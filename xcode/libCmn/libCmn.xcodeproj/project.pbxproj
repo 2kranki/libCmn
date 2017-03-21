@@ -550,6 +550,7 @@
 		C4C675F71E81B1650084CA20 /* histBase.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C675F01E81B1650084CA20 /* histBase.c */; };
 		C4C675F81E81B1650084CA20 /* ioMgr_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C675F31E81B1650084CA20 /* ioMgr_object.c */; };
 		C4C675F91E81B1650084CA20 /* ioMgr.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C675F41E81B1650084CA20 /* ioMgr.c */; };
+		C4C675FD1E81BA120084CA20 /* mkLib.sh in Resources */ = {isa = PBXBuildFile; fileRef = C4C675FC1E81BA120084CA20 /* mkLib.sh */; };
 		C4EDA3E21DBFDC2A005FBE6E /* endian_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4EDA3DE1DBFDC2A005FBE6E /* endian_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C4EDA3E31DBFDC2A005FBE6E /* endian_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EDA3DF1DBFDC2A005FBE6E /* endian_object.c */; };
 		C4EDA3E41DBFDC2A005FBE6E /* endian.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EDA3E01DBFDC2A005FBE6E /* endian.c */; };
@@ -1139,6 +1140,7 @@
 		C4C675F31E81B1650084CA20 /* ioMgr_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioMgr_object.c; sourceTree = "<group>"; };
 		C4C675F41E81B1650084CA20 /* ioMgr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioMgr.c; sourceTree = "<group>"; };
 		C4C675F51E81B1650084CA20 /* ioMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioMgr.h; sourceTree = "<group>"; };
+		C4C675FC1E81BA120084CA20 /* mkLib.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = mkLib.sh; path = ../../mkLib.sh; sourceTree = "<group>"; };
 		C4EDA3DE1DBFDC2A005FBE6E /* endian_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endian_internal.h; sourceTree = "<group>"; };
 		C4EDA3DF1DBFDC2A005FBE6E /* endian_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = endian_object.c; sourceTree = "<group>"; };
 		C4EDA3E01DBFDC2A005FBE6E /* endian.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = endian.c; sourceTree = "<group>"; };
@@ -1186,6 +1188,7 @@
 		C467039E1C6B9C400091FC0E = {
 			isa = PBXGroup;
 			children = (
+				C4C675FC1E81BA120084CA20 /* mkLib.sh */,
 				C4B57A271E515C340042C2A5 /* objects.json.txt */,
 				C4AF15C81C6E14080098171F /* TODO.txt */,
 				C4FE0D4A1C77A73500357347 /* NOTES.txt */,
@@ -2121,6 +2124,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4C675FD1E81BA120084CA20 /* mkLib.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,8 +3,6 @@
 
 # vi:nu:et:sts=4 ts=4 sw=4
 
-#   This is for use with git.sh
-
 
 
 
@@ -502,7 +500,7 @@ main( ) {
         if [ 0 -eq $mainReturn ]; then
             echo		   "Successful completion..."
         else
-            echo		   "${RED}Unsuccessful completion of ${mainReturn}${CANCEL}"
+            echo		   "Unsuccessful completion of ${mainReturn}"
         fi
         echo			"   Started: ${TimeStart}"
         echo			"   Ended:   ${TimeEnd}"
