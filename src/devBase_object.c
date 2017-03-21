@@ -164,20 +164,22 @@ uint16_t		devBase_WhoAmI(
 
 const
 DEVBASE_VTBL    devBase_Vtbl = {
-    &devBase_Info,
-    devBase_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    devBase_Dealloc,
-    devBase_Class,
-    devBase_WhoAmI,
-    NULL,			// devBase_Enable,
-    NULL,			// devBase_Disable,
-    (P_OBJ_TOSTRING)devBase_ToDebugString,
-    NULL,			// (P_OBJ_ASSIGN)devBase_Assign,
-    NULL,			// (P_OBJ_COMPARE)devBase_Compare,
-    NULL, 			// (P_OBJ_PTR)devBase_Copy,
-    NULL, 			// (P_OBJ_HASH)devBase_Hash,
+    {
+        &devBase_Info,
+        devBase_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        devBase_Dealloc,
+        devBase_Class,
+        devBase_WhoAmI,
+        NULL,			// devBase_Enable,
+        NULL,			// devBase_Disable,
+        (P_OBJ_TOSTRING)devBase_ToDebugString,
+        NULL,			// (P_OBJ_ASSIGN)devBase_Assign,
+        NULL,			// (P_OBJ_COMPARE)devBase_Compare,
+        NULL, 			// (P_OBJ_PTR)devBase_Copy,
+        NULL 			// (P_OBJ_HASH)devBase_Hash,
+    },
     // Put other object method names below this.
     // Properties:
     // Methods:

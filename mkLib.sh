@@ -403,8 +403,8 @@ main( ) {
     doCompile   ptrArray_object
     doCompile   pwr2Array
     doCompile   pwr2Array_object
-    doCompile   rrds
-    doCompile   rrds_object
+    doCompile   rrds32
+    doCompile   rrds32_object
     doCompile   sidx
     doCompile   sidx_object
     doCompile   srcFile

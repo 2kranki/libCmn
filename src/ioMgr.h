@@ -1,11 +1,11 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          IOMGR Console Transmit Task (ioMgr) Header
+//                  I/O Manager (ioMgr) Header
 //****************************************************************
 /*
  * Program
- *			Separate ioMgr (ioMgr)
+ *			I/O Manager (ioMgr)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate ioMgr to run things without complications
@@ -80,7 +80,7 @@ extern "C" {
         // method names to the vtbl definition in ioMgr_object.c.
         // Properties:
         // Methods:
-        bool        (*pIsEnabled)(IOMGR_DATA *);
+        //bool        (*pIsEnabled)(IOMGR_DATA *);
     } IOMGR_VTBL;
 
 
@@ -113,26 +113,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool        ioMgr_Disable(
-        IOMGR_DATA		*this
-    );
-
-
-    bool        ioMgr_Enable(
-        IOMGR_DATA		*this
-    );
-
-   
     IOMGR_DATA *   ioMgr_Init(
         IOMGR_DATA     *this
     );
 
 
-    bool        ioMgr_IsEnabled(
-        IOMGR_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the
      objects within it.

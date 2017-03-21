@@ -170,30 +170,34 @@ uint16_t		histBase_WhoAmI(
 
 const
 HISTBASE_VTBL   histBase_Vtbl = {
-	&histBase_Info,
-    histBase_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    histBase_Dealloc,
-    histBase_Class,
-    histBase_WhoAmI,
-    NULL,			// histBase_Enable,
-    NULL,			// histBase_Disable,
-    (P_OBJ_TOSTRING)histBase_ToDebugString,
-    NULL,			// (P_OBJ_ASSIGN)histBase_Assign,
-    NULL,			// (P_OBJ_COMPARE)histBase_Compare,
-    NULL, 			// (P_OBJ_PTR)histBase_Copy,
-    NULL, 			// (P_OBJ_HASH)histBase_Hash,
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    (void*)devBase_Getc,
-    (void*)histBase_Ioctl,
-    (void*)devBase_Putc,
-    (void*)histBase_Read,
-    (void*)histBase_Start,
-    (void*)histBase_Stop,
-    (void*)devBase_Write,
+    {
+        {
+            &histBase_Info,
+            histBase_IsKindOf,
+            obj_RetainStandard,
+            obj_ReleaseStandard,
+            histBase_Dealloc,
+            histBase_Class,
+            histBase_WhoAmI,
+            NULL,			// histBase_Enable,
+            NULL,			// histBase_Disable,
+            (P_OBJ_TOSTRING)histBase_ToDebugString,
+            NULL,			// (P_OBJ_ASSIGN)histBase_Assign,
+            NULL,			// (P_OBJ_COMPARE)histBase_Compare,
+            NULL, 			// (P_OBJ_PTR)histBase_Copy,
+            NULL 			// (P_OBJ_HASH)histBase_Hash
+        },
+        // Put other object method names below this.
+        // Properties:
+        // Methods:
+        (void*)devBase_Getc,
+        (void*)histBase_Ioctl,
+        (void*)devBase_Putc,
+        (void*)histBase_Read,
+        (void*)histBase_Start,
+        (void*)histBase_Stop,
+        (void*)devBase_Write
+    }
  
 };
 

@@ -224,8 +224,8 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        IOMGR_DATA   *this = objId;
-        bool            fRc;
+        IOMGR_DATA      *this = objId;
+        //bool            fRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -239,7 +239,7 @@ extern "C" {
         }
 #endif
 
-        fRc = ioMgr_Disable( this );
+        //fRc = ioMgr_Disable( this );
 
         if (this->pArray) {
             obj_Release(this->pArray);

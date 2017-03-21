@@ -386,6 +386,8 @@ extern	"C" {
     typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID,OBJ_ID);
     typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID,OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_COPY)(OBJ_ID);
+    typedef bool        (*P_OBJ_DISABLE)(OBJ_ID);
+    typedef bool        (*P_OBJ_ENABLE)(OBJ_ID);
     typedef uint32_t    (*P_OBJ_HASH)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_PTR)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_TOSTRING)(OBJ_ID,int);

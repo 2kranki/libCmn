@@ -92,7 +92,7 @@
 {
 	RRDS32_DATA		*cbp;
     uint32_t        i;
-    bool            fRc;
+    //bool            fRc;
 	char			*pPath     = "/tmp/test.rrds";
     char            block[12]  = "            ";
     char            block2[12] = "            ";

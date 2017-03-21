@@ -164,30 +164,27 @@ uint16_t		ioMgr_WhoAmI(
 
 
 const
-IOMGR_VTBL_INTERNAL ioMgr_Vtbl = {
-	&ioMgr_Info,
-    ioMgr_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    ioMgr_Dealloc,
-    ioMgr_Class,
-    ioMgr_WhoAmI,
-    NULL,			// ioMgr_Enable,
-    NULL,			// ioMgr_Disable,
-    (P_OBJ_TOSTRING)ioMgr_ToDebugString,
-    NULL,			// (P_OBJ_ASSIGN)ioMgr_Assign,
-    NULL,			// (P_OBJ_COMPARE)ioMgr_Compare,
-    NULL, 			// (P_OBJ_PTR)ioMgr_Copy,
-    NULL, 			// (P_OBJ_HASH)ioMgr_Hash
+IOMGR_VTBL      ioMgr_Vtbl = {
+    {
+        &ioMgr_Info,
+        ioMgr_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        ioMgr_Dealloc,
+        ioMgr_Class,
+        ioMgr_WhoAmI,
+        NULL,           // ioMgr_Enable,
+        NULL,           // ioMgr_Disable,
+        (P_OBJ_TOSTRING)ioMgr_ToDebugString,
+        NULL,			// (P_OBJ_ASSIGN)ioMgr_Assign,
+        NULL,			// (P_OBJ_COMPARE)ioMgr_Compare,
+        NULL, 			// (P_OBJ_PTR)ioMgr_Copy,
+        NULL 			// (P_OBJ_HASH)ioMgr_Hash
+    },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    ioMgr_IsEnabled,
-#ifdef NDEBUG
-#else
-    ioMgr_Validate
-#endif
- 
+    //ioMgr_IsEnabled
 };
 
 

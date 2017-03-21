@@ -54,19 +54,6 @@ extern "C" {
 #endif
 
 
-  typedef struct ioMgr_vtbl_internal_s	{
-        IOMGR_VTBL         iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ioMgr_object.c.
-        // Properties:
-        // Methods:
-#ifdef NDEBUG
-#else
-        bool			(*pValidate)(IOMGR_DATA *);
-#endif
-    } IOMGR_VTBL_INTERNAL;
-
-
 
 #pragma pack(push, 1)
 struct ioMgr_data_s	{
@@ -93,7 +80,7 @@ struct ioMgr_data_s	{
 
     extern
     const
-    IOMGR_VTBL_INTERNAL ioMgr_Vtbl;
+    IOMGR_VTBL      ioMgr_Vtbl;
 
 
 

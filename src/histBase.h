@@ -131,12 +131,11 @@ extern "C" {
     typedef struct histBase_data_s	HISTBASE_DATA;    // Inherits from devBase.
 
     typedef struct histBase_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        DEVBASE_VTBL    devVtbl;             // Inherited VTBL from devBase
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in histBase_object.c.
         // Properties:
         // Methods:
-        DEVBASE_VTBL    devVtbl;             // Inherited VTBL from devBase
     } HISTBASE_VTBL;
 
 
