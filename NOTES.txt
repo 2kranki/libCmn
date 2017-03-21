@@ -1,0 +1,72 @@
+# vi:nu:et:sts=4 ts=4 sw=4 tw=90
+
+The object system was designed after Objective C. I liked how Objective C used Class
+Objects vs the actual working objects. So, I created a system that somewhat mimicks it.
+
+The object system consists of two parts, the same as Cocoa. Each objects actually con-
+sists of two objects. The first is the class object which is more static. In most cases,
+the class object just makes the working object. However, it can be used to store informa-
+tion accross all working objects created. This is rarely needed.
+
+You will find that it is not really necessary to fully define the vtbls unless you
+actually need them. You can still have objects (ie centralized data and methods) without
+actually using vtbls. The system works either way if you do the vtbl definitions. Note
+that there is a minimal amount of vtbl entries that must be done or defined. See obj.h
+for further information.
+
+
+
+
+
+To eliminate header interference, I found that it was better to group objects in the
+same family into one header. I now put the object and vtbl definition into the family
+header and include in the .c files the actual .h files needed.  That seems to work the
+best. The "node" object is probably the largest family of objects in this system.
+
+
+
+
+
+
+The following are things that need to be followed up on:
+
+
+-- obj
+    --  Currently, the inheriting class needs to store the vtbl in its portion of the
+        internal data and use that to utilize its virtual methods. This needs to be
+        experimented with and thought out more. So far, casting and putting certain
+        functions plus object ptr within another object has worked well for a simulating
+        virtual functions.
+
+    --  If we used static_cast(pObj,OBJ_IDENT_???) to cast to a subclass instead of
+        casting, we could make the objects independent of each other and they would
+        each have their own vtbl ptr. So:
+            class A;
+            class B : A;
+        In the class B Internal.h, we would have base_class *pBase right after
+        OBJ_DATA super; This would force us to use static_cast(), but it would give
+        us separate vtbls and more flexibility. 
+
+
+-- To check for a power of two, use:
+        // Must be power of 2!
+        if (x && !(x & (x - 1))) {
+            // power of two
+        }
+        else {
+            // not a power of two
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

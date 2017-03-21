@@ -1,0 +1,369 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+/*
+ * File:   dirEntry.c
+ *	Generated 06/23/2015 20:03:11
+ *
+ */
+
+ 
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+//*****************************************************************
+//* * * * * * * * * * * *  Data Definitions   * * * * * * * * * * *
+//*****************************************************************
+
+#ifdef __APPLE__
+#   define _DARWIN_FEATURE_64_BIT_INODE /**/
+#endif
+
+
+/* Header File Inclusion */
+#include "dirEntry_internal.h"
+
+
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+    
+
+    
+
+
+ 
+    /****************************************************************
+    * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+
+    /****************************************************************
+    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+    //===============================================================
+    //                      *** Class Methods ***
+    //===============================================================
+
+    DIRENTRY_DATA *     dirEntry_Alloc(
+    )
+    {
+        DIRENTRY_DATA   *cbp;
+        uint32_t        cbSize = sizeof(DIRENTRY_DATA);
+        
+        // Do initialization.
+        
+        cbp = obj_Alloc( cbSize );
+        
+        // Return to caller.
+        return( cbp );
+    }
+
+
+
+    DIRENTRY_DATA * dirEntry_NewA(
+        PATH_DATA       *pDir,
+        const
+        char            *pNameStr,
+        uint8_t         type
+    )
+    {
+        DIRENTRY_DATA   *cbp;
+        ASTR_DATA       *pName;
+        
+        pName = AStr_NewA(pNameStr);
+        if (OBJ_NIL == pName) {
+            return OBJ_NIL;
+        }
+        
+        cbp = dirEntry_Alloc();
+        cbp = dirEntry_Init(cbp);
+        if (OBJ_NIL == cbp) {
+            return cbp;
+        }
+        
+        (void)dirEntry_setDir(cbp, pDir);
+        (void)dirEntry_setName(cbp, pName);
+        (void)dirEntry_setType(cbp, type);
+
+        obj_Release(pName);
+        pName = OBJ_NIL;
+        
+        // Return to caller.
+        return( cbp );
+    }
+    
+    
+    
+    
+
+    //===============================================================
+    //                      P r o p e r t i e s
+    //===============================================================
+
+    PATH_DATA *     dirEntry_getDir(
+        DIRENTRY_DATA   *cbp
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return cbp->pDir;
+    }
+    
+    bool            dirEntry_setDir(
+        DIRENTRY_DATA   *cbp,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (cbp->pDir) {
+            obj_Release(cbp->pDir);
+        }
+        cbp->pDir = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    ASTR_DATA *     dirEntry_getName(
+        DIRENTRY_DATA   *cbp
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return cbp->pName;
+    }
+    
+    bool            dirEntry_setName(
+        DIRENTRY_DATA   *cbp,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (cbp->pName) {
+            obj_Release(cbp->pName);
+        }
+        cbp->pName = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    uint8_t         dirEntry_getType(
+        DIRENTRY_DATA   *cbp
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return cbp->type;
+    }
+
+    bool            dirEntry_setType(
+        DIRENTRY_DATA   *cbp,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        cbp->type = value;
+        return true;
+    }
+
+
+
+    uint32_t        dirEntry_getSize(
+        DIRENTRY_DATA       *cbp
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        return( 0 );
+    }
+
+
+
+
+    
+
+    //===============================================================
+    //                          M e t h o d s
+    //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                        D e a l l o c
+    //---------------------------------------------------------------
+
+    void            dirEntry_Dealloc(
+        OBJ_ID          objId
+    )
+    {
+        DIRENTRY_DATA   *cbp = objId;
+
+        // Do initialization.
+        if (OBJ_NIL == cbp) {
+            return;
+        }        
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+
+        (void)dirEntry_setDir(cbp, OBJ_NIL);
+        (void)dirEntry_setName(cbp, OBJ_NIL);
+
+        obj_Dealloc( cbp );
+        cbp = NULL;
+
+        // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          I n i t
+    //---------------------------------------------------------------
+
+    DIRENTRY_DATA *   dirEntry_Init(
+        DIRENTRY_DATA       *cbp
+    )
+    {
+        
+        if (OBJ_NIL == cbp) {
+            return OBJ_NIL;
+        }
+        
+        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_DIRENTRY );
+        if (OBJ_NIL == cbp) {
+            return OBJ_NIL;
+        }
+        obj_setVtbl(cbp, &dirEntry_Vtbl);
+        
+        //cbp->stackSize = obj_getMisc1(cbp);
+
+    #ifdef NDEBUG
+    #else
+        if( !dirEntry_Validate( cbp ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+    #endif
+
+        return cbp;
+    }
+
+     
+
+    //---------------------------------------------------------------
+    //                      V a l i d a t e
+    //---------------------------------------------------------------
+
+    #ifdef NDEBUG
+    #else
+    bool            dirEntry_Validate(
+        DIRENTRY_DATA      *cbp
+    )
+    {
+        if( cbp ) {
+            if ( obj_IsKindOf(cbp,OBJ_IDENT_DIRENTRY) )
+                ;
+            else
+                return false;
+        }
+        else
+            return false;
+        if( !(obj_getSize(cbp) >= sizeof(DIRENTRY_DATA)) )
+            return false;
+
+        // Return to caller.
+        return true;
+    }
+    #endif
+
+
+    
+    
+    
+#ifdef	__cplusplus
+}
+#endif
+
+

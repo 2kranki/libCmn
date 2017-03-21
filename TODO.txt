@@ -1,0 +1,358 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+The following are things that are being throught about. Whether they get done or not
+will depend upon time and resources.
+
+
+--  device
+    --  Needs more thought
+
+--  wav
+    --  Breakout the RIFF stuff into its own object
+    --  Finish the input side of it.
+
+--  FAT16
+    --  finish when needed
+
+--  Posix
+    --  psxThread
+        --  Add Thread Local Storage, szKey with void *pData. Maybe 1k for it. String size
+            must be rounded to word size on Mips/ARM.
+        --  Address signal processing which right now does not exist on the PIC32.
+    --  psxCond
+        --  Finish and add testing of main functionality
+    --  psxMutex
+        --  Finish and add testing of main functionality
+    --  psxSem
+        --  Finish and add testing of main functionality
+
+--  Node et al
+    --  Finish nodeEntry
+    --  Finish integrating nodeEntry into NodeTree, NodeGraph, NodeHash
+    --  NodeArc should inherit from NodeEntry (???).
+    --  Using left,parent,right or Children effectively makes the node only applicable
+        to one container at a time. Maybe we need to go back and set up the containers
+        to use their own internal structures removing left,parent,right and Children from
+        the Node itself.
+    --  why do we need nodeArray and nodeList?
+    --  nodeList does not use built in pointers.
+    --  nodeTree relies on children not left,parent,right.
+    --  nodeTree is effectively a list of lists.
+    --  nodeArray does not use built in pointers
+    --  nodeHash needs Assign() to be complete.
+    --  Maybe node should just have 3 or 4 contiguous void *'s that can be used by
+        the appropriate container. However, that effectively makes it so that a node
+        can only be in one container at a time.
+
+
+
+-- Finish Consumer deriving from Consumer in libPic32
+
+-- get PPLEX3 working
+-- get PrsObjC working
+
+
+-- get JSON to use srcFile internally
+-- get cmdUtl to use srcFile internally
+-- get Csv (???) to use srcFile internally
+-- Change dbCsv,dbf to return a nodeTree compatible with JSON.
+
+
+The following are things that need to be followed up on:
+
+
+-- Start using HeaderDoc, see  https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/HeaderDoc/intro/intro.html
+
+-- Change mem to support objects separately. So, that it understands
+    them when it dumps them or checks for memory problems
+
+
+
+
+
+
+
+--  Graph Search
+    Input:
+        A graph with nodes N = {n1,n2,...nk} and selected node, n.
+    Output:
+        All nodes reachable from n.
+    Steps:
+        setofnodes      reached;
+        setofnodes      frontier;
+        node            f;
+
+        reached = frontier = {n};
+        f = n;
+        while( (f != NULL) && (frontier != NULL)) {
+            remove f from frontier;
+            for( each arc r with tail f ) {
+                if (head of r is not reached) {
+                    add head of r to reached;
+                }
+            }
+            select f from frontier;
+        }
+    Taken from "Compiler Design and Construction" by Arthur B Pyster
+
+
+
+-- Simplified Regular Expression Grammar
+    e = e '|' t | t ;
+    t = t f | f ;
+    p = '(' e ')' | OPERAND
+
+
+-- AStrC
+    -- Finish
+    -- Adjust AStr to fit AStrC/AStr using NSString
+
+
+-- nodeTree
+    -- Add ToDebugString()
+
+
+-- objHash
+    -- Finish
+
+
+-- dbCsv
+    -- Rewrite parser (each function returns object)
+    -- Finish
+
+
+-- Trie
+    --  Finish!
+        See needsWork/xxx.txt
+
+
+-- ptrArray
+    -- Convert to using pwr2Array
+
+
+-- TrieMP
+    -- Finish
+    -- Add ability to generate static trie with search routine
+
+
+-- bitset(??), bitMatrix(??),
+    arrayPtr(and rename to ptrArray)(??),
+    -- using u16Array as a guide, upgrade to use pwr2Array
+
+
+- scanOpt/cmdutl/clo (Command Line Option Scanning)
+    - cmnutl is to be the final object. However, the example parsing of
+        command line options from Compiler/Languages/RIR/main.c shows
+        that it is not all that complicated to do by hand.
+    - Fix cmdutl_ParseCmdStr().
+    - Merge old CLO into cmdutl (???)
+        - Delete CLO and old CLO
+    - Merge scanOpt into cmdutl (???)
+        - Delete scanOpt
+    - Add stuff from old CLO in rmwSubs that makes sense
+    - Compiler/Languages/RIR has a Main.c that scans parms by main options
+        and options that affect the next input file (it uses the newer CLO
+        object from Windows Programming)
+    - cmdutl has scanning in it also. Combine somehow.
+    - it would be nice to have definitions of the switches and parameters so
+        that we could do a better job of parsing. The other idea is to NOT
+        allow various options to be combined after one '-', but make them
+        be listed separately (not Unix like).
+    - we should recognize '--' alone as terminating the scan (??)
+    - compile the scanner from the normal documentation (add some form of
+        markup language)
+
+
+
+-- Token
+    -- look into having it inherit from Node.
+
+
+
+-- u8Array
+    -- Add methods to get, add, and delete groups of uint8_t
+    -- Possibly change astr to use u8Array underneath.
+
+
+
+-- fbso
+    -- add UTF-8 support
+
+
+
+-- pplex
+    -- phase 1 - handle special characters and continued lines
+    -- phase 2 - break up into tokens for everything including
+                whitespace and comments
+        -- Finish numbers
+        -- Finish fatal errors
+        -- make '\n's their own token, so phase 3 sees "\\\n" as
+            line continuation
+    -- phase 3 - combine tokens as needed such as '@' + "class"
+                for keyword "@class" also L 'x' or L "xx"
+    -- each phase feeds tokens into the next phase.
+
+
+
+- DBFile
+    - Finish as only the field descriptor, make other objects for the other elements
+      of the dbase file system
+    - Merge in old "clf" logic for create, destroy (close with delete), open, close.
+    - Convert file I/O to use "fbsi" and "fbso" or fbr if fixed (???)
+    - Add logic for multiple lines terminated by ASCII_CR
+    - ASCII_CPM_EOF should be optional at EOF
+    - Text Fields should be allowed to contain upto 64k-1 chars including ASCII_LFs
+        but no <cr><lf> because that denotes end of record
+    - How to do blobs, should be len and data
+
+
+
+- j1939_mon
+    - create as j1939_mon.c and put back in cmnLib for ECU and TCU
+    - add command to add tc, er or en ca
+    - add CAM display
+    - add CA display
+    - add ability to turn on/off conxmt of messages transmitted
+
+
+
+- LCD
+    - Finish initial implementation
+    - Add announcement msg with version for ecu, tcu, canfun
+    - Create LCD Simulator for OSX
+
+
+- SRC
+    - Change to use FBSI or fopen w/setvbuf or memory buffer
+
+
+
+- path
+    - Need path that includes expansion of env variables and
+    '~' for $HOME
+    - clean up of path for instance: ./abc/../ == ./
+    - make path inherit from bstr or just add methods to bstr and
+      forget path
+
+
+
+- bstr
+    - upgrade to UTF-8 support
+
+
+
+- pplex2
+    - Create option and code to pass through whitespace as PPLEX_SPCL_WHITESPACE
+    - make the reserved word table optional and supplied at execution time
+    - pplex should work for Macro and LL1 if set up properly.
+    - Finish using old version in "Needs to be updated" and merge in bldtok.c
+        support from macro
+
+
+
+- GREG
+    - Finish initial implementation
+    - leap year (class method)
+    - day of week
+    - ordinal day number
+    - days in year (class method)
+
+
+
+- CT
+    - (Check out interrupt routines and open/close, enable/disable
+    - check WAIT_MS() and WAIT_US() for accuracy.
+
+
+
+- DMA
+    - create routines for each of the 8 dma ports and one for the CRC module
+
+
+
+- PMP 
+    - Finish for LCD
+
+
+
+- LCD
+    - Create using PMP
+
+
+
+- RTCC 
+    - Finish
+
+
+
+- UART - Move to OBJ
+
+
+
+- MON 
+    - look at table-izing the command structure with help part of the table.
+
+
+
+- CAN/UART 
+    - figure out if it is better to use TNeoKernel in interrupts or
+        leave alone
+    - Need to try opening a second peripheral/module that uses the pins of
+        something that is active to see what happens
+
+
+
+- PIC32
+    - tracks pins being used for uart,can,pmp,dma,etc to avoid conflicts on 
+        opening peripherals
+
+
+
+- CAN 
+    - Implement interrupts on send (??)
+    - figure out if it is better to use TNeoKernel in interrupts or leave alone
+    - Initialization sequence:
+        open
+        enable (?)
+        add fifos required
+            transmit
+            receive
+            RTR (if needed)
+        calculate space needed for buffer and allocate
+        set mode (?) to put CAN Module into operation
+        begin operation
+            activate appropriate interrupts for each fifo and module global
+            collect fifo queue beginning addresses or calculate
+
+
+
+- CAN - Do we buffer in Fifo queues 
+            (equal ones on receive just rollover)
+            (treat as one big queue -- not easy)
+            (callback per fifo queue ??)
+
+
+
+- fbr
+    - use fixed hash above and add hash table to it.
+    - Finish debugging LRU/Hash mechanism
+
+
+
+- stm
+    - finish and debug
+    - use hash from above???
+
+
+
+- sym
+    - use hash and stm. get it done so that we can use it like a dict or call it a dict!
+    - hashsz gives us data of void with string key
+    - nodeHash gives us an data object with a bstr key
+    - don't need a simple dict like symbol table with the above.
+
+
+
+- passtr
+    - create and debug
+            
