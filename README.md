@@ -15,4 +15,12 @@ of those. lol
 All of this library is committed to the Public Domain.  See 'obj.h'
 for a list of the objects in the library.
 
+My primary development environment is MacOSX with Xcode. The C code
+is ANSI C and should be compilable with any ANSI C compiler. Use
+'mkLib.sh' after adjusting it to create the library. If you are
+using Xcode, you will find a test program for almost every object.
+Some are tests are pretty complete, but all of them need more
+complete testing.
+
+
 *** Use at your own risk. ***
