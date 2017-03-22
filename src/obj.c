@@ -1086,7 +1086,7 @@ extern	"C" {
         }
 #endif
         
-        if (this->cbFlags & OBJ_FLAG_TRACE)
+        if (this->cbFlags & (1 << OBJ_FLAG_TRACE))
             return true;
         
         // Return to caller.
