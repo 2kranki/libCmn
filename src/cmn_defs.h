@@ -51,16 +51,6 @@
 
 
 
-
-#ifndef     CMN_DEFS_H
-#define     CMN_DEFS_H   1
-
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-    
-    
 #include        <ctype.h>
 #include        <fcntl.h>
 #include        <stdarg.h>
@@ -74,10 +64,20 @@ extern "C" {
 #include        <wchar.h>
 #include        <sys/stat.h>
 #include        <sys/types.h>
-    
-    
+
+
 #include        <str.h>
 
+
+#ifndef     CMN_DEFS_H
+#define     CMN_DEFS_H   1
+
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+    
+    
     
     
     //****************************************************************

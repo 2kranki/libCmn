@@ -38,6 +38,7 @@
 
 /* Header File Inclusion */
 #include        <str.h>
+#include        <cmn_defs.h>
 
 
 typedef struct str_sb_s STR_SB;
