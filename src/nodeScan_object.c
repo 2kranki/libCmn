@@ -3,6 +3,7 @@
 //	Class Object Metods and Tables for 'nodeScan'
 //	Generated 07/10/2016 16:11:02
 
+
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -29,6 +30,8 @@
  
  For more information, please refer to <http://unlicense.org/>
  */
+
+
 
 
 #define			NODESCAN_OBJECT_C	    1

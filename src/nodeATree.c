@@ -112,6 +112,7 @@ extern "C" {
         NODEATREE_DATA  *this,
         void            (pVisitor)(
                                  OBJ_ID,             // Object supplied below
+                                 NODEATREE_DATA *,   // Our Tree
                                  NODE_DATA *,        // Current Node
                                  uint16_t            // Indent level * 4
                                  ),
@@ -136,7 +137,7 @@ extern "C" {
 #endif
         
         pNode = objArray_Get(this->pArray, index);
-        pVisitor(pObject, (NODE_DATA *)pNode, indent);
+        pVisitor(pObject, this, (NODE_DATA *)pNode, indent);
         
         iMax = this->B;
         for (i=0; i<iMax; ++i) {
@@ -975,6 +976,7 @@ extern "C" {
         NODEATREE_DATA	*this,
         void            (pVisitor)(
                               OBJ_ID,             // Object supplied below
+                              NODEATREE_DATA *,   // Our Tree
                               NODE_DATA *,        // Current Node
                               uint16_t            // Indent level * 4
                               ),

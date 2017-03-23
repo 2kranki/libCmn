@@ -238,6 +238,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
             OBJ_ID          ,           // Object supplied below
+            NODETREE_DATA   *,          // Our Tree
             NODE_DATA       *,          // Current Node
             uint16_t                    // Indent level * 4
         ),
@@ -275,7 +276,7 @@ extern "C" {
                 }
             }
             // visit current node.
-            pVisitor(pObject, nodeEntry_getNode(pNode), indent);
+            pVisitor(pObject, this, nodeEntry_getNode(pNode), indent);
             // Follow Sibling chain.
             childIndex = nodeEntry_getSibling(pNode);
             if (childIndex) {
@@ -302,6 +303,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
                                 OBJ_ID,             // Object supplied below
+                                NODETREE_DATA *,    // Our Tree
                                 NODE_DATA *,        // Current Node
                                 uint16_t            // Indent level * 4
                         ),
@@ -353,7 +355,7 @@ extern "C" {
                 }
             }
             // visit current node.
-            pVisitor(pObject, nodeEntry_getNode(pNode), indent);
+            pVisitor(pObject, this, nodeEntry_getNode(pNode), indent);
         }
         
         // Return to caller.
@@ -378,6 +380,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
                                  OBJ_ID,             // Object supplied below
+                                 NODETREE_DATA *,    // Our Tree
                                  NODE_DATA *,        // Current Node
                                  uint16_t            // Indent level * 4
                                  ),
@@ -401,7 +404,7 @@ extern "C" {
         pNode = objArray_Get(this->pArray, index);
         if (pNode) {
             // visit current node.
-            pVisitor(pObject, nodeEntry_getNode(pNode), indent);
+            pVisitor(pObject, this, nodeEntry_getNode(pNode), indent);
             // Follow Child chain.
             childIndex = nodeEntry_getChild(pNode);
             if (childIndex) {
@@ -1683,6 +1686,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
             OBJ_ID          ,               // Object supplied below
+            NODETREE_DATA   *,              // Our Tree
             NODE_DATA       *,              // Current Node
             uint16_t                        // Indent level * 4
         ),
@@ -1713,7 +1717,7 @@ extern "C" {
             this->eRc = ERESULT_SUCCESS;
             return this->eRc;
         }
-        pVisitor(pObject, nodeEntry_getNode(pEntry), indent);
+        pVisitor(pObject, this, nodeEntry_getNode(pEntry), indent);
         objList_Add2Head(pQueue, pEntry);
         while (objList_getSize(pQueue)) {
             pEntry = objList_Tail(pQueue);
@@ -1721,13 +1725,13 @@ extern "C" {
             if (nodeEntry_getChild(pEntry)) {
                 pEntry = objArray_Get(this->pArray, nodeEntry_getChild(pEntry));
                 if (pEntry) {
-                    pVisitor(pObject, nodeEntry_getNode(pEntry), indent);
+                    pVisitor(pObject, this, nodeEntry_getNode(pEntry), indent);
                     objList_Add2Head(pQueue, pEntry);
                 }
                 while (nodeEntry_getSibling(pEntry)) {
                     pEntry = objArray_Get(this->pArray, nodeEntry_getSibling(pEntry));
                     if (pEntry) {
-                        pVisitor(pObject, nodeEntry_getNode(pEntry), indent);
+                        pVisitor(pObject, this, nodeEntry_getNode(pEntry), indent);
                         objList_Add2Head(pQueue, pEntry);
                     }
                 }
@@ -1752,6 +1756,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
             OBJ_ID          ,           // Object supplied below
+            NODETREE_DATA   *,          // Our Tree
             NODE_DATA       *,          // Current Node
             uint16_t                    // Indent level * 4
         ),
@@ -1786,9 +1791,10 @@ extern "C" {
     ERESULT         nodeTree_VisitPostorder(
         NODETREE_DATA	*this,
         void            (pVisitor)(
-                               OBJ_ID,             // Object supplied below
-                               NODE_DATA *,        // Current Node
-                               uint16_t            // Indent level * 4
+                                OBJ_ID,                 // Object supplied below
+                                NODETREE_DATA *,        // Our Tree
+                                NODE_DATA *,            // Current Node
+                                uint16_t                // Indent level * 4
                                ),
         OBJ_ID          pObject
     )
@@ -1822,6 +1828,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
                             OBJ_ID,             // Object supplied below
+                            NODETREE_DATA *,    // Our Tree
                             NODE_DATA *,        // Current Node
                             uint16_t            // Indent level * 4
                         ),

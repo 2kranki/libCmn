@@ -77,6 +77,7 @@ char        **ppVisit = NULL;
 
     void            nodeVisitor(
         OBJ_ID          pObj,               // Object supplied below
+        NODEATREE_DATA  *pTree,             // Our Tree
         NODE_DATA       *pNode,             // Current Node
         uint16_t        indent              // Indent level * 4
     )

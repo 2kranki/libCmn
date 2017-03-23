@@ -70,6 +70,7 @@ NODE_DATA       *pNodes[20];
 static
 void            visitor(
     OBJ_ID          pObject,            // Object supplied below
+    NODETREE_DATA   *pTree,             // Our Tree
     NODE_DATA       *pNode,             // Current Node
     uint16_t        indent
 )

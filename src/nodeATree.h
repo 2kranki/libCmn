@@ -249,6 +249,7 @@ extern "C" {
         NODEATREE_DATA	*this,
         void            (pVisitor)(
             OBJ_ID,             // Object supplied below
+            NODEATREE_DATA *,   // Our Tree
             NODE_DATA *,        // Current Node
             uint16_t            // Indent level * 4
         ),

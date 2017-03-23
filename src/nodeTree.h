@@ -401,6 +401,7 @@ extern "C" {
         NODETREE_DATA	*this,
         void            (pVisitor)(
             OBJ_ID          ,               // Object supplied below
+            NODETREE_DATA   *,              // Our Tree
             NODE_DATA       *,              // Current Node
             uint16_t                        // Indent level * 4
         ),
@@ -413,9 +414,10 @@ extern "C" {
     ERESULT         nodeTree_VisitInorder(
         NODETREE_DATA	*this,
         void            (pVisitor)(
-                                   OBJ_ID,             // Object supplied below
-                                   NODE_DATA *,        // Current Node
-                                   uint16_t            // Indent level * 4
+                                   OBJ_ID,              // Object supplied below
+                                   NODETREE_DATA *,     // Our Tree
+                                   NODE_DATA *,         // Current Node
+                                   uint16_t             // Indent level * 4
                                    ),
         OBJ_ID          pObject
     );
@@ -426,9 +428,10 @@ extern "C" {
     ERESULT         nodeTree_VisitPostorder(
         NODETREE_DATA	*this,
         void            (pVisitor)(
-                                   OBJ_ID,             // Object supplied below
-                                   NODE_DATA *,        // Current Node
-                                   uint16_t            // Indent level * 4
+                                   OBJ_ID,              // Object supplied below
+                                   NODETREE_DATA *,     // Our Tree
+                                   NODE_DATA *,         // Current Node
+                                   uint16_t             // Indent level * 4
                                    ),
         OBJ_ID          pObject
     );
@@ -446,9 +449,10 @@ extern "C" {
     ERESULT         nodeTree_VisitPreorder(
         NODETREE_DATA	*this,
         void            (pVisitor)(
-                                  OBJ_ID,             // Object supplied below
-                                  NODE_DATA *,        // Current Node
-                                  uint16_t            // Indent level * 4
+                                   OBJ_ID,             // Object supplied below
+                                   NODETREE_DATA *,    // Our Tree
+                                   NODE_DATA *,        // Current Node
+                                   uint16_t            // Indent level * 4
                                   ),
         OBJ_ID          pObject
     );
