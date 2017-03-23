@@ -65,6 +65,7 @@ struct nodeEntry_data_s	{
     NODE_DATA       *pNode;
     uint32_t        index;
     uint32_t        leftIndex;
+    uint32_t        middleIndex;
     uint32_t        parentIndex;
     uint32_t        rightIndex;
 

@@ -191,6 +191,16 @@ extern "C" {
     );
     
     
+    uint32_t        nodeEntry_getMiddle(
+        NODEENTRY_DATA  *this
+    );
+    
+    bool            nodeEntry_setMiddle(
+        NODEENTRY_DATA  *this,
+        uint32_t        value
+    );
+    
+    
     uint16_t        nodeEntry_getMisc(
         NODEENTRY_DATA  *this
     );

@@ -267,6 +267,43 @@ extern "C" {
     
     
     
+    uint32_t        nodeEntry_getMiddle(
+        NODEENTRY_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->middleIndex;
+    }
+    
+    
+    bool            nodeEntry_setMiddle(
+        NODEENTRY_DATA  *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->middleIndex = value;
+        
+        return true;
+    }
+    
+    
+    
     uint16_t        nodeEntry_getMisc(
         NODEENTRY_DATA  *this
     )
@@ -772,10 +809,11 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(nodeEntry) index=%3d left=%3d right=%3d parent=%3d\n",
+                     "{%p(nodeEntry) index=%3d left=%3d middle=%3d right=%3d parent=%3d\n",
                      this,
                      nodeEntry_getIndex(this),
                      nodeEntry_getLeft(this),
+                     nodeEntry_getMiddle(this),
                      nodeEntry_getRight(this),
                      nodeEntry_getParent(this)
             );
