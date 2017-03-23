@@ -118,6 +118,14 @@ extern "C" {
     );
     
     
+    NODEENTRY_DATA *     nodeEntry_NewWithUTF8AndClass(
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    );
+    
+    
     NODEENTRY_DATA * nodeEntry_NewWithUTF8Con(
         const
         char            *pName,
@@ -234,12 +242,20 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODEENTRY_DATA *   nodeEntry_Init(
+    NODEENTRY_DATA * nodeEntry_Init(
         NODEENTRY_DATA  *this,
         NODE_DATA       *pNode
     );
 
 
+    NODEENTRY_DATA * nodeEntry_InitWithUTF8(
+        NODEENTRY_DATA  *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    );
+    
+    
     NODEENTRY_DATA * nodeEntry_InitWithUTF8Con(
         NODEENTRY_DATA  *this,
         const

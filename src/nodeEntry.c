@@ -102,6 +102,32 @@ extern "C" {
 
 
 
+    NODEENTRY_DATA * nodeEntry_NewWithUTF8AndClass(
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
+    {
+        NODEENTRY_DATA  *this;
+        
+        if (OBJ_NIL == pName) {
+            return OBJ_NIL;
+        }
+        
+        this = nodeEntry_Alloc( );
+        if (this) {
+            this = nodeEntry_InitWithUTF8(this,pName,pData);
+            if (this) {
+                node_setClass(nodeEntry_getNode(this), cls);
+            }
+        }
+        
+        return this;
+    }
+    
+    
+    
     NODEENTRY_DATA * nodeEntry_NewWithUTF8Con(
         const
         char            *pName,
@@ -657,6 +683,37 @@ extern "C" {
     }
 
      
+    NODEENTRY_DATA * nodeEntry_InitWithUTF8(
+        NODEENTRY_DATA  *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    )
+    {
+        NODE_DATA       *pNode;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pNode = node_NewWithUTF8(pName, pData);
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = nodeEntry_Init( this, pNode );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        return this;
+    }
+    
+    
     NODEENTRY_DATA * nodeEntry_InitWithUTF8Con(
         NODEENTRY_DATA  *this,
         const
