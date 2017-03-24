@@ -67,6 +67,159 @@ static
 NODE_DATA       *pNodes[20];
 
 
+
+
+static
+NODETREE_DATA * createTestTree01(
+)
+{
+    NODETREE_DATA	*pTree = OBJ_NIL;
+    NODE_DATA       *pNodeA = OBJ_NIL;
+    NODE_DATA       *pNodeB = OBJ_NIL;
+    NODE_DATA       *pNodeC = OBJ_NIL;
+    NODE_DATA       *pNodeD = OBJ_NIL;
+    NODE_DATA       *pNodeE = OBJ_NIL;
+    NODE_DATA       *pNodeF = OBJ_NIL;
+    NODE_DATA       *pNodeG = OBJ_NIL;
+    NODE_DATA       *pNodeH = OBJ_NIL;
+    NODE_DATA       *pNodeI = OBJ_NIL;
+    uint32_t        i;
+    ERESULT         eRc;
+    
+    pTree = nodeTree_Alloc( );
+    if  (OBJ_NIL == pTree) {
+        return pTree;
+    }
+    pTree = nodeTree_Init( pTree );
+    if  (OBJ_NIL == pTree) {
+        return pTree;
+    }
+    
+    pNodeA = node_NewWithUTF8Con("A", OBJ_NIL);
+    if  (OBJ_NIL == pNodeA) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeB = node_NewWithUTF8Con("B", OBJ_NIL);
+    if  (OBJ_NIL == pNodeB) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeC = node_NewWithUTF8Con("C", OBJ_NIL);
+    if  (OBJ_NIL == pNodeC) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeD = node_NewWithUTF8Con("D", OBJ_NIL);
+    if  (OBJ_NIL == pNodeD) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeE = node_NewWithUTF8Con("E", OBJ_NIL);
+    if  (OBJ_NIL == pNodeE) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeF = node_NewWithUTF8Con("F", OBJ_NIL);
+    if  (OBJ_NIL == pNodeF) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeG = node_NewWithUTF8Con("G", OBJ_NIL);
+    if  (OBJ_NIL == pNodeG) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeH = node_NewWithUTF8Con("H", OBJ_NIL);
+    if  (OBJ_NIL == pNodeH) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeI = node_NewWithUTF8Con("I", OBJ_NIL);
+    if  (OBJ_NIL == pNodeI) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    
+    fprintf(stderr, "\n\nCreate the tree:\n");
+    fprintf(stderr, "Tree    Index  Sibling  Child  Parent\n");
+    fprintf(stderr, "A         1       0       2       0\n");
+    fprintf(stderr, "--B       2       3       5       1\n");
+    fprintf(stderr, "----C     5       6       0       2\n");
+    fprintf(stderr, "----D     6       0       0       2\n");
+    fprintf(stderr, "--E       3       4       7       1\n");
+    fprintf(stderr, "----F     7       8       9       3\n");
+    fprintf(stderr, "------G   9       0       0       7\n");
+    fprintf(stderr, "----H     8       0       0       3\n");
+    fprintf(stderr, "--I       4       0       0       1\n");
+    fprintf(stderr, "\n\n\n");
+
+    i = nodeTree_ChildAdd(pTree, 0, pNodeA);
+    if  (i == 1)
+        ;
+    else {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeA), pNodeB, pNodeE, pNodeI, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeB), pNodeC, pNodeD, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeE), pNodeF, pNodeH, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeF), pNodeG, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+
+    obj_Release(pNodeI);
+    pNodeI = OBJ_NIL;
+    obj_Release(pNodeH);
+    pNodeH = OBJ_NIL;
+    obj_Release(pNodeG);
+    pNodeG = OBJ_NIL;
+    obj_Release(pNodeF);
+    pNodeF = OBJ_NIL;
+    obj_Release(pNodeE);
+    pNodeE = OBJ_NIL;
+    obj_Release(pNodeD);
+    pNodeD = OBJ_NIL;
+    obj_Release(pNodeC);
+    pNodeC = OBJ_NIL;
+    obj_Release(pNodeB);
+    pNodeB = OBJ_NIL;
+    obj_Release(pNodeA);
+    pNodeA = OBJ_NIL;
+    
+    return pTree;
+}
+
+
+
 static
 void            visitor(
     OBJ_ID          pObject,            // Object supplied below
@@ -149,15 +302,6 @@ void            visitorReset(
 - (void)testUpDownDelete01
 {
     NODETREE_DATA	*pObj = OBJ_NIL;
-    NODE_DATA       *pNodeA = OBJ_NIL;
-    NODE_DATA       *pNodeB = OBJ_NIL;
-    NODE_DATA       *pNodeC = OBJ_NIL;
-    NODE_DATA       *pNodeD = OBJ_NIL;
-    NODE_DATA       *pNodeE = OBJ_NIL;
-    NODE_DATA       *pNodeF = OBJ_NIL;
-    NODE_DATA       *pNodeG = OBJ_NIL;
-    NODE_DATA       *pNodeH = OBJ_NIL;
-    NODE_DATA       *pNodeI = OBJ_NIL;
     NODEARRAY_DATA  *pArray = OBJ_NIL;
     NODEENTRY_DATA  *pEntry = OBJ_NIL;
     uint32_t        i;
@@ -167,53 +311,9 @@ void            visitorReset(
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     
-    pObj = nodeTree_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = nodeTree_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = createTestTree01();
+    XCTAssertFalse( (pObj == OBJ_NIL) );
     if (pObj) {
-        
-        pNodeA = node_NewWithUTF8Con("A", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeA) );
-        pNodeB = node_NewWithUTF8Con("B", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeB) );
-        pNodeC = node_NewWithUTF8Con("C", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeC) );
-        pNodeD = node_NewWithUTF8Con("D", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeD) );
-        pNodeE = node_NewWithUTF8Con("E", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeE) );
-        pNodeF = node_NewWithUTF8Con("F", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeF) );
-        pNodeG = node_NewWithUTF8Con("G", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeG) );
-        pNodeH = node_NewWithUTF8Con("H", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeH) );
-        pNodeI = node_NewWithUTF8Con("I", OBJ_NIL);
-        XCTAssertFalse( (OBJ_NIL == pNodeI) );
-        
-        fprintf(stderr, "\n\nCreate the tree:\n");
-        fprintf(stderr, "Tree    Index  Sibling  Child  Parent\n");
-        fprintf(stderr, "A         1       0       2       0\n");
-        fprintf(stderr, "--B       2       3       5       1\n");
-        fprintf(stderr, "----C     5       6       0       2\n");
-        fprintf(stderr, "----D     6       0       0       2\n");
-        fprintf(stderr, "--E       3       4       7       1\n");
-        fprintf(stderr, "----F     7       8       9       3\n");
-        fprintf(stderr, "------G   9       0       0       7\n");
-        fprintf(stderr, "----H     8       0       0       3\n");
-        fprintf(stderr, "--I       4       0       0       1\n");
-        fprintf(stderr, "\n\n\n");
-        i = nodeTree_ChildAdd(pObj, 0, pNodeA);
-        XCTAssertTrue( (i == 1) );
-        eRc = nodeTree_ChildrenAdd(pObj,node_getIndex(pNodeA), pNodeB, pNodeE, pNodeI, OBJ_NIL);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = nodeTree_ChildrenAdd(pObj,node_getIndex(pNodeB), pNodeC, pNodeD, OBJ_NIL);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = nodeTree_ChildrenAdd(pObj,node_getIndex(pNodeE), pNodeF, pNodeH, OBJ_NIL);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = nodeTree_ChildrenAdd(pObj,node_getIndex(pNodeF), pNodeG, OBJ_NIL);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         i = nodeTree_ChildCount(pObj, 1);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (i == 3) );
@@ -505,25 +605,156 @@ void            visitorReset(
         pEntry = objArray_Get(pObj->pArray, 9);
         XCTAssertTrue( (pEntry == OBJ_NIL) );
         
-        obj_Release(pNodeI);
-        pNodeI = OBJ_NIL;
-        obj_Release(pNodeH);
-        pNodeH = OBJ_NIL;
-        obj_Release(pNodeG);
-        pNodeG = OBJ_NIL;
-        obj_Release(pNodeF);
-        pNodeF = OBJ_NIL;
-        obj_Release(pNodeE);
-        pNodeE = OBJ_NIL;
-        obj_Release(pNodeD);
-        pNodeD = OBJ_NIL;
-        obj_Release(pNodeC);
-        pNodeC = OBJ_NIL;
-        obj_Release(pNodeB);
-        pNodeB = OBJ_NIL;
-        XCTAssertTrue( (obj_IsFlag(pNodeA, OBJ_FLAG_ALLOC)) );
-        obj_Release(pNodeA);
-        pNodeA = OBJ_NIL;
+        XCTAssertTrue( (obj_IsFlag(pObj, OBJ_FLAG_ALLOC)) );
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    szTbl_SharedReset();
+    
+}
+
+
+
+- (void)testMove01
+{
+    NODETREE_DATA	*pObj = OBJ_NIL;
+    NODEENTRY_DATA  *pEntry = OBJ_NIL;
+    uint32_t        i;
+    ERESULT         eRc;
+    
+    pObj = createTestTree01();
+    XCTAssertFalse( (pObj == OBJ_NIL) );
+    if (pObj) {
+        
+        i = nodeTree_ChildCount(pObj, 1);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (i == 3) );
+        i = nodeTree_ChildCount(pObj, 2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (i == 2) );
+        i = nodeTree_ChildCount(pObj, 7);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (i == 1) );
+        i = nodeTree_ChildCount(pObj, 9);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (i == 0) );
+        
+        // Verify that the linkage fields are correct.
+        pEntry = objArray_Get(pObj->pArray, 1);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 1) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 2) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 0) );
+        pEntry = objArray_Get(pObj->pArray, 2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 2) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 3) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 5) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 1) );
+        pEntry = objArray_Get(pObj->pArray, 3);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 3) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 4) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 7) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 1) );
+        pEntry = objArray_Get(pObj->pArray, 4);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 4) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 1) );
+        pEntry = objArray_Get(pObj->pArray, 5);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 5) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 6) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 2) );
+        pEntry = objArray_Get(pObj->pArray, 6);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 6) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 2) );
+        pEntry = objArray_Get(pObj->pArray, 7);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 7) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 8) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 9) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 3) );
+        pEntry = objArray_Get(pObj->pArray, 8);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 8) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 3) );
+        pEntry = objArray_Get(pObj->pArray, 9);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 9) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 7) );
+        
+        eRc = nodeTree_ChildrenMove(pObj, 2, 3);    // Delete C(5), D(6) after
+        //                                              // child H(8) of E(3)
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        // Verify that the linkage fields are correct.
+        pEntry = objArray_Get(pObj->pArray, 1);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 1) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 2) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 0) );
+        pEntry = objArray_Get(pObj->pArray, 2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 2) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 3) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 1) );
+        pEntry = objArray_Get(pObj->pArray, 3);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 3) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 4) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 7) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 1) );
+        pEntry = objArray_Get(pObj->pArray, 4);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 4) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 1) );
+        pEntry = objArray_Get(pObj->pArray, 5);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 5) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 6) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 3) );
+        pEntry = objArray_Get(pObj->pArray, 6);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 6) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 3) );
+        pEntry = objArray_Get(pObj->pArray, 7);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 7) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 8) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 9) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 3) );
+        pEntry = objArray_Get(pObj->pArray, 8);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 8) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 5) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 3) );
+        pEntry = objArray_Get(pObj->pArray, 9);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (node_getIndex(nodeEntry_getNode(pEntry)) == 9) );
+        XCTAssertTrue( (nodeEntry_getSibling(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getChild(pEntry) == 0) );
+        XCTAssertTrue( (nodeEntry_getParent(pEntry) == 7) );
         
         XCTAssertTrue( (obj_IsFlag(pObj, OBJ_FLAG_ALLOC)) );
         obj_Release(pObj);

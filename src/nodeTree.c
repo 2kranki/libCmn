@@ -640,6 +640,21 @@ extern "C" {
     
     
     
+    uint32_t        nodeTree_getRootIndex(
+        NODETREE_DATA   *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        return 1;
+    }
+    
+    
+    
     uint32_t        nodeTree_getSize(
         NODETREE_DATA   *this
     )
@@ -924,6 +939,101 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      C h i l d r e n  M o v e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeTree_ChildrenMove(
+        NODETREE_DATA   *this,
+        uint32_t        parent,
+        uint32_t        index
+    )
+    {
+        uint32_t        idxChild;
+        NODEENTRY_DATA  *pChild;
+        NODEENTRY_DATA  *pChildLast = OBJ_NIL;
+        NODEENTRY_DATA  *pEntry;
+        NODEENTRY_DATA  *pParent;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+        if( !((parent > 0) && (parent <= objArray_getSize(this->pArray))) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return this->eRc;
+        }
+        if( !((index > 0) && (index <= objArray_getSize(this->pArray))) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return this->eRc;
+        }
+#endif
+        
+        pEntry = nodeTree_NodeEntry(this, index);
+        if (pEntry == OBJ_NIL) {
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return this->eRc;
+        }
+        
+        pParent = nodeTree_NodeEntry(this, parent);
+        if (pParent == OBJ_NIL) {
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return this->eRc;
+        }
+        if (0 == nodeEntry_getChild(pParent)) {     // No children to move
+            this->eRc = ERESULT_SUCCESS;
+            return this->eRc;
+        }
+        
+        // Find last child if any of where to add the children.
+        if (pEntry) {
+            idxChild = nodeEntry_getChild(pEntry);
+            if (idxChild) {
+                for (;;) {
+                    pChild = nodeTree_NodeEntry(this, idxChild);
+                    if (pChild && (nodeEntry_getSibling(pChild) == 0)) {
+                        pChildLast = pChild;
+                        break;
+                    }
+                    idxChild = nodeEntry_getSibling(pChild);
+                }
+            }
+        }
+        
+        // We add the children to the index at the end of its children list
+        // and adjust the parent in the first level of children added.
+        idxChild = nodeEntry_getChild(pParent);
+        nodeEntry_setChild(pParent, 0);
+        if (pChildLast) {
+            nodeEntry_setSibling(pChildLast, idxChild);
+        }
+        else {
+            nodeEntry_setChild(pEntry, idxChild);
+        }
+        for (;;) {
+            pChild = nodeTree_NodeEntry(this, idxChild);
+            if (pChild) {
+                nodeEntry_setParent(pChild, index);
+            }
+            idxChild = nodeEntry_getSibling(pChild);
+            if (0 ==  idxChild) {
+                break;
+            }
+        }
+
+        // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
+    eom:
+        return this->eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -1059,26 +1169,28 @@ extern "C" {
             goto eom;
         }
         idxParent = nodeEntry_getParent(pEntry);
-        pParent = nodeTree_NodeEntry(this, idxParent);
-        if (pParent) {
-            // Unlink entry from sibling chain.
-            idxChild = nodeEntry_getChild(pParent);
-            if (idxChild == index) {    // index is at head of chain
-                nodeEntry_setChild(pParent, nodeEntry_getSibling(pEntry));
-            }
-            else {
-                while (idxChild) {      // index is in the chain
-                    pChild = nodeTree_NodeEntry(this, idxChild);
-                    if (pChild && (nodeEntry_getSibling(pChild) == index)) {
-                        nodeEntry_setSibling(pChild, nodeEntry_getSibling(pEntry));
-                        break;
+        if (idxParent) {                // Not Root
+            pParent = nodeTree_NodeEntry(this, idxParent);
+            if (pParent) {
+                // Unlink entry from sibling chain.
+                idxChild = nodeEntry_getChild(pParent);
+                if (idxChild == index) {    // index is at head of chain
+                    nodeEntry_setChild(pParent, nodeEntry_getSibling(pEntry));
+                }
+                else {
+                    while (idxChild) {      // index is in the chain
+                        pChild = nodeTree_NodeEntry(this, idxChild);
+                        if (pChild && (nodeEntry_getSibling(pChild) == index)) {
+                            nodeEntry_setSibling(pChild, nodeEntry_getSibling(pEntry));
+                            break;
+                        }
+                        idxChild = nodeEntry_getSibling(pChild);
                     }
-                    idxChild = nodeEntry_getSibling(pChild);
                 }
             }
         }
         
-        // Now delete all the children.
+        // Now delete all the children ad infinitum.
         for (;;) {
             idxChild = nodeEntry_getChild(pEntry);
             if (idxChild) {

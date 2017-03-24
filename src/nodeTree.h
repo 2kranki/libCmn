@@ -131,6 +131,11 @@ extern "C" {
     );
     
     
+    uint32_t        nodeTree_getRootIndex(
+        NODETREE_DATA   *this
+    );
+    
+    
     uint32_t        nodeTree_getSize(
         NODETREE_DATA   *this
     );
@@ -171,10 +176,10 @@ extern "C" {
      child to be set or first available (if 0). To add a root, parent
      and child indices must be 0.
      @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 0, 0 == root)
+     @param:    parent  parent node index (relative to 1)
      @param:    index   child index (0 <= index <= order) This index is
-     relative to 1. 0 denotes first available child
-     and must be set if parent index is 0.
+                        relative to 1. 0 denotes first available child
+                        and must be set if parent index is 0.
      @param:    pNode   Non-null Node pointer to be added as a child
      @return:   If successful, an Node index, otherwise 0.
      */
@@ -213,8 +218,8 @@ extern "C" {
      @endcode:
      @param:    this    NODETREE_DATA object pointer
      @param:    parent  parent node index (relative to 0, 0 == root)
-     relative to 1. 0 denotes first available child
-     and must be set if parent index is 0.
+                        relative to 1. 0 denotes first available child
+                        and must be set if parent index is 0.
      @param:    pNode   Non-null Node pointer to be added as a child
      @return:   If successful, an Node index, otherwise 0.
      */
@@ -222,6 +227,21 @@ extern "C" {
         NODETREE_DATA   *this,
         uint32_t        parent,
         ...                         // NULL Terminated list
+    );
+    
+    
+    /*!
+     Move the Parent's Children to the given index at once. This moves the children
+     including their children ad infinitum to be the children of the given index.
+     @param:    this    NODETREE_DATA object pointer
+     @param:    parent  parent node index (relative to 1)
+     @param:    index   destination node index (relative to 1)
+     @return:   If successful, an Node index, otherwise 0.
+     */
+    ERESULT         nodeTree_ChildrenMove(
+        NODETREE_DATA   *this,
+        uint32_t        parent,
+        uint32_t        index
     );
     
     
@@ -253,7 +273,7 @@ extern "C" {
      This method is the means to link nodes created with NodeNew()
      back into the main tree. 
      @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 0, 0 == root)
+     @param:    parent  parent node index (relative to 1)
      @param:    index   child index (2 <= index <= order) This index is
                         relative to 1.
      @return:   If successful, an Node index, otherwise 0.
