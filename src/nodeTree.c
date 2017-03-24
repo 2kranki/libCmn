@@ -234,6 +234,39 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                       N o d e  E n t r y
+    //---------------------------------------------------------------
+    
+    NODEENTRY_DATA * nodeTree_NodeEntry(
+        NODETREE_DATA   *this,
+        uint32_t        index
+    )
+    {
+        NODEENTRY_DATA  *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( !((index > 0) && (index <= objArray_getSize(this->pArray))) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEntry = objArray_Get(this->pArray, index);
+        this->eRc = objArray_getLastError(this->pArray);
+        
+        return pEntry;
+    }
+    
+    
+    
     ERESULT         nodeTree_NodeInorder(
         NODETREE_DATA	*this,
         void            (pVisitor)(
@@ -991,6 +1024,92 @@ extern "C" {
         this->eRc = objArray_getLastError(this->pArray);
         
         return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     N o d e  D e l e t e
+    //---------------------------------------------------------------
+    
+    ERESULT     nodeTree_NodeDelete(
+        NODETREE_DATA   *this,
+        uint32_t        index       // Relative to 1
+    )
+    {
+        NODEENTRY_DATA  *pParent;
+        NODEENTRY_DATA  *pEntry;
+        NODEENTRY_DATA  *pChild;
+        uint32_t        idxParent;
+        uint32_t        idxChild;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+        
+        pEntry = nodeTree_NodeEntry(this, index);
+        if (pEntry == OBJ_NIL) {
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            goto eom;
+        }
+        idxParent = nodeEntry_getParent(pEntry);
+        pParent = nodeTree_NodeEntry(this, idxParent);
+        if (pParent) {
+            // Unlink entry from sibling chain.
+            idxChild = nodeEntry_getChild(pParent);
+            if (idxChild == index) {    // index is at head of chain
+                nodeEntry_setChild(pParent, nodeEntry_getSibling(pEntry));
+            }
+            else {
+                while (idxChild) {      // index is in the chain
+                    pChild = nodeTree_NodeEntry(this, idxChild);
+                    if (pChild && (nodeEntry_getSibling(pChild) == index)) {
+                        nodeEntry_setSibling(pChild, nodeEntry_getSibling(pEntry));
+                        break;
+                    }
+                    idxChild = nodeEntry_getSibling(pChild);
+                }
+            }
+        }
+        
+        // Now delete all the children.
+        for (;;) {
+            idxChild = nodeEntry_getChild(pEntry);
+            if (idxChild) {
+                pChild = nodeTree_NodeEntry(this, idxChild);
+                if (pChild) {
+                    this->eRc = nodeTree_NodeDelete(this, idxChild);
+                    if (ERESULT_FAILED(this->eRc)) {
+                        break;
+                    }
+                }
+            }
+            else {
+                break;
+            }
+        }
+        
+        // Now release the entry.
+        objArray_Put(this->pArray, index, OBJ_NIL);
+        pEntry = OBJ_NIL;
+        // NOTE -- We are releasing the entry, but leaving the array position
+        //          for it. If we changed the array, then we would have to
+        //          re-translate the entire tree.
+        
+        // Return to caller.
+        if (ERESULT_FAILED(this->eRc)) {
+        }
+        else {
+            this->eRc = ERESULT_SUCCESS;
+        }
+    eom:
+        return this->eRc;
     }
     
     

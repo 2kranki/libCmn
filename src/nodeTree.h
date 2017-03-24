@@ -237,6 +237,18 @@ extern "C" {
     
     
     /*!
+     Delete the given tree node and its children.
+     @param:    this    NODETREE_DATA object pointer
+     @param:    index   node index (relative to 1)
+     @return:   If successful, an Node index, otherwise 0.
+     */
+    ERESULT     nodeTree_NodeDelete(
+        NODETREE_DATA   *this,
+        uint32_t        index       // Relative to 1
+    );
+    
+    
+    /*!
      Link the given tree node as a child of the specified parent.
      This method is the means to link nodes created with NodeNew()
      back into the main tree. 

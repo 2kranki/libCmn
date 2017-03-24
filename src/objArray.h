@@ -243,6 +243,22 @@ extern "C" {
     
     
     /*!
+     Replace index'th element with the given element expanding the array if
+     necessary. after the index'th element of the array.
+     @param:    this    object pointer
+     @param:    index   1 to Size. 
+     @param:    pObj    Object Pointer or OBJ_NIL.
+     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         objArray_Put(
+        OBJARRAY_DATA	*this,
+        uint16_t        index,          // Relative to 1
+        OBJ_ID          pObj
+    );
+    
+    
+    /*!
      Sort the array in ascending sequence. This only works if 
      the objects have a comparison routine that returns the
      ERESULT values of ERESULT_SUCCESS_EQUAL, ERESULT_SUCCESS_LESS_THAN
