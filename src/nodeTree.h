@@ -177,9 +177,6 @@ extern "C" {
      and child indices must be 0.
      @param:    this    NODETREE_DATA object pointer
      @param:    parent  parent node index (relative to 1)
-     @param:    index   child index (0 <= index <= order) This index is
-                        relative to 1. 0 denotes first available child
-                        and must be set if parent index is 0.
      @param:    pNode   Non-null Node pointer to be added as a child
      @return:   If successful, an Node index, otherwise 0.
      */

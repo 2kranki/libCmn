@@ -51,7 +51,7 @@ extern "C" {
 #endif
 
     
-#define SZTBL_BLOCK_SIZE  4096        /* Heap Block Size */
+#define SZTBL_BLOCK_SIZE  4096        /* Heap Control Block Size */
 
     
 

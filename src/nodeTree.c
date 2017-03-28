@@ -1027,7 +1027,7 @@ extern "C" {
 
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
-    eom:
+    //eom:
         return this->eRc;
     }
     

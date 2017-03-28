@@ -1519,6 +1519,80 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
+    ASTR_DATA *     token_ToDataString(
+        TOKEN_DATA      *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        char            *pString;
+        ERESULT         eRc;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        
+        switch (this->type) {
+                
+            case TOKEN_TYPE_WCHAR:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "%c",
+                             (((this->wchr[0] >= ' ') && (this->wchr[0] < 0x7F))
+                                        ? this->wchr[0] : ' ')
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case TOKEN_TYPE_WSTRING:
+                AStr_AppendA(pStr, "\"");
+                AStr_AppendW(pStr, WStr_getLength(this->pObj), WStr_getData(this->pObj));
+                AStr_AppendA(pStr, "\"");
+                break;
+                
+            case TOKEN_TYPE_INTEGER:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "%lld ",
+                             this->integer
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case TOKEN_TYPE_STRTOKEN:
+                pStr = NULL;
+                eRc = szTbl_TokenToString(szTbl_Shared(), this->strToken, &pString);
+                if (pString) {
+                    AStr_AppendA(pStr, "\"");
+                    j = snprintf(
+                                 str,
+                                 sizeof(str),
+                                 "%s",
+                                 pString
+                                 );
+                    AStr_AppendA(pStr, str);
+                    AStr_AppendA(pStr, "\"");
+                }
+                break;
+                
+            default:
+                DEBUG_BREAK();
+                AStr_AppendA(pStr, "type=>>>ERROR - Bad Type<<< ");
+                break;
+                
+        }
+        
+        return pStr;
+    }
+    
+    
     ASTR_DATA *     token_ToDebugString(
         TOKEN_DATA      *cbp,
         int             indent
@@ -1608,7 +1682,6 @@ extern "C" {
         
         return pStr;
     }
-    
     
 
     ASTR_DATA *     token_ToJSON(

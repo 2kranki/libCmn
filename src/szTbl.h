@@ -61,7 +61,7 @@
 
 
 #ifndef         SZTBL_H
-#define         SZTBL_H
+#define         SZTBL_H 1
 
 
 

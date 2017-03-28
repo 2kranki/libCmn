@@ -173,6 +173,17 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new token object with the given parameter of a String Token Number.
+     Normally, String Token Numbers are indexes into an szTbl object that
+     will return the string.
+     @param:    pFileName pointer to a nul-terminated path character string
+     @param:    lineNo  Line Number for the start of the token
+     @param:    colNo   Column Number for the start of the token
+     @param:    cls     Token class (see PPLEX.H for examples)
+     @param:    token   Token String Number (probably returned by szTbl)
+     @return:   If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
+     */
     TOKEN_DATA *     token_NewStrToken(
         const
         char            *pFileName,
@@ -470,6 +481,18 @@ extern "C" {
         int32_t         *pStr
     );
     
+    /*!
+     Initialize the object with the given parameter of a String Token Number.
+     Normally, String Token Numbers are indexes into an szTbl object that
+     will return the string.
+     @param:    this    TOKEN_DATA object pointer (released if an error occurs)
+     @param:    pFileName pointer to a nul-terminated path character string
+     @param:    lineNo  Line Number for the start of the token
+     @param:    colNo   Column Number for the start of the token
+     @param:    cls     Token class (see PPLEX.H for examples)
+     @param:    token   Token String Number (probably returned by szTbl)
+     @return:   If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
+     */
     TOKEN_DATA *    token_InitStrToken(
         TOKEN_DATA      *this,
         const
@@ -533,9 +556,22 @@ extern "C" {
     
     
     /*!
+     Create a string of the token data in string format. This returns
+     just the data, not any other fields such a filename, line or col.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     token_ToDataString(
+        TOKEN_DATA      *this
+    );
+    
+    
+    /*!
      Create a JSON string that describes this object.
      @return:   If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
      */
     ASTR_DATA *     token_ToJSON(
         TOKEN_DATA      *this

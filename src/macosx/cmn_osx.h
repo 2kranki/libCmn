@@ -66,6 +66,7 @@ extern "C" {
 
 #define BREAK_TRUE(n)  if( (n) )  { DEBUG_BREAK(); }
 #define BREAK_FALSE(n) if( !(n) ) { DEBUG_BREAK(); }
+#define BREAK_FAILED(n) if( ERESULT_FAILED(n) ) { DEBUG_BREAK(); }
 #define BREAK_NULL(n)  if(NULL == (n))  { DEBUG_BREAK(); }
 #define BREAK_NOT_NULL(n)  if(!(NULL == (n)))  { DEBUG_BREAK(); }
 #define BREAK_ZERO(n)  if(0 == (n))  { DEBUG_BREAK(); }
