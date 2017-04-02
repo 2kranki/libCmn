@@ -137,6 +137,20 @@ extern "C" {
     );
     
     
+    /*! Reverse the bits in the supplied 32-bit value.
+     */
+    uint32_t        misc_BitReversal32(
+        uint32_t        a
+    );
+    
+
+    /*! Reverse the bits in the supplied 64-bit value.
+     */
+    uint64_t        misc_BitReversal64(
+        uint64_t        x
+    );
+    
+    
     /*! Compute even parity given a value.
      @param:    value   integer value of which we need the parity for
      @return:   true if even parity, otherwise false.

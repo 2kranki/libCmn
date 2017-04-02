@@ -84,7 +84,7 @@ extern "C" {
     )
     {
         JSON_DATA       *pParser;
-        NODE_DATA       *pFileNode;
+        NODE_DATA       *pFileNode = OBJ_NIL;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
         ERESULT         eRc;
@@ -307,6 +307,27 @@ extern "C" {
     
     
 
+    TOKEN_DATA *     token_NewFromJSONStringA(
+        const
+        char            *pString
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        
+        if (pString) {
+            pStr = AStr_NewA(pString);
+            pToken = token_NewFromJSONString(pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return pToken;
+    }
+    
+    
+    
 
     
     

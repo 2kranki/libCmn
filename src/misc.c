@@ -180,6 +180,51 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      B i t  R e v e r s a l
+    //---------------------------------------------------------------
+    
+    // Knuth's bit reversal algorithm
+    // from http://www.hackersdelight.org/revisions.pdf
+    uint32_t        misc_BitReversal32(
+        uint32_t        a
+    )
+    {
+        uint32_t        t;
+        
+        a = (a << 15) | (a >> 17);
+        t = (a ^ (a >> 10)) & 0x003f801f;
+        a = (t + (t << 10)) ^ a;
+        t = (a ^ (a >>  4)) & 0x0e038421;
+        a = (t + (t <<  4)) ^ a;
+        t = (a ^ (a >>  2)) & 0x22488842;
+        a = (t + (t <<  2)) ^ a;
+        
+        return a;
+    }
+    
+    
+    // Knuth's bit reversal algorithm
+    // from http://www.hackersdelight.org/revisions.pdf
+    uint64_t        misc_BitReversal64(
+        uint64_t        x
+    )
+    {
+        uint64_t        t;
+        x = (x << 31) | (x >> 33);   // I.e., shlr(x, 31).
+        t = (x ^ (x >> 20)) & 0x00000FFF800007FFLL;
+        x = (t |(t << 20)) ^ x;
+        t = (x ^ (x >> 8)) & 0x00F8000F80700807LL;
+        x = (t |(t << 8)) ^ x;
+        t = (x ^ (x >> 4)) & 0x0808708080807008LL;
+        x = (t |(t << 4)) ^ x;
+        t = (x ^ (x >> 2)) & 0x1111111111111111LL;
+        x = (t |(t << 2)) ^ x;
+        return x;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //            C o m p u t e  E v e n  P a r i t y
     //---------------------------------------------------------------
     
@@ -311,8 +356,7 @@ extern "C" {
     }
     
     
-    
-    
+
     
 
     

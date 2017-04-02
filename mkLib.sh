@@ -459,6 +459,7 @@ main( ) {
     doCompile   listdl
     doCompile   obj
     doCompile   str
+    doCompile   tokenFromJSON
     doCompileSpcl   cmn_osx ${osType}
     doCompileSpcl   memOSX_object ${osType}
     doCompileSpcl   memOSX ${osType}

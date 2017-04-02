@@ -109,6 +109,27 @@
 
 - (void)testAbbrev
 {
+    uint32_t        u32;
+    uint64_t        u64;
+    
+    u32 = misc_BitReversal32(0x00000001);
+    XCTAssertTrue( (u32 == 0x80000000) );
+    u32 = misc_BitReversal32(0x80000000);
+    XCTAssertTrue( (u32 == 0x00000001) );
+    u32 = misc_BitReversal32(0x80000001);
+    XCTAssertTrue( (u32 == 0x80000001) );
+    
+    u64 = misc_BitReversal64(0x0000000000000001);
+    XCTAssertTrue( (u64 == 0x8000000000000000) );
+    u64 = misc_BitReversal64(0x8000000000000000);
+    XCTAssertTrue( (u64 == 0x0000000000000001) );
+
+}
+
+
+
+- (void)testBitReversal
+{
     bool        fRc;
     
     fRc = misc_AbbrevA("EXACT", "EXACT");

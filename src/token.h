@@ -151,7 +151,12 @@ extern "C" {
         ASTR_DATA       *pString
     );
     
+    TOKEN_DATA *     token_NewFromJSONStringA(
+        const
+        char            *pString
+    );
     
+   
     TOKEN_DATA *     token_NewStringW(
         const
         char            *pFileName,

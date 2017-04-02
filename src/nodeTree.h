@@ -417,6 +417,13 @@ extern "C" {
     );
     
     
+    ERESULT         nodeTree_Verify(
+        NODETREE_DATA	*this,
+        const
+        char            **pWhy
+    );
+    
+    
     /*!
      Visit the root (or current node) then visit each child recursively.
      This is also known as a depth-first traversal.

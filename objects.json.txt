@@ -137,7 +137,8 @@
         "scanstring.c",
         "scanwhite.c",
         "shellSortPtrs.c",
-        "str.c"
+        "str.c",
+        "tokenFromJSON.c"
     ],
     "tests": [
         "test_idxblk16",

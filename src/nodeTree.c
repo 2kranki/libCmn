@@ -280,7 +280,7 @@ extern "C" {
         uint16_t        indent
     )
     {
-        NODEENTRY_DATA  *pNode;
+        NODEENTRY_DATA  *pEntry;
         uint32_t        childIndex;
         
         // Do initialization.
@@ -292,10 +292,10 @@ extern "C" {
         }
 #endif
         
-        pNode = objArray_Get(this->pArray, index);
-        if (pNode) {
+        pEntry = objArray_Get(this->pArray, index);
+        if (pEntry) {
             // Follow Child chain.
-            childIndex = nodeEntry_getChild(pNode);
+            childIndex = nodeEntry_getChild(pEntry);
             if (childIndex) {
                 this->eRc = nodeTree_NodeInorder(
                                                    this,
@@ -309,9 +309,14 @@ extern "C" {
                 }
             }
             // visit current node.
-            pVisitor(pObject, this, nodeEntry_getNode(pNode), indent);
+            if (nodeEntry_getNode(pEntry)) {
+                pVisitor(pObject, this, nodeEntry_getNode(pEntry), indent);
+            }
+            else {
+                DEBUG_BREAK();
+            }
             // Follow Sibling chain.
-            childIndex = nodeEntry_getSibling(pNode);
+            childIndex = nodeEntry_getSibling(pEntry);
             if (childIndex) {
                 this->eRc = nodeTree_NodeInorder(
                                                    this,
@@ -446,7 +451,7 @@ extern "C" {
                                                   pVisitor,
                                                   pObject,
                                                   childIndex,
-                                                  indent
+                                                  indent+1
                                                   );
                 if (ERESULT_FAILED(this->eRc)) {
                     return this->eRc;
@@ -1518,7 +1523,8 @@ extern "C" {
         printf("\n\n\n");
         
         // Return to caller.
-        return true;
+        this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
     }
     
     
@@ -1908,6 +1914,122 @@ extern "C" {
     #endif
 
 
+    
+    //---------------------------------------------------------------
+    //                      V e r i f y
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeTree_Verify(
+        NODETREE_DATA	*this,
+        const
+        char            **pWhy
+    )
+    {
+        NODEENTRY_DATA  *pEntry;
+        NODE_DATA       *pNode;
+        int             i;
+        int             iMax;
+        uint32_t        idx;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NAME_DATA       *pName;
+        const
+        char            *pStr = NULL;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return false;
+        }
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        iMax = objArray_getSize(this->pArray);
+        for (i=0; i<iMax; ++i) {
+            pEntry = objArray_Get(this->pArray, i+1);
+            if (pEntry) {
+                if (obj_getIdent(pEntry) == OBJ_IDENT_NODEENTRY) {
+                }
+                else {
+                    DEBUG_BREAK();
+                    pStr = "Array entry is not a NODEENTRY!";
+                    eRc = ERESULT_FAILURE;
+                    break;
+                }
+                idx = nodeEntry_getParent(pEntry);
+                if (idx && (idx <= iMax)) {
+                }
+                else if (0 ==  idx)
+                    ;
+                else {
+                    DEBUG_BREAK();
+                    pStr = "node entry contains an invalid Parent Index!";
+                    eRc = ERESULT_FAILURE;
+                    break;
+                }
+                idx = nodeEntry_getLeft(pEntry);
+                if (idx && (idx <= iMax)) {
+                }
+                else if (0 ==  idx)
+                    ;
+                else {
+                    DEBUG_BREAK();
+                    pStr = "node entry contains an invalid Left Index!";
+                    eRc = ERESULT_FAILURE;
+                    break;
+                }
+                idx = nodeEntry_getRight(pEntry);
+                if (idx && (idx <= iMax)) {
+                }
+                else if (0 ==  idx)
+                    ;
+                else {
+                    DEBUG_BREAK();
+                    pStr = "node entry contains an invalid Right Index!";
+                    eRc = ERESULT_FAILURE;
+                    break;
+                }
+               pNode = nodeEntry_getNode(pEntry);
+                if (pNode) {
+                    if (obj_getIdent(pNode) == OBJ_IDENT_NODE) {
+                    }
+                    else {
+                        DEBUG_BREAK();
+                        pStr = "node entry does not contain a proper NODE!";
+                        eRc = ERESULT_FAILURE;
+                        break;
+                    }
+                    pName = node_getName(pNode);
+                    if ((OBJ_NIL == pName) || (obj_getIdent(pName) == OBJ_IDENT_NAME)) {
+                    }
+                    else {
+                        DEBUG_BREAK();
+                        pStr = "node does not contain a NAME!";
+                        eRc = ERESULT_FAILURE;
+                        break;
+                    }
+                }
+                else {
+                    DEBUG_BREAK();
+                    pStr = "node entry does not contain a NODE!";
+                    eRc = ERESULT_FAILURE;
+                    break;
+                }
+            }
+        }
+        
+        // Return to caller.
+    //eom:
+        if (pStr && pWhy) {
+            *pWhy = pStr;
+        }
+        return eRc;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                    V i s i t  B r e a d t h  F i r s t
