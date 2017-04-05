@@ -206,7 +206,7 @@ extern "C" {
     //===============================================================
 
     int32_t         token_getChrW(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         int32_t         i = -1;
@@ -214,35 +214,37 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
-        if (TOKEN_TYPE_WCHAR == cbp->type) {
-            i = cbp->wchr[0];
+        if (TOKEN_TYPE_WCHAR == this->type) {
+            i = this->wchr[0];
         }
         return i;
     }
     
     
     bool            token_setChrW(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         int32_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
         
-        token_ReleaseDataIfObj(cbp);
-        cbp->type = TOKEN_TYPE_WCHAR;
-        //cbp->cls = value;
-        cbp->wchr[0] = value;
-        cbp->wchr[1] = 0;
+        token_ReleaseDataIfObj(this);
+        this->type = TOKEN_TYPE_WCHAR;
+        //this->cls = value;
+        this->wchr[0] = value;
+        this->wchr[1] = 0;
         
         return true;
     }
@@ -250,147 +252,151 @@ extern "C" {
     
     
     int32_t         token_getClass(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
-        return cbp->cls;
+        return this->cls;
     }
 
     
     bool            token_setClass(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         int32_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        cbp->cls = value;
+        this->cls = value;
         return true;
     }
     
     
     
     uint16_t        token_getColNo(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
-        return cbp->colNo;
+        return this->colNo;
     }
 
     
     bool            token_setColNo(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        cbp->colNo = value;
+        this->colNo = value;
         return true;
     }
     
     
     
     const char *    token_getFileName(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        return cbp->pFileName;
+        return this->pFileName;
     }
 
     
     bool            token_setFileName(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         const
         char            *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        cbp->pFileName = pValue;
+        this->pFileName = pValue;
         return true;
     }
     
     
     
     int64_t         token_getInteger(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        if (TOKEN_TYPE_INTEGER == cbp->type) {
-            return cbp->integer;
+        if (TOKEN_TYPE_INTEGER == this->type) {
+            return this->integer;
         }
         return 0;
     }
     
     
     bool            token_setInteger(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         int64_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        token_ReleaseDataIfObj(cbp);
-        cbp->type = TOKEN_TYPE_INTEGER;
-        cbp->integer = value;
+        token_ReleaseDataIfObj(this);
+        this->type = TOKEN_TYPE_INTEGER;
+        this->integer = value;
         
         return true;
     }
@@ -398,145 +404,150 @@ extern "C" {
     
     
     uint16_t        token_getLen(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        return cbp->len;
+        return this->len;
     }
     
     
     bool            token_setLen(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        cbp->len = value;
+        this->len = value;
         return true;
     }
     
     
     
     uint32_t        token_getLineNo(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
-        return cbp->lineNo;
+        return this->lineNo;
     }
     
     bool            token_setLineNo(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        cbp->lineNo = value;
+        this->lineNo = value;
         return true;
     }
     
     
     
     uint16_t        token_getMisc(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        return cbp->misc;
+        return this->misc;
     }
     
     
     bool            token_setMisc(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        cbp->misc = value;
+        this->misc = value;
         return true;
     }
     
     
     
     OBJ_ID          token_getObj(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
-        if (TOKEN_TYPE_OBJECT == cbp->type) {
-            return cbp->pObj;
+        if (TOKEN_TYPE_OBJECT == this->type) {
+            return this->pObj;
         }
         return OBJ_NIL;
     }
     
     
     bool            token_setObj(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
         obj_Retain(pValue);
         
-        token_ReleaseDataIfObj(cbp);
-        cbp->type = TOKEN_TYPE_OBJECT;
-        cbp->pObj = pValue;
+        token_ReleaseDataIfObj(this);
+        this->type = TOKEN_TYPE_OBJECT;
+        this->pObj = pValue;
         
         return true;
     }
@@ -553,6 +564,7 @@ extern "C" {
 #else
         if( !token_Validate( this ) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -574,6 +586,7 @@ extern "C" {
 #else
         if( !token_Validate( this ) ) {
             DEBUG_BREAK();
+            return false;
         }
         type = obj_getType(pValue);
         if ((OBJ_IDENT_WSTR == type) || (OBJ_IDENT_WSTRC == type)) {
@@ -647,6 +660,7 @@ extern "C" {
 #else
         if( !token_Validate( this ) ) {
             DEBUG_BREAK();
+            return NULL;
         }
 #endif
 
@@ -674,34 +688,36 @@ extern "C" {
     
     
     uint16_t        token_getType(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
-        return cbp->type;
+        return this->type;
     }
     
     
     bool            token_setType(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        cbp->type = value;
+        this->type = value;
         return true;
     }
     
