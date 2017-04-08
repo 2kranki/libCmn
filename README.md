@@ -1,9 +1,23 @@
 
-cmnLib
+libCmn
 ===============
 
-**cmnLib** is one approach to providing simple C objects for
+**libCmn** is one approach to providing simple C objects for
 various environments such as Mac, PIC32MX7xx, and iOS.
+
+The library contains a variety of objects such as:
+    string objects
+    array objects
+    hex conversion object
+    file directory access and entries
+    path file name support built on top of the string object
+    plain object arrays, hashses, lists, matrices
+    nodes that can be stored in arrays, hashes, lists, matrices or trees
+    json parsing with objects for true, false, null
+    csv file parsing
+    simple wav file object used to generate morse code
+    big/small endian support
+to name just a few of them.
 
 It is intended that each object be self documenting and consistent
 in its usage from other objects within this library.
