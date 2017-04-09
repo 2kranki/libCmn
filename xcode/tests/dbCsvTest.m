@@ -67,6 +67,7 @@ char        *pTestInput01 = "a,10,\"def\"\n";
 static
 const
 char        *pTestInput02 =
+"#x,y,a\n"
 "a,b,c,\"def\"\n"
 "d,e,f,55\n"
 "h,i,j,77\n";

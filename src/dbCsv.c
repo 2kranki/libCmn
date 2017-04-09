@@ -65,6 +65,38 @@ extern "C" {
 
     
     
+    bool            dbCsv_ParseComment(
+        DBCSV_DATA      *this
+    )
+    {
+        TOKEN_DATA      *pToken;
+        int32_t         chr;
+        bool            fRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dbCsv_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        chr = token_getChrW(pToken);
+        if (chr == '#') {
+            srcFile_InputAdvance(this->pSrc, 1);
+            this->lenFld = 0;
+            while (!(fRc = dbCsv_ParseCRLF(this))) {
+                srcFile_InputAdvance(this->pSrc, 1);
+            }
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    
     // Look for <cr>[<lf>] or <lf>[<cr>] and discard
     // if found, but return true.
     bool            dbCsv_ParseCRLF(
@@ -189,6 +221,8 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
+        
+        dbCsv_ParseComment(this);
         
         if (dbCsv_ParseEOF(this)) {
             return OBJ_NIL;
