@@ -197,6 +197,12 @@ extern "C" {
     );
 
     
+    /*!
+     Parse the string/file given and return ??? that describes this object and the
+     objects within it.
+     @return:   If successful, an AStr object which must be released,
+     otherwise OBJ_NIL.
+     */
     OBJARRAY_DATA * dbCsv_ParseFile(
         DBCSV_DATA		*this
     );

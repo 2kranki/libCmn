@@ -210,6 +210,13 @@ extern "C" {
     );
     
     
+    ERESULT         path_CompareRightA(
+        PATH_DATA		*this,
+        const
+        char            *pOther
+    );
+    
+    
     PATH_DATA *     path_Copy(
         PATH_DATA       *this
     );

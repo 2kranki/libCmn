@@ -725,6 +725,30 @@ extern "C" {
     }
     
     
+    ERESULT         path_CompareRightA(
+        PATH_DATA		*this,
+        const
+        char            *pOther
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = AStr_CompareRightA( (ASTR_DATA *)this, pOther );
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
    
     //---------------------------------------------------------------
     //                          C o p y

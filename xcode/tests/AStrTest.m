@@ -467,6 +467,33 @@ char        whiteSpaceA[22] = {
 
 
 
+- (void)testCompareRight
+{
+    ERESULT     eRc;
+    ASTR_DATA	*pObj = OBJ_NIL;
+    
+    pObj = AStr_NewA("abcdefghijklmnop");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (16 == AStr_getLength(pObj)) );
+    if (pObj) {
+        
+        eRc = AStr_CompareRightA(pObj, NULL);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        eRc = AStr_CompareRightA(pObj, "abc");
+        XCTAssertTrue( (eRc == ERESULT_SUCCESS_GREATER_THAN) );
+        eRc = AStr_CompareRightA(pObj, "nop");
+        XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
+        eRc = AStr_CompareRightA(pObj, "xyz");
+        XCTAssertTrue( (eRc == ERESULT_SUCCESS_LESS_THAN) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
 - (void)testFile
 {
     ASTR_DATA	*pObj = OBJ_NIL;

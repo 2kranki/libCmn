@@ -308,6 +308,20 @@ extern "C" {
     );
     
     
+    /*!
+     Compare the given string against 'this' from the right hand side of the string
+     (ie compare the trailing part of the string)
+     @param:    this    object pointer
+     @return:   If string contains only ASCII, ERESULT_SUCCESS,
+     otherwise, an ERESULT_* Error Code.
+     */
+    ERESULT         AStr_CompareRightA(
+        ASTR_DATA		*this,
+        const
+        char            *pOther
+    );
+    
+    
     ERESULT         AStr_CompareW(
         ASTR_DATA		*this,
         const

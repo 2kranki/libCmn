@@ -159,14 +159,16 @@ extern "C" {
         ERESULT_DIRECTORY_FULL              = -98,
         
         ERESULT_INVALID_PASSWORD            = -128,
+        
         ERESULT_DATA_ERROR                  = -131,
         ERESULT_DATA_NOT_FOUND              = -132,
         ERESULT_DATA_CHANGED                = -133,
         ERESULT_DATA_ALREADY_EXISTS         = -134,
         ERESULT_DATA_TOO_BIG                = -135,
-        ERESULT_DATA_OUT_OF_RANGE           = -136,
-        ERESULT_DATA_MISSING                = -137,
-        ERESULT_DATA_SIZE                   = -138,
+        ERESULT_DATA_TOO_SMALL              = -136,
+        ERESULT_DATA_OUT_OF_RANGE           = -137,
+        ERESULT_DATA_MISSING                = -138,
+        ERESULT_DATA_SIZE                   = -139,
         
         ERESULT_OSCILLATOR_FAILED           = -256,
         ERESULT_TIMEOUT                     = -257,

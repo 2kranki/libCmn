@@ -1274,19 +1274,19 @@ extern "C" {
     //===============================================================
 
     PATH_DATA *     json_getPath(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pPath;
+        return this->pPath;
     }
 
     
