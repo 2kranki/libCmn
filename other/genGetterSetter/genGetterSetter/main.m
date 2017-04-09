@@ -135,87 +135,89 @@ bool            genBody(
         fObj = true;
     }
     if (strlen(pDescription)) {
-        fprintf(stdout, "// %s\n", pDescription);
+        fprintf(stdout, "\t// %s\n", pDescription);
     }
     if (options.fSPN) {
-        fprintf(stdout, "%s\t\t\t%s_getSpn%s(\n",
+        fprintf(stdout, "\t%s\t\t\t%s_getSpn%s(\n",
                 pFieldType,
                 AStr_getData(pObjName),
                 pFieldName
         );
     }
     else {
-        fprintf(stdout, "%s\t\t\t%s_get%s(\n",
+        fprintf(stdout, "\t%s\t\t\t%s_get%s(\n",
                 pFieldType,
                 AStr_getData(pObjName),
                 pFieldName
         );
     }
-    fprintf(stdout, "\t%s_DATA\t*this\n", AStr_getData(pObjData));
-    fprintf(stdout, ")\n{\n\n");
-    fprintf(stdout, "#ifdef NDEBUG\n#else\n");
-    fprintf(stdout, "\tif (%s_Validate(this)) {\n", AStr_getData(pObjName));
-    fprintf(stdout, "\tDEBUG_BREAK();\n");
-    if (fObj) {
-        fprintf(stdout, "\treturn OBJ_NIL;\n");
-    }
-    else {
-        fprintf(stdout, "\treturn 0;\n");
-    }
-    fprintf(stdout, "}\n#endif\n\n");
-    if (options.fSPN) {
-        fprintf(stdout, "\treturn this->spn%s;\n", pFieldName);
-    }
-    else {
-        fprintf(stdout, "\treturn this->%s;\n", pFieldName);
-    }
-    fprintf(stdout, "}\n\n\n");
-
-    if (options.fSPN) {
-        fprintf(stdout, "bool\t\t\t%s_setSpn%s(\n",
-                AStr_getData(pObjName),
-                pFieldName
-                );
-    }
-    else {
-        fprintf(stdout, "bool\t\t\t%s_set%s(\n",
-                AStr_getData(pObjName),
-                pFieldName
-                );
-    }
-    fprintf(stdout, "\t%s_DATA\t*this,\n", AStr_getData(pObjData));
-    fprintf(stdout, "\t%s\t\t\tvalue\n", pFieldType);
-    fprintf(stdout, ")\n{\n\n");
-    fprintf(stdout, "#ifdef NDEBUG\n#else\n");
-    fprintf(stdout, "\tif (%s_Validate(this)) {\n", AStr_getData(pObjName));
-    fprintf(stdout, "\tDEBUG_BREAK();\n");
+    fprintf(stdout, "\t\t%s_DATA\t*this\n", AStr_getData(pObjData));
+    fprintf(stdout, "\t)\n{\n\n");
+    fprintf(stdout, "\t#ifdef NDEBUG\n");
+    fprintf(stdout, "\t#else\n");
+    fprintf(stdout, "\t\tif (%s_Validate(this)) {\n", AStr_getData(pObjName));
+    fprintf(stdout, "\t\tDEBUG_BREAK();\n");
     if (fObj) {
         fprintf(stdout, "\t\treturn OBJ_NIL;\n");
     }
     else {
         fprintf(stdout, "\t\treturn 0;\n");
     }
-    fprintf(stdout, "\t}\n#endif\n\n");
+    fprintf(stdout, "\t}\n\t#endif\n\n");
+    if (options.fSPN) {
+        fprintf(stdout, "\t\treturn this->spn%s;\n", pFieldName);
+    }
+    else {
+        fprintf(stdout, "\t\treturn this->%s;\n", pFieldName);
+    }
+    fprintf(stdout, "\t}\n\n\n");
+
+    if (options.fSPN) {
+        fprintf(stdout, "\tbool\t\t\t%s_setSpn%s(\n",
+                AStr_getData(pObjName),
+                pFieldName
+                );
+    }
+    else {
+        fprintf(stdout, "\tbool\t\t\t%s_set%s(\n",
+                AStr_getData(pObjName),
+                pFieldName
+                );
+    }
+    fprintf(stdout, "\t\t%s_DATA\t*this,\n", AStr_getData(pObjData));
+    fprintf(stdout, "\t\t%s\t\t\tvalue\n", pFieldType);
+    fprintf(stdout, "\t)\n{\n\n");
+    fprintf(stdout, "\t#ifdef NDEBUG\n");
+    fprintf(stdout, "\t#else\n");
+    fprintf(stdout, "\t\tif (%s_Validate(this)) {\n", AStr_getData(pObjName));
+    fprintf(stdout, "\t\tDEBUG_BREAK();\n");
     if (fObj) {
-        fprintf(stdout, "\tobj_Retain(value);\n");
+        fprintf(stdout, "\t\t\treturn OBJ_NIL;\n");
+    }
+    else {
+        fprintf(stdout, "\t\t\treturn 0;\n");
+    }
+    fprintf(stdout, "\t\t}\n\t#endif\n\n");
+    if (fObj) {
+        fprintf(stdout, "\t\tobj_Retain(value);\n");
         if (options.fSPN) {
-            fprintf(stdout, "\tif (this->spn%s) {\n", pFieldName);
-            fprintf(stdout, "\t\tobj_Release(this->spn%s);\n", pFieldName);
-            fprintf(stdout, "\t\t//this->spn%s = OBJ_NIL;\n\t}\n", pFieldName);
+            fprintf(stdout, "\t\tif (this->spn%s) {\n", pFieldName);
+            fprintf(stdout, "\t\t\tobj_Release(this->spn%s);\n", pFieldName);
+            fprintf(stdout, "\t\t\t//this->spn%s = OBJ_NIL;\n\t\t}\n", pFieldName);
         }
         else {
-            fprintf(stdout, "\tif (this->%s) {\n", pFieldName);
-            fprintf(stdout, "\t\tobj_Release(this->%s);\n", pFieldName);
-            fprintf(stdout, "\t\t//this->%s = OBJ_NIL;\n\t}\n", pFieldName);
+            fprintf(stdout, "\t\tif (this->%s) {\n", pFieldName);
+            fprintf(stdout, "\t\t\tobj_Release(this->%s);\n", pFieldName);
+            fprintf(stdout, "\t\t\t//this->%s = OBJ_NIL;\n\t\t}\n", pFieldName);
         }
     }
     if (options.fSPN) {
-        fprintf(stdout, "\tthis->spn%s = value;\n", pFieldName);
+        fprintf(stdout, "\t\tthis->spn%s = value;\n", pFieldName);
     }
     else {
-        fprintf(stdout, "\tthis->%s = value;\n", pFieldName);
+        fprintf(stdout, "\t\tthis->%s = value;\n", pFieldName);
     }
-    fprintf(stdout, "\n\treturn true;\n}\n\n\n\n");
+    fprintf(stdout, "\n\t\treturn true;\n\t}\n\n\n\n");
     
     return true;
 }
@@ -240,39 +242,39 @@ bool            genHeader(
     char            *pDescription = pStrDesc ? AStr_getData(pStrDesc) : OBJ_NIL;
 
     if (strlen(pDescription)) {
-        fprintf(stdout, "// %s\n", pDescription);
+        fprintf(stdout, "\t// %s\n", pDescription);
     }
     if (options.fSPN) {
-        fprintf(stdout, "%s\t\t\t\t%s_getSpn%s(\n",
+        fprintf(stdout, "\t%s\t\t\t\t%s_getSpn%s(\n",
                 pFieldType,
                 AStr_getData(pObjName),
                 pFieldName
                 );
     }
     else {
-        fprintf(stdout, "%s\t\t\t\t%s_get%s(\n",
+        fprintf(stdout, "\t%s\t\t\t\t%s_get%s(\n",
                 pFieldType,
                 AStr_getData(pObjName),
                 pFieldName
                 );
     }
-    fprintf(stdout, "\t%s_DATA\t*this\n", AStr_getData(pObjData));
-    fprintf(stdout, ");\n\n");
+    fprintf(stdout, "\t\t%s_DATA\t*this\n", AStr_getData(pObjData));
+    fprintf(stdout, "\t);\n\n");
     if (options.fSPN) {
-        fprintf(stdout, "bool\t\t\t\t%s_setSpn%s(\n",
+        fprintf(stdout, "\tbool\t\t\t\t%s_setSpn%s(\n",
                 AStr_getData(pObjName),
                 pFieldName
                 );
     }
     else {
-        fprintf(stdout, "bool\t\t\t\t%s_set%s(\n",
+        fprintf(stdout, "\tbool\t\t\t\t%s_set%s(\n",
                 AStr_getData(pObjName),
                 pFieldName
                 );
     }
-    fprintf(stdout, "\t%s_DATA\t*this,\n", AStr_getData(pObjData));
-    fprintf(stdout, "\t%s\t\t\tvalue\n", pFieldType);
-    fprintf(stdout, ");\n\n\n");
+    fprintf(stdout, "\t\t%s_DATA\t*this,\n", AStr_getData(pObjData));
+    fprintf(stdout, "\t\t%s\t\t\tvalue\n", pFieldType);
+    fprintf(stdout, "\t);\n\n\n");
     
     return true;
 }
@@ -573,9 +575,10 @@ void			show_usage(
     fprintf(stderr, "\t-s\t--header\tGenerate .h inclusion instead of .c\n" );
     fprintf(
             stderr,
-            "\t-v\t--Verbose\tmay be entered more than once for even more verbosity\n"
+            "\t-v\t--Verbose\tmay be entered more than once for even more verbosity\n\n"
     );
-    fprintf(stderr, "\nThe input csv file has a minimum of 2 fields. The first is the\n" );
+    fprintf(stderr, "#field_type,field_name,field_description\n" );
+    fprintf(stderr, "The input csv file has a minimum of 2 fields. The first is the\n" );
     fprintf(stderr, "field type such as 'uint8_t'. If it is a pointer, the '*' must\n" );
     fprintf(stderr, "be included. So, it would have to be quoted. The second field is\n" );
     fprintf(stderr, "field name. A third field being a description is optional.\n\n\n" );
