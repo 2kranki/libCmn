@@ -52,6 +52,7 @@
 #include    <table.h>
 #include    <AStr.h>
 #include    <listdl.h>
+#include    <psxMutex.h>
 
 
 
@@ -90,7 +91,7 @@ extern "C" {
         OBJ_IUNKNOWN        *pSuperVtbl;
 #define TABLE_FLAG_FIXED    5
 
-        ERESULT         eRc;
+        ERESULT             eRc;
 
         /* Table General Variables
          */
@@ -106,6 +107,8 @@ extern "C" {
         LISTDL_DATA         freeList;
         uint16_t            numEntries;         // Total Number of Table Entries
         uint16_t            reserved;
+        
+        PSXMUTEX_DATA       *pMutex;
         
     };
     

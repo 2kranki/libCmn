@@ -420,6 +420,11 @@ extern	"C" {
             bp = pNext;
         }
 
+        if (this->pMutex) {
+            obj_Release(this->pMutex);
+            this->pMutex = OBJ_NIL;
+        }
+
         // Free the main control block.
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
         obj_Dealloc(this);
@@ -568,6 +573,14 @@ extern	"C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&table_Vtbl);
         
+        this->pMutex = psxMutex_New();
+        if (this->pMutex) {
+        }
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
         entrySize += entryDataSize;
         entrySize = ROUNDUP4(entrySize);
@@ -608,10 +621,7 @@ extern	"C" {
         TABLE_DATA      *this
     )
     {
-#ifdef __APPLE__
-#else
-        enum TN_RCode   tRc;
-#endif
+        bool            fRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -621,17 +631,14 @@ extern	"C" {
             return;
         }
 #endif
-        
-#ifdef __APPLE__
-#else
-        tRc = tn_mutex_lock(&this->mutexTable, TN_WAIT_INFINITE);
-        if (TN_RC_OK == tRc) {
+
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
         }
         else {
-            // Why? Could be TN_RC_DELETED because mutex was deleted!
+            // Why?
             DEBUG_BREAK();
         }
-#endif
         
         // Return to caller.
     }
@@ -772,6 +779,38 @@ extern	"C" {
         AStr_AppendA(pStr, str);
         
         return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          U n l o c k
+    //---------------------------------------------------------------
+    
+    void            table_Unlock(
+        TABLE_DATA      *this
+    )
+    {
+        bool            fRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !table_Validate(this) ) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+        
+        fRc = psxMutex_Unlock(this->pMutex);
+        if (fRc) {
+        }
+        else {
+            // Why?
+            DEBUG_BREAK();
+        }
+        
+        // Return to caller.
     }
     
     
