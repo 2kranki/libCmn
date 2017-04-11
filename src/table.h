@@ -11,7 +11,11 @@
  *				These subroutines provide a general purpose set of
  *				routines to build and manipulate dynamic tables of
  *				fixed size data. The active data is blocked and
- *              maintained on a linked list.
+ *              maintained on a linked list which you can iterate
+ *              through.
+ *
+ *              The table will grow if need be unless a fixed size
+ *              table was specified at initialization time.
  *
  *
  * Remarks
@@ -142,6 +146,17 @@ extern	"C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*! 
+     Return the number of active table entries.
+     @return:   If successful, return the number of active entries.
+                Otherwise, return 0 and set the appropriate ERESULT_*
+                error.
+     */
+    uint32_t        table_getCount(
+        TABLE_DATA      *this
+    );
+    
     
     ERESULT         table_getLastError(
         TABLE_DATA      *this

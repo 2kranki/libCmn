@@ -75,7 +75,7 @@ extern "C" {
     typedef struct table_block_s TABLE_BLOCK;
     struct table_block_s {
         LISTDL_NODE         node;           // Chain for block list
-        uint8_t             data[0];
+        TABLE_ENTRY         data[0];
     };
     
     

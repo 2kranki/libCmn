@@ -280,6 +280,22 @@ extern	"C" {
     //                      *** Propertiess ***
     //===============================================================
 
+    uint32_t        table_getCount(
+        TABLE_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !table_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        return listdl_Count(&this->activeList);
+    }
+    
+    
+    
     uint16_t        table_getEntriesPerBlock(
         TABLE_DATA      *this
     )
@@ -772,8 +788,8 @@ extern	"C" {
     {
         
         // Do initialization.
-        this->eRc = ERESULT_INVALID_OBJECT;
         if(this) {
+            this->eRc = ERESULT_INVALID_OBJECT;
             if ( obj_IsKindOf(this,OBJ_IDENT_TABLE) )
                 ;
             else
@@ -781,8 +797,10 @@ extern	"C" {
         }
         else
             return false;
-        if( (obj_getSize(this) < sizeof(TABLE_DATA)) )
+        if( (obj_getSize(this) < sizeof(TABLE_DATA)) ) {
+            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
+        }
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
