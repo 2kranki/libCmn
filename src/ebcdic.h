@@ -96,38 +96,31 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
-     Allocate a new Object and partially initialize. Also, this sets an
-     indicator that the object was alloc'd which is tested when the object is
-     released.
-     @return:   pointer to ebcdic object if successful, otherwise OBJ_NIL.
-     */
-    EBCDIC_DATA *     ebcdic_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
+    EBCDIC_DATA *   ebcdic_Alloc(
     );
     
     
-    EBCDIC_DATA *     ebcdic_New(
-        uint16_t    stackSize           // Stack Size in Words
+    EBCDIC_DATA *   ebcdic_New(
     );
     
     
-    char                ascii_fromAsciiToEbcdic(
-        char                asciiChar
+    uint8_t         asciiToEbcdic(
+        char            asciiChar
     );
     
     
-    char                ascii_fromEbcdicToAscii(
-        char                ebcdicChar
+    char            ebcdicToAscii(
+        uint8_t         ebcdicChar
     );
     
     
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     ebcdic_getLastError(
+    ERESULT         ebcdic_getLastError(
         EBCDIC_DATA		*this
     );
 
@@ -138,12 +131,12 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     ebcdic_Disable(
+    ERESULT         ebcdic_Disable(
         EBCDIC_DATA		*this
     );
 
 
-    ERESULT     ebcdic_Enable(
+    ERESULT         ebcdic_Enable(
         EBCDIC_DATA		*this
     );
 
@@ -153,7 +146,7 @@ extern "C" {
     );
 
 
-    ERESULT     ebcdic_IsEnabled(
+    ERESULT         ebcdic_IsEnabled(
         EBCDIC_DATA		*this
     );
     
@@ -170,7 +163,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *    ebcdic_ToDebugString(
+    ASTR_DATA *     ebcdic_ToDebugString(
         EBCDIC_DATA     *this,
         int             indent
     );

@@ -1,20 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          PSXTHREAD Console Transmit Task (psxThread) Header
+//              POSIX Thread Object (psxThread) Header
 //****************************************************************
 /*
  * Program
- *			Separate psxThread (psxThread)
+ *			POSIX Thread Object (psxThread)
  * Purpose
- *          This class provides the means of creating and managing
- *          threads within a process.  It is primarily designed to
- *          manage threads which do a small amount of work and then
- *          relinquish control in a loop.  However, it can be used
- *          for single process type threads as well.  Also, the
- *          thread's actual execution code can be changed after its
- *          creation allowing the thread to perform a multitude of
- *          purposes.
+ *          This class tries to provide a Posix-like threads within
+ *          a process for operating systems. Thus, it provides a
+ *          standardized interface for those operating systems.
+ *          It is primarily designed to manage threads which do a 
+ *          small amount of work and then relinquish control in a
+ *          loop.  However, it can be used for single process type
+ *          threads as well.  Also, the thread's actual execution
+ *          code can be changed after its creation allowing the 
+ *          thread to perform a multitude of purposes.
  *
  * Remarks
  *	1.      We will call the thread created by this object, "worker"
