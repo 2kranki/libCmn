@@ -42,9 +42,9 @@
 #define	PSXTHREAD_INTERNAL_H
 
 
-#include    "psxThread.h"
-#include    "psxMutex.h"
-#include    "psxSem.h"
+#include    <psxThread.h>
+#include    <psxMutex.h>
+#include    <psxSem.h>
 #include    <pthread.h>
 
 

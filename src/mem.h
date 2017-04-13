@@ -69,6 +69,9 @@
 #if defined(__APPLE__)
 #   include <memOSX.h>
 #endif
+#if defined(_MSC_VER)
+#   include <memMSC.h>
+#endif
 
 
 

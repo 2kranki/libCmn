@@ -50,8 +50,8 @@
 //      STAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
-#include    "block16.h"
-#include    "block16_internal.h"           // We cheat!
+#include    <block16.h>
+#include    <block16_internal.h>           // We cheat!
 
 
 #define NUM_STR     10

@@ -62,6 +62,9 @@ struct psxMutex_data_s	{
 #if defined(__APPLE__)
     pthread_mutex_t mutex;
 #endif
+#if defined(_MSC_VER)
+    HANDLE        	m_hMutex;
+#endif
 #if defined(__TNEO__)
     struct TN_Mutex mutex;
 #endif

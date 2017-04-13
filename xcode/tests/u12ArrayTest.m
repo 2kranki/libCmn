@@ -54,8 +54,8 @@
 //      XCTAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
-#include    "arrayExpand.h"
-#include    "u12Array_internal.h"
+#include    <arrayExpand.h>
+#include    <u12Array_internal.h>
 
 
 

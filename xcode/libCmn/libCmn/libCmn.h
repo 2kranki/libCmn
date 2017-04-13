@@ -3,7 +3,6 @@
 //  libCmn
 //
 //  Created by bob on 2/10/16.
-//  Copyright © 2016 bob. All rights reserved.
 //
 
 #ifdef __OBJC__

@@ -127,9 +127,9 @@ char        *pTestInput02 =
     JSON_DATA	*pObj = OBJ_NIL;
    
     pObj = json_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = json_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -155,12 +155,12 @@ char        *pTestInput02 =
     
     
     pStr = AStr_NewA(pTestInput01);
-    XCTAssertFalse( (OBJ_NIL == pStr), @"" );
+    XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
-    XCTAssertFalse( (OBJ_NIL == pPath), @"" );
+    XCTAssertFalse( (OBJ_NIL == pPath) );
     
     pObj = json_NewAStr( pStr, pPath, 4 );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     obj_Release(pStr);
     obj_Release(pPath);
     obj_setFlags(pObj, (obj_getFlags(pObj) | OBJ_FLAG_TRACE));
@@ -168,60 +168,103 @@ char        *pTestInput02 =
         
         obj_TraceSet(pObj, true);
         pFileNode = json_ParseFile(pObj);
-        XCTAssertFalse( (OBJ_NIL == pFileNode), @"" );
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
             pStrA = node_getNameUTF8(pFileNode);
-            XCTAssertTrue( (0 == strcmp("hash", pStrA)), @"" );
+            XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pHash = node_getData(pFileNode);
-            XCTAssertFalse( (OBJ_NIL == pHash), @"" );
-            XCTAssertTrue( (4 == nodeHash_getSize(pHash)), @"" );
+            XCTAssertFalse( (OBJ_NIL == pHash) );
+            XCTAssertTrue( (4 == nodeHash_getSize(pHash)) );
             
             eRc = nodeHash_FindA(pHash, "one", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
-            XCTAssertTrue( (0 == strcmp("number", pStrA)), @"" );
+            XCTAssertTrue( (0 == strcmp("number", pStrA)) );
             mem_Free((void *)pStrA);
             pStr = node_getData(pNode);
-            XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))), @"" );
+            XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))) );
             
             eRc = nodeHash_FindA(pHash, "two", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
-            XCTAssertTrue( (0 == strcmp("string", pStrA)), @"" );
+            XCTAssertTrue( (0 == strcmp("string", pStrA)) );
             mem_Free((void *)pStrA);
             pStr = node_getData(pNode);
-            XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))), @"" );
+            XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))) );
             
             eRc = nodeHash_FindA(pHash, "three", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
-            XCTAssertTrue( (0 == strcmp("array", pStrA)), @"" );
+            XCTAssertTrue( (0 == strcmp("array", pStrA)) );
             mem_Free((void *)pStrA);
             pArray = node_getData(pNode);
-            XCTAssertTrue( (3 == nodeArray_getSize(pArray)), @"" );
+            XCTAssertTrue( (3 == nodeArray_getSize(pArray)) );
             pNode = nodeArray_Get(pArray, 1);
-            XCTAssertFalse( (OBJ_NIL == pNode), @"" );
+            XCTAssertFalse( (OBJ_NIL == pNode) );
             pStr = node_getData(pNode);
-            XCTAssertTrue( (0 == strcmp("a", AStr_getData(pStr))), @"" );
+            XCTAssertTrue( (0 == strcmp("a", AStr_getData(pStr))) );
             pNode = nodeArray_Get(pArray, 2);
-            XCTAssertFalse( (OBJ_NIL == pNode), @"" );
+            XCTAssertFalse( (OBJ_NIL == pNode) );
             pStr = node_getData(pNode);
-            XCTAssertTrue( (0 == strcmp("b", AStr_getData(pStr))), @"" );
+            XCTAssertTrue( (0 == strcmp("b", AStr_getData(pStr))) );
             pNode = nodeArray_Get(pArray, 3);
-            XCTAssertFalse( (OBJ_NIL == pNode), @"" );
+            XCTAssertFalse( (OBJ_NIL == pNode) );
             pStr = node_getData(pNode);
-            XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))), @"" );
-
+            XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))) );
+            
             eRc = nodeHash_FindA(pHash, "four", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
-            XCTAssertTrue( (0 == strcmp("null", pStrA)), @"" );
+            XCTAssertTrue( (0 == strcmp("null", pStrA)) );
             mem_Free((void *)pStrA);
+            
+        }
+        
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    szTbl_SharedReset();
+}
+
+
+
+- (void)testInput02
+{
+    //ERESULT         eRc;
+    JSON_DATA       *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+    
+    
+    pPath = path_NewA("/Users/bob/git/libCan/other/pic32mx/can.json.txt");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    
+    pObj = json_NewFromFile( pPath, 4 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = json_ParseFile(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
             
         }
         

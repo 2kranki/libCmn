@@ -37,7 +37,7 @@
 
 
 
-#include    "psxCond.h"
+#include    <psxCond.h>
 #include    <pthread.h>
 
 

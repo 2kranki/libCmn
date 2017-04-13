@@ -156,6 +156,9 @@ extern "C" {
         }
         obj_FlagOff(this,PSXMUTEX_FLAG_LOCKED);
 #endif
+#if defined(_MSC_VER)
+        CloseHandle(this->m_hMutex);
+#endif
         
         obj_Dealloc( this );
         this = NULL;
@@ -202,6 +205,19 @@ extern "C" {
         iRc = pthread_mutex_init(&this->mutex, NULL);
         if (iRc) {
             DEBUG_BREAK();
+        }
+#endif
+#if defined(_MSC_VER)
+        this->m_hMutex =    CreateMutex(
+                                    NULL,         // default security attributes
+                                    FALSE,        // initially not owned
+                                    NULL          // unnamed mutex
+                            );
+        
+        if (this->m_hMutex == NULL) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
         }
 #endif
 #if defined(__TNEO__)
@@ -265,6 +281,9 @@ extern "C" {
 #if defined(__APPLE__)
         int             iRc;
 #endif
+#if defined(_MSC_VER)
+        DWORD			dwRc;
+#endif
 #if defined(__TNEO__)
         enum TN_RCode   tnRc;
 #endif
@@ -283,6 +302,25 @@ extern "C" {
         if (iRc == 0) {
             obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
             return true;
+        }
+#endif
+#if defined(_MSC_VER)
+        dwRc = WaitForSingleObject(this->m_hMutex, INFINITE);
+        switch (dwRc) {
+            case WAIT_OBJECT_0:
+                obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
+                return true;
+                break;
+                
+            case WAIT_ABANDONED:
+                break;
+                
+            case WAIT_TIMEOUT:
+                break;
+                
+            case WAIT_FAILED:
+                break;
+                
         }
 #endif
 #if defined(__TNEO__)
@@ -352,6 +390,9 @@ extern "C" {
 #if defined(__APPLE__)
         int             iRc;
 #endif
+#if defined(_MSC_VER)
+        DWORD			dwRc;
+#endif
 #if defined(__TNEO__)
         enum TN_RCode   tnRc;
 #endif
@@ -370,6 +411,25 @@ extern "C" {
         if (iRc == 0) {
             obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
             return true;
+        }
+#endif
+#if defined(_MSC_VER)
+        dwRc = WaitForSingleObject(this->m_hMutex, 0);
+        switch (dwRc) {
+            case WAIT_OBJECT_0:
+                obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
+                return true;
+                break;
+                
+            case WAIT_ABANDONED:
+                break;
+                
+            case WAIT_TIMEOUT:
+                break;
+                
+            case WAIT_FAILED:
+                break;
+                
         }
 #endif
 #if defined(__TNEO__)
@@ -413,6 +473,12 @@ extern "C" {
 #if defined(__APPLE__)
         iRc = pthread_mutex_unlock(&this->mutex);
         if (iRc == 0) {
+            obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
+            return true;
+        }
+#endif
+#if defined(_MSC_VER)
+        if (ReleaseMutex(this->m_hMutex)) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }

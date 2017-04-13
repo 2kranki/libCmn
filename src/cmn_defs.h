@@ -330,8 +330,14 @@ typedef struct WStrC_vtbl_s	{
 #if defined( __APPLE__ )
 #	include    <cmn_osx.h>
 #endif
-#if defined( __PIC32MX ) || defined( __PIC32MZ )
-#	include    <cmn_pic32.h>
+#if defined( _MSC_VER )
+#	include    <cmn_msc.h>
+#endif
+#if defined( __PIC32MX )
+#	include    <cmn_pic32mx.h>
+#endif
+#if defined( __PIC32MZ )
+#	include    <cmn_pic32mz.h>
 #endif
 
 

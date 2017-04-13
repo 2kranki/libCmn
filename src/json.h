@@ -174,7 +174,7 @@ extern "C" {
     JSON_DATA *     json_InitFile(
         JSON_DATA       *this,
         PATH_DATA       *pFilePath,
-        uint16_t        tabSize                 // Tab Spacing if any
+        uint16_t        tabSize         // Tab Spacing if any
     );
     
     JSON_DATA *     json_InitAStr(

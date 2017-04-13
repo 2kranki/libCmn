@@ -222,7 +222,8 @@ extern "C" {
         }
 #endif
         
-        dbCsv_ParseComment(this);
+        while( dbCsv_ParseComment(this) )
+            ;
         
         if (dbCsv_ParseEOF(this)) {
             return OBJ_NIL;

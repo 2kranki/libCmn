@@ -67,6 +67,7 @@ extern "C" {
 
     // Returns the next character from the file as a positive number.
     // If the character returned is negative then it is an ERESULT code.
+
     int32_t         json_UnicodeGetc(
         JSON_DATA       *cbp
     )
@@ -616,7 +617,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            json_ParseEOF(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -624,16 +625,16 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if (chr < 0) {
-            json_InputAdvance(cbp, 1);
+            json_InputAdvance(this, 1);
             return true;
         }
         
@@ -647,7 +648,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseFileObject(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -656,25 +657,25 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        pNode = json_ParseHash(cbp);
+        pNode = json_ParseHash(this);
         if( OBJ_NIL == pNode ) {
             return pNode;
         }
         
-        json_ParseWS(cbp);
-        if(!json_ParseEOF(cbp)) {
-            chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        if(!json_ParseEOF(this)) {
+            chr = json_InputLookAhead(this, 1);
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting EOF, but found %c(0x%02X)",
                 chr,
                 chr
@@ -1672,7 +1673,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     int32_t         json_InputAdvance(
-        JSON_DATA      *cbp,
+        JSON_DATA      *this,
         uint16_t        numChrs
     )
     {
@@ -1682,7 +1683,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1690,44 +1691,44 @@ extern "C" {
         
         // Shift inputs.
         for (i=0; i<numChrs; ++i) {
-            json_InputNextChar(cbp);
+            json_InputNextChar(this);
         }
         
-        chr = cbp->pInputs[cbp->curInputs];
+        chr = this->pInputs[this->curInputs];
         if (chr) {
             switch (chr) {
                     
                 case '\b':
-                    if (cbp->colNo) {
-                        --cbp->colNo;
+                    if (this->colNo) {
+                        --this->colNo;
                     }
                     break;
                     
                 case '\f':
                 case '\n':
-                    ++cbp->lineNo;
+                    ++this->lineNo;
                     break;
                     
                 case '\r':
-                    cbp->colNo = 0;
+                    this->colNo = 0;
                     break;
                     
                 case '\t':
-                    if( cbp->tabSize ) {
+                    if( this->tabSize ) {
                         chr = ' ';
-                        if( ((cbp->colNo-1) % cbp->tabSize) )
-                            cbp->colNo += ((cbp->colNo-1) % cbp->tabSize);
+                        if( ((this->colNo - 1) % this->tabSize) )
+                            this->colNo += ((this->colNo - 1) % this->tabSize);
                         else
-                            cbp->colNo += cbp->tabSize;
+                            this->colNo += this->tabSize;
                     }
                     else {
-                        ++cbp->colNo;
+                        ++this->colNo;
                     }
                     break;
                     
                 default:
                     if (chr) {
-                        ++cbp->colNo;
+                        ++this->colNo;
                     }
                     break;
             }

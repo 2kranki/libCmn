@@ -70,7 +70,7 @@ ASTR_DATA       *pObjName = OBJ_NIL;
 static
 ASTR_DATA       *pObjData = OBJ_NIL;        // Upper case of ObjName
 static
-ASTR_DATA		*pProgramName = OBJ_NIL;
+PATH_DATA		*pProgramName = OBJ_NIL;
 static
 OBJARRAY_DATA   *pRecords = OBJ_NIL;
 
@@ -296,7 +296,7 @@ bool            parseArgs(
     int             len;
     char            wrkstr[64];
     
-    pProgramName = AStr_NewA(argv[0]);
+    pProgramName = path_NewA(argv[0]);
     if (OBJ_NIL == pProgramName) {
         return false;
     }
@@ -557,17 +557,26 @@ void			show_usage(
     char            *pErrMsg
 )
 {
-    fprintf(stderr, "usage: %s\n", AStr_getData(pProgramName));
+    PATH_DATA       *pPath = NULL;
+    ERESULT         eRc;
+    
+    eRc = path_SplitPath(pProgramName, OBJ_NIL, OBJ_NIL, &pPath);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "FATAL - Could not get program name!\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    fprintf(stderr, "usage: %s\n", path_getData(pPath));
     if (pErrMsg) {
         fprintf(stderr, "FATAL - %s!\n", pErrMsg);
     }
     fprintf(
             stderr,
             "%s(%s) - Generate Getters/Setters for inclusion into programs\n",
-            AStr_getData(pProgramName),
+            path_getData(pPath),
             __DATE__
     );
-    fprintf(stderr, "%s [-d][-v]* input_csv_path\n", AStr_getData(pProgramName) );
+    fprintf(stderr, "%s [-d][-v]* input_csv_path\n", path_getData(pPath) );
     fprintf(stderr, "Options:\n" );
     fprintf(stderr, "\t-d\t--debug\tDebug Mode\n" );
     fprintf(stderr, "\t-h\t--help\tDisplay this help\n" );
@@ -577,11 +586,15 @@ void			show_usage(
             stderr,
             "\t-v\t--Verbose\tmay be entered more than once for even more verbosity\n\n"
     );
-    fprintf(stderr, "#field_type,field_name,field_description\n" );
+    fprintf(stderr, "#field_type,field_name,[field_description][,field_offset,\n" );
+    fprintf(stderr, "#field_size,field_shift]\n" );
     fprintf(stderr, "The input csv file has a minimum of 2 fields. The first is the\n" );
     fprintf(stderr, "field type such as 'uint8_t'. If it is a pointer, the '*' must\n" );
     fprintf(stderr, "be included. So, it would have to be quoted. The second field is\n" );
-    fprintf(stderr, "field name. A third field being a description is optional.\n\n\n" );
+    fprintf(stderr, "field name. A third field being a description is optional.\n" );
+    fprintf(stderr, "Field_offset is the offset of the field in some structure.\n" );
+    fprintf(stderr, "Field_size is the size of the field in bits. field_shift.\n" );
+    fprintf(stderr, "Field_shift is the amount to shift to put the field in bit 0.\n\n\n" );
     fprintf(stderr, "\n\n\n" );
     exit(EXIT_FAILURE);
 }
