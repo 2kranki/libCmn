@@ -157,7 +157,14 @@ extern "C" {
         obj_FlagOff(this,PSXMUTEX_FLAG_LOCKED);
 #endif
 #if defined(_MSC_VER)
+#ifdef  USE_MSC_MUTEX
         CloseHandle(this->m_hMutex);
+#else
+        while( this->LockCount ) {
+            (void)psxMutex_Unlock( &this->IntLock );
+        }
+        DeleteCriticalSection( &this->csSem );
+#endif
 #endif
         
         obj_Dealloc( this );
@@ -208,6 +215,7 @@ extern "C" {
         }
 #endif
 #if defined(_MSC_VER)
+#ifdef  USE_MSC_MUTEX
         this->m_hMutex =    CreateMutex(
                                     NULL,         // default security attributes
                                     FALSE,        // initially not owned
@@ -219,6 +227,10 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+#else
+        this->LockCount	= 0;
+        InitializeCriticalSection( &this->csSem );
+#endif
 #endif
 #if defined(__TNEO__)
         tnRc = tn_mutex_create(&this->mutex,TN_MUTEX_PROT_INHERIT,0);
@@ -305,6 +317,7 @@ extern "C" {
         }
 #endif
 #if defined(_MSC_VER)
+#ifdef  USE_MSC_MUTEX
         dwRc = WaitForSingleObject(this->m_hMutex, INFINITE);
         switch (dwRc) {
             case WAIT_OBJECT_0:
@@ -322,6 +335,10 @@ extern "C" {
                 break;
                 
         }
+#else
+        EnterCriticalSection( &this->csSem );
+        ++this->LockCount;
+#endif
 #endif
 #if defined(__TNEO__)
         tnRc = tn_mutex_unlock(&this->mutex);
@@ -414,6 +431,7 @@ extern "C" {
         }
 #endif
 #if defined(_MSC_VER)
+#ifdef  USE_MSC_MUTEX
         dwRc = WaitForSingleObject(this->m_hMutex, 0);
         switch (dwRc) {
             case WAIT_OBJECT_0:
@@ -431,6 +449,12 @@ extern "C" {
                 break;
                 
         }
+#else
+        if (this->LockCount == 0) {
+            EnterCriticalSection( &this->csSem );
+            ++this->LockCount;
+        }
+#endif
 #endif
 #if defined(__TNEO__)
         tnRc = tn_mutex_lock_polling(&this->mutex);
@@ -478,10 +502,15 @@ extern "C" {
         }
 #endif
 #if defined(_MSC_VER)
+#ifdef  USE_MSC_MUTEX
         if (ReleaseMutex(this->m_hMutex)) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
+#else
+        --this->LockCount;
+        LeaveCriticalSection( &this->csSem );
+#endif
 #endif
 #if defined(__TNEO__)
         tnRc = tn_mutex_unlock(&this->mutex);

@@ -63,7 +63,13 @@ struct psxMutex_data_s	{
     pthread_mutex_t mutex;
 #endif
 #if defined(_MSC_VER)
+#ifdef  USE_MSC_MUTEX
     HANDLE        	m_hMutex;
+#else
+    uint32_t        LockCount;
+    CRITICAL_SECTION
+                    csSem;
+#endif
 #endif
 #if defined(__TNEO__)
     struct TN_Mutex mutex;
