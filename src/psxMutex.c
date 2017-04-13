@@ -154,7 +154,7 @@ extern "C" {
         if (iRc) {
             DEBUG_BREAK();
         }
-        obj_FlagOff(this,PSXMUTEX_FLAG_LOCKED);
+        obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
 #endif
 #if defined(_MSC_VER)
 #ifdef  USE_MSC_MUTEX
@@ -167,7 +167,7 @@ extern "C" {
 #endif
 #endif
         
-        obj_Dealloc( this );
+        obj_Dealloc(this);
         this = NULL;
 
         // Return to caller.

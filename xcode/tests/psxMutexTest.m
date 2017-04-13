@@ -92,12 +92,26 @@
 - (void)testOpenClose
 {
     PSXMUTEX_DATA	*pObj = OBJ_NIL;
+    bool            fRc;
    
     pObj = psxMutex_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = psxMutex_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
+        
+        fRc = psxMutex_IsLocked(pObj);
+        XCTAssertTrue( (!fRc) );
+        
+        fRc = psxMutex_Lock(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        fRc = psxMutex_IsLocked(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        fRc = psxMutex_Unlock(pObj);
+        XCTAssertTrue( (fRc) );
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
