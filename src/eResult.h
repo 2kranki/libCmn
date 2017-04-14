@@ -169,7 +169,10 @@ extern "C" {
         ERESULT_DATA_OUT_OF_RANGE           = -137,
         ERESULT_DATA_MISSING                = -138,
         ERESULT_DATA_SIZE                   = -139,
-        
+        ERESULT_KEY_NOT_FOUND               = -140,
+        ERESULT_KEY_OUT_OF_RANGE            = -141,
+        ERESULT_INDEX_FULL                  = -142,
+       
         ERESULT_OSCILLATOR_FAILED           = -256,
         ERESULT_TIMEOUT                     = -257,
         ERESULT_SHARING_VIOLATION           = -258,
