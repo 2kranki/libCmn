@@ -173,7 +173,7 @@ extern "C" {
         ERESULT_KEY_OUT_OF_RANGE            = -141,
         ERESULT_INDEX_FULL                  = -142,
        
-        ERESULT_OSCILLATOR_FAILED           = -256,
+        ERESULT_BUSY                        = -256,
         ERESULT_TIMEOUT                     = -257,
         ERESULT_SHARING_VIOLATION           = -258,
         

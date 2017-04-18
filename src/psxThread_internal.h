@@ -70,9 +70,14 @@ struct psxThread_data_s	{
 #if defined(__APPLE__)
     pthread_t       worker;
 #endif
+#if defined(_MSC_VER)
+    HANDLE          m_hThread;
+    DWORD           m_ThreadID;
+#endif
 #if defined(__TNEO__)
     struct TN_Task  worker;
 #endif
+    
     // Warning - It is important that these variables must only be set by either
     //          the owner or the worker thread but not both.  The variables do not
     //          have to be protected with a lock if this is maintained.
@@ -80,18 +85,21 @@ struct psxThread_data_s	{
     sig_atomic_t    iErrno;             // Last Error
     volatile
     sig_atomic_t    fDone;              // Thread routine is done
-    //                                  // (Set by Thread Routine)
+    //                                  // (Set by worker Routine)
     volatile
-    sig_atomic_t    fPause;             // Worker should go into a hold state if true
+    sig_atomic_t    fPause;             // Thread should go into a hold state if true
     //                                  // (RO for worker)
     volatile
-    sig_atomic_t    fTerminate;         // Task should terminate if true
+    sig_atomic_t    fTerminate;         // Thread should terminate if true
     //                                  // (RO for worker)
     volatile
     sig_atomic_t    fSkip;              // Stop processing messages
     volatile
     sig_atomic_t    state;              // Current Thread State
-    //                                  // (Set by Thread)(RO for others)
+    //                                  // (Set by worker)(RO for others)
+    volatile
+    sig_atomic_t    msWait;             // Thread Sleep Time between Iterations
+    //                                  // (RO for worker)
     void *          (*threadBody)(void *);
     void            *threadData;
     

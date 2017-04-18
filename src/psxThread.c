@@ -464,6 +464,13 @@ extern "C" {
             this->pStack = NULL;
         }
         
+#if defined(_MSC_VER)
+        if (this->m_hThread) {
+            CloseHandle(this->m_hThread);
+            this->m_hThread = NULL;
+            this->m_ThreadID = 0;
+        }
+#endif
 #if defined(__TNEO__)
         tn_rc = tn_task_delete( &this->thread );
         if (tn_rc == TN_RC_OK) {
@@ -516,6 +523,10 @@ extern "C" {
         this->threadBody = startRoutine;
         this->threadData = routineData;
         this->stackSize  = stackSize;
+#if defined(_MSC_VER)
+        this->m_hThread = NULL;
+        this->m_ThreadID = 0;
+#endif
 #if defined(__TNEO__)
         if (stackSize) {
             this->pStack = mem_Malloc(stackSize);
@@ -763,15 +774,26 @@ extern "C" {
             fRc = true;
         }
 #endif
+#if defined(_MSC_VER)
+        this-m_hThread =    CreateThread(
+                                    NULL,               // default security attributes
+                                    0,                  // use default stack size
+                                    thread_task_body,   // thread function name
+                                    this,               // argument to thread function
+                                    0,                  // use default creation flags
+                                    &this-m_ThreadID    // returns the thread identifier
+                            );
+        
+#endif
 #if defined(__TNEO__)
-        memset(&cbp->thread, 0, sizeof(struct TN_Task));
+        memset(&this->thread, 0, sizeof(struct TN_Task));
         tn_rc =     tn_task_create(
-                                   &cbp->thread,
+                                   &this->thread,
                                    thread_task_body,
-                                   cbp->priority,
-                                   (void *)cbp->stack,
-                                   cbp->stackSize,
-                                   cbp,
+                                   this->priority,
+                                   (void *)this->stack,
+                                   this->stackSize,
+                                   this,
                                    (TN_TASK_CREATE_OPT_START)
                                    );
         if (tn_rc == TN_RC_OK) {
@@ -779,7 +801,7 @@ extern "C" {
         else {
             DEBUG_BREAK();
         }
-        cbp->thread.name = "psxThread";
+        this->thread.name = "psxThread";
 #endif
         
         // Return to caller.
