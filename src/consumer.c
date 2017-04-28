@@ -58,16 +58,14 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
     void            consumer_task_body(
         void            *pData
     )
     {
-        //CONSUMER_DATA  *this = pData;
+        CONSUMER_DATA   *this = pData;
         
     }
-#endif
 
 
 
@@ -96,12 +94,12 @@ extern "C" {
 
 
 
-    CONSUMER_DATA *     consumer_New(
+    CONSUMER_DATA * consumer_New(
         uint16_t        messageSize,
         uint16_t        messageCount        // Max Message Queue size
     )
     {
-        CONSUMER_DATA       *this;
+        CONSUMER_DATA   *this;
         
         this = consumer_Alloc( );
         if (this) {
@@ -119,7 +117,7 @@ extern "C" {
     //===============================================================
 
     uint16_t        consumer_getPriority(
-        CONSUMER_DATA     *this
+        CONSUMER_DATA   *this
     )
     {
 
@@ -136,7 +134,7 @@ extern "C" {
     }
 
     bool            consumer_setPriority(
-        CONSUMER_DATA     *this,
+        CONSUMER_DATA   *this,
         uint16_t        value
     )
     {
@@ -153,7 +151,7 @@ extern "C" {
 
 
     uint32_t        consumer_getSize(
-        CONSUMER_DATA       *this
+        CONSUMER_DATA   *this
     )
     {
 #ifdef NDEBUG
@@ -223,7 +221,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            consumer_Disable(
-        CONSUMER_DATA		*this
+        CONSUMER_DATA   *this
     )
     {
 
@@ -254,7 +252,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            consumer_Enable(
-        CONSUMER_DATA		*this
+        CONSUMER_DATA	*this
     )
     {
 
@@ -281,7 +279,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    CONSUMER_DATA *   consumer_Init(
+    CONSUMER_DATA * consumer_Init(
         CONSUMER_DATA   *this,
         uint16_t        messageSize,
         uint16_t        messageCount        // Max Message Queue size
@@ -371,7 +369,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            consumer_IsEnabled(
-        CONSUMER_DATA		*this
+        CONSUMER_DATA	*this
     )
     {
         
@@ -398,7 +396,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     consumer_ToDebugString(
-        CONSUMER_DATA      *this,
+        CONSUMER_DATA   *this,
         int             indent
     )
     {
