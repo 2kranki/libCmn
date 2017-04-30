@@ -151,11 +151,20 @@ void            cb32_Dealloc(
     }
 #endif
 
-    obj_Release(this->pSemEmpty);
-    this->pSemEmpty = NULL;
-    obj_Release(this->pSemFull);
-    this->pSemFull = NULL;
+    if (this->pSemEmpty) {
+        obj_Release(this->pSemEmpty);
+        this->pSemEmpty = OBJ_NIL;
+    }
+    if (this->pSemFull) {
+        obj_Release(this->pSemFull);
+        this->pSemFull = OBJ_NIL;
+    }
+    if (this->pMutex) {
+        obj_Release(this->pMutex);
+        this->pMutex = OBJ_NIL;
+    }
     
+    obj_setVtbl(this, this->pSuperVtbl);
     obj_Dealloc(this);
     this = NULL;
     
@@ -310,6 +319,13 @@ CB32_DATA *     cb32_Init(
         return OBJ_NIL;
     }
 
+    size = obj_getMisc1(this);
+    if( 0 == size ) {
+        DEBUG_BREAK();
+        obj_Release(this);
+        return OBJ_NIL;
+    }
+
     this = obj_Init( this, obj_getSize(this), OBJ_IDENT_CB32 );
     if (NULL == this) {
         return OBJ_NIL;
@@ -317,12 +333,6 @@ CB32_DATA *     cb32_Init(
     this->pSuperVtbl = obj_getVtbl(this);
     obj_setVtbl(this, (OBJ_IUNKNOWN *)&cb32_Vtbl);
     
-    size = obj_getMisc1(this);
-    if( 0 == size ) {
-        DEBUG_BREAK();
-        obj_Release(this);
-        return OBJ_NIL;
-    }
     this->size = size;
 
     this->pSemEmpty = psxSem_New(size,size);

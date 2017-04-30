@@ -97,12 +97,10 @@ extern "C" {
     //---------------------------------------------------------------
 
     DEVMGR_DATA *     devMgr_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
     );
     
     
     DEVMGR_DATA *     devMgr_New(
-        uint16_t    stackSize           // Stack Size in Words
     );
     
     

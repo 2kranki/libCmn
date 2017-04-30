@@ -234,6 +234,10 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
         
         obj_Dealloc( this );
         this = NULL;
@@ -256,6 +260,8 @@ extern "C" {
         uint32_t        cbSize;
 #if defined(__APPLE__)
         int             iRc;
+#endif
+#if defined(_MSC_VER)
 #endif
 #if defined(__TNEO__)
         enum TN_RCode   tRc;
@@ -300,6 +306,10 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
 
     #ifdef NDEBUG
     #else
@@ -331,6 +341,8 @@ extern "C" {
 #if defined(__APPLE__)
 //        int             iRc;
 #endif
+#if defined(_MSC_VER)
+#endif
 #if defined(__TNEO__)
         enum TN_RCode   tnRc;
 #endif
@@ -360,6 +372,12 @@ extern "C" {
         }
         pthread_mutex_unlock(&this->mutex);
 #endif
+#if defined(_MSC_VER)
+	    fRc = SetEvent( hsemSem );
+	    if( !fRc ) {
+		    return false;
+        }
+#endif
 #if defined(__TNEO__)
         tRc = tn_sem_signal(&cbp->sem);
         if (TN_RC_OK == tRc)
@@ -367,6 +385,10 @@ extern "C" {
         else {
             DEBUG_BREAK();
         }
+#endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
 #endif
         
         // Return to caller.
@@ -404,11 +426,48 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
         
         // Return to caller.
         return false;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                          R e s e t
+    //---------------------------------------------------------------
+    
+    bool            psxSem_Reset(
+        PSXSEM_DATA		*this
+    )
+    {
+        bool            fRc = false;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !psxSem_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+      
+#if defined(__WIN16)
+#elif defined(__WIN32) || defined(__WIN64)
+        fRc = SetEvent( hsemSem );
+        if( !fRc ) {
+            return false;
+        }
+#endif
+        
+        // Return to caller.
+        return fRc;
+    }
+
     
     
     //---------------------------------------------------------------
@@ -586,6 +645,10 @@ extern "C" {
             fRc = false;
         }
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
         
         // Return to caller.
         return fRc;
@@ -621,6 +684,10 @@ extern "C" {
             fRc = false;
         }
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
         
         // Return to caller.
         return fRc;
@@ -631,6 +698,9 @@ extern "C" {
         PSXSEM_DATA		*this
     )
     {
+#if defined(_MSC_VER)
+	    ULONG           iRc;
+#endif
 #if defined(__TNEO__)
         enum TN_RCode   tnRc;
 #endif
@@ -654,6 +724,11 @@ extern "C" {
         }
         --this->wakeups;
         pthread_mutex_unlock(&this->mutex);
+#endif
+#if defined(_MSC_VER)
+	    iRc = WaitForSingleObject( hsemSem, TimeOut );
+	    if( iRc == (ULONG)-1 )
+		return FALSE;
 #endif
 #if defined(__TNEO__)
         tRc = tn_sem_wait(&cbp->sem, TN_WAIT_INFINITE);

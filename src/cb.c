@@ -128,8 +128,8 @@ extern "C" {
         }
         
         cbp = obj_Alloc( cbSize );
-        obj_setMisc1(cbp,size);
-        obj_setMisc2(cbp,elemSize);
+        obj_setMisc1(cbp, size);
+        obj_setMisc2(cbp, elemSize);
         
         // Return to caller.
         return( cbp );
@@ -393,6 +393,8 @@ extern "C" {
             return NULL;
         }
 #endif
+        cbSize += size * elemSize;
+
         
         this = obj_Init( this, cbSize, OBJ_IDENT_CB );
         if (NULL == this) {

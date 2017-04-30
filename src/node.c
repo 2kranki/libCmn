@@ -703,6 +703,7 @@ extern "C" {
         node_setProperties(this, OBJ_NIL);
         node_setData(this, OBJ_NIL);
         node_setName(this, OBJ_NIL);
+        node_setOther(this, OBJ_NIL);
 
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
         obj_Dealloc(this);

@@ -93,11 +93,12 @@
 {
     NODEENTRY_DATA	*pObj = OBJ_NIL;
    
-    pObj = nodeEntry_Alloc(0);
+    pObj = nodeEntry_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = nodeEntry_InitWithUTF8Con(pObj, "aName", OBJ_NIL);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

@@ -2193,6 +2193,9 @@ extern "C" {
         fclose(pFile);
         pFile = NULL;
         
+        mem_Free(pBuffer);
+        pBuffer = NULL;
+        
         // Return to caller.
         return ERESULT_SUCCESS;
     }

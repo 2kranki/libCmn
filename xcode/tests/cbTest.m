@@ -130,7 +130,7 @@ char        *StrArray[NUM_STR] = {
     bool            fRc;
     char            msg[10];
     
-	cbp = cb_Alloc(8,10);
+	cbp = cb_Alloc(8, 10);
     XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
 	cbp = cb_Init( cbp );
     XCTAssertFalse( (NULL == cbp), @"Could not init" );

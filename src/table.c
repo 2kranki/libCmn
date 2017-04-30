@@ -391,7 +391,6 @@ extern	"C" {
     {
         TABLE_DATA      *this = objId;
         TABLE_BLOCK     *bp;
-        TABLE_BLOCK     *pNext;
 #ifdef __APPLE__
 #else
         enum TN_RCode   tRc;
@@ -411,13 +410,11 @@ extern	"C" {
 #endif
 
         // Free all external blocks. The list is a pushdown
-        // list in order by newest to oldest. The last block
-        // on the list is allocated within cbp.
-        while( listdl_Count(&this->blockList) > 1 ) {
+        // list in order by newest to oldest.
+        while( listdl_Count(&this->blockList) ) {
             bp = listdl_Head(&this->blockList);
-            pNext = listdl_Next(&this->blockList,bp);
+            listdl_DeleteHead(&this->blockList);
             mem_Free( bp );
-            bp = pNext;
         }
 
         if (this->pMutex) {

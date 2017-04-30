@@ -58,6 +58,7 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+#ifdef TO_BE_USED_LATER
     static
     void            consumer_task_body(
         void            *pData
@@ -66,6 +67,7 @@ extern "C" {
         CONSUMER_DATA   *this = pData;
         
     }
+#endif
 
 
 
@@ -204,6 +206,26 @@ extern "C" {
         if (this->pData) {
             mem_Free(this->pData);
             this->pData = NULL;
+        }
+        
+        if (this->pSemEmpty) {
+            obj_Release(this->pSemEmpty);
+            this->pSemEmpty = OBJ_NIL;
+        }
+        
+        if (this->pSemFull) {
+            obj_Release(this->pSemFull);
+            this->pSemFull = OBJ_NIL;
+        }
+        
+        if (this->pMutex) {
+            obj_Release(this->pMutex);
+            this->pMutex = OBJ_NIL;
+        }
+        
+        if (this->pThread) {
+            obj_Release(this->pThread);
+            this->pThread = OBJ_NIL;
         }
         
         obj_setVtbl(this, this->pSuperVtbl);

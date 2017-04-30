@@ -81,20 +81,14 @@ extern "C" {
     //===============================================================
 
     DEVICE_DATA *     device_Alloc(
-        uint16_t        stackSize
     )
     {
-        DEVICE_DATA       *this;
+        DEVICE_DATA     *this;
         uint32_t        cbSize = sizeof(DEVICE_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
         this = obj_Alloc( cbSize );
-        obj_setMisc1(this, stackSize);
         
         // Return to caller.
         return this;
@@ -103,12 +97,11 @@ extern "C" {
 
 
     DEVICE_DATA *     device_New(
-        uint16_t        stackSize
     )
     {
         DEVICE_DATA       *this;
         
-        this = device_Alloc(stackSize);
+        this = device_Alloc( );
         if (this) {
             this = device_Init(this);
         } 
@@ -415,7 +408,7 @@ extern "C" {
         }
 #endif
         
-        pOther = device_New(obj_getSize(this));
+        pOther = device_New( );
         if (pOther) {
             eRc = device_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {

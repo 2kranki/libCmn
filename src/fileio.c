@@ -379,12 +379,6 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((FILEIO_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
         fileio_setPath(this,OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -473,6 +467,8 @@ extern "C" {
             return OBJ_NIL;
         }
         if (pPath == OBJ_NIL) {
+            DEBUG_BREAK();
+            obj_Release(this);
             return OBJ_NIL;
         }
         

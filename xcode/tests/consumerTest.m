@@ -96,11 +96,12 @@
 {
     CONSUMER_DATA	*pObj = OBJ_NIL;
    
-    pObj = consumer_Alloc(0);
+    pObj = consumer_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = consumer_Init( pObj, 32, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

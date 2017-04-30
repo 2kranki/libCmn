@@ -105,12 +105,10 @@ extern "C" {
      @return:   pointer to device object if successful, otherwise OBJ_NIL.
      */
     DEVICE_DATA *     device_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
     );
     
     
     DEVICE_DATA *     device_New(
-        uint16_t    stackSize           // Stack Size in Words
     );
     
     

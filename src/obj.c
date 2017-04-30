@@ -256,7 +256,9 @@ extern	"C" {
             this->cbSize = size;
             this->cbIdent = OBJ_IDENT_OBJ;
             this->cbRetainCount = 1;
+            //this->cbFlags = 0;
             obj_FlagOn(this, OBJ_FLAG_ALLOC);
+            //this->cbMisc = 0;
         }
         
         return (OBJ_ID)this;
@@ -613,9 +615,6 @@ extern	"C" {
             mem_FreeObject(this);
             this = OBJ_NIL;
         }
-        else {
-            memset(this, 0, cbSize);
-        }
         
         // Return to caller.
     }
@@ -908,26 +907,43 @@ extern	"C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+#ifdef NDEBUG
+#else
+        if (size >= sizeof(OBJ_DATA)) {
+        }
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
         
         if (this) {
-            if (obj_IsFlag(this, OBJ_FLAG_INIT)) {
-                DEBUG_BREAK();
-                return this;
-            }
-            // We assume that if the Object Identifier is
-            // already set to us, then we allocated the
-            // object. This will do until we do a class
-            // object.
-            if ((OBJ_IDENT_OBJ == this->cbIdent) && (obj_IsFlag(this, OBJ_FLAG_ALLOC))) {
+            if ( (this->pVtbl == &obj_Vtbl)
+                && (OBJ_IDENT_OBJ == this->cbIdent)
+                && (obj_IsFlag(this, OBJ_FLAG_ALLOC))
+            ) {
+#ifdef NDEBUG
+#else
+                if (size > this->cbSize) {
+                    DEBUG_BREAK();
+                }
+#endif
+                // We assume that if the Object Identifier is already set to us,
+                // then we allocated the object.
             }
             else {
-                memset(this, 0, size);
+                this->cbFlags = 0;
             }
+            // The following must initialize all fields in the
+            // OBJ_DATA structure;
             this->pVtbl = &obj_Vtbl;
             this->cbSize = size;
             this->cbIdent = objectIdentifier;
             obj_FlagOn(this, OBJ_FLAG_INIT);
             this->cbRetainCount = 1;
+            //this->cbMisc = 0;
+            // We can't zero cbMisc, because data may be passed in it
+            // from Alloc().
         }
 
         
@@ -954,10 +970,14 @@ extern	"C" {
         if (NULL == this->pVtbl) {
             return OBJ_NIL;
         }
-        if (obj_IsFlag(this, OBJ_FLAG_ALLOC)) {
-            if (this->pVtbl->pRelease) {
-                this->pVtbl->pRelease(this);
-            }
+#ifdef NDEBUG
+#else
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
+        if (this->pVtbl->pRelease) {
+            this->pVtbl->pRelease(this);
         }
         return objId;
     }
@@ -967,6 +987,15 @@ extern	"C" {
         OBJ_ID          objId
     )
     {
+        OBJ_DATA        *this = objId;
+        
+#ifdef NDEBUG
+#else
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
+        
         return objId;
     }
     
@@ -980,14 +1009,18 @@ extern	"C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+#ifdef NDEBUG
+#else
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
         
-        if (obj_IsFlag(this, OBJ_FLAG_ALLOC)) {
-            --this->cbRetainCount;
-            if (0 == this->cbRetainCount) {
-                // Release/destroy this object.
-                (*this->pVtbl->pDealloc)(objId);
-                objId = OBJ_NIL;
-            }
+        --this->cbRetainCount;
+        if (0 == this->cbRetainCount) {
+            // Release/destroy this object.
+            (*this->pVtbl->pDealloc)(objId);
+            objId = OBJ_NIL;
         }
         
         return objId;
@@ -1013,6 +1046,13 @@ extern	"C" {
                 this->pVtbl->pRetain(this);
             }
         }
+#ifdef NDEBUG
+#else
+        // Check for Retain Count Overflow.
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
         return objId;
     }
     
@@ -1021,6 +1061,16 @@ extern	"C" {
         OBJ_ID          objId
     )
     {
+        OBJ_DATA        *this = objId;
+        
+#ifdef NDEBUG
+#else
+        // Check for Retain Count Overflow.
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
+
         return objId;
     }
     
@@ -1037,6 +1087,14 @@ extern	"C" {
         if (obj_IsFlag(this, OBJ_FLAG_ALLOC)) {
             ++this->cbRetainCount;
         }
+#ifdef NDEBUG
+#else
+        // Check for Retain Count Overflow.
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
+
         return objId;
     }
     

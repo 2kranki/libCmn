@@ -437,7 +437,7 @@ extern "C" {
 #endif
 
         for (i=0; i<this->max; ++i) {
-            if (this->ppArray[i]) {
+            if (this->ppArray[i] && obj_getRetainCount(this->ppArray[i])) {
                 obj_Release(this->ppArray[i]);
                 this->ppArray[i] = OBJ_NIL;
             }

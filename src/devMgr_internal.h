@@ -78,15 +78,6 @@ struct devMgr_data_s	{
     LISTDL_DATA     freeList;       // Free Device Linked List
     LISTDL_DATA     list;           // Device Table
 
-    uint16_t        size;		/* maximum number of elements           */
-    uint16_t        reserved;
-    OBJARRAY_DATA   *pArray;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
-
 };
 #pragma pack(pop)
 

@@ -761,7 +761,7 @@
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == AStr_getLength(pStr)) );
         XCTAssertTrue( (0 == AStr_CompareA(pStr, "xy\\ z.txt")) );
-        mem_Free(pStr);
+        obj_Release(pStr);
         pStr = NULL;
         
         obj_Release(pObj);

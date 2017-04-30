@@ -70,6 +70,10 @@ struct psxSem_data_s	{
 #if defined(__TNEO__)
     struct TN_Sem   sem;
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32) || defined(__WIN64)
+    HANDLE          m_hSem;
+#endif
 
 };
 #pragma pack(pop)

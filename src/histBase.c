@@ -86,7 +86,7 @@ extern "C" {
         uint16_t        tableSize
     )
     {
-        HISTBASE_DATA       *this;
+        HISTBASE_DATA   *this;
         uint32_t        cbSize = sizeof(HISTBASE_DATA);
         
         // Do initialization.

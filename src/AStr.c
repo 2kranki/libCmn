@@ -2182,7 +2182,7 @@ extern "C" {
     )
     {
         FILE            *pFile = NULL;
-        uint32_t        size;
+        uint32_t        size = 0;
         char            *pChr;
         char            *pBuffer;
         int             chr;
@@ -2216,6 +2216,9 @@ extern "C" {
         }
         fclose(pFile);
         pFile = NULL;
+        
+        mem_Free(pBuffer);
+        pBuffer = NULL;
         
         // Return to caller.
         return ERESULT_SUCCESS;

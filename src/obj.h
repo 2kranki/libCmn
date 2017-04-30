@@ -408,6 +408,16 @@ extern	"C" {
 #define OBJ_FLAG_ENABLED    2               /* Object is enabled. */
 #define OBJ_FLAG_TRACE      3               /* Object tracing */
 #define OBJ_FLAG_USER1      4               /* First User Useable flag */
+#define OBJ_FLAG_USER2      5
+#define OBJ_FLAG_USER3      6
+#define OBJ_FLAG_USER4      7
+#define OBJ_FLAG_USER5      8
+#define OBJ_FLAG_USER6      9
+#define OBJ_FLAG_USER7      10
+#define OBJ_FLAG_USER8      11
+#define OBJ_FLAG_USER9      12
+#define OBJ_FLAG_USER10     13
+#define OBJ_FLAG_USER11     14
 #define OBJ_FLAG_USER12     15              /* Last User Useable flag */
 
         uint16_t		cbRetainCount;

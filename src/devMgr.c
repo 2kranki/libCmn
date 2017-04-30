@@ -83,20 +83,14 @@ extern "C" {
     //===============================================================
 
     DEVMGR_DATA *     devMgr_Alloc(
-        uint16_t        stackSize
     )
     {
-        DEVMGR_DATA       *this;
+        DEVMGR_DATA     *this;
         uint32_t        cbSize = sizeof(DEVMGR_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
         this = obj_Alloc( cbSize );
-        obj_setMisc1(this, stackSize);
         
         // Return to caller.
         return( this );
@@ -105,12 +99,11 @@ extern "C" {
 
 
     DEVMGR_DATA *     devMgr_New(
-        uint16_t        stackSize
     )
     {
         DEVMGR_DATA       *this;
         
-        this = devMgr_Alloc( stackSize );
+        this = devMgr_Alloc( );
         if (this) {
             this = devMgr_Init( this );
         } 
@@ -124,96 +117,6 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
-
-    OBJARRAY_DATA * devMgr_getArray(
-        DEVMGR_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !devMgr_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pArray;
-    }
-    
-    
-    bool            devMgr_setArray(
-        DEVMGR_DATA     *this,
-        OBJARRAY_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !devMgr_Validate( this ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        obj_Retain(pValue);
-        if (this->pArray) {
-            obj_Release(this->pArray);
-        }
-        this->pArray = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    uint16_t        devMgr_getPriority(
-        DEVMGR_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !devMgr_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        //return this->priority;
-        return 0;
-    }
-
-    bool            devMgr_setPriority(
-        DEVMGR_DATA     *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !devMgr_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        //this->priority = value;
-        return true;
-    }
-
-
-
-    uint32_t        devMgr_getSize(
-        DEVMGR_DATA       *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !devMgr_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        return( 0 );
-    }
-
-
 
 
     
@@ -244,11 +147,6 @@ extern "C" {
             return;
         }
 #endif
-
-        if (this->pArray) {
-            obj_Release(this->pArray);
-            this->pArray = OBJ_NIL;
-        }
 
         obj_Dealloc( this );
         this = NULL;
@@ -428,9 +326,8 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(devMgr) size=%d ",
-                     this,
-                     devMgr_getSize(this)
+                     "{%p(devMgr) ",
+                     this
             );
         AStr_AppendA(pStr, str);
 

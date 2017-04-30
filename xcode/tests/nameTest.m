@@ -201,6 +201,62 @@ void        memTesterM(
 
 
 
+- (void)testUTF8Con
+{
+    NAME_DATA	*pName1 = OBJ_NIL;
+    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    ASTR_DATA   *pAStr1 = OBJ_NIL;
+    const
+    char        *pChrs = NULL;
+    
+    
+#ifndef         MEMOSX_H
+    //memTesterC();
+    memTesterM();
+    mem_DebugSet(true);
+    mem_DebugSet(true);
+    mem_Malloc(256);
+    mem_MallocObject(256);
+    fprintf(stderr, "name_NewUTF8()\n");
+    pName1 = name_NewUTF8( "abc" );
+    mem_StrDup("abc");
+    mem_DebugCheck( "abc", 1);
+    mem_DebugSet(true);
+    mem_Calloc(1, 256);
+    mem_MallocObject(256);
+    fprintf(stderr, "name_NewUTF8()\n");
+    pName1 = name_NewUTF8( "abc" );
+    mem_Free(pName1);
+#endif
+    
+    
+    pName1 = name_NewUTF8Con( "abc" );
+    XCTAssertFalse( (OBJ_NIL == pName1) );
+    if (pName1) {
+        
+        pAStr1 = name_getStrA(pName1);
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
+        obj_Release(pAStr1);
+        pAStr1 = OBJ_NIL;
+        
+        pWStr1 = name_getStrW(pName1);
+        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "abc")) );
+        obj_Release(pWStr1);
+        pWStr1 = OBJ_NIL;
+        
+        pChrs = name_getUTF8(pName1);
+        XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
+        mem_Free((void *)pChrs);
+        pChrs = NULL;
+        
+        obj_Release(pName1);
+        pName1 = OBJ_NIL;
+    }
+    
+}
+
+
+
 - (void)testInt
 {
     NAME_DATA	*pName1 = OBJ_NIL;

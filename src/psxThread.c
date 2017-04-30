@@ -105,6 +105,10 @@ extern "C" {
 #if defined(__APPLE__)
                 usleep(100);            // Sleep for 100us
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
 #if defined(__TNEO__)
                 tn_task_sleep(TN_WAIT_INFINITE);
 #endif
@@ -365,6 +369,10 @@ extern "C" {
                 fRc = true;
             }
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
 #if defined(__TNEO__)
             tn_rc = tn_task_terminate( &this->worker );
             if (tn_rc == TN_RC_OK) {
@@ -503,6 +511,10 @@ extern "C" {
 #if defined(__APPLE__)
         //int             iRc;
 #endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
+#endif
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -536,6 +548,10 @@ extern "C" {
                 return OBJ_NIL;
             }
         }
+#endif
+#if defined(__WIN16)
+#elif defined(__WIN32)
+#elif defined(__WIN64)
 #endif
         
         this->pWorkerVars = psxMutex_New();

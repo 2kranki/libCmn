@@ -202,7 +202,7 @@ extern "C" {
         BITMATRIX_DATA	*pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         uint32_t        j;
         
@@ -366,7 +366,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -593,7 +593,7 @@ extern "C" {
         BITMATRIX_DATA	*pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         uint32_t        j;
         
@@ -654,7 +654,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -818,12 +818,14 @@ extern "C" {
             ;
         else {
             DEBUG_BREAK();
+            bitMatrix_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if ((y > 0) && (y <= this->yMax))
             ;
         else {
             DEBUG_BREAK();
+            bitMatrix_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -839,7 +841,8 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        bitMatrix_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1011,7 +1014,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1078,7 +1081,6 @@ extern "C" {
         BITMATRIX_DATA      *this
     )
     {
-        this->eRc = ERESULT_INVALID_OBJECT;
         if( this ) {
             if ( obj_IsKindOf(this, OBJ_IDENT_BITMATRIX) )
                 ;
@@ -1087,6 +1089,7 @@ extern "C" {
         }
         else
             return false;
+        this->eRc = ERESULT_INVALID_OBJECT;
         if( !(obj_getSize(this) >= sizeof(BITMATRIX_DATA)) )
             return false;
 

@@ -652,11 +652,6 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((NODEENTRY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
         nodeEntry_setNode(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -746,6 +741,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        obj_Release(pNode);
         
         return this;
     }
@@ -771,12 +767,13 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = nodeEntry_Init( this, pNode );
+        this = nodeEntry_Init(this, pNode);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        obj_Release(pNode);
         
         return this;
     }

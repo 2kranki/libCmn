@@ -93,7 +93,7 @@
 {
     FILEIO_DATA	*pObj = OBJ_NIL;
    
-    pObj = fileio_Alloc(0);
+    pObj = fileio_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = fileio_Init( pObj, 0, OBJ_NIL );
     //FIXME: XCTAssertFalse( (OBJ_NIL == pObj) );

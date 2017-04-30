@@ -74,6 +74,7 @@
 
 - (void)tearDown
 {
+    
     mem_Dump( );
     mem_Release( );
     
@@ -162,6 +163,37 @@
     
     pObj = obj_Release(pObj);
 	pObj = OBJ_NIL;
+    
+}
+
+
+
+- (void)testObjPrealloc
+{
+    OBJ_DATA    obj;
+    OBJ_DATA    *pObj;
+    uint16_t    size = sizeof(OBJ_DATA);
+    bool        fRc;
+    
+    memset(&obj, 0, sizeof(OBJ_DATA));
+    
+    pObj = obj_Init(&obj, size, OBJ_IDENT_CON);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (pObj == &obj) );
+    XCTAssertTrue( (1 == obj_getRetainCount(pObj)) );
+    XCTAssertTrue( (OBJ_IDENT_CON == obj_getIdent(pObj)) );
+    XCTAssertTrue( (size == obj_getSize(pObj)) );
+    
+    fRc = pObj->pVtbl->pIsKindOf(OBJ_IDENT_OBJ);
+    XCTAssertTrue( (fRc) );
+    fRc = pObj->pVtbl->pIsKindOf(OBJ_IDENT_CON);
+    XCTAssertFalse( (fRc) );
+    fRc = pObj->pVtbl->pIsKindOf(OBJ_IDENT_ASTR);
+    XCTAssertFalse( (fRc) );
+    
+    pObj = obj_Release(pObj);
+    XCTAssertTrue( (0 == obj_getRetainCount(&obj)) );
+    pObj = OBJ_NIL;
     
 }
 
