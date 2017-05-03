@@ -194,7 +194,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseArray(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -206,17 +206,17 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this,"%s:\n", __func__);
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if( chr == '[' ) {
-            TRC_OBJ(cbp,"\t[ - found\n");
-            json_InputAdvance(cbp, 1);
+            TRC_OBJ(this,"\t[ - found\n");
+            json_InputAdvance(this, 1);
         }
         else {
             return OBJ_NIL;
@@ -226,15 +226,15 @@ extern "C" {
         if (pArray == OBJ_NIL) {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Out of Memory"
             );
             return pNode;
         }
         
-        pChild = json_ParseValue(cbp);
+        pChild = json_ParseValue(this);
         if (pChild) {
             nodeArray_AppendNode(pArray, pChild, NULL);
             obj_Release(pChild);
@@ -245,14 +245,14 @@ extern "C" {
         }
         
         for (;;) {
-            json_ParseWS(cbp);
-            chr = json_InputLookAhead(cbp, 1);
+            json_ParseWS(this);
+            chr = json_InputLookAhead(this, 1);
             if( chr == ',' ) {
-                json_InputAdvance(cbp, 1);
+                json_InputAdvance(this, 1);
             }
             else
                 break;
-            pChild = json_ParseValue(cbp);
+            pChild = json_ParseValue(this);
             if (pChild) {
                 nodeArray_AppendNode(pArray, pChild, NULL);
                 obj_Release(pChild);
@@ -260,9 +260,9 @@ extern "C" {
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    path_getData(this->pPath),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting a value, but found %c(0x%02X)",
                     chr,
                     chr
@@ -270,18 +270,18 @@ extern "C" {
             }
         }
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if( chr == ']' ) {
-            TRC_OBJ(cbp,"\t] - found\n");
-            json_InputAdvance(cbp, 1);
+            TRC_OBJ(this,"\t] - found\n");
+            json_InputAdvance(this, 1);
         }
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting ']', but found %c(0x%02X)",
                 chr,
                 chr
