@@ -1,0 +1,130 @@
+
+SYS=win32
+TARGETOS=BOTH
+
+as = ml
+cc = cl
+
+cvarsmt =
+
+aflags = /DWIN32 /c
+!IFDEF  NDEBUG
+adebug = /DNDEBUG
+cflags = $(cflags) /DNDEBUG /c
+libNam = libCmnR.lib
+objdir = $(TMP)\$(SYS)\Release
+!ELSE
+adebug = /Zd /Zi /D_DEBUG
+cflags = $(cflags) /D_DEBUG /c /Isrc /Isrc\$(SYS)
+libNam = libCmnD.lib
+objdir = $(TMP)\$(SYS)\Debug
+!ENDIF  #NODEBUG
+
+
+
+{}.asm{$(objdir)}.obj:
+	$(AS) $(adebug) $(aflags) /Cp /coff /Fo$(objdir)\$(@F) src\$(*B).asm
+
+{}.c{$(objdir)}.obj:
+	$(cc) $(cdebug) $(cflags) $(cvarsmt) /Fo$(objdir)\$(@F) src\$(*B).c
+
+{src}.asm{$(objdir)}.obj:
+	$(AS) $(adebug) $(aflags) /Cp /coff /Fo$(objdir)\$(@F) src\$(*B).asm
+
+{src}.c{$(objdir)}.obj:
+	$(cc) $(cdebug) $(cflags) $(cvarsmt) /Fo$(objdir)\$(@F) src\$(*B).c
+
+{src\$(SYS)}.asm{$(objdir)}.obj:
+	$(AS) $(adebug) $(aflags) /Cp /coff /Fo$(objdir)\$(@F) src\$(SYS)\$(*B).asm
+
+{src\$(SYS)}.c{$(objdir)}.obj:
+	$(cc) $(cdebug) $(cflags) $(cvarsmt) /Fo$(objdir)\$(@F) src\$(SYS)\$(*B).c
+
+
+
+
+# Define Obj Files that make up the Library or DLL.
+
+srcs = 
+#srcs = $(srcs) $(SYS)\cmn_osx.c 
+#srcs = $(srcs) $(SYS)\memMSC.c 
+#srcs = $(srcs) $(SYS)\memMSC_object.c 
+srcs = $(srcs) obj.c 
+srcs = $(srcs) arrayExpand.c 
+srcs = $(srcs) arrayExpand_object.c 
+srcs = $(srcs) ascii.c 
+srcs = $(srcs) ascii_object.c
+srcs = $(srcs) AStr.c
+srcs = $(srcs) AStr_object.c
+srcs = $(srcs) AStrArray.c
+srcs = $(srcs) AStrArray_object.c
+srcs = $(srcs) AStrC.c
+srcs = $(srcs) AStrC_object.c
+
+
+#objs = $(srcs:.c=.obj)
+
+
+
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .obj
+
+
+!IFDEF   NODEBUG
+LIBNAM = .\Vcn\Lib\Release\$(RmwLibNam)
+LRFNAM = $(LIBPRE)$(COMPILER).lbc
+!ELSE
+LIBNAM = .\Vcn\Lib\Debug\$(RmwLibNam)
+LRFNAM = $(LIBPRE)$(COMPILER)d.lbc
+!ENDIF
+
+
+
+
+$(LIBNAM):  $(objs)
+	if exist $(LIBNAM) del $(LIBNAM)
+	lib /OUT:$(LIBNAM) @<<$(LRFNAM)
+$(objs: =  )
+<<NOKEEP
+
+
+
+
+
+$(objdir)\cmn_msc.obj: src\$(SYS)\cmn_msc.c
+
+$(objdir)\memMSC.obj: src\$(SYS)\memMSC.c
+
+$(objdir)\memMSC_object.obj: src\$(SYS)\memMSC_object.c
+
+$(objdir)\ascii.obj: src\ascii.c
+
+$(objdir)\ascii_object.obj: src\ascii_object.c
+
+$(objdir)\obj.obj: src\obj.c
+
+
+objs =
+objs = $(objs) $(objdir)\cmn_msc.obj
+objs = $(objs) $(objdir)\memMSC.obj
+objs = $(objs) $(objdir)\memMSC_object.obj
+objs = $(objs) $(objdir)\ascii.obj
+objs = $(objs) $(objdir)\ascii_object.obj
+
+
+clean:
+	if exist $(objdir) rmdir /S /Q $(objdir)
+
+
+
+create_dirs:
+	if not exist $(objdir) mkdir $(objdir)
+
+
+
+all:  clean create_dirs $(objs) 
+
+
+
+
