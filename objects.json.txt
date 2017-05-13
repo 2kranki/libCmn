@@ -141,8 +141,8 @@
         "tokenFromJSON.c"
     ],
     "tests": [
-        "test_idxblk16",
-        "test_obj",
-        "test_str"
+        {"name":"test_idxblk16"},
+        {"name":"test_obj"},
+        {"name":"test_str"}
     ]
 }

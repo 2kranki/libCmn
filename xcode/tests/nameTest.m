@@ -57,7 +57,6 @@
 
 
 #include    "name_internal.h"
-#include    "mem.h"
 
 
 extern

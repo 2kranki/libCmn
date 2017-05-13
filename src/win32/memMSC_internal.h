@@ -77,7 +77,7 @@ extern "C" {
         uint16_t		flags;
 #define MEM_FLAG_OBJECT 0x0001
         uint16_t		filler1;
-        MEMOSX_DATA     *pMem;
+        MEMMSC_DATA     *pMem;
         uint8_t			check[16];			// Check Value for Underrun
         // >>>>>>>>>>>>>>>>>  *** WARNING *** <<<<<<<<<<<<<<<<<<<<<<<<<
         // The offset of the Data must be on a DWORD boundary to be compatible

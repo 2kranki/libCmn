@@ -1,4 +1,4 @@
-// vi: nu:noai:ts=4:sw=4
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //	Class Object Metods and Tables for 'ascii'
 //	Generated 06/27/2016 18:08:55

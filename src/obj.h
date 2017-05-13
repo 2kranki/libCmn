@@ -204,11 +204,15 @@ extern	"C" {
         OBJ_IDENT_IORCD_CLASS,
         OBJ_IDENT_JSON,                 // JSON Parser
         OBJ_IDENT_JSON_CLASS,
+        OBJ_IDENT_LEX,                  // Generic Lexical Scanner
+        OBJ_IDENT_LEX_CLASS,
         OBJ_IDENT_LISTDL,               // Generic Doubly-linked List
         OBJ_IDENT_LISTDL_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching
         OBJ_IDENT_LRU_CLASS,
-        OBJ_IDENT_MEMOSX,               // Memory Debug
+        OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
+        OBJ_IDENT_MEMMSC_CLASS,
+        OBJ_IDENT_MEMOSX,               // Memory Debug for OSX
         OBJ_IDENT_MEMOSX_CLASS,
         OBJ_IDENT_MISC,                 // Miscellaneous Functions
         OBJ_IDENT_MISC_CLASS,

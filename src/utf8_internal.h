@@ -42,9 +42,8 @@
 #define	UTF8_INTERNAL_H
 
 
-#include    "cmn_defs.h"
-#include    "utf8.h"
-#include    "AStr.h"
+#include    <utf8.h>
+#include    <AStr.h>
 
 #ifdef	__cplusplus
 extern "C" {

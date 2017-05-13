@@ -52,14 +52,9 @@
 
 
 /* Header File Inclusion */
-#include    "path_internal.h"
-#include    "file.h"
-#include    "utf8.h"
-#include    <sys/dirent.h>
-#include    <sys/stat.h>
-#include    <sys/types.h>
-#include    <dirent.h>
-#include    <unistd.h>
+#include    <path_internal.h>
+#include    <file.h>
+#include    <utf8.h>
 
 
 
@@ -154,7 +149,6 @@ extern "C" {
         // Return to caller.
         return( cbp );
     }
-    
     
     
     PATH_DATA *     path_NewFromCurrentDirectory(

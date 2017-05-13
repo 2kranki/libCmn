@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include    "memMSC_internal.h"
 #include    "trace.h"
-#include    <pthread.h>
+//#include    <pthread.h>
 #include    <stdio.h>
 
 

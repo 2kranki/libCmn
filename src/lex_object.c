@@ -1,7 +1,7 @@
-// vi:nu:et:sts=4 ts=4 sw=4
+// vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'memOSX'
-//	Generated 02/08/2016 19:45:14
+//	Class Object Metods and Tables for 'lex'
+//	Generated 01/28/2016 13:46:58
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +31,7 @@
  */
 
 
-#include        "obj.h"
-#include        "memOSX_internal.h"
+#include        "lex_internal.h"
 
 
 
@@ -40,7 +39,7 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct memOSX_class_data_s	{
+struct lex_class_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -48,7 +47,7 @@ struct memOSX_class_data_s	{
     // Common Data
     //uint32_t        misc;
 };
-typedef struct memOSX_class_data_s MEMOSX_CLASS_DATA;
+typedef struct lex_class_data_s LEX_CLASS_DATA;
 
 
 
@@ -61,22 +60,22 @@ typedef struct memOSX_class_data_s MEMOSX_CLASS_DATA;
 
 static
 const
-OBJ_INFO        memOSX_Info;            // Forward Reference
+OBJ_INFO        lex_Info;            // Forward Reference
 
 
 
-OBJ_ID          memOSX_Class(
+OBJ_ID          lex_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            memOSX_ClassIsKindOf(
+bool            lex_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_MEMOSX_CLASS == classID) {
+    if (OBJ_IDENT_LEX_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -91,15 +90,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_MEMOSX_CLASS;
+    return OBJ_IDENT_LEX_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&memOSX_Info,
-    memOSX_ClassIsKindOf,
+	&lex_Info,
+    lex_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -113,21 +112,20 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
 const
-MEMOSX_CLASS_DATA  memOSX_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_MEMOSX_CLASS, 0, 1},
+LEX_CLASS_DATA  lex_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_LEX_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            memOSX_IsKindOf(
+bool            lex_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_MEMOSX == classID) {
+    if (OBJ_IDENT_LEX == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,54 +137,67 @@ bool            memOSX_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            memOSX_Dealloc(
+void            lex_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          memOSX_Class(
+OBJ_ID          lex_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&memOSX_ClassObj;
+    return (OBJ_ID)&lex_ClassObj;
 }
 
 
 static
-uint16_t		memOSX_WhoAmI(
+uint16_t		lex_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_MEMOSX;
+    return OBJ_IDENT_LEX;
 }
 
 
 const
-OBJ_IUNKNOWN    memOSX_Vtbl = {
-	&memOSX_Info,
-    memOSX_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    memOSX_Dealloc,
-    memOSX_Class,
-    memOSX_WhoAmI,
-    NULL,			// memOSX_Enable,
-    NULL,			// memOSX_Disable,
-    (P_OBJ_TOSTRING)memOSX_ToDebugString,
-    NULL,			// (P_OBJ_ASSIGN)memOSX_Assign,
-    NULL,			// (P_OBJ_COMPARE)memOSX_Compare,
-    NULL, 			// (P_OBJ_PTR)memOSX_Copy,
-    NULL 			// (P_OBJ_HASH)memOSX_Hash
+LEX_VTBL        lex_Vtbl = {
+    {
+        &lex_Info,
+        lex_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        lex_Dealloc,
+        lex_Class,
+        lex_WhoAmI,
+        NULL,			// lex_Enable,
+        NULL,			// lex_Disable,
+        (P_OBJ_TOSTRING)lex_ToDebugString,
+        NULL,			// (P_OBJ_ASSIGN)lex_Assign,
+        NULL,			// (P_OBJ_COMPARE)lex_Compare,
+        NULL, 			// (P_OBJ_PTR)lex_Copy,
+        NULL 			// (P_OBJ_HASH)lex_Hash
+    },
+    lex_getErrors,
+    lex_setErrors,
+    lex_setParserFunction,
+    lex_setSourceFunction,
+    lex_getString,
+    lex_getToken,
+    lex_Error,
+    lex_ErrorFatal,
+    lex_InputAdvance,
+    lex_InputLookAhead,
+    lex_PushToken
 };
 
 
 
 static
 const
-OBJ_INFO        memOSX_Info = {
-    "memOSX",
-    "OSX Memory Allocation Checker",
-    (OBJ_DATA *)&memOSX_ClassObj,
+OBJ_INFO        lex_Info = {
+    "lex",
+    "Lexical Analyzer Base",				// <-- Fill in description
+    (OBJ_DATA *)&lex_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
 //#warning -- adjust super class object in Info above

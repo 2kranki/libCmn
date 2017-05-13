@@ -1,16 +1,9 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   cmn_osx.h
  *
  * Notes:
- *   1	Before including define the following to customize the config bits for
- *		the development environment needed:
- *		_EXPLORER_16		Microchip Explorer 16 board
- *		_MAX32              Diligent MAX 32 board
- *		_NETWORK_SHIELD     Diligent Network Shield
- *   2  CONFIG properties are generated in cmn.c depending upon how the above
- *      options are set.
- *   3  We assume that you have allocated some space for a heap
- *      (Properties -> ld -> heapsize).
+ *   1	None
  *
  * Created on September 26, 2014, 3:39 PM
  */

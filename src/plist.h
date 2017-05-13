@@ -7,16 +7,21 @@
  * Program
  *			Separate plist (plist)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate plist to run things without complications
- *          of interfering with the main plist. A plist may be 
- *          called a plist on other O/S's.
+ *			This object provides a standardized way of parsing
+ *          plists which were started in NextStep and continued
+ *          on in MacOSX. They are similar to JSON files, but the
+ *          formats are different.
+ *
+ *          Actually, there are multiple formats for plists:
+ *          --  old style (which Xcode still uses)
+ *          --  xml style
+ *          --  binary style
+ *          The plutil program supports those styles for input.
+ *          For output, it only supports XML, Binary and JSON
+ *          formats. Try "plutil --help" for further information.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal plist. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      N/A
  *
  * History
  *	10/18/2015 Generated
@@ -26,31 +31,46 @@
  /***
    "http://www.apple.com/DTDs/PropertyList-1.0.dtd"
   
-  <!ENTITY % plistObject "(array | data | date | dict | real | integer | string | true | false )" >
-  <!ELEMENT plist %plistObject;>
-  <!ATTLIST plist version CDATA "1.0" >
+  plist
+        = plistObject
+        ;
   
-  <!-- Collections -->
-  <!ELEMENT array (%plistObject;)*>
-  <!ELEMENT dict (key, %plistObject;)*>
-  <!ELEMENT key (#PCDATA)>
+  plistObject
+        = (array | data | date | dict | real | integer | string | true | false )
+        ;
+
+  array 
+        = '(' plistObject {',' plistObject} ')' ';'
+        ;
+  
+  dict
+        = '{' key '=' plistObject {',' key '=' plistObject} '}' ';'
+        ;
   
   <!--- Primitive types -->
   <!ELEMENT string (#PCDATA)>
   <!ELEMENT data (#PCDATA)> <!-- Contents interpreted as Base-64 encoded -->
-  <!ELEMENT date (#PCDATA)> <!-- Contents should conform to a subset of ISO 8601 
-                                (in particular,
-                                    YYYY '-' MM '-' DD 'T' HH ':' MM ':' SS 'Z'.
-                                Smaller units may be omitted with a loss of precision) -->
   
-  <!-- Numerical primitives -->
-  <!ELEMENT true EMPTY>  <!-- Boolean constant true -->
-  <!ELEMENT false EMPTY> <!-- Boolean constant false -->
-  <!ELEMENT real (#PCDATA)> <!-- Contents should represent a floating point number 
-                                    matching ("+" | "-")? d+ ("."d*)? ("E" ("+" | "-") d+)? 
-                                    where d is a digit 0-9.  -->
-  <!ELEMENT integer (#PCDATA)> <!-- Contents should represent a (possibly signed) integer 
-                                    number in base 10 -->  ***/
+  date  
+        = YYYY '-' MM '-' DD 'T' HH ':' MM ':' SS 'Z'. //a subset of ISO 8601
+  
+  false
+        = 'false'
+        ;
+  
+  true
+        = 'true'
+        ;
+  
+  real
+        = ("+" | "-")? d+ ("."d*)? ("E" ("+" | "-") d+)? // floating point number
+        ;
+  
+  integer 
+        = ("+" | "-")? d+ // a (possibly signed) integer in base 10
+        ;
+ 
+ ***/
 
 
 

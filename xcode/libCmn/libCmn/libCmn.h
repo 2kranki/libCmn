@@ -66,7 +66,6 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/json.h>
 #import <libCmn/listdl.h>
 #import <libCmn/lru.h>
-#import <libCmn/mem.h>
 #import <libCmn/memOSX.h>
 #import <libCmn/misc.h>
 #import <libCmn/name.h>

@@ -252,7 +252,7 @@ char        *pTestInput02 =
     pPath = path_NewA("/Users/bob/git/libCan/other/pic32mx/can.json.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
-    pObj = json_NewFromFile( pPath, 4 );
+    pObj = json_NewFromPath( pPath, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     obj_Release(pPath);
     if (pObj) {

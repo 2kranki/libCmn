@@ -48,7 +48,6 @@
 #include "nodeHash.h"
 #include "trace.h"
 #include "WStr.h"
-#include <stdio.h>
 
 
 
@@ -1251,7 +1250,7 @@ extern "C" {
     
     
     
-    JSON_DATA *     json_NewFromFile(
+    JSON_DATA *     json_NewFromPath(
         PATH_DATA       *pPath,         // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -1260,7 +1259,7 @@ extern "C" {
         
         cbp = json_Alloc( );
         if (cbp) {
-            cbp = json_InitFile( cbp, pPath, tabSize );
+            cbp = json_InitPath( cbp, pPath, tabSize );
         }
         return( cbp );
     }
@@ -1520,7 +1519,7 @@ extern "C" {
 
      
 
-    JSON_DATA *     json_InitFile(
+    JSON_DATA *     json_InitPath(
         JSON_DATA       *cbp,
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any

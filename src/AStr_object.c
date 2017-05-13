@@ -1,4 +1,4 @@
-// vi: nu:noai:ts=4:sw=4
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //	Class Object Metods and Tables for 'AStr'
 //	Generated 01/29/2016 22:02:37

@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   cmn_osx.c
  * Author: bob

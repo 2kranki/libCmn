@@ -1,4 +1,4 @@
-// vi: nu:noai:ts=4:sw=4
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //	Class Object Metods and Tables for 'dec'
 //	Generated 02/12/2017 23:00:27

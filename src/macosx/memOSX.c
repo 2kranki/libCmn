@@ -1,4 +1,4 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   memOSX.c
  *	Generated 02/08/2016 19:45:14

@@ -138,7 +138,7 @@ extern "C" {
     );
     
     
-    JSON_DATA *     json_NewFromFile(
+    JSON_DATA *     json_NewFromPath(
         PATH_DATA       *pPath,         // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
     );
@@ -171,7 +171,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    JSON_DATA *     json_InitFile(
+    JSON_DATA *     json_InitPath(
         JSON_DATA       *this,
         PATH_DATA       *pFilePath,
         uint16_t        tabSize         // Tab Spacing if any

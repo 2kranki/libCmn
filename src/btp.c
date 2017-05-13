@@ -68,9 +68,8 @@
 #include        <stdint.h>
 #include        <stdlib.h>
 #include        <string.h>
-#include        "btp_internal.h"
-#include        "mem.h"
-#include        "str.h"
+#include        <btp_internal.h>
+#include        <str.h>
 
 
 

@@ -43,15 +43,50 @@
  */
 
 
-//#define         _EXPLORER_16      1
-//#define         _MAX32            1
-//#define         _NETWORK_SHIELD   1
-
 //#define         _USE_TNEO         1
+//  Define the Compiler Environment
+//      __AZTECC__      - Aztec C (Being Removed)
+//      __BCDOS__       - Borland C++ for MS/DOS (16-Bit)
+//      __BC32__        - Borland C++ for MS/DOS (32-Bit)
+//      __BCOS2__       - Borland C++ for OS/2 v2.x (32-Bit)
+//      __IBMCS2__      - IBM C++ Set/2
+//      __MSVC16__      - Microsoft C++ for MS/DOS (16-Bit)
+//      __MSVC32__      - Microsoft C++ for Windows 95/NT (32-Bit)
+//      __MSVC64__      - Visual Studio (64-Bit)
+//      __WATCOM_C386__ - Watcom C++ (32-Bit)
+#if     !defined(__APPLE__) && !defined(__AZTEC_C__) &&\
+        !defined(__BC_DOS__) && !defined(__BC_32__) &&\
+        !defined(__MSVC16__) && !defined(__MSVC32__) && !defined(__MSVC64__) &&\
+        !defined(__WATCOM_C386__)
+#   error  No compiler environment specified!!!
+#endif
+
+
+//  Define the Operating Environment of the Programs/Routines
+//      DPMI32_ENV  - MS/DOS Extender with Windows NT subset support
+//      MACOSX_ENV  - Mac OS X Standard Environment
+//      MSDOS_ENV   - MS/DOS Standard Environment
+//      OS2_ENV     - OS/2 v1.x Support (Being Removed)
+//      OS2V2_ENV   - OS/2 v2.x Support
+//      PIC32MX_ENV - Microchip PIC32MX Support
+//      PIC32MZ_ENV - Microchip PIC32MZ Support
+//      WIN16_ENV   - Windows v3.1 with MS/DOS
+//      WIN32_ENV   - Win32 Support
+//      WIN64_ENV   - Win64 Support
+#if     !defined(__DPMI32_ENV__) && !defined(__MSDOS_ENV__) &&\
+        !defined(__PIC32MX_ENV__) && !defined(__PIC32MZ_ENV__) &&\
+        !defined(__WIN16_ENV__) && !defined(__WIN32_ENV__) && !defined(__WIN64_ENV__) &&\
+        !defined(__MACOSX_ENV__)
+#   error  No execution environment specified!!!
+#endif
 
 
 
+#if             defined(__MACOSX_ENV__)
+#   include        <unistd.h>
+#endif
 #include        <ctype.h>
+#include        <dirent.h>
 #include        <fcntl.h>
 #include        <stdarg.h>
 #include        <stdbool.h>
@@ -60,8 +95,8 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
-#include        <unistd.h>
 #include        <wchar.h>
+#include        <sys/dirent.h>
 #include        <sys/stat.h>
 #include        <sys/types.h>
 
@@ -325,18 +360,23 @@ typedef struct WStrC_vtbl_s	{
 
 #include    <eResult.h>
 
-#include    <mem.h>
 
-#if defined( __APPLE__ )
-#	include    <cmn_osx.h>
+#if defined(__MACOSX_ENV__)
+#	include     <cmn_osx.h>
+#   include     <memOSX.h>
 #endif
-#if defined( _MSC_VER )
-#	include    <cmn_msc.h>
+#if defined(__WIN32_ENV__)
+#	include     <cmn_msc.h>
+#   include     <memMSC.h>
 #endif
-#if defined( __PIC32MX )
+#if defined(__WIN64_ENV__)
+#	include     <cmn_msc.h>
+#   include     <memMSC.h>
+#endif
+#if defined(__PIC32MX_ENV__)
 #	include    <cmn_pic32mx.h>
 #endif
-#if defined( __PIC32MZ )
+#if defined( __PIC32MZ_ENV__ )
 #	include    <cmn_pic32mz.h>
 #endif
 

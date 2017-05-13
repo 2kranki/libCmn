@@ -184,8 +184,8 @@ OBJ_IUNKNOWN    memMSC_Vtbl = {
 static
 const
 OBJ_INFO        memMSC_Info = {
-    "memOSX",
-    "OSX Memory Allocation Checker",
+    "memMSC",
+    "MSC Memory Allocation Checker",
     (OBJ_DATA *)&memMSC_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };

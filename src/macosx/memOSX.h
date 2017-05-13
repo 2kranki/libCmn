@@ -1,4 +1,4 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
 //          MEMOSX Console Transmit Task (memOSX) Header
