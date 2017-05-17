@@ -66,7 +66,7 @@ struct cb16_data_s	{
     uint16_t        start;		/* index of oldest element              */
     uint16_t        end;		/* index at which to write new element  */
     uint16_t        reserved;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     struct TN_Sem   semEmpty;
     struct TN_Sem   semFull;
 #endif

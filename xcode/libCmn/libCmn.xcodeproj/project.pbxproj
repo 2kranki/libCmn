@@ -112,9 +112,6 @@
 		C46704FA1C6B9CFB0091FC0E /* cb_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46703F31C6B9CFA0091FC0E /* cb_object.c */; };
 		C46704FB1C6B9CFB0091FC0E /* cb.c in Sources */ = {isa = PBXBuildFile; fileRef = C46703F41C6B9CFA0091FC0E /* cb.c */; };
 		C46704FC1C6B9CFB0091FC0E /* cb.h in Headers */ = {isa = PBXBuildFile; fileRef = C46703F51C6B9CFA0091FC0E /* cb.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C46704FD1C6B9CFB0091FC0E /* cb8_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C46703F61C6B9CFA0091FC0E /* cb8_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		C46704FE1C6B9CFB0091FC0E /* cb8.c in Sources */ = {isa = PBXBuildFile; fileRef = C46703F71C6B9CFA0091FC0E /* cb8.c */; };
-		C46704FF1C6B9CFB0091FC0E /* cb8.h in Headers */ = {isa = PBXBuildFile; fileRef = C46703F81C6B9CFA0091FC0E /* cb8.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C46705001C6B9CFB0091FC0E /* cb16_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C46703F91C6B9CFA0091FC0E /* cb16_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C46705011C6B9CFB0091FC0E /* cb16_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46703FA1C6B9CFA0091FC0E /* cb16_object.c */; };
 		C46705021C6B9CFB0091FC0E /* cb16.c in Sources */ = {isa = PBXBuildFile; fileRef = C46703FB1C6B9CFA0091FC0E /* cb16.c */; };
@@ -695,9 +692,6 @@
 		C46703F31C6B9CFA0091FC0E /* cb_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cb_object.c; sourceTree = "<group>"; };
 		C46703F41C6B9CFA0091FC0E /* cb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cb.c; sourceTree = "<group>"; };
 		C46703F51C6B9CFA0091FC0E /* cb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cb.h; sourceTree = "<group>"; };
-		C46703F61C6B9CFA0091FC0E /* cb8_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cb8_internal.h; sourceTree = "<group>"; };
-		C46703F71C6B9CFA0091FC0E /* cb8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cb8.c; sourceTree = "<group>"; };
-		C46703F81C6B9CFA0091FC0E /* cb8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cb8.h; sourceTree = "<group>"; };
 		C46703F91C6B9CFA0091FC0E /* cb16_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cb16_internal.h; sourceTree = "<group>"; };
 		C46703FA1C6B9CFA0091FC0E /* cb16_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cb16_object.c; sourceTree = "<group>"; };
 		C46703FB1C6B9CFA0091FC0E /* cb16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cb16.c; sourceTree = "<group>"; };
@@ -1298,9 +1292,6 @@
 				C46703F31C6B9CFA0091FC0E /* cb_object.c */,
 				C46703F41C6B9CFA0091FC0E /* cb.c */,
 				C46703F51C6B9CFA0091FC0E /* cb.h */,
-				C46703F61C6B9CFA0091FC0E /* cb8_internal.h */,
-				C46703F71C6B9CFA0091FC0E /* cb8.c */,
-				C46703F81C6B9CFA0091FC0E /* cb8.h */,
 				C46703F91C6B9CFA0091FC0E /* cb16_internal.h */,
 				C46703FA1C6B9CFA0091FC0E /* cb16_object.c */,
 				C46703FB1C6B9CFA0091FC0E /* cb16.c */,
@@ -1903,7 +1894,6 @@
 				C46706C51C6B9DD40091FC0E /* sidx.h in Headers */,
 				C4AF8D641E5BDCD2003AE67C /* tokenList.h in Headers */,
 				C46705CE1C6B9CFB0091FC0E /* obj.h in Headers */,
-				C46704FF1C6B9CFB0091FC0E /* cb8.h in Headers */,
 				C46705141C6B9CFB0091FC0E /* cmdutl.h in Headers */,
 				C46706DA1C6B9DD40091FC0E /* szHash.h in Headers */,
 				C46705C41C6B9CFB0091FC0E /* nodeTree.h in Headers */,
@@ -1949,7 +1939,6 @@
 				C4AF15B81C6CE57B0098171F /* psxSem_internal.h in Headers */,
 				C4AF15B41C6CE57B0098171F /* psxMutex_internal.h in Headers */,
 				C456C4171C91E81E003AC73E /* memOSX_internal.h in Headers */,
-				C46704FD1C6B9CFB0091FC0E /* cb8_internal.h in Headers */,
 				C4694B2E1D90B6C10066F924 /* audioCW.h in Headers */,
 				C46A5BE51D24138000C279F4 /* consumer.h in Headers */,
 				C46707181C6B9DD40091FC0E /* uint128_internal.h in Headers */,
@@ -2270,7 +2259,6 @@
 				C46705BA1C6B9CFB0091FC0E /* nodeList_object.c in Sources */,
 				C46705721C6B9CFB0091FC0E /* file_object.c in Sources */,
 				C467050E1C6B9CFB0091FC0E /* cfa.c in Sources */,
-				C46704FE1C6B9CFB0091FC0E /* cb8.c in Sources */,
 				C411A1D31DBB139F001832EE /* lru.c in Sources */,
 				C46705D81C6B9CFB0091FC0E /* objHash_object.c in Sources */,
 				C46A5BE41D24138000C279F4 /* consumer.c in Sources */,

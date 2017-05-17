@@ -57,10 +57,10 @@ extern "C" {
 
 #pragma pack(push, 1)
     typedef struct index_record_s {
-        uint16_t        size;           // Size of Data including this header
-        //              Bit 0x8000 of size is available.
-        uint16_t        offset;         // Offset of DATA_RECORD within block
-        //              Bit 0x8000 of offset is available.
+        uint16_t        idxSize;        // Size of Data including this header
+        //              Bit 0x8000 of idxSize is available.
+        uint16_t        idxOffset;      // Offset of DATA_RECORD within block
+        //              Bit 0x8000 of idxOffset is available.
     } INDEX_RECORD;
 #pragma pack(pop)
     

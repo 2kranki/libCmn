@@ -649,7 +649,7 @@ extern "C" {
     
     ERESULT         blkdrcds16_RecordAdd(
         BLKDRCDS16_DATA *this,
-        uint16_t        size,
+        uint16_t        rcdSize,
         void            *pData,
         uint16_t        *pIndex             // Optional Output Index
     )
@@ -670,11 +670,11 @@ extern "C" {
             this->eRc = ERESULT_GENERAL_FAILURE;
             return this->eRc;
         }
-        if ((size == 0) || (size >= 32768)) {
+        if ((rcdSize == 0) || (rcdSize >= 32768)) {
             blkdrcds16_setLastError(this, ERESULT_DATA_SIZE);
             return this->eRc;
         }
-        if ((size + sizeof(INDEX_RECORD)) > this->pBlock->unusedSize) {
+        if ((rcdSize + sizeof(INDEX_RECORD)) > this->pBlock->unusedSize) {
             blkdrcds16_setLastError(this, ERESULT_DATA_TOO_BIG);
             return this->eRc;
         }
@@ -683,12 +683,12 @@ extern "C" {
         offset = sizeof(DATA_BLOCK);
         offset += (this->pBlock->numRecords * sizeof(INDEX_RECORD));
         offset += this->pBlock->unusedSize;
-        offset -= size;
+        offset -= rcdSize;
         pBlockData = (((uint8_t *)this->pBlock) + offset);
-        memmove(pBlockData, pData, size);
-        this->pBlock->unusedSize -= size + sizeof(INDEX_RECORD);
-        this->pBlock->index[this->pBlock->numRecords].offset = offset;
-        this->pBlock->index[this->pBlock->numRecords].size = size;
+        memmove(pBlockData, pData, rcdSize);
+        this->pBlock->unusedSize -= rcdSize + sizeof(INDEX_RECORD);
+        this->pBlock->index[this->pBlock->numRecords].idxOffset = offset;
+        this->pBlock->index[this->pBlock->numRecords].idxSize = rcdSize;
         ++this->pBlock->numRecords;
         
         // Return to caller.
@@ -710,12 +710,12 @@ extern "C" {
         uint16_t        index
     )
     {
-        uint16_t        offset;
-        uint16_t        size;
+        uint16_t        dataOffset;
+        uint16_t        dataSize;
         uint16_t        numShiftRcds;
         uint16_t        shiftSize;
-        void            *start;
-        void            *shiftTo;
+        uint8_t         *start;
+        uint8_t         *shiftTo;
         int             i;
         
         // Do initialization.
@@ -737,20 +737,20 @@ extern "C" {
         }
 #endif
         
-        offset = this->pBlock->index[index-1].offset;
-        size = this->pBlock->index[index-1].size;
+        dataOffset = this->pBlock->index[index-1].idxOffset;
+        dataSize = this->pBlock->index[index-1].idxSize;
         numShiftRcds = this->pBlock->numRecords - index;
         
         if( numShiftRcds ) {
             // Shift the data.
             shiftSize = 0;
             for( i=0; i<numShiftRcds; ++i ) {
-                shiftSize += this->pBlock->index[index+i].size;
+                shiftSize += this->pBlock->index[index+i].idxSize;
             }
             if( shiftSize ) {
                 start = (uint8_t *)this->pBlock
-                        + this->pBlock->index[this->pBlock->numRecords - 1].offset;
-                shiftTo = start + size;
+                        + this->pBlock->index[this->pBlock->numRecords - 1].idxOffset;
+                shiftTo = start + dataSize;
                 memmove( shiftTo, start, shiftSize );
             }
             // Shift the index.
@@ -761,16 +761,16 @@ extern "C" {
                 memmove( shiftTo, start, shiftSize );
                 // Adjust the index for new offsets.
                 for( i=0; i<numShiftRcds; ++i ) {
-                    this->pBlock->index[index-1+i].offset += size;
+                    this->pBlock->index[index-1+i].idxOffset += dataSize;
                 }
             }
         }
         
         // Give the record space back.
-        this->pBlock->unusedSize += (size + sizeof(INDEX_RECORD));
+        this->pBlock->unusedSize += (dataSize + sizeof(INDEX_RECORD));
         --this->pBlock->numRecords;
-        this->pBlock->index[this->pBlock->numRecords].offset = 0;
-        this->pBlock->index[this->pBlock->numRecords].size = 0;
+        this->pBlock->index[this->pBlock->numRecords].idxOffset = 0;
+        this->pBlock->index[this->pBlock->numRecords].idxSize = 0;
         
         // Return to caller.
         blkdrcds16_setLastError(this, ERESULT_SUCCESS);
@@ -815,8 +815,8 @@ extern "C" {
 #endif
         
         pIndex = (INDEX_RECORD *)(&this->pBlock->index[index-1]);
-        size = pIndex->size;
-        pBlockData = (((uint8_t *)this->pBlock) + pIndex->offset);
+        size = pIndex->idxSize;
+        pBlockData = (((uint8_t *)this->pBlock) + pIndex->idxOffset);
         
         if (pData) {
             size = size < dataSize ? size : dataSize;
@@ -866,7 +866,7 @@ extern "C" {
 #endif
         
         pIndex = (INDEX_RECORD *)(&this->pBlock->index[index-1]);
-        size = pIndex->size;
+        size = pIndex->idxSize;
         
         // Return to caller.
         if (pSize) {
@@ -894,8 +894,8 @@ extern "C" {
         uint16_t        dataShiftOff = 0;
         uint16_t        shiftFirstRcd;          // Relative to 1
         uint16_t        shiftLastRcd;           // Relative to 1
-        void            *start;
-        void            *shiftTo;
+        uint8_t         *start;
+        uint8_t         *shiftTo;
         int             i;
         
         // Do initialization.
@@ -915,7 +915,7 @@ extern "C" {
             this->eRc = ERESULT_OUT_OF_RANGE;
             return this->eRc;
         }
-        if (dataSize > (this->pBlock->unusedSize + this->pBlock->index[index-1].size)) {
+        if (dataSize > (this->pBlock->unusedSize + this->pBlock->index[index-1].idxSize)) {
             this->eRc = ERESULT_DATA_TOO_BIG;
             return this->eRc;
         }
@@ -925,57 +925,57 @@ extern "C" {
         shiftFirstRcd = index + 1;
         shiftLastRcd = this->pBlock->numRecords;
         
-        if( dataSize == pIndex->size ) {
+        if( dataSize == pIndex->idxSize ) {
         }
         else {
-            if (dataSize < pIndex->size) {
-                dataShiftOff = pIndex->size - dataSize;
+            if (dataSize < pIndex->idxSize) {
+                dataShiftOff = pIndex->idxSize - dataSize;
                 if( (index < this->pBlock->numRecords) && dataShiftOff ) {
                     // Shift the data towards the end of the block closing the hole.
                     dataShiftAmt = 0;
                     for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        dataShiftAmt += this->pBlock->index[i-1].size;
+                        dataShiftAmt += this->pBlock->index[i-1].idxSize;
                     }
                     if( dataShiftAmt ) {
                         start = (uint8_t *)this->pBlock
-                                + this->pBlock->index[shiftLastRcd-1].offset;
+                                + this->pBlock->index[shiftLastRcd-1].idxOffset;
                         shiftTo = start + dataShiftOff;
                         memmove( shiftTo, start, dataShiftAmt );
                     }
                     // Adjust the index for new offsets.
                     for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        this->pBlock->index[i-1].offset += dataShiftOff;
+                        this->pBlock->index[i-1].idxOffset += dataShiftOff;
                     }
                 }
-                pIndex->offset += dataShiftOff;
+                pIndex->idxOffset += dataShiftOff;
             }
             else {
-                dataShiftOff = dataSize - pIndex->size;
+                dataShiftOff = dataSize - pIndex->idxSize;
                 if( (index < this->pBlock->numRecords) && dataShiftOff ) {
                     // Shift the data towards the beginning of the block to make more room.
                     dataShiftAmt = 0;
                     for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        dataShiftAmt += this->pBlock->index[i-1].size;
+                        dataShiftAmt += this->pBlock->index[i-1].idxSize;
                     }
                     if( dataShiftAmt ) {
                         start = (uint8_t *)this->pBlock
-                                + this->pBlock->index[shiftLastRcd-1].offset;
+                                + this->pBlock->index[shiftLastRcd-1].idxOffset;
                         shiftTo = start - dataShiftOff;
                         memmove( shiftTo, start, dataShiftAmt );
                     }
                     // Adjust the index for new offsets.
                     for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        this->pBlock->index[i-1].offset -= dataShiftOff;
+                        this->pBlock->index[i-1].idxOffset -= dataShiftOff;
                     }
                 }
-                pIndex->offset -= dataShiftOff;
+                pIndex->idxOffset -= dataShiftOff;
             }
-            this->pBlock->unusedSize += pIndex->size;
+            this->pBlock->unusedSize += pIndex->idxSize;
             this->pBlock->unusedSize -= dataSize;
         }
         
-        pIndex->size = dataSize;
-        start = (uint8_t *)this->pBlock + pIndex->offset;
+        pIndex->idxSize = dataSize;
+        start = (uint8_t *)this->pBlock + pIndex->idxOffset;
         memmove( start, pData, dataSize);
        
         // Return to caller.

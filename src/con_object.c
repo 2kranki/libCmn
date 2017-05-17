@@ -32,7 +32,7 @@
 
 
 #define			CON_OBJECT_C	    1
-#include        "con_internal.h"
+#include        <con_internal.h>
 
 
 

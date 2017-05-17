@@ -69,12 +69,14 @@
 //      OS2_ENV     - OS/2 v1.x Support (Being Removed)
 //      OS2V2_ENV   - OS/2 v2.x Support
 //      PIC32MX_ENV - Microchip PIC32MX Support
+//      PIC32MX_TNEO_ENV - Microchip PIC32MX Support w/ TNEO O/S
 //      PIC32MZ_ENV - Microchip PIC32MZ Support
 //      WIN16_ENV   - Windows v3.1 with MS/DOS
 //      WIN32_ENV   - Win32 Support
 //      WIN64_ENV   - Win64 Support
 #if     !defined(__DPMI32_ENV__) && !defined(__MSDOS_ENV__) &&\
-        !defined(__PIC32MX_ENV__) && !defined(__PIC32MZ_ENV__) &&\
+        !defined(__PIC32MX_ENV__) && !defined(__PIC32MX_TNEO_ENV__) &&\
+        !defined(__PIC32MZ_ENV__) &&\
         !defined(__WIN16_ENV__) && !defined(__WIN32_ENV__) && !defined(__WIN64_ENV__) &&\
         !defined(__MACOSX_ENV__)
 #   error  No execution environment specified!!!
@@ -83,10 +85,11 @@
 
 
 #if             defined(__MACOSX_ENV__)
+#   include        <dirent.h>
 #   include        <unistd.h>
+#   include        <sys/dirent.h>
 #endif
 #include        <ctype.h>
-#include        <dirent.h>
 #include        <fcntl.h>
 #include        <stdarg.h>
 #include        <stdbool.h>
@@ -96,7 +99,6 @@
 #include        <stdlib.h>
 #include        <string.h>
 #include        <wchar.h>
-#include        <sys/dirent.h>
 #include        <sys/stat.h>
 #include        <sys/types.h>
 

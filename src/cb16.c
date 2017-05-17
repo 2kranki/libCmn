@@ -137,7 +137,7 @@ void            cb16_Dealloc(
 )
 {
 	CB16_DATA		*cbp = objId;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
 
@@ -150,7 +150,7 @@ void            cb16_Dealloc(
     }
 #endif
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_delete(&cbp->semEmpty);
     tRc = tn_sem_delete(&cbp->semFull);
 #endif
@@ -173,7 +173,7 @@ bool            cb16_Get(
     uint32_t        timeout
 )
 {
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
     
@@ -185,7 +185,7 @@ bool            cb16_Get(
     }
 #endif
     
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_wait(&cbp->semFull, timeout);
     if (TN_RC_OK == tRc)
         ;
@@ -203,7 +203,7 @@ bool            cb16_Get(
         cbp->start = 0;
     }
     
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_signal(&cbp->semEmpty);
 #endif
     
@@ -217,7 +217,7 @@ bool            cb16_iGet(
     uint16_t        *pData
 )
 {
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
     
@@ -229,7 +229,7 @@ bool            cb16_iGet(
     }
 #endif
     
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_iwait_polling(&cbp->semFull);
     if (TN_RC_OK == tRc)
         ;
@@ -247,7 +247,7 @@ bool            cb16_iGet(
         cbp->start = 0;
     }
     
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_isignal(&cbp->semEmpty);
 #endif
     
@@ -318,7 +318,7 @@ CB16_DATA *     cb16_Init(
 )
 {
     uint32_t        cbSize;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
 
@@ -348,7 +348,7 @@ CB16_DATA *     cb16_Init(
     obj_setVtbl(this, (OBJ_IUNKNOWN *)&cb16_Vtbl);
     
     this->size = size;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_create(&this->semEmpty, size, size);
     tRc = tn_sem_create(&this->semFull, 0, size);
 #endif
@@ -358,7 +358,7 @@ CB16_DATA *     cb16_Init(
     if ( !cb16_Validate(this) ) {
         return this;
     }
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     BREAK_NOT_BOUNDARY4(&this->semEmpty);
     BREAK_NOT_BOUNDARY4(&this->semFull);
 #endif
@@ -381,7 +381,7 @@ bool            cb16_Put(
 )
 {
     bool            fRc = true;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
 
@@ -393,7 +393,7 @@ bool            cb16_Put(
     }
 #endif
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_wait(&cbp->semEmpty, timeout);
     if (TN_RC_OK == tRc)
         ;
@@ -409,7 +409,7 @@ bool            cb16_Put(
         cbp->end = 0;
     }
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_signal(&cbp->semFull);
     if (TN_RC_OK == tRc)
         ;
@@ -428,11 +428,11 @@ bool            cb16_iPut(
 )
 {
     bool            fRc = true;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
     
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_iwait_polling(&cbp->semEmpty);
     if (TN_RC_OK == tRc)
         ;
@@ -448,7 +448,7 @@ bool            cb16_iPut(
         cbp->end = 0;
     }
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     tRc = tn_sem_isignal(&cbp->semFull);
     if (TN_RC_OK == tRc)
         ;

@@ -138,7 +138,7 @@ void            cb32_Dealloc(
 )
 {
 	CB32_DATA		*this = objId;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
 
@@ -311,7 +311,7 @@ CB32_DATA *     cb32_Init(
 )
 {
     uint16_t        size;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
     enum TN_RCode   tRc;
 #endif
 

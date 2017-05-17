@@ -34,10 +34,10 @@
  */
 
  
-#include        "con_internal.h"
+#include        <con_internal.h>
 #include        <stdarg.h>
 #include        <stdio.h>
-#include        "hex.h"
+#include        <hex.h>
 
 
 //****************************************************************
