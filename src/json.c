@@ -88,6 +88,7 @@ extern "C" {
                 break;
                 
             case OBJ_IDENT_FILE:
+            case OBJ_IDENT_PATH:
                 wrkChr = fgetwc( cbp->pFile);
                 if( wrkChr == EOF ) {
                     if( feof(cbp->pFile) ) {
@@ -259,7 +260,7 @@ extern "C" {
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(this->pPath),
+                    (this->pPath ? path_getData(this->pPath) : NULL),
                     this->lineNo,
                     this->colNo,
                     "Expecting a value, but found %c(0x%02X)",
@@ -278,7 +279,7 @@ extern "C" {
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(this->pPath),
+                (this->pPath ? path_getData(this->pPath) : NULL),
                 this->lineNo,
                 this->colNo,
                 "Expecting ']', but found %c(0x%02X)",
@@ -308,7 +309,7 @@ extern "C" {
     // until there are no more that are acceptable.
     
     bool            json_ParseChrCon(
-        JSON_DATA       *cbp,
+        JSON_DATA       *this,
         int32_t         ending
     )
     {
@@ -318,18 +319,18 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = json_InputLookAhead(cbp, 1);
+        chr = json_InputLookAhead(this, 1);
         if (chr == ending) {
             return false;
         }
         if ( chr == '\\') {
-            chr = json_InputAdvance(cbp, 1);
+            chr = json_InputAdvance(this, 1);
             switch (chr) {
                     
 #ifdef XYZZY
@@ -341,19 +342,19 @@ extern "C" {
                 case '5':
                 case '6':
                 case '7':
-                    json_AppendCharToField(cbp, chr);
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, chr);
+                    json_InputAdvance(this, 1);
                     for (i=0; i<2; ++i) {
                         wrk = 0;
-                        chr = json_ParseDigitOctal(cbp);
+                        chr = json_ParseDigitOctal(this);
                         if (chr >= 0) {
                             wrk = (wrk << 3) | chr;
                         }
                         else {
-                            chr = json_InputLookAhead(cbp, 1);
+                            chr = json_InputLookAhead(this, 1);
                             eResult_ErrorFatalFLC(
                                 eResult_Shared(),
-                                path_getData(cbp->pPath),
+                                (this->pPath ? path_getData(this->pPath) : NULL),
                                 cbp->lineNo,
                                 cbp->colNo,
                                 "Invalid octal char, %c(0x%02X)",
@@ -366,73 +367,73 @@ extern "C" {
 #endif
                     
                 case 'b':
-                    json_AppendCharToField(cbp, '\b');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\b');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case 'f':
-                    json_AppendCharToField(cbp, '\f');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\f');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case 'n':
-                    json_AppendCharToField(cbp, '\n');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\n');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case 'r':
-                    json_AppendCharToField(cbp, '\r');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\r');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case 't':
-                    json_AppendCharToField(cbp, '\t');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\t');
+                    json_InputAdvance(this, 1);
                     return true;
 
 #ifdef XYZZY
                 case 'v':
-                    json_AppendCharToField(cbp, '\v');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\v');
+                    json_InputAdvance(this, 1);
                     return true;
 #endif
                     
                 case '\\':
-                    json_AppendCharToField(cbp, '\\');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\\');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case '/':
-                    json_AppendCharToField(cbp, '/');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '/');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case '\'':
-                    json_AppendCharToField(cbp, '\'');
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, '\'');
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case '"':
-                    json_AppendCharToField(cbp, chr);
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, chr);
+                    json_InputAdvance(this, 1);
                     return true;
                     
                 case 'u':
-                    json_AppendCharToField(cbp, chr);
-                    json_InputAdvance(cbp, 1);
+                    json_AppendCharToField(this, chr);
+                    json_InputAdvance(this, 1);
                     for (i=0; i<4; ++i) {
                         wrk = 0;
-                        chr = json_ParseDigitHex(cbp);
+                        chr = json_ParseDigitHex(this);
                         if (chr >= 0) {
                             wrk = (wrk << 4) | chr;
                         }
                         else {
-                            chr = json_InputLookAhead(cbp, 1);
+                            chr = json_InputLookAhead(this, 1);
                             eResult_ErrorFatalFLC(
                                 eResult_Shared(),
-                                path_getData(cbp->pPath),
-                                cbp->lineNo,
-                                cbp->colNo,
+                                (this->pPath ? path_getData(this->pPath) : NULL),
+                                this->lineNo,
+                                this->colNo,
                                 "Invalid hexadecimal char, %c(0x%02X)",
                                 chr,
                                 chr
@@ -442,12 +443,12 @@ extern "C" {
                     break;
                     
                 default:
-                    chr = json_InputLookAhead(cbp, 1);
+                    chr = json_InputLookAhead(this, 1);
                     eResult_ErrorFatalFLC(
                                           eResult_Shared(),
-                                          path_getData(cbp->pPath),
-                                          cbp->lineNo,
-                                          cbp->colNo,
+                                          (this->pPath ? path_getData(this->pPath) : NULL),
+                                          this->lineNo,
+                                          this->colNo,
                                           "Invalid char after \\, %c(0x%02X)",
                                           chr,
                                           chr
@@ -456,8 +457,8 @@ extern "C" {
             }
         }
         else {
-            json_AppendCharToField(cbp, chr);
-            json_InputAdvance(cbp, 1);
+            json_AppendCharToField(this, chr);
+            json_InputAdvance(this, 1);
         }
         
         return true;
@@ -470,24 +471,24 @@ extern "C" {
     //---------------------------------------------------------------
     
     int32_t         json_ParseDigit0To9(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
         
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = json_InputLookAhead(cbp, 1);
+        chr = json_InputLookAhead(this, 1);
         
         if( (chr >= '0') && (chr <= '9') ) {
-            json_AppendCharToField(cbp, chr);
-            json_InputAdvance(cbp, 1);
+            json_AppendCharToField(this, chr);
+            json_InputAdvance(this, 1);
             chr -= '0';
         }
         else {
@@ -505,24 +506,24 @@ extern "C" {
     //---------------------------------------------------------------
     
     int32_t         json_ParseDigit1To9(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
         
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = json_InputLookAhead(cbp, 1);
+        chr = json_InputLookAhead(this, 1);
         
         if( (chr >= '1') && (chr <= '9') ) {
-            json_AppendCharToField(cbp, chr);
-            json_InputAdvance(cbp, 1);
+            json_AppendCharToField(this, chr);
+            json_InputAdvance(this, 1);
             chr -= '0';
         }
         else {
@@ -672,7 +673,7 @@ extern "C" {
             chr = json_InputLookAhead(this, 1);
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(this->pPath),
+                (this->pPath ? path_getData(this->pPath) : NULL),
                 this->lineNo,
                 this->colNo,
                 "Expecting EOF, but found %c(0x%02X)",
@@ -691,7 +692,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseHash(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -703,17 +704,17 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this,"%s:\n", __func__);
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if( chr == '{' ) {
-            TRC_OBJ(cbp,"\t{ - found\n");
-            json_InputAdvance(cbp, 1);
+            TRC_OBJ(this,"\t{ - found\n");
+            json_InputAdvance(this, 1);
         }
         else {
             return pNode;
@@ -725,20 +726,20 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pChild = json_ParsePair(cbp);
+        pChild = json_ParsePair(this);
         if (pChild) {
             eRc = nodeHash_Add(pHash, pChild);
             obj_Release(pChild);
             pChild = OBJ_NIL;
             for (;;) {
-                json_ParseWS(cbp);
-                chr = json_InputLookAhead(cbp, 1);
+                json_ParseWS(this);
+                chr = json_InputLookAhead(this, 1);
                 if( chr == ',' ) {
-                    json_InputAdvance(cbp, 1);
+                    json_InputAdvance(this, 1);
                 }
                 else
                     break;
-                pChild = json_ParsePair(cbp);
+                pChild = json_ParsePair(this);
                 if (pChild) {
                     eRc = nodeHash_Add(pHash, pChild);
                     obj_Release(pChild);
@@ -747,9 +748,9 @@ extern "C" {
                 else {
                     eResult_ErrorFatalFLC(
                         eResult_Shared(),
-                        path_getData(cbp->pPath),
-                        cbp->lineNo,
-                        cbp->colNo,
+                        (this->pPath ? path_getData(this->pPath) : NULL),
+                        this->lineNo,
+                        this->colNo,
                         "Expecting a value, but found %c(0x%02X)",
                         chr,
                         chr
@@ -758,18 +759,18 @@ extern "C" {
             }
         }
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if( chr == '}' ) {
-            TRC_OBJ(cbp,"\t} - found\n");
-            json_InputAdvance(cbp, 1);
+            TRC_OBJ(this,"\t} - found\n");
+            json_InputAdvance(this, 1);
         }
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                (this->pPath ? path_getData(this->pPath) : NULL),
+                this->lineNo,
+                this->colNo,
                 "Expecting '}', but found %c(0x%02X)",
                 chr,
                 chr
@@ -797,7 +798,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseKeyWord(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -809,37 +810,37 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
-        cbp->lenFld = 0;
-        cbp->pFld[0] = 0;
+        TRC_OBJ(this,"%s:\n", __func__);
+        this->lenFld = 0;
+        this->pFld[0] = 0;
         
-        json_ParseWS(cbp);
-        while ((chr=json_ParseAlpha(cbp)) > 0) {
+        json_ParseWS(this);
+        while ((chr=json_ParseAlpha(this)) > 0) {
         }
-        str_ToLowerW(cbp->pFld);
-        if (cbp->lenFld) {
-            if (0 == str_CompareW(L"false", cbp->pFld)) {
+        str_ToLowerW(this->pFld);
+        if (this->lenFld) {
+            if (0 == str_CompareW(L"false", this->pFld)) {
                 pNode = node_NewWithUTF8Con("false", pFalse);
-                TRC_OBJ(cbp,"\tfalse - found\n");
+                TRC_OBJ(this,"\tfalse - found\n");
             }
-            else if (0 == str_CompareW(L"null", cbp->pFld)) {
+            else if (0 == str_CompareW(L"null", this->pFld)) {
                 pNode = node_NewWithUTF8Con("null", pNull);
-                TRC_OBJ(cbp,"\tnull - found\n");
+                TRC_OBJ(this,"\tnull - found\n");
             }
-            else if (0 == str_CompareW(L"true", cbp->pFld)) {
+            else if (0 == str_CompareW(L"true", this->pFld)) {
                 pNode = node_NewWithUTF8Con("true", pTrue);
-                TRC_OBJ(cbp,"\ttrue - found\n");
+                TRC_OBJ(this,"\ttrue - found\n");
             }
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    (this->pPath ? path_getData(this->pPath) : NULL),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting false, null or true, but found %c(0x%02X)",
                     chr,
                     chr
@@ -860,7 +861,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseNumber(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -871,26 +872,26 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->lenFld = 0;
-        cbp->pFld[0] = 0;
+        this->lenFld = 0;
+        this->pFld[0] = 0;
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if( chr == '-' ) {
-            json_AppendCharToField(cbp, chr);
-            json_InputAdvance(cbp, 1);
+            json_AppendCharToField(this, chr);
+            json_InputAdvance(this, 1);
         }
         if( chr == '0' ) {
-            json_AppendCharToField(cbp, chr);
-            chr = json_InputAdvance(cbp, 1);
+            json_AppendCharToField(this, chr);
+            chr = json_InputAdvance(this, 1);
             fRc = true;
         }
-        else if ( json_ParseDigit1To9(cbp) >= 0) {
-            while (json_ParseDigit0To9(cbp) >= 0) {
+        else if ( json_ParseDigit1To9(this) >= 0) {
+            while (json_ParseDigit0To9(this) >= 0) {
             }
             fRc = true;
         }
@@ -899,56 +900,56 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        chr = json_InputLookAhead(cbp, 1);
+        chr = json_InputLookAhead(this, 1);
         if( chr == '.' ) {
-            json_AppendCharToField(cbp, chr);
-            json_InputAdvance(cbp, 1);
-            if (json_ParseDigit0To9(cbp) >= 0)
+            json_AppendCharToField(this, chr);
+            json_InputAdvance(this, 1);
+            if (json_ParseDigit0To9(this) >= 0)
                 ;
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    (this->pPath ? path_getData(this->pPath) : NULL),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting 0-9, but found %c(0x%02X)",
                     chr,
                     chr
                 );
             }
-            while (json_ParseDigit0To9(cbp) >= 0) {
+            while (json_ParseDigit0To9(this) >= 0) {
             }
         }
         
-        chr = json_InputLookAhead(cbp, 1);
+        chr = json_InputLookAhead(this, 1);
         if( (chr == 'e') || (chr == 'E') ) {
-            json_AppendCharToField(cbp, chr);
-            json_InputAdvance(cbp, 1);
-            chr = json_InputLookAhead(cbp, 1);
+            json_AppendCharToField(this, chr);
+            json_InputAdvance(this, 1);
+            chr = json_InputLookAhead(this, 1);
             if( (chr == '-') || (chr == '+') ) {
-                json_AppendCharToField(cbp, chr);
-                json_InputAdvance(cbp, 1);
+                json_AppendCharToField(this, chr);
+                json_InputAdvance(this, 1);
             }
-            if (json_ParseDigit0To9(cbp) > 0)
+            if (json_ParseDigit0To9(this) > 0)
                 ;
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    (this->pPath ? path_getData(this->pPath) : NULL),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting 0-9, but found %c(0x%02X)",
                     chr,
                     chr
                 );
             }
-            while (json_ParseDigit0To9(cbp) >= 0) {
+            while (json_ParseDigit0To9(this) >= 0) {
             }
         }
 
         if (fRc) {
-            pStr = AStr_NewW(cbp->pFld);
-            TRC_OBJ(cbp,"\tnumber: %s\n", AStr_getData(pStr));
+            pStr = AStr_NewW(this->pFld);
+            TRC_OBJ(this,"\tnumber: %s\n", AStr_getData(pStr));
             if (pStr) {
                 pNode = node_NewWithUTF8Con("number", pStr);
             }
@@ -970,7 +971,7 @@ extern "C" {
     // node.
     
     NODE_DATA *     json_ParsePair(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         int32_t         chr;
@@ -983,28 +984,28 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this,"%s:\n", __func__);
         
-        pName = json_ParseString(cbp);
+        pName = json_ParseString(this);
         if (pName == OBJ_NIL) {
             return OBJ_NIL;
         }
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if( chr == ':' ) {
-            json_InputAdvance(cbp, 1);
+            json_InputAdvance(this, 1);
         }
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                (this->pPath ? path_getData(this->pPath) : NULL),
+                this->lineNo,
+                this->colNo,
                 "Expecting ':', but found %c(0x%02X)",
                 chr,
                 chr
@@ -1014,13 +1015,13 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        pData = json_ParseValue(cbp);
+        pData = json_ParseValue(this);
         if (pData == OBJ_NIL) {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                (this->pPath ? path_getData(this->pPath) : NULL),
+                this->lineNo,
+                this->colNo,
                 "Expecting a \"value\""
             );
             obj_Release(pName);
@@ -1028,15 +1029,15 @@ extern "C" {
         }
 
         pszName = AStr_CStringA(node_getData(pName),NULL);
-        TRC_OBJ(cbp,"%s found:\n", __func__);
-        TRC_OBJ(cbp,"\tname: %s\n", pszName);
+        TRC_OBJ(this,"%s found:\n", __func__);
+        TRC_OBJ(this,"\tname: %s\n", pszName);
 #ifdef NDEBUG
 #else
         {
             ASTR_DATA       *pStrA;
             pStrA = node_ToDebugString(pData, 8);
-            TRC_OBJ(cbp,"\tdata:\n");
-            TRC_OBJ(cbp,"%s\n", AStr_getData(pStrA));
+            TRC_OBJ(this,"\tdata:\n");
+            TRC_OBJ(this,"%s\n", AStr_getData(pStrA));
             obj_Release(pStrA);
         }
 #endif
@@ -1250,6 +1251,22 @@ extern "C" {
     
     
     
+    JSON_DATA *     json_NewFromFile(
+        FILE            *pFile,         // Input File
+        uint16_t		tabSize         // Tab Spacing if any
+    )
+    {
+        JSON_DATA       *this;
+        
+        this = json_Alloc( );
+        if (this) {
+            this = json_InitFile(this, pFile, tabSize);
+        }
+        return this;
+    }
+    
+    
+    
     JSON_DATA *     json_NewFromPath(
         PATH_DATA       *pPath,         // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
@@ -1314,35 +1331,35 @@ extern "C" {
     
     
     uint16_t        json_getPriority(
-        JSON_DATA     *cbp
+        JSON_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        //return cbp->priority;
+        //return this->priority;
         return 0;
     }
 
     
     bool            json_setPriority(
-        JSON_DATA     *cbp,
+        JSON_DATA       *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
-        //cbp->priority = value;
+        //this->priority = value;
         return true;
     }
 
@@ -1361,7 +1378,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     ERESULT         json_AppendCharToField(
-        JSON_DATA      *cbp,
+        JSON_DATA      *this,
         int32_t        chr
     )
     {
@@ -1369,15 +1386,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
 #endif
         
-        if ((cbp->lenFld + 1) < cbp->sizeFld) {
-            cbp->pFld[cbp->lenFld++] = chr;
-            cbp->pFld[cbp->lenFld] = '\0';
+        if ((this->lenFld + 1) < this->sizeFld) {
+            this->pFld[this->lenFld++] = chr;
+            this->pFld[this->lenFld] = '\0';
         }
         else
             return ERESULT_DATA_TOO_BIG;
@@ -1396,40 +1413,40 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        JSON_DATA   *cbp = objId;
+        JSON_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        switch (cbp->inputType) {
+        switch (this->inputType) {
                 
-            case OBJ_IDENT_FILE:
-                if (cbp->pFile) {
-                    fclose(cbp->pFile);
-                    cbp->pFile = NULL;
+            case OBJ_IDENT_PATH:
+                if (this->pFile) {
+                    fclose(this->pFile);
+                    this->pFile = NULL;
                 }
                 break;
                 
             case OBJ_IDENT_ASTR:
-                if (cbp->pAStr) {
-                    obj_Release(cbp->pAStr);
-                    cbp->pAStr = OBJ_NIL;
+                if (this->pAStr) {
+                    obj_Release(this->pAStr);
+                    this->pAStr = OBJ_NIL;
                 }
                 break;
                 
             case OBJ_IDENT_WSTR:
-                if (cbp->pWStr) {
-                    obj_Release(cbp->pWStr);
-                    cbp->pWStr = OBJ_NIL;
+                if (this->pWStr) {
+                    obj_Release(this->pWStr);
+                    this->pWStr = OBJ_NIL;
                 }
                 break;
                 
@@ -1437,24 +1454,24 @@ extern "C" {
                 break;
         }
         
-        json_setPath(cbp, OBJ_NIL);
+        json_setPath(this, OBJ_NIL);
         
-        if (cbp->pFld) {
-            mem_Free(cbp->pFld);
-            cbp->pFld    = NULL;
-            cbp->sizeFld = 0;
-            cbp->lenFld  = 0;
+        if (this->pFld) {
+            mem_Free(this->pFld);
+            this->pFld    = NULL;
+            this->sizeFld = 0;
+            this->lenFld  = 0;
         }
         
-        if (cbp->pInputs) {
-            mem_Free(cbp->pInputs);
-            cbp->pInputs    = NULL;
-            cbp->sizeInputs = 0;
-            cbp->curInputs  = 0;
+        if (this->pInputs) {
+            mem_Free(this->pInputs);
+            this->pInputs    = NULL;
+            this->sizeInputs = 0;
+            this->curInputs  = 0;
         }
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc( this );
+        this = NULL;
 
         // Return to caller.
     }
@@ -1466,92 +1483,172 @@ extern "C" {
     //---------------------------------------------------------------
 
     JSON_DATA *     json_Init(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         uint32_t        cbSize;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbSize = obj_getSize(cbp);
-        cbp = (JSON_DATA *)obj_Init( cbp, cbSize, OBJ_IDENT_JSON );
-        if (OBJ_NIL == cbp) {
+        cbSize = obj_getSize(this);
+        this = (JSON_DATA *)obj_Init( this, cbSize, OBJ_IDENT_JSON );
+        if (OBJ_NIL == this) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(cbp, cbSize);         // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_JSON);
-        obj_setVtbl(cbp, &json_Vtbl);
+        //obj_setSize(this, cbSize);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_JSON);
+        obj_setVtbl(this, &json_Vtbl);
         
-        cbp->sizeFld = JSON_FIELD_MAX;
-        cbp->pFld = mem_Calloc(cbp->sizeFld, sizeof(int32_t));
-        if (cbp->pFld == NULL) {
-            cbp->sizeFld = 0;
+        this->sizeFld = JSON_FIELD_MAX;
+        this->pFld = mem_Calloc(this->sizeFld, sizeof(int32_t));
+        if (this->pFld == NULL) {
+            this->sizeFld = 0;
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         
-        cbp->sizeInputs = 5;
-        cbp->pInputs = mem_Calloc(cbp->sizeInputs, sizeof(int32_t));
-        if (cbp->pInputs == NULL) {
-            cbp->sizeInputs = 0;
+        this->sizeInputs = 5;
+        this->pInputs = mem_Calloc(this->sizeInputs, sizeof(int32_t));
+        if (this->pInputs == NULL) {
+            this->sizeInputs = 0;
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         
     #ifdef NDEBUG
     #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate( this ) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
 
+    JSON_DATA *     json_InitAStr(
+        JSON_DATA       *this,
+        ASTR_DATA       *pAStr,         // Buffer of file data
+        PATH_DATA       *pPath,
+        uint16_t		tabSize         // Tab Spacing if any
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (OBJ_NIL == pAStr) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        obj_Retain(pAStr);
+        
+        this = json_Init( this );
+        if (OBJ_NIL == this) {
+            obj_Release(this);
+            obj_Release(pAStr);
+            return OBJ_NIL;
+        }
+        
+        json_setPath(this, pPath);
+        this->tabSize = tabSize;
+        
+        // Open the file.
+        this->inputType = OBJ_IDENT_ASTR;
+        //obj_Retain(pSzStr);   // retained above
+        this->pAStr = pAStr;
+        this->fileOffset = 0;
+        
+#ifdef NDEBUG
+#else
+        if( !json_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            obj_Release(pAStr);
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this;
+    }
+    
+    
+    JSON_DATA *     json_InitFile(
+        JSON_DATA       *this,
+        FILE            *pFile,
+        uint16_t		tabSize         // Tab Spacing if any
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (OBJ_NIL == pFile) {
+            fprintf( stderr, "Fatal Error - Missing input source file.\n" );
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = json_Init(this);
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        // Set up the file.
+        this->inputType = OBJ_IDENT_FILE;
+        this->pFile = pFile;
+        this->tabSize = tabSize;
+        
+        return this;
+    }
+    
+    
     JSON_DATA *     json_InitPath(
-        JSON_DATA       *cbp,
+        JSON_DATA       *this,
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
     {
         char            *pszFileName;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         if (OBJ_NIL == pPath) {
             fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         
-        cbp = json_Init( cbp );
-        if (OBJ_NIL == cbp) {
+        this = json_Init(this);
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        json_setPath(cbp, pPath);
-        cbp->tabSize = tabSize;
+        json_setPath(this, pPath);
+        this->tabSize = tabSize;
         
         // Open the file.
-        cbp->inputType = OBJ_IDENT_FILE;
+        this->inputType = OBJ_IDENT_PATH;
         pszFileName = path_CStringA(pPath);
         if (pszFileName) {
-            cbp->pFile = fopen( pszFileName, "r" );
-            if (NULL == cbp->pFile) {
-                obj_Release(cbp);
+            this->pFile = fopen( pszFileName, "r" );
+            if (NULL == this->pFile) {
+                obj_Release(this);
                 return OBJ_NIL;
             }
             mem_Free(pszFileName);
@@ -1559,110 +1656,60 @@ extern "C" {
         }
         else {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         
-        return cbp;
-    }
-    
-    
-    
-    JSON_DATA *     json_InitAStr(
-        JSON_DATA       *cbp,
-        ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == cbp) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pAStr) {
-            DEBUG_BREAK();
-            obj_Release(cbp);
-            return OBJ_NIL;
-        }
-        obj_Retain(pAStr);
-        
-        cbp = json_Init( cbp );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
-            obj_Release(pAStr);
-            return OBJ_NIL;
-        }
-        
-        json_setPath(cbp, pPath);
-        cbp->tabSize = tabSize;
-        
-        // Open the file.
-        cbp->inputType = OBJ_IDENT_ASTR;
-        //obj_Retain(pSzStr);   // retained above
-        cbp->pAStr = pAStr;
-        cbp->fileOffset = 0;
-        
-#ifdef NDEBUG
-#else
-        if( !json_Validate( cbp ) ) {
-            DEBUG_BREAK();
-            obj_Release(cbp);
-            obj_Release(pAStr);
-            return OBJ_NIL;
-        }
-#endif
-        
-        return cbp;
+        return this;
     }
     
     
     JSON_DATA *     json_InitWStr(
-        JSON_DATA       *cbp,
+        JSON_DATA       *this,
         WSTR_DATA       *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         if (OBJ_NIL == pWStr) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         obj_Retain(pWStr);
         
-        cbp = json_Init( cbp );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
+        this = json_Init(this);
+        if (OBJ_NIL == this) {
+            obj_Release(this);
             obj_Release(pWStr);
             return OBJ_NIL;
         }
         
-        json_setPath(cbp, pPath);
-        cbp->tabSize = tabSize;
+        json_setPath(this, pPath);
+        this->tabSize = tabSize;
         
         // Open the file.
-        cbp->inputType = OBJ_IDENT_WSTR;
+        this->inputType = OBJ_IDENT_WSTR;
         //obj_Retain(pWStr);    // retained above
-        cbp->pWStr = pWStr;
-        cbp->fileOffset = 0;
+        this->pWStr = pWStr;
+        this->fileOffset = 0;
         
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             obj_Release(pWStr);
             return OBJ_NIL;
         }
 #endif
         
-        return cbp;
+        return this;
     }
     
     
@@ -1706,6 +1753,7 @@ extern "C" {
                 case '\f':
                 case '\n':
                     ++this->lineNo;
+                    this->colNo = 0;
                     break;
                     
                 case '\r':
@@ -1744,7 +1792,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     int32_t         json_InputLookAhead(
-        JSON_DATA       *cbp,
+        JSON_DATA       *this,
         uint16_t        num
     )
     {
@@ -1754,14 +1802,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
             return -1;
         }
 #endif
         
-        idx = (cbp->curInputs + num - 1) % cbp->sizeInputs;
-        chr = cbp->pInputs[idx];
+        idx = (this->curInputs + num - 1) % this->sizeInputs;
+        chr = this->pInputs[idx];
         
         // Return to caller.
         return chr;
@@ -1775,7 +1823,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     ERESULT         json_InputNextChar(
-        JSON_DATA      *cbp
+        JSON_DATA      *this
     )
     {
         int32_t         chr;
@@ -1783,16 +1831,16 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         // Add the next char to the queue.
-        chr = json_UnicodeGetc(cbp);
-        cbp->pInputs[cbp->curInputs] = chr;
-        cbp->curInputs = (cbp->curInputs + 1) % cbp->sizeInputs;
+        chr = json_UnicodeGetc(this);
+        this->pInputs[this->curInputs] = chr;
+        this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
@@ -1805,7 +1853,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseFile(
-        JSON_DATA		*cbp
+        JSON_DATA		*this
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
@@ -1813,16 +1861,16 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        cbp->fileOffset = 0;
-        json_InputAdvance(cbp, cbp->sizeInputs);
-        pNode = json_ParseFileObject(cbp);
+        this->fileOffset = 0;
+        json_InputAdvance(this, this->sizeInputs);
+        pNode = json_ParseFileObject(this);
         
         // Return to caller.
         return pNode;
@@ -1835,7 +1883,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     json_ToDebugString(
-        JSON_DATA       *cbp,
+        JSON_DATA       *this,
         int             indent
     )
     {
@@ -1846,7 +1894,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -1859,15 +1907,15 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(json) ",
-                     cbp
+                     this
             );
         AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
-        if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                    cbp->pData,
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -1876,7 +1924,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf(str, sizeof(str), " %p}\n", this);
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -1891,18 +1939,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            json_Validate(
-        JSON_DATA      *cbp
+        JSON_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_JSON) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_JSON) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(JSON_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(JSON_DATA)) )
             return false;
 
         // Return to caller.

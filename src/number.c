@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "number_internal.h"
+#include <number_internal.h>
 #include <stdio.h>
 
 

@@ -318,7 +318,7 @@ extern "C" {
     }
 
     bool            file_setPriority(
-        FILE_DATA     *cbp,
+        FILE_DATA       *cbp,
         uint16_t        value
     )
     {
@@ -344,7 +344,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        return( 0 );
+        return 0;
     }
 
 

@@ -1,4 +1,4 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
 //              NUL-terminated String (AStr) Header
@@ -312,8 +312,9 @@ extern "C" {
      Compare the given string against 'this' from the right hand side of the string
      (ie compare the trailing part of the string)
      @param:    this    object pointer
-     @return:   If string contains only ASCII, ERESULT_SUCCESS,
-     otherwise, an ERESULT_* Error Code.
+     @return:   If str == const, ERESULT_SUCCESS_EQUAL. Otherwise, ERESULT_SUCCESS_LESS_THAN,
+                ERESULT_SUCCESS_GREATER_THAN or an ERESULT_* error code.
+                otherwise, an ERESULT_* Error Code.
      */
     ERESULT         AStr_CompareRightA(
         ASTR_DATA		*this,

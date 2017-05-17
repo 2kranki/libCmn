@@ -1,11 +1,14 @@
-# vi:nu:et:sts=4 ts=4 sw=4
 {
+    "name":
+        "libCmn",
     "deps":null,
-    "headers_private": [
+    "headers_private":
+    [
         "idxblk16_internal.h",
         "str_internal.h"
     ],
-    "headers_public": [
+    "headers_public":
+    [
         "cmn.h",
         "chario.h",
         "idxblk16.h",
@@ -13,7 +16,8 @@
         "obj.h",
         "str.h"
     ],
-    "objects": {
+    "objects":
+    {
         "arrayExpand":["cmn","AStr"],
         "ascii":["cmn","AStr"],
         "AStr":["cmn"],
@@ -67,7 +71,6 @@
         "ioRcd":["cmn","AStr"],
         "json":["cmn","AStr","false","name","node","nodeArray",
                 "nodeHash","nodeTree","null","path","true"],
-        "listdl":["cmn"],
         "lru":["cmn","AStr","listdl"],
         "misc":["cmn","AStr"],
         "name":["cmn","AStr","str","WStr"],
@@ -127,8 +130,10 @@
         "WStrC":["cmn"],
         "xml":["cmn"]
     },
-    "routines": [
+    "routines":
+    [
         "idxblk16.c",
+        "listdl.c",
         "obj.c",
         "scan.c",
         "scandec32.c",
@@ -140,7 +145,8 @@
         "str.c",
         "tokenFromJSON.c"
     ],
-    "tests": [
+    "tests":
+    [
         {"name":"test_idxblk16"},
         {"name":"test_obj"},
         {"name":"test_str"}

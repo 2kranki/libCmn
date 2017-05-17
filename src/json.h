@@ -138,6 +138,12 @@ extern "C" {
     );
     
     
+    JSON_DATA *     json_NewFromFile(
+        FILE            *pFile,         // Input File
+        uint16_t		tabSize         // Tab Spacing if any
+    );
+    
+    
     JSON_DATA *     json_NewFromPath(
         PATH_DATA       *pPath,         // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
@@ -171,17 +177,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    JSON_DATA *     json_InitPath(
-        JSON_DATA       *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any
-    );
-    
     JSON_DATA *     json_InitAStr(
         JSON_DATA       *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
+    );
+    
+    JSON_DATA *     json_InitFile(
+        JSON_DATA       *this,
+        FILE            *pFile,
+        uint16_t        tabSize         // Tab Spacing if any
+    );
+    
+    JSON_DATA *     json_InitPath(
+        JSON_DATA       *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize         // Tab Spacing if any
     );
     
     JSON_DATA *     json_InitWStr(

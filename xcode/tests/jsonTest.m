@@ -280,6 +280,53 @@ char        *pTestInput02 =
 
 
 
+- (void)testInput03
+{
+    //ERESULT         eRc;
+    JSON_DATA       *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+    FILE            *pInput = NULL;
+    
+    
+    pInput = fopen("/Users/bob/git/libCan/other/pic32mx/can.json.txt", "r");
+    XCTAssertFalse( (OBJ_NIL == pInput) );
+    
+    pObj = json_NewFromFile( pInput, 4 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = json_ParseFile(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            
+        }
+        
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fclose(pInput);
+    pInput = NULL;
+    
+    szTbl_SharedReset();
+}
+
+
+
 @end
 
 

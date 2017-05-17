@@ -62,18 +62,18 @@ extern "C" {
 
     static
     bool            nodeHash_AddBlock(
-        NODEHASH_DATA   *cbp
+        NODEHASH_DATA   *this
     );
     
     static
     uint16_t        nodeHash_IndexFromHash(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint32_t        hash
     );
     
     static
     LISTDL_DATA *   nodeHash_NodeListFromHash(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint32_t        hash
     );
     
@@ -83,30 +83,30 @@ extern "C" {
      */
     static
     bool            nodeHash_AddBlock(
-        NODEHASH_DATA   *cbp
+        NODEHASH_DATA   *this
     )
     {
         NODEHASH_BLOCK  *pBlock;
         uint32_t        i;
         
         // Do initialization.
-        if ( 0 == listdl_Count(&cbp->freeList) )
+        if ( 0 == listdl_Count(&this->freeList) )
             ;
         else {
             return true;
         }
         
         // Get a new block.
-        i = sizeof(NODEHASH_BLOCK) + (cbp->cBlock * sizeof(NODEHASH_NODE));
+        i = sizeof(NODEHASH_BLOCK) + (this->cBlock * sizeof(NODEHASH_NODE));
         pBlock = (NODEHASH_BLOCK *)mem_Malloc( i );
         if( NULL == pBlock ) {
             return false;
         }
-        listdl_Add2Tail(&cbp->blocks, pBlock);
+        listdl_Add2Tail(&this->blocks, pBlock);
         
         // Now chain the entries to the Free chain.
-        for (i=0; i<cbp->cBlock; ++i) {
-            listdl_Add2Tail(&cbp->freeList, &pBlock->node[i]);
+        for (i=0; i<this->cBlock; ++i) {
+            listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
         }
         
         // Return to caller.
@@ -117,7 +117,7 @@ extern "C" {
     
     static
     NODEHASH_NODE * nodeHash_FindNodeA(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint32_t        hash,
         const
         char            *pKey
@@ -130,7 +130,7 @@ extern "C" {
         char            *pName;
         
         // Do initialization.
-        pNodeList = nodeHash_NodeListFromHash( cbp, hash );
+        pNodeList = nodeHash_NodeListFromHash(this, hash);
         
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
@@ -156,7 +156,7 @@ extern "C" {
     
     static
     NODEHASH_NODE * nodeHash_FindNodeW(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint32_t        hash,
         const
         int32_t         *pKey
@@ -169,7 +169,7 @@ extern "C" {
         char            *pName;
         
         // Do initialization.
-        pNodeList = nodeHash_NodeListFromHash( cbp, hash );
+        pNodeList = nodeHash_NodeListFromHash(this, hash);
         
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
@@ -196,13 +196,13 @@ extern "C" {
     
     static
     uint16_t        nodeHash_IndexFromHash(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint32_t        hash
     )
     {
         uint16_t        index;
         
-        index = hash % cbp->cHash;
+        index = hash % this->cHash;
         return index;
     }
     
@@ -210,13 +210,13 @@ extern "C" {
     
     static
     LISTDL_DATA *   nodeHash_NodeListFromHash(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint32_t        hash
     )
     {
         LISTDL_DATA     *pNodeList;
         
-        pNodeList = &cbp->pHash[nodeHash_IndexFromHash(cbp,hash)];
+        pNodeList = &this->pHash[nodeHash_IndexFromHash(this, hash)];
         return( pNodeList );
     }
     
@@ -236,15 +236,15 @@ extern "C" {
     NODEHASH_DATA * nodeHash_Alloc(
     )
     {
-        NODEHASH_DATA   *cbp;
+        NODEHASH_DATA   *this;
         uint32_t        cbSize = sizeof(NODEHASH_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -253,14 +253,14 @@ extern "C" {
         uint16_t        cHash           // [in] Hash Table Size
     )
     {
-        NODEHASH_DATA   *cbp;
+        NODEHASH_DATA   *this;
         
-        cbp = nodeHash_Alloc( );
-        if (cbp) {
-            cbp = nodeHash_Init(cbp, cHash);
+        this = nodeHash_Alloc( );
+        if (this) {
+            this = nodeHash_Init(this, cHash);
         }
         
-        return( cbp );
+        return this;
     }
     
     
@@ -272,14 +272,14 @@ extern "C" {
     //===============================================================
 
     uint16_t        nodeHash_getPriority(
-        NODEHASH_DATA     *cbp
+        NODEHASH_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -289,13 +289,13 @@ extern "C" {
     }
 
     bool            nodeHash_setPriority(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -306,16 +306,16 @@ extern "C" {
 
 
     uint32_t        nodeHash_getSize(
-        NODEHASH_DATA   *cbp
+        NODEHASH_DATA   *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        return cbp->size;
+        return this->size;
     }
 
 
@@ -333,7 +333,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         nodeHash_Add(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         NODE_DATA       *pNode
     )
     {
@@ -346,7 +346,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -358,7 +358,7 @@ extern "C" {
 
         pName = node_getNameUTF8(pNode);
         hash = name_Hash(node_getName(pNode));
-        pEntry = nodeHash_FindNodeA(cbp, hash, pName);
+        pEntry = nodeHash_FindNodeA(this, hash, pName);
         mem_Free((void *)pName);
         pName = NULL;
         if (pEntry) {
@@ -367,14 +367,14 @@ extern "C" {
         }
         
         // Determine the entry number.
-        if (0 == listdl_Count(&cbp->freeList)) {
-            if ( nodeHash_AddBlock(cbp) )
+        if (0 == listdl_Count(&this->freeList)) {
+            if ( nodeHash_AddBlock(this) )
                 ;
             else {
                 return ERESULT_INSUFFICIENT_MEMORY;
             }
         }
-        pEntry = listdl_DeleteHead(&cbp->freeList);
+        pEntry = listdl_DeleteHead(&this->freeList);
         if (NULL == pEntry) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
@@ -384,10 +384,10 @@ extern "C" {
         pEntry->pNode = pNode;
         pEntry->hash = hash;
         
-        pNodeList = nodeHash_NodeListFromHash( cbp, hash );
+        pNodeList = nodeHash_NodeListFromHash(this, hash);
         listdl_Add2Tail(pNodeList, pEntry);
         
-        ++cbp->size;
+        ++this->size;
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
@@ -463,27 +463,27 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        NODEHASH_DATA   *cbp = objId;
+        NODEHASH_DATA   *this = objId;
         LISTDL_DATA     *pNodeList;
         NODEHASH_BLOCK  *pBlock;
         NODEHASH_NODE   *pEntry;
         uint32_t        i;
         
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
         // Release all the nodes.
-        for (i=0; i<cbp->cHash; ++i) {
-            pNodeList = &cbp->pHash[i];
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
             pEntry = listdl_Head(pNodeList);
             while ( pEntry ) {
                 obj_Release(pEntry->pNode);
@@ -492,18 +492,18 @@ extern "C" {
             }
         }
         
-        while ( listdl_Count(&cbp->blocks) ) {
-            pBlock = listdl_DeleteHead(&cbp->blocks);
+        while ( listdl_Count(&this->blocks) ) {
+            pBlock = listdl_DeleteHead(&this->blocks);
             mem_Free( pBlock );
         }
         
-        if( cbp->pHash ) {
-            mem_Free( cbp->pHash );
-            cbp->pHash = NULL;
+        if( this->pHash ) {
+            mem_Free( this->pHash );
+            this->pHash = NULL;
         }
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
         
         // Return to caller.
     }
@@ -515,7 +515,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeHash_Delete(
-        NODEHASH_DATA	*cbp,
+        NODEHASH_DATA	*this,
         const
         char            *pName
     )
@@ -527,7 +527,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -538,17 +538,17 @@ extern "C" {
 #endif
         
         hash = str_HashAcmA((const char *)pName, NULL);
-        pEntry = nodeHash_FindNodeA(cbp, hash, pName);
+        pEntry = nodeHash_FindNodeA(this, hash, pName);
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
         
-        pNodeList = nodeHash_NodeListFromHash( cbp, hash );
+        pNodeList = nodeHash_NodeListFromHash(this, hash);
         obj_Release(pEntry->pNode);
         pEntry->pNode = OBJ_NIL;
         listdl_Delete(pNodeList, pEntry);
-        listdl_Add2Tail(&cbp->freeList, pEntry);
-        --cbp->size;
+        listdl_Add2Tail(&this->freeList, pEntry);
+        --this->size;
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
@@ -561,7 +561,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         nodeHash_FindA(
-        NODEHASH_DATA	*cbp,
+        NODEHASH_DATA	*this,
         const
         char            *pName,
         NODE_DATA       **ppNode
@@ -573,7 +573,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -584,7 +584,7 @@ extern "C" {
     #endif
         
         hash = str_HashAcmA((const char *)pName, NULL);
-        pEntry = nodeHash_FindNodeA( cbp, hash, pName );
+        pEntry = nodeHash_FindNodeA(this, hash, pName);
         if (pEntry) {
             if (ppNode) {
                 *ppNode = pEntry->pNode;
@@ -646,7 +646,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeHash_ForEach(
-        NODEHASH_DATA	*cbp,
+        NODEHASH_DATA	*this,
         P_VOIDEXIT2_BE  pScan,
         OBJ_ID          pObj            // Used as first parameter of scan method
     )
@@ -659,7 +659,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -669,8 +669,8 @@ extern "C" {
         }
 #endif
         
-        for (i=0; i<cbp->cHash; ++i) {
-            pNodeList = &cbp->pHash[i];
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
             pEntry = listdl_Head(pNodeList);
             while ( pEntry ) {
                 eRc = pScan(pObj,pEntry->pNode);
@@ -751,7 +751,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeHash_Nodes(
-        NODEHASH_DATA	*cbp,
+        NODEHASH_DATA	*this,
         NODEARRAY_DATA  **ppKeys
     )
     {
@@ -764,7 +764,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate( cbp ) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -775,8 +775,8 @@ extern "C" {
 #endif
         
         pKeys = nodeArray_New();
-        for (i=0; i<cbp->cHash; ++i) {
-            pNodeList = &cbp->pHash[i];
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
             pEntry = listdl_Head(pNodeList);
             while ( pEntry ) {
                 eRc = nodeArray_AppendNode(pKeys, pEntry->pNode, NULL);
@@ -792,6 +792,9 @@ extern "C" {
         nodeArray_SortAscending(pKeys);
         
         // Return to caller.
+        if (ppKeys) {
+            *ppKeys = pKeys;
+        }
         return ERESULT_SUCCESSFUL_COMPLETION;
     }
     
@@ -802,7 +805,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     nodeHash_ToDebugString(
-        NODEHASH_DATA   *cbp,
+        NODEHASH_DATA   *this,
         int             indent
     )
     {
@@ -815,7 +818,7 @@ extern "C" {
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry = OBJ_NIL;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -826,13 +829,13 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(nodeHash) Size=%d\n",
-                     cbp,
-                     cbp->size
+                     this,
+                     this->size
                      );
         AStr_AppendA(pStr, str);
         
-        for (i=0; i<cbp->cHash; ++i) {
-            pNodeList = &cbp->pHash[i];
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
             pEntry = listdl_Head(pNodeList);
             while ( pEntry ) {
                 pNode = pEntry->pNode;
@@ -850,7 +853,7 @@ extern "C" {
         
         AStr_AppendCharRepeatA(pStr, 1, '\n');
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), "%p(nodeHash)}\n", cbp );
+        j = snprintf( str, sizeof(str), "%p(nodeHash)}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -865,18 +868,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            nodeHash_Validate(
-        NODEHASH_DATA      *cbp
+        NODEHASH_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_NODEHASH) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODEHASH) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(NODEHASH_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODEHASH_DATA)) )
             return false;
 
         // Return to caller.

@@ -1,4 +1,4 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   eResult.c
  *	Generated 05/24/2015 10:53:28
@@ -309,11 +309,11 @@ extern "C" {
         va_start( argsp, fmt );
         
         fprintf(
-                   stderr,
-                   "Error: %s line: %d col: %d  ",
-                   pFileName,
-                   linnum,
-                   colnum
+                    stderr,
+                    "Error: %s line: %d col: %d  ",
+                    (pFileName ? pFileName : ""),
+                    linnum,
+                    colnum
         );
         vfprintf( stderr, fmt, argsp );
         
@@ -339,11 +339,11 @@ extern "C" {
     {
         
         fprintf(
-                   stderr,
-                   "Error: %s line: %d col: %d  ",
-                   pFileName,
-                   linnum,
-                   colnum
+                    stderr,
+                    "Error: %s line: %d col: %d  ",
+                    (pFileName ? pFileName : ""),
+                    linnum,
+                    colnum
         );
         vfprintf( stderr, fmt, argsp );
         
@@ -415,7 +415,7 @@ extern "C" {
         fprintf(
                 stderr,
                 "Fatal Error: %s line: %d col: %d  ",
-                pFileName,
+                (pFileName ? pFileName : ""),
                 linnum,
                 colnum
         );
@@ -443,7 +443,7 @@ extern "C" {
         fprintf(
                 stderr,
                 "Fatal Error: %s line: %d col: %d  ",
-                pFileName,
+                (pFileName ? pFileName : ""),
                 linnum,
                 colnum
         );
