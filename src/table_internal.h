@@ -76,7 +76,8 @@ extern "C" {
     typedef struct table_block_s TABLE_BLOCK;
     struct table_block_s {
         LISTDL_NODE         node;           // Chain for block list
-        TABLE_ENTRY         data[0];
+        uint8_t             data[0];
+        //TABLE_ENTRY         data[0];  // MSC gets C2233 if we use this.
     };
     
     

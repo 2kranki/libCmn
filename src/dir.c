@@ -47,13 +47,6 @@
 
 /* Header File Inclusion */
 #include    "dir_internal.h"
-#include    <sys/dirent.h>
-#include    <sys/stat.h>
-#include    <sys/types.h>
-#include    <dirent.h>
-#include    <stdio.h>
-#include    <time.h>
-#include    <unistd.h>
 
 
 
@@ -177,11 +170,14 @@ extern "C" {
         char            *pPath
     )
     {
+#if     defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         if (pPath) {
+#if     defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
@@ -190,11 +186,14 @@ extern "C" {
                 else
                     eRc = ERESULT_FAILURE_FALSE;
             }
-            else
+            else {
                 eRc = ERESULT_PATH_NOT_FOUND;
+            }
+#endif
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -211,20 +210,26 @@ extern "C" {
         char            *pPath
     )
     {
+#if     defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         if (pPath) {
+#if     defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 eRc = ERESULT_SUCCESSFUL_COMPLETION;
             }
-            else
+            else {
                 eRc = ERESULT_PATH_NOT_FOUND;
+            }
+#endif
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -241,24 +246,31 @@ extern "C" {
         char            *pPath
     )
     {
+#if     defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         if (pPath) {
+#if     defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
                     eRc = ERESULT_SUCCESSFUL_COMPLETION;
                 }
-                else
+                else {
                     eRc = ERESULT_FAILURE_FALSE;
+                }
             }
-            else
+            else {
                 eRc = ERESULT_PATH_NOT_FOUND;
+            }
+#endif
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -275,24 +287,31 @@ extern "C" {
         char            *pPath
     )
     {
+#if     defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         if (pPath) {
+#if     defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
                     eRc = ERESULT_SUCCESSFUL_COMPLETION;
                 }
-                else
+                else {
                     eRc = ERESULT_FAILURE_FALSE;
+                }
             }
-            else
+            else {
                 eRc = ERESULT_PATH_NOT_FOUND;
+            }
+#endif
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -446,9 +465,11 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
+#if     defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -465,6 +486,7 @@ extern "C" {
         
         pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pStr) {
+#if     defined(__MACOSX_ENV__)
             iRc = stat(pStr, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
@@ -473,13 +495,16 @@ extern "C" {
                 else
                     eRc = ERESULT_FAILURE_FALSE;
             }
-            else
+            else {
                 eRc = ERESULT_PATH_NOT_FOUND;
+            }
+#endif
             mem_Free(pStr);
             pStr = NULL;
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -498,7 +523,9 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
+#if     defined(__MACOSX_ENV__)
         int             iRc;
+#endif
         ERESULT         eRc;
         
         // Do initialization.
@@ -521,17 +548,21 @@ extern "C" {
         
         pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pStr) {
+#if     defined(__MACOSX_ENV__)
             iRc = mkdir(pStr, mode);
             if (0 == iRc) {
                 eRc = ERESULT_SUCCESSFUL_COMPLETION;
             }
-            else
+            else {
                 eRc = ERESULT_CANNOT_MAKE_DIRECTORY;
+            }
+#endif
             mem_Free(pStr);
             pStr = NULL;
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -551,9 +582,11 @@ extern "C" {
     )
     {
         char            *pDir;
+#if     defined(__MACOSX_ENV__)
         struct dirent   *pDirent;
         DIR             *pDirectory;
         bool            fRc;
+#endif
         DIRENTRY_DATA   *pEntry;
         ASTR_DATA       *pStr;
         
@@ -578,6 +611,7 @@ extern "C" {
         }
 #endif
 
+#if     defined(__MACOSX_ENV__)
         pDir = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pDir) {
             pDirectory = opendir(pDir);
@@ -590,8 +624,10 @@ extern "C" {
         else {
             return ERESULT_GENERAL_FAILURE;
         }
+#endif
         
         
+#if     defined(__MACOSX_ENV__)
         pEntry = dirEntry_Alloc();
         pEntry = dirEntry_Init(pEntry);
         if( OBJ_NIL == pEntry ) {
@@ -625,9 +661,10 @@ extern "C" {
         
         obj_Release(pEntry);
         pEntry = OBJ_NIL;
+#endif
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

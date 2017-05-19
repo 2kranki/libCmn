@@ -1,7 +1,7 @@
-// vi: nu:noai:ts=4:sw=4
+// vi:nu:et:sts=4 ts=4 sw=4
 
-//	Class Object Metods and Tables for 'histBase'
-//	Generated 02/26/2016 00:57:45
+//	Class Object Metods and Tables for 'block'
+//	Generated 01/05/2016 07:38:50
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +31,8 @@
  */
 
 
-
-
-#define			HISTBASE_OBJECT_C	    1
-#include        "histBase_internal.h"
+#include        "obj.h"
+#include        "block32_internal.h"
 
 
 
@@ -42,7 +40,7 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct histBase_class_data_s	{
+struct block32_class_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -50,7 +48,7 @@ struct histBase_class_data_s	{
     // Common Data
     //uint32_t        misc;
 };
-typedef struct histBase_class_data_s HISTBASE_CLASS_DATA;
+typedef struct block32_class_data_s BLOCK32_CLASS_DATA;
 
 
 
@@ -63,26 +61,23 @@ typedef struct histBase_class_data_s HISTBASE_CLASS_DATA;
 
 static
 const
-OBJ_INFO        histBase_Info;            // Forward Reference
+OBJ_INFO        block32_Info;            // Forward Reference
 
 
 
-OBJ_ID          histBase_Class(
+OBJ_ID          block32_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            histBase_ClassIsKindOf(
+bool            block32_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HISTBASE_CLASS == classID) {
+    if (OBJ_IDENT_BLOCK32_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_DEVBASE_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -96,15 +91,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_HISTBASE_CLASS;
+    return OBJ_IDENT_BLOCK32_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&histBase_Info,
-    histBase_ClassIsKindOf,
+	&block32_Info,
+    block32_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -119,23 +114,20 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-HISTBASE_CLASS_DATA  histBase_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_HISTBASE_CLASS, 0, 1},
+BLOCK32_CLASS_DATA  block32_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BLOCK32_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            histBase_IsKindOf(
+bool            block32_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HISTBASE == classID) {
+    if (OBJ_IDENT_BLOCK32 == classID) {
        return true;
-    }
-    if (OBJ_IDENT_DEVBASE == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -146,73 +138,58 @@ bool            histBase_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            histBase_Dealloc(
+void            block32_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          histBase_Class(
+OBJ_ID          block32_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&histBase_ClassObj;
+    return (OBJ_ID)&block32_ClassObj;
 }
 
 
 static
-uint16_t		histBase_WhoAmI(
+uint16_t		block32_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_HISTBASE;
+    return OBJ_IDENT_BLOCK32;
 }
 
 
 const
-HISTBASE_VTBL   histBase_Vtbl = {
+BLOCK32_VTBL    block32_Vtbl = {
     {
-        {
-            &histBase_Info,
-            histBase_IsKindOf,
-            obj_RetainStandard,
-            obj_ReleaseStandard,
-            histBase_Dealloc,
-            histBase_Class,
-            histBase_WhoAmI,
-            NULL,			// histBase_Enable,
-            NULL,			// histBase_Disable,
-            (P_OBJ_TOSTRING)histBase_ToDebugString,
-            NULL,			// (P_OBJ_ASSIGN)histBase_Assign,
-            NULL,			// (P_OBJ_COMPARE)histBase_Compare,
-            NULL, 			// (P_OBJ_PTR)histBase_Copy,
-            NULL 			// (P_OBJ_HASH)histBase_Hash
-        },
-        // Put other object method names below this.
-        // Properties:
-        // Methods:
-        (void*)devBase_Getc,
-        (void*)histBase_Ioctl,
-        (void*)devBase_Putc,
-        (void*)histBase_Read,
-        (void*)histBase_Start,
-        (void*)histBase_Stop,
-        (void*)devBase_Write
+        &block32_Info,
+        block32_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        block32_Dealloc,
+        block32_Class,
+        block32_WhoAmI,
+        NULL,			// block32_Enable,
+        NULL,			// block32_Disable,
+        (P_OBJ_TOSTRING)block32_ToDebugString,
+        NULL,			// (P_OBJ_ASSIGN)block32_Assign,
+        NULL,			// (P_OBJ_COMPARE)block32_Compare,
+        NULL, 			// (P_OBJ_PTR)block32_Copy,
+        NULL 			// (P_OBJ_HASH)block32_Hash
     }
- 
 };
 
 
 
 static
 const
-OBJ_INFO        histBase_Info = {
-    "histBase",
-    "History Table",
-    (OBJ_DATA *)&histBase_ClassObj,
+OBJ_INFO        block32_Info = {
+    "block32",
+    "Data Block with optional Header (32-bit sizes)",
+    (OBJ_DATA *)&block32_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

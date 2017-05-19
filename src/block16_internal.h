@@ -1,16 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   block16_internal.h
- * Author: bob
+ *	Generated 01/05/2016 07:38:50
  *
  * Notes:
- *   1	Before including define the following to customize the config bits for
- *		the development environment needed:
- *		_EXPLORER_16		Microchip Explorer 16 board
- *		_MAX32              Diligent MAX 32 board
- *		_NETWORK_SHIELD     Diligent Network Shield
+ *  --	N/A
  *
- * Created on September 26, 2014, 3:39 PM
  */
 
 /*
@@ -41,13 +36,12 @@
  */
 
 
+#include    <block16.h>
+
 
 
 #ifndef BLOCK16_INTERNAL_H
-#define	BLOCK16_INTERNAL_H
-
-
-#include    <block16.h>
+#define	BLOCK16_INTERNAL_H 1
 
 
 #ifdef	__cplusplus
@@ -58,22 +52,20 @@ extern "C" {
     // In C, "long" is defined to be the word size of the computer
     // where "int" might be shorter.
 //#define WORDSIZE sizeof(long)   /* word size in bytes */
-    // Since we are limiting the block size to 64k, let's make
-    // the word size compatible with the PIC32.
 //#define WORDSIZE 4              /* word size in bytes */
 //#define ROUNDUP_WORD(x) (((x + WORDSIZE - 1) / WORDSIZE) * WORDSIZE)
     
     
-                    /* Main Control block */
+    /* Main Control block */
     /* This control block resides only in memory and is used to provide
      * the information necessary to access the block data.
      */
     
 #pragma pack(push, 1)
-    struct block16_data_s {
+typedef struct blocked16_data_s {
         // With pack(1), we must be careful that the user and data are
         // on a word boundary.
-        uint16_t			cbSize;
+        uint16_t			cbSize;         // Total Block Size
         uint16_t            headerSize;     // Header Data Size
         uint16_t            dataSize;       // Data Size
         uint16_t            dataUsed;       // Amount of Data Size Used
@@ -84,34 +76,48 @@ extern "C" {
         // Both the areas are simply considered an array of bytes and
         // treated as such. The header is a fixed amount and the data can
         // can be a variable amount.
-    };
+} BLOCKED16_DATA;
 #pragma pack(pop)
     
     
     
+    
+#pragma pack(push, 1)
+struct block16_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
+     */
+    OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;
+
+    // Common Data
+    ERESULT         eRc;
+    BLOCKED16_DATA  *pBlock;
+
+};
+#pragma pack(pop)
+
+    extern
+    const
+    struct block16_class_data_s  block16_ClassObj;
+    
+    extern
+    const
+    BLOCK16_VTBL    block16_Vtbl;
 
 
-    /****************************************************************
-     * * * * * * *  Internal Function Definitions * * * * * * * * * *
-     ****************************************************************/
-    
-    uint32_t        block16_DataOffset(
-        BLOCK16_DATA      *this
+
+    // Internal Functions
+    void            block16_Dealloc(
+        OBJ_ID          objId
     );
-    
-    
-    void *			block16_UnusedDataPtr(
-        BLOCK16_DATA		*
-    );
-    
+
 #ifdef NDEBUG
 #else
-    bool            block16_Validate(
-        BLOCK16_DATA      *this
+    bool			block16_Validate(
+        BLOCK16_DATA    *this
     );
 #endif
-    
-    
+
 
 
 #ifdef	__cplusplus

@@ -39,7 +39,6 @@
 
 
 #include    <psxSem.h>
-#include    <pthread.h>
 
 
 #ifndef PSXSEM_INTERNAL_H
@@ -60,18 +59,17 @@ struct psxSem_data_s	{
 
     // Common Data
     char            name[16];       // "/XSEMnnnnnnnnnn"
-#if defined(__APPLE__)
+    int32_t         count;
+    int32_t         max;
+    int32_t         wakeups;
+#if defined(__MACOSX_ENV__)
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
-    int32_t         count;
-    int32_t         wakeups;
-    int32_t         max;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
     struct TN_Sem   sem;
 #endif
-#if defined(__WIN16)
-#elif defined(__WIN32) || defined(__WIN64)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     HANDLE          m_hSem;
 #endif
 

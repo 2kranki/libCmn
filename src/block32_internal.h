@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   block_internal.h
+ * File:   block32_internal.h
  *	Generated 01/05/2016 07:38:50
  *
  * Notes:
@@ -36,12 +36,12 @@
  */
 
 
-#include    <block.h>
+#include    <block32.h>
 
 
 
-#ifndef BLOCK_INTERNAL_H
-#define	BLOCK_INTERNAL_H 1
+#ifndef BLOCK32_INTERNAL_H
+#define	BLOCK32_INTERNAL_H 1
 
 
 #ifdef	__cplusplus
@@ -62,12 +62,13 @@ extern "C" {
      */
     
 #pragma pack(push, 1)
-typedef struct blocked_data_s {
+typedef struct blocked32_data_s {
         // With pack(1), we must be careful that the user and data are
         // on a word boundary.
         uint32_t			cbSize;         // Total Block Size
         uint32_t            headerSize;     // Header Data Size
         uint32_t            dataSize;       // Data Size
+        uint32_t            dataUsed;       // Amount of Data Size Used
         uint8_t             header[0];
         // This block consists of an optional header data area to be used
         // as needed followed by the actual block data. The header data
@@ -75,14 +76,14 @@ typedef struct blocked_data_s {
         // Both the areas are simply considered an array of bytes and
         // treated as such. The header is a fixed amount and the data can
         // can be a variable amount.
-} BLOCKED_DATA;
+} BLOCKED32_DATA;
 #pragma pack(pop)
     
     
     
     
 #pragma pack(push, 1)
-struct block_data_s	{
+struct block32_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -90,26 +91,30 @@ struct block_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    BLOCKED_DATA    *pBlock;
+    BLOCKED32_DATA  *pBlock;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    OBJ_IUNKNOWN    block_Vtbl;
+    struct block32_class_data_s  block32_ClassObj;
+    
+    extern
+    const
+    BLOCK32_VTBL    block32_Vtbl;
 
 
 
     // Internal Functions
-    void            block_Dealloc(
+    void            block32_Dealloc(
         OBJ_ID          objId
     );
 
 #ifdef NDEBUG
 #else
-    bool			block_Validate(
-        BLOCK_DATA       *cbp
+    bool			block32_Validate(
+        BLOCK32_DATA    *this
     );
 #endif
 

@@ -63,7 +63,7 @@ extern "C" {
          */
         OBJ_DATA        super;
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         struct TN_Mutex getMutex;
         struct TN_Mutex putMutex;
 #endif

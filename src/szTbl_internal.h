@@ -84,7 +84,8 @@ extern "C" {
         uint16_t            used;
         uint16_t            rsvd;
         struct szTbl_heap_s *pNext;
-        SZTBL_NODE          node[0];
+        uint8_t             node[0];
+        //SZTBL_NODE          node[0];  // MSC gets C2233 if we use this.
     } SZTBL_HEAP;
     
     

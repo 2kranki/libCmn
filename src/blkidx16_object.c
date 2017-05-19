@@ -1,4 +1,4 @@
-// vi: nu:noai:ts=4:sw=4
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //	Class Object Metods and Tables for 'blkidx16'
 //	Generated 03/05/2017 09:37:30

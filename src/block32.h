@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          CON_FIO Console Transmit Task (con_fio) Header
+//          Fixed Sized Header and Data Areas (block) Header
 //****************************************************************
 /*
  * Program
- *			Separate con_fio (con_fio)
+ *			A block with fixed size header and data areas (block)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate con_fio to run things without complications
- *          of interfering with the main con_fio. A con_fio may be 
- *          called a con_fio on other O/S's.
+ *			This object provides the means of manipulating a data
+ *          block that consists of a fixed size header and a fixed
+ *          size data area whose combined sizes must fit in a
+ *          uint32_t.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal con_fio. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	10/04/2016 Generated
+ *	01/05/2016 Generated
  */
 
 
@@ -56,12 +53,10 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <ascii.h>
-#include        <chario.h>
 
 
-#ifndef         CON_FIO_H
-#define         CON_FIO_H
+#ifndef         BLOCK32_H
+#define         BLOCK32_H
 
 
 
@@ -75,16 +70,18 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct con_fio_data_s	CON_FIO_DATA;    // Inherits from OBJ.
+    typedef struct block32_data_s	BLOCK32_DATA;
 
-    typedef struct con_fio_vtbl_s	{
+    
+    typedef struct block32_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in con_fio_object.c.
+        // method names to the vtbl definition in bptree_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CON_FIO_DATA *);
-    } CON_FIO_VTBL;
+        //bool        (*pIsEnabled)(BPTREE_DATA *);
+    } BLOCK32_VTBL;
+    
 
 
 
@@ -97,91 +94,131 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
-     Allocate a new Object and partially initialize. Also, this sets an
-     indicator that the object was alloc'd which is tested when the object is
-     released.
-     @return:   pointer to con_fio object if successful, otherwise OBJ_NIL.
-     */
-    CON_FIO_DATA *  con_fio_Alloc(
+    BLOCK32_DATA *  block32_Alloc(
     );
     
     
-    CON_FIO_DATA *  con_fio_New(
+    uint32_t		block32_CalcBlockSize(
+        uint32_t        headerSize,
+        uint32_t        dataSize
+    );
+    
+    
+    BLOCK32_DATA *  block32_New(
+    );
+    
+    BLOCK32_DATA *  block32_NewWithSizes(
+        uint32_t        headerSize,
+        uint32_t        dataSize
     );
     
     
 
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    CHARIO_DATA *   con_fio_getChario(
-        CON_FIO_DATA    *this
+    void *          block32_getData(
+        BLOCK32_DATA   *this
     );
     
     
-    FILE *          con_fio_getFileIn(
-        CON_FIO_DATA    *this
-    );
-    
-    bool            con_fio_setFileIn(
-        CON_FIO_DATA    *this,
-        FILE            *pValue
+    uint32_t        block32_getDataOffset(
+        BLOCK32_DATA   *this
     );
     
     
-    FILE *          con_fio_getFileOut(
-        CON_FIO_DATA    *this
-    );
-    
-    bool            con_fio_setFileOut(
-        CON_FIO_DATA    *this,
-        FILE            *pValue
+    uint32_t        block32_getDataSize(
+        BLOCK32_DATA   *this
     );
     
     
-    ERESULT     con_fio_getLastError(
-        CON_FIO_DATA	*this
+    /*!
+     DataUsed is a convenience property to be used if it is necessary
+     to know or control how much of the data area has been used.
+     @warning: The addData() method relies on .
+     */
+    uint32_t        block32_getDataUsed(
+        BLOCK32_DATA    *this
     );
-
-
+    
+    bool            block32_setDataUsed(
+        BLOCK32_DATA    *this,
+        uint32_t        value
+    );
+    
+    
+    void *          block32_getHeader(
+        BLOCK32_DATA   *this
+    );
+    
+    
+    uint32_t        block32_getHeaderSize(
+        BLOCK32_DATA   *this
+    );
+    
+    
+    ERESULT         block32_getLastError(
+        BLOCK32_DATA   *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    int32_t         con_fio_Getc(
-        CON_FIO_DATA	*this
+    /*!
+     Add data to the end of the data area within the block.
+     @param:    this    BLOCK32 object pointer
+     @return:   true if successful, otherwise false.
+     */
+    bool			block32_AddData(
+        BLOCK32_DATA	*this,
+        uint32_t        size,
+        void            *pData
     );
     
     
-    CON_FIO_DATA *   con_fio_Init(
-        CON_FIO_DATA     *this
+    // block_DataPtr returns a pointer to the beginning of the data
+    // in the block. Care must be taken how this pointer is used to
+    // maintain the integrity of the block.
+    void *          block32_DataPtr(
+        BLOCK32_DATA   *this
+    );
+    
+    
+    /* Init() sets up the default TaskBody() outlined above
+     * and initializes other fields needed. Init() assumes 
+     * that the size of the stack is passed to in obj_misc1.
+     */
+    BLOCK32_DATA *  block32_Init(
+        BLOCK32_DATA   *this
     );
 
-
-    ERESULT          con_fio_Putc(
-        CON_FIO_DATA    *this,
-        int32_t         value
+    BLOCK32_DATA *  block32_InitWithSizes(
+        BLOCK32_DATA    *this,
+        uint32_t        headerSize,
+        uint32_t        dataSize
     );
     
-    
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = con_fio_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = block_ToDebugString(this,4);
      @endcode:
-     @param:    this    CON_FIO object pointer
+     @param:    this    BLOCK32 object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *    con_fio_ToDebugString(
-        CON_FIO_DATA     *this,
+    ASTR_DATA *    block32_ToDebugString(
+        BLOCK32_DATA    *this,
         int             indent
     );
     
@@ -192,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* CON_FIO_H */
+#endif	/* BLOCK32_H */
 

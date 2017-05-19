@@ -45,7 +45,6 @@
 #include    <psxThread.h>
 #include    <psxMutex.h>
 #include    <psxSem.h>
-#include    <pthread.h>
 
 
 
@@ -67,14 +66,14 @@ struct psxThread_data_s	{
     PSXSEM_DATA     *pWorkerWait;
     PSXSEM_DATA     *pOwnerWait;
     PSXSEM_DATA     *pWorkerEnded;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
     pthread_t       worker;
 #endif
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     HANDLE          m_hThread;
     DWORD           m_ThreadID;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
     struct TN_Task  worker;
 #endif
     

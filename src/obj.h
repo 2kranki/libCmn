@@ -110,17 +110,18 @@ extern	"C" {
         OBJ_IDENT_BITMATRIX_CLASS,
         OBJ_IDENT_BITSET,
         OBJ_IDENT_BITSET_CLASS,
-        OBJ_IDENT_BLK16,                // Data Block with an optional fixed sized area
-        OBJ_IDENT_BLK16_CLASS,
         OBJ_IDENT_BLKDRCDS16,           // Block of variable sized records with
         //                              // an optional fixed sized area
         OBJ_IDENT_BLKDRCDS16_CLASS,
         OBJ_IDENT_BLKIDX16,             // Data Block of variable sized data and
         //                              // an optional fixed sized area
         OBJ_IDENT_BLKIDX16_CLASS,
-        OBJ_IDENT_BLOCK,                // Data Block with Fixed Sized Header and
-        //                              // Fixed Sized Data Area
-        OBJ_IDENT_BLOCK_CLASS,
+        OBJ_IDENT_BLOCK16,              // Data Block with an optional fixed sized area
+        //                              // and Fixed Sized Data Area
+        OBJ_IDENT_BLOCK16_CLASS,
+        OBJ_IDENT_BLOCK32,              // Data Block with an optional Fixed Sized Header
+        //                              // and Fixed Sized Data Area
+        OBJ_IDENT_BLOCK32_CLASS,
         OBJ_IDENT_BLOCKS,               // A list of Data Blocks
         OBJ_IDENT_BLOCKS_CLASS,
         OBJ_IDENT_BPTREE,               // B-Plus Tree Index
@@ -276,6 +277,8 @@ extern	"C" {
         OBJ_IDENT_PRT_CLASS,
         OBJ_IDENT_PSXCOND,              // Posix Condition
         OBJ_IDENT_PSXCOND_CLASS,
+        OBJ_IDENT_PSXLOCK,              // Posix Lock
+        OBJ_IDENT_PSXLOCK_CLASS,
         OBJ_IDENT_PSXMUTEX,             // Posix Mutex
         OBJ_IDENT_PSXMUTEX_CLASS,
         OBJ_IDENT_PSXSEM,               // Posix Semaphore
@@ -371,10 +374,10 @@ extern	"C" {
         OBJ_IDENT_DISK_ENTRIES=OBJ_IDENT_COMPILER_ENTRIES+256,      //  64 Objects
         OBJ_IDENT_J1939_ENTRIES=OBJ_IDENT_DISK_ENTRIES+128,         //  64 Objects
         OBJ_IDENT_LL1_ENTRIES=OBJ_IDENT_J1939_ENTRIES+128,          //  64 Objects
-        OBJ_IDENT_PARSERS_ENTRIES=OBJ_IDENT_LL1_ENTRIES+128,        //  64 Objects
+        OBJ_IDENT_OS_ENTRIES=OBJ_IDENT_J1939_ENTRIES+128,           // 128 Objects
+        OBJ_IDENT_PARSERS_ENTRIES=OBJ_IDENT_OS_ENTRIES+128,         //  64 Objects
         OBJ_IDENT_PIC32_ENTRIES=OBJ_IDENT_PARSERS_ENTRIES+128,      //  64 Objects
-        OBJ_IDENT_PREXX_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+128,        // 128 Objects
-        OBJ_IDENT_EMU_ENTRIES=OBJ_IDENT_PREXX_ENTRIES+256,          //  32 Objects
+        OBJ_IDENT_EMU_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+256,          //  32 Objects
         OBJ_IDENT_USER_ENTRIES=16384
    } OBJ_IDENTS;
 #endif

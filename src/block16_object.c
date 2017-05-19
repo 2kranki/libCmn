@@ -1,7 +1,7 @@
-// vi: nu:noai:ts=4:sw=4
+// vi:nu:et:sts=4 ts=4 sw=4
 
-//	Class Object Metods and Tables for 'prt'
-//	Generated 09/30/2015 16:08:28
+//	Class Object Metods and Tables for 'block16'
+//	Generated 01/05/2016 07:38:50
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,25 +31,52 @@
  */
 
 
-#include        "obj.h"
-#include        "prt_internal.h"
+#include        <obj.h>
+#include        <block16_internal.h>
+
+
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct block16_class_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
+     */
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct block16_class_data_s BLOCK16_CLASS_DATA;
 
 
 
 
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
 
-OBJ_ID          prt_Class(
+
+
+static
+const
+OBJ_INFO        block16_Info;            // Forward Reference
+
+
+
+OBJ_ID          block16_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            prt_ClassIsKindOf(
+bool            block16_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PRT_CLASS == classID) {
+    if (OBJ_IDENT_BLOCK16_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -64,15 +91,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_PRT_CLASS;
+    return OBJ_IDENT_BLOCK16_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
-    prt_ClassIsKindOf,
+	&block16_Info,
+    block16_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -83,27 +110,23 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						prt Class Object
+//						Class Object
 //-----------------------------------------------------------
 
-static
 const
-OBJ_DATA        prt_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_PRT_CLASS,
-    0,
-    1
+BLOCK16_CLASS_DATA  block16_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BLOCK16_CLASS, 0, 1},
+	//0
 };
 
 
 
 static
-bool            prt_IsKindOf(
+bool            block16_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PRT == classID) {
+    if (OBJ_IDENT_BLOCK16 == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -115,45 +138,58 @@ bool            prt_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            prt_Dealloc(
+void            block16_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          prt_Class(
+OBJ_ID          block16_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&prt_ClassObj;
+    return (OBJ_ID)&block16_ClassObj;
 }
 
 
 static
-uint16_t		prt_WhoAmI(
+uint16_t		block16_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_PRT;
+    return OBJ_IDENT_BLOCK16;
 }
 
 
 const
-OBJ_IUNKNOWN    prt_Vtbl = {
-    NULL,
-    prt_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    prt_Dealloc,
-    prt_Class,
-    prt_WhoAmI,
-    NULL,			// prt_Enable()
-    NULL,			// prt_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))prt_ToDebugString,
-    NULL,			// prt_Assign()
-    NULL,			// prt_Compare()
-    NULL 			// prt_Copy()
+BLOCK16_VTBL    block16_Vtbl = {
+    {
+        &block16_Info,
+        block16_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        block16_Dealloc,
+        block16_Class,
+        block16_WhoAmI,
+        NULL,			// block16_Enable,
+        NULL,			// block16_Disable,
+        (P_OBJ_TOSTRING)block16_ToDebugString,
+        NULL,			// (P_OBJ_ASSIGN)block16_Assign,
+        NULL,			// (P_OBJ_COMPARE)block16_Compare,
+        NULL, 			// (P_OBJ_PTR)block16_Copy,
+        NULL 			// (P_OBJ_HASH)block16_Hash
+    }
 };
 
+
+
+static
+const
+OBJ_INFO        block16_Info = {
+    "block16",
+    "Data Block with optional Header (16-bit sizes)",
+    (OBJ_DATA *)&block16_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj
+};
 
 
 

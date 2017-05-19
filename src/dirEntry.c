@@ -131,38 +131,38 @@ extern "C" {
     //===============================================================
 
     PATH_DATA *     dirEntry_getDir(
-        DIRENTRY_DATA   *cbp
+        DIRENTRY_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pDir;
+        return this->pDir;
     }
     
     bool            dirEntry_setDir(
-        DIRENTRY_DATA   *cbp,
+        DIRENTRY_DATA   *this,
         PATH_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pDir) {
-            obj_Release(cbp->pDir);
+        if (this->pDir) {
+            obj_Release(this->pDir);
         }
-        cbp->pDir = pValue;
+        this->pDir = pValue;
         
         return true;
     }
@@ -170,38 +170,38 @@ extern "C" {
     
     
     ASTR_DATA *     dirEntry_getName(
-        DIRENTRY_DATA   *cbp
+        DIRENTRY_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pName;
+        return this->pName;
     }
     
     bool            dirEntry_setName(
-        DIRENTRY_DATA   *cbp,
+        DIRENTRY_DATA   *this,
         ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pName) {
-            obj_Release(cbp->pName);
+        if (this->pName) {
+            obj_Release(this->pName);
         }
-        cbp->pName = pValue;
+        this->pName = pValue;
         
         return true;
     }
@@ -209,45 +209,45 @@ extern "C" {
     
     
     uint8_t         dirEntry_getType(
-        DIRENTRY_DATA   *cbp
+        DIRENTRY_DATA   *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        return cbp->type;
+        return this->type;
     }
 
     bool            dirEntry_setType(
-        DIRENTRY_DATA   *cbp,
+        DIRENTRY_DATA   *this,
         uint8_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->type = value;
+        this->type = value;
         return true;
     }
 
 
 
     uint32_t        dirEntry_getSize(
-        DIRENTRY_DATA       *cbp
+        DIRENTRY_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -272,25 +272,25 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        DIRENTRY_DATA   *cbp = objId;
+        DIRENTRY_DATA   *this = objId;
 
         // Do initialization.
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        (void)dirEntry_setDir(cbp, OBJ_NIL);
-        (void)dirEntry_setName(cbp, OBJ_NIL);
+        (void)dirEntry_setDir(this, OBJ_NIL);
+        (void)dirEntry_setName(this, OBJ_NIL);
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -302,32 +302,32 @@ extern "C" {
     //---------------------------------------------------------------
 
     DIRENTRY_DATA *   dirEntry_Init(
-        DIRENTRY_DATA       *cbp
+        DIRENTRY_DATA       *this
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_DIRENTRY );
-        if (OBJ_NIL == cbp) {
+        this = obj_Init( this, obj_getSize(this), OBJ_IDENT_DIRENTRY );
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &dirEntry_Vtbl);
+        obj_setVtbl(this, &dirEntry_Vtbl);
         
-        //cbp->stackSize = obj_getMisc1(cbp);
+        //this->stackSize = obj_getMisc1(this);
 
     #ifdef NDEBUG
     #else
-        if( !dirEntry_Validate( cbp ) ) {
+        if( !dirEntry_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
@@ -339,18 +339,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            dirEntry_Validate(
-        DIRENTRY_DATA      *cbp
+        DIRENTRY_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_DIRENTRY) )
+        if( this ) {
+            if ( obj_IsKindOf(this,OBJ_IDENT_DIRENTRY) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(DIRENTRY_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(DIRENTRY_DATA)) )
             return false;
 
         // Return to caller.

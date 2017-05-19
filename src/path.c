@@ -157,11 +157,12 @@ extern "C" {
         PATH_DATA       *this =  OBJ_NIL;
         char            data[512];
         uint32_t        len;
-        char            *pBuffer;
+        char            *pBuffer = NULL;
         
         // Do initialization.
-        
+#ifdef __MACOSX_ENV__
         pBuffer = getcwd(data, sizeof(data));
+#endif
         if (NULL == pBuffer)
             ;
         else {
@@ -935,9 +936,11 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
+#ifdef __MACOSX_ENV__
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -949,16 +952,18 @@ extern "C" {
 #endif
 
         pStr = (char *)AStr_getData((ASTR_DATA *)cbp);
+#ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
-                eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                eRc = ERESULT_SUCCESS;
             }
             else
                 eRc = ERESULT_FAILURE_FALSE;
         }
         else
             eRc = ERESULT_PATH_NOT_FOUND;
+#endif
         
         // Return to caller.
         return eRc;
@@ -976,9 +981,11 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
+#ifdef __MACOSX_ENV__
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -990,12 +997,14 @@ extern "C" {
 #endif
         
         pStr = AStr_getData((ASTR_DATA *)cbp);
+#ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             eRc = ERESULT_SUCCESS;
         }
         else
             eRc = ERESULT_PATH_NOT_FOUND;
+#endif
         
         // Return to caller.
         return eRc;
@@ -1013,9 +1022,11 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
+#ifdef __MACOSX_ENV__
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1027,6 +1038,7 @@ extern "C" {
 #endif
         
         pStr = AStr_getData((ASTR_DATA *)cbp);
+#ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
@@ -1037,6 +1049,7 @@ extern "C" {
         }
         else
             eRc = ERESULT_PATH_NOT_FOUND;
+#endif
         
         // Return to caller.
         return eRc;
@@ -1054,9 +1067,11 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
+#ifdef __MACOSX_ENV__
         struct stat     statBuffer;
         int             iRc;
-        ERESULT         eRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1068,16 +1083,18 @@ extern "C" {
 #endif
         
         pStr = AStr_getData((ASTR_DATA *)cbp);
+#ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
-                eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                eRc = ERESULT_SUCCESS;
             }
             else
                 eRc = ERESULT_FAILURE_FALSE;
         }
         else
             eRc = ERESULT_PATH_NOT_FOUND;
+#endif
         
         // Return to caller.
         return eRc;
@@ -1139,7 +1156,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1211,7 +1228,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1297,7 +1314,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1401,7 +1418,7 @@ extern "C" {
         }
     
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1519,7 +1536,7 @@ extern "C" {
     )
     {
         if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_PATH) )
+            if ( obj_IsKindOf(cbp, OBJ_IDENT_PATH) )
                 ;
             else
                 return false;

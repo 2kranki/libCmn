@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4 tw=90
 /*
- * File:   block.c
+ * File:   block32.c
  *	Generated 01/05/2016 07:38:50
  *
  */
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "block_internal.h"
+#include <block32_internal.h>
 #include <stdio.h>
 
 
@@ -61,7 +61,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            block_task_body(
+    void            block32_task_body(
         void            *pData
     )
     {
@@ -73,22 +73,20 @@ extern "C" {
 
 
     // An offset of zero should never occur. So, it denotes an error.
-#ifdef XYZZY
     static
-    uint32_t        block_DataOffset(
-        BLOCK_DATA      *this
+    uint32_t        block32_DataOffset(
+        BLOCK32_DATA    *this
     )
     {
         uint32_t        offset = 0;
         
-        if (this->pData) {
-            offset  = ROUNDUP_WORD(sizeof(BLOCKED_DATA));
-            offset += this->pData->headerSize;
-            offset += this->pData->dataUsed;
+        if (this->pBlock) {
+            offset  = ROUNDUP4(sizeof(BLOCKED32_DATA));
+            offset += this->pBlock->headerSize;
+            offset += this->pBlock->dataUsed;
         }
         return offset;
     }
-#endif
     
     
     
@@ -101,25 +99,25 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BLOCK_DATA *     block_Alloc(
+    BLOCK32_DATA *   block32_Alloc(
     )
     {
-        BLOCK_DATA      *cbp;
-        uint32_t        cbSize = sizeof(BLOCK_DATA);
+        BLOCK32_DATA    *this;
+        uint32_t        cbSize = sizeof(BLOCK32_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
 
     // Given the data size, block16_blockSize returns the size of
     // the block that will be acquired.
-    uint32_t		block_CalcBlockSize(
+    uint32_t		block32_CalcBlockSize(
         uint32_t        headerSize,
         uint32_t        dataSize
     )
@@ -127,12 +125,12 @@ extern "C" {
         uint32_t        cbSize;
         
         // Do initialization.
-        cbSize = ROUNDUP_WORD(sizeof(BLOCKED_DATA));
+        cbSize = ROUNDUP4(sizeof(BLOCKED32_DATA));
         if (headerSize) {
-            cbSize += ROUNDUP_WORD(headerSize);
+            cbSize += ROUNDUP4(headerSize);
         }
         if (dataSize) {
-            cbSize += ROUNDUP_WORD(dataSize);
+            cbSize += ROUNDUP4(dataSize);
         }
         else {
             return 0;
@@ -144,30 +142,30 @@ extern "C" {
     
     
     
-    BLOCK_DATA *     block_New(
+    BLOCK32_DATA *   block32_New(
     )
     {
-        BLOCK_DATA       *this;
+        BLOCK32_DATA    *this;
         
-        this = block_Alloc( );
+        this = block32_Alloc( );
         if (this) {
-            this = block_Init(this);
+            this = block32_Init(this);
         } 
         return this;
     }
 
 
 
-    BLOCK_DATA *     block_NewWithSizes(
+    BLOCK32_DATA *   block32_NewWithSizes(
         uint32_t        headerSize,
         uint32_t        dataSize
     )
     {
-        BLOCK_DATA       *this;
+        BLOCK32_DATA    *this;
         
-        this = block_Alloc( );
+        this = block32_Alloc( );
         if (this) {
-            this = block_InitWithSizes(this, headerSize, dataSize);
+            this = block32_InitWithSizes(this, headerSize, dataSize);
         }
         return this;
     }
@@ -180,15 +178,15 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    void *          block_getBlock(
-        BLOCK_DATA     *this
+    void *          block32_getBlock(
+        BLOCK32_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate( this ) ) {
+        if( !block32_Validate( this ) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -198,14 +196,14 @@ extern "C" {
     }
     
     
-    bool            block_setBlock(
-        BLOCK_DATA      *this,
+    bool            block32_setBlock(
+        BLOCK32_DATA    *this,
         void            *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !block_Validate( this ) ) {
+        if( !block32_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -221,15 +219,15 @@ extern "C" {
     
     
     
-    void *          block_getData(
-        BLOCK_DATA     *this
+    void *          block32_getData(
+        BLOCK32_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate( this ) ) {
+        if( !block32_Validate( this ) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -241,15 +239,15 @@ extern "C" {
     
     
 
-    uint32_t        block_getDataOffset(
-        BLOCK_DATA     *this
+    uint32_t        block32_getDataOffset(
+        BLOCK32_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -261,15 +259,15 @@ extern "C" {
     
 
     
-    uint32_t        block_getDataSize(
-        BLOCK_DATA     *this
+    uint32_t        block32_getDataSize(
+        BLOCK32_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -279,16 +277,56 @@ extern "C" {
         return this->pBlock->dataSize;
     }
     
+
     
-    void *          block_getHeader(
-        BLOCK_DATA     *this
+    uint32_t        block32_getDataUsed(
+        BLOCK32_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate( this ) ) {
+        if( !block32_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        return this->pBlock->dataUsed;
+    }
+    
+    
+    bool            block32_setDataUsed(
+        BLOCK32_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !block32_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        this->pBlock->dataUsed = value;
+        
+        return true;
+    }
+    
+    
+    
+    void *          block32_getHeader(
+        BLOCK32_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block32_Validate( this ) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -300,15 +338,15 @@ extern "C" {
     
     
     
-    uint32_t        block_getHeaderSize(
-        BLOCK_DATA     *this
+    uint32_t        block32_getHeaderSize(
+        BLOCK32_DATA    *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -319,14 +357,14 @@ extern "C" {
     }
 
     
-    bool            block_setHeaderSize(
-        BLOCK_DATA      *this,
+    bool            block32_setHeaderSize(
+        BLOCK32_DATA    *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
         }
         BREAK_NULL(this->pBlock);
@@ -339,15 +377,15 @@ extern "C" {
 
 
 
-    ERESULT         block_getLastError(
-        BLOCK_DATA     *this
+    ERESULT         block32_getLastError(
+        BLOCK32_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
             return this->eRc;
         }
@@ -366,15 +404,52 @@ extern "C" {
     //===============================================================
 
 
+    //----------------------------------------------------------
+    //                    A d d D a t a
+    //----------------------------------------------------------
+    
+    bool			block32_AddData(
+        BLOCK32_DATA	*this,
+        uint32_t        dataSize,
+        void            *pData
+    )
+    {
+        void            *pBlockData;
+        
+        /* Validate the input parameters.
+         */
+#ifdef NDEBUG
+#else
+        if( !block32_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if( dataSize > (this->pBlock->dataSize - this->pBlock->dataUsed) )
+            return false;
+#endif
+        
+        pBlockData = (uint8_t *)(this->pBlock) + block32_DataOffset(this);
+        if (pBlockData == NULL) {
+            return false;
+        }
+        memmove(pBlockData, pData, dataSize);
+        this->pBlock->dataUsed += dataSize;
+        
+        // Return to caller.
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            block_Dealloc(
+    void            block32_Dealloc(
         OBJ_ID          objId
     )
     {
-        BLOCK_DATA      *this = objId;
+        BLOCK32_DATA    *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -382,7 +457,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -403,42 +478,11 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      D i s a b l e
-    //---------------------------------------------------------------
-
-    bool            block_Disable(
-        BLOCK_DATA		*cbp
-    )
-    {
-
-        // Do initialization.
-        if (NULL == cbp) {
-            return false;
-        }
-    #ifdef NDEBUG
-    #else
-        if( !block_Validate( cbp ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-    #endif
-
-        // Put code here...
-
-        obj_Disable(cbp);
-        
-        // Return to caller.
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      D a t a  P t r
     //---------------------------------------------------------------
 
-    void *          block_DataPtr(
-        BLOCK_DATA		*this
+    void *          block32_DataPtr(
+        BLOCK32_DATA    *this
     )
     {
         void            *pData = NULL;
@@ -446,7 +490,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !block_Validate(this) ) {
+        if( !block32_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -465,31 +509,31 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    BLOCK_DATA *    block_Init(
-        BLOCK_DATA      *this
+    BLOCK32_DATA *  block32_Init(
+        BLOCK32_DATA    *this
     )
     {
-        uint32_t        cbSize;
+        uint32_t        cbSize = sizeof(BLOCK32_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         cbSize = obj_getSize(this);
-        this = (BLOCK_DATA *)obj_Init( this, cbSize, OBJ_IDENT_BLOCK );
+        this = (BLOCK32_DATA *)obj_Init( this, cbSize, OBJ_IDENT_BLOCK32 );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             //obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);         // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_BLOCK);
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_BLOCK32);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&block_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&block32_Vtbl);
         
     #ifdef NDEBUG
     #else
-        if( !block_Validate( this ) ) {
+        if( !block32_Validate( this ) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -502,8 +546,8 @@ extern "C" {
 
      
 
-    BLOCK_DATA *    block_InitWithSizes(
-        BLOCK_DATA      *this,
+    BLOCK32_DATA *  block32_InitWithSizes(
+        BLOCK32_DATA    *this,
         uint32_t        headerSize,
         uint32_t        dataSize
     )
@@ -519,14 +563,14 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = block_Init( this );
+        this = block32_Init( this );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             //obj_Release(this);
             return OBJ_NIL;
         }
         
-        cbBlock = block_CalcBlockSize(headerSize, dataSize);
+        cbBlock = block32_CalcBlockSize(headerSize, dataSize);
         if (0 == cbBlock) {
             obj_Release(this);
             return OBJ_NIL;
@@ -547,38 +591,11 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
-    //---------------------------------------------------------------
-    
-    bool            block_IsEnabled(
-        BLOCK_DATA		*cbp
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !block_Validate( cbp ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        if (obj_IsEnabled(cbp))
-            return true;
-        
-        // Return to caller.
-        return false;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     block_ToDebugString(
-        BLOCK_DATA      *this,
+    ASTR_DATA *     block32_ToDebugString(
+        BLOCK32_DATA    *this,
         int             indent
     )
     {
@@ -601,7 +618,7 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(block) ",
+                     "{%p(block32) ",
                      this
             );
         AStr_AppendA(pStr, str);
@@ -619,7 +636,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", this );
+        j = snprintf( str, sizeof(str), " (block32)%p}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -633,12 +650,12 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            block_Validate(
-        BLOCK_DATA      *this
+    bool            block32_Validate(
+        BLOCK32_DATA    *this
     )
     {
         if(this) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_BLOCK) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_BLOCK32) )
                 ;
             else
                 return false;
@@ -646,7 +663,7 @@ extern "C" {
         else
             return false;
         this->eRc = ERESULT_INVALID_OBJECT;
-        if( !(obj_getSize(this) >= sizeof(BLOCK_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(BLOCK32_DATA)) )
             return false;
 
         // Return to caller.

@@ -756,8 +756,8 @@ extern "C" {
             // Shift the index.
             shiftSize = sizeof(INDEX_RECORD) * numShiftRcds;
             if( shiftSize ) {
-                start = &this->pBlock->index[index];
-                shiftTo = &this->pBlock->index[index-1];
+                start = (uint8_t *)&this->pBlock->index[index];
+                shiftTo = (uint8_t *)&this->pBlock->index[index-1];
                 memmove( shiftTo, start, shiftSize );
                 // Adjust the index for new offsets.
                 for( i=0; i<numShiftRcds; ++i ) {

@@ -26,12 +26,11 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/audioWAV.h>
 #import <libCmn/bitMatrix.h>
 #import <libCmn/bitSet.h>
-#import <libCmn/block.h>
 #import <libCmn/block16.h>
+#import <libCmn/block32.h>
 #import <libCmn/blocks.h>
 #import <libCmn/btp.h>
 #import <libCmn/cb.h>
-#import <libCmn/cb8.h>
 #import <libCmn/cb16.h>
 #import <libCmn/cb32.h>
 #import <libCmn/cfa.h>
@@ -39,8 +38,6 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/cmdutl.h>
 #import <libCmn/cmn_defs.h>
 #import <libCmn/cmn_osx.h>
-#import <libCmn/con.h>
-#import <libCmn/con_fio.h>
 #import <libCmn/consumer.h>
 #import <libCmn/csv.h>
 #import <libCmn/dateTime.h>
@@ -62,7 +59,6 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/greg.h>
 #import <libCmn/hash32.h>
 #import <libCmn/hex.h>
-#import <libCmn/ioRcd.h>
 #import <libCmn/json.h>
 #import <libCmn/listdl.h>
 #import <libCmn/lru.h>
@@ -90,7 +86,6 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/objMatrix.h>
 #import <libCmn/path.h>
 #import <libCmn/plist.h>
-#import <libCmn/prt.h>
 #import <libCmn/psxCond.h>
 #import <libCmn/psxMutex.h>
 #import <libCmn/psxSem.h>

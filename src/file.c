@@ -43,15 +43,6 @@
 
 /* Header File Inclusion */
 #include    "file_internal.h"
-#include    <sys/dirent.h>
-#include    <sys/stat.h>
-#include    <sys/time.h>
-#include    <sys/types.h>
-#include    <dirent.h>
-#include    <errno.h>
-#include    <stdio.h>
-#include    <time.h>
-#include    <unistd.h>
 
 
 

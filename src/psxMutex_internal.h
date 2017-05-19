@@ -43,7 +43,8 @@
 
 
 #include    "psxMutex.h"
-#include    <pthread.h>
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -59,10 +60,10 @@ struct psxMutex_data_s	{
 #define PSXMUTEX_FLAG_LOCKED    6
 
     // Common Data
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
     pthread_mutex_t mutex;
 #endif
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #ifdef  USE_MSC_MUTEX
     HANDLE        	m_hMutex;
 #else
@@ -71,7 +72,7 @@ struct psxMutex_data_s	{
                     csSem;
 #endif
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
     struct TN_Mutex mutex;
 #endif
 

@@ -1,3 +1,7 @@
+/*
+ *	Generated 01/05/2016 07:38:50
+ */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -33,44 +37,24 @@
 
 // All code under test must be linked into the Unit Test bundle
 // Test Macros:
-//      STAssert(expression, failure_description, ...)
-//      STFail(failure_description, ...)
-//      STAssertEqualObjects(object_1, object_2, failure_description, ...) uses isEqualTo:
-//      STAssertEquals(value_1, value_2, failure_description, ...)
-//      STAssertEqualsWithAccuracy(value_1, value_2, accuracy, failure_description, ...)
-//      STAssertNil(expression, failure_description, ...)
-//      STAssertNotNil(expression, failure_description, ...)
-//      STAssertTrue(expression, failure_description, ...)
-//      STAssertFalse(expression, failure_description, ...)
-//      STAssertThrows(expression, failure_description, ...)
-//      STAssertThrowsSpecific(expression, exception_class, failure_description, ...)
-//      STAssertThrowsSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
-//      STAssertNoThrow(expression, failure_description, ...)
-//      STAssertNoThrowSpecific(expression, exception_class, failure_description, ...)
-//      STAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
+//      XCTAssert(expression, failure_description, ...)
+//      XCTFail(failure_description, ...)
+//      XCTAssertEqualObjects(object_1, object_2, failure_description, ...) uses isEqualTo:
+//      XCTAssertEquals(value_1, value_2, failure_description, ...)
+//      XCTAssertEqualsWithAccuracy(value_1, value_2, accuracy, failure_description, ...)
+//      XCTAssertNil(expression, failure_description, ...)
+//      XCTAssertNotNil(expression, failure_description, ...)
+//      XCTAssertTrue(expression, failure_description, ...)
+//      XCTAssertFalse(expression, failure_description, ...)
+//      XCTAssertThrows(expression, failure_description, ...)
+//      XCTAssertThrowsSpecific(expression, exception_class, failure_description, ...)
+//      XCTAssertThrowsSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
+//      XCTAssertNoThrow(expression, failure_description, ...)
+//      XCTAssertNoThrowSpecific(expression, exception_class, failure_description, ...)
+//      XCTAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
-#include    <block16.h>
-#include    <block16_internal.h>           // We cheat!
-
-
-#define NUM_STR     10
-
-/* Other variables */
-static
-char        *StrArray[NUM_STR] = {
-//   123456789
-	"String  1",
-	"String  2",
-	"String  3",
-	"String  4",
-	"String  5",
-	"String  6",
-	"String  7",
-	"String  8",
-	"String  9",
-	"String 10"
-};
+#include    <block16_internal.h>
 
 
 
@@ -86,7 +70,7 @@ char        *StrArray[NUM_STR] = {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each
     // test method in the class.
-
+    
     mem_Init( );
     
 }
@@ -106,84 +90,53 @@ char        *StrArray[NUM_STR] = {
 
 - (void)testOpenClose
 {
-	BLOCK16_DATA    *cbp;
-
-    mem_Init( );
-    
-	cbp = block16_Open( 0, 32 );
-    XCTAssertTrue( (block16_Validate(cbp)) );
-    XCTAssertFalse( (NULL == cbp) );
-    XCTAssertTrue( (0 == block16_DataOffset(cbp)) );
-	cbp = block16_Close( cbp );
-    XCTAssertTrue( (NULL == cbp) );
-
-	cbp = block16_Open( 7, 32 );
-    XCTAssertFalse( (NULL == cbp) );
-    XCTAssertTrue( (8 == block16_DataOffset(cbp)) );
-	cbp = block16_Close( cbp );
-    XCTAssertTrue( (NULL == cbp) );
-    
-}
-
-
-
-- (void)testAddData01
-{
-	BLOCK16_DATA    *cbp;
+    BLOCK16_DATA    *pObj = OBJ_NIL;
+    uint32_t        size = 0;
     bool            fRc;
-    uint32_t        i;
-    void            *pData;
-    
-    mem_Init( );
-    
-    // BLock without a header.
-	cbp = block16_Open( 0, 32 );
-    XCTAssertFalse( (NULL == cbp) );
-    XCTAssertTrue( (0 == block16_DataOffset(cbp)) );
+    uint8_t         *pData;
+   
+    pObj = block16_NewWithSizes(0, 32);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        size = block16_getHeaderSize(pObj);
+        XCTAssertTrue( (0 == size) );
+        size = block16_getDataOffset(pObj);
+        XCTAssertTrue( (0 == size) );
+        size = block16_getDataSize(pObj);
+        XCTAssertTrue( (32 == size) );
 
-    i = block16_UnusedDataSize(cbp);
-    XCTAssertTrue( (32 == i) );
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
 
-    fRc = block16_AddData(cbp, 9, StrArray[0] );
-    XCTAssertTrue( (fRc), @"block_AddData failed!" );
-    XCTAssertTrue( (9 == cbp->dataUsed) );
+    pObj = block16_NewWithSizes(8, 31);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        size = block16_getHeaderSize(pObj);
+        XCTAssertTrue( (8 == size) );
+        size = block16_getDataOffset(pObj);
+        XCTAssertTrue( (8 == size) );
+        size = block16_getDataSize(pObj);
+        XCTAssertTrue( (32 == size) );
 
-    pData = block16_DataPtr( cbp );
-    XCTAssertTrue( (pData == &cbp->header[0]) );
-    i = memcmp( pData, StrArray[0], 9 );
-    XCTAssertTrue( (i == 0) );
-    
-    i = block16_UnusedDataSize(cbp);
-    XCTAssertTrue( ((32-9) == i) );
-
-	cbp = block16_Close( cbp );
-    XCTAssertTrue( (NULL == cbp) );
-    
-    
-    // Block with a header.
-	cbp = block16_Open( 7, 32 );
-    XCTAssertFalse( (NULL == cbp) );
-    XCTAssertTrue( (8 == block16_DataOffset(cbp)) );
-    
-    i = block16_UnusedDataSize(cbp);
-    XCTAssertTrue( (32 == i) );
-    
-    fRc = block16_AddData(cbp, 9, StrArray[0] );
-    XCTAssertTrue( (fRc) );
-    XCTAssertTrue( (9 == cbp->dataUsed) );
-    
-    pData = block16_DataPtr( cbp );
-    XCTAssertTrue( (pData == &cbp->header[8]) );
-    i = memcmp( pData, StrArray[0], 9 );
-    XCTAssertTrue( (i == 0) );
-    
-    i = block16_UnusedDataSize(cbp);
-    XCTAssertTrue( ((32-9) == i) );
-    
-	cbp = block16_Close( cbp );
-    XCTAssertTrue( (NULL == cbp) );
+        fRc = block16_AddData(pObj, 4, "abcd");
+        XCTAssertTrue( (fRc) );
+        size = block16_getDataUsed(pObj);
+        XCTAssertTrue( (4 == size) );
+        
+        fRc = block16_AddData(pObj, 4, "abcd");
+        XCTAssertTrue( (fRc) );
+        size = block16_getDataUsed(pObj);
+        XCTAssertTrue( (8 == size) );
+        pData = block16_getData(pObj);
+        XCTAssertTrue( (0 == strncmp("abcdabcd", (void *)pData, size)) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
     
 }
+
 
 
 @end

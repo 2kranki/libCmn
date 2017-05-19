@@ -38,7 +38,6 @@
 
 
 #include    <psxCond.h>
-#include    <pthread.h>
 
 
 

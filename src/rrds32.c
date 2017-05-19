@@ -401,11 +401,20 @@ bool            rrds32_FileOpen(
     int             fileHandle;
 
 	//  Open the File.
+#if defined(__MACOSX_ENV__)
     fileHandle = open(
                       pFilePath,
                       (O_APPEND | O_RDWR),
                       (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
                 );
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    fileHandle =    open(
+                          pFilePath,
+                          (O_APPEND | O_RDWR),
+                          (S_IREAD | S_IWRITE)
+                    );
+#endif
 	if( -1 == fileHandle ) {
 		return false;
     }

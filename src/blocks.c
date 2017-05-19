@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   blocks.c
+ * File:   blocks32.c
  *	Generated 09/04/2016 13:13:56
  *
  */
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "blocks_internal.h"
+#include <blocks_internal.h>
 
 
 
@@ -80,10 +80,10 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BLOCKS_DATA *     blocks_Alloc(
+    BLOCKS_DATA * blocks_Alloc(
     )
     {
-        BLOCKS_DATA       *this;
+        BLOCKS_DATA   *this;
         uint32_t        cbSize = sizeof(BLOCKS_DATA);
         
         // Do initialization.
@@ -96,11 +96,11 @@ extern "C" {
 
 
 
-    BLOCKS_DATA *     blocks_New(
+    BLOCKS_DATA * blocks_New(
         uint16_t        blockSize
     )
     {
-        BLOCKS_DATA       *this;
+        BLOCKS_DATA   *this;
         
         this = blocks_Alloc( );
         if (this) {

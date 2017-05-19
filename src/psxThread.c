@@ -42,8 +42,6 @@
 
 /* Header File Inclusion */
 #include "psxThread_internal.h"
-#include <stdio.h>
-#include <unistd.h>
 
 
 
@@ -61,17 +59,26 @@ extern "C" {
     ****************************************************************/
 
     static
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    uint32_t __stdcall thread_task_body(
+        void            *pData
+    )
+#else
     void *          thread_task_body(
         void            *pData
     )
+#endif
     {
         PSXTHREAD_DATA  *this = pData;
         void            *pReturn = NULL;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        int             iRc = 0;
+#endif
        
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 #endif
         this->state = PSXTHREAD_STATE_RUNNING;
@@ -102,14 +109,10 @@ extern "C" {
                 }
             }
             else {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
                 usleep(100);            // Sleep for 100us
 #endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
-#endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
                 tn_task_sleep(TN_WAIT_INFINITE);
 #endif
             }
@@ -118,7 +121,11 @@ extern "C" {
     
         this->state = PSXTHREAD_STATE_ENDED;
         psxSem_Post(this->pWorkerEnded);
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        return iRc;
+#else
         return pReturn;
+#endif
     }
     
     
@@ -345,10 +352,10 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -363,17 +370,13 @@ extern "C" {
         
         if (!((psxThread_getState(this) == PSXTHREAD_STATE_ENDED)
             || (psxThread_getState(this) == PSXTHREAD_STATE_ENDING))) {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
             iRc = pthread_cancel(this->worker);
             if (iRc == 0) {
                 fRc = true;
             }
 #endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
-#endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
             tn_rc = tn_task_terminate( &this->worker );
             if (tn_rc == TN_RC_OK) {
                 fRc = true;
@@ -400,10 +403,10 @@ extern "C" {
     )
     {
         PSXTHREAD_DATA  *this = objId;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
 
@@ -428,7 +431,7 @@ extern "C" {
                 psxThread_Stop(this);
                 psxThread_Join(this, NULL);
             }
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
             if (this->state == PSXTHREAD_STATE_ENDED) {
             }
             else {
@@ -472,14 +475,14 @@ extern "C" {
             this->pStack = NULL;
         }
         
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         if (this->m_hThread) {
             CloseHandle(this->m_hThread);
             this->m_hThread = NULL;
             this->m_ThreadID = 0;
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tn_rc = tn_task_delete( &this->thread );
         if (tn_rc == TN_RC_OK) {
         }
@@ -508,12 +511,8 @@ extern "C" {
     )
     {
         uint32_t        cbSize;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         //int             iRc;
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         if (OBJ_NIL == this) {
@@ -535,11 +534,11 @@ extern "C" {
         this->threadBody = startRoutine;
         this->threadData = routineData;
         this->stackSize  = stackSize;
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         this->m_hThread = NULL;
         this->m_ThreadID = 0;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         if (stackSize) {
             this->pStack = mem_Malloc(stackSize);
             if (this->pStack == NULL) {
@@ -548,10 +547,6 @@ extern "C" {
                 return OBJ_NIL;
             }
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         this->pWorkerVars = psxMutex_New();
@@ -612,7 +607,7 @@ extern "C" {
         void                **ppReturn
     )
     {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
         
@@ -628,7 +623,7 @@ extern "C" {
         if (!obj_IsEnabled(this) || !(this->state == PSXTHREAD_STATE_RUNNING))
             return false;
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_join(this->worker, ppReturn);
         if (0 == iRc) {
             return true;
@@ -710,11 +705,11 @@ extern "C" {
         uint32_t        msTime              // Time in ms
     )
     {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         struct timespec req;
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
         int             iRc;
 #endif
@@ -728,7 +723,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         if(msTime > 999) {
             req.tv_sec = (int)(msTime / 1000);  /* Must be Non-Negative */
             req.tv_nsec = (msTime - ((long)req.tv_sec * 1000)) * 1000000;
@@ -744,7 +739,7 @@ extern "C" {
             return true;
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_task_sleep(msTime);
         if (tnRc == TN_RC_OK) {
             return true;
@@ -766,10 +761,10 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tn_rc;
 #endif
         
@@ -784,24 +779,24 @@ extern "C" {
         
         // Create the thread and get it running.
         this->state = PSXTHREAD_STATE_STARTING;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_create(&this->worker, NULL, &thread_task_body, this);
         if (iRc == 0) {
             fRc = true;
         }
 #endif
-#if defined(_MSC_VER)
-        this-m_hThread =    CreateThread(
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        this->m_hThread =   CreateThread(
                                     NULL,               // default security attributes
                                     0,                  // use default stack size
                                     thread_task_body,   // thread function name
                                     this,               // argument to thread function
                                     0,                  // use default creation flags
-                                    &this-m_ThreadID    // returns the thread identifier
+                                    &this->m_ThreadID   // returns the thread identifier
                             );
         
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         memset(&this->thread, 0, sizeof(struct TN_Task));
         tn_rc =     tn_task_create(
                                    &this->thread,

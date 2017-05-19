@@ -201,8 +201,7 @@ extern "C" {
     )
     {
         uint16_t        count;
-#ifdef __APPLE__
-#else
+#ifdef __PIC32MX_ENV__
         INTERRUPT_STATUS;
 #endif
         
@@ -217,15 +216,13 @@ extern "C" {
         
         // We need to disable interrupts so that we have
         // uninterrupted access to both variables.
-#ifdef __APPLE__
-#else
+#ifdef __PIC32MX_ENV__
         DISABLE_INTERRUPTS();
 #endif
         
         count = (uint16_t)(cbp->numWritten - cbp->numRead);
         
-#ifdef __APPLE__
-#else
+#ifdef __PIC32MX_ENV__
         RESTORE_INTERRUPTS;
 #endif
         
@@ -256,7 +253,7 @@ extern "C" {
         }
 #endif
         
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         tn_mutex_delete(&cbp->putMutex);
         tn_mutex_delete(&cbp->getMutex);
 #endif
@@ -287,7 +284,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         TN_RC           tRc;
 #endif
 
@@ -300,7 +297,7 @@ extern "C" {
         }
     #endif
         
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         tRc = tn_mutex_lock( &cbp->getMutex, TN_WAIT_INFINITE );
         if (TN_RC_OK == tRc)
             ;
@@ -324,7 +321,7 @@ extern "C" {
             fRc = true;
         }
         
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         tn_mutex_unlock(&cbp->getMutex);
 #endif
         
@@ -411,7 +408,7 @@ extern "C" {
         
         cbp->cEntries = size;
         
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         tn_mutex_create(&cbp->getMutex, TN_MUTEX_PROT_INHERIT, 0);
         tn_mutex_create(&cbp->putMutex, TN_MUTEX_PROT_INHERIT, 0);
 #endif
@@ -431,7 +428,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         TN_RC           tRc;
 #endif
 
@@ -444,7 +441,7 @@ extern "C" {
         }
     #endif
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         tRc = tn_mutex_lock( &cbp->putMutex, TN_WAIT_INFINITE );
         if (TN_RC_OK == tRc)
             ;
@@ -466,7 +463,7 @@ extern "C" {
             fRc = true;
         }
 
-#ifdef USE_PIC32
+#ifdef __PIC32MX_TNEO_ENV__
         tn_mutex_unlock(&cbp->putMutex);
 #endif
         

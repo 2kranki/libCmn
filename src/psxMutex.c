@@ -42,7 +42,6 @@
 
 /* Header File Inclusion */
 #include "psxMutex_internal.h"
-#include <stdio.h>
 
 
 
@@ -161,7 +160,7 @@ extern "C" {
         CloseHandle(this->m_hMutex);
 #else
         while( this->LockCount ) {
-            (void)psxMutex_Unlock( &this->IntLock );
+            (void)psxMutex_Unlock(this);
         }
         DeleteCriticalSection( &this->csSem );
 #endif
@@ -184,10 +183,10 @@ extern "C" {
     )
     {
         uint32_t        cbSize;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -207,14 +206,14 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxMutex_Vtbl);
        
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         //this->mutex = PTHREAD_MUTEX_INITIALIZER;
         iRc = pthread_mutex_init(&this->mutex, NULL);
         if (iRc) {
             DEBUG_BREAK();
         }
 #endif
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__)
 #ifdef  USE_MSC_MUTEX
         this->m_hMutex =    CreateMutex(
                                     NULL,         // default security attributes
@@ -232,7 +231,7 @@ extern "C" {
         InitializeCriticalSection( &this->csSem );
 #endif
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_create(&this->mutex,TN_MUTEX_PROT_INHERIT,0);
         if (tnRc == TN_RC_OK) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
@@ -296,7 +295,7 @@ extern "C" {
 #if defined(_MSC_VER)
         DWORD			dwRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -340,7 +339,7 @@ extern "C" {
         ++this->LockCount;
 #endif
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (tnRc == TN_RC_OK) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
@@ -410,7 +409,7 @@ extern "C" {
 #if defined(_MSC_VER)
         DWORD			dwRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -456,7 +455,7 @@ extern "C" {
         }
 #endif
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_lock_polling(&this->mutex);
         if (tnRc == TN_RC_OK) {
             obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
@@ -478,10 +477,10 @@ extern "C" {
         PSXMUTEX_DATA		*this
     )
     {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int                 iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode       tnRc;
 #endif
         
@@ -494,14 +493,14 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_unlock(&this->mutex);
         if (iRc == 0) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__)
 #ifdef  USE_MSC_MUTEX
         if (ReleaseMutex(this->m_hMutex)) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
@@ -512,7 +511,7 @@ extern "C" {
         LeaveCriticalSection( &this->csSem );
 #endif
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (tnRc == TN_RC_OK) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);

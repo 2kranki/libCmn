@@ -42,7 +42,6 @@
 
 /* Header File Inclusion */
 #include "psxSem_internal.h"
-#include <stdio.h>
 
 
 
@@ -133,10 +132,10 @@ extern "C" {
         }
 #endif
 
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         count = this->count;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         count = 0;      //FIXME:
 #endif
         
@@ -195,10 +194,10 @@ extern "C" {
     )
     {
         PSXSEM_DATA     *this = objId;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
 
@@ -214,7 +213,7 @@ extern "C" {
         }
 #endif
 
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_cond_destroy(&this->cond);
         if (iRc) {
             DEBUG_BREAK();
@@ -224,7 +223,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_delete(&this->sem);
         if( TN_RC_OK == tRc )
             ;
@@ -233,10 +232,6 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         obj_Dealloc( this );
@@ -258,12 +253,12 @@ extern "C" {
     )
     {
         uint32_t        cbSize;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tRc;
 #endif
         
@@ -285,7 +280,7 @@ extern "C" {
         
         this->count = start;
         this->max = max;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         this->wakeups = 0;
         iRc = pthread_cond_init(&this->cond,NULL);
         if (iRc) {
@@ -296,7 +291,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_create(&this->sem, start, max);   // FIXME: Dunno if correct.
         if( TN_RC_OK == tRc )
             ;
@@ -305,10 +300,6 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
 
     #ifdef NDEBUG
@@ -319,7 +310,7 @@ extern "C" {
             return OBJ_NIL;
         }
         //BREAK_NOT_BOUNDARY4(&this->thread);
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         BREAK_NOT_BOUNDARY4(&this->sem);
 #endif
     #endif
@@ -338,12 +329,12 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
 //        int             iRc;
 #endif
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -356,7 +347,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         pthread_mutex_lock(&this->mutex);
         if (this->count < this->max) {
             ++this->count;
@@ -372,23 +363,19 @@ extern "C" {
         }
         pthread_mutex_unlock(&this->mutex);
 #endif
-#if defined(_MSC_VER)
-	    fRc = SetEvent( hsemSem );
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+	    fRc = SetEvent( this->m_hSem );
 	    if( !fRc ) {
 		    return false;
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_signal(&cbp->sem);
         if (TN_RC_OK == tRc)
             fRc = true;
         else {
             DEBUG_BREAK();
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         // Return to caller.
@@ -401,7 +388,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -414,21 +401,17 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         fRc = psxSem_Post(this);
         return fRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_isignal(&cbp->sem);
         if (TN_RC_OK == tRc)
             ;
         else {
             DEBUG_BREAK();
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         // Return to caller.
@@ -456,9 +439,8 @@ extern "C" {
         }
 #endif
       
-#if defined(__WIN16)
-#elif defined(__WIN32) || defined(__WIN64)
-        fRc = SetEvent( hsemSem );
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        fRc = SetEvent( this->m_hSem );
         if( !fRc ) {
             return false;
         }
@@ -544,7 +526,7 @@ extern "C" {
             AStr_AppendCharRepeatW(pStr, indent, ' ');
         }
         str[0] = '\0';
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         pthread_mutex_lock(&this->mutex);
 #endif
         j = snprintf(
@@ -556,7 +538,7 @@ extern "C" {
                      this->wakeups,
                      this->max
             );
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         pthread_mutex_unlock(&this->mutex);
 #endif
         AStr_AppendA(pStr, str);
@@ -606,7 +588,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -619,7 +601,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         pthread_mutex_lock(&this->mutex);
         if (this->count <= 0) {
             fRc = false;
@@ -636,7 +618,7 @@ extern "C" {
         }
         pthread_mutex_unlock(&this->mutex);
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_wait_polling(&cbp->sem);
         if (TN_RC_OK == tRc) {
             fRc = true;
@@ -644,10 +626,6 @@ extern "C" {
         else {
             fRc = false;
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         // Return to caller.
@@ -660,7 +638,7 @@ extern "C" {
     )
     {
         bool            fRc;
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -673,20 +651,16 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         fRc = psxSem_Wait(this);
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_iwait_polling(&cbp->sem);
         if (TN_RC_OK == tRc)
             fRc = true;
         else {
             fRc = false;
         }
-#endif
-#if defined(__WIN16)
-#elif defined(__WIN32)
-#elif defined(__WIN64)
 #endif
         
         // Return to caller.
@@ -698,10 +672,10 @@ extern "C" {
         PSXSEM_DATA		*this
     )
     {
-#if defined(_MSC_VER)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 	    ULONG           iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -714,7 +688,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         pthread_mutex_lock(&this->mutex);
         --this->count;
         if (this->count < 0) {
@@ -725,12 +699,13 @@ extern "C" {
         --this->wakeups;
         pthread_mutex_unlock(&this->mutex);
 #endif
-#if defined(_MSC_VER)
-	    iRc = WaitForSingleObject( hsemSem, TimeOut );
-	    if( iRc == (ULONG)-1 )
-		return FALSE;
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+	    //FIXME: iRc = WaitForSingleObject( this->m_hSem, TimeOut );
+        if( iRc == (ULONG)-1 ) {
+            return FALSE;
+        }
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_wait(&cbp->sem, TN_WAIT_INFINITE);
         if (TN_RC_OK == tRc)
             ;

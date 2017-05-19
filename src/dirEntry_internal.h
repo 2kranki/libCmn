@@ -62,6 +62,10 @@ struct dirEntry_data_s	{
     uint8_t         type;
     uint8_t         reserved8;
     uint16_t        reserved16;
+#if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    uint64_t        fileSize;
+#endif
+    uint32_t        attr;           // File Attributes (ie Read-Only, Hidden, ...)
 
 };
 #pragma pack(pop)

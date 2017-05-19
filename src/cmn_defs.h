@@ -86,8 +86,17 @@
 
 #if             defined(__MACOSX_ENV__)
 #   include        <dirent.h>
+#   include        <errno.h>
+#   include        <pthread.h>
 #   include        <unistd.h>
 #   include        <sys/dirent.h>
+#   include        <sys/time.h>
+#endif
+#if             defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#   define         STRICT
+#   include        <windows.h>
+#   include        <windowsx.h>
+#   include        <signal.h>
 #endif
 #include        <ctype.h>
 #include        <fcntl.h>
@@ -98,6 +107,7 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
+#include        <time.h>
 #include        <wchar.h>
 #include        <sys/stat.h>
 #include        <sys/types.h>

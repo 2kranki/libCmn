@@ -1,5 +1,5 @@
 /*
- *	Generated 10/03/2016 16:19:27
+ *	Generated 01/05/2016 07:38:50
  */
 
 
@@ -54,79 +54,15 @@
 //      XCTAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
-#include    "con_internal.h"
+#include    <block32_internal.h>
 
 
 
-CHARIO_DATA     chario = { 0 };
-bool            fObjectError = false;
-int             inputLen = 0;
-char            *pInput = NULL;
-int             outputLen = 0;
-char            output[2048];
-
-
-
-bool            getRxChar(
-    void            *pObjectRx,
-    int32_t         *pData,         // Return Data ptr,
-                                    // if NULL, return data is flushed.
-    uint32_t        timeOut_ms      // Time Out in ms to wait
-                                    // (0 == no wait, 0xFFFFFFFF == infinite)
-)
-{
-    char            data;
-    
-    if (pObjectRx == (void *)1) {
-    }
-    else {
-        fObjectError = true;
-        return false;
-    }
-    
-    if (inputLen) {
-        data = *pInput++;
-        --inputLen;
-        *pData = data;
-        return true;
-    }
-    
-    return false;
-}
-
-
-
-bool            putTxChar(
-    void            *pObjectTx,
-    int32_t         data,
-    uint32_t        timeOut_ms      // Time Out in ms to wait
-                                    // (0 == no wait, 0xFFFFFFFF == infinite)
-)
-{
-    if (pObjectTx == (void *)2) {
-    }
-    else {
-        fObjectError = true;
-        return false;
-    }
-    
-    if (data) {
-        output[outputLen++] = data;
-        output[outputLen] = 0;
-        return true;
-    }
-    return false;
-}
-
-
-
-
-
-@interface conTests : XCTestCase
+@interface block32Tests : XCTestCase
 
 @end
 
-@implementation conTests
+@implementation block32Tests
 
 
 - (void)setUp
@@ -144,7 +80,7 @@ bool            putTxChar(
 {
     mem_Dump( );
     mem_Release( );
-
+    
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
     [super tearDown];
@@ -152,60 +88,48 @@ bool            putTxChar(
 
 
 
-
 - (void)testOpenClose
 {
-    CON_DATA	*pObj = OBJ_NIL;
+    BLOCK32_DATA    *pObj = OBJ_NIL;
+    uint32_t        size = 0;
+    bool            fRc;
+    uint8_t         *pData;
    
-    chario.pObjectRx = (void *)1;
-    chario.pObjectTx = (void *)2;
-    chario.GetRxChar = getRxChar;
-    chario.PutTxChar = putTxChar;
-
-    pObj = con_Alloc(128);
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = con_Init( pObj );
+    pObj = block32_NewWithSizes(0, 32);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        con_setCharIO(pObj, &chario);
-        XCTAssertFalse( (fObjectError) );
-        
+        size = block32_getHeaderSize(pObj);
+        XCTAssertTrue( (0 == size) );
+        size = block32_getDataOffset(pObj);
+        XCTAssertTrue( (0 == size) );
+        size = block32_getDataSize(pObj);
+        XCTAssertTrue( (32 == size) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-}
-
-
-
-- (void)testGetStr
-{
-    CON_DATA	*pObj = OBJ_NIL;
-    uint16_t    len = 0;
-    char        buffer[128];
-    bool        fRc;
-    
-    chario.pObjectRx = (void *)1;
-    chario.pObjectTx = (void *)2;
-    chario.GetRxChar = getRxChar;
-    chario.PutTxChar = putTxChar;
-    
-    pObj = con_Alloc(128);
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = con_Init( pObj );
+    pObj = block32_NewWithSizes(8, 31);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        inputLen = 3;
-        pInput = "hi\r";
-        outputLen = 0;
-        con_setCharIO(pObj, &chario);
-        
-        fRc = con_InCString(pObj, 128, &len, buffer, 0);
-        XCTAssertFalse( (fObjectError) );
+        size = block32_getHeaderSize(pObj);
+        XCTAssertTrue( (8 == size) );
+        size = block32_getDataOffset(pObj);
+        XCTAssertTrue( (8 == size) );
+        size = block32_getDataSize(pObj);
+        XCTAssertTrue( (32 == size) );
+
+        fRc = block32_AddData(pObj, 4, "abcd");
         XCTAssertTrue( (fRc) );
-        XCTAssertTrue( (0 == strcmp("hi", buffer)) );
+        size = block32_getDataUsed(pObj);
+        XCTAssertTrue( (4 == size) );
+        
+        fRc = block32_AddData(pObj, 4, "abcd");
+        XCTAssertTrue( (fRc) );
+        size = block32_getDataUsed(pObj);
+        XCTAssertTrue( (8 == size) );
+        pData = block32_getData(pObj);
+        XCTAssertTrue( (0 == strncmp("abcdabcd", (void *)pData, size)) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;

@@ -1,25 +1,11 @@
-// vi:nu:et:sts=4 ts=4 sw=4
-
-//****************************************************************
-//        Data Block (block) Support Subroutines
-//****************************************************************
-
+// vi:nu:et:sts=4 ts=4 sw=4 tw=90
 /*
- * Program
- *              Data block (block) Subroutines
- * Purpose
- *              See block.H for a description of these routines.
- * Todo List
- *              None
- * Remarks
- *  1.          The data array is referenced relative to one, but
- *              each reference is adjusted to be relative to zero.
- * History
- *              See block.H for the history.
- * References
- *              See block.H for the references.
+ * File:   block16.c
+ *	Generated 01/05/2016 07:38:50
+ *
  */
 
+ 
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -49,525 +35,649 @@
 
 
 
-/****************************************************************
-* * * * * * * * * * * *  data definitions   * * * * * * * * * * *
-****************************************************************/
+
+//*****************************************************************
+//* * * * * * * * * * * *  Data Definitions   * * * * * * * * * * *
+//*****************************************************************
 
 /* Header File Inclusion */
-#include "block16_internal.h"
+#include <block16_internal.h>
+#include <stdio.h>
 
 
 
-/****************************************************************
-* * * * * * * * * * *  Internal Subroutines * * * * * * * * * * *
-****************************************************************/
-
-
-
-/****************************************************************
-* * * * * * * * * * *  External Subroutines   * * * * * * * * * *
-****************************************************************/
-
-
-
-//----------------------------------------------------------
-//                    A d d D a t a
-//----------------------------------------------------------
-
-bool			block16_AddData(
-    BLOCK16_DATA		*cbp,
-    uint16_t        size,
-    void            *data
-)
-{
-    void            *blockData;
-
-	/* Validate the input parameters.
-	 */
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return false;
-    }
-	if( size > block16_UnusedDataSize(cbp) )
-		return( false );
-#endif
-
-    blockData = block16_UnusedDataPtr( cbp );
-    if (blockData == NULL )
-        return( false );
-    memmove( blockData, data, size );
-    cbp->dataUsed += size;
-    
-	// Return to caller.
-	return( true );
-}
-
-
-
-//**********************************************************
-//                C a l c B l o c k S i z e
-//**********************************************************
-
-// Given the data size, block16_blockSize returns the size of
-// the block that will be acquired.
-uint16_t		block16_CalcBlockSize(
-    uint16_t        headerSize,
-    uint16_t        dataSize
-)
-{
-    uint32_t        cbSize;
-
-	// Do initialization.
-    cbSize  = ROUNDUP_WORD(sizeof(BLOCK16_DATA));
-    cbSize += ROUNDUP_WORD(headerSize);
-    cbSize += ROUNDUP_WORD(dataSize);
-
-    if( cbSize > (64 * 1024) )
-        cbSize = 0;                 // TOO Big!
-    
-	// Return to caller.
-	return( cbSize );
-}
-
-
-
-/**********************************************************
-                        Close
- **********************************************************/
-
-BLOCK16_DATA *    block16_Close(
-    BLOCK16_DATA      *cbp
-)
-{
-    
-	// Do initialization.
-    
-	// Free the main control block.
-	if( cbp == NULL )
-        return NULL;
-    
-    mem_Free( cbp );
-    cbp = NULL;
-    
-	// Return to caller.
-	return( cbp );
-}
-
-
-
-/**********************************************************
-                            Copy
- **********************************************************/
-
-BLOCK16_DATA *	block16_Copy(
-    BLOCK16_DATA		*cbp
-)
-{
-    BLOCK16_DATA      *pNew;
-
-	// Do initialization.
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return NULL;
-    }
-#endif
-
-    pNew = block16_Open( cbp->headerSize, cbp->dataSize );
-    if( pNew == NULL )
-        return NULL;
-
-    // Move in the header.
-    if( cbp->headerSize ) {
-        block16_HeaderPut( pNew, &cbp->header[0] );
-    }
-
-	// Move in the data.
-	if( cbp->dataUsed ) {
-        block16_AddData( pNew, cbp->dataUsed, block16_DataPtr(cbp) );
-    }
-
-	// Return to caller.
-	return( pNew );
-}
-
-
-
-
-/**********************************************************
-                   D a t a  O f f s e t
- **********************************************************/
-
-uint32_t        block16_DataOffset(
-    BLOCK16_DATA      *this
-)
-{
-    uint32_t        offset = 0;
-    
-    offset = this->headerSize;
-    
-    return( offset );
-}
-
-
-
-/**********************************************************
-                    D a t a P t r
- **********************************************************/
-
-void *          block16_DataPtr(
-    BLOCK16_DATA      *this
-)
-{
-    void                 *ptr;
-
-	// Do initialization.
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( this ) ) {
-        DEBUG_BREAK();
-        return NULL;
-    }
-#endif
-
-    ptr = &this->header[block16_DataOffset(this)];
-
-	// Return to caller.
-	return( ptr );
-}
-
-
-
-//----------------------------------------------------------
-//                     D a t a  S i z e
-//----------------------------------------------------------
-
-uint16_t        block16_DataSize(
-    BLOCK16_DATA      *cbp
-)
-{
-
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return 0;
-    }
-#endif
-
-    return( cbp->dataSize );
-}
-
-
-
-//----------------------------------------------------------
-//                     D a t a  U s e d
-//----------------------------------------------------------
-
-uint16_t        block16_DataUsed(
-    BLOCK16_DATA      *cbp
-)
-{
-    
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return 0;
-    }
+#ifdef	__cplusplus
+extern "C" {
 #endif
     
-    return( cbp->dataUsed );
-}
 
-
-
-//----------------------------------------------------------
-//                   D a t a  U s e  A l l
-//----------------------------------------------------------
-
-bool            block16_DataUseAll(
-    BLOCK16_DATA      *cbp
-)
-{
     
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return false;
+
+
+ 
+    /****************************************************************
+    * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+#ifdef XYZZY
+    static
+    void            block16_task_body(
+        void            *pData
+    )
+    {
+        //BLOCK_DATA  *cbp = pData;
+        
     }
-#endif
-    
-    cbp->dataUsed = cbp->dataSize;
-    
-    return true;
-}
-
-
-
-/**********************************************************
-                    H e a d e r G e t
- **********************************************************/
-
-bool			block16_HeaderGet(
-    BLOCK16_DATA	*cbp,
-    void            *pHeader
-)
-{
-    void            *blockData;
-
-	/* Validate the input parameters.
-	 */
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return false;
-    }
-#endif
-
-    blockData = block16_UnusedDataPtr( cbp );
-    if (blockData == NULL )
-        return( false );
-    memmove( pHeader, &cbp->header[0], cbp->headerSize );
-
-	// Return to caller.
-	return( true );
-}
-
-
-
-/**********************************************************
-                H e a d e r O f f s e t
- **********************************************************/
-
-uint16_t        block16_HeaderOffset(
-    void
-)
-{
-    uint32_t        offset;
-   
-    offset = (size_t)((char *)&(((struct block16_data_s*)0)->header)-(char *)0);
-    
-    return( offset );
-}
-
-
-
-/**********************************************************
-                    H e a d e r P t r
- **********************************************************/
-
-void *          block16_HeaderPtr(
-    BLOCK16_DATA      *cbp
-)
-{
-    void                 *ptr;
-
-	// Do initialization.
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return NULL;
-    }
-#endif
-
-    ptr = &cbp->header[0];
-
-	// Return to caller.
-	return( ptr );
-}
-
-
-
-/**********************************************************
-                    H e a d e r P u t
- **********************************************************/
-
-bool			block16_HeaderPut(
-    BLOCK16_DATA		*cbp,
-    void            *pHeader
-)
-{
-    void            *blockData;
-
-	/* Validate the input parameters.
-	 */
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return false;
-    }
-#endif
-
-    blockData = block16_UnusedDataPtr( cbp );
-    if (blockData == NULL )
-        return( false );
-    memmove( &cbp->header[0], pHeader, cbp->headerSize );
-
-	// Return to caller.
-	return( true );
-}
-
-
-
-//----------------------------------------------------------
-//                    H e a d e r S i z e
-//----------------------------------------------------------
-
-uint16_t        block16_HeaderSize(
-    BLOCK16_DATA      *cbp
-)
-{
-
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return 0;
-    }
-#endif
-
-    return( cbp->headerSize );
-}
-
-
-
-//----------------------------------------------------------
-//                        I n i t
-//----------------------------------------------------------
-
-bool			block16_Init(
-    BLOCK16_DATA	*cbp,
-    uint16_t        headerSize,
-    uint16_t        dataSize
-)
-{
-	uint16_t		cbSize;
-    
-	// Allocate the control block.
-	cbSize = block16_CalcBlockSize( headerSize, dataSize );
-    if( cbSize == 0 )
-        return false;
-    if (cbp) {
-        memset( cbp, 0, cbSize );
-        cbp->cbSize = cbSize;
-        cbp->headerSize = ROUNDUP_WORD(headerSize);
-        cbp->dataSize = ROUNDUP_WORD(dataSize);
-        BREAK_NOT_BOUNDARY4(cbp->header);
-    }
-    
-	// Return to caller.
-	return( true );
-}
-
-
-
-//----------------------------------------------------------
-//                        O p e n
-//----------------------------------------------------------
-
-BLOCK16_DATA *	block16_Open(
-    uint16_t        headerSize,
-    uint16_t        dataSize
-)
-{
-	uint16_t		cbSize;
-    BLOCK16_DATA      *cbp = NULL;
-    
-	// Allocate the control block.
-	cbSize = block16_CalcBlockSize( headerSize, dataSize );
-    if( cbSize == 0 )
-        return NULL;
-	cbp = (BLOCK16_DATA *)mem_Malloc( cbSize );
-	if( cbp == NULL )
-		return( cbp );
-    block16_Init( cbp, headerSize, dataSize );
-    
-	// Return to caller.
-	return( cbp );
-}
-
-
-
-//----------------------------------------------------------
-//                U n u s e d D a t a S i z e
-//----------------------------------------------------------
-
-uint16_t        block16_UnusedDataSize(
-    BLOCK16_DATA      *cbp
-)
-{
-    uint32_t            unused;
-
-#ifdef NDEBUG
-#else
-    if( !block16_Validate( cbp ) ) {
-        DEBUG_BREAK();
-        return 0;
-    }
-#endif
-
-    unused = cbp->dataSize - cbp->dataUsed;
-    return( unused );
-}
-
-
-
-
-//----------------------------------------------------------
-//                 U n u s e d D a t a P t r
-//----------------------------------------------------------
-
-void *          block16_UnusedDataPtr(
-    BLOCK16_DATA      *this
-)
-{
-    void                 *ptr;
-
-	// Do initialization.
-#ifdef NDEBUG
-#else
-    if( !block16_Validate(this) ) {
-        DEBUG_BREAK();
-        return NULL;
-    }
-#endif
-
-    ptr = &this->header[block16_DataOffset(this) + this->dataUsed];
-
-	// Return to caller.
-	return( ptr );
-}
-
-
-
-
-//----------------------------------------------------------
-//                      Validate
-//----------------------------------------------------------
-
-#ifdef NDEBUG
-#else
-bool            block16_Validate(
-    BLOCK16_DATA      *cbp
-)
-{
-	if( cbp->dataUsed <= cbp->dataSize )
-		;
-	else
-		return(false);
-    return( true );
-}
 #endif
 
 
 
+    // An offset of zero should never occur. So, it denotes an error.
+    static
+    uint32_t        block16_DataOffset(
+        BLOCK16_DATA    *this
+    )
+    {
+        uint32_t        offset = 0;
+        
+        if (this->pBlock) {
+            offset  = ROUNDUP4(sizeof(BLOCKED16_DATA));
+            offset += this->pBlock->headerSize;
+            offset += this->pBlock->dataUsed;
+        }
+        return offset;
+    }
+    
+    
+    
+    /****************************************************************
+    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+    //===============================================================
+    //                      *** Class Methods ***
+    //===============================================================
+
+    BLOCK16_DATA *   block16_Alloc(
+    )
+    {
+        BLOCK16_DATA    *this;
+        uint32_t        cbSize = sizeof(BLOCK16_DATA);
+        
+        // Do initialization.
+        
+        this = obj_Alloc( cbSize );
+        
+        // Return to caller.
+        return this;
+    }
+
+
+
+    // Given the data size, block16_blockSize returns the size of
+    // the block that will be acquired.
+    uint32_t		block16_CalcBlockSize(
+        uint16_t        headerSize,
+        uint16_t        dataSize
+    )
+    {
+        uint32_t        cbSize;
+        
+        // Do initialization.
+        cbSize = ROUNDUP4(sizeof(BLOCKED16_DATA));
+        if (headerSize) {
+            cbSize += ROUNDUP4(headerSize);
+        }
+        if (dataSize) {
+            cbSize += ROUNDUP4(dataSize);
+        }
+        else {
+            return 0;
+        }
+        
+        // Return to caller.
+        return( cbSize );
+    }
+    
+    
+    
+    BLOCK16_DATA *   block16_New(
+    )
+    {
+        BLOCK16_DATA    *this;
+        
+        this = block16_Alloc( );
+        if (this) {
+            this = block16_Init(this);
+        } 
+        return this;
+    }
+
+
+
+    BLOCK16_DATA *   block16_NewWithSizes(
+        uint16_t        headerSize,
+        uint16_t        dataSize
+    )
+    {
+        BLOCK16_DATA    *this;
+        
+        this = block16_Alloc( );
+        if (this) {
+            this = block16_InitWithSizes(this, headerSize, dataSize);
+        }
+        return this;
+    }
+    
+    
+    
+    
+
+    //===============================================================
+    //                      P r o p e r t i e s
+    //===============================================================
+
+    void *          block16_getBlock(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pBlock;
+    }
+    
+    
+    bool            block16_setBlock(
+        BLOCK16_DATA    *this,
+        void            *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !block16_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pBlock) {
+            mem_Free(this->pBlock);
+        }
+        this->pBlock = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    void *          block16_getData(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        return &this->pBlock->header[this->pBlock->headerSize];
+    }
+    
+    
+
+    uint16_t        block16_getDataOffset(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        return this->pBlock->headerSize;
+    }
+    
+
+    
+    uint16_t        block16_getDataSize(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        return this->pBlock->dataSize;
+    }
+    
+
+    
+    uint16_t        block16_getDataUsed(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        return this->pBlock->dataUsed;
+    }
+    
+    
+    bool            block16_setDataUsed(
+        BLOCK16_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        this->pBlock->dataUsed = value;
+        
+        return true;
+    }
+    
+    
+    
+    void *          block16_getHeader(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        return &this->pBlock->header[0];
+    }
+    
+    
+    
+    uint16_t        block16_getHeaderSize(
+        BLOCK16_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+
+        return this->pBlock->headerSize;
+    }
+
+    
+    bool            block16_setHeaderSize(
+        BLOCK16_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+        BREAK_NULL(this->pBlock);
+#endif
+        
+        this->pBlock->headerSize = value;
+        
+        return true;
+    }
+
+
+
+    ERESULT         block16_getLastError(
+        BLOCK16_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        return this->eRc;
+    }
+    
+    
+    
+
+    
+
+    //===============================================================
+    //                          M e t h o d s
+    //===============================================================
+
+
+    //----------------------------------------------------------
+    //                    A d d D a t a
+    //----------------------------------------------------------
+    
+    bool			block16_AddData(
+        BLOCK16_DATA	*this,
+        uint16_t        dataSize,
+        void            *pData
+    )
+    {
+        void            *pBlockData;
+        
+        /* Validate the input parameters.
+         */
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if( dataSize > (this->pBlock->dataSize - this->pBlock->dataUsed) )
+            return false;
+#endif
+        
+        pBlockData = (uint8_t *)(this->pBlock) + block16_DataOffset(this);
+        if (pBlockData == NULL) {
+            return false;
+        }
+        memmove(pBlockData, pData, dataSize);
+        this->pBlock->dataUsed += dataSize;
+        
+        // Return to caller.
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        D e a l l o c
+    //---------------------------------------------------------------
+
+    void            block16_Dealloc(
+        OBJ_ID          objId
+    )
+    {
+        BLOCK16_DATA    *this = objId;
+
+        // Do initialization.
+        if (NULL == this) {
+            return;
+        }        
+#ifdef NDEBUG
+#else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+
+        if (this->pBlock) {
+            mem_Free(this->pBlock);
+            this->pBlock = NULL;
+        }
+
+        obj_setVtbl(this, this->pSuperVtbl);
+        obj_Dealloc(this);
+        this = NULL;
+
+        // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      D a t a  P t r
+    //---------------------------------------------------------------
+
+    void *          block16_DataPtr(
+        BLOCK16_DATA    *this
+    )
+    {
+        void            *pData = NULL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !block16_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        BREAK_NULL(this->pBlock);
+    #endif
+        
+        pData = (void *)&this->pBlock->header[this->pBlock->headerSize];
+        
+        // Return to caller.
+        return pData;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          I n i t
+    //---------------------------------------------------------------
+
+    BLOCK16_DATA *  block16_Init(
+        BLOCK16_DATA    *this
+    )
+    {
+        uint32_t        cbSize = sizeof(BLOCK16_DATA);
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        cbSize = obj_getSize(this);
+        this = (BLOCK16_DATA *)obj_Init( this, cbSize, OBJ_IDENT_BLOCK32 );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            //obj_Release(this);
+            return OBJ_NIL;
+        }
+        //obj_setSize(this, cbSize);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_BLOCK32);
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&block16_Vtbl);
+        
+    #ifdef NDEBUG
+    #else
+        if( !block16_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        BREAK_NOT_BOUNDARY4(&this->pBlock);
+    #endif
+
+        return this;
+    }
+
+     
+
+    BLOCK16_DATA *  block16_InitWithSizes(
+        BLOCK16_DATA    *this,
+        uint16_t        headerSize,
+        uint16_t        dataSize
+    )
+    {
+        uint32_t        cbBlock;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (0 == dataSize) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = block16_Init( this );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            //obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        cbBlock = block16_CalcBlockSize(headerSize, dataSize);
+        if (0 == cbBlock) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pBlock = mem_Calloc(1, cbBlock);
+        if (NULL == this->pBlock) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this->pBlock->cbSize = cbBlock;
+        this->pBlock->headerSize = ROUNDUP_WORD(headerSize);
+        this->pBlock->dataSize = ROUNDUP_WORD(dataSize);
+        
+        return this;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     block16_ToDebugString(
+        BLOCK16_DATA    *this,
+        int             indent
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+#ifdef  XYZZY        
+        ASTR_DATA       *pWrkStr;
+#endif
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStr_New();
+        if (indent) {
+            AStr_AppendCharRepeatW(pStr, indent, ' ');
+        }
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{%p(block16) ",
+                     this
+            );
+        AStr_AppendA(pStr, str);
+
+#ifdef  XYZZY        
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                    this->pData,
+                                                    indent+3
+                            );
+                AStr_Append(pStr, pWrkStr);
+                obj_Release(pWrkStr);
+            }
+        }
+#endif
+        
+        j = snprintf( str, sizeof(str), " (block16)%p}\n", this );
+        AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      V a l i d a t e
+    //---------------------------------------------------------------
+
+    #ifdef NDEBUG
+    #else
+    bool            block16_Validate(
+        BLOCK16_DATA    *this
+    )
+    {
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_BLOCK16) )
+                ;
+            else
+                return false;
+        }
+        else
+            return false;
+        this->eRc = ERESULT_INVALID_OBJECT;
+        if( !(obj_getSize(this) >= sizeof(BLOCK16_DATA)) )
+            return false;
+
+        // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
+        return true;
+    }
+    #endif
+
+
+    
+    
+    
+#ifdef	__cplusplus
+}
+#endif
 
 

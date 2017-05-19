@@ -1,48 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                Data block (block) Support  Header
+//          Fixed Sized Header and Data Areas (block) Header
 //****************************************************************
-
 /*
  * Program
- *				Data block (block) Support Subroutines
+ *			A block with fixed size header and data areas (block)
  * Purpose
- *				These subroutines provide a general purpose set of
- *				routines to build and manipulate a block of data.
- *				A block consists of 3 portions. The first is the
- *              control portion that defines the rest of the block.
- *              The second is an optional fixed-size header that can
- *              be used for any purpose and is a fixed number of
- *              bytes. The last is the variable-sized data itself.
- *              The total size of the block is the size of the control
- *              portion, the header and the the data with each section's
- *              size rounded up to the nearest word.
- *
+ *			This object provides the means of manipulating a data
+ *          block that consists of a fixed size header and a fixed
+ *          size data area whose combined sizes must fit in a
+ *          uint32_t.
  *
  * Remarks
- *	1.			The Block's internal structures should not contain any pointers. 
- *              So, it can be used in a file if needed. Use offsets instead.
- *  2.          The combined size of the control, header and data
- *              portions of the block is limited to 64k.
+ *	1.      None
+ *
  * History
- *	12/01/14	Adapted for cmnLib.
- *	11/15/93	Added Borland C++ for OS/2 support.
- *	04/18/93	Added block16_MaxCount() to get an array size when using
- *				block16_Update() to create a sparse array.
- *	04/15/93	Changed block16_Update() for adding or updating entries
- *				based on an entry number.
- *	03/19/93	Added cbSize checking on all external functions.
- *	02/08/93	Added MEM_ support.
- *	01/21/93	Added IBM C Set/2 support.
- *	06/26/92	Created from CLF routines.
- * References
- *		"Data Structures and Algorithms", Alfred V. Aho et al,
- *			Addison-Wesley, 1985
- *		"Data Structures using C", Aaron M. Tenenbaum et al,
- *			Prentice-Hall, 1990
- *		"Programs and Data Structures in C", Leendert Ammeraal,
- *			John Wiley & Sons, 1987
+ *	01/05/2016 Generated
  */
 
 
@@ -76,168 +50,184 @@
 
 
 
+
 #include        <cmn_defs.h>
+#include        <AStr.h>
 
 
-#ifndef BLOCK16_H
-#define BLOCK16_H	1
+#ifndef         BLOCK16_H
+#define         BLOCK16_H
 
 
-//****************************************************************
-//* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
-//****************************************************************
-
-
-typedef struct block16_data_s		BLOCK16_DATA;
-
-
-
-
-
-/****************************************************************
-* * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
-****************************************************************/
 
 #ifdef	__cplusplus
-extern	"C" {
+extern "C" {
 #endif
+    
+
+    //****************************************************************
+    //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
+    //****************************************************************
+
+
+    typedef struct block16_data_s	BLOCK16_DATA;
 
     
-    // block16_Open calculates the needed buffer size, allocates an
-    // area and sets up the control portion of the block.
-    BLOCK16_DATA *	block16_Open(
-                                 uint16_t        headerSize,
-                                 uint16_t        dataSize
-                                 );
+    typedef struct block16_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in bptree_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(BPTREE_DATA *);
+    } BLOCK16_VTBL;
+    
+
+
+
+    /****************************************************************
+    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    ****************************************************************/
+
+
+    //---------------------------------------------------------------
+    //                      *** Class Methods ***
+    //---------------------------------------------------------------
+
+    BLOCK16_DATA *  block16_Alloc(
+    );
     
     
-    // block16_CalcBlocksize calculates the size of the block in bytes
-    // given the header and data sizes. If the total size exceeds
-    // 64k, then 0 is returned.
-    uint16_t		block16_CalcBlockSize(
+    uint32_t		block16_CalcBlockSize(
         uint16_t        headerSize,
         uint16_t        dataSize
     );
+    
+    
+    BLOCK16_DATA *  block16_New(
+    );
+    
+    BLOCK16_DATA *  block16_NewWithSizes(
+        uint16_t        headerSize,
+        uint16_t        dataSize
+    );
+    
+    
 
+    
+    //---------------------------------------------------------------
+    //                      *** Properties ***
+    //---------------------------------------------------------------
 
-    // block16_AddData adds Data to the end of the buffer.
+    void *          block16_getData(
+        BLOCK16_DATA   *this
+    );
+    
+    
+    uint16_t        block16_getDataOffset(
+        BLOCK16_DATA   *this
+    );
+    
+    
+    uint16_t        block16_getDataSize(
+        BLOCK16_DATA   *this
+    );
+    
+    
+    /*!
+     DataUsed is a convenience property to be used if it is necessary
+     to know or control how much of the data area has been used.
+     @warning: The addData() method relies on .
+     */
+    uint16_t        block16_getDataUsed(
+        BLOCK16_DATA    *this
+    );
+    
+    bool            block_setDataUsed(
+        BLOCK16_DATA    *this,
+        uint16_t        value
+    );
+    
+    
+    void *          block16_getHeader(
+        BLOCK16_DATA   *this
+    );
+    
+    
+    uint16_t        block16_getHeaderSize(
+        BLOCK16_DATA   *this
+    );
+    
+    
+    ERESULT         block16_getLastError(
+        BLOCK16_DATA   *this
+    );
+    
+    
+
+    
+    //---------------------------------------------------------------
+    //                      *** Methods ***
+    //---------------------------------------------------------------
+
+    /*!
+     Add data to the end of the data area within the block.
+     @param:    this    BLOCK32 object pointer
+     @return:   true if successful, otherwise false.
+     */
     bool			block16_AddData(
-                                    BLOCK16_DATA	*this,
-                                    uint16_t        size,
-                                    void            *data
-                                    );
+        BLOCK16_DATA	*this,
+        uint16_t        size,
+        void            *pData
+    );
     
     
-    // block16_Close frees the block and its associated data.
-    BLOCK16_DATA *	block16_Close(
-        BLOCK16_DATA	*this
-    );
-        
-        
-    // block16_Copy allocates a new block copying all the data from
-    // this block to the new block.
-    BLOCK16_DATA *	block16_Copy(
-        BLOCK16_DATA	*this
-    );
-        
-
-    // block16_DataPtr returns a pointer to the beginning of the data
+    // block_DataPtr returns a pointer to the beginning of the data
     // in the block. Care must be taken how this pointer is used to
     // maintain the integrity of the block.
     void *          block16_DataPtr(
-        BLOCK16_DATA    *this
-    );
-
-
-    // block16_DataSize provides the size of the data portion
-    // of the block.
-    uint16_t        block16_DataSize(
-        BLOCK16_DATA    *this
+        BLOCK16_DATA   *this
     );
     
     
-    // block16_DataSize provides the size of the data portion
-    // of the block that is in use.
-    uint16_t        block16_DataUsed(
-        BLOCK16_DATA    *this
-    );
-    
-    
-    // block16_DataUseAll sets the data used size to be the max
-    // maximum allowed for this buffer.
-    bool			block16_DataUseAll(
-        BLOCK16_DATA	*this
-    );
-    
-    
-    // block16_HeaderGet copies the Header Data to the specified
-    // buffer using block16_HeaderSize() to determine the amount
-    // of data to be transferred.
-    bool			block16_HeaderGet(
-        BLOCK16_DATA	*this,
-        void            *pHeader
+    /* Init() sets up the default TaskBody() outlined above
+     * and initializes other fields needed. Init() assumes 
+     * that the size of the stack is passed to in obj_misc1.
+     */
+    BLOCK16_DATA *  block16_Init(
+        BLOCK16_DATA   *this
     );
 
-
-    // block16_HeaderOffset returns the offset into the block for
-    // the header. This may be needed for other objects such as
-    // listdl.
-    uint16_t        block16_HeaderOffset(
-        void
-    );
-    
-    
-    // block16_DataPtr returns a pointer to the beginning of the header
-    // in the block. Care must be taken how this pointer is used to
-    // maintain the integrity of the block.
-    void *          block16_HeaderPtr(
-        BLOCK16_DATA      *this
-    );
-
-
-    // block16_HeaderPut copies the Header Data from the specified
-    // buffer using block16_HeaderSize() to determine the amount
-    // of data to be transferred.
-    bool			block16_HeaderPut(
-        BLOCK16_DATA	*this,
-        void            *pHeader
-    );
-
-
-    // block16_HeaderSize provides the size of the header portion
-    // of the block.
-    uint16_t        block16_HeaderSize(
-        BLOCK16_DATA    *this
-    );
-
-
-    // block16_Init assumes that it has been passed an area of the
-    // size that block16_CalcBlockSize would provide and sets up
-    // the control portion of the block. This can be used when
-    // you want a block within another structure. For instance,
-    // you could use block16_Open() to create a very large block
-    // and then break it up into smaller blocks internally by
-    // using this function.
-    bool			block16_Init(
-        BLOCK16_DATA	*this,
+    BLOCK16_DATA *  block16_InitWithSizes(
+        BLOCK16_DATA    *this,
         uint16_t        headerSize,
         uint16_t        dataSize
     );
     
-    
-    // block16_UnusedDataSize calculates the amount of remaining
-    // space in the block that is unused for data.
-    uint16_t		block16_UnusedDataSize(
-        BLOCK16_DATA	*this
-    );
 
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code:
+        ASTR_DATA      *pDesc = block_ToDebugString(this,4);
+     @endcode:
+     @param:    this    BLOCK32 object pointer
+     @param:    indent  number of characters to indent every line of output, can be 0
+     @return:   If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    block16_ToDebugString(
+        BLOCK16_DATA    *this,
+        int             indent
+    );
+    
+    
 
     
 #ifdef	__cplusplus
-};
+}
 #endif
 
+#endif	/* BLOCK16_H */
 
-
-
-#endif
