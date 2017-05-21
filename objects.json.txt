@@ -86,6 +86,7 @@
         "path":["cmn","AStr"],
         "plist":["cmn","objArray"],
         "psxCond":["cmn","AStr"],
+        "psxLock":["cmn","AStr"],
         "psxMutex":["cmn","AStr"],
         "psxSem":["cmn","AStr"],
         "psxThread":["cmn","AStr","psxMutex","psxSem"],
@@ -130,10 +131,21 @@
         "str.c",
         "tokenFromJSON.c"
     ],
+    "macosx": {
+        "cmn_osx.c":null,
+        "memOSX.c":null,
+        "memOSX_object.c":null
+    },
+    "win32": {
+        "cmn_win32.c":null,
+        "memWin32.c":null,
+        "memWin32_object.c":null
+    },
     "tests":
     [
-        {"name":"test_blkidx16"},
-        {"name":"test_obj"},
-        {"name":"test_str"}
+        "test_psxLock",
+        "test_psxMutex",
+        "test_psxSem",
+        "test_psxThread"
     ]
 }

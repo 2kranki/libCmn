@@ -174,8 +174,9 @@ extern "C" {
         ERESULT_INDEX_FULL                  = -142,
        
         ERESULT_BUSY                        = -256,
-        ERESULT_TIMEOUT                     = -257,
-        ERESULT_SHARING_VIOLATION           = -258,
+        ERESULT_NOT_BUSY                    = -257,
+        ERESULT_TIMEOUT                     = -258,
+        ERESULT_SHARING_VIOLATION           = -259,
         
         ERESULT_USER_START                  = -1024    /* First code for user usage */
         

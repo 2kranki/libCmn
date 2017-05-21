@@ -378,12 +378,12 @@ typedef struct WStrC_vtbl_s	{
 #   include     <memOSX.h>
 #endif
 #if defined(__WIN32_ENV__)
-#	include     <cmn_msc.h>
-#   include     <memMSC.h>
+#	include     <cmn_win32.h>
+#   include     <memWin32.h>
 #endif
 #if defined(__WIN64_ENV__)
-#	include     <cmn_msc.h>
-#   include     <memMSC.h>
+#	include     <cmn_win64.h>
+#   include     <memWin64.h>
 #endif
 #if defined(__PIC32MX_ENV__)
 #	include    <cmn_pic32mx.h>

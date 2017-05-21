@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4 tw=90
 /*
- * File:   memMSC.c
+ * File:   memWin32.c
  *	Generated 02/08/2016 19:45:14
  *
  */
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "memMSC_internal.h"
+#include    "memWin32_internal.h"
 #include    "trace.h"
 //#include    <pthread.h>
 #include    <stdio.h>

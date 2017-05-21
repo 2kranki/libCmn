@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   memMSC_internal.h
+ * File:   memWin32_internal.h
  *	Generated 02/08/2016 19:45:14
  *
  * Notes:
@@ -38,14 +38,14 @@
 
 
 
-#include        <memMSC.h>
+#include        <memWin32.h>
 #include        <AStr.h>
 #include        <listdl.h>
 #include        <objArray.h>
 
 
-#ifndef MEMMSC_INTERNAL_H
-#define	MEMMSC_INTERNAL_H
+#ifndef MEMWIN32_INTERNAL_H
+#define	MEMWIN32_INTERNAL_H
 
 
 #ifdef	__cplusplus
@@ -144,5 +144,5 @@ struct memMSC_data_s	{
 }
 #endif
 
-#endif	/* MEMMSC_INTERNAL_H */
+#endif	/* MEMWIN32_INTERNAL_H */
 

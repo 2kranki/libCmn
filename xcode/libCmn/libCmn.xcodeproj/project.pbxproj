@@ -46,7 +46,11 @@
 		C44213681D6F180C00974569 /* dateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = C44213641D6F180C00974569 /* dateTime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C442136A1D6F183600974569 /* dateTimeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C44213691D6F183600974569 /* dateTimeTest.m */; };
 		C4529AA01ECF705600D898DE /* block16_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4529A9F1ECF705600D898DE /* block16_object.c */; };
-		C4529AA21ECF867E00D898DE /* cb8Test.m in Sources */ = {isa = PBXBuildFile; fileRef = C4529AA11ECF867E00D898DE /* cb8Test.m */; };
+		C4529AA71ECFD0D500D898DE /* psxLock_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4529AA31ECFD0D500D898DE /* psxLock_internal.h */; };
+		C4529AA81ECFD0D500D898DE /* psxLock_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4529AA41ECFD0D500D898DE /* psxLock_object.c */; };
+		C4529AA91ECFD0D500D898DE /* psxLock.c in Sources */ = {isa = PBXBuildFile; fileRef = C4529AA51ECFD0D500D898DE /* psxLock.c */; };
+		C4529AAA1ECFD0D500D898DE /* psxLock.h in Headers */ = {isa = PBXBuildFile; fileRef = C4529AA61ECFD0D500D898DE /* psxLock.h */; };
+		C4529AAC1ECFD13500D898DE /* psxLockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C4529AAB1ECFD13500D898DE /* psxLockTest.m */; };
 		C4555F2C1CA2312C00D57BBB /* objArray.c in Sources */ = {isa = PBXBuildFile; fileRef = C4555F291CA1EA6900D57BBB /* objArray.c */; };
 		C4555F2D1CA231D100D57BBB /* objArray_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4555F281CA1EA6900D57BBB /* objArray_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C4555F2E1CA231DA00D57BBB /* objArray.h in Headers */ = {isa = PBXBuildFile; fileRef = C4555F2A1CA1EA6900D57BBB /* objArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -583,7 +587,11 @@
 		C44213641D6F180C00974569 /* dateTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dateTime.h; sourceTree = "<group>"; };
 		C44213691D6F183600974569 /* dateTimeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = dateTimeTest.m; sourceTree = "<group>"; };
 		C4529A9F1ECF705600D898DE /* block16_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = block16_object.c; sourceTree = "<group>"; };
-		C4529AA11ECF867E00D898DE /* cb8Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cb8Test.m; sourceTree = "<group>"; };
+		C4529AA31ECFD0D500D898DE /* psxLock_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxLock_internal.h; sourceTree = "<group>"; };
+		C4529AA41ECFD0D500D898DE /* psxLock_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxLock_object.c; sourceTree = "<group>"; };
+		C4529AA51ECFD0D500D898DE /* psxLock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxLock.c; sourceTree = "<group>"; };
+		C4529AA61ECFD0D500D898DE /* psxLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxLock.h; sourceTree = "<group>"; };
+		C4529AAB1ECFD13500D898DE /* psxLockTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = psxLockTest.m; sourceTree = "<group>"; };
 		C4555F221CA1E6E200D57BBB /* WStrArray_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WStrArray_internal.h; sourceTree = "<group>"; };
 		C4555F231CA1E6E200D57BBB /* WStrArray_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStrArray_object.c; sourceTree = "<group>"; };
 		C4555F241CA1E6E200D57BBB /* WStrArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStrArray.c; sourceTree = "<group>"; };
@@ -1416,6 +1424,10 @@
 				C4C188C81D2BF63D0085AC16 /* psxCond_object.c */,
 				C4C188C91D2BF63D0085AC16 /* psxCond.c */,
 				C4C188CA1D2BF63D0085AC16 /* psxCond.h */,
+				C4529AA31ECFD0D500D898DE /* psxLock_internal.h */,
+				C4529AA41ECFD0D500D898DE /* psxLock_object.c */,
+				C4529AA51ECFD0D500D898DE /* psxLock.c */,
+				C4529AA61ECFD0D500D898DE /* psxLock.h */,
 				C4AF15A81C6CE57B0098171F /* psxMutex_internal.h */,
 				C4AF15A91C6CE57B0098171F /* psxMutex_object.c */,
 				C4AF15AA1C6CE57B0098171F /* psxMutex.c */,
@@ -1554,7 +1566,6 @@
 		C46703C31C6B9C740091FC0E /* tests */ = {
 			isa = PBXGroup;
 			children = (
-				C4529AA11ECF867E00D898DE /* cb8Test.m */,
 				C46004CE1DA7EBB700FE04F6 /* arrayExpandTest.m */,
 				C4AF15C01C6CE5DE0098171F /* asciiTest.m */,
 				C46707331C6BA6D90091FC0E /* AStrTest.m */,
@@ -1625,6 +1636,7 @@
 				C46707A31C6BAE0D0091FC0E /* pathTest.m */,
 				C46707AA1C6BAE0D0091FC0E /* plistTest.m */,
 				C4C188C51D2BF5C50085AC16 /* psxCondTest.m */,
+				C4529AAB1ECFD13500D898DE /* psxLockTest.m */,
 				C4AF15C21C6CE5F40098171F /* psxMutexTest.m */,
 				C4AF15C31C6CE5F40098171F /* psxSemTest.m */,
 				C4AF15C41C6CE5F40098171F /* psxThreadTest.m */,
@@ -1716,6 +1728,7 @@
 				C411A1871DA9CF37001832EE /* u12Array_internal.h in Headers */,
 				C4694B171D89A96A0066F924 /* objList_internal.h in Headers */,
 				C4F51B781D392CE6001AFAD7 /* nodeArc_internal.h in Headers */,
+				C4529AA71ECFD0D500D898DE /* psxLock_internal.h in Headers */,
 				C46704DD1C6B9CFB0091FC0E /* AStr.h in Headers */,
 				C46706CA1C6B9DD40091FC0E /* srcFile.h in Headers */,
 				C46705CC1C6B9CFB0091FC0E /* number.h in Headers */,
@@ -1836,6 +1849,7 @@
 				C4FE0D441C77698400357347 /* WStrC_internal.h in Headers */,
 				C467057D1C6B9CFB0091FC0E /* hash32_internal.h in Headers */,
 				C46707141C6B9DD40091FC0E /* u32Array_internal.h in Headers */,
+				C4529AAA1ECFD0D500D898DE /* psxLock.h in Headers */,
 				C46705C11C6B9CFB0091FC0E /* nodeTree_internal.h in Headers */,
 				C46707041C6B9DD40091FC0E /* true_internal.h in Headers */,
 				C44213681D6F180C00974569 /* dateTime.h in Headers */,
@@ -2022,6 +2036,7 @@
 				C46705EF1C6B9D120091FC0E /* path.c in Sources */,
 				C46705B31C6B9CFB0091FC0E /* nodeArray.c in Sources */,
 				C46705AA1C6B9CFB0091FC0E /* name.c in Sources */,
+				C4529AA81ECFD0D500D898DE /* psxLock_object.c in Sources */,
 				C467056E1C6B9CFB0091FC0E /* fbso_object.c in Sources */,
 				C46707061C6B9DD40091FC0E /* true.c in Sources */,
 				C46706C41C6B9DD40091FC0E /* sidx.c in Sources */,
@@ -2084,6 +2099,7 @@
 				C46705AD1C6B9CFB0091FC0E /* node_object.c in Sources */,
 				C46705611C6B9CFB0091FC0E /* execArray.c in Sources */,
 				C4F51B6E1D386FB1001AFAD7 /* nodeGraph.c in Sources */,
+				C4529AA91ECFD0D500D898DE /* psxLock.c in Sources */,
 				C46705271C6B9CFB0091FC0E /* csv_object.c in Sources */,
 				C46706E51C6B9DD40091FC0E /* ternary.c in Sources */,
 				C456C4151C91E81E003AC73E /* cmn_osx.c in Sources */,
@@ -2272,6 +2288,7 @@
 				C46004CF1DA7EBB700FE04F6 /* arrayExpandTest.m in Sources */,
 				C46708001C6BAE0D0091FC0E /* falseTest.m in Sources */,
 				C467082E1C6BAE0D0091FC0E /* ptrArrayTest.m in Sources */,
+				C4529AAC1ECFD13500D898DE /* psxLockTest.m in Sources */,
 				C46708051C6BAE0D0091FC0E /* hash32Test.m in Sources */,
 				C49E7C741E6C5AB3002A08A5 /* blkidx16_object.c in Sources */,
 				C43918DF1D77BAED00083689 /* nodeATreeTest.m in Sources */,
@@ -2298,7 +2315,6 @@
 				C4AF8D7C1E5BDDAB003AE67C /* WStrArrayTest.m in Sources */,
 				C467080E1C6BAE0D0091FC0E /* nameTest.m in Sources */,
 				C4694B1C1D89A9C10066F924 /* objListTest.m in Sources */,
-				C4529AA21ECF867E00D898DE /* cb8Test.m in Sources */,
 				C46707F01C6BAE0D0091FC0E /* dirTest.m in Sources */,
 				C4F51B651D386E2A001AFAD7 /* nodeGraphTest.m in Sources */,
 				C46707DF1C6BAE0D0091FC0E /* cfaTest.m in Sources */,

@@ -1,5 +1,5 @@
 /* 
- * File:   cmn_msc.h
+ * File:   cmn_win32.h
  *
  * Notes:
  *   1  CONFIG properties are generated in cmn.c depending upon how the above
@@ -37,8 +37,8 @@
  For more information, please refer to <http://unlicense.org/>
  */
 
-#ifndef CMN_MSC_H
-#define	CMN_MSC_H
+#ifndef CMN_WIN32_H
+#define	CMN_WIN32_H
 
 /****************************************************************
 * * * * * * * * * * * *  Data Definitions   * * * * * * * * * * *

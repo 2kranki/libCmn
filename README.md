@@ -26,8 +26,10 @@ However, this is a work in-progress, constantly evolving and some
 objects/environments may be incomplete, duplicated, buggy or all
 of those. lol
 
-All of this library is committed to the Public Domain.  See 'obj.h'
-for a list of the objects in the library.
+All of this library is committed to the Public Domain except for files
+which are copyrighted.  Those copyrights still stand. Note that copyrighted
+files within this library are minimal and only used for extraneous purposes.
+See 'obj.h' for a list of the public domain objects in the library.
 
 My primary development environment is MacOSX with Xcode. The C code
 is ANSI C and should be compilable with any ANSI C compiler. Use

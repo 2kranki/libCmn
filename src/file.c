@@ -115,11 +115,14 @@ extern "C" {
         int64_t         *pFileSize
     )
     {
+#if defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
+#endif
         ERESULT         eRc;
         
         if (pPath) {
+#if defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
@@ -132,10 +135,12 @@ extern "C" {
                     eRc = ERESULT_FAILURE_FALSE;
             }
             else
+#endif
                 eRc = ERESULT_PATH_NOT_FOUND;
         }
-        else
+        else {
             eRc = ERESULT_DATA_ERROR;
+        }
         
         // Return to caller.
         return eRc;
@@ -252,11 +257,14 @@ extern "C" {
         char            *pPath
     )
     {
+#if defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
+#endif
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
         if (pPath) {
+#if defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
@@ -274,6 +282,7 @@ extern "C" {
                 }
                 eRc = ERESULT_PATH_NOT_FOUND;
             }
+#endif
         }
         else
             eRc = ERESULT_DATA_ERROR;

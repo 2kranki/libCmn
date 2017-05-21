@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'memMSC'
-//	Generated 02/08/2016 19:45:14
+//	Class Object Metods and Tables for 'psxLock'
+//	Generated 05/19/2017 21:15:36
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,9 @@
  */
 
 
-#include        "obj.h"
-#include        "memMSC_internal.h"
+
+#define			PSXLOCK_OBJECT_C	    1
+#include        <psxLock_internal.h>
 
 
 
@@ -40,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct memMSC_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct psxLock_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct memMSC_class_data_s MEMMSC_CLASS_DATA;
+typedef struct psxLock_class_data_s PSXLOCK_CLASS_DATA;
 
 
 
@@ -61,22 +62,22 @@ typedef struct memMSC_class_data_s MEMMSC_CLASS_DATA;
 
 static
 const
-OBJ_INFO        memMSC_Info;            // Forward Reference
+OBJ_INFO        psxLock_Info;            // Forward Reference
 
 
 
-OBJ_ID          memMSC_Class(
+OBJ_ID          psxLock_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            memMSC_ClassIsKindOf(
+bool            psxLock_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_MEMMSC_CLASS == classID) {
+    if (OBJ_IDENT_PSXLOCK_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -91,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_MEMMSC_CLASS;
+    return OBJ_IDENT_PSXLOCK_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&memMSC_Info,
-    memMSC_ClassIsKindOf,
+	&psxLock_Info,
+    psxLock_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -113,21 +114,20 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
 const
-MEMMSC_CLASS_DATA  memMSC_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_MEMMSC_CLASS, 0, 1},
+PSXLOCK_CLASS_DATA  psxLock_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PSXLOCK_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            memMSC_IsKindOf(
+bool            psxLock_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_MEMMSC == classID) {
+    if (OBJ_IDENT_PSXLOCK == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,58 +139,64 @@ bool            memMSC_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            memMSC_Dealloc(
+void            psxLock_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          memMSC_Class(
+OBJ_ID          psxLock_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&memMSC_ClassObj;
+    return (OBJ_ID)&psxLock_ClassObj;
 }
 
 
 static
-uint16_t		memMSC_WhoAmI(
+uint16_t		psxLock_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_MEMMSC;
+    return OBJ_IDENT_PSXLOCK;
 }
 
 
 const
-OBJ_IUNKNOWN    memMSC_Vtbl = {
-	&memMSC_Info,
-    memMSC_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    memMSC_Dealloc,
-    memMSC_Class,
-    memMSC_WhoAmI,
-    NULL,			// memMSC_Enable,
-    NULL,			// memMSC_Disable,
-    (P_OBJ_TOSTRING)memMSC_ToDebugString,
-    NULL,			// (P_OBJ_ASSIGN)memMSC_Assign,
-    NULL,			// (P_OBJ_COMPARE)memMSC_Compare,
-    NULL, 			// (P_OBJ_PTR)memMSC_Copy,
-    NULL 			// (P_OBJ_HASH)memMSC_Hash
+PSXLOCK_VTBL     psxLock_Vtbl = {
+    {
+        &psxLock_Info,
+        psxLock_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        psxLock_Dealloc,
+        psxLock_Class,
+        psxLock_WhoAmI,
+        NULL,			// psxLock_Enable,
+        NULL,			// psxLock_Disable,
+        (P_OBJ_TOSTRING)psxLock_ToDebugString,
+        NULL,			// (P_OBJ_ASSIGN)psxLock_Assign,
+        NULL,			// (P_OBJ_COMPARE)psxLock_Compare,
+        NULL, 			// (P_OBJ_PTR)psxLock_Copy,
+        NULL 			// (P_OBJ_HASH)psxLock_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //psxLock_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        memMSC_Info = {
-    "memMSC",
-    "MSC Memory Allocation Checker",
-    (OBJ_DATA *)&memMSC_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+OBJ_INFO        psxLock_Info = {
+    "psxLock",
+    "Posix Mutex-like Lock",
+    (OBJ_DATA *)&psxLock_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&psxLock_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 
