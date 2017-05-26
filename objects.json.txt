@@ -143,9 +143,9 @@
     },
     "tests":
     [
-        "test_psxLock",
-        "test_psxMutex",
-        "test_psxSem",
-        "test_psxThread"
+        "test_psxLock.c",
+        "test_psxMutex.c",
+        "test_psxSem.c",
+        "test_psxThread.c"
     ]
 }

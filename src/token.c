@@ -183,6 +183,7 @@ extern "C" {
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
+        const
         uint32_t        token
     )
     {

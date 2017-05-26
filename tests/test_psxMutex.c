@@ -96,11 +96,11 @@ int         test_psxMutex_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_psxLock);
-  TINYTEST_ADD_TEST(test_psxLock_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_psxMutex);
+  TINYTEST_ADD_TEST(test_psxMutex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_psxLock);
+TINYTEST_MAIN_SINGLE_SUITE(test_psxMutex);
 
 
 

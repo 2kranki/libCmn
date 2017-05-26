@@ -58,7 +58,7 @@ struct psxSem_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    char            name[16];       // "/XSEMnnnnnnnnnn"
+    ASTR_DATA       *pName;
     int32_t         count;
     int32_t         max;
     int32_t         wakeups;

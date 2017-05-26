@@ -3,6 +3,21 @@
 The following are things that are being throught about. Whether they get done or not
 will depend upon time and resources.
 
+--  audioCW
+    --     "int32_t *cwCharElements[128]", line 93, needs change for win32 (utf16 vs utf32)
+        -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas
+
+--  cmdutl
+    -- cmdutl_ParseKeyWord() needs change for win32 (utf16 vs utf32)
+        -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas
+
+--  json
+    -- json_ParseKeyWord() needs change for win32 (utf16 vs utf32)
+        -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas
+
+--  token
+    -- token_getTextW() needs change for win32 (utf16 vs utf32)
+        -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas
 
 --  device
     --  Needs more thought

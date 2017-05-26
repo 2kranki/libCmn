@@ -888,6 +888,9 @@ extern "C" {
         uint32_t        len = 0;
         
         // Do initialization.
+        if (pLen && (*pLen < 4)) {
+            return 0;
+        }
         
         // Print the byte.
         this->pLen = pLen;
@@ -938,6 +941,9 @@ extern "C" {
         uint32_t        len = 0;
         
         // Do initialization.
+        if (pLen && (*pLen < 6)) {
+            return 0;
+        }
         
         // Print the byte.
         this->pLen = pLen;
@@ -990,6 +996,9 @@ extern "C" {
         uint32_t        len = 0;
         
         // Do initialization.
+        if (pLen && (*pLen < 8)) {
+            return 0;
+        }
         
         // Print the byte.
         this->pLen = pLen;
@@ -1044,6 +1053,9 @@ extern "C" {
         uint32_t        len = 0;
         
         // Do initialization.
+        if (pLen && (*pLen < 16)) {
+            return 0;
+        }
         
         // Print the byte.
         this->pLen = pLen;

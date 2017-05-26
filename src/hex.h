@@ -133,26 +133,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     hex_Disable(
-        HEX_DATA		*this
-    );
-
-
-    ERESULT     hex_Enable(
-        HEX_DATA		*this
-    );
-
-   
     HEX_DATA *   hex_Init(
         HEX_DATA     *this
     );
 
 
-    ERESULT     hex_IsEnabled(
-        HEX_DATA		*this
-    );
-    
- 
     /*!
         Convert 16 uint8_t to printable form at a time.
      Example:
@@ -249,8 +234,8 @@ extern "C" {
      @param:    this    HEX object pointer
      @param:    input   number to be converted
      @return:   If successful, ppBuffer is advanced past the outputted chars and
-     *pLen is decremented. The value returned is the length of the
-     data put in the buffer.
+                *pLen is decremented. The value returned is the length of the
+                data put in the buffer.
      */
     uint32_t        hex_putU16(
         HEX_DATA		*this,

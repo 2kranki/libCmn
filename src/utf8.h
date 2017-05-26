@@ -37,6 +37,15 @@
  *	1.      Based on routines found in Basic UTF-8 manipulation 
  *          routines by Jeff Bezanson placed in the public domain
  *          Fall 2005
+ *  2.      UTF-16 is used extensively in Win2K and newer. It encodes all
+ *          code points as either 2 or 4 byte sequences as follows:
+ *          0x0000 - 0xD7FF are encoded as 2 bytes.
+ *          0xE000 - 0xFFFD are encoded as 2 bytes.
+ *          0x010000 - 0x10FFFF are encoded as 4 byte sequences using:
+ *              0xD800 - 0xDBFF encode 2 bytes with 0x3FF (10) bits.
+ *              0xDC00 - 0xDFFF encode 2 bytes with 0x3FF (10) bits.
+ *          Little Endian BOM == 0xFF 0xFE
+ *          Big Endian BOM == 0xFE 0xFF
  *
  * History
  *	08/06/2015 Generated

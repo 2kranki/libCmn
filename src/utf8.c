@@ -384,6 +384,70 @@ extern "C" {
     
     
     
+    int             utf8_Utf16beToWC(
+        const
+        char            *pSrc,
+        int32_t         *pChr
+    )
+    {
+        uint32_t        ch;
+        uint16_t        first = 0;
+        uint16_t        second = 0;
+        int             i = 2;
+        
+        first = ((uint8_t)pSrc[1] & 0xFF) | ((uint8_t)pSrc[0] << 8);
+        ch = first;
+        if ((first >= 0xD800) && (first <= 0xDBFF)) {
+            second = ((uint8_t)pSrc[3] & 0xFF) | ((uint8_t)pSrc[2] << 8);
+            if ((second >= 0xDC00) && (second <= 0xDFFF)) {
+                ch = 0x10000 + ((first & 0x03FF) | ((second & 0x03FF) << 10));
+                i = 4;
+            }
+            else {
+                return -1;
+            }
+        }
+        
+        if (pChr) {
+            *pChr = ch;
+        }
+        return i;
+    }
+    
+    
+    
+    int             utf8_Utf16leToWC(
+        const
+        char            *pSrc,
+        int32_t         *pChr
+    )
+    {
+        uint32_t        ch;
+        uint16_t        first = 0;
+        uint16_t        second = 0;
+        int             i = 2;
+
+        first = ((uint8_t)pSrc[0] & 0xFF) | ((uint8_t)pSrc[1] << 8);
+        ch = first;
+        if ((first >= 0xD800) && (first <= 0xDBFF)) {
+            second = ((uint8_t)pSrc[2] & 0xFF) | ((uint8_t)pSrc[3] << 8);
+            if ((second >= 0xDC00) && (second <= 0xDFFF)) {
+                ch = 0x10000 + ((first & 0x03FF) | ((second & 0x03FF) << 10));
+                i = 4;
+            }
+            else {
+                return -1;
+            }
+        }
+        
+        if (pChr) {
+            *pChr = ch;
+        }
+        return i;
+    }
+    
+    
+    
     int             utf8_Utf8ToWC(
         const
         char            *pSrc,
@@ -467,6 +531,66 @@ extern "C" {
         }
         
         return ch;
+    }
+    
+    
+    
+    int             utf8_WCToUtf16be(
+        int32_t         wc,
+        char            *pSrc
+    )
+    {
+        uint16_t        first = 0;
+        uint16_t        second = 0;
+        int             i = 2;
+        
+        if (wc >= 0x10000) {
+            wc -= 0x10000;
+            first = 0xD800 | (wc & 0x03FF);
+            second = 0xDC00 | ((wc >> 10) & 0x03FF);
+            pSrc[0] = (first >> 8) & 0xFF;
+            pSrc[1] = first & 0xFF;
+            pSrc[2] = (second >> 8) & 0xFF;
+            pSrc[3] = second & 0xFF;
+            i = 4;
+        }
+        else {
+            first = wc & 0x03FF;
+            pSrc[0] = (first >> 8) & 0xFF;
+            pSrc[1] = first & 0xFF;
+        }
+        
+        return i;
+    }
+    
+    
+    
+    int             utf8_WCToUtf16le(
+        int32_t         wc,
+        char            *pSrc
+    )
+    {
+        uint16_t        first = 0;
+        uint16_t        second = 0;
+        int             i = 2;
+        
+        if (wc >= 0x10000) {
+            wc -= 0x10000;
+            first = 0xD800 | (wc & 0x03FF);
+            second = 0xDC00 | ((wc >> 10) & 0x03FF);
+            pSrc[0] = first & 0xFF;
+            pSrc[1] = (first >> 8) & 0xFF;
+            pSrc[2] = second & 0xFF;
+            pSrc[3] = (second >> 8) & 0xFF;
+            i = 4;
+        }
+        else {
+            first = wc & 0x03FF;
+            pSrc[0] = first & 0xFF;
+            pSrc[1] = (first >> 8) & 0xFF;
+        }
+        
+        return i;
     }
     
     

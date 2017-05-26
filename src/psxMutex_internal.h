@@ -64,13 +64,7 @@ struct psxMutex_data_s	{
     pthread_mutex_t mutex;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#ifdef  USE_MSC_MUTEX
     HANDLE        	m_hMutex;
-#else
-    uint32_t        LockCount;
-    CRITICAL_SECTION
-                    csSem;
-#endif
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
     struct TN_Mutex mutex;

@@ -885,7 +885,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseKeyWord(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA       *this
     )
     {
         int32_t         chr;
@@ -897,34 +897,34 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
-        cbp->lenFld = 0;
-        cbp->pFld[0] = 0;
+        TRC_OBJ(this,"%s:\n", __func__);
+        this->lenFld = 0;
+        this->pFld[0] = 0;
         
-        cmdutl_ParseWS(cbp);
-        while ((chr=cmdutl_ParseAlpha(cbp)) > 0) {
+        cmdutl_ParseWS(this);
+        while ((chr=cmdutl_ParseAlpha(this)) > 0) {
         }
-        str_ToLowerW(cbp->pFld);
-        if (cbp->lenFld) {
-            if (0 == str_CompareW(L"false", cbp->pFld)) {
+        str_ToLowerW(this->pFld);
+        if (this->lenFld) {
+            if (0 == str_CompareW(L"false", this->pFld)) {
                 pNode = node_NewWithUTF8("false", pFalse);
             }
-            else if (0 == str_CompareW(L"null", cbp->pFld)) {
+            else if (0 == str_CompareW(L"null", this->pFld)) {
                 pNode = node_NewWithUTF8("null", pNull);
             }
-            else if (0 == str_CompareW(L"true", cbp->pFld)) {
+            else if (0 == str_CompareW(L"true", this->pFld)) {
                 pNode = node_NewWithUTF8("true", pTrue);
             }
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    path_getData(this->pPath),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting false, null or true, but found %c(0x%02X)",
                     chr,
                     chr

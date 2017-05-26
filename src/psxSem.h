@@ -115,8 +115,18 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
     
+    ASTR_DATA *     psxSem_getName(
+        PSXSEM_DATA     *this
+    );
     
 
+    bool            psxSem_setName(
+        PSXSEM_DATA     *this,
+        ASTR_DATA       *pValue
+    );
+    
+    
+    
     
     //---------------------------------------------------------------
     //                      *** Methods ***

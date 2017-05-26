@@ -99,6 +99,9 @@
     pObj = trace_Init( pObj, NULL );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  TRACE_DATA" );
     if (pObj) {
+        
+        TRC("This is a test!");
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include "AStr_internal.h"
 #include "dec.h"
+#include "hex.h"
 #include "str.h"
 #include "utf8.h"
 #include "wstr.h"
@@ -809,6 +810,77 @@ extern "C" {
         }
         
         // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    A p p e n d  H e x
+    //---------------------------------------------------------------
+    
+    ERESULT         AStr_AppendHex16(
+        ASTR_DATA		*this,
+        const
+        uint16_t        num
+    )
+    {
+        ERESULT         eRc;
+        HEX_DATA        *pHex;
+        uint32_t        chrsLen = 32;
+        char            chrs[33];
+        char            *pChrs = chrs;
+        uint32_t        len;
+       
+        pHex = hex_New();
+        if (pHex == OBJ_NIL) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        len = hex_putU16(pHex, num, &chrsLen, &pChrs);
+        if (len) {
+            chrs[len] = '\0';
+            eRc = AStr_AppendA(this, chrs);
+        }
+        else {
+            obj_Release(pHex);
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        obj_Release(pHex);
+        return eRc;
+    }
+    
+    
+    ERESULT         AStr_AppendHex32(
+        ASTR_DATA		*this,
+        const
+        uint32_t        num
+    )
+    {
+        ERESULT         eRc;
+        HEX_DATA        *pHex;
+        uint32_t        chrsLen = 32;
+        char            chrs[33];
+        char            *pChrs = chrs;
+        uint32_t        len;
+        
+        pHex = hex_New();
+        if (pHex == OBJ_NIL) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        len = hex_putU32(pHex, num, &chrsLen, &pChrs);
+        if (len) {
+            chrs[len] = '\0';
+            eRc = AStr_AppendA(this, chrs);
+        }
+        else {
+            obj_Release(pHex);
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        obj_Release(pHex);
         return eRc;
     }
     

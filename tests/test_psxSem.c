@@ -70,10 +70,14 @@ int         test_psxSem_OpenClose(
    
     pObj = psxSem_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = psxSem_Init( pObj );
+    pObj = psxSem_Init( pObj, 0, 2 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        if (psxSem_getName(pObj)) {
+            fprintf(stderr, "psSem_Name=%s\n", AStr_getData(psxSem_getName(pObj)));
+        }
+        
         //fRc = psxSem_IsLocked(pObj);
         //XCTAssertTrue( (!fRc) );
         

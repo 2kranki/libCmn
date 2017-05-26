@@ -536,6 +536,55 @@ char        whiteSpaceA[22] = {
 
 
 
+- (void)testHex01
+{
+    ERESULT     eRc;
+    ASTR_DATA	*pObj = OBJ_NIL;
+    uint16_t    num = 0xF0F0;
+    
+    pObj = AStr_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (0 == AStr_getLength(pObj)) );
+    if (pObj) {
+        
+        eRc = AStr_AppendHex16(pObj, num);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (4 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("F0F0", AStr_getData(pObj))) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
+- (void)testHex02
+{
+    ERESULT     eRc;
+    ASTR_DATA	*pObj = OBJ_NIL;
+    uint32_t    num = 0xF0F0F0F0;
+    
+    pObj = AStr_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (0 == AStr_getLength(pObj)) );
+    if (pObj) {
+        
+        eRc = AStr_AppendHex32(pObj, num);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        fprintf(stderr, "hex32 (%d)%s\n", AStr_getLength(pObj), AStr_getData(pObj));
+        XCTAssertTrue( (8 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("F0F0F0F0", AStr_getData(pObj))) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
 - (void)testInsert01
 {
     ERESULT     eRc;

@@ -76,15 +76,15 @@ extern "C" {
     TRACE_DATA *     trace_Alloc(
     )
     {
-        TRACE_DATA       *cbp;
+        TRACE_DATA      *this;
         uint32_t        cbSize = sizeof(TRACE_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -111,67 +111,67 @@ extern "C" {
     //===============================================================
 
     FILE *          trace_getStream(
-        TRACE_DATA     *cbp
+        TRACE_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pFileOut;
+        return this->pFileOut;
     }
     
     
     bool            trace_setStream(
-        TRACE_DATA      *cbp,
+        TRACE_DATA      *this,
         FILE            *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->pFileOut = pValue;
+        this->pFileOut = pValue;
         return true;
     }
     
     
     bool            trace_getTrace(
-        TRACE_DATA     *cbp
+        TRACE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        return cbp->fTrace;
+        return this->fTrace;
     }
 
     
     bool            trace_setTrace(
-        TRACE_DATA      *cbp,
+        TRACE_DATA      *this,
         bool            value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->fTrace = value;
+        this->fTrace = value;
         return true;
     }
 
@@ -191,27 +191,32 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        TRACE_DATA   *cbp = objId;
+        TRACE_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if (cbp->fOpened && cbp->pFileOut) {
-            fclose(cbp->pFileOut);
-            cbp->pFileOut = NULL;
+        if (this->fOpened && this->pFileOut) {
+            fclose(this->pFileOut);
+            this->pFileOut = NULL;
+        }
+        
+        if (this->pLock) {
+            obj_Release(this->pLock);
+            this->pLock = OBJ_NIL;
         }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -223,75 +228,81 @@ extern "C" {
     //---------------------------------------------------------------
 
     TRACE_DATA *   trace_Init(
-        TRACE_DATA      *cbp,
+        TRACE_DATA      *this,
         const
         char            *pszFilePath
     )
     {
+        uint32_t        cbSize = sizeof(TRACE_DATA);
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_TRACE );
-        if (OBJ_NIL == cbp) {
+        this = obj_Init( this, cbSize, OBJ_IDENT_TRACE );
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &trace_Vtbl);
+        //obj_setSize(this, cbSize);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_TRACE);
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&trace_Vtbl);
         
         if (pszFilePath) {
-            cbp->pFileOut = fopen(pszFilePath, "w");
-            if (NULL == cbp->pFileOut) {
-                obj_Release(cbp);
+            this->pFileOut = fopen(pszFilePath, "w");
+            if (NULL == this->pFileOut) {
+                obj_Release(this);
                 return OBJ_NIL;
             }
-            cbp->fOpened = true;
+            this->fOpened = true;
         }
+        else {
+            this->pFileOut = stderr;
+            this->fOpened = false;
+        }
+        
+        this->pLock = psxLock_New();
 
     #ifdef NDEBUG
     #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        BREAK_NOT_BOUNDARY4(&this->pFileOut);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
     TRACE_DATA *   trace_InitStream(
-        TRACE_DATA      *cbp,
+        TRACE_DATA      *this,
         FILE            *pTraceFile
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_TRACE );
-        if (OBJ_NIL == cbp) {
+        this = trace_Init( this, NULL );
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &trace_Vtbl);
+        
+        if (this->fOpened) {
+            fclose(this->pFileOut);
+            this->pFileOut = NULL;
+            this->fOpened = false;
+        }
         
         if (pTraceFile) {
-            cbp->pFileOut = pTraceFile;
-            cbp->fOpened = false;
+            this->pFileOut = pTraceFile;
+            this->fOpened = false;
         }
         
-#ifdef NDEBUG
-#else
-        if( !trace_Validate( cbp ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
-#endif
-        
-        return cbp;
+        return this;
     }
     
     
@@ -301,17 +312,20 @@ extern "C" {
     //---------------------------------------------------------------
     
     void            trace_LineOut(
-        TRACE_DATA      *cbp,
+        TRACE_DATA      *this,
         const
         char            *pszData
     )
     {
-        if (cbp->pFileOut) {
-            fputs(pszData, cbp->pFileOut);
+
+        psxLock_Lock(this->pLock);
+        if (this->pFileOut) {
+            fputs(pszData, this->pFileOut);
         }
         else {
             fprintf(stderr, "%s\n", pszData);
         }
+        psxLock_Unlock(this->pLock);
         
     }
 
@@ -321,7 +335,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     void            trace_FlagA(
-        TRACE_DATA		*cbp,
+        TRACE_DATA		*this,
         bool			flg,
         const
         char			*pszFormat,
@@ -332,12 +346,12 @@ extern "C" {
         char			Buffer[1024];
         
         // Do initialization.
-        if( !cbp->fTrace ) {
+        if( !this->fTrace ) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -345,11 +359,13 @@ extern "C" {
         Buffer[0] = '\0';
         
         if( flg ) {
+            psxLock_Lock(this->pLock);
             va_start( pArgs, pszFormat );
             vsnprintf( Buffer, sizeof(Buffer), pszFormat, pArgs );
             va_end( pArgs );
+            psxLock_Unlock(this->pLock);
 
-            trace_LineOut( cbp, Buffer );
+            trace_LineOut( this, Buffer );
         }
         
         // Return to caller.
@@ -363,7 +379,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            trace_FlagGet(
-        TRACE_DATA		*cbp,
+        TRACE_DATA		*this,
         uint16_t        index
     )
     {
@@ -374,7 +390,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return fRc;
         }
@@ -391,7 +407,7 @@ extern "C" {
         //j = (32-1) - (index % 32);	    /* horizontal - bit */
         j = (32-1) - (index & 0x1F);
         
-        if ( cbp->flags[i] & (1 << j) ) {
+        if ( this->flags[i] & (1 << j) ) {
             fRc = true;
         }
         
@@ -406,7 +422,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         trace_FlagSet(
-        TRACE_DATA		*cbp,
+        TRACE_DATA		*this,
         uint16_t        index,
         bool            fValue
     )
@@ -417,7 +433,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -429,18 +445,20 @@ extern "C" {
         }
 #endif
         
+        psxLock_Lock(this->pLock);
         //i = index / 32;			        /* horizontal - word */
         i = index >> 5;
         //j = (32-1) - (index % 32);	    /* horizontal - bit */
         j = (32-1) - (index & 0x1F);
         
         if (fValue )
-            cbp->flags[i] |= (1 << j);
+            this->flags[i] |= (1 << j);
         else
-            cbp->flags[i] &= ~(1 << j);
+            this->flags[i] &= ~(1 << j);
+        psxLock_Unlock(this->pLock);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -450,7 +468,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     void            trace_TraceA(
-        TRACE_DATA		*cbp,
+        TRACE_DATA		*this,
         const
         char			*pszFormat,
         ...
@@ -460,12 +478,12 @@ extern "C" {
         char			Buffer[1024];
         
         // Do initialization.
-        if( !cbp->fTrace ) {
+        if( !this->fTrace ) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -473,17 +491,19 @@ extern "C" {
         
         Buffer[0] = '\0';
         
+        psxLock_Lock(this->pLock);
         va_start( pArgs, pszFormat );
         vsnprintf( Buffer, sizeof(Buffer), pszFormat, pArgs );
         va_end( pArgs );
+        psxLock_Unlock(this->pLock);
         
-        trace_LineOut( cbp, Buffer );
+        trace_LineOut( this, Buffer );
         
     }
     
     
     void            trace_TraceFuncA(
-        TRACE_DATA		*cbp,
+        TRACE_DATA		*this,
         const
         char			*pszFunc,           // __func__
         const
@@ -496,24 +516,26 @@ extern "C" {
         char			Buffer2[512];
         
         // Do initialization.
-        if( !cbp->fTrace ) {
+        if( !this->fTrace ) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if( !trace_Validate( cbp ) ) {
+        if( !trace_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
         Buffer2[0] = '\0';
+        psxLock_Lock(this->pLock);
         va_start( pArgs, pszFormat );
         vsnprintf( Buffer2, sizeof(Buffer2), pszFormat, pArgs );
         va_end( pArgs );
         snprintf( Buffer1, sizeof(Buffer1), "%s: %s", pszFunc, Buffer2 );
+        psxLock_Unlock(this->pLock);
         
-        trace_LineOut( cbp, Buffer1 );
+        trace_LineOut( this, Buffer1 );
         
     }
     
@@ -526,18 +548,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            trace_Validate(
-        TRACE_DATA      *cbp
+        TRACE_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_TRACE) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_TRACE) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(TRACE_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(TRACE_DATA)) )
             return false;
 
         // Return to caller.

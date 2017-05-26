@@ -177,6 +177,9 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Cancel the Thread waiting for it to end.
+     */
     bool        psxThread_Cancel(
         PSXTHREAD_DATA	*this
     );
@@ -205,6 +208,8 @@ extern "C" {
      of the worker thread if it is running. The calling thread will be suspended
      until this thread ends. When control is returned, the worker thread will have
      ended and its return value should optionally be stored in the area provided.
+     Note that this does not request the thread to end. It simply waits for it to
+     end.
      @param: ppReturn optionally points to an area where the thread's void * return 
             value will be stored. It may be NULL ignoring the result value of
             this thread.
@@ -221,21 +226,16 @@ extern "C" {
     );
     
     
-    bool        psxThread_getRestart(
+    bool        psxThread_Resume(
         PSXTHREAD_DATA	*this
     );
 
     
     /*!
-     Start execution of the worker thread.
+     Request the worker thread to stop its execution.
      @return:   True if successful, otherwise False.
      */
-    bool        psxThread_Start(
-        PSXTHREAD_DATA  *this
-    );
-    
-    
-    bool        psxThread_Stop(
+    bool        psxThread_Terminate(
         PSXTHREAD_DATA	*this
     );
     

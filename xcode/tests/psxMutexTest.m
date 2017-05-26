@@ -54,6 +54,7 @@
 //      XCTAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
+#include <psxMutex_internal.h>
 
 
 

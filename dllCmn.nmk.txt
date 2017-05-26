@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 5/21/2017 11:17:10.000)
+# ( 5/21/2017 17:01:48.000)
 
 
 LIBNAM=libCmn
@@ -200,7 +200,7 @@ TESTS =
 TESTS = $(TESTS) test_psxLock
 
 test_psxLock:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxLock
+	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxLock.c
 	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
 	$(OBJDIR)\$(@F).exe
 
@@ -208,7 +208,7 @@ test_psxLock:
 TESTS = $(TESTS) test_psxMutex
 
 test_psxMutex:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxMutex
+	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxMutex.c
 	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
 	$(OBJDIR)\$(@F).exe
 
@@ -216,7 +216,7 @@ test_psxMutex:
 TESTS = $(TESTS) test_psxSem
 
 test_psxSem:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxSem
+	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxSem.c
 	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
 	$(OBJDIR)\$(@F).exe
 
@@ -224,7 +224,7 @@ test_psxSem:
 TESTS = $(TESTS) test_psxThread
 
 test_psxThread:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxThread
+	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxThread.c
 	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
 	$(OBJDIR)\$(@F).exe
 

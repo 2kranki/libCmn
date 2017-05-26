@@ -122,7 +122,7 @@ extern "C" {
         PSXSEM_DATA     *this
     )
     {
-        int32_t         count;
+        int32_t         count = 0;
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -160,8 +160,7 @@ extern "C" {
 
 
 
-    const
-    char *          psxSem_getName(
+    ASTR_DATA *     psxSem_getName(
         PSXSEM_DATA     *this
     )
     {
@@ -169,15 +168,39 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !psxSem_Validate( this ) ) {
+        if( !psxSem_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
-        return this->name;
+        return this->pName;
     }
     
-
+    
+    bool          psxSem_setName(
+        PSXSEM_DATA     *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !psxSem_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pName) {
+            obj_Release(this->pName);
+        }
+        this->pName = pValue;
+        
+        return true;
+    }
+    
+    
+    
     
 
     //===============================================================
@@ -223,6 +246,12 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        if (this->m_hSem) {
+            CloseHandle(this->m_hSem);
+            this->m_hSem = NULL;
+        }
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_delete(&this->sem);
         if( TN_RC_OK == tRc )
@@ -233,6 +262,11 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+        
+        if (this->pName) {
+            obj_Release(this->pName);
+            this->pName = OBJ_NIL;
+        }
         
         obj_Dealloc( this );
         this = NULL;
@@ -257,6 +291,8 @@ extern "C" {
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        uint32_t        num32;
+        SYSTEMTIME      time;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tRc;
@@ -291,8 +327,33 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        this->pName = AStr_NewA(".SEM32.P");
+        num32 = GetCurrentProcessId( );
+        AStr_AppendHex32(this->pName, num32);
+        AStr_AppendA(this->pName, ".T");
+        GetSystemTime(&time);
+        num32 = (time.wSecond * 1000) + time.wMilliseconds;
+        num32 += time.wMinute * 100000;
+        num32 += time.wHour * 10000000;
+        AStr_AppendHex32(this->pName, num32);
+        
+        this->m_hSem =  CreateSemaphore(
+                                NULL,                   // Attributes
+                                start,                  // Initial Count
+                                max,                    // Maximum Count
+                                AStr_getData(this->pName)
+                        );
+        if (this->m_hSem) {
+        }
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
-        tRc = tn_sem_create(&this->sem, start, max);   // FIXME: Dunno if correct.
+        tRc = tn_sem_create(&this->sem, start, max);    // FIXME: Dunno if correct.
         if( TN_RC_OK == tRc )
             ;
         else {
@@ -364,7 +425,7 @@ extern "C" {
         pthread_mutex_unlock(&this->mutex);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-	    fRc = SetEvent( this->m_hSem );
+	    fRc = ReleaseSemaphore(this->m_hSem, 1, NULL);
 	    if( !fRc ) {
 		    return false;
         }
@@ -673,7 +734,7 @@ extern "C" {
     )
     {
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-	    ULONG           iRc;
+	    ULONG           iRc = 0;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
@@ -700,10 +761,13 @@ extern "C" {
         pthread_mutex_unlock(&this->mutex);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-	    //FIXME: iRc = WaitForSingleObject( this->m_hSem, TimeOut );
+        //fprintf(stderr, "psxSem_wait: starting waiting (%d)...\n", GetTickCount());
+	    iRc = WaitForSingleObject(this->m_hSem, INFINITE);
         if( iRc == (ULONG)-1 ) {
+            fprintf(stderr, "psxSem_wait: wait error %d\n", GetLastError());
             return FALSE;
         }
+        //fprintf(stderr, "psxSem_wait: wait is over (%d).\n", GetTickCount());
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_wait(&cbp->sem, TN_WAIT_INFINITE);

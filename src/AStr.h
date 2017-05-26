@@ -243,6 +243,20 @@ extern "C" {
     );
     
     
+    ERESULT         AStr_AppendHex16(
+        ASTR_DATA		*this,
+        const
+        uint16_t        num
+    );
+    
+    
+    ERESULT         AStr_AppendHex32(
+        ASTR_DATA		*this,
+        const
+        uint32_t        num
+    );
+    
+    
     ERESULT         AStr_AppendPrint(
         ASTR_DATA		*this,
         const

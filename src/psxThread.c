@@ -86,13 +86,13 @@ extern "C" {
             
             if( this->fPause ) {
                 //psxSem_Post(this->pOwnerWait);
-                psxMutex_Lock(this->pWorkerVars);
+                psxLock_Lock(this->pWorkerVars);
                 this->state = PSXTHREAD_STATE_PAUSED;
-                psxMutex_Unlock(this->pWorkerVars);
+                psxLock_Unlock(this->pWorkerVars);
                 psxSem_Wait(this->pWorkerWait);
-                psxMutex_Lock(this->pWorkerVars);
+                psxLock_Lock(this->pWorkerVars);
                 this->state = PSXTHREAD_STATE_RUNNING;
-                psxMutex_Unlock(this->pWorkerVars);
+                psxLock_Unlock(this->pWorkerVars);
             }
             
             if( this->fTerminate ) {
@@ -112,8 +112,11 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
                 usleep(100);            // Sleep for 100us
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+                Sleep(100);             // Sleep for 100ms
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
-                tn_task_sleep(TN_WAIT_INFINITE);
+                tn_task_sleep(TN_WAIT_INFINITE); // ???
 #endif
             }
             
@@ -376,6 +379,14 @@ extern "C" {
                 fRc = true;
             }
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+            if (this->m_hThread) {
+                //WARNING - This terminates the thread, but does NOT release
+                // any of its resources. Those resources are only released
+                // when the process terminates.
+                TerminateThread(this->m_hThread, 512);
+            }
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
             tn_rc = tn_task_terminate( &this->worker );
             if (tn_rc == TN_RC_OK) {
@@ -428,7 +439,7 @@ extern "C" {
             if (this->state == PSXTHREAD_STATE_ENDED) {
             }
             else {
-                psxThread_Stop(this);
+                psxThread_Terminate(this);
                 psxThread_Join(this, NULL);
             }
 #if defined(__MACOSX_ENV__)
@@ -445,6 +456,23 @@ extern "C" {
             }
 #endif
         }
+
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        if (this->m_hThread) {
+            CloseHandle(this->m_hThread);
+            this->m_hThread = NULL;
+            this->m_ThreadID = 0;
+        }
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+        tn_rc = tn_task_delete( &this->thread );
+        if (tn_rc == TN_RC_OK) {
+        }
+        else {
+            DEBUG_BREAK();
+        }
+#endif
+        
         if (this->pOwnerWait) {
             obj_Release(this->pOwnerWait);
             this->pOwnerWait = NULL;
@@ -475,22 +503,6 @@ extern "C" {
             this->pStack = NULL;
         }
         
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        if (this->m_hThread) {
-            CloseHandle(this->m_hThread);
-            this->m_hThread = NULL;
-            this->m_ThreadID = 0;
-        }
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        tn_rc = tn_task_delete( &this->thread );
-        if (tn_rc == TN_RC_OK) {
-        }
-        else {
-            DEBUG_BREAK();
-        }
-#endif
-
         obj_Dealloc( this );
         this = NULL;
 
@@ -510,9 +522,12 @@ extern "C" {
         uint32_t        stackSize       // in Words
     )
     {
-        uint32_t        cbSize;
+        uint32_t        cbSize = sizeof(PSXTHREAD_DATA);
 #if defined(__MACOSX_ENV__)
-        //int             iRc;
+        int             iRc;
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+        enum TN_RCode   tn_rc;
 #endif
         
         if (OBJ_NIL == this) {
@@ -534,10 +549,6 @@ extern "C" {
         this->threadBody = startRoutine;
         this->threadData = routineData;
         this->stackSize  = stackSize;
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        this->m_hThread = NULL;
-        this->m_ThreadID = 0;
-#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         if (stackSize) {
             this->pStack = mem_Malloc(stackSize);
@@ -548,42 +559,90 @@ extern "C" {
             }
         }
 #endif
+        //this->fPause = true;
         
-        this->pWorkerVars = psxMutex_New();
+        this->pWorkerVars = psxLock_New( );
         if (OBJ_NIL == this->pWorkerVars) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        this->pWorkerEnded = psxSem_New(0, 0);
+        this->pWorkerEnded = psxSem_New(0, 1);
         if (OBJ_NIL == this->pWorkerEnded) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        this->pWorkerLock = psxMutex_New();
+        this->pWorkerLock = psxLock_New( );
         if (OBJ_NIL == this->pWorkerLock) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        this->pOwnerWait = psxSem_New(0, 0);
+        this->pOwnerWait = psxSem_New(0, 1);
         if (OBJ_NIL == this->pOwnerWait) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 
-        this->pWorkerWait = psxSem_New(0, 0);
+        this->pWorkerWait = psxSem_New(0, 1);
         if (OBJ_NIL == this->pWorkerWait) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
+        this->state = PSXTHREAD_STATE_STARTING;
+#if defined(__MACOSX_ENV__)
+        iRc = pthread_create(&this->worker, NULL, &thread_task_body, this);
+        if (iRc) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        this->m_hThread =   CreateThread(
+                                         NULL,               // default security attributes
+                                         0,                  // use default stack size
+                                         thread_task_body,   // thread function name
+                                         this,               // argument to thread function
+                                         0,                  // use default creation flags
+                                         &this->m_ThreadID   // returns the thread identifier
+                            );
+        if (this->m_ThreadID) {
+        }
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+        memset(&this->thread, 0, sizeof(struct TN_Task));
+        tn_rc =     tn_task_create(
+                                   &this->thread,
+                                   thread_task_body,
+                                   this->priority,
+                                   (void *)this->stack,
+                                   this->stackSize,
+                                   this,
+                                   (TN_TASK_CREATE_OPT_START)
+                                   );
+        if (tn_rc == TN_RC_OK) {
+        }
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->thread.name = "psxThread";
+#endif
+
     #ifdef NDEBUG
     #else
         if( !psxThread_Validate( this ) ) {
@@ -607,8 +666,13 @@ extern "C" {
         void                **ppReturn
     )
     {
+        bool            fRc = false;
+        void            *pReturn = NULL;
 #if defined(__MACOSX_ENV__)
         int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        uint32_t        iRc = 0;
 #endif
         
         // Do initialization.
@@ -620,19 +684,29 @@ extern "C" {
         }
 #endif
         
-        if (!obj_IsEnabled(this) || !(this->state == PSXTHREAD_STATE_RUNNING))
-            return false;
-        
-#if defined(__MACOSX_ENV__)
-        iRc = pthread_join(this->worker, ppReturn);
-        if (0 == iRc) {
+        if (this->state == PSXTHREAD_STATE_ENDED) {
             return true;
         }
+        
+#if defined(__MACOSX_ENV__)
+        iRc = pthread_join(this->worker, &pReturn);
+        if (0 == iRc) {
+            fRc = true;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        iRc = WaitForSingleObject(this->m_hThread, INFINITE);
+        if (iRc == 0) {
+            fRc = true;
+        }
+        GetExitCodeThread(this->m_hThread, (LPDWORD)&pReturn);
 #endif
         
         // Return to caller.
-        DEBUG_BREAK();
-        return false;
+        if (ppReturn) {
+            *ppReturn = pReturn;
+        }
+        return fRc;
     }
     
     
@@ -667,10 +741,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          R e s t a r t
+    //                          R e s u m e
     //---------------------------------------------------------------
     
-    bool            psxThread_Restart(
+    bool            psxThread_Resume(
         PSXTHREAD_DATA	*this
     )
     {
@@ -687,6 +761,7 @@ extern "C" {
         if (this->state == PSXTHREAD_STATE_PAUSED) {
             this->fPause = false;
             psxSem_Post(this->pWorkerWait);
+            return true;
         }
 
         
@@ -739,6 +814,10 @@ extern "C" {
             return true;
         }
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        Sleep(msTime);
+        return true;
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_task_sleep(msTime);
         if (tnRc == TN_RC_OK) {
@@ -753,79 +832,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          S t a r t
+    //                         T e r m i n a t e
     //---------------------------------------------------------------
     
-    bool            psxThread_Start(
-        PSXTHREAD_DATA	*this
-    )
-    {
-        bool            fRc = false;
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        enum TN_RCode   tn_rc;
-#endif
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !psxThread_Validate( this ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        // Create the thread and get it running.
-        this->state = PSXTHREAD_STATE_STARTING;
-#if defined(__MACOSX_ENV__)
-        iRc = pthread_create(&this->worker, NULL, &thread_task_body, this);
-        if (iRc == 0) {
-            fRc = true;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        this->m_hThread =   CreateThread(
-                                    NULL,               // default security attributes
-                                    0,                  // use default stack size
-                                    thread_task_body,   // thread function name
-                                    this,               // argument to thread function
-                                    0,                  // use default creation flags
-                                    &this->m_ThreadID   // returns the thread identifier
-                            );
-        
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        memset(&this->thread, 0, sizeof(struct TN_Task));
-        tn_rc =     tn_task_create(
-                                   &this->thread,
-                                   thread_task_body,
-                                   this->priority,
-                                   (void *)this->stack,
-                                   this->stackSize,
-                                   this,
-                                   (TN_TASK_CREATE_OPT_START)
-                                   );
-        if (tn_rc == TN_RC_OK) {
-        }
-        else {
-            DEBUG_BREAK();
-        }
-        this->thread.name = "psxThread";
-#endif
-        
-        // Return to caller.
-        return fRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          S t o p
-    //---------------------------------------------------------------
-    
-    bool            psxThread_Stop(
+    bool            psxThread_Terminate(
         PSXTHREAD_DATA	*this
     )
     {
@@ -865,9 +875,42 @@ extern "C" {
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
 #endif
+        const
+        char            *pState;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
+        }
+
+        switch (this->state) {
+
+            case PSXTHREAD_STATE_ENDED:
+                pState = "Ended";
+                break;
+                
+            case PSXTHREAD_STATE_ENDING:
+                pState = "Ending";
+                break;
+                
+            case PSXTHREAD_STATE_PAUSED:
+                pState = "Paused";
+                break;
+                
+            case PSXTHREAD_STATE_RUNNING:
+                pState = "Running";
+                break;
+                
+            case PSXTHREAD_STATE_STOPPED:
+                pState = "Stopped";
+                break;
+                
+            case PSXTHREAD_STATE_STARTING:
+                pState = "Starting";
+                break;
+                
+            default:
+                pState = "Unknown";
+                break;
         }
         
         pStr = AStr_New();
@@ -878,9 +921,14 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(psxThread) stackSize=%d ",
+                     "{%p(psxThread) stackSize=%d  status=%s "
+                     "done=%c pause=%c terminate=%c",
                      this,
-                     psxThread_getStackSize(this)
+                     psxThread_getStackSize(this),
+                     pState,
+                     (this->fDone ? 'T' : 'F'),
+                     (this->fPause ? 'T' : 'F'),
+                     (this->fTerminate ? 'T' : 'F')
             );
         AStr_AppendA(pStr, str);
 

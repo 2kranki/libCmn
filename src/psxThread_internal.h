@@ -43,6 +43,7 @@
 
 
 #include    <psxThread.h>
+#include    <psxLock.h>
 #include    <psxMutex.h>
 #include    <psxSem.h>
 
@@ -61,8 +62,8 @@ struct psxThread_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    PSXMUTEX_DATA   *pWorkerVars;
-    PSXMUTEX_DATA   *pWorkerLock;
+    PSXLOCK_DATA    *pWorkerVars;
+    PSXLOCK_DATA    *pWorkerLock;
     PSXSEM_DATA     *pWorkerWait;
     PSXSEM_DATA     *pOwnerWait;
     PSXSEM_DATA     *pWorkerEnded;

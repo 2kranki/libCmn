@@ -43,7 +43,7 @@
 
 
 #include    "trace.h"
-#include    <stdio.h>
+#include    <psxLock.h>
 
 #ifdef	__cplusplus
 extern "C" {
@@ -55,12 +55,16 @@ struct trace_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
+    PSXLOCK_DATA    *pLock;
 #define NUM_FLAGS   (4*32)
+    volatile
     uint32_t        flags[4];
-    bool            fTrace;
-    bool            fOpened;                // We opened pTrace.
+    volatile
+    uint16_t        fTrace;
+    uint16_t        fOpened;                // We opened pTrace.
     FILE            *pFileOut;
 
 };
