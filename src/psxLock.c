@@ -229,7 +229,7 @@ extern "C" {
 
         // Return to caller.
         psxLock_setLastError(this, ERESULT_SUCCESS);
-    eom:
+    //eom:
         //FIXME: Implement the assignment.        
         psxLock_setLastError(this, ERESULT_NOT_IMPLEMENTED);
         return psxLock_getLastError(this);

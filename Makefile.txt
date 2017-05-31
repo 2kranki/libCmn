@@ -1,0 +1,1371 @@
+# Generated file do not edit!
+# ( 5/31/2017  2:26:45.000)
+
+
+LIBNAM=libCmn
+SYS=macosx
+TEMP=/tmp
+BASEDIR = $(TEMP)/$(LIBNAM)
+
+CFLAGS += -g -Isrc -Isrc/$(SYS)
+CFLAGS += -D__MACOSX_ENV__
+
+INSTALL_BASE = $(HOME)/Support/lib/$(SYS)
+INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)
+LIBDIR = $(BASEDIR)/$(SYS)
+SRCDIR = ./src
+SRCSYSDIR = ./src/$(SYS)
+ifdef  NDEBUG
+CFLAGS += -DNDEBUG 
+LIB_FILENAME=$(LIBNAM)R.a
+OBJDIR = $(LIBDIR)/o/r
+else   #DEBUG
+CFLAGS += -D_DEBUG 
+LIB_FILENAME=$(LIBNAM)D.a
+OBJDIR = $(LIBDIR)/o/d
+endif  #NDEBUG
+LIBPATH = $(LIBDIR)/$(LIB_FILENAME)
+
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .o
+
+
+
+
+
+OBJS =
+OBJS += $(OBJDIR)/AStr.o $(OBJDIR)/AStr_object.o
+
+
+$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/AStrArray.o $(OBJDIR)/AStrArray_object.o
+
+
+$(OBJDIR)/AStrArray.o: $(SRCDIR)/AStrArray.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/AStrArray_object.o: $(SRCDIR)/AStrArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/AStrC.o $(OBJDIR)/AStrC_object.o
+
+
+$(OBJDIR)/AStrC.o: $(SRCDIR)/AStrC.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/AStrC_object.o: $(SRCDIR)/AStrC_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/WStr.o $(OBJDIR)/WStr_object.o
+
+
+$(OBJDIR)/WStr.o: $(SRCDIR)/WStr.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/WStr_object.o: $(SRCDIR)/WStr_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/WStrArray.o $(OBJDIR)/WStrArray_object.o
+
+
+$(OBJDIR)/WStrArray.o: $(SRCDIR)/WStrArray.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/WStrArray_object.o: $(SRCDIR)/WStrArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/WStrC.o $(OBJDIR)/WStrC_object.o
+
+
+$(OBJDIR)/WStrC.o: $(SRCDIR)/WStrC.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/WStrC_object.o: $(SRCDIR)/WStrC_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/arrayExpand.o $(OBJDIR)/arrayExpand_object.o
+
+
+$(OBJDIR)/arrayExpand.o: $(SRCDIR)/arrayExpand.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/arrayExpand_object.o: $(SRCDIR)/arrayExpand_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/ascii.o $(OBJDIR)/ascii_object.o
+
+
+$(OBJDIR)/ascii.o: $(SRCDIR)/ascii.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/ascii_object.o: $(SRCDIR)/ascii_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/audioCW.o $(OBJDIR)/audioCW_object.o
+
+
+$(OBJDIR)/audioCW.o: $(SRCDIR)/audioCW.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/audioCW_object.o: $(SRCDIR)/audioCW_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/audioWAV.o $(OBJDIR)/audioWAV_object.o
+
+
+$(OBJDIR)/audioWAV.o: $(SRCDIR)/audioWAV.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/audioWAV_object.o: $(SRCDIR)/audioWAV_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/bitMatrix.o $(OBJDIR)/bitMatrix_object.o
+
+
+$(OBJDIR)/bitMatrix.o: $(SRCDIR)/bitMatrix.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/bitMatrix_object.o: $(SRCDIR)/bitMatrix_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/bitSet.o $(OBJDIR)/bitSet_object.o
+
+
+$(OBJDIR)/bitSet.o: $(SRCDIR)/bitSet.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/bitSet_object.o: $(SRCDIR)/bitSet_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/blkdrcds16.o $(OBJDIR)/blkdrcds16_object.o
+
+
+$(OBJDIR)/blkdrcds16.o: $(SRCDIR)/blkdrcds16.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/blkdrcds16_object.o: $(SRCDIR)/blkdrcds16_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/blkidx16.o $(OBJDIR)/blkidx16_object.o
+
+
+$(OBJDIR)/blkidx16.o: $(SRCDIR)/blkidx16.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/blkidx16_object.o: $(SRCDIR)/blkidx16_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/block16.o $(OBJDIR)/block16_object.o
+
+
+$(OBJDIR)/block16.o: $(SRCDIR)/block16.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/block16_object.o: $(SRCDIR)/block16_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/block32.o $(OBJDIR)/block32_object.o
+
+
+$(OBJDIR)/block32.o: $(SRCDIR)/block32.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/block32_object.o: $(SRCDIR)/block32_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/blocks.o $(OBJDIR)/blocks_object.o
+
+
+$(OBJDIR)/blocks.o: $(SRCDIR)/blocks.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/blocks_object.o: $(SRCDIR)/blocks_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/bptree.o $(OBJDIR)/bptree_object.o
+
+
+$(OBJDIR)/bptree.o: $(SRCDIR)/bptree.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/bptree_object.o: $(SRCDIR)/bptree_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/btp.o $(OBJDIR)/btp_object.o
+
+
+$(OBJDIR)/btp.o: $(SRCDIR)/btp.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/btp_object.o: $(SRCDIR)/btp_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/cb.o $(OBJDIR)/cb_object.o
+
+
+$(OBJDIR)/cb.o: $(SRCDIR)/cb.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cb_object.o: $(SRCDIR)/cb_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/cb16.o $(OBJDIR)/cb16_object.o
+
+
+$(OBJDIR)/cb16.o: $(SRCDIR)/cb16.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cb16_object.o: $(SRCDIR)/cb16_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/cb32.o $(OBJDIR)/cb32_object.o
+
+
+$(OBJDIR)/cb32.o: $(SRCDIR)/cb32.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cb32_object.o: $(SRCDIR)/cb32_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/cfa.o $(OBJDIR)/cfa_object.o
+
+
+$(OBJDIR)/cfa.o: $(SRCDIR)/cfa.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cfa_object.o: $(SRCDIR)/cfa_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/cmdutl.o $(OBJDIR)/cmdutl_object.o
+
+
+$(OBJDIR)/cmdutl.o: $(SRCDIR)/cmdutl.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cmdutl_object.o: $(SRCDIR)/cmdutl_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/consumer.o $(OBJDIR)/consumer_object.o
+
+
+$(OBJDIR)/consumer.o: $(SRCDIR)/consumer.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/consumer_object.o: $(SRCDIR)/consumer_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/csv.o $(OBJDIR)/csv_object.o
+
+
+$(OBJDIR)/csv.o: $(SRCDIR)/csv.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/csv_object.o: $(SRCDIR)/csv_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dateTime.o $(OBJDIR)/dateTime_object.o
+
+
+$(OBJDIR)/dateTime.o: $(SRCDIR)/dateTime.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dateTime_object.o: $(SRCDIR)/dateTime_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dbCsv.o $(OBJDIR)/dbCsv_object.o
+
+
+$(OBJDIR)/dbCsv.o: $(SRCDIR)/dbCsv.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dbCsv_object.o: $(SRCDIR)/dbCsv_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dbField.o $(OBJDIR)/dbField_object.o
+
+
+$(OBJDIR)/dbField.o: $(SRCDIR)/dbField.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dbField_object.o: $(SRCDIR)/dbField_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dbf.o $(OBJDIR)/dbf_object.o
+
+
+$(OBJDIR)/dbf.o: $(SRCDIR)/dbf.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dbf_object.o: $(SRCDIR)/dbf_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dec.o $(OBJDIR)/dec_object.o
+
+
+$(OBJDIR)/dec.o: $(SRCDIR)/dec.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dec_object.o: $(SRCDIR)/dec_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dir.o $(OBJDIR)/dir_object.o
+
+
+$(OBJDIR)/dir.o: $(SRCDIR)/dir.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dir_object.o: $(SRCDIR)/dir_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dirEntry.o $(OBJDIR)/dirEntry_object.o
+
+
+$(OBJDIR)/dirEntry.o: $(SRCDIR)/dirEntry.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/dirEntry_object.o: $(SRCDIR)/dirEntry_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/eResult.o $(OBJDIR)/eResult_object.o
+
+
+$(OBJDIR)/eResult.o: $(SRCDIR)/eResult.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/eResult_object.o: $(SRCDIR)/eResult_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/ebcdic.o $(OBJDIR)/ebcdic_object.o
+
+
+$(OBJDIR)/ebcdic.o: $(SRCDIR)/ebcdic.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/ebcdic_object.o: $(SRCDIR)/ebcdic_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/endian.o $(OBJDIR)/endian_object.o
+
+
+$(OBJDIR)/endian.o: $(SRCDIR)/endian.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/endian_object.o: $(SRCDIR)/endian_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/execArray.o $(OBJDIR)/execArray_object.o
+
+
+$(OBJDIR)/execArray.o: $(SRCDIR)/execArray.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/false.o $(OBJDIR)/false_object.o
+
+
+$(OBJDIR)/false.o: $(SRCDIR)/false.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/false_object.o: $(SRCDIR)/false_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/fbsi.o $(OBJDIR)/fbsi_object.o
+
+
+$(OBJDIR)/fbsi.o: $(SRCDIR)/fbsi.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/fbsi_object.o: $(SRCDIR)/fbsi_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/fbso.o $(OBJDIR)/fbso_object.o
+
+
+$(OBJDIR)/fbso.o: $(SRCDIR)/fbso.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/fbso_object.o: $(SRCDIR)/fbso_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/file.o $(OBJDIR)/file_object.o
+
+
+$(OBJDIR)/file.o: $(SRCDIR)/file.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/file_object.o: $(SRCDIR)/file_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/fileio.o $(OBJDIR)/fileio_object.o
+
+
+$(OBJDIR)/fileio.o: $(SRCDIR)/fileio.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/fileio_object.o: $(SRCDIR)/fileio_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/greg.o $(OBJDIR)/greg_object.o
+
+
+$(OBJDIR)/greg.o: $(SRCDIR)/greg.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/greg_object.o: $(SRCDIR)/greg_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/hash32.o $(OBJDIR)/hash32_object.o
+
+
+$(OBJDIR)/hash32.o: $(SRCDIR)/hash32.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/hash32_object.o: $(SRCDIR)/hash32_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/hex.o $(OBJDIR)/hex_object.o
+
+
+$(OBJDIR)/hex.o: $(SRCDIR)/hex.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/hex_object.o: $(SRCDIR)/hex_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/json.o $(OBJDIR)/json_object.o
+
+
+$(OBJDIR)/json.o: $(SRCDIR)/json.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/json_object.o: $(SRCDIR)/json_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/lru.o $(OBJDIR)/lru_object.o
+
+
+$(OBJDIR)/lru.o: $(SRCDIR)/lru.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/lru_object.o: $(SRCDIR)/lru_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/misc.o $(OBJDIR)/misc_object.o
+
+
+$(OBJDIR)/misc.o: $(SRCDIR)/misc.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/misc_object.o: $(SRCDIR)/misc_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/name.o $(OBJDIR)/name_object.o
+
+
+$(OBJDIR)/name.o: $(SRCDIR)/name.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/name_object.o: $(SRCDIR)/name_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/node.o $(OBJDIR)/node_object.o
+
+
+$(OBJDIR)/node.o: $(SRCDIR)/node.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/node_object.o: $(SRCDIR)/node_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeATree.o $(OBJDIR)/nodeATree_object.o
+
+
+$(OBJDIR)/nodeATree.o: $(SRCDIR)/nodeATree.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeATree_object.o: $(SRCDIR)/nodeATree_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeArc.o $(OBJDIR)/nodeArc_object.o
+
+
+$(OBJDIR)/nodeArc.o: $(SRCDIR)/nodeArc.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeArc_object.o: $(SRCDIR)/nodeArc_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeArray.o $(OBJDIR)/nodeArray_object.o
+
+
+$(OBJDIR)/nodeArray.o: $(SRCDIR)/nodeArray.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeArray_object.o: $(SRCDIR)/nodeArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeEntry.o $(OBJDIR)/nodeEntry_object.o
+
+
+$(OBJDIR)/nodeEntry.o: $(SRCDIR)/nodeEntry.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeEntry_object.o: $(SRCDIR)/nodeEntry_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeGraph.o $(OBJDIR)/nodeGraph_object.o
+
+
+$(OBJDIR)/nodeGraph.o: $(SRCDIR)/nodeGraph.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeGraph_object.o: $(SRCDIR)/nodeGraph_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeHash.o $(OBJDIR)/nodeHash_object.o
+
+
+$(OBJDIR)/nodeHash.o: $(SRCDIR)/nodeHash.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeHash_object.o: $(SRCDIR)/nodeHash_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeList.o $(OBJDIR)/nodeList_object.o
+
+
+$(OBJDIR)/nodeList.o: $(SRCDIR)/nodeList.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeList_object.o: $(SRCDIR)/nodeList_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeMatrix.o $(OBJDIR)/nodeMatrix_object.o
+
+
+$(OBJDIR)/nodeMatrix.o: $(SRCDIR)/nodeMatrix.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeMatrix_object.o: $(SRCDIR)/nodeMatrix_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeScan.o $(OBJDIR)/nodeScan_object.o
+
+
+$(OBJDIR)/nodeScan.o: $(SRCDIR)/nodeScan.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeScan_object.o: $(SRCDIR)/nodeScan_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeTree.o $(OBJDIR)/nodeTree_object.o
+
+
+$(OBJDIR)/nodeTree.o: $(SRCDIR)/nodeTree.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeTree_object.o: $(SRCDIR)/nodeTree_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/null.o $(OBJDIR)/null_object.o
+
+
+$(OBJDIR)/null.o: $(SRCDIR)/null.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/null_object.o: $(SRCDIR)/null_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/number.o $(OBJDIR)/number_object.o
+
+
+$(OBJDIR)/number.o: $(SRCDIR)/number.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/number_object.o: $(SRCDIR)/number_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objArray.o $(OBJDIR)/objArray_object.o
+
+
+$(OBJDIR)/objArray.o: $(SRCDIR)/objArray.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objArray_object.o: $(SRCDIR)/objArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objCb.o $(OBJDIR)/objCb_object.o
+
+
+$(OBJDIR)/objCb.o: $(SRCDIR)/objCb.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objCb_object.o: $(SRCDIR)/objCb_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objHash.o $(OBJDIR)/objHash_object.o
+
+
+$(OBJDIR)/objHash.o: $(SRCDIR)/objHash.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objHash_object.o: $(SRCDIR)/objHash_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objList.o $(OBJDIR)/objList_object.o
+
+
+$(OBJDIR)/objList.o: $(SRCDIR)/objList.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objList_object.o: $(SRCDIR)/objList_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objMatrix.o $(OBJDIR)/objMatrix_object.o
+
+
+$(OBJDIR)/objMatrix.o: $(SRCDIR)/objMatrix.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objMatrix_object.o: $(SRCDIR)/objMatrix_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/path.o $(OBJDIR)/path_object.o
+
+
+$(OBJDIR)/path.o: $(SRCDIR)/path.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/path_object.o: $(SRCDIR)/path_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/plist.o $(OBJDIR)/plist_object.o
+
+
+$(OBJDIR)/plist.o: $(SRCDIR)/plist.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/plist_object.o: $(SRCDIR)/plist_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/psxCond.o $(OBJDIR)/psxCond_object.o
+
+
+$(OBJDIR)/psxCond.o: $(SRCDIR)/psxCond.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/psxCond_object.o: $(SRCDIR)/psxCond_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/psxLock.o $(OBJDIR)/psxLock_object.o
+
+
+$(OBJDIR)/psxLock.o: $(SRCDIR)/psxLock.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/psxLock_object.o: $(SRCDIR)/psxLock_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/psxMutex.o $(OBJDIR)/psxMutex_object.o
+
+
+$(OBJDIR)/psxMutex.o: $(SRCDIR)/psxMutex.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/psxMutex_object.o: $(SRCDIR)/psxMutex_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/psxSem.o $(OBJDIR)/psxSem_object.o
+
+
+$(OBJDIR)/psxSem.o: $(SRCDIR)/psxSem.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/psxSem_object.o: $(SRCDIR)/psxSem_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/psxThread.o $(OBJDIR)/psxThread_object.o
+
+
+$(OBJDIR)/psxThread.o: $(SRCDIR)/psxThread.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/psxThread_object.o: $(SRCDIR)/psxThread_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/ptrArray.o $(OBJDIR)/ptrArray_object.o
+
+
+$(OBJDIR)/ptrArray.o: $(SRCDIR)/ptrArray.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/ptrArray_object.o: $(SRCDIR)/ptrArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/pwr2Array.o $(OBJDIR)/pwr2Array_object.o
+
+
+$(OBJDIR)/pwr2Array.o: $(SRCDIR)/pwr2Array.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/pwr2Array_object.o: $(SRCDIR)/pwr2Array_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/rrds32.o $(OBJDIR)/rrds32_object.o
+
+
+$(OBJDIR)/rrds32.o: $(SRCDIR)/rrds32.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/rrds32_object.o: $(SRCDIR)/rrds32_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/sidx.o $(OBJDIR)/sidx_object.o
+
+
+$(OBJDIR)/sidx.o: $(SRCDIR)/sidx.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/sidx_object.o: $(SRCDIR)/sidx_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/srcFile.o $(OBJDIR)/srcFile_object.o
+
+
+$(OBJDIR)/srcFile.o: $(SRCDIR)/srcFile.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/srcFile_object.o: $(SRCDIR)/srcFile_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/srcFiles.o $(OBJDIR)/srcFiles_object.o
+
+
+$(OBJDIR)/srcFiles.o: $(SRCDIR)/srcFiles.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/srcFiles_object.o: $(SRCDIR)/srcFiles_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/srcLoc.o $(OBJDIR)/srcLoc_object.o
+
+
+$(OBJDIR)/srcLoc.o: $(SRCDIR)/srcLoc.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/srcLoc_object.o: $(SRCDIR)/srcLoc_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/szHash.o $(OBJDIR)/szHash_object.o
+
+
+$(OBJDIR)/szHash.o: $(SRCDIR)/szHash.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/szHash_object.o: $(SRCDIR)/szHash_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/szTbl.o $(OBJDIR)/szTbl_object.o
+
+
+$(OBJDIR)/szTbl.o: $(SRCDIR)/szTbl.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/szTbl_object.o: $(SRCDIR)/szTbl_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/table.o $(OBJDIR)/table_object.o
+
+
+$(OBJDIR)/table.o: $(SRCDIR)/table.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/table_object.o: $(SRCDIR)/table_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/ternary.o $(OBJDIR)/ternary_object.o
+
+
+$(OBJDIR)/ternary.o: $(SRCDIR)/ternary.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/ternary_object.o: $(SRCDIR)/ternary_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/token.o $(OBJDIR)/token_object.o
+
+
+$(OBJDIR)/token.o: $(SRCDIR)/token.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/token_object.o: $(SRCDIR)/token_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/tokenList.o $(OBJDIR)/tokenList_object.o
+
+
+$(OBJDIR)/tokenList.o: $(SRCDIR)/tokenList.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/tokenList_object.o: $(SRCDIR)/tokenList_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/trace.o $(OBJDIR)/trace_object.o
+
+
+$(OBJDIR)/trace.o: $(SRCDIR)/trace.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/trace_object.o: $(SRCDIR)/trace_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/true.o $(OBJDIR)/true_object.o
+
+
+$(OBJDIR)/true.o: $(SRCDIR)/true.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/true_object.o: $(SRCDIR)/true_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/u12Array.o $(OBJDIR)/u12Array_object.o
+
+
+$(OBJDIR)/u12Array.o: $(SRCDIR)/u12Array.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/u12Array_object.o: $(SRCDIR)/u12Array_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/u16Array.o $(OBJDIR)/u16Array_object.o
+
+
+$(OBJDIR)/u16Array.o: $(SRCDIR)/u16Array.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/u16Array_object.o: $(SRCDIR)/u16Array_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/u16Matrix.o $(OBJDIR)/u16Matrix_object.o
+
+
+$(OBJDIR)/u16Matrix.o: $(SRCDIR)/u16Matrix.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/u16Matrix_object.o: $(SRCDIR)/u16Matrix_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/u32Array.o $(OBJDIR)/u32Array_object.o
+
+
+$(OBJDIR)/u32Array.o: $(SRCDIR)/u32Array.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/u32Array_object.o: $(SRCDIR)/u32Array_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/u8Array.o $(OBJDIR)/u8Array_object.o
+
+
+$(OBJDIR)/u8Array.o: $(SRCDIR)/u8Array.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/u8Array_object.o: $(SRCDIR)/u8Array_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/uint128.o $(OBJDIR)/uint128_object.o
+
+
+$(OBJDIR)/uint128.o: $(SRCDIR)/uint128.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/uint128_object.o: $(SRCDIR)/uint128_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/utf8.o $(OBJDIR)/utf8_object.o
+
+
+$(OBJDIR)/utf8.o: $(SRCDIR)/utf8.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/wav.o $(OBJDIR)/wav_object.o
+
+
+$(OBJDIR)/wav.o: $(SRCDIR)/wav.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/wav_object.o: $(SRCDIR)/wav_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/xml.o $(OBJDIR)/xml_object.o
+
+
+$(OBJDIR)/xml.o: $(SRCDIR)/xml.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+$(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/listdl.o
+$(OBJDIR)/obj.o: $(SRCDIR)/obj.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/obj.o
+$(OBJDIR)/scandec32.o: $(SRCDIR)/scandec32.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/scandec32.o
+$(OBJDIR)/scanhex32.o: $(SRCDIR)/scanhex32.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/scanhex32.o
+$(OBJDIR)/scanstring.o: $(SRCDIR)/scanstring.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/scanstring.o
+$(OBJDIR)/scanwhite.o: $(SRCDIR)/scanwhite.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/scanwhite.o
+$(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/shellSortPtrs.o
+$(OBJDIR)/str.o: $(SRCDIR)/str.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/str.o
+$(OBJDIR)/tokenFromJSON.o: $(SRCDIR)/tokenFromJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/tokenFromJSON.o
+
+
+
+OBJS += $(OBJDIR)/cmn_osx.o
+
+
+$(OBJDIR)/cmn_osx.o: src/$(SYS)/cmn_osx.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) src/$(SYS)/cmn_osx.c
+
+
+OBJS += $(OBJDIR)/memOSX.o
+
+
+$(OBJDIR)/memOSX.o: src/$(SYS)/memOSX.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) src/$(SYS)/memOSX.c
+
+
+OBJS += $(OBJDIR)/memOSX_object.o
+
+
+$(OBJDIR)/memOSX_object.o: src/$(SYS)/memOSX_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) src/$(SYS)/memOSX_object.c
+
+
+
+
+
+
+
+$(LIBPATH):  $(OBJS)
+	-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)
+	ar rc $(LIBPATH) $(OBJS)
+
+
+
+
+
+
+TESTS =
+
+
+
+TESTS += test_psxLock
+
+test_psxLock:
+	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxLock.c
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_psxMutex
+
+test_psxMutex:
+	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxMutex.c
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_psxSem
+
+test_psxSem:
+	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxSem.c
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_psxThread
+
+test_psxThread:
+	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c
+	$(OBJDIR)/$(@F)
+
+
+
+
+test:  $(TESTS)
+
+
+
+
+
+
+
+.PHONY: clean
+clean:
+	-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+
+
+.PHONY: install
+install:
+	-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include
+	cp -v $(LIBPATH) $(INSTALLDIR)/
+	cp -v src/*.h $(INSTALLDIR)/include/
+	cp -v src/$(SYS)/*.h $(INSTALLDIR)/include/
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)
+
+
+.PHONY: all
+all:  clean create_dirs $(LIBPATH)
+
+
+
