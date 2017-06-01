@@ -171,9 +171,10 @@ CMDUTL_VTBL     cmdutl_Vtbl = {
         cmdutl_Dealloc,
         cmdutl_Class,
         cmdutl_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)cmdutl_ToDebugString,
         NULL,			// cmdutl_Enable,
         NULL,			// cmdutl_Disable,
-        (P_OBJ_TOSTRING)cmdutl_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)cmdutl_Assign,
         NULL,			// (P_OBJ_COMPARE)cmdutl_Compare,
         NULL, 			// (P_OBJ_PTR)cmdutl_Copy,

@@ -171,9 +171,10 @@ PSXLOCK_VTBL     psxLock_Vtbl = {
         psxLock_Dealloc,
         psxLock_Class,
         psxLock_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)psxLock_ToDebugString,
         NULL,			// psxLock_Enable,
         NULL,			// psxLock_Disable,
-        (P_OBJ_TOSTRING)psxLock_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)psxLock_Assign,
         NULL,			// (P_OBJ_COMPARE)psxLock_Compare,
         NULL, 			// (P_OBJ_PTR)psxLock_Copy,

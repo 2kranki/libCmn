@@ -152,9 +152,10 @@ OBJ_IUNKNOWN    u16Array_Vtbl = {
     u16Array_Dealloc,
     u16Array_Class,
     u16Array_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)u16Array_ToDebugString,
     NULL,			// u16Array_Enable()
     NULL,			// u16Array_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))u16Array_ToDebugString,
     NULL,			// u16Array_Assign()
     NULL,			// u16Array_Compare()
     NULL 			// u16Array_Copy()

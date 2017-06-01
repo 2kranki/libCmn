@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    number_Vtbl = {
     number_Dealloc,
     number_Class,
     number_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)number_ToDebugString,
     NULL,			// number_Enable()
     NULL,			// number_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))number_ToDebugString,
     NULL,			// number_Assign()
     NULL,			// number_Compare()
     NULL 			// number_Copy()

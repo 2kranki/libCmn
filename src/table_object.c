@@ -170,9 +170,10 @@ TABLE_VTBL     table_Vtbl = {
         table_Dealloc,
         table_Class,
         table_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)table_ToDebugString,
         NULL,			// table_Enable,
         NULL,			// table_Disable,
-        (P_OBJ_TOSTRING)table_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)table_Assign,
         NULL,			// (P_OBJ_COMPARE)table_Compare,
         NULL, 			// (P_OBJ_PTR)table_Copy,

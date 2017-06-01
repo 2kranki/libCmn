@@ -170,9 +170,10 @@ U8ARRAY_VTBL     u8Array_Vtbl = {
         u8Array_Dealloc,
         u8Array_Class,
         u8Array_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)u8Array_ToDebugString,
         NULL,			// u8Array_Enable,
         NULL,			// u8Array_Disable,
-        (P_OBJ_TOSTRING)u8Array_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)u8Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u8Array_Compare,
         NULL, 			// (P_OBJ_PTR)u8Array_Copy,

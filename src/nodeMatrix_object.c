@@ -169,9 +169,10 @@ NODEMATRIX_VTBL     nodeMatrix_Vtbl = {
         nodeMatrix_Dealloc,
         nodeMatrix_Class,
         nodeMatrix_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeMatrix_ToDebugString,
         NULL,			// nodeMatrix_Enable,
         NULL,			// nodeMatrix_Disable,
-        (P_OBJ_TOSTRING)nodeMatrix_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeMatrix_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeMatrix_Compare,
         NULL, 			// (P_OBJ_PTR)nodeMatrix_Copy,

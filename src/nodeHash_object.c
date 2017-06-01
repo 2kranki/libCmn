@@ -171,9 +171,10 @@ NODEHASH_VTBL   nodeHash_Vtbl = {
         nodeHash_Dealloc,
         nodeHash_Class,
         nodeHash_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeHash_ToDebugString,
         NULL,			// nodeHash_Enable,
         NULL,			// nodeHash_Disable,
-        (P_OBJ_TOSTRING)nodeHash_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeHash_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeHash_Compare,
         (P_OBJ_PTR)nodeHash_Copy,

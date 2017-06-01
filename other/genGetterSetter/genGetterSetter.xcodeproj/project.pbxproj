@@ -26,7 +26,7 @@
 /* Begin PBXFileReference section */
 		C4745BBB1E992FDE001DCCC8 /* genGetterSetter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = genGetterSetter; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4745BBE1E992FDE001DCCC8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C4745BC51E99305F001DCCC8 /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../Support/lib/macosx/libCmn/libCmn.a; sourceTree = "<group>"; };
+		C4745BC51E99305F001DCCC8 /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = /Users/bob/Support/lib/macosx/libCmn/libCmn.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +213,7 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = /Users/bob/Support/lib/macosx/libCmn/include;
 				LIBRARY_SEARCH_PATHS = /Users/bob/Support/lib/macosx/libCmn;
+				OTHER_CFLAGS = "-D__MACOSX_ENV__";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -222,6 +223,7 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = /Users/bob/Support/lib/macosx/libCmn/include;
 				LIBRARY_SEARCH_PATHS = /Users/bob/Support/lib/macosx/libCmn;
+				OTHER_CFLAGS = "-D__MACOSX_ENV__";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -245,6 +247,7 @@
 				C4745BC41E992FDE001DCCC8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

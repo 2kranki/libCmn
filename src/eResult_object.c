@@ -148,9 +148,10 @@ OBJ_IUNKNOWN    eResult_Vtbl = {
     eResult_Dealloc,
     eResult_Class,
     eResult_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))eResult_ToDebugString,
     NULL,			// eResult_Enable()
     NULL,			// eResult_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))eResult_ToDebugString,
     NULL,			// eResult_Assign()
     NULL,			// eResult_Compare()
     NULL 			// eResult_Copy()

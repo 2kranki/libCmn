@@ -258,9 +258,10 @@ EBCDIC_VTBL     ebcdic_Vtbl = {
         ebcdic_Dealloc,
         ebcdic_Class,
         ebcdic_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)ebcdic_ToDebugString,
         NULL,			// ebcdic_Enable,
         NULL,			// ebcdic_Disable,
-        (P_OBJ_TOSTRING)ebcdic_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)ebcdic_Assign,
         NULL,			// (P_OBJ_COMPARE)ebcdic_Compare,
         NULL, 			// (P_OBJ_PTR)ebcdic_Copy,

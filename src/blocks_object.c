@@ -169,9 +169,10 @@ BLOCKS_VTBL     blocks_Vtbl = {
         blocks_Dealloc,
         blocks_Class,
         blocks_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)blocks_ToDebugString,
         NULL,			// blocks_Enable,
         NULL,			// blocks_Disable,
-        (P_OBJ_TOSTRING)blocks_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)blocks_Assign,
         NULL,			// (P_OBJ_COMPARE)blocks_Compare,
         NULL, 			// (P_OBJ_PTR)blocks_Copy,

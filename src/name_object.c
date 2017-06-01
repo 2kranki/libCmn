@@ -177,9 +177,10 @@ NAME_VTBL       name_Vtbl = {
         name_Dealloc,
         name_Class,
         name_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)name_ToDebugString,
         NULL,			// name_Enable,
         NULL,			// name_Disable,
-        (P_OBJ_TOSTRING)name_ToDebugString,
         (P_OBJ_ASSIGN)name_Assign,
         (P_OBJ_COMPARE)name_Compare,
         (P_OBJ_PTR)name_Copy,

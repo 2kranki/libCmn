@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    dirEntry_Vtbl = {
     dirEntry_Dealloc,
     dirEntry_Class,
     dirEntry_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))dirEntry_ToDebugString,
     NULL,			// dirEntry_Enable()
     NULL,			// dirEntry_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))dirEntry_ToDebugString,
     NULL,			// dirEntry_Assign()
     NULL,			// dirEntry_Compare()
     NULL 			// dirEntry_Copy()

@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    greg_Vtbl = {
     greg_Dealloc,
     greg_Class,
     greg_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))greg_ToDebugString,
     NULL,			// greg_Enable()
     NULL,			// greg_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))greg_ToDebugString,
     NULL,			// greg_Assign()
     NULL,			// greg_Compare()
     NULL 			// greg_Copy()

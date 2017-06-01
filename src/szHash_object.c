@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    szHash_Vtbl = {
     szHash_Dealloc,
     szHash_Class,
     szHash_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)szHash_ToDebugString,
     NULL,			// szHash_Enable,
     NULL,			// szHash_Disable,
-    (P_OBJ_TOSTRING)szHash_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)szHash_Assign,
     NULL,			// (P_OBJ_COMPARE)szHash_Compare,
     NULL, 			// (P_OBJ_PTR)szHash_Copy,

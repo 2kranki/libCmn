@@ -169,9 +169,10 @@ OBJ_IUNKNOWN    srcLoc_Vtbl = {
     srcLoc_Dealloc,
     srcLoc_Class,
     srcLoc_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)srcLoc_ToDebugString,
     NULL,			// srcLoc_Enable,
     NULL,			// srcLoc_Disable,
-    (P_OBJ_TOSTRING)srcLoc_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)srcLoc_Assign,
     NULL,			// (P_OBJ_COMPARE)srcLoc_Compare,
     NULL, 			// (P_OBJ_PTR)srcLoc_Copy,

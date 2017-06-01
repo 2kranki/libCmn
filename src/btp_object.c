@@ -172,9 +172,10 @@ BTP_VTBL     btp_Vtbl = {
         btp_Dealloc,
         btp_Class,
         btp_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        NULL,           // (P_OBJ_TOSTRING)btp_ToDebugString,
         NULL,			// btp_Enable,
         NULL,			// btp_Disable,
-        NULL,           // (P_OBJ_TOSTRING)btp_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)btp_Assign,
         NULL,			// (P_OBJ_COMPARE)btp_Compare,
         NULL, 			// (P_OBJ_PTR)btp_Copy,

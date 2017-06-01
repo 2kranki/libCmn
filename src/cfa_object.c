@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    cfa_Vtbl = {
     cfa_Dealloc,
     cfa_Class,
     cfa_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cfa_ToDebugString,
     NULL,			// cfa_Enable()
     NULL,			// cfa_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))cfa_ToDebugString,
     NULL,			// cfa_Assign()
     NULL,			// cfa_Compare()
     NULL 			// cfa_Copy()

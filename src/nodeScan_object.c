@@ -172,9 +172,10 @@ NODESCAN_VTBL     nodeScan_Vtbl = {
         nodeScan_Dealloc,
         nodeScan_Class,
         nodeScan_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeScan_ToDebugString,
         NULL,			// nodeScan_Enable,
         NULL,			// nodeScan_Disable,
-        (P_OBJ_TOSTRING)nodeScan_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeScan_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeScan_Compare,
         NULL, 			// (P_OBJ_PTR)nodeScan_Copy,

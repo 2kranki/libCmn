@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    u16Matrix_Vtbl = {
     u16Matrix_Dealloc,
     u16Matrix_Class,
     u16Matrix_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (OBJ_ID (*)(OBJ_ID,int))u16Matrix_ToDebugString,
     NULL,			// u16Matrix_Enable()
     NULL,			// u16Matrix_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))u16Matrix_ToDebugString,
     NULL,			// u16Matrix_Assign()
     NULL,			// u16Matrix_Compare()
     NULL 			// u16Matrix_Copy()

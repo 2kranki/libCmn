@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    dbCsv_Vtbl = {
     dbCsv_Dealloc,
     dbCsv_Class,
     dbCsv_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)dbCsv_ToDebugString,
     NULL,			// dbCsv_Enable,
     NULL,			// dbCsv_Disable,
-    (P_OBJ_TOSTRING)dbCsv_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)dbCsv_Assign,
     NULL,			// (P_OBJ_COMPARE)dbCsv_Compare,
     NULL, 			// (P_OBJ_PTR)dbCsv_Copy,

@@ -170,9 +170,10 @@ FBSO_VTBL     fbso_Vtbl = {
         fbso_Dealloc,
         fbso_Class,
         fbso_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        NULL,           // (P_OBJ_TOSTRING)fbso_ToDebugString,
         NULL,			// fbso_Enable,
         NULL,			// fbso_Disable,
-        NULL,           // (P_OBJ_TOSTRING)fbso_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)fbso_Assign,
         NULL,			// (P_OBJ_COMPARE)fbso_Compare,
         NULL, 			// (P_OBJ_PTR)fbso_Copy,

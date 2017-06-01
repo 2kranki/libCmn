@@ -147,9 +147,10 @@ UINT128_VTBL    uint128_Vtbl = {
         uint128_Dealloc,
         uint128_Class,
         uint128_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (OBJ_ID (*)(OBJ_ID,int))uint128_ToDebugString,
         NULL,			// uint128_Enable()
         NULL,			// uint128_Disable(
-        (OBJ_ID (*)(OBJ_ID,int))uint128_ToDebugString,
         NULL,			// uint128_Assign()
         NULL,			// uint128_Compare()
         NULL 			// uint128_Copy()

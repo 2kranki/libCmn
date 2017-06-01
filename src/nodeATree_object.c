@@ -169,9 +169,10 @@ NODEATREE_VTBL     nodeATree_Vtbl = {
         nodeATree_Dealloc,
         nodeATree_Class,
         nodeATree_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeATree_ToDebugString,
         NULL,			// nodeATree_Enable,
         NULL,			// nodeATree_Disable,
-        (P_OBJ_TOSTRING)nodeATree_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeATree_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeATree_Compare,
         NULL, 			// (P_OBJ_PTR)nodeATree_Copy,

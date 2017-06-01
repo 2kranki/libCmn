@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    dbf_Vtbl = {
     dbf_Dealloc,
     dbf_Class,
     dbf_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))dbf_ToDebugString,
     NULL,			// dbf_Enable()
     NULL,			// dbf_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))dbf_ToDebugString,
     NULL,			// dbf_Assign()
     NULL,			// dbf_Compare()
     NULL 			// dbf_Copy()

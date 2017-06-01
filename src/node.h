@@ -146,6 +146,12 @@ extern "C" {
     );
     
     
+    NODE_DATA *     node_NewWithInt(
+        int64_t         ident,
+        OBJ_ID          pData
+    );
+    
+    
     NODE_DATA *     node_NewWithUTF8(
         const
         char            *pName,
@@ -273,6 +279,13 @@ extern "C" {
     ERESULT         node_Compare(
         NODE_DATA		*this,
         NODE_DATA       *pOther
+    );
+    
+    
+    NODE_DATA *     node_InitWithInt(
+        NODE_DATA       *this,
+        int64_t         ident,
+        OBJ_ID          pData
     );
     
     

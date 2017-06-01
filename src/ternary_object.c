@@ -176,9 +176,10 @@ TERNARY_VTBL     ternary_Vtbl = {
         ternary_Dealloc,
         ternary_Class,
         ternary_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)ternary_ToDebugString,
         NULL,			// ternary_Enable,
         NULL,			// ternary_Disable,
-        (P_OBJ_TOSTRING)ternary_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)ternary_Assign,
         NULL,			// (P_OBJ_COMPARE)ternary_Compare,
         NULL, 			// (P_OBJ_PTR)ternary_Copy,

@@ -40,6 +40,8 @@
 
 
 #include    <msgBus.h>
+#include    <node.h>
+
 
 
 #ifndef MSGBUS_INTERNAL_H

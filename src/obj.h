@@ -94,7 +94,7 @@ extern	"C" {
     typedef struct obj_info_s  OBJ_INFO;
     typedef void (*DEALLOC_METHOD)(void *);
     
-    typedef struct obj_data_s OBJ_DATA;     /* One Interface */
+    typedef struct obj_data_s   OBJ_DATA;   /* One Interface */
 
     typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID, OBJ_ID);
     typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID, OBJ_ID);
@@ -104,7 +104,7 @@ extern	"C" {
     typedef uint32_t    (*P_OBJ_HASH)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_PTR)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_TOSTRING)(OBJ_ID, int);
-    typedef void *      (*P_OBJ_QUERYMETHOD)(OBJ_ID, const char *);
+    typedef void *      (*P_OBJ_QUERYINFO)(OBJ_ID, uint32_t, const char *);
 
 
     
@@ -174,10 +174,16 @@ extern	"C" {
         uint16_t    (*pWhoAmI)();
         // Everything before this is required and does not need to be
         // tested to see if it exists.  Everything after this must be
-        // tested to see if it exists, because it may not be implemented.
+        // tested to see if it exists, because it may not be implemented
+        // (ie NULL).
+        // ------- Beginning of Methods likely to be in all objects -------
+        // Query an object for specific data including object size,
+        // method name(s) in character format, etc.
+        void *      (*pQueryInfo)(OBJ_ID, uint32_t, const uint8_t *);
+        OBJ_ID      (*pToDebugString)(OBJ_ID, int);
+        // ------- End of Methods likely to be in all objects -------
         bool        (*pEnable)(OBJ_ID);
         bool        (*pDisable)(OBJ_ID);
-        OBJ_ID      (*pToDebugString)(OBJ_ID, int);
         // Assigns data within 1st object to 2nd object.
         ERESULT     (*pAssign)(OBJ_ID, OBJ_ID);  // P_OBJ_ASSIGN
         // Compares 1st object to 2nd object.
@@ -192,14 +198,18 @@ extern	"C" {
         OBJ_ID      (*pCopy)(OBJ_ID);           // P_OBJ_PTR
         // Creates hash of this object.
         uint32_t    (*pHash)(OBJ_ID);           // P_OBJ_HASH
-        // Query an object for a method name in character format. If
-        // found within the object, return the address of the method.
-        // The method name can be in UTF-8 format.
-        void *      (*pQueryMethod)(OBJ_ID, const uint8_t *);
     };
 //#pragma pack(pop)
     
     
+    typedef enum obj_QueryInfoType_e {
+        OBJ_QUERYINFO_TYPE_UNKNOWN=0,
+        OBJ_QUERYINFO_TYPE_METHOD      // String is method name without object prefix
+    } OBJ_QUERYINFO_TYPE;
+
+
+
+
 #define OBJ_INIT_SHARED(cbp,cbSize)\
     if (!(obj_getFlags(cbp) & OBJ_FLAG_INIT)) {\
         memset(cbp, 0, cbSize);\
@@ -489,6 +499,14 @@ extern	"C" {
     );
 
 
+    void *          obj_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        uint8_t         *pStr
+    );
+    
+    
     OBJ_ID          obj_Release(
         OBJ_ID          objId
     );

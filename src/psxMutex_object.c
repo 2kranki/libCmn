@@ -171,9 +171,10 @@ PSXMUTEX_VTBL   psxMutex_Vtbl = {
         psxMutex_Dealloc,
         psxMutex_Class,
         psxMutex_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)psxMutex_ToDebugString,
         NULL,			// psxMutex_Enable,
         NULL,			// psxMutex_Disable,
-        (P_OBJ_TOSTRING)psxMutex_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)psxMutex_Assign,
         NULL,			// (P_OBJ_COMPARE)psxMutex_Compare,
         NULL, 			// (P_OBJ_PTR)psxMutex_Copy,

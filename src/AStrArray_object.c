@@ -146,12 +146,14 @@ OBJ_IUNKNOWN    AStrArray_Vtbl = {
     AStrArray_Dealloc,
     AStrArray_Class,
     AStrArray_WhoAmI,
+    NULL,
+    NULL, // (OBJ_ID (*)(OBJ_ID,int))AStrArray_ToDebugString,
     NULL,			// AStrArray_Enable()
     NULL,			// AStrArray_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))AStrArray_ToDebugString,
     NULL,			// AStrArray_Assign()
     NULL,			// AStrArray_Compare()
-    NULL 			// AStrArray_Copy()
+    NULL,			// AStrArray_Copy()
+    NULL 			// AStrArray_Hash()
 };
 
 

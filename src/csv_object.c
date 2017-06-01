@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    csv_Vtbl = {
     csv_Dealloc,
     csv_Class,
     csv_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))csv_ToDebugString,
     NULL,			// csv_Enable()
     NULL,			// csv_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))csv_ToDebugString,
     NULL,			// csv_Assign()
     NULL,			// csv_Compare()
     NULL 			// csv_Copy()

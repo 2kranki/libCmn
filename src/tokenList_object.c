@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    tokenList_Vtbl = {
     tokenList_Dealloc,
     tokenList_Class,
     tokenList_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)tokenList_ToDebugString,
     NULL,			// tokenList_Enable,
     NULL,			// tokenList_Disable,
-    (P_OBJ_TOSTRING)tokenList_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)tokenList_Assign,
     NULL,			// (P_OBJ_COMPARE)tokenList_Compare,
     NULL, 			// (P_OBJ_PTR)tokenList_Copy,

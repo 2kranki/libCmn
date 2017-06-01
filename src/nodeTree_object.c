@@ -163,9 +163,10 @@ OBJ_IUNKNOWN    nodeTree_Vtbl = {
     nodeTree_Dealloc,
     nodeTree_Class,
     nodeTree_WhoAmI,
+    NULL,
+    (OBJ_ID (*)(OBJ_ID,int))nodeTree_ToDebugString,
     NULL,			// nodeTree_Enable()
     NULL,			// nodeTree_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))nodeTree_ToDebugString,
     NULL,			// nodeTree_Assign()
     NULL,			// nodeTree_Compare()
     NULL 			// nodeTree_Copy()

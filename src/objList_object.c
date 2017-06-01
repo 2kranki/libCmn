@@ -169,9 +169,10 @@ OBJLIST_VTBL     objList_Vtbl = {
         objList_Dealloc,
         objList_Class,
         objList_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)objList_ToDebugString,
         NULL,			// objList_Enable,
         NULL,			// objList_Disable,
-        (P_OBJ_TOSTRING)objList_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)objList_Assign,
         NULL,			// (P_OBJ_COMPARE)objList_Compare,
         NULL, 			// (P_OBJ_PTR)objList_Copy,

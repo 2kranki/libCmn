@@ -165,20 +165,21 @@ const
 WSTRC_VTBL_INTERNAL WStrC_Vtbl = {
     {
         {
-        &WStrC_Info,
-        WStrC_IsKindOf,
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-        WStrC_Dealloc,
-        WStrC_Class,
-        WStrC_WhoAmI,
-        NULL,			// WStrC_Enable,
-        NULL,			// WStrC_Disable,
-        (P_OBJ_TOSTRING)WStrC_ToDebugString,
-        NULL,			// (P_OBJ_ASSIGN)WStrC_Assign,
-        (P_OBJ_COMPARE)WStrC_Compare,
-        (P_OBJ_PTR)WStrC_Copy,
-        (P_OBJ_HASH)WStrC_Hash
+            &WStrC_Info,
+            WStrC_IsKindOf,
+            obj_RetainStandard,
+            obj_ReleaseStandard,
+            WStrC_Dealloc,
+            WStrC_Class,
+            WStrC_WhoAmI,
+            NULL,           // (P_OBJ_QUERYINFO)
+            (P_OBJ_TOSTRING)WStrC_ToDebugString,
+            NULL,			// WStrC_Enable,
+            NULL,			// WStrC_Disable,
+            NULL,			// (P_OBJ_ASSIGN)WStrC_Assign,
+            (P_OBJ_COMPARE)WStrC_Compare,
+            (P_OBJ_PTR)WStrC_Copy,
+            (P_OBJ_HASH)WStrC_Hash
         },
         // Put other object method names below this.
         // Properties:

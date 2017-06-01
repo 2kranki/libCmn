@@ -564,9 +564,10 @@ DEC_VTBL     dec_Vtbl = {
         dec_Dealloc,
         dec_Class,
         dec_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)dec_ToDebugString,
         NULL,			// dec_Enable,
         NULL,			// dec_Disable,
-        (P_OBJ_TOSTRING)dec_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)dec_Assign,
         NULL,			// (P_OBJ_COMPARE)dec_Compare,
         NULL, 			// (P_OBJ_PTR)dec_Copy,

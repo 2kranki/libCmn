@@ -170,9 +170,10 @@ NODE_VTBL       node_Vtbl = {
         node_Dealloc,
         node_Class,
         node_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)node_ToDebugString,
         NULL,			// node_Enable,
         NULL,			// node_Disable,
-        (P_OBJ_TOSTRING)node_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)node_Assign,
         NULL,			// (P_OBJ_COMPARE)node_Compare,
         NULL, 			// (P_OBJ_PTR)node_Copy,

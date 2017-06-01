@@ -170,9 +170,10 @@ DIR_VTBL     dir_Vtbl = {
         dir_Dealloc,
         dir_Class,
         dir_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)dir_ToDebugString,
         NULL,			// dir_Enable,
         NULL,			// dir_Disable,
-        (P_OBJ_TOSTRING)dir_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)dir_Assign,
         NULL,			// (P_OBJ_COMPARE)dir_Compare,
         NULL, 			// (P_OBJ_PTR)dir_Copy,

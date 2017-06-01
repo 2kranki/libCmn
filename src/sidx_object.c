@@ -148,9 +148,10 @@ OBJ_IUNKNOWN    sidx_Vtbl = {
     sidx_Dealloc,
     sidx_Class,
     sidx_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)sidx_ToDebugString,
     NULL,			// sidx_Enable()
     NULL,			// sidx_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))sidx_ToDebugString,
     NULL,			// sidx_Assign()
     NULL,			// sidx_Compare()
     NULL 			// sidx_Copy()

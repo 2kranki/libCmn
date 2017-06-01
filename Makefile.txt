@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 5/31/2017  2:26:45.000)
+# ( 6/ 1/2017 10:52:55.000)
 
 
 LIBNAM=libCmn
@@ -1354,9 +1354,9 @@ clean:
 install:
 	-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
 	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include
-	cp -v $(LIBPATH) $(INSTALLDIR)/
-	cp -v src/*.h $(INSTALLDIR)/include/
-	cp -v src/$(SYS)/*.h $(INSTALLDIR)/include/
+	cp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a
+	cp src/*.h $(INSTALLDIR)/include/
+	cp src/$(SYS)/*.h $(INSTALLDIR)/include/
 
 
 .PHONY: create_dirs

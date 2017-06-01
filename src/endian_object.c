@@ -169,9 +169,10 @@ ENDIAN_VTBL     endian_Vtbl = {
         endian_Dealloc,
         endian_Class,
         endian_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)endian_ToDebugString,
         NULL,			// endian_Enable,
         NULL,			// endian_Disable,
-        (P_OBJ_TOSTRING)endian_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)endian_Assign,
         NULL,			// (P_OBJ_COMPARE)endian_Compare,
         NULL, 			// (P_OBJ_PTR)endian_Copy,

@@ -116,6 +116,8 @@ extern	"C" {
         NULL,
         obj_Class,
         obj_ClassWhoAmI,
+        NULL,
+        NULL,
         obj_ClassEnable,
         obj_ClassDisable
     };
@@ -170,6 +172,8 @@ extern	"C" {
         obj_Dealloc,
         obj_Class,
         obj_ObjWhoAmI,
+        NULL,
+        NULL,
         obj_Enable,
         obj_Disable
     };
@@ -185,6 +189,8 @@ extern	"C" {
         obj_Dealloc,
         obj_Class,
         obj_ObjWhoAmI,
+        NULL,
+        NULL,
         obj_Enable,
         obj_Disable
     };
@@ -954,6 +960,121 @@ extern	"C" {
 
 
 
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          obj_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        uint8_t         *pStr
+    )
+    {
+        OBJ_DATA        *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+        if (NULL == this->pVtbl) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        switch (type) {
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                    case 'A':
+                        if (str_Compare("Assign", (char *)pStr) == 0) {
+                            return this->pVtbl->pAssign;
+                        }
+                        break;
+                        
+                    case 'C':
+                        if (str_Compare("ClassObject", (char *)pStr) == 0) {
+                            return this->pVtbl->pClassObject;
+                        }
+                        if (str_Compare("Compare", (char *)pStr) == 0) {
+                            return this->pVtbl->pCompare;
+                        }
+                        if (str_Compare("Copy", (char *)pStr) == 0) {
+                            return this->pVtbl->pCopy;
+                        }
+                        break;
+                        
+                    case 'D':
+                        if (str_Compare("Dealloc", (char *)pStr) == 0) {
+                            return this->pVtbl->pDealloc;
+                        }
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return this->pVtbl->pDisable;
+                        }
+                        break;
+                        
+                    case 'E':
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return this->pVtbl->pEnable;
+                        }
+                        break;
+                        
+                    case 'H':
+                        if (str_Compare("Hash", (char *)pStr) == 0) {
+                            return this->pVtbl->pHash;
+                        }
+                        break;
+                        
+                    case 'I':
+                        if (str_Compare("IsKindOf", (char *)pStr) == 0) {
+                            return this->pVtbl->pIsKindOf;
+                        }
+                        break;
+                        
+                    case 'Q':
+                        if (str_Compare("QueryInfo", (char *)pStr) == 0) {
+                            return this->pVtbl->pQueryInfo;
+                        }
+                        break;
+                        
+                    case 'R':
+                        if (str_Compare("Release", (char *)pStr) == 0) {
+                            return this->pVtbl->pRelease;
+                        }
+                        if (str_Compare("Retain", (char *)pStr) == 0) {
+                            return this->pVtbl->pRetain;
+                        }
+                        break;
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return this->pVtbl->pToDebugString;
+                        }
+                        break;
+                        
+                    case 'W':
+                        if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                            return this->pVtbl->pWhoAmI;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return NULL;
+    }
+
+    
+    
     //---------------------------------------------------------------
     //                      R e l e a s e
     //---------------------------------------------------------------

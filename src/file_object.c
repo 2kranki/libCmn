@@ -170,9 +170,10 @@ FILE_VTBL     file_Vtbl = {
         file_Dealloc,
         file_Class,
         file_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)file_ToDebugString,
         NULL,			// file_Enable,
         NULL,			// file_Disable,
-        (P_OBJ_TOSTRING)file_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)file_Assign,
         NULL,			// (P_OBJ_COMPARE)file_Compare,
         NULL, 			// (P_OBJ_PTR)file_Copy,

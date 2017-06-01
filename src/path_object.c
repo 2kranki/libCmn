@@ -182,9 +182,10 @@ OBJ_IUNKNOWN    path_Vtbl = {
     path_Dealloc,
     path_Class,
     path_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)path_ToDebugString,
     NULL,			// path_Enable,
     NULL,			// path_Disable,
-    (P_OBJ_TOSTRING)path_ToDebugString,
     (P_OBJ_ASSIGN)AStr_Assign,
     (P_OBJ_COMPARE)AStr_Compare,
     (P_OBJ_PTR)AStr_Copy,

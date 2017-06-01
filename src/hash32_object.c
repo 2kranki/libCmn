@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    hash32_Vtbl = {
     hash32_Dealloc,
     hash32_Class,
     hash32_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))hash32_ToDebugString,
     NULL,			// hash32_Enable()
     NULL,			// hash32_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))hash32_ToDebugString,
     NULL,			// hash32_Assign()
     NULL,			// hash32_Compare()
     NULL 			// hash32_Copy()

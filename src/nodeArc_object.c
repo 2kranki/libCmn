@@ -169,9 +169,10 @@ NODEARC_VTBL     nodeArc_Vtbl = {
         nodeArc_Dealloc,
         nodeArc_Class,
         nodeArc_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeArc_ToDebugString,
         NULL,			// nodeArc_Enable,
         NULL,			// nodeArc_Disable,
-        (P_OBJ_TOSTRING)nodeArc_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeArc_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeArc_Compare,
         NULL, 			// (P_OBJ_PTR)nodeArc_Copy,

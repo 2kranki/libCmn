@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    cb32_Vtbl = {
     cb32_Dealloc,
     cb32_Class,
     cb32_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cb32_ToDebugString,
     NULL,			// cb32_Enable()
     NULL,			// cb32_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))cb32_ToDebugString,
     NULL,			// cb32_Assign()
     NULL,			// cb32_Compare()
     NULL 			// cb32_Copy()

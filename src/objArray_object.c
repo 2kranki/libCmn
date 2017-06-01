@@ -170,9 +170,10 @@ OBJARRAY_VTBL     objArray_Vtbl = {
         objArray_Dealloc,
         objArray_Class,
         objArray_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)objArray_ToDebugString,
         NULL,			// objArray_Enable,
         NULL,			// objArray_Disable,
-        (P_OBJ_TOSTRING)objArray_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)objArray_Assign,
         NULL,			// (P_OBJ_COMPARE)objArray_Compare,
         NULL, 			// (P_OBJ_PTR)objArray_Copy,

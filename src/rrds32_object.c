@@ -171,9 +171,10 @@ RRDS32_VTBL     rrds32_Vtbl = {
         rrds32_Dealloc,
         rrds32_Class,
         rrds32_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)rrds32_ToDebugString,
         NULL,			// rrds_Enable,
         NULL,			// rrds_Disable,
-        (P_OBJ_TOSTRING)rrds32_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)rrds_Assign,
         NULL,			// (P_OBJ_COMPARE)rrds_Compare,
         NULL, 			// (P_OBJ_PTR)rrds_Copy,

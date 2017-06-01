@@ -171,9 +171,10 @@ SRCFILE_VTBL    srcFile_Vtbl = {
         srcFile_Dealloc,
         srcFile_Class,
         srcFile_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)srcFile_ToDebugString,
         NULL,			// srcFile_Enable,
         NULL,			// srcFile_Disable,
-        (P_OBJ_TOSTRING)srcFile_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)srcFile_Assign,
         NULL,			// (P_OBJ_COMPARE)srcFile_Compare,
         NULL, 			// (P_OBJ_PTR)srcFile_Copy,

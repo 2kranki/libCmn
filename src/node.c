@@ -86,6 +86,23 @@ extern "C" {
 
 
 
+    NODE_DATA *     node_NewWithInt(
+        int64_t         ident,
+        OBJ_ID          pData
+    )
+    {
+        NODE_DATA       *this;
+        
+        this = node_Alloc( );
+        if (this) {
+            this = node_InitWithInt(this, ident, pData);
+        }
+        
+        return this;
+    }
+    
+    
+    
     NODE_DATA *     node_NewWithName(
         NAME_DATA       *pName,
         OBJ_ID          pData
@@ -99,7 +116,7 @@ extern "C" {
         
         this = node_Alloc( );
         if (this) {
-            this = node_InitWithName(this,pName,pData);
+            this = node_InitWithName(this, pName, pData);
         }
         
         return this;
@@ -121,7 +138,7 @@ extern "C" {
         
         this = node_Alloc( );
         if (this) {
-            this = node_InitWithUTF8(this,pName,pData);
+            this = node_InitWithUTF8(this, pName, pData);
         }
         
         return this;
@@ -751,6 +768,38 @@ extern "C" {
 
      
 
+    NODE_DATA *     node_InitWithInt(
+        NODE_DATA       *this,
+        int64_t         ident,
+        OBJ_ID          pData
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this = node_Init( this );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this->pName = name_NewInt(ident);
+        if (OBJ_NIL == this->pName) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        node_setData(this, pData);
+        
+        return this;
+    }
+    
+    
+    
     NODE_DATA *     node_InitWithName(
         NODE_DATA       *this,
         NAME_DATA       *pName,

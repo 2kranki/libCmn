@@ -70,7 +70,7 @@ extern "C" {
 
     typedef enum name_type_e {
         NAME_TYPE_UNKNOWN=0,
-        NAME_TYPE_INTEGER,          // int16_t
+        NAME_TYPE_INTEGER,          // int64_t
         NAME_TYPE_STR,              // WStr Object
         NAME_TYPE_UTF8,             // UTF-8 NUL-terminated String
         NAME_TYPE_UTF8_CON          // UTF-8 NUL-terminated String Constant

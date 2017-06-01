@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    trace_Vtbl = {
     trace_Dealloc,
     trace_Class,
     trace_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (P_OBJ_TOSTRING)trace_ToDebugString,
     NULL,			// trace_Enable,
     NULL,			// trace_Disable,
-    NULL,           // (P_OBJ_TOSTRING)trace_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)trace_Assign,
     NULL,			// (P_OBJ_COMPARE)trace_Compare,
     NULL, 			// (P_OBJ_PTR)trace_Copy,

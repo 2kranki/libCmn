@@ -169,9 +169,10 @@ U12ARRAY_VTBL     u12Array_Vtbl = {
         u12Array_Dealloc,
         u12Array_Class,
         u12Array_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)u12Array_ToDebugString,
         NULL,			// u12Array_Enable,
         NULL,			// u12Array_Disable,
-        (P_OBJ_TOSTRING)u12Array_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)u12Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u12Array_Compare,
         NULL, 			// (P_OBJ_PTR)u12Array_Copy,

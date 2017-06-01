@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    objCb_Vtbl = {
     objCb_Dealloc,
     objCb_Class,
     objCb_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           //(OBJ_ID (*)(OBJ_ID,int))objCb_ToDebugString,
     NULL,			// objCb_Enable()
     NULL,			// objCb_Disable(
-    NULL,   //(OBJ_ID (*)(OBJ_ID,int))objCb_ToDebugString,
     NULL,			// objCb_Assign()
     NULL,			// objCb_Compare()
     NULL 			// objCb_Copy()

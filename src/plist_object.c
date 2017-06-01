@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    plist_Vtbl = {
     plist_Dealloc,
     plist_Class,
     plist_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (OBJ_ID (*)(OBJ_ID,int))plist_ToDebugString,
     NULL,			// plist_Enable()
     NULL,			// plist_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))plist_ToDebugString,
     NULL,			// plist_Assign()
     NULL,			// plist_Compare()
     NULL 			// plist_Copy()

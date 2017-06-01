@@ -170,9 +170,10 @@ PWR2ARRAY_VTBL  pwr2Array_Vtbl = {
         pwr2Array_Dealloc,
         pwr2Array_Class,
         pwr2Array_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)pwr2Array_ToDebugString,
         NULL,			// pwr2Array_Enable,
         NULL,			// pwr2Array_Disable,
-        (P_OBJ_TOSTRING)pwr2Array_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)pwr2Array_Assign,
         NULL,			// (P_OBJ_COMPARE)pwr2Array_Compare,
         NULL, 			// (P_OBJ_PTR)pwr2Array_Copy,

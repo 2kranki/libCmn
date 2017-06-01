@@ -169,9 +169,10 @@ NODEGRAPH_VTBL     nodeGraph_Vtbl = {
         nodeGraph_Dealloc,
         nodeGraph_Class,
         nodeGraph_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeGraph_ToDebugString,
         NULL,			// nodeGraph_Enable,
         NULL,			// nodeGraph_Disable,
-        (P_OBJ_TOSTRING)nodeGraph_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeGraph_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeGraph_Compare,
         NULL, 			// (P_OBJ_PTR)nodeGraph_Copy,

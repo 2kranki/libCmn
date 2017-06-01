@@ -169,9 +169,10 @@ HEX_VTBL     hex_Vtbl = {
         hex_Dealloc,
         hex_Class,
         hex_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)hex_ToDebugString,
         NULL,			// hex_Enable,
         NULL,			// hex_Disable,
-        (P_OBJ_TOSTRING)hex_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)hex_Assign,
         NULL,			// (P_OBJ_COMPARE)hex_Compare,
         NULL, 			// (P_OBJ_PTR)hex_Copy,

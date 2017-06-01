@@ -171,9 +171,10 @@ FALSE_VTBL      false_Vtbl = {
         NULL,
         false_Class,
         false_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)false_ToDebugString,
         NULL,			// false_Enable,
         NULL,			// false_Disable,
-        (P_OBJ_TOSTRING)false_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)false_Assign,
         NULL,			// (P_OBJ_COMPARE)false_Compare,
         NULL, 			// (P_OBJ_PTR)false_Copy,

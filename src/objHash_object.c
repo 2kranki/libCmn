@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    objHash_Vtbl = {
     objHash_Dealloc,
     objHash_Class,
     objHash_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)objHash_ToDebugString,
     NULL,			// objHash_Enable,
     NULL,			// objHash_Disable,
-    (P_OBJ_TOSTRING)objHash_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)objHash_Assign,
     NULL,			// (P_OBJ_COMPARE)objHash_Compare,
     NULL, 			// (P_OBJ_PTR)objHash_Copy,

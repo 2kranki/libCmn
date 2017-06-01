@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    srcFiles_Vtbl = {
     srcFiles_Dealloc,
     srcFiles_Class,
     srcFiles_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)srcFiles_ToDebugString,
     NULL,			// srcFiles_Enable,
     NULL,			// srcFiles_Disable,
-    (P_OBJ_TOSTRING)srcFiles_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)srcFiles_Assign,
     NULL,			// (P_OBJ_COMPARE)srcFiles_Compare,
     NULL, 			// (P_OBJ_PTR)srcFiles_Copy,

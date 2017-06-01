@@ -171,9 +171,10 @@ PSXTHREAD_VTBL  psxThread_Vtbl = {
         psxThread_Dealloc,
         psxThread_Class,
         psxThread_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)psxThread_ToDebugString,
         NULL,			// psxThread_Enable,
         NULL,			// psxThread_Disable,
-        (P_OBJ_TOSTRING)psxThread_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)psxThread_Assign,
         NULL,			// (P_OBJ_COMPARE)psxThread_Compare,
         NULL, 			// (P_OBJ_PTR)psxThread_Copy,

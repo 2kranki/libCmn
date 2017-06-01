@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    dbField_Vtbl = {
     dbField_Dealloc,
     dbField_Class,
     dbField_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))dbField_ToDebugString,
     NULL,			// dbField_Enable()
     NULL,			// dbField_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))dbField_ToDebugString,
     NULL,			// dbField_Assign()
     NULL,			// dbField_Compare()
     NULL 			// dbField_Copy()

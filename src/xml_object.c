@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    xml_Vtbl = {
     xml_Dealloc,
     xml_Class,
     xml_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (OBJ_ID (*)(OBJ_ID,int))xml_ToDebugString,
     NULL,			// xml_Enable()
     NULL,			// xml_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))xml_ToDebugString,
     NULL,			// xml_Assign()
     NULL,			// xml_Compare()
     NULL 			// xml_Copy()

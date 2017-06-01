@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    json_Vtbl = {
     json_Dealloc,
     json_Class,
     json_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)json_ToDebugString,
     NULL,			// json_Enable,
     NULL,			// json_Disable,
-    (P_OBJ_TOSTRING)json_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)json_Assign,
     NULL,			// (P_OBJ_COMPARE)json_Compare,
     NULL, 			// (P_OBJ_PTR)json_Copy,

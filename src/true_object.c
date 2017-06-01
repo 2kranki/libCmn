@@ -169,9 +169,10 @@ OBJ_IUNKNOWN    true_Vtbl = {
     NULL,
     true_Class,
     true_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)true_ToDebugString,
     NULL,			// true_Enable,
     NULL,			// true_Disable,
-    (P_OBJ_TOSTRING)true_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)true_Assign,
     NULL,			// (P_OBJ_COMPARE)true_Compare,
     NULL, 			// (P_OBJ_PTR)true_Copy,

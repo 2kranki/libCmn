@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    ptrArray_Vtbl = {
     ptrArray_Dealloc,
     ptrArray_Class,
     ptrArray_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (P_OBJ_TOSTRING)ptrArray_ToDebugString,
     NULL,			// ptrArray_Enable,
     NULL,			// ptrArray_Disable,
-    NULL,           // (P_OBJ_TOSTRING)ptrArray_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)ptrArray_Assign,
     NULL,			// (P_OBJ_COMPARE)ptrArray_Compare,
     NULL, 			// (P_OBJ_PTR)ptrArray_Copy,

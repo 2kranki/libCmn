@@ -170,9 +170,10 @@ NODEARRAY_VTBL  nodeArray_Vtbl = {
         nodeArray_Dealloc,
         nodeArray_Class,
         nodeArray_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeArray_ToDebugString,
         NULL,			// nodeArray_Enable,
         NULL,			// nodeArray_Disable,
-        (P_OBJ_TOSTRING)nodeArray_ToDebugString,
         (P_OBJ_ASSIGN)nodeArray_Assign,
         NULL,           // (P_OBJ_COMPARE)nodeArray_Compare,
         (P_OBJ_PTR)nodeArray_Copy,

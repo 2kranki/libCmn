@@ -170,9 +170,10 @@ PSXSEM_VTBL     psxSem_Vtbl = {
         psxSem_Dealloc,
         psxSem_Class,
         psxSem_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)psxSem_ToDebugString,
         NULL,			// psxSem_Enable,
         NULL,			// psxSem_Disable,
-        (P_OBJ_TOSTRING)psxSem_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)psxSem_Assign,
         NULL,			// (P_OBJ_COMPARE)psxSem_Compare,
         NULL, 			// (P_OBJ_PTR)psxSem_Copy,

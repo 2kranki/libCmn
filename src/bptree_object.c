@@ -153,9 +153,10 @@ BPTREE_VTBL     bptree_Vtbl = {
         bptree_Dealloc,
         bptree_Class,
         bptree_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)bptree_ToDebugString,
         NULL,			// bptree_Enable,
         NULL,			// bptree_Disable,
-        (P_OBJ_TOSTRING)bptree_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)bptree_Assign,
         NULL,			// (P_OBJ_COMPARE)bptree_Compare,
         NULL, 			// (P_OBJ_PTR)bptree_Copy,

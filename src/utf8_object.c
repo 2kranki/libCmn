@@ -170,9 +170,10 @@ UTF8_VTBL       utf8_Vtbl = {
         utf8_Dealloc,
         utf8_Class,
         utf8_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)utf8_ToDebugString,
         NULL,			// utf8_Enable,
         NULL,			// utf8_Disable,
-        (P_OBJ_TOSTRING)utf8_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)utf8_Assign,
         NULL,			// (P_OBJ_COMPARE)utf8_Compare,
         NULL, 			// (P_OBJ_PTR)utf8_Copy,

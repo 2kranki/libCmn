@@ -170,9 +170,10 @@ PSXCOND_VTBL     psxCond_Vtbl = {
         psxCond_Dealloc,
         psxCond_Class,
         psxCond_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)psxCond_ToDebugString,
         NULL,			// psxCond_Enable,
         NULL,			// psxCond_Disable,
-        (P_OBJ_TOSTRING)psxCond_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)psxCond_Assign,
         NULL,			// (P_OBJ_COMPARE)psxCond_Compare,
         NULL, 			// (P_OBJ_PTR)psxCond_Copy,

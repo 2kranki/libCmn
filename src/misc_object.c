@@ -170,9 +170,10 @@ MISC_VTBL     misc_Vtbl = {
         misc_Dealloc,
         misc_Class,
         misc_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)misc_ToDebugString,
         NULL,			// misc_Enable,
         NULL,			// misc_Disable,
-        (P_OBJ_TOSTRING)misc_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)misc_Assign,
         NULL,			// (P_OBJ_COMPARE)misc_Compare,
         NULL, 			// (P_OBJ_PTR)misc_Copy,

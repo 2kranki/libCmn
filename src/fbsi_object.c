@@ -170,9 +170,10 @@ FBSI_VTBL     fbsi_Vtbl = {
         fbsi_Dealloc,
         fbsi_Class,
         fbsi_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)fbsi_ToDebugString,
         NULL,			// fbsi_Enable,
         NULL,			// fbsi_Disable,
-        (P_OBJ_TOSTRING)fbsi_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)fbsi_Assign,
         NULL,			// (P_OBJ_COMPARE)fbsi_Compare,
         NULL, 			// (P_OBJ_PTR)fbsi_Copy,

@@ -170,9 +170,10 @@ NODEENTRY_VTBL     nodeEntry_Vtbl = {
             nodeEntry_Dealloc,
             nodeEntry_Class,
             nodeEntry_WhoAmI,
+            NULL,           // (P_OBJ_QUERYINFO)
+            (P_OBJ_TOSTRING)nodeEntry_ToDebugString,
             NULL,			// nodeEntry_Enable,
             NULL,			// nodeEntry_Disable,
-            (P_OBJ_TOSTRING)nodeEntry_ToDebugString,
             NULL,			// (P_OBJ_ASSIGN)nodeEntry_Assign,
             NULL,			// (P_OBJ_COMPARE)nodeEntry_Compare,
             NULL, 			// (P_OBJ_PTR)nodeEntry_Copy,

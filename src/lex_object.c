@@ -169,9 +169,10 @@ LEX_VTBL        lex_Vtbl = {
         lex_Dealloc,
         lex_Class,
         lex_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)lex_ToDebugString,
         NULL,			// lex_Enable,
         NULL,			// lex_Disable,
-        (P_OBJ_TOSTRING)lex_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)lex_Assign,
         NULL,			// (P_OBJ_COMPARE)lex_Compare,
         NULL, 			// (P_OBJ_PTR)lex_Copy,

@@ -170,9 +170,10 @@ OBJ_IUNKNOWN    szTbl_Vtbl = {
     szTbl_Dealloc,
     szTbl_Class,
     szTbl_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)szTbl_ToDebugString,
     NULL,			// szTbl_Enable,
     NULL,			// szTbl_Disable,
-    (P_OBJ_TOSTRING)szTbl_ToDebugString,
     NULL,			// (P_OBJ_ASSIGN)szTbl_Assign,
     NULL,			// (P_OBJ_COMPARE)szTbl_Compare,
     NULL, 			// (P_OBJ_PTR)szTbl_Copy,

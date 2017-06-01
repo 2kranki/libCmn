@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    cb_Vtbl = {
     cb_Dealloc,
     cb_Class,
     cb_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cb_ToDebugString,
     NULL,			// cb_Enable()
     NULL,			// cb_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))cb_ToDebugString,
     NULL,			// cb_Assign()
     NULL,			// cb_Compare()
     NULL 			// cb_Copy()

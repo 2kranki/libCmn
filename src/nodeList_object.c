@@ -170,9 +170,10 @@ NODELIST_VTBL     nodeList_Vtbl = {
         nodeList_Dealloc,
         nodeList_Class,
         nodeList_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)nodeList_ToDebugString,
         NULL,			// nodeList_Enable,
         NULL,			// nodeList_Disable,
-        (P_OBJ_TOSTRING)nodeList_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)nodeList_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeList_Compare,
         NULL, 			// (P_OBJ_PTR)nodeList_Copy,

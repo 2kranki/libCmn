@@ -170,9 +170,10 @@ TOKEN_VTBL     token_Vtbl = {
         token_Dealloc,
         token_Class,
         token_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)token_ToDebugString,
         NULL,			// token_Enable,
         NULL,			// token_Disable,
-        (P_OBJ_TOSTRING)token_ToDebugString,
         (P_OBJ_ASSIGN)token_Assign,
         (P_OBJ_COMPARE)token_Compare,
         (P_OBJ_PTR)token_Copy,

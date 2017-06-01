@@ -171,9 +171,10 @@ WAV_VTBL        wav_Vtbl = {
         wav_Dealloc,
         wav_Class,
         wav_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)wav_ToDebugString,
         NULL,			// wav_Enable,
         NULL,			// wav_Disable(
-        (P_OBJ_TOSTRING)wav_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)wav_Assign,
         NULL,			// (P_OBJ_COMPARE)wav_Compare,
         NULL, 			// (P_OBJ_PTR)wav_Copy,

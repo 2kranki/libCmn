@@ -179,9 +179,10 @@ WSTR_VTBL_INTERNAL WStr_Vtbl = {
             WStr_Dealloc,
             WStr_Class,
             WStr_WhoAmI,
+            NULL,           // (P_OBJ_QUERYINFO)
+            (P_OBJ_TOSTRING)WStr_ToDebugString,
             NULL,			// WStr_Enable,
             NULL,			// WStr_Disable,
-            (P_OBJ_TOSTRING)WStr_ToDebugString,
             (P_OBJ_ASSIGN)WStr_Assign,
             (P_OBJ_COMPARE)WStr_Compare,
             (P_OBJ_PTR)WStr_Copy,

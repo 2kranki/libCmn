@@ -176,9 +176,10 @@ U32ARRAY_VTBL     u32Array_Vtbl = {
         u32Array_Dealloc,
         u32Array_Class,
         u32Array_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)u32Array_ToDebugString,
         NULL,			// u32Array_Enable,
         NULL,			// u32Array_Disable,
-        (P_OBJ_TOSTRING)u32Array_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)u32Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u32Array_Compare,
         NULL, 			// (P_OBJ_PTR)u32Array_Copy,

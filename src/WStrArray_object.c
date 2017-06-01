@@ -176,9 +176,10 @@ WSTRARRAY_VTBL     WStrArray_Vtbl = {
         WStrArray_Dealloc,
         WStrArray_Class,
         WStrArray_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)WStrArray_ToDebugString,
         NULL,			// WStrArray_Enable,
         NULL,			// WStrArray_Disable,
-        (P_OBJ_TOSTRING)WStrArray_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)WStrArray_Assign,
         NULL,			// (P_OBJ_COMPARE)WStrArray_Compare,
         NULL, 			// (P_OBJ_PTR)WStrArray_Copy,

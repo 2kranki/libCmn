@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    objMatrix_Vtbl = {
     objMatrix_Dealloc,
     objMatrix_Class,
     objMatrix_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)objMatrix_ToDebugString,
     NULL,			// objMatrix_Enable()
     NULL,			// objMatrix_Disable(
-    (OBJ_ID (*)(OBJ_ID,int))objMatrix_ToDebugString,
     (ERESULT (*)(OBJ_ID,OBJ_ID))objMatrix_Assign,
     NULL,			// objMatrix_Compare()
     (OBJ_ID (*)(OBJ_ID))objMatrix_Copy

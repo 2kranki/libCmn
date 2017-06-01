@@ -170,9 +170,10 @@ CONSUMER_VTBL     consumer_Vtbl = {
         consumer_Dealloc,
         consumer_Class,
         consumer_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)consumer_ToDebugString,
         NULL,			// consumer_Enable,
         NULL,			// consumer_Disable,
-        (P_OBJ_TOSTRING)consumer_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)consumer_Assign,
         NULL,			// (P_OBJ_COMPARE)consumer_Compare,
         NULL, 			// (P_OBJ_PTR)consumer_Copy,

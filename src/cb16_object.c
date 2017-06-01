@@ -146,9 +146,10 @@ OBJ_IUNKNOWN    cb16_Vtbl = {
     cb16_Dealloc,
     cb16_Class,
     cb16_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cb16_ToDebugString,
     NULL,			// cb16_Enable()
     NULL,			// cb16_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))cb16_ToDebugString,
     NULL,			// cb16_Assign()
     NULL,			// cb16_Compare()
     NULL 			// cb16_Copy()

@@ -171,9 +171,10 @@ EXECARRAY_VTBL     execArray_Vtbl = {
         execArray_Dealloc,
         execArray_Class,
         execArray_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)execArray_ToDebugString,
         NULL,			// execArray_Enable,
         NULL,			// execArray_Disable,
-        (P_OBJ_TOSTRING)execArray_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)execArray_Assign,
         NULL,			// (P_OBJ_COMPARE)execArray_Compare,
         NULL, 			// (P_OBJ_PTR)execArray_Copy,

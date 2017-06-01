@@ -169,9 +169,10 @@ DATETIME_VTBL     dateTime_Vtbl = {
         dateTime_Dealloc,
         dateTime_Class,
         dateTime_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)dateTime_ToDebugString,
         NULL,			// dateTime_Enable,
         NULL,			// dateTime_Disable,
-        (P_OBJ_TOSTRING)dateTime_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)dateTime_Assign,
         NULL,			// (P_OBJ_COMPARE)dateTime_Compare,
         NULL, 			// (P_OBJ_PTR)dateTime_Copy,

@@ -169,9 +169,10 @@ FILEIO_VTBL     fileio_Vtbl = {
         fileio_Dealloc,
         fileio_Class,
         fileio_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)fileio_ToDebugString,
         NULL,			// fileio_Enable,
         NULL,			// fileio_Disable,
-        (P_OBJ_TOSTRING)fileio_ToDebugString,
         NULL,			// (P_OBJ_ASSIGN)fileio_Assign,
         NULL,			// (P_OBJ_COMPARE)fileio_Compare,
         NULL, 			// (P_OBJ_PTR)fileio_Copy,
