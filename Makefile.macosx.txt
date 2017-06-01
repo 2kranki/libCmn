@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 1/2017 10:52:55.000)
+# ( 6/ 1/2017 17:38:53.000)
 
 
 LIBNAM=libCmn
@@ -611,6 +611,18 @@ $(OBJDIR)/misc_object.o: $(SRCDIR)/misc_object.c
 
 
 
+OBJS += $(OBJDIR)/msgBus.o $(OBJDIR)/msgBus_object.o
+
+
+$(OBJDIR)/msgBus.o: $(SRCDIR)/msgBus.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/msgBus_object.o: $(SRCDIR)/msgBus_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/name.o $(OBJDIR)/name_object.o
 
 
@@ -859,6 +871,18 @@ $(OBJDIR)/plist.o: $(SRCDIR)/plist.c
 
 
 $(OBJDIR)/plist_object.o: $(SRCDIR)/plist_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/prt.o $(OBJDIR)/prt_object.o
+
+
+$(OBJDIR)/prt.o: $(SRCDIR)/prt.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/prt_object.o: $(SRCDIR)/prt_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
