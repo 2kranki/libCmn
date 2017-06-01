@@ -53,14 +53,14 @@ extern "C" {
 #else
     static
     bool			cb_Validate(
-        CB_DATA         *cbp
+        CB_DATA         *this
     );
 #endif
 
 
     static
     void *          cb_GetPtr(
-        CB_DATA         *cbp,
+        CB_DATA         *this,
         uint16_t        index
     )
     {
@@ -69,16 +69,16 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cb_Validate( cbp ) ) {
+        if( !cb_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
-        if( index >= cbp->cEntries ) {
+        if( index >= this->cEntries ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
-        ptr = &cbp->entries[(index * cbp->elemSize)];
+        ptr = &this->entries[(index * this->elemSize)];
 
         // Return to caller.
         return( ptr );
@@ -105,7 +105,7 @@ extern "C" {
         uint16_t        elemSize        // Element Size in bytes
     )
     {
-        CB_DATA         *cbp;
+        CB_DATA         *this;
         uint32_t        cbSize;
         
         // Do initialization.
@@ -127,12 +127,12 @@ extern "C" {
             return NULL;
         }
         
-        cbp = obj_Alloc( cbSize );
-        obj_setMisc1(cbp, size);
-        obj_setMisc2(cbp, elemSize);
+        this = obj_Alloc( cbSize );
+        obj_setMisc1(this, size);
+        obj_setMisc2(this, elemSize);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -144,21 +144,21 @@ extern "C" {
     //===============================================================
 
     uint16_t        cb_getSize(
-        CB_DATA       *cbp
+        CB_DATA       *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cb_Validate( cbp ) ) {
+        if( !cb_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         // Return to caller.
-        return( cbp->cEntries );
+        return( this->cEntries );
     }
 
 
@@ -174,34 +174,21 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint16_t        cb_Count(
-        CB_DATA       *cbp
+        CB_DATA       *this
     )
     {
         uint16_t        count;
-#ifdef __PIC32MX_ENV__
-        INTERRUPT_STATUS;
-#endif
         
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
-        if( !cb_Validate( cbp ) ) {
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
-    #endif
-        
-        // We need to disable interrupts so that we have
-        // uninterrupted access to both variables.
-#ifdef __PIC32MX_ENV__
-        DISABLE_INTERRUPTS();
 #endif
         
-        count = (uint16_t)(cbp->numWritten - cbp->numRead);
-        
-#ifdef __PIC32MX_ENV__
-        RESTORE_INTERRUPTS;
-#endif
+        count = (uint16_t)(this->numWritten - this->numRead);
         
         // Return to caller.
         return( count );
@@ -217,24 +204,33 @@ extern "C" {
         OBJ_ID      objId
     )
     {
-        CB_DATA		*cbp = objId;
+        CB_DATA		*this = objId;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if ( !cb_Validate(cbp) ) {
+        if ( !cb_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
-#ifdef __PIC32MX_TNEO_ENV__
-        tn_mutex_delete(&cbp->putMutex);
-        tn_mutex_delete(&cbp->getMutex);
-#endif
+        if (this->pSemEmpty) {
+            obj_Release(this->pSemEmpty);
+            this->pSemEmpty = OBJ_NIL;
+        }
+        if (this->pSemFull) {
+            obj_Release(this->pSemFull);
+            this->pSemFull = OBJ_NIL;
+        }
+        if (this->pLock) {
+            obj_Release(this->pLock);
+            this->pLock = OBJ_NIL;
+        }
         
-        obj_Dealloc(cbp);
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        obj_Dealloc(this);
+        this = NULL;
         
         // Return to caller.
     }
@@ -246,56 +242,49 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            cb_Get(
-        CB_DATA         *cbp,
-        void            *pData
+        CB_DATA         *this,
+        void            *pData,
+        uint32_t        timeout
     )
     {
         bool            fRc = false;
         uint8_t         *pElem;
-#ifdef __PIC32MX_TNEO_ENV__
-        TN_RC           tRc;
-#endif
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if ( !cb_Validate(cbp) ) {
+        if ( !cb_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
     #endif
         
-#ifdef __PIC32MX_TNEO_ENV__
-        tRc = tn_mutex_lock( &cbp->getMutex, TN_WAIT_INFINITE );
-        if (TN_RC_OK == tRc)
-            ;
-        else {
-            return false;
-        }
-#endif
+        psxSem_Wait(this->pSemFull);
         
-        if ( (pData == NULL) || cb_isEmpty(cbp) ) {
+        psxLock_Lock(this->pLock);
+        
+        if ( (pData == NULL) || (((uint16_t)(this->numWritten - this->numRead)) == 0) ) {
         }
         else {
-            pElem = cb_GetPtr( cbp, cbp->start );
+            pElem = cb_GetPtr(this, this->start );
             if( pElem ) {
                 if( pData ) {
-                    memmove( pData, pElem, cbp->elemSize );
+                    memmove( pData, pElem, this->elemSize );
                 }
                 // below needed if multi-processor
                 //__sync_fetch_and_add( &cbp->numRead, 1 ); 
-                ++cbp->numRead;
-                ++cbp->start;
-                if (cbp->start == cbp->cEntries) {
-                    cbp->start = 0;
+                ++this->numRead;
+                ++this->start;
+                if (this->start == this->cEntries) {
+                    this->start = 0;
                 }
                 fRc = true;
             }
         }
         
-#ifdef __PIC32MX_TNEO_ENV__
-        tn_mutex_unlock(&cbp->getMutex);
-#endif
+        psxLock_Unlock(this->pLock);
+        
+        psxSem_Post(this->pSemEmpty);
         
         return fRc;
     }
@@ -307,7 +296,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            cb_isEmpty(
-        CB_DATA         *cbp
+        CB_DATA         *this
     )
     {
         bool            fRc = false;
@@ -315,13 +304,13 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if ( !cb_Validate(cbp) ) {
+        if ( !cb_Validate(this) ) {
             DEBUG_BREAK();
-            return cbp;
+            return this;
         }
     #endif
 
-        if (((uint16_t)(cbp->numWritten - cbp->numRead)) == 0)
+        if (((uint16_t)(this->numWritten - this->numRead)) == 0)
             fRc = true;
         
         return fRc;
@@ -334,7 +323,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            cb_isFull(
-        CB_DATA       *cbp
+        CB_DATA       *this
     )
     {
         bool            fRc = false;
@@ -342,14 +331,15 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if ( !cb_Validate(cbp) ) {
+        if ( !cb_Validate(this) ) {
             DEBUG_BREAK();
-            return cbp;
+            return false;
         }
     #endif
 
-        if ( ((uint16_t)(cbp->numWritten - cbp->numRead)) == cbp->cEntries )
+        if (((uint16_t)(this->numWritten - this->numRead)) == this->cEntries) {
             fRc = true;
+        }
         
         return fRc;
     }
@@ -398,19 +388,41 @@ extern "C" {
             return NULL;
         }
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this,(OBJ_IUNKNOWN *)&cb_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&cb_Vtbl);
         
         dataSize = size * elemSize;
         if (dataSize >= (64 * 1024)) {
+            DEBUG_BREAK();
+            obj_Release(this);
             return NULL;
         }        
         this->cEntries = size;
         this->elemSize = elemSize;
         
-#ifdef __PIC32MX_TNEO_ENV__
-        tn_mutex_create(&this->getMutex, TN_MUTEX_PROT_INHERIT, 0);
-        tn_mutex_create(&this->putMutex, TN_MUTEX_PROT_INHERIT, 0);
-#endif
+        this->pSemEmpty = psxSem_New(size,size);
+        if (OBJ_NIL == this->pSemEmpty) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pSemFull = psxSem_New(0,size);
+        if (OBJ_NIL == this->pSemFull) {
+            DEBUG_BREAK();
+            obj_Release(this->pSemEmpty);
+            this->pSemEmpty = OBJ_NIL;
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pLock = psxLock_New();
+        if (OBJ_NIL == this->pLock) {
+            DEBUG_BREAK();
+            obj_Release(this->pSemFull);
+            this->pSemFull = OBJ_NIL;
+            obj_Release(this->pSemEmpty);
+            this->pSemEmpty = OBJ_NIL;
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
         return this;
     }
@@ -422,52 +434,44 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            cb_Put(
-        CB_DATA         *cbp,
+        CB_DATA         *this,
         void            *pValue
     )
     {
         bool            fRc = false;
         uint8_t         *pElem;
-#ifdef __PIC32MX_TNEO_ENV__
-        TN_RC           tRc;
-#endif
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if ( !cb_Validate(cbp) ) {
+        if ( !cb_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
     #endif
 
-#ifdef __PIC32MX_TNEO_ENV__
-        tRc = tn_mutex_lock( &cbp->putMutex, TN_WAIT_INFINITE );
-        if (TN_RC_OK == tRc)
-            ;
-        else {
-            return false;
-        }
-#endif
-
-        if ( cb_isFull(cbp) ) {
+        psxSem_Wait(this->pSemEmpty);
+        
+        psxLock_Lock(this->pLock);
+        
+        if ( (((uint16_t)(this->numWritten - this->numRead)) == this->cEntries) ) {
         }
         else {
-            pElem = cb_GetPtr( cbp, cbp->end );
+            pElem = cb_GetPtr(this, this->end );
             if (pElem) {
-                memmove(pElem, pValue, cbp->elemSize);
-                ++cbp->numWritten;
-                ++cbp->end;
-                if (cbp->end == cbp->cEntries) {
-                    cbp->end = 0;
+                memmove(pElem, pValue, this->elemSize);
+                ++this->numWritten;
+                ++this->end;
+                if (this->end == this->cEntries) {
+                    this->end = 0;
                 }
                 fRc = true;
             }
         }
 
-#ifdef __PIC32MX_TNEO_ENV__
-        tn_mutex_unlock(&cbp->putMutex);
-#endif
+        psxLock_Unlock(this->pLock);
+        
+        psxSem_Post(this->pSemFull);
         
         return fRc;
     }
@@ -482,14 +486,14 @@ extern "C" {
     #else
     static
     bool			cb_Validate(
-        CB_DATA       *cbp
+        CB_DATA       *this
     )
     {
 
         // Do initialization.
 
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_CB) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_CB) )
                 ;
             else
                 return false;
@@ -498,7 +502,7 @@ extern "C" {
             DEBUG_BREAK();
             return false;
         }
-        if( obj_getSize(cbp) >= sizeof(CB_DATA) )
+        if( obj_getSize(this) >= sizeof(CB_DATA) )
             ;
         else {
             DEBUG_BREAK();

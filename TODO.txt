@@ -3,6 +3,10 @@
 The following are things that are being throught about. Whether they get done or not
 will depend upon time and resources.
 
+
+--  cb
+    -- Look into interrupt iGet/iPut which is run in the kernel with no interrupts.
+
 --  audioCW
     --     "int32_t *cwCharElements[128]", line 93, needs change for win32 (utf16 vs utf32)
         -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas

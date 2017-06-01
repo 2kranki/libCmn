@@ -99,6 +99,11 @@ extern "C" {
     );
     
     
+    CB16_DATA *      cb16_New(
+        uint16_t        size            // Number of Elements in Buffer
+    );
+    
+    
     
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -132,8 +137,7 @@ extern "C" {
 
 
     CB16_DATA *     cb16_Init(
-        CB16_DATA       *this,
-        uint16_t        size            // Size of Buffer in uint16_t's
+        CB16_DATA       *this
     );
 
 

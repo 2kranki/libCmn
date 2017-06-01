@@ -25,6 +25,11 @@
 		C41F015C1EC50C2B0039F0EB /* lex.c in Sources */ = {isa = PBXBuildFile; fileRef = C41F01581EC50C2B0039F0EB /* lex.c */; };
 		C41F015D1EC50C2B0039F0EB /* lex.h in Headers */ = {isa = PBXBuildFile; fileRef = C41F01591EC50C2B0039F0EB /* lex.h */; };
 		C41F015F1EC50C8C0039F0EB /* lexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C41F015E1EC50C8C0039F0EB /* lexTest.m */; };
+		C42AF19F1EDF90A400C3924E /* msgBus_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C42AF19B1EDF90A400C3924E /* msgBus_internal.h */; };
+		C42AF1A01EDF90A400C3924E /* msgBus_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C42AF19C1EDF90A400C3924E /* msgBus_object.c */; };
+		C42AF1A11EDF90A400C3924E /* msgBus.c in Sources */ = {isa = PBXBuildFile; fileRef = C42AF19D1EDF90A400C3924E /* msgBus.c */; };
+		C42AF1A21EDF90A400C3924E /* msgBus.h in Headers */ = {isa = PBXBuildFile; fileRef = C42AF19E1EDF90A400C3924E /* msgBus.h */; };
+		C42AF1A41EDF913400C3924E /* msgBusTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C42AF1A31EDF913400C3924E /* msgBusTest.m */; };
 		C43918C81D748C4B00083689 /* nodeEntry_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C43918C41D748C4B00083689 /* nodeEntry_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C43918C91D748C4B00083689 /* nodeEntry_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43918C51D748C4B00083689 /* nodeEntry_object.c */; };
 		C43918CA1D748C4B00083689 /* nodeEntry.c in Sources */ = {isa = PBXBuildFile; fileRef = C43918C61D748C4B00083689 /* nodeEntry.c */; };
@@ -565,6 +570,11 @@
 		C41F01581EC50C2B0039F0EB /* lex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lex.c; sourceTree = "<group>"; };
 		C41F01591EC50C2B0039F0EB /* lex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lex.h; sourceTree = "<group>"; };
 		C41F015E1EC50C8C0039F0EB /* lexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lexTest.m; sourceTree = "<group>"; };
+		C42AF19B1EDF90A400C3924E /* msgBus_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msgBus_internal.h; sourceTree = "<group>"; };
+		C42AF19C1EDF90A400C3924E /* msgBus_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msgBus_object.c; sourceTree = "<group>"; };
+		C42AF19D1EDF90A400C3924E /* msgBus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msgBus.c; sourceTree = "<group>"; };
+		C42AF19E1EDF90A400C3924E /* msgBus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msgBus.h; sourceTree = "<group>"; };
+		C42AF1A31EDF913400C3924E /* msgBusTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = msgBusTest.m; sourceTree = "<group>"; };
 		C43918C41D748C4B00083689 /* nodeEntry_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeEntry_internal.h; sourceTree = "<group>"; };
 		C43918C51D748C4B00083689 /* nodeEntry_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeEntry_object.c; sourceTree = "<group>"; };
 		C43918C61D748C4B00083689 /* nodeEntry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeEntry.c; sourceTree = "<group>"; };
@@ -1331,6 +1341,10 @@
 				C467049B1C6B9CFA0091FC0E /* misc_object.c */,
 				C467049C1C6B9CFA0091FC0E /* misc.c */,
 				C467049D1C6B9CFA0091FC0E /* misc.h */,
+				C42AF19B1EDF90A400C3924E /* msgBus_internal.h */,
+				C42AF19C1EDF90A400C3924E /* msgBus_object.c */,
+				C42AF19D1EDF90A400C3924E /* msgBus.c */,
+				C42AF19E1EDF90A400C3924E /* msgBus.h */,
 				C46704A11C6B9CFA0091FC0E /* name_internal.h */,
 				C46704A21C6B9CFA0091FC0E /* name_object.c */,
 				C46704A31C6B9CFA0091FC0E /* name.c */,
@@ -1610,6 +1624,7 @@
 				C411A1D51DBB13FC001832EE /* lruTest.m */,
 				C467078E1C6BAE0D0091FC0E /* memOSXTest.m */,
 				C46707901C6BAE0D0091FC0E /* miscTest.m */,
+				C42AF1A31EDF913400C3924E /* msgBusTest.m */,
 				C46707911C6BAE0D0091FC0E /* nameTest.m */,
 				C4F51B761D387A26001AFAD7 /* nodeArcTest.m */,
 				C46707931C6BAE0D0091FC0E /* nodeArrayTest.m */,
@@ -1842,6 +1857,7 @@
 				C46705A11C6B9CFB0091FC0E /* misc_internal.h in Headers */,
 				C46705321C6B9CFB0091FC0E /* dbf_internal.h in Headers */,
 				C46706B01C6B9DD40091FC0E /* rrds32_internal.h in Headers */,
+				C42AF19F1EDF90A400C3924E /* msgBus_internal.h in Headers */,
 				C467055F1C6B9CFB0091FC0E /* execArray_internal.h in Headers */,
 				C4FE0D441C77698400357347 /* WStrC_internal.h in Headers */,
 				C467057D1C6B9CFB0091FC0E /* hash32_internal.h in Headers */,
@@ -1879,6 +1895,7 @@
 				C46706E31C6B9DD40091FC0E /* ternary_internal.h in Headers */,
 				C467072F1C6BA13E0091FC0E /* ascii_internal.h in Headers */,
 				C467058F1C6B9CFB0091FC0E /* json_internal.h in Headers */,
+				C42AF1A21EDF90A400C3924E /* msgBus.h in Headers */,
 				C46705B91C6B9CFB0091FC0E /* nodeList_internal.h in Headers */,
 				C4AF15BC1C6CE57B0098171F /* psxThread_internal.h in Headers */,
 				C483532B1C99FA1600C6D2E6 /* ascii.h in Headers */,
@@ -2128,6 +2145,7 @@
 				C46706F61C6B9DD40091FC0E /* trace.c in Sources */,
 				C49E7C861E737FCA002A08A5 /* blkdrcds16.c in Sources */,
 				C4AF8B281E5AA8A9003AE67C /* ebcdic_object.c in Sources */,
+				C42AF1A01EDF90A400C3924E /* msgBus_object.c in Sources */,
 				C46705B71C6B9CFB0091FC0E /* nodeHash.c in Sources */,
 				C46706A91C6B9DD40091FC0E /* ptrArray_object.c in Sources */,
 				C4FE0D451C77698400357347 /* WStrC_object.c in Sources */,
@@ -2198,6 +2216,7 @@
 				C46704FA1C6B9CFB0091FC0E /* cb_object.c in Sources */,
 				C46704EC1C6B9CFB0091FC0E /* bitSet.c in Sources */,
 				C46704E41C6B9CFB0091FC0E /* AStrC.c in Sources */,
+				C42AF1A11EDF90A400C3924E /* msgBus.c in Sources */,
 				C4C188CE1D2BF6B50085AC16 /* psxCond_object.c in Sources */,
 				C46706DD1C6B9DD40091FC0E /* szTbl.c in Sources */,
 				C4AF15B91C6CE57B0098171F /* psxSem_object.c in Sources */,
@@ -2304,6 +2323,7 @@
 				C4AF15C51C6CE5F40098171F /* psxMutexTest.m in Sources */,
 				C46708521C6BAE0D0091FC0E /* utf8Test.m in Sources */,
 				C4AF15C71C6CE5F40098171F /* psxThreadTest.m in Sources */,
+				C42AF1A41EDF913400C3924E /* msgBusTest.m in Sources */,
 				C467081B1C6BAE0D0091FC0E /* objMatrixTest.m in Sources */,
 				C46707DB1C6BAE0D0091FC0E /* cb16Test.m in Sources */,
 				C467073D1C6BA6D90091FC0E /* bitMatrixTest.m in Sources */,

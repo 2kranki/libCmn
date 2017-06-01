@@ -51,6 +51,9 @@
 
 
 #include    <cb.h>
+#include    <psxLock.h>
+#include    <psxSem.h>
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -64,20 +67,21 @@ extern "C" {
         OBJ_DATA        super;
         OBJ_IUNKNOWN    *pSuperVtbl;
 
-#ifdef USE_PIC32
-        struct TN_Mutex getMutex;
-        struct TN_Mutex putMutex;
-#endif
+        PSXSEM_DATA     *pSemEmpty;
+        PSXSEM_DATA     *pSemFull;
+        PSXLOCK_DATA    *pLock;
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements
         uint16_t        elemSize;   // Must be power of two (??)
+        volatile
         uint16_t        start;		// index of oldest element
+        volatile
         uint16_t        end;		// index at which to write new element
         volatile
-        int16_t         numWritten;
+        int32_t         numWritten;
         volatile
-        int16_t         numRead;
+        int32_t         numRead;
 
         uint8_t         entries[0];
 

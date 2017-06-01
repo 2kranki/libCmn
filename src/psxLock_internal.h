@@ -68,7 +68,6 @@ struct psxLock_data_s	{
     pthread_mutex_t mutex;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    uint32_t        lockCount;
     CRITICAL_SECTION
                     csSem;
 #endif

@@ -72,7 +72,7 @@ CB32_DATA *     cb32_Alloc(
     uint16_t        size           // Number of Elements in Buffer
 )
 {
-    CB32_DATA       *cbp;
+    CB32_DATA       *this;
     uint32_t        cbSize;
     
     // Do initialization.
@@ -90,11 +90,11 @@ CB32_DATA *     cb32_Alloc(
         return NULL;
     }
     
-    cbp = obj_Alloc( cbSize );
-    obj_setMisc1(cbp, size);
+    this = obj_Alloc( cbSize );
+    obj_setMisc1(this, size);
     
     // Return to caller.
-    return( cbp );
+    return this;
 }
 
 
@@ -106,19 +106,19 @@ CB32_DATA *     cb32_Alloc(
 //===============================================================
 
 uint16_t        cb32_getSize(
-	CB32_DATA       *cbp
+	CB32_DATA       *this
 )
 {
 
 	// Validate the input parameters.
 #ifdef NDEBUG
 #else
-    if( !cb32_Validate( cbp ) )
+    if( !cb32_Validate(this) )
         return -1;
 #endif
 
 	// Return to caller.
-	return( cbp->size );
+	return( this->size );
 }
 
 
@@ -138,9 +138,6 @@ void            cb32_Dealloc(
 )
 {
 	CB32_DATA		*this = objId;
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
 
 	// Do initialization.
 #ifdef NDEBUG
@@ -159,9 +156,9 @@ void            cb32_Dealloc(
         obj_Release(this->pSemFull);
         this->pSemFull = OBJ_NIL;
     }
-    if (this->pMutex) {
-        obj_Release(this->pMutex);
-        this->pMutex = OBJ_NIL;
+    if (this->pLock) {
+        obj_Release(this->pLock);
+        this->pLock = OBJ_NIL;
     }
     
     obj_setVtbl(this, this->pSuperVtbl);
@@ -194,7 +191,8 @@ bool            cb32_Get(
     
     psxSem_Wait(this->pSemFull);
     
-    psxMutex_Lock(this->pMutex);
+    psxLock_Lock(this->pLock);
+
     if (pData) {
         *pData = this->elems[this->start];
     }
@@ -203,7 +201,8 @@ bool            cb32_Get(
     if (this->start == this->size) {
         this->start = 0;
     }
-    psxMutex_Unlock(this->pMutex);
+
+    psxLock_Unlock(this->pLock);
  
     psxSem_Post(this->pSemEmpty);
     
@@ -232,7 +231,8 @@ bool            cb32_iGet(
         return fRc;
     }
     
-    //psxMutex_Lock(this->pMutex);
+    //psxLock_Lock(this->pLock);
+    
     if (pData) {
         *pData = this->elems[this->start];
     }
@@ -241,7 +241,8 @@ bool            cb32_iGet(
     if (this->start == this->size) {
         this->start = 0;
     }
-    //psxMutex_Unlock(this->pMutex);
+    
+    //psxLock_Unlock(this->pLock);
     
     psxSem_iPost(this->pSemEmpty);
     
@@ -255,7 +256,7 @@ bool            cb32_iGet(
 //**********************************************************
 
 bool            cb32_IsEmpty(
-	CB32_DATA       *cbp
+	CB32_DATA       *this
 )
 {
     bool            fRc = false;
@@ -263,12 +264,12 @@ bool            cb32_IsEmpty(
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb32_Validate(cbp) ) {
-        return cbp;
+    if ( !cb32_Validate(this) ) {
+        return false;
     }
 #endif
 
-    if (((uint32_t)(cbp->numWritten - cbp->numRead)) == 0)
+    if (((uint32_t)(this->numWritten - this->numRead)) == 0)
 		fRc = true;
     
     return fRc;
@@ -281,7 +282,7 @@ bool            cb32_IsEmpty(
 //**********************************************************
 
 bool            cb32_IsFull(
-	CB32_DATA       *cbp
+	CB32_DATA       *this
 )
 {
     bool            fRc = false;
@@ -289,12 +290,12 @@ bool            cb32_IsFull(
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb32_Validate(cbp) ) {
-        return cbp;
+    if ( !cb32_Validate(this) ) {
+        return false;
     }
 #endif
 
-    if ( ((uint32_t)(cbp->numWritten - cbp->numRead)) == cbp->size )
+    if (((uint32_t)(this->numWritten - this->numRead)) == this->size)
         fRc = true;
     
     return fRc;
@@ -311,9 +312,6 @@ CB32_DATA *     cb32_Init(
 )
 {
     uint16_t        size;
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
 
     if (NULL == this) {
         return OBJ_NIL;
@@ -349,8 +347,8 @@ CB32_DATA *     cb32_Init(
         obj_Release(this);
         return OBJ_NIL;
     }
-    this->pMutex = psxMutex_New();
-    if (OBJ_NIL == this->pMutex) {
+    this->pLock = psxLock_New();
+    if (OBJ_NIL == this->pLock) {
         DEBUG_BREAK();
         obj_Release(this->pSemFull);
         this->pSemFull = OBJ_NIL;
@@ -396,14 +394,16 @@ bool            cb32_Put(
 
     psxSem_Wait(this->pSemEmpty);
     
-    psxMutex_Lock(this->pMutex);
+    psxLock_Lock(this->pLock);
+    
     this->elems[this->end] = value;
     ++this->numWritten;
     ++this->end;
     if (this->end == this->size) {
         this->end = 0;
     }
-    psxMutex_Unlock(this->pMutex);
+    
+    psxLock_Unlock(this->pLock);
 
     psxSem_Post(this->pSemFull);
 
@@ -423,14 +423,16 @@ bool            cb32_iPut(
         return fRc;
     }
 
-    //psxMutex_Lock(this->pMutex);
+    //psxLock_Lock(this->pLock);
+    
     this->elems[this->end] = value;
     ++this->numWritten;
     ++this->end;
     if (this->end == this->size) {
         this->end = 0;
     }
-    //psxMutex_Unlock(this->pMutex);
+    
+    //psxLock_Unlock(this->pLock);
 
     psxSem_iPost(this->pSemFull);
     
@@ -446,21 +448,21 @@ bool            cb32_iPut(
 #ifdef NDEBUG
 #else
 bool			cb32_Validate(
-	CB32_DATA       *cbp
+	CB32_DATA       *this
 )
 {
 
 	// Do initialization.
 
-    if( cbp ) {
-        if ( obj_IsKindOf(cbp,OBJ_IDENT_CB32) )
+    if( this ) {
+        if ( obj_IsKindOf(this, OBJ_IDENT_CB32) )
             ;
         else
             return false;
     }
     else
         return false;
-    if( !(obj_getSize(cbp) >= sizeof(CB32_DATA)) )
+    if( !(obj_getSize(this) >= sizeof(CB32_DATA)) )
         return false;
 
 	// Return to caller.

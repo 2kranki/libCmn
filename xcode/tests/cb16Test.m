@@ -95,7 +95,7 @@
 
 	cbp = cb16_Alloc(8);
     XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
-	cbp = cb16_Init( cbp, 8 );
+	cbp = cb16_Init( cbp );
     XCTAssertFalse( (NULL == cbp), @"Could not init" );
     if (cbp) {
         obj_Release(cbp);
@@ -115,7 +115,7 @@
     
 	cbp = cb16_Alloc(8);
     XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
-	cbp = cb16_Init( cbp, 8 );
+	cbp = cb16_Init( cbp );
     XCTAssertFalse( (NULL == cbp), @"Could not init" );
     if (cbp) {
         

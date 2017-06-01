@@ -49,10 +49,11 @@
 
 #include    <cb32.h>
 #include    <psxSem.h>
-#include    <psxMutex.h>
+#include    <psxLock.h>
 #ifdef __APPLE__
 #   include <dispatch/dispatch.h>
 #endif
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -68,13 +69,15 @@ struct cb32_data_s	{
 
     // Common Data
     uint16_t        size;		/* maximum number of elements           */
-    uint16_t        start;		/* index of oldest element              */
-    uint16_t        end;		/* index at which to write new element  */
+    volatile
+    uint16_t        start;		// index of oldest element
+    volatile
+    uint16_t        end;		// index at which to write new element
     uint16_t        reserved;
 
     PSXSEM_DATA     *pSemEmpty;
     PSXSEM_DATA     *pSemFull;
-    PSXMUTEX_DATA   *pMutex;
+    PSXLOCK_DATA    *pLock;
 
     volatile
     int16_t         numWritten;

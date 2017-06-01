@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   psxLock.c
- *	Generated 05/19/2017 21:15:36
+ * File:   msgBus.c
+ *	Generated 05/31/2017 20:00:00
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <psxLock_internal.h>
+#include <msgBus_internal.h>
 
 
 
@@ -60,11 +60,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            psxLock_task_body(
+    void            msgBus_task_body(
         void            *pData
     )
     {
-        //PSXLOCK_DATA  *this = pData;
+        //MSGBUS_DATA  *this = pData;
         
     }
 #endif
@@ -80,11 +80,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    PSXLOCK_DATA *  psxLock_Alloc(
+    MSGBUS_DATA *   msgBus_Alloc(
     )
     {
-        PSXLOCK_DATA    *this;
-        uint32_t        cbSize = sizeof(PSXLOCK_DATA);
+        MSGBUS_DATA     *this;
+        uint32_t        cbSize = sizeof(MSGBUS_DATA);
         
         // Do initialization.
         
@@ -96,14 +96,15 @@ extern "C" {
 
 
 
-    PSXLOCK_DATA *     psxLock_New(
+    MSGBUS_DATA *     msgBus_New(
+        uint16_t        size
     )
     {
-        PSXLOCK_DATA       *this;
+        MSGBUS_DATA       *this;
         
-        this = psxLock_Alloc( );
+        this = msgBus_Alloc( );
         if (this) {
-            this = psxLock_Init(this);
+            this = msgBus_Init(this);
         } 
         return this;
     }
@@ -120,15 +121,15 @@ extern "C" {
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         psxLock_getLastError(
-        PSXLOCK_DATA     *this
+    ERESULT         msgBus_getLastError(
+        MSGBUS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
             return this->eRc;
         }
@@ -139,14 +140,14 @@ extern "C" {
     }
 
 
-    bool            psxLock_setLastError(
-        PSXLOCK_DATA     *this,
+    bool            msgBus_setLastError(
+        MSGBUS_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -156,6 +157,110 @@ extern "C" {
         
         return true;
     }
+    
+    
+
+    uint16_t        msgBus_getPriority(
+        MSGBUS_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        //return this->priority;
+        return 0;
+    }
+
+    bool            msgBus_setPriority(
+        MSGBUS_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        //this->priority = value;
+
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+
+
+
+    uint32_t        msgBus_getSize(
+        MSGBUS_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return this->size;
+    }
+
+
+
+
+    ASTR_DATA * msgBus_getStr(
+        MSGBUS_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return this->pStr;
+    }
+    
+    
+    bool        msgBus_setStr(
+        MSGBUS_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
     
     
     
@@ -175,29 +280,29 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code:
-        ERESULT eRc = psxLock__Assign(this,pOther);
+        ERESULT eRc = msgBus__Assign(this,pOther);
      @endcode:
-     @param:    this    PSXLOCK object pointer
-     @param:    pOther  a pointer to another PSXLOCK object
+     @param:    this    MSGBUS object pointer
+     @param:    pOther  a pointer to another MSGBUS object
      @return:   If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         psxLock_Assign(
-        PSXLOCK_DATA		*this,
-        PSXLOCK_DATA      *pOther
+    ERESULT         msgBus_Assign(
+        MSGBUS_DATA		*this,
+        MSGBUS_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return msgBus_getLastError(this);
         }
-        if( !psxLock_Validate(pOther) ) {
+        if( !msgBus_Validate(pOther) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(pOther);
+            return msgBus_getLastError(pOther);
         }
 #endif
 
@@ -228,11 +333,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        psxLock_setLastError(this, ERESULT_SUCCESS);
-    //eom:
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+    eom:
         //FIXME: Implement the assignment.        
-        psxLock_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return psxLock_getLastError(this);
+        msgBus_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return msgBus_getLastError(this);
     }
     
     
@@ -245,32 +350,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code:
-        psxLock      *pCopy = psxLock_Copy(this);
+        msgBus      *pCopy = msgBus_Copy(this);
      @endcode:
-     @param:    this    PSXLOCK object pointer
-     @return:   If successful, a PSXLOCK object which must be released,
+     @param:    this    MSGBUS object pointer
+     @return:   If successful, a MSGBUS object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the PSXLOCK object.
+     @warning: Remember to release the returned the MSGBUS object.
      */
-    PSXLOCK_DATA *     psxLock_Copy(
-        PSXLOCK_DATA       *this
+    MSGBUS_DATA *     msgBus_Copy(
+        MSGBUS_DATA       *this
     )
     {
-        PSXLOCK_DATA       *pOther = OBJ_NIL;
+        MSGBUS_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = psxLock_New( );
+        pOther = msgBus_New(obj_getSize(this));
         if (pOther) {
-            eRc = psxLock_Assign(this, pOther);
+            eRc = msgBus_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -279,7 +384,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        psxLock_setLastError(this, ERESULT_SUCCESS);
+        msgBus_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -289,14 +394,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            psxLock_Dealloc(
+    void            msgBus_Dealloc(
         OBJ_ID          objId
     )
     {
-        PSXLOCK_DATA   *this = objId;
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
+        MSGBUS_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -304,22 +406,19 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-#if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_destroy(&this->mutex);
-        if (iRc) {
-            DEBUG_BREAK();
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((MSGBUS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
-        obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
 #endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        DeleteCriticalSection( &this->csSem );
-#endif
+
+        msgBus_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         //other_Dealloc(this);          // Needed for inheritance
@@ -332,20 +431,76 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      D i s a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         msgBus_Disable(
+        MSGBUS_DATA		*this
+    )
+    {
+
+        // Do initialization.
+        if (NULL == this) {
+            msgBus_setLastError(this, ERESULT_INVALID_OBJECT);
+            return msgBus_getLastError(this);
+        }
+    #ifdef NDEBUG
+    #else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return msgBus_getLastError(this);
+        }
+    #endif
+
+        // Put code here...
+
+        obj_Disable(this);
+        
+        // Return to caller.
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return msgBus_getLastError(this);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          E n a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         msgBus_Enable(
+        MSGBUS_DATA		*this
+    )
+    {
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return msgBus_getLastError(this);
+        }
+    #endif
+        
+        obj_Enable(this);
+
+        // Put code here...
+        
+        // Return to caller.
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return msgBus_getLastError(this);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    PSXLOCK_DATA *   psxLock_Init(
-        PSXLOCK_DATA       *this
+    MSGBUS_DATA *   msgBus_Init(
+        MSGBUS_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(PSXLOCK_DATA);
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        enum TN_RCode   tnRc;
-#endif
+        uint32_t        cbSize = sizeof(MSGBUS_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -362,53 +517,34 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_PSXLOCK);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGBUS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_PSXLOCK);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_MSGBUS);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxLock_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&msgBus_Vtbl);
         
-        psxLock_setLastError(this, ERESULT_GENERAL_FAILURE);
-        obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
-#if defined(__MACOSX_ENV__)
-        //this->mutex = PTHREAD_MUTEX_INITIALIZER;
-        iRc = pthread_mutex_init(&this->mutex, NULL);
-        if (iRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        InitializeCriticalSection( &this->csSem );
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        tnRc = tn_mutex_create(&this->mutex, TN_MUTEX_PROT_INHERIT, 0);
-        if (tnRc == TN_RC_OK) {
-        }
-        else {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
+        msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(PSXLOCK_DATA,eRc));
-        //fprintf(stderr, "sizeof(PSXLOCK_DATA) = %lu\n", sizeof(PSXLOCK_DATA));
+#ifdef __APPLE__
+        fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(MSGBUS_DATA,eRc));
+        fprintf(stderr, "sizeof(MSGBUS_DATA) = %lu\n", sizeof(MSGBUS_DATA));
+#endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(PSXLOCK_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(MSGBUS_DATA));
     #endif
 
         return this;
@@ -417,77 +553,31 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s L o c k e d
+    //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    bool            psxLock_IsLocked(
-        PSXLOCK_DATA	*this
+    ERESULT         msgBus_IsEnabled(
+        MSGBUS_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return msgBus_getLastError(this);
         }
 #endif
         
-        if (obj_IsFlag(this, PSXLOCK_FLAG_LOCKED)) {
-            psxLock_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return true;
+        if (obj_IsEnabled(this)) {
+            msgBus_setLastError(this, ERESULT_SUCCESS_TRUE);
+            return msgBus_getLastError(this);
         }
         
         // Return to caller.
-        psxLock_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return false;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          L o c k
-    //---------------------------------------------------------------
-    
-    bool            psxLock_Lock(
-        PSXLOCK_DATA	*this
-    )
-    {
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        DWORD			dwRc;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        enum TN_RCode   tnRc;
-#endif
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !psxLock_Validate(this) ) {
-            DEBUG_BREAK();
-            return psxLock_getLastError(this);
-        }
-#endif
-        
-#if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_lock(&this->mutex);
-        if (iRc == 0) {
-            obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-            return true;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        EnterCriticalSection( &this->csSem );
-        obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-#endif
-        
-        // Return to caller.
-        psxLock_setLastError(this, ERESULT_SUCCESS);
-        return true;
+        msgBus_setLastError(this, ERESULT_SUCCESS_FALSE);
+        return msgBus_getLastError(this);
     }
     
     
@@ -500,16 +590,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = psxLock_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = msgBus_ToDebugString(this,4);
      @endcode:
-     @param:    this    PSXLOCK object pointer
+     @param:    this    MSGBUS object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *     psxLock_ToDebugString(
-        PSXLOCK_DATA      *this,
+    ASTR_DATA *     msgBus_ToDebugString(
+        MSGBUS_DATA      *this,
         int             indent
     )
     {
@@ -523,7 +613,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxLock_Validate(this) ) {
+        if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -537,8 +627,9 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(psxLock)\n",
-                     this
+                     "{%p(msgBus) size=%d\n",
+                     this,
+                     msgBus_getSize(this)
             );
         AStr_AppendA(pStr, str);
 
@@ -558,134 +649,11 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatW(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(psxLock)}\n", this);
+        j = snprintf(str, sizeof(str), " %p(msgBus)}\n", this);
         AStr_AppendA(pStr, str);
         
-        psxLock_setLastError(this, ERESULT_SUCCESS);
+        msgBus_setLastError(this, ERESULT_SUCCESS);
         return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                         T r y L o c k
-    //---------------------------------------------------------------
-    
-    bool            psxLock_TryLock(
-        PSXLOCK_DATA	*this
-    )
-    {
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        int             iRc;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        enum TN_RCode   tnRc;
-#endif
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !psxLock_Validate(this) ) {
-            DEBUG_BREAK();
-            return psxLock_getLastError(this);
-        }
-#endif
-        
-#if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_trylock(&this->mutex);
-        if (iRc) {
-            psxLock_setLastError(this, ERESULT_BUSY);
-            return false;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        iRc = TryEnterCriticalSection( &this->csSem );
-        if (iRc) {
-            obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-        }
-        else {
-            psxLock_setLastError(this, ERESULT_BUSY);
-            return false;
-        }
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        tnRc = tn_mutex_lock_polling(&this->mutex);
-        if (tnRc == TN_RC_OK) {
-        }
-        else {
-            psxLock_setLastError(this, ERESULT_BUSY);
-            return false;
-        }
-#endif
-        
-        // Return to caller.
-        obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-        psxLock_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                        U n l o c k
-    //---------------------------------------------------------------
-    
-    bool            psxLock_Unlock(
-        PSXLOCK_DATA	*this
-    )
-    {
-#if defined(__MACOSX_ENV__)
-        int                 iRc;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        enum TN_RCode       tnRc;
-#endif
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !psxLock_Validate(this) ) {
-            DEBUG_BREAK();
-            return psxLock_getLastError(this);
-        }
-#endif
-        
-#if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_unlock(&this->mutex);
-        if (iRc == 0) {
-        }
-        else {
-            psxLock_setLastError(this, ERESULT_NOT_BUSY);
-            return false;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        if (obj_IsFlag(this, PSXLOCK_FLAG_LOCKED)) {
-            LeaveCriticalSection( &this->csSem );
-            obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
-        }
-        else {
-            psxLock_setLastError(this, ERESULT_NOT_BUSY);
-            return false;
-        }
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-        tnRc = tn_mutex_unlock(&this->mutex);
-        if (tnRc == TN_RC_OK) {
-        }
-        else {
-            psxLock_setLastError(this, ERESULT_NOT_BUSY);
-            return false;
-        }
-#endif
-        
-        // Return to caller.
-        obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
-        psxLock_setLastError(this, ERESULT_SUCCESS);
-        return true;
     }
     
     
@@ -696,15 +664,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            psxLock_Validate(
-        PSXLOCK_DATA      *this
+    bool            msgBus_Validate(
+        MSGBUS_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_PSXLOCK) )
+            if ( obj_IsKindOf(this,OBJ_IDENT_MSGBUS) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -720,7 +688,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(PSXLOCK_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(MSGBUS_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

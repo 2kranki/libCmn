@@ -203,6 +203,11 @@ extern "C" {
         }
 #endif
 
+        if (this->pThread) {
+            obj_Release(this->pThread);
+            this->pThread = OBJ_NIL;
+        }
+        
         if (this->pData) {
             mem_Free(this->pData);
             this->pData = NULL;
@@ -221,11 +226,6 @@ extern "C" {
         if (this->pMutex) {
             obj_Release(this->pMutex);
             this->pMutex = OBJ_NIL;
-        }
-        
-        if (this->pThread) {
-            obj_Release(this->pThread);
-            this->pThread = OBJ_NIL;
         }
         
         obj_setVtbl(this, this->pSuperVtbl);
@@ -346,13 +346,13 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this->pSemEmpty = psxSem_New(messageCount,messageCount);
+        this->pSemEmpty = psxSem_New(messageCount, messageCount);
         if (OBJ_NIL == this->pSemEmpty) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pSemFull = psxSem_New(0,messageCount);
+        this->pSemFull = psxSem_New(0, messageCount);
         if (OBJ_NIL == this->pSemFull) {
             DEBUG_BREAK();
             obj_Release(this->pSemEmpty);

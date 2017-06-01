@@ -111,9 +111,9 @@ char        *StrArray[NUM_STR] = {
 	CB_DATA			*cbp;
 
 	cbp = cb_Alloc(8,8);
-    XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
+    XCTAssertFalse( (NULL == cbp) );
 	cbp = cb_Init( cbp );
-    XCTAssertFalse( (NULL == cbp), @"Could not init" );
+    XCTAssertFalse( (NULL == cbp) );
     if (cbp) {
         obj_Release(cbp);
         cbp = NULL;
@@ -131,61 +131,61 @@ char        *StrArray[NUM_STR] = {
     char            msg[10];
     
 	cbp = cb_Alloc(8, 10);
-    XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
+    XCTAssertFalse( (NULL == cbp) );
 	cbp = cb_Init( cbp );
-    XCTAssertFalse( (NULL == cbp), @"Could not init" );
+    XCTAssertFalse( (NULL == cbp) );
     
     // Empty Queue - positive to negative overflow
     cbp->numRead = 32766;
     cbp->numWritten = 32766;
     
     fRc = cb_isEmpty(cbp);
-    XCTAssertTrue( (fRc), @"cb8_IsEmpty failed" );
+    XCTAssertTrue( (fRc) );
 
     for (i=0; i<8; ++i) {
         fRc = cb_Put(cbp, StrArray[i]);
-        XCTAssertTrue( (fRc), @"cb_Put failed" );
+        XCTAssertTrue( (fRc) );
         fRc = cb_isEmpty(cbp);
-        XCTAssertFalse( (fRc), @"cb_IsEmpty failed" );
+        XCTAssertFalse( (fRc) );
         j = cb_Count(cbp);
-        XCTAssertTrue( (j == (i+1)), @"cb_Count failed j=%d, i=%d", j, i );
+        XCTAssertTrue( (j == (i+1)) );
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg);
-        XCTAssertTrue( (fRc), @"cb_Get failed" );
-        XCTAssertTrue( (0 == strcmp(msg,StrArray[i])), @"cb_Get value failed" );
+        fRc = cb_Get(cbp, &msg, -1);
+        XCTAssertTrue( (fRc) );
+        XCTAssertTrue( (0 == strcmp(msg,StrArray[i])) );
         
     }
     
     fRc = cb_isEmpty(cbp);
-    XCTAssertTrue( (fRc), @"cb_IsEmpty failed" );
+    XCTAssertTrue( (fRc) );
     
     // Empty Queue - negative to positive overflow
     cbp->numRead = -32766;
     cbp->numWritten = -32766;
     
     fRc = cb_isEmpty(cbp);
-    XCTAssertTrue( (fRc), @"cb_IsEmpty failed" );
+    XCTAssertTrue( (fRc) );
     
     for (i=0; i<8; ++i) {
         fRc = cb_Put(cbp, StrArray[i]);
-        XCTAssertTrue( (fRc), @"cb_Put failed" );
+        XCTAssertTrue( (fRc) );
         fRc = cb_isEmpty(cbp);
-        XCTAssertFalse( (fRc), @"cb_IsEmpty failed" );
+        XCTAssertFalse( (fRc) );
         j = cb_Count(cbp);
-        XCTAssertTrue( (j == (i+1)), @"cb_Count failed j=%d, i=%d", j, i );
+        XCTAssertTrue( (j == (i+1)) );
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg);
-        XCTAssertTrue( (fRc), @"cb_Get failed" );
+        fRc = cb_Get(cbp, &msg, -1);
+        XCTAssertTrue( (fRc) );
         //STAssertTrue( (aVal == i), @"cb8_Get value failed" );
         
     }
     
     fRc = cb_isEmpty(cbp);
-    XCTAssertTrue( (fRc), @"cb_IsEmpty failed" );
+    XCTAssertTrue( (fRc) );
     
 	obj_Release( cbp );
     cbp = NULL;

@@ -86,302 +86,6 @@ extern	"C" {
 * * * * * * * * * * * *  Data Definitions   * * * * * * * * * * *
 ****************************************************************/
 
-#ifndef         OBJ_IDENTS_ENUM
-#define         OBJ_IDENTS_ENUM	1
-    typedef enum obj_idents_e {
-        OBJ_IDENT_UNKNOWN=0,
-        OBJ_IDENT_BASE,
-        OBJ_IDENT_APP32_CLASS,
-        OBJ_IDENT_ARRAYEXPAND,          // Expandable Array
-        OBJ_IDENT_ARRAYEXPAND_CLASS,
-        OBJ_IDENT_ASCII,                // ASCII Character Set
-        OBJ_IDENT_ASCII_CLASS,
-        OBJ_IDENT_ASTR,                 // ASCII String
-        OBJ_IDENT_ASTR_CLASS,
-        OBJ_IDENT_ASTRARRAY,            // an Array of ASCII Strings
-        OBJ_IDENT_ASTRARRAY_CLASS,
-        OBJ_IDENT_ASTRC,                // ASCII String Constant
-        OBJ_IDENT_ASTRC_CLASS,
-        OBJ_IDENT_AUDIOCW,              // Morse Code Audio
-        OBJ_IDENT_AUDIOCW_CLASS,
-        OBJ_IDENT_AUDIOWAV,             // WAV Audio
-        OBJ_IDENT_AUDIOWAV_CLASS,
-        OBJ_IDENT_BITMATRIX,
-        OBJ_IDENT_BITMATRIX_CLASS,
-        OBJ_IDENT_BITSET,
-        OBJ_IDENT_BITSET_CLASS,
-        OBJ_IDENT_BLKDRCDS16,           // Block of variable sized records with
-        //                              // an optional fixed sized area
-        OBJ_IDENT_BLKDRCDS16_CLASS,
-        OBJ_IDENT_BLKIDX16,             // Data Block of variable sized data and
-        //                              // an optional fixed sized area
-        OBJ_IDENT_BLKIDX16_CLASS,
-        OBJ_IDENT_BLOCK16,              // Data Block with an optional fixed sized area
-        //                              // and Fixed Sized Data Area
-        OBJ_IDENT_BLOCK16_CLASS,
-        OBJ_IDENT_BLOCK32,              // Data Block with an optional Fixed Sized Header
-        //                              // and Fixed Sized Data Area
-        OBJ_IDENT_BLOCK32_CLASS,
-        OBJ_IDENT_BLOCKS,               // A list of Data Blocks
-        OBJ_IDENT_BLOCKS_CLASS,
-        OBJ_IDENT_BPTREE,               // B-Plus Tree Index
-        OBJ_IDENT_BPTREE_CLASS,
-        OBJ_IDENT_BSTR,                 // Basic String
-        OBJ_IDENT_BSTR_CLASS,
-        OBJ_IDENT_BTP,                  /* Binary Search Tree */
-        OBJ_IDENT_BTP_CLASS,
-        OBJ_IDENT_CB,                   /* Generic Circular Buffer */
-        OBJ_IDENT_CB_CLASS,
-        OBJ_IDENT_CB8,                  /* Circular Buffer for 8-bit data */
-        OBJ_IDENT_CB16,                 /* Circular Buffer for 16-bit data */
-        OBJ_IDENT_CB16_CLASS,
-        OBJ_IDENT_CB32,                 /* Circular Buffer for 32-bit data */
-        OBJ_IDENT_CB32_CLASS,
-        OBJ_IDENT_CFA,                  // C Fixed Array
-        OBJ_IDENT_CFA_CLASS,
-        OBJ_IDENT_CMDUTL,               // Command Utilities
-        OBJ_IDENT_CMDUTL_CLASS,
-        OBJ_IDENT_CON,                  // Console Object
-        OBJ_IDENT_CON_CLASS,
-        OBJ_IDENT_CON_FIO,              // Console File I/O Object
-        OBJ_IDENT_CON_FIO_CLASS,
-        OBJ_IDENT_CONSUMER,
-        OBJ_IDENT_CONSUMER_CLASS,
-        OBJ_IDENT_CONXMT,
-        OBJ_IDENT_CONXMT_CLASS,
-        OBJ_IDENT_CSV,
-        OBJ_IDENT_CSV_CLASS,
-        OBJ_IDENT_DATETIME,             // Date & Time
-        OBJ_IDENT_DATETIME_CLASS,
-        OBJ_IDENT_DBCSV,                // Comma-Delimited Database
-        OBJ_IDENT_DBCSV_CLASS,
-        OBJ_IDENT_DBF,                  // DBase III/IV Field
-        OBJ_IDENT_DBF_CLASS,
-        OBJ_IDENT_DBFIELD,
-        OBJ_IDENT_DBFIELD_CLASS,
-        OBJ_IDENT_DEC,                  // Decimal (Base 10)
-        OBJ_IDENT_DEC_CLASS,
-        OBJ_IDENT_DEVBASE,              // Device Driver Base/Lower Object
-        OBJ_IDENT_DEVBASE_CLASS,
-        OBJ_IDENT_DEVICE,               // Device Virtual Object
-        OBJ_IDENT_DEVICE_CLASS,
-        OBJ_IDENT_DEVMGR,               // Device Manager
-        OBJ_IDENT_DEVMGR_CLASS,
-        OBJ_IDENT_DIR,
-        OBJ_IDENT_DIR_CLASS,
-        OBJ_IDENT_DIRENTRY,
-        OBJ_IDENT_DIRENTRY_CLASS,
-        OBJ_IDENT_EBCDIC,               // EBCDIC Character
-        OBJ_IDENT_EBCDIC_CLASS,
-        OBJ_IDENT_ENDIAN,               // Little/Big Endian Manipulation
-        OBJ_IDENT_ENDIAN_CLASS,
-        OBJ_IDENT_ERESULT,
-        OBJ_IDENT_ERESULT_CLASS,
-        OBJ_IDENT_EXECARRAY,            // An Array of Function/Object(s) pairs
-        OBJ_IDENT_EXECARRAY_CLASS,
-        OBJ_IDENT_FALSE,
-        OBJ_IDENT_FALSE_CLASS,
-        OBJ_IDENT_FBSI,                 // Fixed Blocked Input Class
-        OBJ_IDENT_FBSI_CLASS,
-        OBJ_IDENT_FBSO,                 // Fixed Blocked Output Class
-        OBJ_IDENT_FBSO_CLASS,
-        OBJ_IDENT_FCB,                  // MSDOS/CPM File Control Block
-        OBJ_IDENT_FCB_CLASS,
-        OBJ_IDENT_FILE,                 // File
-        OBJ_IDENT_FILE_CLASS,
-        OBJ_IDENT_FILEIO,               // File I/O
-        OBJ_IDENT_FILEIO_CLASS,
-        OBJ_IDENT_GREG,                 // Gregorian Date
-        OBJ_IDENT_GREG_CLASS,
-        OBJ_IDENT_HASH32,
-        OBJ_IDENT_HASH32_CLASS,
-        OBJ_IDENT_HEX,                  // Hex Input/Output
-        OBJ_IDENT_HEX_CLASS,
-        OBJ_IDENT_HISTBASE,             // ???
-        OBJ_IDENT_HISTBASE_CLASS,
-        OBJ_IDENT_IOMGR,                // I/O Manager
-        OBJ_IDENT_IOMGR_CLASS,
-        OBJ_IDENT_IORCD,                // Record I/O
-        OBJ_IDENT_IORCD_CLASS,
-        OBJ_IDENT_JSON,                 // JSON Parser
-        OBJ_IDENT_JSON_CLASS,
-        OBJ_IDENT_LEX,                  // Generic Lexical Scanner
-        OBJ_IDENT_LEX_CLASS,
-        OBJ_IDENT_LISTDL,               // Generic Doubly-linked List
-        OBJ_IDENT_LISTDL_CLASS,
-        OBJ_IDENT_LRU,                  // Least Recently Used Caching
-        OBJ_IDENT_LRU_CLASS,
-        OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
-        OBJ_IDENT_MEMMSC_CLASS,
-        OBJ_IDENT_MEMOSX,               // Memory Debug for OSX
-        OBJ_IDENT_MEMOSX_CLASS,
-        OBJ_IDENT_MISC,                 // Miscellaneous Functions
-        OBJ_IDENT_MISC_CLASS,
-        OBJ_IDENT_NAME,
-        OBJ_IDENT_NAME_CLASS,
-        OBJ_IDENT_NODE,
-        OBJ_IDENT_NODE_CLASS,
-        OBJ_IDENT_NODEARC,              // An Arc in a Node Graph
-        OBJ_IDENT_NODEARC_CLASS,
-        OBJ_IDENT_NODEARRAY,            // An Array of Nodes
-        OBJ_IDENT_NODEARRAY_CLASS,
-        OBJ_IDENT_NODEATREE,             // A Tree of Nodes using an Array internally
-        OBJ_IDENT_NODEATREE_CLASS,
-        OBJ_IDENT_NODEENTRY,            // A Node to be used in other containers
-        OBJ_IDENT_NODEENTRY_CLASS,
-        OBJ_IDENT_NODEGRAPH,            // Graph of Nodes
-        OBJ_IDENT_NODEGRAPH_CLASS,
-        OBJ_IDENT_NODEHASH,             // A Hash Table of Nodes
-        OBJ_IDENT_NODEHASH_CLASS,
-        OBJ_IDENT_NODELIST,             // A List of Nodes
-        OBJ_IDENT_NODELIST_CLASS,
-        OBJ_IDENT_NODEMATRIX,
-        OBJ_IDENT_NODEMATRIX_CLASS,
-        OBJ_IDENT_NODESCAN,             // Node Tree Scanner
-        OBJ_IDENT_NODESCAN_CLASS,
-        OBJ_IDENT_NODETREE,             // A Tree of Nodes
-        OBJ_IDENT_NODETREE_CLASS,
-        OBJ_IDENT_NULL,
-        OBJ_IDENT_NULL_CLASS,
-        OBJ_IDENT_NUMBER,               // Generic Number
-        OBJ_IDENT_NUMBER_CLASS,
-        OBJ_IDENT_OBJ,
-        OBJ_IDENT_OBJ_CLASS,
-        OBJ_IDENT_OBJARRAY,             // Array of Objects
-        OBJ_IDENT_OBJARRAY_CLASS,
-        OBJ_IDENT_OBJCB,                // Circular Buffer of Objects
-        OBJ_IDENT_OBJCB_CLASS,
-        OBJ_IDENT_OBJHASH,              // Hash Dictionary of Objects
-        OBJ_IDENT_OBJHASH_CLASS,
-        OBJ_IDENT_OBJLIST,              // List of Objects
-        OBJ_IDENT_OBJLIST_CLASS,
-        OBJ_IDENT_OBJMATRIX,            // 2 dimensional array of Objects
-        OBJ_IDENT_OBJMATRIX_CLASS,
-        OBJ_IDENT_OSC,
-        OBJ_IDENT_OSC_CLASS,
-        OBJ_IDENT_PACKET,
-        OBJ_IDENT_PACKET_CLASS,
-        OBJ_IDENT_PASSTR,
-        OBJ_IDENT_PASSTR_CLASS,
-        OBJ_IDENT_PATH,                 // File Path
-        OBJ_IDENT_PATH_CLASS,
-        OBJ_IDENT_PBXPROJ,              // Xcode pbxproj file parser
-        OBJ_IDENT_PBXPROJ_CLASS,
-        OBJ_IDENT_PLIST,                // PLIST Parser
-        OBJ_IDENT_PLIST_CLASS,
-        OBJ_IDENT_PRODCONS,             // Producer/Consumer Pattern
-        OBJ_IDENT_PRODCONS_CLASS,
-        OBJ_IDENT_PROTOCOL,             // Protocol LAYER which uses RECEIVE and TRANSMIT
-        OBJ_IDENT_PROTOCOL_CLASS,
-        OBJ_IDENT_PRT,
-        OBJ_IDENT_PRT_CLASS,
-        OBJ_IDENT_PSXCOND,              // Posix Condition
-        OBJ_IDENT_PSXCOND_CLASS,
-        OBJ_IDENT_PSXLOCK,              // Posix Lock
-        OBJ_IDENT_PSXLOCK_CLASS,
-        OBJ_IDENT_PSXMUTEX,             // Posix Mutex
-        OBJ_IDENT_PSXMUTEX_CLASS,
-        OBJ_IDENT_PSXSEM,               // Posix Semaphore
-        OBJ_IDENT_PSXSEM_CLASS,
-        OBJ_IDENT_PSXTHREAD,            // Posix Thread
-        OBJ_IDENT_PSXTHREAD_CLASS,
-        OBJ_IDENT_PTRARRAY,             // Generic Array of Pointers
-        OBJ_IDENT_PTRARRAY_CLASS,
-        OBJ_IDENT_PTRTBL,
-        OBJ_IDENT_PTRTBL_CLASS,
-        OBJ_IDENT_PWR2ARRAY,            // An Array of elements that have a size
-        //                              // which is a power of 2
-        OBJ_IDENT_PWR2ARRAY_CLASS,
-        OBJ_IDENT_RECEIVE,              // Protocol Receive Handler
-        OBJ_IDENT_RECEIVE_CLASS,
-        OBJ_IDENT_RESPONDER,
-        OBJ_IDENT_RETRANSBUF,           // Protocol Retransmit Buffer
-        OBJ_IDENT_RETRANSBUF_CLASS,
-        OBJ_IDENT_RRDS,                 // Relative Record Database
-        OBJ_IDENT_RRDS_CLASS,
-        OBJ_IDENT_RRDS32,               // Relative Record Database - 32 bit Logical
-        //                              //                              Record Number
-        OBJ_IDENT_RRDS32_CLASS,
-        OBJ_IDENT_SIDX,                 // Simple Integer Index
-        OBJ_IDENT_SIDX_CLASS,
-        OBJ_IDENT_SRC,
-        OBJ_IDENT_SRC_CLASS,
-        OBJ_IDENT_SRCFILE,
-        OBJ_IDENT_SRCFILE_CLASS,
-        OBJ_IDENT_SRCFILES,
-        OBJ_IDENT_SRCFILES_CLASS,
-        OBJ_IDENT_SRCLOC,               // Source Location (File, Line, Col)
-        OBJ_IDENT_SRCLOC_CLASS,
-        OBJ_IDENT_SZSTRARRAY,           // An Array of szStr's
-        OBJ_IDENT_SZSTRARRAY_CLASS,
-        OBJ_IDENT_SZHASH,               // Store void data with a char string key
-        OBJ_IDENT_SZHASH_CLASS,
-        OBJ_IDENT_SZSTR,
-        OBJ_IDENT_SZSTR_CLASS,
-        OBJ_IDENT_SZTBL,                // Static String Table
-        OBJ_IDENT_SZTBL_CLASS,
-        OBJ_IDENT_TABLE,
-        OBJ_IDENT_TABLE_CLASS,
-        OBJ_IDENT_TERNARY,              // Ternary Tree
-        OBJ_IDENT_TERNARY_CLASS,
-        OBJ_IDENT_THREAD,               // Separate Threads with own stack
-        OBJ_IDENT_THREAD_CLASS,
-        OBJ_IDENT_TIMER,
-        OBJ_IDENT_TIMER_CLASS,
-        OBJ_IDENT_TOKEN,                // Lexical Token
-        OBJ_IDENT_TOKEN_CLASS,
-        OBJ_IDENT_TOKENLIST,            // A List of Lexical Tokens
-        OBJ_IDENT_TOKENLIST_CLASS,
-        OBJ_IDENT_TRACE,
-        OBJ_IDENT_TRACE_CLASS,
-        OBJ_IDENT_TRANSMIT,             // Protocol Transmit Handler
-        OBJ_IDENT_TRANSMIT_CLASS,
-        OBJ_IDENT_TRCTBL,
-        OBJ_IDENT_TRCTBL_CLASS,
-        OBJ_IDENT_TRIE,
-        OBJ_IDENT_TRIE_CLASS,
-        OBJ_IDENT_TRIEMP,               // Minimal Prefix Trie
-        OBJ_IDENT_TRIEMP_CLASS,
-        OBJ_IDENT_TRUE,
-        OBJ_IDENT_TRUE_CLASS,
-        OBJ_IDENT_U12ARRAY,
-        OBJ_IDENT_U12ARRAY_CLASS,
-        OBJ_IDENT_U16ARRAY,
-        OBJ_IDENT_U16ARRAY_CLASS,
-        OBJ_IDENT_U16MATRIX,
-        OBJ_IDENT_U16MATRIX_CLASS,
-        OBJ_IDENT_U32ARRAY,
-        OBJ_IDENT_U32ARRAY_CLASS,
-        OBJ_IDENT_U8ARRAY,
-        OBJ_IDENT_U8ARRAY_CLASS,
-        OBJ_IDENT_UINT128,
-        OBJ_IDENT_UINT128_CLASS,
-        OBJ_IDENT_UTF8,
-        OBJ_IDENT_UTF8_CLASS,
-        OBJ_IDENT_WAV,                  // WAV File
-        OBJ_IDENT_WAV_CLASS,
-        OBJ_IDENT_WSTR,
-        OBJ_IDENT_WSTR_CLASS,
-        OBJ_IDENT_WSTRARRAY,            // an Array of Wide Strings
-        OBJ_IDENT_WSTRARRAY_CLASS,
-        OBJ_IDENT_WSTRC,
-        OBJ_IDENT_WSTRC_CLASS,
-        OBJ_IDENT_XML,
-        OBJ_IDENT_XML_CLASS,
-        OBJ_IDENT_OTHER_LIBS=8192,
-        OBJ_IDENT_CAN_ENTRIES=OBJ_IDENT_OTHER_LIBS,                 // 128 Objects
-        OBJ_IDENT_COMPILER_ENTRIES=OBJ_IDENT_CAN_ENTRIES+256,       // 128 Objects
-        OBJ_IDENT_DISK_ENTRIES=OBJ_IDENT_COMPILER_ENTRIES+256,      //  64 Objects
-        OBJ_IDENT_J1939_ENTRIES=OBJ_IDENT_DISK_ENTRIES+128,         //  64 Objects
-        OBJ_IDENT_LL1_ENTRIES=OBJ_IDENT_J1939_ENTRIES+128,          //  64 Objects
-        OBJ_IDENT_OS_ENTRIES=OBJ_IDENT_J1939_ENTRIES+128,           // 128 Objects
-        OBJ_IDENT_PARSERS_ENTRIES=OBJ_IDENT_OS_ENTRIES+128,         //  64 Objects
-        OBJ_IDENT_PIC32_ENTRIES=OBJ_IDENT_PARSERS_ENTRIES+128,      //  64 Objects
-        OBJ_IDENT_EMU_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+256,          //  32 Objects
-        OBJ_IDENT_USER_ENTRIES=16384
-   } OBJ_IDENTS;
-#endif
-
 
     typedef void *  OBJ_PTR;
     typedef void *  OBJ_ID;
@@ -392,14 +96,15 @@ extern	"C" {
     
     typedef struct obj_data_s OBJ_DATA;     /* One Interface */
 
-    typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID,OBJ_ID);
-    typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID,OBJ_ID);
+    typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID, OBJ_ID);
+    typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID, OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_COPY)(OBJ_ID);
     typedef bool        (*P_OBJ_DISABLE)(OBJ_ID);
     typedef bool        (*P_OBJ_ENABLE)(OBJ_ID);
     typedef uint32_t    (*P_OBJ_HASH)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_PTR)(OBJ_ID);
-    typedef OBJ_ID      (*P_OBJ_TOSTRING)(OBJ_ID,int);
+    typedef OBJ_ID      (*P_OBJ_TOSTRING)(OBJ_ID, int);
+    typedef void *      (*P_OBJ_QUERYMETHOD)(OBJ_ID, const char *);
 
 
     
@@ -472,21 +177,25 @@ extern	"C" {
         // tested to see if it exists, because it may not be implemented.
         bool        (*pEnable)(OBJ_ID);
         bool        (*pDisable)(OBJ_ID);
-        OBJ_ID      (*pToDebugString)(OBJ_ID,int);
-        ERESULT     (*pAssign)(OBJ_ID,OBJ_ID);  // P_OBJ_ASSIGN
-        // Assigns 1st object to 2nd object.
-        ERESULT     (*pCompare)(OBJ_ID,OBJ_ID); // P_OBJ_COMPARE
+        OBJ_ID      (*pToDebugString)(OBJ_ID, int);
+        // Assigns data within 1st object to 2nd object.
+        ERESULT     (*pAssign)(OBJ_ID, OBJ_ID);  // P_OBJ_ASSIGN
         // Compares 1st object to 2nd object.
         // Returns:
         //          ERESULT_SUCCESS_LESS_THAN        1st <  2nd
         //          ERESULT_SUCCESS_EQUAL            1st == 2nd
         //          ERESULT_SUCCESS_GREATER_THAN     1st >  2nd
-        OBJ_ID      (*pCopy)(OBJ_ID);           // P_OBJ_PTR
+        ERESULT     (*pCompare)(OBJ_ID, OBJ_ID); // P_OBJ_COMPARE
         // Creates a new copy of the object. If the object is
         // immmutable (ie can not be changed) then it just returns
         // a retained self.
-        uint32_t    (*pHash)(OBJ_ID);           // P_OBJ_HASH
+        OBJ_ID      (*pCopy)(OBJ_ID);           // P_OBJ_PTR
         // Creates hash of this object.
+        uint32_t    (*pHash)(OBJ_ID);           // P_OBJ_HASH
+        // Query an object for a method name in character format. If
+        // found within the object, return the address of the method.
+        // The method name can be in UTF-8 format.
+        void *      (*pQueryMethod)(OBJ_ID, const uint8_t *);
     };
 //#pragma pack(pop)
     

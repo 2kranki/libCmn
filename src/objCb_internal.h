@@ -51,6 +51,9 @@
 
 
 #include    <objCb.h>
+#include    <psxLock.h>
+#include    <psxSem.h>
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -63,15 +66,17 @@ extern "C" {
          */
         OBJ_DATA        super;
 
-#ifdef __PIC32MX_TNEO_ENV__
-        struct TN_Mutex getMutex;
-        struct TN_Mutex putMutex;
-#endif
+        PSXSEM_DATA     *pSemEmpty;
+        PSXSEM_DATA     *pSemFull;
+        PSXLOCK_DATA    *pLock;
+        
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements
         uint16_t        rsvd;
+        volatile
         uint16_t        start;		// index of oldest element
+        volatile
         uint16_t        end;		// index at which to write new element
         volatile
         int16_t         numWritten;

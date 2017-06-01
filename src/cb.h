@@ -21,6 +21,9 @@
  *
  * History
  *	12/30/2014	Created from cb8.
+ *  05/31/2017  Moved to using the psxSem and psxLock classes instead of
+ *              having environment specific code.
+ *
  * References
  *      http://en.wikipedia.org/wiki/Circular_buffer
  *		"Data Structures and Algorithms", Alfred V. Aho et al,
@@ -29,6 +32,11 @@
  *			Prentice-Hall, 1990
  *		"Programs and Data Structures in C", Leendert Ammeraal,
  *			John Wiley & Sons, 1987
+ *
+ * TODO
+ *  --          Implement iGet/iPut where they are executed in a non-
+ *              interruptable state and at a higher priority than normal
+ *              processing.
  */
 
 /*
@@ -123,7 +131,8 @@ extern "C" {
         
     bool            cb_Get(
         CB_DATA         *this,
-        void            *pValue         // Copies element into the provided buffer
+        void            *pValue,        // Copies element into the provided buffer
+        uint32_t        timeout         // in ms
     );
 
 

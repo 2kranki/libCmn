@@ -75,13 +75,8 @@ struct consumer_data_s	{
     uint32_t        *pDQueBufs;         // Points into data[0] below
     uint32_t        **ppDQueBufs;       // Points into data[0] below
 
-    uint16_t        size;		/* maximum number of elements           */
+    uint16_t        size;               // maximum number of elements
     uint16_t        reserved;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
 
 };
 #pragma pack(pop)

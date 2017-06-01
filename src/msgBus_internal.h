@@ -1,17 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   cb16_internal.h
- * Author: bob
+ * File:   msgBus_internal.h
+ *	Generated 05/31/2017 20:00:00
  *
  * Notes:
- *   1	Before including define the following to customize the config bits for
- *		the development environment needed:
- *		_EXPLORER_16		Microchip Explorer 16 board
- *		_MAX32              Diligent MAX 32 board
- *		_NETWORK_SHIELD     Diligent Network Shield
+ *  --	N/A
  *
- * Created on September 26, 2014, 3:39 PM
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -43,13 +39,12 @@
 
 
 
-#ifndef CB16_INTERNAL_H
-#define	CB16_INTERNAL_H
+#include    <msgBus.h>
 
 
-#include    <cb16.h>
-#include    <psxLock.h>
-#include    <psxSem.h>
+#ifndef MSGBUS_INTERNAL_H
+#define	MSGBUS_INTERNAL_H
+
 
 
 #ifdef	__cplusplus
@@ -57,55 +52,57 @@ extern "C" {
 #endif
 
 
+
+
 #pragma pack(push, 1)
-struct cb16_data_s	{
+struct msgBus_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		/* maximum number of elements           */
-    volatile
-    uint16_t        start;		/* index of oldest element              */
-    volatile
-    uint16_t        end;		/* index at which to write new element  */
+    ERESULT         eRc;
+    uint16_t        size;           // Message Size
     uint16_t        reserved;
-
-    PSXSEM_DATA     *pSemEmpty;
-    PSXSEM_DATA     *pSemFull;
-    PSXLOCK_DATA    *pLock;
+    ASTR_DATA       *pStr;
 
     volatile
-    int16_t         numWritten;
-    volatile
-    int16_t         numRead;
+    int32_t         numRead;
     // WARNING - 'elems' must be last element of this structure!
-    uint16_t        elems[0];
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    OBJ_IUNKNOWN    cb16_Vtbl;
+    struct msgBus_class_data_s  msgBus_ClassObj;
 
+    extern
+    const
+    MSGBUS_VTBL         msgBus_Vtbl;
 
 
     // Internal Functions
-#ifdef RMW_DEBUG
-    bool			cb16_Validate(
-        CB16_DATA       *cbp
+    void            msgBus_Dealloc(
+        OBJ_ID          objId
+    );
+
+    bool            msgBus_setLastError(
+        MSGBUS_DATA     *this,
+        ERESULT         value
+    );
+
+
+
+
+#ifdef NDEBUG
+#else
+    bool			msgBus_Validate(
+        MSGBUS_DATA       *this
     );
 #endif
-    bool            cb16_iGet(
-        CB16_DATA       *cbp,
-        uint16_t        *pData
-    );
-    bool            cb16_iPut(
-        CB16_DATA       *cbp,
-        uint16_t        value
-    );
 
 
 
@@ -113,5 +110,5 @@ struct cb16_data_s	{
 }
 #endif
 
-#endif	/* CB16_INTERNAL_H */
+#endif	/* MSGBUS_INTERNAL_H */
 

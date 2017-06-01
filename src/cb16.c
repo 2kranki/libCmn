@@ -72,7 +72,7 @@ CB16_DATA *     cb16_Alloc(
     uint16_t        size           // Number of Elements in Buffer
 )
 {
-    CB16_DATA       *cbp;
+    CB16_DATA       *this;
     uint32_t        cbSize;
     
     // Do initialization.
@@ -90,10 +90,41 @@ CB16_DATA *     cb16_Alloc(
         return NULL;
     }
     
-    cbp = obj_Alloc( cbSize );
+    this = obj_Alloc( cbSize );
+    obj_setMisc1(this, size);
     
     // Return to caller.
-    return( cbp );
+    return this;
+}
+
+
+
+//---------------------------------------------------------------
+//                        N e w
+//---------------------------------------------------------------
+
+CB16_DATA *     cb16_New(
+    uint16_t        size           // Number of Elements in Buffer
+)
+{
+    CB16_DATA       *this;
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if (0 == size) {
+        DEBUG_BREAK();
+        return NULL;
+    }
+#endif
+    
+    this = cb16_Alloc(size);
+    if (this) {
+        this = cb16_Init(this);
+    }
+    
+    // Return to caller.
+    return this;
 }
 
 
@@ -105,19 +136,19 @@ CB16_DATA *     cb16_Alloc(
 //===============================================================
 
 uint16_t        cb16_getSize(
-	CB16_DATA       *cbp
+	CB16_DATA       *this
 )
 {
 
 	// Validate the input parameters.
 #ifdef NDEBUG
 #else
-    if( !cb16_Validate( cbp ) )
+    if( !cb16_Validate(this) )
         return -1;
 #endif
 
 	// Return to caller.
-	return( cbp->size );
+	return( this->size );
 }
 
 
@@ -136,27 +167,32 @@ void            cb16_Dealloc(
 	OBJ_ID          objId
 )
 {
-	CB16_DATA		*cbp = objId;
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
+	CB16_DATA		*this = objId;
 
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb16_Validate(cbp) ) {
+    if ( !cb16_Validate(this) ) {
         DEBUG_BREAK();
         return;
     }
 #endif
 
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_delete(&cbp->semEmpty);
-    tRc = tn_sem_delete(&cbp->semFull);
-#endif
+    if (this->pSemEmpty) {
+        obj_Release(this->pSemEmpty);
+        this->pSemEmpty = OBJ_NIL;
+    }
+    if (this->pSemFull) {
+        obj_Release(this->pSemFull);
+        this->pSemFull = OBJ_NIL;
+    }
+    if (this->pLock) {
+        obj_Release(this->pLock);
+        this->pLock = OBJ_NIL;
+    }
     
-    obj_Dealloc(cbp);
-    cbp = NULL;
+    obj_Dealloc(this);
+    this = NULL;
     
 	// Return to caller.
 }
@@ -168,44 +204,36 @@ void            cb16_Dealloc(
 //----------------------------------------------------------------
 
 bool            cb16_Get(
-	CB16_DATA       *cbp,
+	CB16_DATA       *this,
     uint16_t        *pData,
     uint32_t        timeout
 )
 {
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
     
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb16_Validate(cbp) ) {
+    if ( !cb16_Validate(this) ) {
         return false;
     }
 #endif
     
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_wait(&cbp->semFull, timeout);
-    if (TN_RC_OK == tRc)
-        ;
-    else {
-        return false;
-    }
-#endif
+    psxSem_Wait(this->pSemFull);
+    
+    psxLock_Lock(this->pLock);
     
     if (pData) {
-        *pData = cbp->elems[cbp->start];
+        *pData = this->elems[this->start];
     }
-    ++cbp->numRead;
-    ++cbp->start;
-    if (cbp->start == cbp->size) {
-        cbp->start = 0;
+    ++this->numRead;
+    ++this->start;
+    if (this->start == this->size) {
+        this->start = 0;
     }
     
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_signal(&cbp->semEmpty);
-#endif
+    psxLock_Unlock(this->pLock);
+    
+    psxSem_Post(this->pSemEmpty);
     
     return true;
 }
@@ -213,43 +241,39 @@ bool            cb16_Get(
  
 
 bool            cb16_iGet(
-    CB16_DATA       *cbp,
+    CB16_DATA       *this,
     uint16_t        *pData
 )
 {
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
+    bool            fRc;
     
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb16_Validate(cbp) ) {
+    if ( !cb16_Validate(this) ) {
         return false;
     }
 #endif
     
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_iwait_polling(&cbp->semFull);
-    if (TN_RC_OK == tRc)
-        ;
-    else {
-        return false;
+    fRc = psxSem_iTryWait(this->pSemFull);
+    if (!fRc) {
+        return fRc;
     }
-#endif
+    
+    //psxLock_Lock(this->pLock);
     
     if (pData) {
-        *pData = cbp->elems[cbp->start];
+        *pData = this->elems[this->start];
     }
-    ++cbp->numRead;
-    ++cbp->start;
-    if (cbp->start == cbp->size) {
-        cbp->start = 0;
+    ++this->numRead;
+    ++this->start;
+    if (this->start == this->size) {
+        this->start = 0;
     }
     
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_isignal(&cbp->semEmpty);
-#endif
+    //psxLock_Unlock(this->pLock);
+    
+    psxSem_iPost(this->pSemEmpty);
     
     return true;
 }
@@ -261,7 +285,7 @@ bool            cb16_iGet(
 //**********************************************************
 
 bool            cb16_IsEmpty(
-	CB16_DATA       *cbp
+	CB16_DATA       *this
 )
 {
     bool            fRc = false;
@@ -269,12 +293,12 @@ bool            cb16_IsEmpty(
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb16_Validate(cbp) ) {
-        return cbp;
+    if ( !cb16_Validate(this) ) {
+        return false;
     }
 #endif
 
-    if (((uint32_t)(cbp->numWritten - cbp->numRead)) == 0)
+    if (((uint32_t)(this->numWritten - this->numRead)) == 0)
 		fRc = true;
     
     return fRc;
@@ -287,7 +311,7 @@ bool            cb16_IsEmpty(
 //**********************************************************
 
 bool            cb16_IsFull(
-	CB16_DATA       *cbp
+	CB16_DATA       *this
 )
 {
     bool            fRc = false;
@@ -295,12 +319,12 @@ bool            cb16_IsFull(
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb16_Validate(cbp) ) {
-        return cbp;
+    if ( !cb16_Validate(this) ) {
+        return false;
     }
 #endif
 
-    if ( ((uint32_t)(cbp->numWritten - cbp->numRead)) == cbp->size )
+    if ( ((uint32_t)(this->numWritten - this->numRead)) == this->size )
         fRc = true;
     
     return fRc;
@@ -313,24 +337,21 @@ bool            cb16_IsFull(
 //**********************************************************
 
 CB16_DATA *     cb16_Init(
-    CB16_DATA		*this,
-    uint16_t        size            // Size of Buffer in uint16_t's
+    CB16_DATA		*this
 )
 {
     uint32_t        cbSize;
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
+    uint16_t        size;
 
     if (NULL == this) {
         return NULL;
     }
-    if( 0 == size )
-        return NULL;
 
-    // Must be less than 2^31 because of numWritten and numRead.
-    if ( !(size < 0x7FFF) ) {
-        return NULL;
+    size = obj_getMisc1(this);
+    if( 0 == size ) {
+        DEBUG_BREAK();
+        obj_Release(this);
+        return OBJ_NIL;
     }
     
 	cbSize = size * sizeof(uint16_t);
@@ -348,10 +369,31 @@ CB16_DATA *     cb16_Init(
     obj_setVtbl(this, (OBJ_IUNKNOWN *)&cb16_Vtbl);
     
     this->size = size;
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_create(&this->semEmpty, size, size);
-    tRc = tn_sem_create(&this->semFull, 0, size);
-#endif
+
+    this->pSemEmpty = psxSem_New(size,size);
+    if (OBJ_NIL == this->pSemEmpty) {
+        DEBUG_BREAK();
+        obj_Release(this);
+        return OBJ_NIL;
+    }
+    this->pSemFull = psxSem_New(0,size);
+    if (OBJ_NIL == this->pSemFull) {
+        DEBUG_BREAK();
+        obj_Release(this->pSemEmpty);
+        this->pSemEmpty = OBJ_NIL;
+        obj_Release(this);
+        return OBJ_NIL;
+    }
+    this->pLock = psxLock_New();
+    if (OBJ_NIL == this->pLock) {
+        DEBUG_BREAK();
+        obj_Release(this->pSemFull);
+        this->pSemFull = OBJ_NIL;
+        obj_Release(this->pSemEmpty);
+        this->pSemEmpty = OBJ_NIL;
+        obj_Release(this);
+        return OBJ_NIL;
+    }
     
 #ifdef NDEBUG
 #else
@@ -375,65 +417,53 @@ CB16_DATA *     cb16_Init(
 //**********************************************************
 
 bool            cb16_Put(
-	CB16_DATA       *cbp,
+	CB16_DATA       *this,
     uint16_t        value,
     uint32_t        timeout
 )
 {
     bool            fRc = true;
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
 
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !cb16_Validate(cbp) ) {
+    if ( !cb16_Validate(this) ) {
         return false;
     }
 #endif
 
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_wait(&cbp->semEmpty, timeout);
-    if (TN_RC_OK == tRc)
-        ;
-    else {
-        return false;
-    }
-#endif
+    psxSem_Wait(this->pSemEmpty);
     
-    cbp->elems[cbp->end] = value;
-    ++cbp->numWritten;
-    ++cbp->end;
-    if (cbp->end == cbp->size) {
-        cbp->end = 0;
+    psxLock_Lock(this->pLock);
+    
+    this->elems[this->end] = value;
+    ++this->numWritten;
+    ++this->end;
+    if (this->end == this->size) {
+        this->end = 0;
     }
 
-#ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_signal(&cbp->semFull);
-    if (TN_RC_OK == tRc)
-        ;
-    else {
-        DEBUG_BREAK();
-    }
-#endif
-
+    psxLock_Unlock(this->pLock);
+    
+    psxSem_Post(this->pSemFull);
+    
     return fRc;
 }
 
  
 bool            cb16_iPut(
-    CB16_DATA       *cbp,
+    CB16_DATA       *this,
     uint16_t        value
 )
 {
     bool            fRc = true;
-#ifdef __PIC32MX_TNEO_ENV__
-    enum TN_RCode   tRc;
-#endif
+    
+    psxSem_Wait(this->pSemEmpty);
+    
+    psxLock_Lock(this->pLock);
     
 #ifdef __PIC32MX_TNEO_ENV__
-    tRc = tn_sem_iwait_polling(&cbp->semEmpty);
+    tRc = tn_sem_iwait_polling(&this->semEmpty);
     if (TN_RC_OK == tRc)
         ;
     else {
@@ -441,11 +471,11 @@ bool            cb16_iPut(
     }
 #endif
 
-    cbp->elems[cbp->end] = value;
-    ++cbp->numWritten;
-    ++cbp->end;
-    if (cbp->end == cbp->size) {
-        cbp->end = 0;
+    this->elems[this->end] = value;
+    ++this->numWritten;
+    ++this->end;
+    if (this->end == this->size) {
+        this->end = 0;
     }
 
 #ifdef __PIC32MX_TNEO_ENV__
@@ -456,6 +486,10 @@ bool            cb16_iPut(
         DEBUG_BREAK();
     }
 #endif
+    
+    psxLock_Unlock(this->pLock);
+    
+    psxSem_Post(this->pSemFull);
     
     return fRc;
 }

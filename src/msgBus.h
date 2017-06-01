@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          PSXLOCK Console Transmit Task (psxLock) Header
+//          Message BUS/Rebroadcaster (msgBus) Header
 //****************************************************************
 /*
  * Program
- *			Separate psxLock (psxLock)
+ *			Message BUS/Rebroadcaster (msgBus)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate psxLock to run things without complications
- *          of interfering with the main psxLock. A psxLock may be 
- *          called a psxLock on other O/S's.
+ *			This object simulates a message bus. Other objects
+ *          register with it and then send broadcast messages
+ *          which are rebroadcast to all the other objects that
+ *          have previously register with this object.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal psxLock. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	05/19/2017 Generated
+ *	05/31/2017 Generated
  */
 
 
@@ -58,8 +55,8 @@
 #include        <AStr.h>
 
 
-#ifndef         PSXLOCK_H
-#define         PSXLOCK_H
+#ifndef         MSGBUS_H
+#define         MSGBUS_H
 
 
 
@@ -73,16 +70,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct psxLock_data_s	PSXLOCK_DATA;    // Inherits from OBJ.
-
-    typedef struct psxLock_vtbl_s	{
+    typedef struct msgObj_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in psxLock_object.c.
+        // method names to the vtbl definition in msgBus_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(PSXLOCK_DATA *);
-    } PSXLOCK_VTBL;
+        ERESULT         (*pReceive)(OBJ_ID, void *);
+        ERESULT         (*pTransmit)(OBJ_ID, void *);
+    } MSGOBJ_VTBL;
+    
+    
+    typedef struct msgBus_data_s	MSGBUS_DATA;    // Inherits from OBJ.
+
+    typedef struct msgBus_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in msgBus_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(MSGBUS_DATA *);
+    } MSGBUS_VTBL;
 
 
 
@@ -99,13 +107,14 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to psxLock object if successful, otherwise OBJ_NIL.
+     @return:   pointer to msgBus object if successful, otherwise OBJ_NIL.
      */
-    PSXLOCK_DATA *  psxLock_Alloc(
+    MSGBUS_DATA *     msgBus_Alloc(
     );
     
     
-    PSXLOCK_DATA *  psxLock_New(
+    MSGBUS_DATA *     msgBus_New(
+        uint16_t    size                // Message Size
     );
     
     
@@ -114,8 +123,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         psxLock_getLastError(
-        PSXLOCK_DATA	*this
+    ERESULT     msgBus_getLastError(
+        MSGBUS_DATA		*this
     );
 
 
@@ -125,25 +134,36 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    PSXLOCK_DATA *   psxLock_Init(
-        PSXLOCK_DATA     *this
-    );
-
-
-    bool            psxLock_IsLocked(
-        PSXLOCK_DATA	*this
+    ERESULT     msgBus_Broadcast(
+        MSGBUS_DATA		*this,
+        uint8_t         *pMsg
     );
     
     
-    /*!
-     Set the lock unconditionally.
-     @param:    this    PSXLOCK object pointer
-     @return:   If successful, true is returned. Otherwise, false.
-     @warning:  This will put the thread in an infinite wait until
-                the lock provided for its use.
-     */
-    bool            psxLock_Lock(
-        PSXLOCK_DATA	*this
+    ERESULT     msgBus_Disable(
+        MSGBUS_DATA		*this
+    );
+
+
+    ERESULT     msgBus_Enable(
+        MSGBUS_DATA		*this
+    );
+
+   
+    MSGBUS_DATA *   msgBus_Init(
+        MSGBUS_DATA     *this
+    );
+
+
+    ERESULT     msgBus_IsEnabled(
+        MSGBUS_DATA		*this
+    );
+    
+ 
+    ERESULT     msgBus_RegisterObject(
+        MSGBUS_DATA		*this,
+        OBJ_ID          pObj,
+        ERESULT         (*pReceive)(OBJ_ID, void *)
     );
     
     
@@ -151,27 +171,17 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = psxLock_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = msgBus_ToDebugString(this,4);
      @endcode:
-     @param:    this    PSXLOCK object pointer
+     @param:    this    MSGBUS object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *     psxLock_ToDebugString(
-        PSXLOCK_DATA    *this,
+    ASTR_DATA *    msgBus_ToDebugString(
+        MSGBUS_DATA     *this,
         int             indent
-    );
-    
-    
-    bool            psxLock_TryLock(
-        PSXLOCK_DATA	*this
-    );
-    
-    
-    bool            psxLock_Unlock(
-        PSXLOCK_DATA	*this
     );
     
     
@@ -181,5 +191,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* PSXLOCK_H */
+#endif	/* MSGBUS_H */
 
