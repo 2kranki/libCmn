@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 1/2017 17:38:53.000)
+# ( 6/ 2/2017  3:30:11.000)
 
 
 LIBNAM=libCmn
@@ -7,6 +7,7 @@ SYS=macosx
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(LIBNAM)
 
+CFLAGS_LIBS = 
 CFLAGS += -g -Isrc -Isrc/$(SYS)
 CFLAGS += -D__MACOSX_ENV__
 
@@ -583,6 +584,18 @@ $(OBJDIR)/json.o: $(SRCDIR)/json.c
 
 
 $(OBJDIR)/json_object.o: $(SRCDIR)/json_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/lex.o $(OBJDIR)/lex_object.o
+
+
+$(OBJDIR)/lex.o: $(SRCDIR)/lex.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/lex_object.o: $(SRCDIR)/lex_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1334,28 +1347,28 @@ TESTS =
 TESTS += test_psxLock
 
 test_psxLock:
-	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxLock.c
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxLock.c 
 	$(OBJDIR)/$(@F)
 
 
 TESTS += test_psxMutex
 
 test_psxMutex:
-	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxMutex.c
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxMutex.c 
 	$(OBJDIR)/$(@F)
 
 
 TESTS += test_psxSem
 
 test_psxSem:
-	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxSem.c
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxSem.c 
 	$(OBJDIR)/$(@F)
 
 
 TESTS += test_psxThread
 
 test_psxThread:
-	$(CC) $(CFLAGS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1380,7 +1393,7 @@ install:
 	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include
 	cp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a
 	cp src/*.h $(INSTALLDIR)/include/
-	cp src/$(SYS)/*.h $(INSTALLDIR)/include/
+	-cp src/$(SYS)/*.h $(INSTALLDIR)/include/
 
 
 .PHONY: create_dirs

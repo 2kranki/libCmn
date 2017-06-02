@@ -1,6 +1,5 @@
 {
-    "name":
-        "libCmn",
+    "name":"libCmn",
     "deps":null,
     "headers_private":
     [
@@ -9,7 +8,7 @@
     ],
     "headers_public":
     [
-        "cmn.h",
+        "cmn_defs.h",
         "chario.h",
         "mem.h",
         "obj.h",
@@ -62,6 +61,7 @@
         "hex":["cmn","AStr"],
         "json":["cmn","AStr","false","name","node","nodeArray",
                 "nodeHash","nodeTree","null","path","true"],
+        "lex":["cmn"],
         "lru":["cmn","AStr","listdl"],
         "misc":["cmn","AStr"],
         "msgBus":["cmn"],
@@ -108,7 +108,7 @@
         "tokenList":["cmn","AStr","token"],
         "trace":["cmn"],
         "true":["cmn","AStr"],
-        "u8Array":["cmn","AStr","path","pwr2Array"],
+        "u8Array":null,
         "u12Array":["cmn","AStr","arrayExpand"],
         "u16Array":["cmn","AStr","pwr2Array"],
         "u16Matrix":["cmn","AStr"],
@@ -144,10 +144,10 @@
         "memWin32_object.c":null
     },
     "tests":
-    [
-        "test_psxLock.c",
-        "test_psxMutex.c",
-        "test_psxSem.c",
-        "test_psxThread.c"
-    ]
+    {
+        "test_psxLock.c":null,
+        "test_psxMutex.c":null,
+        "test_psxSem.c":null,
+        "test_psxThread.c":null
+    }
 }
