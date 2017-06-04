@@ -148,6 +148,7 @@
         "test_psxLock.c":null,
         "test_psxMutex.c":null,
         "test_psxSem.c":null,
-        "test_psxThread.c":null
+        "test_psxThread.c":null,
+        "test_trace.c":null
     }
 }

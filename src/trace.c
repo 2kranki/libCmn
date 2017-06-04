@@ -89,7 +89,7 @@ extern "C" {
 
 
 
-    TRACE_DATA *     trace_Shared(
+    TRACE_DATA *    trace_Shared(
     )
     {
         
@@ -100,6 +100,23 @@ extern "C" {
         }
         
         return( pShared );
+    }
+    
+    
+    
+    bool            trace_SharedReset(
+    )
+    {
+        
+        while (pShared && (obj_getRetainCount(pShared) > 1)) {
+            obj_Release(pShared);
+        }
+        if (pShared) {
+            obj_Release(pShared);
+            pShared = OBJ_NIL;
+        }
+        
+        return true;
     }
     
     
@@ -276,6 +293,33 @@ extern "C" {
     }
 
      
+    TRACE_DATA *   trace_InitLineOut(
+        TRACE_DATA      *this,
+        void            (*pLineOut)(
+             OBJ_ID          this,
+             const
+             char            *pszData
+        ),
+        OBJ_ID          pLineOutObj
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this = trace_Init( this, NULL );
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this->pLineOut = pLineOut;
+        this->pLineOutObj = pLineOutObj;
+        
+        return this;
+    }
+    
+    
     TRACE_DATA *   trace_InitStream(
         TRACE_DATA      *this,
         FILE            *pTraceFile
@@ -319,11 +363,19 @@ extern "C" {
     {
 
         psxLock_Lock(this->pLock);
-        if (this->pFileOut) {
-            fputs(pszData, this->pFileOut);
+        if (this->pLineOut) {
+            this->pLineOut(this->pLineOutObj, pszData);
         }
         else {
-            fprintf(stderr, "%s\n", pszData);
+            if (this->pFileOut) {
+                fputs(pszData, this->pFileOut);
+            }
+            else {
+                fprintf(stderr, "%s\n", pszData);
+            }
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+            //OutputDebugStringA( pszData );
+#endif
         }
         psxLock_Unlock(this->pLock);
         

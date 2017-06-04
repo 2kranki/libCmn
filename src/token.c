@@ -684,7 +684,7 @@ extern "C" {
                 break;
         }
 
-        return L"";
+        return &this->zero;
     }
     
     

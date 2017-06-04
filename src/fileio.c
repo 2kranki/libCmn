@@ -467,7 +467,7 @@ extern "C" {
             return OBJ_NIL;
         }
         if (pPath == OBJ_NIL) {
-            DEBUG_BREAK();
+            //DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }

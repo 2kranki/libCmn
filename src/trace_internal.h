@@ -64,8 +64,16 @@ struct trace_data_s	{
     uint32_t        flags[4];
     volatile
     uint16_t        fTrace;
-    uint16_t        fOpened;                // We opened pTrace.
+    uint16_t        fOpened;                // We opened pFileOut.
     FILE            *pFileOut;
+    
+    void            (*pLineOut)(
+        OBJ_ID          this,
+        const
+        char            *pszData
+    );
+    OBJ_ID          pLineOutObj;
+
 
 };
 #pragma pack(pop)

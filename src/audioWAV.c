@@ -51,7 +51,7 @@ extern "C" {
     
 
     
-    //		Internal 4-place Sine Table
+    //              Internal 4-place Sine Table
     // 	All numbers should be divided by 10000 to get the proper value.
     // 	Table is from data in "Modern Plane Trigonometry", William L. Hart,
     //	D.C. Heath and Company, 1961.

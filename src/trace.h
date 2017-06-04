@@ -77,8 +77,10 @@ extern "C" {
 
 #ifdef NDEBUG
 #   define  TRC_FLAG(flag,desc,...)     /**/
-#   define  TRC_FLAGS(flag,desc,...)     /**/
-#   define  TRC(desc,...)     /**/
+#   define  TRC_FLAGS(flag,desc,...)    /**/
+#   define  TRC_FLAGSF(flag,desc,...)   /**/
+#   define  TRC_OBJ(cbp,desc,...)       /**/
+#   define  TRC(desc,...)               /**/
 #else
 #   define  TRC_FLAG(flag,desc,...)\
     trace_FlagA(trace_Shared(),flag,desc,## __VA_ARGS__)
@@ -120,12 +122,17 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    TRACE_DATA *     trace_Alloc(
+    TRACE_DATA *    trace_Alloc(
     );
     
     
-    TRACE_DATA *     trace_Shared(
+    TRACE_DATA *    trace_Shared(
     );
+    
+    
+    bool            trace_SharedReset(
+    );
+    
     
     
 
@@ -182,6 +189,34 @@ extern "C" {
     );
 
 
+    /*!
+     Initialize the object with a supplied routine and its object pointer. 
+     The function overrides the file/stream file output if it is present.
+     @param:    pLineOut is a pointer to a function that accepts the line of
+                data and does something with it.
+     @param:    pLineOutObj is the object pointer to be passed to the pLineOut
+                function when it is called.
+     @return:   If successful, a TRACE_DATA pointer otherwise OBJ_NIL
+     */
+    TRACE_DATA *    trace_InitLineOut(
+        TRACE_DATA      *this,
+        void            (*pLineOut)(
+            OBJ_ID          this,
+            const
+            char            *pszData
+        ),
+        OBJ_ID          pLineOutObj
+    );
+    
+    
+    /*!
+     Initialize the object with the given open file stream. The stream is
+     used to output the trace data. It is not closed when this object is
+     released.
+     @param:    pTraceFile stream file pointer. If NULL, then stderr will
+                be used.
+     @return:   If successful, a TRACE_DATA pointer otherwise OBJ_NIL
+     */
     TRACE_DATA *     trace_InitStream(
         TRACE_DATA      *this,
         FILE            *pTraceFile

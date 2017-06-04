@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'dbCsv'
-//	Generated 01/25/2016 11:10:18
+//	Class Object Metods and Tables for 'csv'
+//	Generated 09/30/2015 15:54:30
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -32,51 +32,24 @@
 
 
 #include        "obj.h"
-#include        "dbCsv_internal.h"
-
-
-
-//-----------------------------------------------------------
-//                  Class Object Definition
-//-----------------------------------------------------------
-
-struct dbCsv_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
-    OBJ_DATA        super;
-    
-    // Common Data
-    //uint32_t        misc;
-};
-typedef struct dbCsv_class_data_s DBCSV_CLASS_DATA;
+#include        "csv_internal.h"
 
 
 
 
-//-----------------------------------------------------------
-//                  Class Methods
-//-----------------------------------------------------------
 
-
-
-static
-const
-OBJ_INFO        dbCsv_Info;            // Forward Reference
-
-
-
-OBJ_ID          dbCsv_Class(
+OBJ_ID          csv_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            dbCsv_ClassIsKindOf(
+bool            csv_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_DBCSV_CLASS == classID) {
+    if (OBJ_IDENT_CSV_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -91,15 +64,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_DBCSV_CLASS;
+    return OBJ_IDENT_CSV_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&dbCsv_Info,
-    dbCsv_ClassIsKindOf,
+    NULL,
+    csv_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -110,24 +83,27 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						Class Object
+//						csv Class Object
 //-----------------------------------------------------------
 
 static
 const
-DBCSV_CLASS_DATA  dbCsv_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DBCSV_CLASS, 0, 1},
-	//0
+OBJ_DATA        csv_ClassObj = {
+    &obj_Vtbl,
+    sizeof(OBJ_DATA),
+    OBJ_IDENT_CSV_CLASS,
+    0,
+    1
 };
 
 
 
 static
-bool            dbCsv_IsKindOf(
+bool            csv_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_DBCSV == classID) {
+    if (OBJ_IDENT_CSV == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,57 +115,46 @@ bool            dbCsv_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            dbCsv_Dealloc(
+void            csv_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          dbCsv_Class(
+OBJ_ID          csv_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&dbCsv_ClassObj;
+    return (OBJ_ID)&csv_ClassObj;
 }
 
 
 static
-uint16_t		dbCsv_WhoAmI(
+uint16_t		csv_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_DBCSV;
+    return OBJ_IDENT_CSV;
 }
 
 
 const
-OBJ_IUNKNOWN    dbCsv_Vtbl = {
-	&dbCsv_Info,
-    dbCsv_IsKindOf,
+OBJ_IUNKNOWN    csv_Vtbl = {
+    NULL,
+    csv_IsKindOf,
     obj_RetainStandard,
     obj_ReleaseStandard,
-    dbCsv_Dealloc,
-    dbCsv_Class,
-    dbCsv_WhoAmI,
+    csv_Dealloc,
+    csv_Class,
+    csv_WhoAmI,
     NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)dbCsv_ToDebugString,
-    NULL,			// dbCsv_Enable,
-    NULL,			// dbCsv_Disable,
-    NULL,			// (P_OBJ_ASSIGN)dbCsv_Assign,
-    NULL,			// (P_OBJ_COMPARE)dbCsv_Compare,
-    NULL, 			// (P_OBJ_PTR)dbCsv_Copy,
-    NULL 			// (P_OBJ_HASH)dbCsv_Hash
+    NULL,           // (OBJ_ID (*)(OBJ_ID,int))csv_ToDebugString,
+    NULL,			// csv_Enable()
+    NULL,			// csv_Disable(
+    NULL,			// csv_Assign()
+    NULL,			// csv_Compare()
+    NULL 			// csv_Copy()
 };
 
-
-
-static
-const
-OBJ_INFO        dbCsv_Info = {
-    "dbCsv",
-    "Read CSV Files",
-    (OBJ_DATA *)&dbCsv_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
-};
 
 
 

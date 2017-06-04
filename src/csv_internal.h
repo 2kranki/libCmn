@@ -87,7 +87,7 @@ struct csv_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    csv_Vtbl;
+    CSV_VTBL        csv_Vtbl;
 
 
 

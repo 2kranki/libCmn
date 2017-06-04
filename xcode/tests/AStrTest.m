@@ -477,8 +477,8 @@ char        whiteSpaceA[22] = {
     XCTAssertTrue( (16 == AStr_getLength(pObj)) );
     if (pObj) {
         
-        eRc = AStr_CompareRightA(pObj, NULL);
-        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        //eRc = AStr_CompareRightA(pObj, NULL);
+        //XCTAssertTrue( (ERESULT_FAILED(eRc)) );
         eRc = AStr_CompareRightA(pObj, "abc");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_GREATER_THAN) );
         eRc = AStr_CompareRightA(pObj, "nop");

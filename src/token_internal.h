@@ -77,6 +77,8 @@ struct token_data_s	{
         OBJ_ID			pObj;               /* an object */
         uint32_t        strToken;
     };
+    const
+    int32_t         zero;				/* Used to return a zero length string */
 
 };
 #pragma pack(pop)

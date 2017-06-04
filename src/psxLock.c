@@ -457,9 +457,6 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        DWORD			dwRc;
-#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif

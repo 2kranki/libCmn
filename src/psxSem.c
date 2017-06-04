@@ -698,7 +698,7 @@ extern "C" {
         PSXSEM_DATA		*this
     )
     {
-        bool            fRc;
+        bool            fRc = false;
 #if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif

@@ -179,7 +179,7 @@ extern	"C" {
         // ------- Beginning of Methods likely to be in all objects -------
         // Query an object for specific data including object size,
         // method name(s) in character format, etc.
-        void *      (*pQueryInfo)(OBJ_ID, uint32_t, const uint8_t *);
+        void *      (*pQueryInfo)(OBJ_ID, uint32_t, const char *);
         OBJ_ID      (*pToDebugString)(OBJ_ID, int);
         // ------- End of Methods likely to be in all objects -------
         bool        (*pEnable)(OBJ_ID);
@@ -204,7 +204,8 @@ extern	"C" {
     
     typedef enum obj_QueryInfoType_e {
         OBJ_QUERYINFO_TYPE_UNKNOWN=0,
-        OBJ_QUERYINFO_TYPE_METHOD      // String is method name without object prefix
+        OBJ_QUERYINFO_TYPE_INFO,       // String is not used
+        OBJ_QUERYINFO_TYPE_METHOD,     // String is method name without object prefix
     } OBJ_QUERYINFO_TYPE;
 
 
@@ -503,7 +504,7 @@ extern	"C" {
         OBJ_ID          objId,
         uint32_t        type,
         const
-        uint8_t         *pStr
+        char            *pStr
     );
     
     

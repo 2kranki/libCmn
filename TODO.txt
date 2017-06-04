@@ -3,7 +3,10 @@
 The following are things that are being throught about. Whether they get done or not
 will depend upon time and resources.
 
-
+--  WIN32/WIN64
+    -- (IMPORTANT) we must remove ALL L'' and L"" constants from all objects since
+        we are assuming them to use int32_t, but Windows uses int16_t for those
+        constants. Windows is based on UTF-16.
 --  cb
     -- Look into interrupt iGet/iPut which is run in the kernel with no interrupts.
 

@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 2/2017  3:30:11.000)
+# ( 6/ 3/2017  4:31:58.000)
 
 
 LIBNAM=libCmn
@@ -1369,6 +1369,13 @@ TESTS += test_psxThread
 
 test_psxThread:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_trace
+
+test_trace:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_trace.c 
 	$(OBJDIR)/$(@F)
 
 

@@ -114,14 +114,29 @@ extern "C" {
     ERESULT_DATA *	eResult_Shared(
     )
     {
-        ERESULT_DATA    *cbp = &singleton;
+        ERESULT_DATA    *this = &singleton;
         uint32_t        cbSize = sizeof(ERESULT_DATA);
         
-        if (obj_getSize(cbp) == 0) {
-            obj_setSize(cbp, cbSize);
-            cbp = eResult_Init( cbp );
+        if (obj_getRetainCount(this) == 0) {
+            obj_setSize(this, cbSize);
+            this = eResult_Init( this );
         }
-        return cbp;
+        return this;
+    }
+    
+    
+    
+    bool            eResult_SharedReset(
+    )
+    {
+        ERESULT_DATA    *this = &singleton;
+        
+        while (obj_getRetainCount(this)) {
+            obj_Release(this);
+        }
+        memset(&singleton, 0, sizeof(ERESULT_DATA));
+        
+        return true;
     }
     
     

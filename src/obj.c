@@ -968,7 +968,7 @@ extern	"C" {
         OBJ_ID          objId,
         uint32_t        type,
         const
-        uint8_t         *pStr
+        char            *pStr
     )
     {
         OBJ_DATA        *this = objId;
@@ -987,6 +987,11 @@ extern	"C" {
 #endif
 
         switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                     case 'A':

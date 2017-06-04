@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'csv'
-//	Generated 09/30/2015 15:54:30
+//	Generated 06/02/2017 16:51:04
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "csv_internal.h"
+
+#define			CSV_OBJECT_C	    1
+#include        <csv_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct csv_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct csv_class_data_s CSV_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        csv_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&csv_Info,
     csv_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						csv Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        csv_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_CSV_CLASS,
-    0,
-    1
+CSV_CLASS_DATA  csv_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_CSV_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		csv_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    csv_Vtbl = {
-    NULL,
-    csv_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    csv_Dealloc,
-    csv_Class,
-    csv_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))csv_ToDebugString,
-    NULL,			// csv_Enable()
-    NULL,			// csv_Disable(
-    NULL,			// csv_Assign()
-    NULL,			// csv_Compare()
-    NULL 			// csv_Copy()
+CSV_VTBL     csv_Vtbl = {
+    {
+        &csv_Info,
+        csv_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        csv_Dealloc,
+        csv_Class,
+        csv_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)csv_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)csv_ToDebugString,
+        NULL,			// csv_Enable,
+        NULL,			// csv_Disable,
+        NULL,			// (P_OBJ_ASSIGN)csv_Assign,
+        NULL,			// (P_OBJ_COMPARE)csv_Compare,
+        NULL, 			// (P_OBJ_PTR)csv_Copy,
+        NULL 			// (P_OBJ_HASH)csv_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //csv_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        csv_Info = {
+    "csv",
+    "CSV File I/O",
+    (OBJ_DATA *)&csv_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&csv_Vtbl
+};
 
 
 

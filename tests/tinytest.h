@@ -210,7 +210,13 @@ void Suite##suiteName(TinyTestRegistry* registry)                       \
     printf("\nOK: %d", okTests);                                        \
     if ( failedTests )                                                  \
     {                                                                   \
-      printf(" FAILED: %d", failedTests);                               \
+      printf(                                                           \
+              "\x1b[1m"                                                 \
+              "\x1b[31m"                                                \
+              " FAILED: %d"                                             \
+              "\x1b[0m",                                                \
+              failedTests                                               \
+      );                                                                \
     }                                                                   \
     printf("\n");                                                       \
   }

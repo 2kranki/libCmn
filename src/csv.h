@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          CSV Console Transmit Task (csv) Header
+//          Comma Separated Variable File (csv) Header
 //****************************************************************
 /*
  * Program
- *				Separate csv (csv)
+ *				Comma Separated Variable File (csv)
  * Purpose
  *				This object provides a standardized way of handling
  *              a separate csv to run things without complications
@@ -13,10 +13,7 @@
  *              called a csv on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal csv. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	06/03/2015 Generated
@@ -73,6 +70,16 @@ extern "C" {
 
     typedef struct csv_data_s	CSV_DATA;
 
+    typedef struct csv_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in DateTime_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(DATETIME_DATA *);
+    } CSV_VTBL;
+    
+    
 
     /*		* * *  Record Field Descriptor	* * *
      */

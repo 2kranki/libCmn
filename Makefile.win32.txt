@@ -1,20 +1,23 @@
 # Generated file do not edit!
-# ( 5/21/2017 17:01:48.000)
+# ( 6/ 3/2017  4:31:31.000)
 
 
 LIBNAM=libCmn
 SYS=win32
+INSTALL_BASE = $(HOMEDRIVE)$(HOMEPATH)\Support\lib\$(SYS)
 
+LIBS = 
 CFLAGS = $(CFLAGS) /Isrc /Isrc\$(SYS)
 CFLAGS = $(CFLAGS) /D__MSVC32__ /D__WIN32_ENV__
 
+INSTALLDIR = $(INSTALL_BASE)\$(LIBNAM)
 !IFDEF  NDEBUG
-CFLAGS = $(CFLAGS) /DNDEBUG  /c
+CFLAGS = $(CFLAGS) /DNDEBUG
 LIB_FILENAME=$(LIBNAM)R.lib
 OBJDIR = $(TEMP)\$(SYS)\Release
 LRFNAM = $(LIBNAM)_$(SYS)_r.lbc
 !ELSE   #DEBUG
-CFLAGS = $(CFLAGS) /D_DEBUG /c 
+CFLAGS = $(CFLAGS) /D_DEBUG
 LIB_FILENAME=$(LIBNAM)D.lib
 OBJDIR = $(TEMP)\$(SYS)\Debug
 LRFNAM = $(LIBNAM)_$(SYS)_d.lbc
@@ -23,7 +26,7 @@ LIBPATH = $(OBJDIR)\$(LIB_FILENAME)
 
 
 .SUFFIXES:
-.SUFFIXES: .asm .c .obj
+.SUFFIXES: .asm .c .cpp .obj
 
 
 
@@ -76,8 +79,10 @@ OBJS = $(OBJS) $(OBJDIR)\greg.obj $(OBJDIR)\greg_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hash32.obj $(OBJDIR)\hash32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hex.obj $(OBJDIR)\hex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\json.obj $(OBJDIR)\json_object.obj
+OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lru.obj $(OBJDIR)\lru_object.obj
 OBJS = $(OBJS) $(OBJDIR)\misc.obj $(OBJDIR)\misc_object.obj
+OBJS = $(OBJS) $(OBJDIR)\msgBus.obj $(OBJDIR)\msgBus_object.obj
 OBJS = $(OBJS) $(OBJDIR)\name.obj $(OBJDIR)\name_object.obj
 OBJS = $(OBJS) $(OBJDIR)\node.obj $(OBJDIR)\node_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeATree.obj $(OBJDIR)\nodeATree_object.obj
@@ -99,6 +104,7 @@ OBJS = $(OBJS) $(OBJDIR)\objList.obj $(OBJDIR)\objList_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objMatrix.obj $(OBJDIR)\objMatrix_object.obj
 OBJS = $(OBJS) $(OBJDIR)\path.obj $(OBJDIR)\path_object.obj
 OBJS = $(OBJS) $(OBJDIR)\plist.obj $(OBJDIR)\plist_object.obj
+OBJS = $(OBJS) $(OBJDIR)\prt.obj $(OBJDIR)\prt_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxCond.obj $(OBJDIR)\psxCond_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxLock.obj $(OBJDIR)\psxLock_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxMutex.obj $(OBJDIR)\psxMutex_object.obj
@@ -140,40 +146,40 @@ OBJS = $(OBJS) $(OBJDIR)\tokenFromJSON.obj
 
 
 {src}.asm{$(OBJDIR)}.obj:
-	$(AS) $(AFLAGS) /Fo$(OBJDIR)\$(@F) $<
+	$(AS) $(AFLAGS) /c /Fo$(OBJDIR)\$(@F) $<
 
 
 {src}.c{$(OBJDIR)}.obj:
-	$(CC) $(CFLAGS) /Fo$(OBJDIR)\$(@F) $<
+	$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\$(@F) $<
 
 
 
 
 {src\$(SYS)}.asm{$(OBJDIR)}.obj:
-	$(AS) $(AFLAGS) /Fo$(OBJDIR)\$(@F) $<
+	$(AS) $(AFLAGS) /c /Fo$(OBJDIR)\$(@F) $<
 
 
 {src\$(SYS)}.c{$(OBJDIR)}.obj:
-	$(CC) $(CFLAGS) /Fo$(OBJDIR)\$(@F) $<
+	$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\$(@F) $<
 
 
 
 OBJS = $(OBJS) $(OBJDIR)\cmn_win32.obj
 
 $(OBJDIR)\cmn_win32.obj:
-	$(CC) $(CFLAGS) /Fo$(OBJDIR)\$(@F) src\$(SYS)\cmn_win32.c
+	$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\$(@F) src\$(SYS)\cmn_win32.c
 
 
 OBJS = $(OBJS) $(OBJDIR)\memWin32.obj
 
 $(OBJDIR)\memWin32.obj:
-	$(CC) $(CFLAGS) /Fo$(OBJDIR)\$(@F) src\$(SYS)\memWin32.c
+	$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\$(@F) src\$(SYS)\memWin32.c
 
 
 OBJS = $(OBJS) $(OBJDIR)\memWin32_object.obj
 
 $(OBJDIR)\memWin32_object.obj:
-	$(CC) $(CFLAGS) /Fo$(OBJDIR)\$(@F) src\$(SYS)\memWin32_object.c
+	$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\$(@F) src\$(SYS)\memWin32_object.c
 
 
 
@@ -200,32 +206,40 @@ TESTS =
 TESTS = $(TESTS) test_psxLock
 
 test_psxLock:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxLock.c
-	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
+	$(CC) $(CFLAGS) /Itests tests\test_psxLock.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
 	$(OBJDIR)\$(@F).exe
 
 
 TESTS = $(TESTS) test_psxMutex
 
 test_psxMutex:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxMutex.c
-	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
+	$(CC) $(CFLAGS) /Itests tests\test_psxMutex.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
 	$(OBJDIR)\$(@F).exe
 
 
 TESTS = $(TESTS) test_psxSem
 
 test_psxSem:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxSem.c
-	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
+	$(CC) $(CFLAGS) /Itests tests\test_psxSem.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
 	$(OBJDIR)\$(@F).exe
 
 
 TESTS = $(TESTS) test_psxThread
 
 test_psxThread:
-	$(CC) $(CFLAGS) /Itests /Fo$(OBJDIR)\$(@F) tests\test_psxThread.c
-	LINK $(LDEBUG) /OUT:$(OBJDIR)\$(@F).exe $(OBJDIR)\$(@F).obj $(LIBPATH)
+	$(CC) $(CFLAGS) /Itests tests\test_psxThread.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_trace
+
+test_trace:
+	$(CC) $(CFLAGS) /Itests tests\test_trace.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
 	$(OBJDIR)\$(@F).exe
 
 
@@ -249,5 +263,13 @@ create_dirs:
 
 all:  clean create_dirs $(LIBPATH)
 
+
+
+install:
+	pushd $(INSTALL_BASE) & if exist $(LIBNAM) rmdir /S /Q $(LIBNAM) & popd
+	pushd $(INSTALL_BASE) & mkdir $(LIBNAM)\include & popd
+	copy $(LIBPATH) $(INSTALLDIR)\$(LIBNAM).lib
+	copy src\*.h $(INSTALLDIR)\include
+	if exist src\$(SYS) copy src\$(SYS)\*.h $(INSTALLDIR)\include
 
 
