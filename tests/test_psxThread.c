@@ -220,6 +220,7 @@ int         test_psxThread_Run01(
         fprintf(stderr, "Run01_EndCount = %d\n",count);
     }
     
+    return 1; 
 }
 
 

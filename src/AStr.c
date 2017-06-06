@@ -837,7 +837,7 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
         
-        len = hex_putU16(pHex, num, &chrsLen, &pChrs);
+        len = hex_putU16A(pHex, num, &chrsLen, &pChrs);
         if (len) {
             chrs[len] = '\0';
             eRc = AStr_AppendA(this, chrs);
@@ -870,7 +870,7 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
         
-        len = hex_putU32(pHex, num, &chrsLen, &pChrs);
+        len = hex_putU32A(pHex, num, &chrsLen, &pChrs);
         if (len) {
             chrs[len] = '\0';
             eRc = AStr_AppendA(this, chrs);

@@ -148,8 +148,8 @@ extern "C" {
      @param:    offset  number to be displayed as the address/offset
      @param:    input   number to be converted
      @return:   If successful, ppBuffer is advanced past the outputted chars and
-     *pLen is decremented. The value returned is the length of the
-     data put in the buffer.
+                *pLen is decremented. The value returned is the length of the
+                data put in the buffer.
      */
     uint32_t        hex_put16Bytes_32(
         HEX_DATA		*this,
@@ -200,7 +200,7 @@ extern "C" {
      Convert uint8_t to printable form.
      Example:
      @code:
-        uint32_t   strlen = hex_putU8(this, 4);
+        uint32_t   strlen = hex_putU8A(this, 4);
      @endcode:
      @param:    this    HEX object pointer
      @param:    input   number to be converted
@@ -208,7 +208,7 @@ extern "C" {
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
-    uint32_t        hex_putU8(
+    uint32_t        hex_putU8A(
         HEX_DATA		*this,
         uint8_t	        input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -229,7 +229,7 @@ extern "C" {
      Convert uint16_t to printable form.
      Example:
      @code:
-     uint32_t   strlen = hex_putU8(this, 4);
+     uint32_t   strlen = hex_putU16A(this, 4);
      @endcode:
      @param:    this    HEX object pointer
      @param:    input   number to be converted
@@ -237,7 +237,7 @@ extern "C" {
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
-    uint32_t        hex_putU16(
+    uint32_t        hex_putU16A(
         HEX_DATA		*this,
         uint16_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -258,7 +258,7 @@ extern "C" {
      Convert uint32_t (low 24-bits only) to printable form.
      Example:
      @code:
-     uint32_t   strlen = hex_putU24(this, 4);
+     uint32_t   strlen = hex_putU24A(this, 4);
      @endcode:
      @param:    this    HEX object pointer
      @param:    input   number to be converted
@@ -266,7 +266,7 @@ extern "C" {
      *pLen is decremented. The value returned is the length of the
      data put in the buffer.
      */
-    uint32_t        hex_putU24(
+    uint32_t        hex_putU24A(
         HEX_DATA		*this,
         uint32_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -287,15 +287,15 @@ extern "C" {
      Convert  to printable form.
      Example:
      @code:
-     uint32_t   strlen = hex_putU32(this, 4);
+     uint32_t   strlen = hex_putU32A(this, 4);
      @endcode:
      @param:    this    HEX object pointer
      @param:    input   number to be converted
      @return:   If successful, ppBuffer is advanced past the outputted chars and
-     *pLen is decremented. The value returned is the length of the
-     data put in the buffer.
+                *pLen is decremented. The value returned is the length of the
+                data put in the buffer.
      */
-    uint32_t        hex_putU32(
+    uint32_t        hex_putU32A(
         HEX_DATA		*this,
         uint32_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -316,15 +316,15 @@ extern "C" {
      Convert  to printable form.
      Example:
      @code:
-     uint32_t   strlen = hex_putU32(this, 4);
+     uint32_t   strlen = hex_putU64A(this, 4);
      @endcode:
      @param:    this    HEX object pointer
      @param:    input   number to be converted
      @return:   If successful, ppBuffer is advanced past the outputted chars and
-     *pLen is decremented. The value returned is the length of the
-     data put in the buffer.
+                *pLen is decremented. The value returned is the length of the
+                data put in the buffer.
      */
-    uint32_t        hex_putU64(
+    uint32_t        hex_putU64A(
         HEX_DATA		*this,
         uint64_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer

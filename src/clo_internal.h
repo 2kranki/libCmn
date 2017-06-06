@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   msgBus_internal.h
- *	Generated 05/31/2017 20:00:00
+ * File:   clo_internal.h
+ *	Generated 06/05/2017 21:57:10
  *
  * Notes:
  *  --	N/A
@@ -39,14 +39,13 @@
 
 
 
-#include    <msgBus.h>
-#include    <consumer_internal.h>
-#include    <node.h>
+#include    <clo.h>
+#include    <AStrArray.h>
+#include    <path.h>
 
 
-
-#ifndef MSGBUS_INTERNAL_H
-#define	MSGBUS_INTERNAL_H
+#ifndef CLO_INTERNAL_H
+#define	CLO_INTERNAL_H
 
 
 
@@ -56,44 +55,67 @@ extern "C" {
 
 
 
+    typedef enum clo_opt_type_e {
+        CLO_OPT_TYPE_UNKNOWN=0,
+        CLO_OPT_TYPE_CSV,
+        CLO_OPT_TYPE_NUMBER,
+        CLO_OPT_TYPE_PATH,
+        CLO_OPT_TYPE_SWITCH,
+    } CLO_OPT_TYPE;
+    
+    
+    typedef struct clo_opt_def_s {
+        char            argChr;
+        const
+        char            *pArgStr;
+        uint8_t         type;
+        const
+        char            *pName;         // Node Name
+    } CLO_OPT_DEF;
+    
+    
+    
+
 
 #pragma pack(push, 1)
-struct msgBus_data_s	{
+struct clo_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;           // Message Size
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    PATH_DATA       *pProgramPath;
+    ASTRARRAY_DATA  *pArgs;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct msgBus_class_data_s  msgBus_ClassObj;
+    struct clo_class_data_s  clo_ClassObj;
 
     extern
     const
-    MSGBUS_VTBL         msgBus_Vtbl;
+    CLO_VTBL         clo_Vtbl;
 
 
     // Internal Functions
-    void            msgBus_Dealloc(
+    void            clo_Dealloc(
         OBJ_ID          objId
     );
 
-    bool            msgBus_setLastError(
-        MSGBUS_DATA     *this,
+    void *          clo_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+
+
+    bool            clo_setLastError(
+        CLO_DATA     *this,
         ERESULT         value
     );
 
@@ -102,8 +124,8 @@ struct msgBus_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			msgBus_Validate(
-        MSGBUS_DATA       *this
+    bool			clo_Validate(
+        CLO_DATA       *this
     );
 #endif
 
@@ -113,5 +135,5 @@ struct msgBus_data_s	{
 }
 #endif
 
-#endif	/* MSGBUS_INTERNAL_H */
+#endif	/* CLO_INTERNAL_H */
 

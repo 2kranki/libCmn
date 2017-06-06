@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 3/2017  4:31:31.000)
+# ( 6/ 6/2017 17:52:47.000)
 
 
 LIBNAM=libCmn
@@ -39,6 +39,7 @@ OBJS = $(OBJS) $(OBJDIR)\AStrC.obj $(OBJDIR)\AStrC_object.obj
 OBJS = $(OBJS) $(OBJDIR)\WStr.obj $(OBJDIR)\WStr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\WStrArray.obj $(OBJDIR)\WStrArray_object.obj
 OBJS = $(OBJS) $(OBJDIR)\WStrC.obj $(OBJDIR)\WStrC_object.obj
+OBJS = $(OBJS) $(OBJDIR)\appl.obj $(OBJDIR)\appl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\arrayExpand.obj $(OBJDIR)\arrayExpand_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ascii.obj $(OBJDIR)\ascii_object.obj
 OBJS = $(OBJS) $(OBJDIR)\audioCW.obj $(OBJDIR)\audioCW_object.obj
@@ -56,6 +57,8 @@ OBJS = $(OBJS) $(OBJDIR)\cb.obj $(OBJDIR)\cb_object.obj
 OBJS = $(OBJS) $(OBJDIR)\cb16.obj $(OBJDIR)\cb16_object.obj
 OBJS = $(OBJS) $(OBJDIR)\cb32.obj $(OBJDIR)\cb32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\cfa.obj $(OBJDIR)\cfa_object.obj
+OBJS = $(OBJS) $(OBJDIR)\clo.obj $(OBJDIR)\clo_object.obj
+OBJS = $(OBJS) $(OBJDIR)\cloOpt.obj $(OBJDIR)\cloOpt_object.obj
 OBJS = $(OBJS) $(OBJDIR)\cmdutl.obj $(OBJDIR)\cmdutl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\consumer.obj $(OBJDIR)\consumer_object.obj
 OBJS = $(OBJS) $(OBJDIR)\csv.obj $(OBJDIR)\csv_object.obj
@@ -201,6 +204,46 @@ $(OBJS: =  )
 
 TESTS =
 
+
+
+TESTS = $(TESTS) test_appl
+
+test_appl:
+	$(CC) $(CFLAGS) /Itests tests\test_appl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_clo
+
+test_clo:
+	$(CC) $(CFLAGS) /Itests tests\test_clo.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_cloOpt
+
+test_cloOpt:
+	$(CC) $(CFLAGS) /Itests tests\test_cloOpt.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_name
+
+test_name:
+	$(CC) $(CFLAGS) /Itests tests\test_name.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_node
+
+test_node:
+	$(CC) $(CFLAGS) /Itests tests\test_node.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
 
 
 TESTS = $(TESTS) test_psxLock

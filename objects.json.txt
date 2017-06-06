@@ -16,6 +16,7 @@
     ],
     "objects":
     {
+        "appl":null,
         "arrayExpand":["cmn","AStr"],
         "ascii":["cmn","AStr"],
         "AStr":["cmn"],
@@ -36,6 +37,8 @@
         "cb16":["cmn"],
         "cb32":["cmn","psxMutex","psxSem"],
         "cfa":["cmn"],
+        "clo":null,
+        "cloOpt":null,
         "cmdutl":["cmn","AStr","false","node","nodeArray","nodeHash",
                     "nodeTree","null","path","srcFile","true"],
         "consumer":["cmn","AStr","psxMutex","psxSem","psxThread"],
@@ -145,6 +148,11 @@
     },
     "tests":
     {
+        "test_appl.c":null,
+        "test_clo.c":null,
+        "test_cloOpt.c":null,
+        "test_name.c":null,
+        "test_node.c":null,
         "test_psxLock.c":null,
         "test_psxMutex.c":null,
         "test_psxSem.c":null,

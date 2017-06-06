@@ -556,11 +556,20 @@ extern "C" {
             chr1 = AStr_CharGetW((ASTR_DATA *)this, 1);
             if( chr1 == '~' ) {
                 pszHome = getenv("HOME");
-                if (str_LengthA(pszHome) > 1) {
+                if (pszHome && (str_LengthA(pszHome) > 1)) {
                     eRc = AStr_Remove((ASTR_DATA *)this, 1, 1);
                     if (ERESULT_IS_SUCCESSFUL(eRc)) {
                         AStr_InsertA((ASTR_DATA *)this, 1, pszHome);
                     }
+                }
+                else {
+                    pszHome = getenv("HOMEDRIVE");
+                    if (pszHome && (str_LengthA(pszHome) > 1)) {
+                        const
+                        char            *pszPath;
+                        pszPath = getenv("HOMEDRIVE");
+                    }
+                    
                 }
             }
         }
@@ -1167,7 +1176,7 @@ extern "C" {
     
     ERESULT         path_MakePath(
         PATH_DATA		*cbp,
-        ASTR_DATA      *pDrive,
+        ASTR_DATA       *pDrive,
         PATH_DATA       *pDir,
         PATH_DATA       *pFileName
         )

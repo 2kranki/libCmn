@@ -1,21 +1,25 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//       Consumer Input Message Queue Task (consumer) Header
+//          CLOOPT Console Transmit Task (cloOpt) Header
 //****************************************************************
 /*
  * Program
- *			Consumer Input Message Queue Task (consumer)
+ *			Separate cloOpt (cloOpt)
  * Purpose
  *			This object provides a standardized way of handling
- *          messages in a separate task where the messages are
- *          queued from other tasks or interrupts.
+ *          a separate cloOpt to run things without complications
+ *          of interfering with the main cloOpt. A cloOpt may be 
+ *          called a cloOpt on other O/S's.
  *
  * Remarks
- *	1.      None
+ *	1.      Using this object allows for testable code, because a
+ *          function, TaskBody() must be supplied which is repeatedly
+ *          called on the internal cloOpt. A testing unit simply calls
+ *          the TaskBody() function as many times as needed to test.
  *
  * History
- *	06/29/2016 Generated
+ *	06/05/2017 Generated
  */
 
 
@@ -54,8 +58,8 @@
 #include        <AStr.h>
 
 
-#ifndef         CONSUMER_H
-#define         CONSUMER_H
+#ifndef         CLOOPT_H
+#define         CLOOPT_H
 
 
 
@@ -69,15 +73,25 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct consumer_data_s	CONSUMER_DATA;    // Inherits from OBJ.
+    typedef enum cloOpt_type_e {
+        CLOOPT_TYPE_UNKNOWN=0,
+        CLOOPT_TYPE_CSV,
+        CLOOPT_TYPE_NUMBER,
+        CLOOPT_TYPE_PATH,
+        CLOOPT_TYPE_SWITCH,
+    } CLOOPT_TYPE;
+    
 
-    typedef struct consumer_vtbl_s	{
+    typedef struct cloOpt_data_s	CLOOPT_DATA;    // Inherits from OBJ.
+
+    typedef struct cloOpt_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in consumer_object.c.
+        // method names to the vtbl definition in cloOpt_object.c.
         // Properties:
         // Methods:
-    } CONSUMER_VTBL;
+        //bool        (*pIsEnabled)(CLOOPT_DATA *);
+    } CLOOPT_VTBL;
 
 
 
@@ -90,13 +104,19 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    CONSUMER_DATA *     consumer_Alloc(
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return:   pointer to cloOpt object if successful, otherwise OBJ_NIL.
+     */
+    CLOOPT_DATA *     cloOpt_Alloc(
+        uint16_t    stackSize           // Stack Size in Words
     );
     
     
-    CONSUMER_DATA *     consumer_New(
-        uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+    CLOOPT_DATA *     cloOpt_New(
+        uint16_t    stackSize           // Stack Size in Words
     );
     
     
@@ -105,31 +125,34 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT     cloOpt_getLastError(
+        CLOOPT_DATA		*this
+    );
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool        consumer_Disable(
-        CONSUMER_DATA	*this
+    ERESULT     cloOpt_Disable(
+        CLOOPT_DATA		*this
     );
 
 
-    bool        consumer_Enable(
-        CONSUMER_DATA	*this
+    ERESULT     cloOpt_Enable(
+        CLOOPT_DATA		*this
     );
 
    
-    CONSUMER_DATA * consumer_Init(
-        CONSUMER_DATA   *this,
-        uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+    CLOOPT_DATA *   cloOpt_Init(
+        CLOOPT_DATA     *this
     );
 
 
-    bool        consumer_IsEnabled(
-        CONSUMER_DATA	*this
+    ERESULT     cloOpt_IsEnabled(
+        CLOOPT_DATA		*this
     );
     
  
@@ -137,16 +160,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = consumer_ToDebugString(pObj,4);
+        ASTR_DATA      *pDesc = cloOpt_ToDebugString(this,4);
      @endcode:
-     @param:    this    consumer object pointer
+     @param:    this    CLOOPT object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *    consumer_ToDebugString(
-        CONSUMER_DATA   *this,
+    ASTR_DATA *    cloOpt_ToDebugString(
+        CLOOPT_DATA     *this,
         int             indent
     );
     
@@ -157,5 +180,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* CONSUMER_H */
+#endif	/* CLOOPT_H */
 

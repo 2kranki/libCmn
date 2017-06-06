@@ -96,9 +96,9 @@
     NODE_DATA	*pObj = OBJ_NIL;
    
     pObj = node_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = node_InitWithUTF8( pObj, "abc", OBJ_NIL );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -114,9 +114,9 @@
     NODE_DATA	*pObj = OBJ_NIL;
     
     pObj = node_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = node_InitWithUTF8Con( pObj, "abc", OBJ_NIL );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         obj_Release(pObj);

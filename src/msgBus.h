@@ -10,7 +10,9 @@
  *			This object simulates a message bus. Other objects
  *          register with it and then send broadcast messages
  *          which are rebroadcast to all the other objects that
- *          have previously register with this object.
+ *          have previously register with this object. The object
+ *          id of the registered objects is used as an indentifier
+ *          within the system.
  *
  * Remarks
  *	1.      None
@@ -134,8 +136,20 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Broadcast a message to all objects registered on the message bus
+     except the originator if the originator is identified.
+     @param:    this    MSGBUS object pointer
+     @param:    pObj    OBJ_ID of the message originator otherwise OBJ_NIL.
+                        If an object id is supplied, that object will
+                        not receive the message otherwise all registered
+                        objects will receive the message.
+     @param:    pRcv    method within pObj that receives the messages
+     @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
+     */
     ERESULT     msgBus_Broadcast(
         MSGBUS_DATA		*this,
+        OBJ_ID          pObj,
         uint8_t         *pMsg
     );
     
@@ -160,6 +174,13 @@ extern "C" {
     );
     
  
+    /*!
+     Add an object to the message bus giving its method for message reception.
+     @param:    this    MSGBUS object pointer
+     @param:    pObj    OBJ_ID of object to receive messages
+     @param:    pRcv    method within pObj that receives the messages
+     @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
+     */
     ERESULT     msgBus_RegisterObject(
         MSGBUS_DATA		*this,
         OBJ_ID          pObj,
@@ -182,6 +203,18 @@ extern "C" {
     ASTR_DATA *    msgBus_ToDebugString(
         MSGBUS_DATA     *this,
         int             indent
+    );
+    
+    
+    /*!
+     Remove an object from the message bus.
+     @param:    this    MSGBUS object pointer
+     @param:    pObj    OBJ_ID of object to receive messages
+     @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
+     */
+    ERESULT     msgBus_UnregisterObject(
+        MSGBUS_DATA		*this,
+        OBJ_ID          pObj
     );
     
     

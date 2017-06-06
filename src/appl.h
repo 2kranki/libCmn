@@ -1,21 +1,25 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//       Consumer Input Message Queue Task (consumer) Header
+//          APPL Console Transmit Task (appl) Header
 //****************************************************************
 /*
  * Program
- *			Consumer Input Message Queue Task (consumer)
+ *			Separate appl (appl)
  * Purpose
  *			This object provides a standardized way of handling
- *          messages in a separate task where the messages are
- *          queued from other tasks or interrupts.
+ *          a separate appl to run things without complications
+ *          of interfering with the main appl. A appl may be 
+ *          called a appl on other O/S's.
  *
  * Remarks
- *	1.      None
+ *	1.      Using this object allows for testable code, because a
+ *          function, TaskBody() must be supplied which is repeatedly
+ *          called on the internal appl. A testing unit simply calls
+ *          the TaskBody() function as many times as needed to test.
  *
  * History
- *	06/29/2016 Generated
+ *	06/05/2017 Generated
  */
 
 
@@ -52,10 +56,11 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <node.h>
 
 
-#ifndef         CONSUMER_H
-#define         CONSUMER_H
+#ifndef         APPL_H
+#define         APPL_H
 
 
 
@@ -69,15 +74,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct consumer_data_s	CONSUMER_DATA;    // Inherits from OBJ.
+    typedef struct appl_data_s	APPL_DATA;    // Inherits from OBJ.
 
-    typedef struct consumer_vtbl_s	{
+    typedef struct appl_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in consumer_object.c.
+        // method names to the vtbl definition in appl_object.c.
         // Properties:
         // Methods:
-    } CONSUMER_VTBL;
+        //bool        (*pIsEnabled)(APPL_DATA *);
+    } APPL_VTBL;
 
 
 
@@ -90,13 +96,20 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    CONSUMER_DATA *     consumer_Alloc(
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return:   pointer to appl object if successful, otherwise OBJ_NIL.
+     */
+    APPL_DATA *     appl_Alloc(
     );
     
     
-    CONSUMER_DATA *     consumer_New(
-        uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+    APPL_DATA *     appl_New(
+        uint16_t    cArgs,
+        const
+        char        *pArgs[]
     );
     
     
@@ -105,48 +118,72 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         appl_getLastError(
+        APPL_DATA		*this
+    );
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool        consumer_Disable(
-        CONSUMER_DATA	*this
+    ERESULT         appl_AddProperty(
+        APPL_DATA       *this,
+        NODE_DATA       *pData
+    );
+    
+    
+    ERESULT         appl_Disable(
+        APPL_DATA		*this
     );
 
 
-    bool        consumer_Enable(
-        CONSUMER_DATA	*this
+    ERESULT         appl_Enable(
+        APPL_DATA		*this
     );
 
    
-    CONSUMER_DATA * consumer_Init(
-        CONSUMER_DATA   *this,
-        uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+    APPL_DATA *     appl_Init(
+        APPL_DATA       *this,
+        uint16_t        cArgs,
+        const
+        char            **pArgs
     );
 
 
-    bool        consumer_IsEnabled(
-        CONSUMER_DATA	*this
+    ERESULT         appl_IsEnabled(
+        APPL_DATA		*this
     );
     
  
+    uint16_t        appl_NumberOfProperties(
+        APPL_DATA       *this
+    );
+    
+    
+    NODE_DATA *     appl_Property(
+        APPL_DATA       *this,
+        const
+        char            *pName
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = consumer_ToDebugString(pObj,4);
+        ASTR_DATA      *pDesc = appl_ToDebugString(this,4);
      @endcode:
-     @param:    this    consumer object pointer
+     @param:    this    APPL object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *    consumer_ToDebugString(
-        CONSUMER_DATA   *this,
+    ASTR_DATA *     appl_ToDebugString(
+        APPL_DATA       *this,
         int             indent
     );
     
@@ -157,5 +194,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* CONSUMER_H */
+#endif	/* APPL_H */
 

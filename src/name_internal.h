@@ -69,6 +69,8 @@ struct name_data_s	{
         const
         char            *pChrs;             // UTF-8 Character String
         OBJ_ID			pObj;               // any object
+        const
+        void            *pPtr;              // any address
     };
     uint32_t            hash;
 

@@ -71,6 +71,7 @@ extern "C" {
     typedef enum name_type_e {
         NAME_TYPE_UNKNOWN=0,
         NAME_TYPE_INTEGER,          // int64_t
+        NAME_TYPE_PTR,              // void *
         NAME_TYPE_STR,              // WStr Object
         NAME_TYPE_UTF8,             // UTF-8 NUL-terminated String
         NAME_TYPE_UTF8_CON          // UTF-8 NUL-terminated String Constant
@@ -111,6 +112,11 @@ extern "C" {
     
     NAME_DATA *     name_NewInt(
         int64_t         value
+    );
+    
+    NAME_DATA *     name_NewPtr(
+        const
+        void            *pValue
     );
     
     NAME_DATA *     name_NewStrA(
@@ -224,6 +230,13 @@ extern "C" {
     );
 
 
+    NAME_DATA *   name_InitPtr(
+        NAME_DATA       *this,
+        const
+        void            *pValue
+    );
+    
+    
     NAME_DATA *   name_InitStrA(
         NAME_DATA       *this,
         ASTR_DATA       *pValue
@@ -276,6 +289,16 @@ extern "C" {
      otherwise OBJ_NIL.
      */
     ASTR_DATA *     name_ToString(
+        NAME_DATA       *this
+    );
+    
+    
+    /*!
+     Get the name value as a UTF-8 string.
+     @return:   If successful, a UTF-8 string which must be freed
+                using mem_Free(), otherwise NULL.
+     */
+    char *          name_ToUTF8(
         NAME_DATA       *this
     );
     

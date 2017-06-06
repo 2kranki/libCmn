@@ -296,6 +296,14 @@ extern "C" {
     );
     
     
+    NODE_DATA *     node_InitWithPtr(
+        NODE_DATA       *this,
+        const
+        void            *pValue,
+        OBJ_ID          pData
+    );
+    
+    
     NODE_DATA *     node_InitWithUTF8(
         NODE_DATA       *this,
         const

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   msgBus_internal.h
- *	Generated 05/31/2017 20:00:00
+ * File:   cloOpt_internal.h
+ *	Generated 06/05/2017 23:06:44
  *
  * Notes:
  *  --	N/A
@@ -39,14 +39,11 @@
 
 
 
-#include    <msgBus.h>
-#include    <consumer_internal.h>
-#include    <node.h>
+#include    <cloOpt.h>
 
 
-
-#ifndef MSGBUS_INTERNAL_H
-#define	MSGBUS_INTERNAL_H
+#ifndef CLOOPT_INTERNAL_H
+#define	CLOOPT_INTERNAL_H
 
 
 
@@ -58,42 +55,46 @@ extern "C" {
 
 
 #pragma pack(push, 1)
-struct msgBus_data_s	{
+struct cloOpt_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;           // Message Size
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    uint16_t        type;
+    union {
+        ASTR_DATA       *pStr;
+    };
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct msgBus_class_data_s  msgBus_ClassObj;
+    struct cloOpt_class_data_s  cloOpt_ClassObj;
 
     extern
     const
-    MSGBUS_VTBL         msgBus_Vtbl;
+    CLOOPT_VTBL         cloOpt_Vtbl;
 
 
     // Internal Functions
-    void            msgBus_Dealloc(
+    void            cloOpt_Dealloc(
         OBJ_ID          objId
     );
 
-    bool            msgBus_setLastError(
-        MSGBUS_DATA     *this,
+    void *          cloOpt_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+
+
+    bool            cloOpt_setLastError(
+        CLOOPT_DATA     *this,
         ERESULT         value
     );
 
@@ -102,8 +103,8 @@ struct msgBus_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			msgBus_Validate(
-        MSGBUS_DATA       *this
+    bool			cloOpt_Validate(
+        CLOOPT_DATA       *this
     );
 #endif
 
@@ -113,5 +114,5 @@ struct msgBus_data_s	{
 }
 #endif
 
-#endif	/* MSGBUS_INTERNAL_H */
+#endif	/* CLOOPT_INTERNAL_H */
 

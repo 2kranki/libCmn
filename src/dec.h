@@ -194,8 +194,8 @@ extern "C" {
      @param:    pLen    buffer len ptr (len must be greater than 0)
      @param:    ppBuffer buffer ptr (21 bytes required minimum)
      @return:
-     if successful, buffer will contain ascii representation of number
-     with leading zeros and trailing NUL char.
+                if successful, buffer will contain ascii representation of number
+                with leading zeros and trailing NUL char.
      */
     void            dec_putUint64A(
         uint64_t        input,

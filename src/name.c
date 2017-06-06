@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include "name_internal.h"
 #include "dec.h"
+#include "hex.h"
 #include "utf8.h"
 #include <stdio.h>
 
@@ -108,6 +109,21 @@ extern "C" {
         this = name_Alloc( );
         if (this) {
             this = name_InitInt( this, value );
+        }
+        return( this );
+    }
+    
+    
+    NAME_DATA *     name_NewPtr(
+        const
+        void            *pValue
+    )
+    {
+        NAME_DATA       *this;
+        
+        this = name_Alloc( );
+        if (this) {
+            this = name_InitPtr( this, pValue );
         }
         return( this );
     }
@@ -247,6 +263,7 @@ extern "C" {
         
         return pValue;
     }
+
     
     bool            name_setStrA(
         NAME_DATA       *this,
@@ -348,6 +365,7 @@ extern "C" {
         char            numValue[22];
         char            *pStr;
         uint32_t        len;
+        HEX_DATA        *pHex = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -369,6 +387,23 @@ extern "C" {
                 else {
                     pValue = str_DupA(numValue);
                 }
+                break;
+                
+            case NAME_TYPE_PTR:
+                pHex = hex_New();
+                len = 22;
+                pStr = numValue;
+                *pStr++ = '0'; --len;
+                *pStr++ = 'x'; --len;
+                if (sizeof(void *) == 4) {
+                    hex_putU32A(pHex, (uint64_t)this->pPtr, &len, &pStr);
+                }
+                else {
+                    hex_putU64A(pHex, (uint64_t)this->pPtr, &len, &pStr);
+                }
+                *pStr = '\0';
+                pValue = str_DupA(numValue);
+                obj_Release(pHex);
                 break;
                 
             case NAME_TYPE_STR:
@@ -835,6 +870,39 @@ extern "C" {
     }
     
     
+    NAME_DATA *   name_InitPtr(
+        NAME_DATA       *this,
+        const
+        void            *pValue
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+#ifdef NDEBUG
+#else
+        if( pValue == OBJ_NIL ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        this = name_Init( this );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        this->type = NAME_TYPE_PTR;
+        this->pPtr = pValue;
+        
+        return this;
+    }
+    
+    
     NAME_DATA *   name_InitStrA(
         NAME_DATA       *this,
         ASTR_DATA       *pValue
@@ -993,6 +1061,11 @@ extern "C" {
                     // nothing to release.
                     break;
                     
+                case NAME_TYPE_PTR:
+                    // This fits within this object. So,
+                    // nothing to release.
+                    break;
+                    
                 case NAME_TYPE_STR:
                     obj_Release(this->pObj);
                     this->pObj = OBJ_NIL;
@@ -1029,9 +1102,6 @@ extern "C" {
         char            str[256];
         int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
         const
         char            *pName;
         
@@ -1055,19 +1125,6 @@ extern "C" {
         mem_Free((void *)pName);
         AStr_AppendA(pStr, str);
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
-        
         j = snprintf( str, sizeof(str), " %p(name)}\n", this );
         AStr_AppendA(pStr, str);
         
@@ -1080,9 +1137,34 @@ extern "C" {
     )
     {
         ASTR_DATA       *pValue = OBJ_NIL;
+        const
+        char            *pStr;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !name_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        pStr = name_ToUTF8(this);
+        pValue = AStr_NewA(pStr);
+        mem_Free((void *)pStr);
+        pStr = NULL;
+        return pValue;
+    }
+    
+
+    char *          name_ToUTF8(
+        NAME_DATA       *this
+    )
+    {
+        char            *pValue = NULL;
         char            numValue[22];
         char            *pStr;
         uint32_t        len;
+        HEX_DATA        *pHex = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -1099,20 +1181,37 @@ extern "C" {
                 pStr = numValue;
                 dec_putInt64A(this->integer, &len, &pStr);
                 if (numValue[0] == ' ') {
-                    pValue = AStr_NewA(&numValue[1]);
+                    pValue = str_DupA(&numValue[1]);
                 }
                 else {
-                    pValue = AStr_NewA(numValue);
+                    pValue = str_DupA(numValue);
                 }
                 break;
                 
+            case NAME_TYPE_PTR:
+                pHex = hex_New();
+                len = 22;
+                pStr = numValue;
+                *pStr++ = '0'; --len;
+                *pStr++ = 'x'; --len;
+                if (sizeof(void *) == 4) {
+                    hex_putU32A(pHex, (uint64_t)this->pPtr, &len, &pStr);
+                }
+                else {
+                    hex_putU64A(pHex, (uint64_t)this->pPtr, &len, &pStr);
+                }
+                *pStr = '\0';
+                pValue = str_DupA(numValue);
+                obj_Release(pHex);
+                break;
+                
             case NAME_TYPE_STR:
-                pValue = AStr_NewW(WStr_getData(this->pObj));
+                pValue = WStr_CStringA(this->pObj, NULL);
                 break;
                 
             case NAME_TYPE_UTF8:
             case NAME_TYPE_UTF8_CON:
-                pValue = AStr_NewA(this->pChrs);
+                pValue = str_DupA(this->pChrs);
                 break;
                 
             default:
@@ -1123,7 +1222,8 @@ extern "C" {
         return pValue;
     }
     
-
+    
+    
     
     //---------------------------------------------------------------
     //                      V a l i d a t e

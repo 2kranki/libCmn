@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 3/2017  4:31:58.000)
+# ( 6/ 6/2017 17:52:48.000)
 
 
 LIBNAM=libCmn
@@ -104,6 +104,18 @@ $(OBJDIR)/WStrC.o: $(SRCDIR)/WStrC.c
 
 
 $(OBJDIR)/WStrC_object.o: $(SRCDIR)/WStrC_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/appl.o $(OBJDIR)/appl_object.o
+
+
+$(OBJDIR)/appl.o: $(SRCDIR)/appl.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -308,6 +320,30 @@ $(OBJDIR)/cfa.o: $(SRCDIR)/cfa.c
 
 
 $(OBJDIR)/cfa_object.o: $(SRCDIR)/cfa_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/clo.o $(OBJDIR)/clo_object.o
+
+
+$(OBJDIR)/clo.o: $(SRCDIR)/clo.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/clo_object.o: $(SRCDIR)/clo_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/cloOpt.o $(OBJDIR)/cloOpt_object.o
+
+
+$(OBJDIR)/cloOpt.o: $(SRCDIR)/cloOpt.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cloOpt_object.o: $(SRCDIR)/cloOpt_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1342,6 +1378,41 @@ $(LIBPATH):  $(OBJS)
 
 TESTS =
 
+
+
+TESTS += test_appl
+
+test_appl:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_appl.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_clo
+
+test_clo:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_clo.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_cloOpt
+
+test_cloOpt:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_name
+
+test_name:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_name.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_node
+
+test_node:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_node.c 
+	$(OBJDIR)/$(@F)
 
 
 TESTS += test_psxLock

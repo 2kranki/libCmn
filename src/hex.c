@@ -828,7 +828,7 @@ extern "C" {
     //                     P u t  U 8
     //---------------------------------------------------------------
     
-    uint32_t        hex_putU8(
+    uint32_t        hex_putU8A(
         HEX_DATA		*this,
         uint8_t	        input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -876,7 +876,7 @@ extern "C" {
     //                     P u t  U 1 6
     //---------------------------------------------------------------
     
-    uint32_t        hex_putU16(
+    uint32_t        hex_putU16A(
         HEX_DATA		*this,
         uint16_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -929,7 +929,7 @@ extern "C" {
     //                     P u t  U 2 4
     //---------------------------------------------------------------
     
-    uint32_t        hex_putU24(
+    uint32_t        hex_putU24A(
         HEX_DATA		*this,
         uint32_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -984,7 +984,7 @@ extern "C" {
     //                     P u t  U 3 2
     //---------------------------------------------------------------
     
-    uint32_t        hex_putU32(
+    uint32_t        hex_putU32A(
         HEX_DATA		*this,
         uint32_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
@@ -1038,10 +1038,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                     P u t  U 6 4
+    //                     P u t  U 6 4 A
     //---------------------------------------------------------------
     
-    uint32_t        hex_putU64(
+    uint32_t        hex_putU64A(
         HEX_DATA		*this,
         uint64_t	    input,
         uint32_t        *pLen,              // Remaining length of buffer
