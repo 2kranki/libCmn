@@ -65,6 +65,11 @@
 		C43F502D1EE65CD500A8AA0B /* clo.h in Headers */ = {isa = PBXBuildFile; fileRef = C43F501B1EE6439200A8AA0B /* clo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C43F502E1EE65CDE00A8AA0B /* cloOpt_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C43F50221EE6556200A8AA0B /* cloOpt_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C43F502F1EE65CE800A8AA0B /* cloOpt.h in Headers */ = {isa = PBXBuildFile; fileRef = C43F50251EE6556300A8AA0B /* cloOpt.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C43F50341EE7A8AD00A8AA0B /* timer_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C43F50301EE7A8AD00A8AA0B /* timer_internal.h */; };
+		C43F50351EE7A8AD00A8AA0B /* timer_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43F50311EE7A8AD00A8AA0B /* timer_object.c */; };
+		C43F50361EE7A8AD00A8AA0B /* timer.c in Sources */ = {isa = PBXBuildFile; fileRef = C43F50321EE7A8AD00A8AA0B /* timer.c */; };
+		C43F50371EE7A8AD00A8AA0B /* timer.h in Headers */ = {isa = PBXBuildFile; fileRef = C43F50331EE7A8AD00A8AA0B /* timer.h */; };
+		C43F50391EE8356D00A8AA0B /* timerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C43F50381EE8356D00A8AA0B /* timerTest.m */; };
 		C44213651D6F180C00974569 /* dateTime_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C44213611D6F180C00974569 /* dateTime_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C44213661D6F180C00974569 /* dateTime_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C44213621D6F180C00974569 /* dateTime_object.c */; };
 		C44213671D6F180C00974569 /* dateTime.c in Sources */ = {isa = PBXBuildFile; fileRef = C44213631D6F180C00974569 /* dateTime.c */; };
@@ -630,6 +635,11 @@
 		C43F50231EE6556200A8AA0B /* cloOpt_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cloOpt_object.c; sourceTree = "<group>"; };
 		C43F50241EE6556200A8AA0B /* cloOpt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cloOpt.c; sourceTree = "<group>"; };
 		C43F50251EE6556300A8AA0B /* cloOpt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cloOpt.h; sourceTree = "<group>"; };
+		C43F50301EE7A8AD00A8AA0B /* timer_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer_internal.h; sourceTree = "<group>"; };
+		C43F50311EE7A8AD00A8AA0B /* timer_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timer_object.c; sourceTree = "<group>"; };
+		C43F50321EE7A8AD00A8AA0B /* timer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timer.c; sourceTree = "<group>"; };
+		C43F50331EE7A8AD00A8AA0B /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		C43F50381EE8356D00A8AA0B /* timerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = timerTest.m; sourceTree = "<group>"; };
 		C44213611D6F180C00974569 /* dateTime_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dateTime_internal.h; sourceTree = "<group>"; };
 		C44213621D6F180C00974569 /* dateTime_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateTime_object.c; sourceTree = "<group>"; };
 		C44213631D6F180C00974569 /* dateTime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateTime.c; sourceTree = "<group>"; };
@@ -1560,6 +1570,10 @@
 				C46706461C6B9DD40091FC0E /* ternary_object.c */,
 				C46706471C6B9DD40091FC0E /* ternary.c */,
 				C46706481C6B9DD40091FC0E /* ternary.h */,
+				C43F50301EE7A8AD00A8AA0B /* timer_internal.h */,
+				C43F50311EE7A8AD00A8AA0B /* timer_object.c */,
+				C43F50321EE7A8AD00A8AA0B /* timer.c */,
+				C43F50331EE7A8AD00A8AA0B /* timer.h */,
 				C4AF8D531E5BDCD2003AE67C /* token_internal.h */,
 				C4AF8D541E5BDCD2003AE67C /* token_object.c */,
 				C4AF8D551E5BDCD2003AE67C /* token.c */,
@@ -1649,9 +1663,9 @@
 				C47E78E71D7C8E6200A76B8E /* blocksTest.m */,
 				C49E7C7E1E6C6941002A08A5 /* bptreeTest.m */,
 				C46707391C6BA6D90091FC0E /* btpTest.m */,
+				C467075F1C6BAE0D0091FC0E /* cbTest.m */,
 				C467075D1C6BAE0D0091FC0E /* cb16Test.m */,
 				C467075E1C6BAE0D0091FC0E /* cb32Test.m */,
-				C467075F1C6BAE0D0091FC0E /* cbTest.m */,
 				C46707611C6BAE0D0091FC0E /* cfaTest.m */,
 				C43F501E1EE643BF00A8AA0B /* cloTest.m */,
 				C43F50201EE6553200A8AA0B /* cloOptTest.m */,
@@ -1712,6 +1726,7 @@
 				C4AF15C21C6CE5F40098171F /* psxMutexTest.m */,
 				C4AF15C31C6CE5F40098171F /* psxSemTest.m */,
 				C4AF15C41C6CE5F40098171F /* psxThreadTest.m */,
+				C43F50381EE8356D00A8AA0B /* timerTest.m */,
 				C46707B11C6BAE0D0091FC0E /* ptrArrayTest.m */,
 				C46707B31C6BAE0D0091FC0E /* pwr2ArrayTest.m */,
 				C46707B41C6BAE0D0091FC0E /* rrds32Test.m */,
@@ -1901,6 +1916,7 @@
 				C4F51B6C1D386F9F001AFAD7 /* nodeGraph_internal.h in Headers */,
 				C43918C81D748C4B00083689 /* nodeEntry_internal.h in Headers */,
 				C46705041C6B9CFB0091FC0E /* cb32_internal.h in Headers */,
+				C43F50341EE7A8AD00A8AA0B /* timer_internal.h in Headers */,
 				C46705D31C6B9CFB0091FC0E /* objCb_internal.h in Headers */,
 				C46704E61C6B9CFB0091FC0E /* bitMatrix_internal.h in Headers */,
 				C46705451C6B9CFB0091FC0E /* dirEntry_internal.h in Headers */,
@@ -1927,6 +1943,7 @@
 				C467055F1C6B9CFB0091FC0E /* execArray_internal.h in Headers */,
 				C4FE0D441C77698400357347 /* WStrC_internal.h in Headers */,
 				C467057D1C6B9CFB0091FC0E /* hash32_internal.h in Headers */,
+				C43F50371EE7A8AD00A8AA0B /* timer.h in Headers */,
 				C46707141C6B9DD40091FC0E /* u32Array_internal.h in Headers */,
 				C4529AAA1ECFD0D500D898DE /* psxLock.h in Headers */,
 				C46705C11C6B9CFB0091FC0E /* nodeTree_internal.h in Headers */,
@@ -2100,6 +2117,7 @@
 				C43918E21D77BB3E00083689 /* nodeATree_object.c in Sources */,
 				C46705AF1C6B9CFB0091FC0E /* node.c in Sources */,
 				C467070E1C6B9DD40091FC0E /* u16Array.c in Sources */,
+				C43F50361EE7A8AD00A8AA0B /* timer.c in Sources */,
 				C467053B1C6B9CFB0091FC0E /* dec.c in Sources */,
 				C43918C91D748C4B00083689 /* nodeEntry_object.c in Sources */,
 				C46704E81C6B9CFB0091FC0E /* bitMatrix.c in Sources */,
@@ -2130,6 +2148,7 @@
 				C43918D11D7726F300083689 /* nodeMatrix_object.c in Sources */,
 				C46704EB1C6B9CFB0091FC0E /* bitSet_object.c in Sources */,
 				C46705A21C6B9CFB0091FC0E /* misc_object.c in Sources */,
+				C43F50351EE7A8AD00A8AA0B /* timer_object.c in Sources */,
 				C4EDA3E41DBFDC2A005FBE6E /* endian.c in Sources */,
 				C46706911C6B9DD40091FC0E /* plist.c in Sources */,
 				C46706901C6B9DD40091FC0E /* plist_object.c in Sources */,
@@ -2365,6 +2384,7 @@
 				C467073B1C6BA6D90091FC0E /* AStrCTest.m in Sources */,
 				C46708411C6BAE0D0091FC0E /* ternaryTest.m in Sources */,
 				C467073F1C6BA6D90091FC0E /* bitSetTest.m in Sources */,
+				C43F50391EE8356D00A8AA0B /* timerTest.m in Sources */,
 				C4F51B771D387A26001AFAD7 /* nodeArcTest.m in Sources */,
 				C467083B1C6BAE0D0091FC0E /* srcFileTest.m in Sources */,
 				C467081C1C6BAE0D0091FC0E /* objTest.m in Sources */,

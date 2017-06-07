@@ -68,7 +68,7 @@
    
     pObj = appl_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = appl_Init( pObj );
+    pObj = appl_Init( pObj, 0, NULL );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);

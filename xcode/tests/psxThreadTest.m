@@ -57,7 +57,9 @@
 #include    "psxThread_internal.h"
 
 
+
 int         count = 0;
+
 
 void *      testPausable(void *pData)
 {
@@ -95,6 +97,7 @@ void *      testNonpausable(void *pData)
     // test method in the class.
     
     mem_Init( );
+    count = 0;
     
 }
 
@@ -135,18 +138,21 @@ void *      testNonpausable(void *pData)
     PSXTHREAD_DATA	*pObj = OBJ_NIL;
     bool            fRc;
     uint32_t        status;
+#if defined(__MACOSX_ENV__)
+    int             iSleep;
+#endif
     
-    pObj = psxThread_Alloc();
+    pObj = psxThread_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = psxThread_Init( pObj, testPausable, NULL, 0 );
+    pObj = psxThread_Init(pObj, testPausable, NULL, 0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        sleep(2);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        Sleep(3000);
+        Sleep(2000);
 #endif
         {
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
@@ -160,48 +166,65 @@ void *      testNonpausable(void *pData)
         fRc = psxThread_Pause(pObj);
         XCTAssertTrue( (fRc) );
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        sleep(1);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        Sleep(3000);
+        Sleep(1000);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
             fprintf(stderr, "After Pause:  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n", save);
         }
-        status = psxThread_getState(pObj);
-        XCTAssertTrue( (status == PSXTHREAD_STATE_PAUSED) );
-        
+
+        psxThread_setWait(pObj, 500);
+        count = 0;
         fRc = psxThread_Resume(pObj);
         XCTAssertTrue( (fRc) );
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        iSleep = sleep(5);
+        if (iSleep == 0) {
+        }
+        else {
+            fprintf(stderr, "ERROR: sleep(5) rc = %d\n", iSleep);
+        }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        Sleep(3000);
+        Sleep(5000);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
             fprintf(stderr, "After Resume:  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n", save);
+            XCTAssertTrue( ((save > 8) && (save < 12)) );
         }
 
-        fRc = psxThread_Terminate(pObj);
-        XCTAssertTrue( (fRc) );
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        sleep(5);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        Sleep(3000);
+        Sleep(5000);
+#endif
+        fRc = psxThread_Terminate(pObj);
+        XCTAssertTrue( (fRc) );
+        
+#if defined(__MACOSX_ENV__)
+        sleep(1);
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        Sleep(1000);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
             fprintf(stderr, "After Stop:  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n", save);
+            XCTAssertTrue( ((save > 18) && (save < 22)) );
         }
         
         fRc = psxThread_Join(pObj, NULL);

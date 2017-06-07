@@ -116,7 +116,8 @@ extern "C" {
     
     
     MSGBUS_DATA *     msgBus_New(
-        uint16_t    size                // Message Size
+        uint16_t        messageSize,
+        uint16_t        messageCount        // Max Message Queue size
     );
     
     
@@ -165,7 +166,9 @@ extern "C" {
 
    
     MSGBUS_DATA *   msgBus_Init(
-        MSGBUS_DATA     *this
+        MSGBUS_DATA     *this,
+        uint16_t        messageSize,
+        uint16_t        messageCount        // Max Message Queue size
     );
 
 
@@ -181,7 +184,7 @@ extern "C" {
      @param:    pRcv    method within pObj that receives the messages
      @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
-    ERESULT     msgBus_RegisterObject(
+    ERESULT     msgBus_Register(
         MSGBUS_DATA		*this,
         OBJ_ID          pObj,
         ERESULT         (*pReceive)(OBJ_ID, void *)

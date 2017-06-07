@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   msgBus.c
- *	Generated 05/31/2017 20:00:00
+ * File:   timer.c
+ *	Generated 06/06/2017 23:20:26
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <msgBus_internal.h>
+#include <timer_internal.h>
 
 
 
@@ -59,12 +59,17 @@ extern "C" {
     ****************************************************************/
 
     static
-    void            msgBus_task_body(
+    void *          timer_task_body(
         void            *pData
     )
     {
-        //MSGBUS_DATA  *this = pData;
+        TIMER_DATA  *this = pData;
         
+        if (this->timerBody) {
+            this->timerBody(this->timerData);
+        }
+        
+        return NULL;
     }
 
 
@@ -78,11 +83,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MSGBUS_DATA *   msgBus_Alloc(
+    TIMER_DATA *     timer_Alloc(
     )
     {
-        MSGBUS_DATA     *this;
-        uint32_t        cbSize = sizeof(MSGBUS_DATA);
+        TIMER_DATA      *this;
+        uint32_t        cbSize = sizeof(TIMER_DATA);
         
         // Do initialization.
         
@@ -94,16 +99,17 @@ extern "C" {
 
 
 
-    MSGBUS_DATA *     msgBus_New(
-        uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+    TIMER_DATA *     timer_New(
+        uint32_t        msWait,
+        void            *(*timerRoutine)(void *),
+        void            *routineData
     )
     {
-        MSGBUS_DATA       *this;
+        TIMER_DATA       *this;
         
-        this = msgBus_Alloc( );
+        this = timer_Alloc( );
         if (this) {
-            this = msgBus_Init(this, messageSize, messageCount);
+            this = timer_Init(this, msWait, timerRoutine, routineData);
         } 
         return this;
     }
@@ -120,15 +126,15 @@ extern "C" {
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         msgBus_getLastError(
-        MSGBUS_DATA     *this
+    ERESULT         timer_getLastError(
+        TIMER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return this->eRc;
         }
@@ -139,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            msgBus_setLastError(
-        MSGBUS_DATA     *this,
+    bool            timer_setLastError(
+        TIMER_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -159,89 +165,71 @@ extern "C" {
     
     
 
-    uint16_t        msgBus_getPriority(
-        MSGBUS_DATA     *this
+    bool            timer_setRoutine(
+        TIMER_DATA      *this,
+        void            *(*timerRoutine)(void *),
+        void            *routineData
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !timer_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->timerBody = timerRoutine;
+        this->timerData = routineData;
+        
+        return true;
+    }
+    
+    
+    
+    uint32_t        timer_getWait(
+        TIMER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        //return this->priority;
-        return 0;
+        timer_setLastError(this, ERESULT_SUCCESS);
+        return this->msWait;
     }
 
-    bool            msgBus_setPriority(
-        MSGBUS_DATA     *this,
-        uint16_t        value
+    bool            timer_setWait(
+        TIMER_DATA     *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        //this->priority = value;
+        this->msWait = value;
+        if (this->pThread) {
+            psxThread_setWait(this->pThread, value);
+        }
 
-        msgBus_setLastError(this, ERESULT_SUCCESS);
+        timer_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
 
 
-    NODEARRAY_DATA * msgBus_getRegistry(
-        MSGBUS_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !msgBus_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return this->pRegistry;
-    }
-    
-    
-    bool        msgBus_setRegistry(
-        MSGBUS_DATA     *this,
-        NODEARRAY_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !msgBus_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pRegistry) {
-            obj_Release(this->pRegistry);
-        }
-        this->pRegistry = pValue;
-        
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
     
     
 
@@ -260,29 +248,29 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code:
-        ERESULT eRc = msgBus__Assign(this,pOther);
+        ERESULT eRc = timer__Assign(this,pOther);
      @endcode:
-     @param:    this    MSGBUS object pointer
-     @param:    pOther  a pointer to another MSGBUS object
+     @param:    this    TIMER object pointer
+     @param:    pOther  a pointer to another TIMER object
      @return:   If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         msgBus_Assign(
-        MSGBUS_DATA		*this,
-        MSGBUS_DATA      *pOther
+    ERESULT         timer_Assign(
+        TIMER_DATA		*this,
+        TIMER_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return timer_getLastError(this);
         }
-        if( !msgBus_Validate(pOther) ) {
+        if( !timer_Validate(pOther) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(pOther);
+            return timer_getLastError(pOther);
         }
 #endif
 
@@ -313,11 +301,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
+        timer_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        msgBus_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return msgBus_getLastError(this);
+        timer_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return timer_getLastError(this);
     }
     
     
@@ -330,32 +318,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code:
-        msgBus      *pCopy = msgBus_Copy(this);
+        timer      *pCopy = timer_Copy(this);
      @endcode:
-     @param:    this    MSGBUS object pointer
-     @return:   If successful, a MSGBUS object which must be released,
+     @param:    this    TIMER object pointer
+     @return:   If successful, a TIMER object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the MSGBUS object.
+     @warning: Remember to release the returned the TIMER object.
      */
-    MSGBUS_DATA *     msgBus_Copy(
-        MSGBUS_DATA       *this
+    TIMER_DATA *     timer_Copy(
+        TIMER_DATA       *this
     )
     {
-        MSGBUS_DATA       *pOther = OBJ_NIL;
+        TIMER_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        //FIXME: pOther = msgBus_New(obj_getSize(this));
+        //FIXME: pOther = timer_New(obj_getSize(this));
         if (pOther) {
-            eRc = msgBus_Assign(this, pOther);
+            eRc = timer_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -364,7 +352,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        msgBus_setLastError(this, ERESULT_SUCCESS);
+        timer_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -374,11 +362,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            msgBus_Dealloc(
+    void            timer_Dealloc(
         OBJ_ID          objId
     )
     {
-        MSGBUS_DATA   *this = objId;
+        TIMER_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -386,22 +374,27 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        msgBus_setRegistry(this, OBJ_NIL);
-        
-        if (this->pLock) {
-            obj_Release(this->pLock);
-            this->pLock = OBJ_NIL;
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((TIMER_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        if (this->pThread) {
+            psxThread_Terminate(this->pThread);
+            obj_Release(this->pThread);
+            this->pThread = OBJ_NIL;
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
-        consumer_Dealloc(this);             // Needed for inheritance
-        //obj_Dealloc(this);
+        //other_Dealloc(this);          // Needed for inheritance
+        obj_Dealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -413,31 +406,29 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         msgBus_Disable(
-        MSGBUS_DATA		*this
+    ERESULT         timer_Disable(
+        TIMER_DATA		*this
     )
     {
 
         // Do initialization.
         if (NULL == this) {
-            msgBus_setLastError(this, ERESULT_INVALID_OBJECT);
-            return msgBus_getLastError(this);
+            timer_setLastError(this, ERESULT_INVALID_OBJECT);
+            return timer_getLastError(this);
         }
     #ifdef NDEBUG
     #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return timer_getLastError(this);
         }
     #endif
-
-        // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return msgBus_getLastError(this);
+        timer_setLastError(this, ERESULT_SUCCESS);
+        return timer_getLastError(this);
     }
 
 
@@ -446,17 +437,17 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         msgBus_Enable(
-        MSGBUS_DATA		*this
+    ERESULT         timer_Enable(
+        TIMER_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return timer_getLastError(this);
         }
     #endif
         
@@ -465,8 +456,8 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return msgBus_getLastError(this);
+        timer_setLastError(this, ERESULT_SUCCESS);
+        return timer_getLastError(this);
     }
 
 
@@ -475,13 +466,14 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    MSGBUS_DATA *   msgBus_Init(
-        MSGBUS_DATA     *this,
-        uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+    TIMER_DATA *    timer_Init(
+        TIMER_DATA      *this,
+        uint32_t        msWait,
+        void            *(*timerRoutine)(void *),
+        void            *routineData
     )
     {
-        uint32_t        cbSize = sizeof(MSGBUS_DATA);
+        uint32_t        cbSize = sizeof(TIMER_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -497,34 +489,41 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)consumer_Init(
-                            (CONSUMER_DATA *)this,
-                            messageSize,
-                            messageCount         
-                );    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGBUS);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TIMER);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                          // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_MSGBUS);       // Needed for Inheritance
+        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_TIMER);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&msgBus_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&timer_Vtbl);
         
-        msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->pLock = psxLock_New( );
+        timer_setLastError(this, ERESULT_GENERAL_FAILURE);
+
+        this->msWait = msWait;
+        this->timerBody = timerRoutine;
+        this->timerData = routineData;
+        //this->pThread = psxThread_New(timer_task_body, this, 0);
+        this->pThread = psxThread_New(timerRoutine, routineData, 0);
+        if (this->pThread == OBJ_NIL) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        psxThread_setWait(this->pThread, this->msWait);
 
     #ifdef NDEBUG
     #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(MSGBUS_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(TIMER_DATA));
     #endif
 
         return this;
@@ -536,73 +535,139 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         msgBus_IsEnabled(
-        MSGBUS_DATA		*this
+    ERESULT         timer_IsEnabled(
+        TIMER_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return timer_getLastError(this);
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            msgBus_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return msgBus_getLastError(this);
+            timer_setLastError(this, ERESULT_SUCCESS_TRUE);
+            return timer_getLastError(this);
         }
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return msgBus_getLastError(this);
+        timer_setLastError(this, ERESULT_SUCCESS_FALSE);
+        return timer_getLastError(this);
     }
     
     
     
     //---------------------------------------------------------------
-    //                      R e g i s t e r
+    //                          P a u s e
     //---------------------------------------------------------------
     
-    ERESULT         msgBus_Register(
-        MSGBUS_DATA		*this,
-        OBJ_ID          pObj,
-        ERESULT         (*pReceive)(OBJ_ID, void *)
+    bool            timer_Pause(
+        TIMER_DATA     *this
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        
-        // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return false;
         }
 #endif
         
-        if (this->pRegistry == OBJ_NIL) {
-            this->pRegistry = nodeArray_New();
-            if (this->pRegistry == OBJ_NIL) {
-                msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
-                return ERESULT_OUT_OF_MEMORY;
-            }
+        if (this->pThread) {
+            psxThread_Pause(this->pThread);
         }
         
-        pNode = node_NewWithPtr(pObj,OBJ_NIL);
-        if (pNode == OBJ_NIL) {
-            msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
-            return ERESULT_OUT_OF_MEMORY;
+        timer_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          timer_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        TIMER_DATA   *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
         }
-        node_setExtra(pNode, pReceive);
+#ifdef NDEBUG
+#else
+        if( !timer_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
         
-        nodeArray_AppendNode(this->pRegistry, pNode, NULL);
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'D':
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return timer_Disable;
+                        }
+                        break;
+
+                    case 'E':
+                        if (str_Compare("Ensable", (char *)pStr) == 0) {
+                            return timer_Enable;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
         
-        // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return msgBus_getLastError(this);
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          R e s u m e
+    //---------------------------------------------------------------
+    
+    bool            timer_Resume(
+        TIMER_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !timer_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->pThread) {
+            psxThread_Resume(this->pThread);
+        }
+        
+        timer_setLastError(this, ERESULT_SUCCESS);
+        return true;
     }
     
     
@@ -615,28 +680,30 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = msgBus_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = timer_ToDebugString(this,4);
      @endcode:
-     @param:    this    MSGBUS object pointer
+     @param:    this    TIMER object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *     msgBus_ToDebugString(
-        MSGBUS_DATA      *this,
+    ASTR_DATA *     timer_ToDebugString(
+        TIMER_DATA      *this,
         int             indent
     )
     {
         char            str[256];
         int             j;
         ASTR_DATA       *pStr;
+#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
+#endif
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgBus_Validate(this) ) {
+        if( !timer_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -650,79 +717,33 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(msgBus)\n",
-                     this
+                     "{%p(timer) msWait=%d\n",
+                     this,
+                     this->msWait
             );
         AStr_AppendA(pStr, str);
 
-        if (this->pRegistry) {
-            if (((OBJ_DATA *)(this->pRegistry))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pRegistry))->pVtbl->pToDebugString(
-                                                    this->pRegistry,
+#ifdef  XYZZY        
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
+#endif
         
         if (indent) {
             AStr_AppendCharRepeatW(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(msgBus)}\n", this);
+        j = snprintf(str, sizeof(str), " %p(timer)}\n", this);
         AStr_AppendA(pStr, str);
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
+        timer_setLastError(this, ERESULT_SUCCESS);
         return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      R e g i s t e r
-    //---------------------------------------------------------------
-    
-    ERESULT         msgBus_Unregister(
-        MSGBUS_DATA		*this,
-        OBJ_ID          pObj
-    )
-    {
-        NODE_DATA       *pNode = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !msgBus_Validate(this) ) {
-            DEBUG_BREAK();
-            return msgBus_getLastError(this);
-        }
-#endif
-        
-        if (this->pRegistry == OBJ_NIL) {
-            msgBus_setLastError(this, ERESULT_DATA_NOT_FOUND);
-            return ERESULT_DATA_NOT_FOUND;
-        }
-        
-        iMax = nodeArray_getSize(this->pRegistry);
-        for (i=0; i<iMax; ++i) {
-            pNode = nodeArray_Get(this->pRegistry, i+1);
-            if (pNode) {
-                if (pObj == node_getNamePtr(pNode)) {
-                    pNode = nodeArray_Delete(this->pRegistry, i+1);
-                    obj_Release(pNode);
-                    pNode = OBJ_NIL;
-                    msgBus_setLastError(this, ERESULT_SUCCESS);
-                    return msgBus_getLastError(this);
-                    break;
-                }
-            }
-        }
-        
-        // Return to caller.
-        msgBus_setLastError(this, ERESULT_DATA_NOT_FOUND);
-        return msgBus_getLastError(this);
     }
     
     
@@ -733,15 +754,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            msgBus_Validate(
-        MSGBUS_DATA      *this
+    bool            timer_Validate(
+        TIMER_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_MSGBUS) )
+            if ( obj_IsKindOf(this,OBJ_IDENT_TIMER) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -757,7 +778,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(MSGBUS_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(TIMER_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

@@ -63,6 +63,13 @@ int         tearDown(
 
 void *      testRoutine(void *pData)
 {
+    ++count;
+    return NULL;
+}
+
+
+void *      testRoutine_NonPausible(void *pData)
+{
     int         whatever = 1000;
     
     // Non-pausable
@@ -130,6 +137,9 @@ int         test_psxThread_Run01(
     PSXTHREAD_DATA	*pObj = OBJ_NIL;
     bool            fRc;
     uint32_t        status;
+#if defined(__MACOSX_ENV__)
+    int             iSleep;
+#endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     uint32_t        start;
 #endif
@@ -143,18 +153,19 @@ int         test_psxThread_Run01(
 
         fprintf(stderr, "Count = %d\n",count);
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        sleep(1);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         start = GetTickCount();
-        Sleep(3000);
+        Sleep(1000);
         fprintf(stderr, "Delayed %d ticks\n", GetTickCount()-start);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
             fprintf(stderr, "==> After Start:  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n",save);
         }
         status = psxThread_getState(pObj);
         XCTAssertTrue( (status == PSXTHREAD_STATE_RUNNING) );
@@ -162,54 +173,85 @@ int         test_psxThread_Run01(
         fRc = psxThread_Pause(pObj);
         XCTAssertTrue( (fRc) );
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        sleep(1);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         start = GetTickCount();
-        Sleep(3000);
+        Sleep(1000);
         fprintf(stderr, "Delayed %d ticks\n", GetTickCount()-start);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
             fprintf(stderr, "==> After Pause:  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n",save);
         }
         status = psxThread_getState(pObj);
         XCTAssertTrue( (status == PSXTHREAD_STATE_PAUSED) );
         
+        psxThread_setWait(pObj, 500);
+        count = 0;
         fRc = psxThread_Resume(pObj);
         XCTAssertTrue( (fRc) );
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        iSleep = sleep(5);
+        if (iSleep == 0) {
+        }
+        else {
+            fprintf(stderr, "ERROR: sleep(5) rc = %d\n", iSleep);
+        }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         start = GetTickCount();
-        Sleep(3000);
+        Sleep(5000);
         fprintf(stderr, "Delayed %d ticks\n", GetTickCount()-start);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
-            fprintf(stderr, "==> After Resume:  %s\n", AStr_getData(pStr));
+            fprintf(stderr, "==> After Resume+Sleep(5):  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n",save);
+            XCTAssertTrue( ((save > 8) && (save < 12)) );
         }
+
+#if defined(__MACOSX_ENV__)
+        iSleep = sleep(5);
+        if (iSleep == 0) {
+        }
+        else {
+            fprintf(stderr, "ERROR: sleep(5) rc = %d\n", iSleep);
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        start = GetTickCount();
+        Sleep(5000);
+        fprintf(stderr, "Delayed %d ticks\n", GetTickCount()-start);
+#endif
 
         fRc = psxThread_Terminate(pObj);
         XCTAssertTrue( (fRc) );
 #if defined(__MACOSX_ENV__)
-        sleep(3);
+        iSleep = sleep(1);
+        if (iSleep == 0) {
+        }
+        else {
+            fprintf(stderr, "ERROR: sleep(5) rc = %d\n", iSleep);
+        }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         start = GetTickCount();
-        Sleep(3000);
+        Sleep(1000);
         fprintf(stderr, "Delayed %d ticks\n", GetTickCount()-start);
 #endif
         {
+            int         save = count;
             ASTR_DATA       *pStr = psxThread_ToDebugString(pObj, 0);
             fprintf(stderr, "==> After Stop:  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
-            fprintf(stderr, "Count = %d\n",count);
+            fprintf(stderr, "Count = %d\n",save);
+            XCTAssertTrue( ((save > 18) && (save < 22)) );
         }
         
         fRc = psxThread_Join(pObj, NULL);
@@ -227,8 +269,8 @@ int         test_psxThread_Run01(
 
 
 TINYTEST_START_SUITE(test_psxThread);
-  TINYTEST_ADD_TEST(test_psxThread_OpenClose,setUp,tearDown);
   TINYTEST_ADD_TEST(test_psxThread_Run01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_psxThread_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_psxThread);

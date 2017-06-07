@@ -560,6 +560,31 @@ extern "C" {
     //                        D e l e t e
     //---------------------------------------------------------------
     
+    NODE_DATA *     nodeArray_Delete(
+        NODEARRAY_DATA	*this,
+        uint32_t        index
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->pArray) {
+            pNode = objArray_Delete(this->pArray, index);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
     NODE_DATA *     nodeArray_DeleteFirst(
         NODEARRAY_DATA	*this
     )

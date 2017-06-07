@@ -152,6 +152,13 @@ extern "C" {
     );
     
     
+    NODE_DATA *     node_NewWithPtr(
+        const
+        void            *pValue,
+        OBJ_ID          pData
+    );
+    
+    
     NODE_DATA *     node_NewWithUTF8(
         const
         char            *pName,
@@ -210,6 +217,16 @@ extern "C" {
     );
     
 
+    void *          node_getExtra(
+        NODE_DATA       *this
+    );
+    
+    bool            node_setExtra(
+        NODE_DATA       *this,
+        void            *pValue
+    );
+    
+    
     uint32_t        node_getIndex(
         NODE_DATA       *this
     );
@@ -240,6 +257,14 @@ extern "C" {
     );
     
     /*!
+     @return:   If successful, a void ptr, otherwise NULL.
+     */
+    const
+    void *          node_getNamePtr(
+        NODE_DATA       *this
+    );
+    
+    /*!
      @return:   If successful, a UTF-8 string which must be freed 
                 with mem_Free(), otherwise OBJ_NIL.
      */
@@ -247,6 +272,7 @@ extern "C" {
     char *          node_getNameUTF8(
         NODE_DATA       *this
     );
+
     
     OBJ_ID          node_getOther(
         NODE_DATA       *this

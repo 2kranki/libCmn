@@ -107,6 +107,7 @@
         "szTbl":["cmn","AStr","ptrArray","szHash"],
         "table":["cmn","AStr","listdl"],
         "ternary":["cmn","AStr","blocks"],
+        "timer":null,
         "token":["cmn","AStr","AStrC","WStr","WStrC"],
         "tokenList":["cmn","AStr","token"],
         "trace":["cmn"],
@@ -157,6 +158,7 @@
         "test_psxMutex.c":null,
         "test_psxSem.c":null,
         "test_psxThread.c":null,
+        "test_timer.c":null,
         "test_trace.c":null
     }
 }

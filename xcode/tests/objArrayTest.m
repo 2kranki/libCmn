@@ -111,17 +111,17 @@ int             num = 7;
     ASTR_DATA       *pStr;
    
     pObj = objArray_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  OBJARRAY_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  OBJARRAY_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         for (i=0; i<num; ++i) {
             pStr = AStr_NewA(stringTable[i]);
-            XCTAssertFalse( (OBJ_NIL == pStr), @"" );
+            XCTAssertFalse( (OBJ_NIL == pStr) );
             if (pStr) {
                 eRc = objArray_AppendObj(pObj, pStr, NULL);
-                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)), @"" );
+                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
@@ -129,8 +129,8 @@ int             num = 7;
         
         for (i=0; i<num; ++i) {
             pStr = objArray_Get(pObj, i+1);
-            XCTAssertFalse( (OBJ_NIL == pStr), @"" );
-            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])), @"" );
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
         }
         
         eRc = objArray_SortAscending(pObj, (OBJ_COMPARE)&AStr_Compare);
@@ -144,6 +144,223 @@ int             num = 7;
         pObj = OBJ_NIL;
     }
 
+}
+
+
+
+- (void)testDeleteFirst
+{
+    OBJARRAY_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc;
+    uint32_t        i;
+    ASTR_DATA       *pStr;
+    
+    pObj = objArray_Alloc(0);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = objArray_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        for (i=0; i<num; ++i) {
+            pStr = AStr_NewA(stringTable[i]);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            if (pStr) {
+                eRc = objArray_AppendObj(pObj, pStr, NULL);
+                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertTrue( (num == objArray_getSize(pObj)) );
+        fprintf( stderr, "size = %d\n", objArray_getSize(pObj) );
+        
+        for (i=0; i<num; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
+        }
+        
+        pStr = objArray_DeleteFirst(pObj);
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[0])) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        for (i=0; i<num-1; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i+1])) );
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
+- (void)testDelete01
+{
+    OBJARRAY_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc;
+    uint32_t        i;
+    ASTR_DATA       *pStr;
+    
+    pObj = objArray_Alloc(0);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = objArray_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        for (i=0; i<num; ++i) {
+            pStr = AStr_NewA(stringTable[i]);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            if (pStr) {
+                eRc = objArray_AppendObj(pObj, pStr, NULL);
+                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertTrue( (num == objArray_getSize(pObj)) );
+        fprintf( stderr, "size = %d\n", objArray_getSize(pObj) );
+        
+        for (i=0; i<num; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
+        }
+        
+        pStr = objArray_Delete(pObj, 1);
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[0])) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        for (i=0; i<num-1; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i+1])) );
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
+- (void)testDelete02
+{
+    OBJARRAY_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc;
+    uint32_t        i;
+    ASTR_DATA       *pStr;
+    
+    pObj = objArray_Alloc(0);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = objArray_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        for (i=0; i<num; ++i) {
+            pStr = AStr_NewA(stringTable[i]);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            if (pStr) {
+                eRc = objArray_AppendObj(pObj, pStr, NULL);
+                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertTrue( (num == objArray_getSize(pObj)) );
+        fprintf( stderr, "size = %d\n", objArray_getSize(pObj) );
+        
+        for (i=0; i<num; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
+        }
+        
+        pStr = objArray_Delete(pObj, num);
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[6])) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        for (i=0; i<num-1; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
+- (void)testDelete03
+{
+    OBJARRAY_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc;
+    uint32_t        i;
+    ASTR_DATA       *pStr;
+    
+    pObj = objArray_Alloc(0);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = objArray_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        for (i=0; i<num; ++i) {
+            pStr = AStr_NewA(stringTable[i]);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            if (pStr) {
+                eRc = objArray_AppendObj(pObj, pStr, NULL);
+                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertTrue( (num == objArray_getSize(pObj)) );
+        fprintf( stderr, "size = %d\n", objArray_getSize(pObj) );
+        
+        for (i=0; i<num; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
+        }
+        
+        pStr = objArray_Delete(pObj, 4);
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[4-1])) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStr = objArray_Get(pObj, 1);
+        fprintf( stderr, "%d - %s\n", 1, AStr_getData(pStr) );
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[1-1])) );
+        pStr = objArray_Get(pObj, 2);
+        fprintf( stderr, "%d - %s\n", 2, AStr_getData(pStr) );
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[2-1])) );
+        pStr = objArray_Get(pObj, 3);
+        fprintf( stderr, "%d - %s\n", 3, AStr_getData(pStr) );
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[3-1])) );
+        pStr = objArray_Get(pObj, 4);
+        fprintf( stderr, "%d - %s\n", 4, AStr_getData(pStr) );
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[4])) );
+        pStr = objArray_Get(pObj, 5);
+        fprintf( stderr, "%d - %s\n", 5, AStr_getData(pStr) );
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[5])) );
+        pStr = objArray_Get(pObj, 6);
+        fprintf( stderr, "%d - %s\n", 6, AStr_getData(pStr) );
+        XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[6])) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
 }
 
 

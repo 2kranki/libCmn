@@ -216,6 +216,29 @@ extern "C" {
     }
     
     
+    const
+    void *          name_getPtr(
+        NAME_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !name_Validate( this ) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        if (this->type == NAME_TYPE_PTR) {
+            return this->pPtr;
+        }
+        
+        return NULL;
+    }
+    
+    
     ASTR_DATA *     name_getStrA(
         NAME_DATA       *this
     )

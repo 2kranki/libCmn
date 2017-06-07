@@ -189,6 +189,17 @@ extern "C" {
     );
     
     
+    /*!
+     Remove the index'th element from the array and return it.
+     @return:   If successful, an object pointer, otherwise OBJ_NIL.
+     @warning: Remember to release the returned object.
+     */
+    NODE_DATA *     nodeArray_Delete(
+        NODEARRAY_DATA	*this,
+        uint32_t        index
+    );
+    
+    
     // DeleteFromBottom() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.

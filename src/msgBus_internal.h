@@ -42,6 +42,8 @@
 #include    <msgBus.h>
 #include    <consumer_internal.h>
 #include    <node.h>
+#include    <nodeArray.h>
+#include    <psxLock.h>
 
 
 
@@ -61,19 +63,13 @@ extern "C" {
 struct msgBus_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    CONSUMER_DATA   super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;           // Message Size
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    PSXLOCK_DATA    *pLock;
+    NODEARRAY_DATA  *pRegistry;
 
 };
 #pragma pack(pop)

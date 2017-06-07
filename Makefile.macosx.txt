@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 6/2017 17:52:48.000)
+# ( 6/ 7/2017 15:41:46.000)
 
 
 LIBNAM=libCmn
@@ -1128,6 +1128,18 @@ $(OBJDIR)/ternary_object.o: $(SRCDIR)/ternary_object.c
 
 
 
+OBJS += $(OBJDIR)/timer.o $(OBJDIR)/timer_object.o
+
+
+$(OBJDIR)/timer.o: $(SRCDIR)/timer.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/timer_object.o: $(SRCDIR)/timer_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/token.o $(OBJDIR)/token_object.o
 
 
@@ -1440,6 +1452,13 @@ TESTS += test_psxThread
 
 test_psxThread:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_timer
+
+test_timer:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_timer.c 
 	$(OBJDIR)/$(@F)
 
 

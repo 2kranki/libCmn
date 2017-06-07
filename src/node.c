@@ -319,6 +319,43 @@ extern "C" {
     
     
     
+    void *          node_getExtra(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pExtra;
+    }
+    
+    
+    bool            node_setExtra(
+        NODE_DATA       *this,
+        void            *pValue
+                                 )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pExtra = pValue;
+        
+        return true;
+    }
+    
+    
+    
     uint32_t        node_getIndex(
         NODE_DATA       *this
     )
@@ -408,6 +445,24 @@ extern "C" {
 
     
     const
+    void *          node_getNamePtr(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return name_getPtr(this->pName);
+    }
+    
+    
+    const
     char *          node_getNameUTF8(
         NODE_DATA       *this
     )
@@ -425,6 +480,7 @@ extern "C" {
     }
     
     
+
     bool            node_setName(
         NODE_DATA       *this,
         NAME_DATA       *pValue
@@ -620,6 +676,7 @@ extern "C" {
         // Copy other data from this object to other.
         pOther->cls = this->cls;
         pOther->index = this->index;
+        pOther->pExtra = this->pExtra;
 
         return ERESULT_SUCCESS;
     }

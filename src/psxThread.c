@@ -81,9 +81,10 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         iRc = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 #endif
-        this->state = PSXTHREAD_STATE_RUNNING;
         for (;;) {
             
+            this->state = PSXTHREAD_STATE_RUNNING;
+
             if( this->fPause ) {
                 //psxSem_Post(this->pOwnerWait);
                 psxLock_Lock(this->pWorkerVars);
@@ -102,13 +103,30 @@ extern "C" {
             
             if (this->threadBody) {
                 pReturn = (*this->threadBody)(this->threadData);
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+                iRc = (int)pReturn;
+#endif
                 if (this->fDone) {
                     this->threadBody = NULL;
                     this->threadData = OBJ_NIL;
                     this->fDone = false;
                 }
+                if (this->msWait) {
+                    this->state = PSXTHREAD_STATE_DELAYING;
+#if defined(__MACOSX_ENV__)
+                    usleep(this->msWait * 1000);
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+                    Sleep(this->msWait);
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+                    tn_task_sleep(this->msWait);
+#endif
+                    this->state = PSXTHREAD_STATE_RUNNING;
+                }
             }
             else {
+                this->state = PSXTHREAD_STATE_DELAYING;
 #if defined(__MACOSX_ENV__)
                 usleep(100);            // Sleep for 100us
 #endif
@@ -118,6 +136,7 @@ extern "C" {
 #if defined(__PIC32MX_TNEO_ENV__)
                 tn_task_sleep(TN_WAIT_INFINITE); // ???
 #endif
+                this->state = PSXTHREAD_STATE_RUNNING;
             }
             
         }   // for (;;)
@@ -332,6 +351,39 @@ extern "C" {
         }
 #endif
         this->fTerminate = value;
+        
+        return true;
+    }
+    
+    
+    
+    uint32_t        psxThread_getWait(
+        PSXTHREAD_DATA  *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        return this->msWait;
+    }
+    
+    
+    bool            psxThread_setWait(
+        PSXTHREAD_DATA	*this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        this->msWait = value;
         
         return true;
     }
@@ -884,6 +936,10 @@ extern "C" {
 
         switch (this->state) {
 
+            case PSXTHREAD_STATE_DELAYING:
+                pState = "Delaying";
+                break;
+                
             case PSXTHREAD_STATE_ENDED:
                 pState = "Ended";
                 break;
@@ -922,13 +978,14 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(psxThread) stackSize=%d  status=%s "
-                     "done=%c pause=%c terminate=%c",
+                     "done=%c pause=%c terminate=%c routine=%p",
                      this,
                      psxThread_getStackSize(this),
                      pState,
                      (this->fDone ? 'T' : 'F'),
                      (this->fPause ? 'T' : 'F'),
-                     (this->fTerminate ? 'T' : 'F')
+                     (this->fTerminate ? 'T' : 'F'),
+                     this->threadBody
             );
         AStr_AppendA(pStr, str);
 

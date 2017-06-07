@@ -87,6 +87,7 @@ extern "C" {
     
     typedef enum psxThread_state_e	{
         PSXTHREAD_STATE_UNKNOWN=0,
+        PSXTHREAD_STATE_DELAYING,
         PSXTHREAD_STATE_ENDED,
         PSXTHREAD_STATE_ENDING,
         PSXTHREAD_STATE_PAUSED,
@@ -168,6 +169,16 @@ extern "C" {
     bool        psxThread_setTerminate(
         PSXTHREAD_DATA	*this,
         bool            value
+    );
+    
+    
+    uint32_t        psxThread_getWait(
+        PSXTHREAD_DATA  *this
+    );
+    
+    bool            psxThread_setWait(
+        PSXTHREAD_DATA	*this,
+        uint32_t        value
     );
     
     

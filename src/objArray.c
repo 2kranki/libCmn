@@ -462,11 +462,57 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
+    OBJ_ID          objArray_Delete(
+        OBJARRAY_DATA	*this,
+        uint32_t        index
+    )
+    {
+        OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (this->size)
+            ;
+        else {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+        if (index && (index <= this->size))
+            ;
+        else {
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->ppArray) {
+            pObj = this->ppArray[index-1];
+            if (index < this->size) {
+                for (i=(index-1); i<this->size; ++i) {
+                    this->ppArray[i] = this->ppArray[i+1];
+                }
+            }
+            --this->size;
+        }
+        
+        this->eRc = ERESULT_SUCCESS;
+        return pObj;
+    }
+    
+    
     OBJ_ID          objArray_DeleteFirst(
         OBJARRAY_DATA	*this
     )
     {
         OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        i;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -484,14 +530,12 @@ extern "C" {
         }
 #endif
         
-        --this->size;
         if (this->ppArray) {
             pObj = this->ppArray[0];
-            memmove(
-                    &this->ppArray[0],
-                    &this->ppArray[1],
-                    (this->size * sizeof(OBJ_DATA *))
-                    );
+            for (i=0; i<this->size; ++i) {
+                this->ppArray[i] = this->ppArray[i+1];
+            }
+            --this->size;
         }
         
         this->eRc = ERESULT_SUCCESS;
@@ -522,8 +566,8 @@ extern "C" {
         }
 #endif
         
-        --this->size;
         if (this->ppArray) {
+            --this->size;
             pObj = this->ppArray[this->size];
             this->ppArray[this->size] = OBJ_NIL;
         }

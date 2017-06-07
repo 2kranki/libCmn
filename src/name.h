@@ -144,6 +144,16 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Get the name value if it is a ptr.
+     @return:   If successful, void ptr, otherwise NULL.
+     */
+    const
+    void *          name_getPtr(
+        NAME_DATA       *this
+    );
+    
+    
+    /*!
      Get the name value as an AStr object.
      @return:   If successful, an AStr object which must be released,
      otherwise OBJ_NIL.

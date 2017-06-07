@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 6/2017 17:52:47.000)
+# ( 6/ 7/2017 15:41:45.000)
 
 
 LIBNAM=libCmn
@@ -124,6 +124,7 @@ OBJS = $(OBJS) $(OBJDIR)\szHash.obj $(OBJDIR)\szHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szTbl.obj $(OBJDIR)\szTbl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\table.obj $(OBJDIR)\table_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ternary.obj $(OBJDIR)\ternary_object.obj
+OBJS = $(OBJS) $(OBJDIR)\timer.obj $(OBJDIR)\timer_object.obj
 OBJS = $(OBJS) $(OBJDIR)\token.obj $(OBJDIR)\token_object.obj
 OBJS = $(OBJS) $(OBJDIR)\tokenList.obj $(OBJDIR)\tokenList_object.obj
 OBJS = $(OBJS) $(OBJDIR)\trace.obj $(OBJDIR)\trace_object.obj
@@ -274,6 +275,14 @@ TESTS = $(TESTS) test_psxThread
 
 test_psxThread:
 	$(CC) $(CFLAGS) /Itests tests\test_psxThread.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_timer
+
+test_timer:
+	$(CC) $(CFLAGS) /Itests tests\test_timer.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

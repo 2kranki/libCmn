@@ -68,7 +68,7 @@
    
     pObj = clo_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = clo_Init( pObj );
+    pObj = clo_Init(pObj, 0, NULL);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);

@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   node_internal.h
- *	Generated 06/30/2015 22:51:43
+ * File:   timer_internal.h
+ *	Generated 06/06/2017 23:20:26
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,16 +38,13 @@
 
 
 
-#include    <name.h>
-#include    <node.h>
-#include    <nodeArray.h>
-#include    <nodeHash.h>
-#include    <listdl.h>
-#include    <szTbl.h>
+
+#include    <timer.h>
+#include    <psxThread.h>
 
 
-#ifndef NODE_INTERNAL_H
-#define	NODE_INTERNAL_H
+#ifndef TIMER_INTERNAL_H
+#define	TIMER_INTERNAL_H
 
 
 
@@ -55,63 +53,60 @@ extern "C" {
 #endif
 
 
-    
+
+
 #pragma pack(push, 1)
-struct node_data_s	{
+struct timer_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
-#define NODE_DUP_NAME   5   /* We allocated Name */
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    int32_t         cls;
-    uint32_t        index;
-    NAME_DATA       *pName;
-    OBJ_ID          pData;
-    OBJ_ID          pOther;
-    NODEARRAY_DATA  *pProperties;
-    void            *pExtra;
+    ERESULT         eRc;
+    PSXTHREAD_DATA  *pThread;
+
+    uint32_t        msWait;
+    void *          (*timerBody)(void *);
+    void            *timerData;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    NODE_VTBL       node_Vtbl;
+    struct timer_class_data_s  timer_ClassObj;
 
     extern
     const
-    struct node_class_data_s   node_ClassObj;
-    
+    TIMER_VTBL         timer_Vtbl;
 
 
     // Internal Functions
-    
-    bool            node_setName(
-        NODE_DATA       *cbp,
-        NAME_DATA       *pValue
-    );
-    
-    
-    void            node_Dealloc(
+    void            timer_Dealloc(
         OBJ_ID          objId
     );
 
-    NODE_DATA *     node_Init(
-        NODE_DATA       *cbp
+    void *          timer_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
     );
-    
-    NODE_DATA *     node_InitWithName(
-        NODE_DATA       *cbp,
-        NAME_DATA       *pName,
-        OBJ_ID          pData
+
+
+    bool            timer_setLastError(
+        TIMER_DATA     *this,
+        ERESULT         value
     );
-    
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			node_Validate(
-        NODE_DATA       *cbp
+    bool			timer_Validate(
+        TIMER_DATA       *this
     );
 #endif
 
@@ -121,5 +116,5 @@ struct node_data_s	{
 }
 #endif
 
-#endif	/* NODE_INTERNAL_H */
+#endif	/* TIMER_INTERNAL_H */
 
