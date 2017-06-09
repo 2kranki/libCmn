@@ -77,6 +77,10 @@ extern "C" {
         pthread_mutex_t mutex;
         pthread_cond_t  cond;
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        CRITICAL_SECTION    csMutex;
+        CONDITION_VARIABLE  cvCond;
+#endif
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements

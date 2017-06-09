@@ -163,7 +163,7 @@ int         test_msgBus_Broadcast01(
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
 
-        sleep(10);
+        psxThread_Wait(10000);
         printf("\n\n\n");
         printf("Output Queue(%d):\n", outputQueueEnd+1);
         for (i=0; i<outputQueueEnd+1; ++i) {
@@ -176,7 +176,7 @@ int         test_msgBus_Broadcast01(
         obj_Release(pObj);
         pObj = OBJ_NIL;
 
-        sleep(10);
+        psxThread_Wait(10000);
         printf("\n\n\n");
         printf("Output Queue(%d):\n", outputQueueEnd+1);
         for (i=0; i<outputQueueEnd+1; ++i) {

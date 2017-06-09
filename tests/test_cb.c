@@ -275,12 +275,12 @@ int         test_cb_Operation(
         fRc = psxThread_Pause(pThread);
         XCTAssertTrue( (fRc) );
         while (!psxThread_IsPaused(pThread)) {
-            sleep(1);
+            psxThread_Wait(1000);
         }
         psxThread_setWait(pThread, 500);
         fRc = psxThread_Resume(pThread);
         while (!psxThread_IsRunning(pThread)) {
-            sleep(1);
+            psxThread_Wait(1000);
         }
         
         printf("Loading Buffer...\n");
@@ -288,7 +288,7 @@ int         test_cb_Operation(
             printf("  Put(%d) - %s\n", i, StrArray[i]);
             cb_Put(pCB, &StrArray[i]);
         }
-        sleep(10);
+        psxThread_Wait(10000);
         
         printf("\n\n");
         printf("Output Queue(%d):\n", outputQueueEnd+1);
@@ -301,7 +301,7 @@ int         test_cb_Operation(
         cb_Pause(pCB);
         psxThread_Terminate(pThread);
         while (!psxThread_IsEnded(pThread)) {
-            usleep(100000);
+            psxThread_Wait(100);
         }
         obj_Release(pThread);
         pThread = NULL;
