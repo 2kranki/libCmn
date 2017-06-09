@@ -74,7 +74,7 @@ extern "C" {
         void            *msgOutData;
    
         // WARNING: We had to make this pausible.
-        fRc = cb_Get(this->pBuffer, pEntry, this->msWait);
+        fRc = cb_Get(this->pBuffer, pEntry);
         if (fRc) {
             iMax = nodeArray_getSize(this->pRegistry);
             for (i=0; i<iMax; ++i) {
@@ -227,6 +227,29 @@ extern "C" {
     
     
     
+    uint32_t        msgBus_getRegistrySize(
+        MSGBUS_DATA     *this
+    )
+    {
+        uint32_t        size = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        size = nodeArray_getSize(this->pRegistry);
+        
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return size;
+    }
+    
+    
+
     uint32_t        msgBus_getWait(
         MSGBUS_DATA     *this
     )
@@ -455,8 +478,10 @@ extern "C" {
 #endif
 
         // WARNING: Order is important here!
-        
+
+        cb_Pause(this->pBuffer);
         psxThread_Terminate(this->pThread);
+        
         if (this->pThread) {
             obj_Release(this->pThread);
             this->pThread = OBJ_NIL;
@@ -467,6 +492,11 @@ extern "C" {
             this->pBuffer = OBJ_NIL;
         }
 
+        if (this->pRegistry) {
+            obj_Release(this->pRegistry);
+            this->pRegistry = OBJ_NIL;
+        }
+        
         if (this->pLock) {
             obj_Release(this->pLock);
             this->pLock = OBJ_NIL;
@@ -557,16 +587,20 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(MSGBUS_DATA);
+        uint16_t        actualSize = messageSize + sizeof(MSG_ENTRY);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        if ((messageSize + sizeof(MSG_ENTRY)) > 512) {
+        if (messageSize && (actualSize <= 512)) {
+        }
+        else {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        
         /* cbSize can be zero if Alloc() was not called and we are
          * are passed the address of a zero'd area.
          */
@@ -598,8 +632,16 @@ extern "C" {
         msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->msWait = 10;
         this->messageSize = messageSize;
+        this->actualSize = actualSize;
 
         // WARNING: Order is important here!
+        
+        this->pLock = psxLock_New( );
+        if (OBJ_NIL == this->pLock) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
         this->pRegistry = nodeArray_New();
         if (OBJ_NIL == this->pRegistry) {
@@ -608,14 +650,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pLock = psxLock_New( );
-        if (OBJ_NIL == this->pRegistry) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-
-        this->pBuffer = cb_New((sizeof(MSG_ENTRY) + messageSize), messageCount);
+        this->pBuffer = cb_New(actualSize, messageCount);
         if (OBJ_NIL == this->pBuffer) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -712,10 +747,12 @@ extern "C" {
         node_setExtra(pNode, pRcv);
         
         nodeArray_AppendNode(this->pRegistry, pNode, NULL);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
         
         // Return to caller.
         msgBus_setLastError(this, ERESULT_SUCCESS);
-        return msgBus_getLastError(this);
+        return ERESULT_SUCCESS;
     }
     
     

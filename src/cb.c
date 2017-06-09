@@ -334,7 +334,7 @@ extern "C" {
 #endif
 #if defined(__MACOSX_ENV__)
         // We must release any Get()s/Put()s.
-        obj_FlagSet(this, CB_FLAG_TERM, true);
+        obj_FlagSet(this, CB_FLAG_PAUSE, true);
         pthread_cond_broadcast(&this->cond);
         usleep(500000);
         
@@ -363,8 +363,7 @@ extern "C" {
 
     bool            cb_Get(
         CB_DATA         *this,
-        void            *pData,
-        uint32_t        timeout
+        void            *pData
     )
     {
         bool            fRc = false;
@@ -385,12 +384,12 @@ extern "C" {
         psxLock_Lock(this->pLock);
 #endif
 #if defined(__MACOSX_ENV__)
-        if (obj_Flag(this, CB_FLAG_TERM)) {
+        if (obj_Flag(this, CB_FLAG_PAUSE)) {
             return false;
         }
         pthread_mutex_lock(&this->mutex);
         while (cb_NumEntries(this) == 0) { // queue is empty
-            if (obj_Flag(this, CB_FLAG_TERM)) {
+            if (obj_Flag(this, CB_FLAG_PAUSE)) {
                 pthread_mutex_unlock(&this->mutex);
                 return false;
             }
@@ -649,7 +648,7 @@ extern "C" {
 #endif
         
 #if defined(__MACOSX_ENV__)
-        obj_FlagSet(this, CB_FLAG_TERM, true);
+        obj_FlagSet(this, CB_FLAG_PAUSE, true);
         pthread_cond_broadcast(&this->cond);
         usleep(100000);
 #endif
@@ -685,12 +684,12 @@ extern "C" {
         psxLock_Lock(this->pLock);
 #endif
 #if defined(__MACOSX_ENV__)
-        if (obj_Flag(this, CB_FLAG_TERM)) {
+        if (obj_Flag(this, CB_FLAG_PAUSE)) {
             return false;
         }
         pthread_mutex_lock(&this->mutex);
         while (cb_NumEntries(this) == this->cEntries) { // queue is full
-            if (obj_Flag(this, CB_FLAG_TERM)) {
+            if (obj_Flag(this, CB_FLAG_PAUSE)) {
                 pthread_mutex_unlock(&this->mutex);
                 return false;
             }
@@ -698,22 +697,24 @@ extern "C" {
         }
 #endif
         
-        TRC_OBJ(
-                this,
-                "cb_Put(%p): %d Entries  end: %d\n",
-                this,
-                cb_NumEntries(this),
-                this->end
-        );
-        pElem = cb_GetPtr(this, this->end);
-        if (pElem) {
-            memmove(pElem, pValue, this->elemSize);
-            ++this->numWritten;
-            ++this->end;
-            if (this->end == this->cEntries) {
-                this->end = 0;
+        if (cb_NumEntries(this) < this->cEntries) {
+            TRC_OBJ(
+                    this,
+                    "cb_Put(%p): %d Entries  end: %d\n",
+                    this,
+                    cb_NumEntries(this),
+                    this->end
+                    );
+            pElem = cb_GetPtr(this, this->end);
+            if (pElem) {
+                memmove(pElem, pValue, this->elemSize);
+                ++this->numWritten;
+                ++this->end;
+                if (this->end == this->cEntries) {
+                    this->end = 0;
+                }
+                fRc = true;
             }
-            fRc = true;
         }
 
 #ifdef XYZZY
@@ -749,7 +750,7 @@ extern "C" {
 #endif
         
 #if defined(__MACOSX_ENV__)
-        obj_FlagSet(this, CB_FLAG_TERM, false);
+        obj_FlagSet(this, CB_FLAG_PAUSE, false);
 #endif
         
         return true;

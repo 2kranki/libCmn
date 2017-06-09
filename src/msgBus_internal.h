@@ -82,7 +82,7 @@ struct msgBus_data_s	{
     volatile
     uint32_t        msWait;
     uint16_t        messageSize;
-    uint16_t        rsvd16;
+    uint16_t        actualSize;
 
 };
 #pragma pack(pop)

@@ -149,8 +149,7 @@ extern "C" {
      */
     bool            cb_Get(
         CB_DATA         *this,
-        void            *pValue,        // Copies element into the provided buffer
-        uint32_t        msWait
+        void            *pValue         // Copies element into the provided buffer
     );
 
 
@@ -174,6 +173,11 @@ extern "C" {
     );
 
 
+    /*!
+     Pause the buffer flow releasing any tasks waiting to get/put data.
+     This is necessary especially just prior to termination since all
+     conditions and mutexes must be in an unlocked state.
+     */
     bool            cb_Pause(
         CB_DATA         *this
     );

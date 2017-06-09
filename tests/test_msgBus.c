@@ -57,12 +57,41 @@ char        *StrArray[NUM_STR] = {
 
 
 
+typedef struct buffer_entry_s {
+    const
+    char            *pObj;
+    const
+    char            *pMsg;
+} BUFFER_ENTRY;
+
+
+// Output Queue is written by the separate task.
+static
+BUFFER_ENTRY    outputQueue[NUM_STR * (NUM_OBJ * 2)] = {0};
+static
+int             outputQueueEnd = -1;
+
+
+
+static
+void            addOutput(const char *pObj, const char *pMsg)
+{
+    
+    ++outputQueueEnd;
+    outputQueue[outputQueueEnd].pObj = pObj;
+    outputQueue[outputQueueEnd].pMsg = pMsg;
+    
+}
+
+
+
 void        printMsg(
     void        *pObj,
-    void        *pMsg
+    void        **ppMsg
 )
 {
-    fprintf(stderr, "%s  %s\n", pObj, pMsg);
+    fprintf(stderr, "    Rcvd for: %s   msg: %s\n", pObj, *ppMsg);
+    addOutput(pObj, *ppMsg);
 }
 
 
@@ -115,22 +144,48 @@ int         test_msgBus_Broadcast01(
    
     pObj = msgBus_Alloc(0);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = msgBus_Init( pObj, 10, 4 );
+    pObj = msgBus_Init( pObj, sizeof(const char *), 4 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     obj_TraceSet(pObj, true);
     if (pObj) {
 
+        printf("Registering Receivers...\n");
         for (i=0; i<NUM_OBJ; ++i) {
             eRc = msgBus_Register(pObj, printMsg, StrObj[i]);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
+        TINYTEST_TRUE( (msgBus_getRegistrySize(pObj) == NUM_OBJ) );
+
+        printf("Broadcasting to all Receivers...\n");
         for (i=0; i<NUM_STR; ++i) {
-            eRc = msgBus_Broadcast(pObj, (void *)0, (uint8_t *)StrArray[0]);
+            printf("  Broadcasting %s...\n", StrArray[i]);
+            eRc = msgBus_Broadcast(pObj, (void *)0, (void *)&StrArray[i]);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
 
+        sleep(10);
+        printf("\n\n\n");
+        printf("Output Queue(%d):\n", outputQueueEnd+1);
+        for (i=0; i<outputQueueEnd+1; ++i) {
+            BUFFER_ENTRY    *pEntry = &outputQueue[i];
+            if (pEntry->pObj) {
+                printf("  %2d %s - %s\n", i, pEntry->pObj, pEntry->pMsg);
+            }
+        }
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
+
+        sleep(10);
+        printf("\n\n\n");
+        printf("Output Queue(%d):\n", outputQueueEnd+1);
+        for (i=0; i<outputQueueEnd+1; ++i) {
+            BUFFER_ENTRY    *pEntry = &outputQueue[i];
+            if (pEntry->pObj) {
+                printf("  %2d %s - %s\n", i, pEntry->pObj, pEntry->pMsg);
+            }
+        }
+        
     }
 
     return 1;

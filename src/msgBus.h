@@ -131,6 +131,11 @@ extern "C" {
     );
 
 
+    uint32_t        msgBus_getRegistrySize(
+        MSGBUS_DATA     *this
+    );
+    
+    
     uint32_t        msgBus_getWait(
         MSGBUS_DATA     *this
     );

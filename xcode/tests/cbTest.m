@@ -128,7 +128,7 @@ void *          getRoutine(
     
     while (1) {
         pStr = NULL;
-        cb_Get(pCB, &pStr, -1);
+        cb_Get(pCB, &pStr);
         if (pStr) {
             addOutput(pStr);
         }
@@ -217,7 +217,7 @@ void *          getRoutine(
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg, -1);
+        fRc = cb_Get(cbp, &msg);
         XCTAssertTrue( (fRc) );
         XCTAssertTrue( (0 == strcmp(msg,StrArray[i])) );
         
@@ -243,7 +243,7 @@ void *          getRoutine(
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg, -1);
+        fRc = cb_Get(cbp, &msg);
         XCTAssertTrue( (fRc) );
         //STAssertTrue( (aVal == i), @"cb8_Get value failed" );
         

@@ -134,7 +134,7 @@ extern "C" {
         
         this = node_Alloc( );
         if (this) {
-            this = node_InitWithUTF8(this, pValue, pData);
+            this = node_InitWithPtr(this, pValue, pData);
         }
         
         return this;

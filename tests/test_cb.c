@@ -101,7 +101,7 @@ void *          getRoutine(
     const
     char            *pStr = NULL;
     
-    cb_Get(pCB, &pStr, 100);
+    cb_Get(pCB, &pStr);
     if (pStr) {
         addOutput(pStr);
     }
@@ -204,7 +204,7 @@ int         test_cb_CounterOverflow(
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg, -1);
+        fRc = cb_Get(cbp, &msg);
         XCTAssertTrue( (fRc) );
         XCTAssertTrue( (0 == strcmp(msg,StrArray[i])) );
         
@@ -230,7 +230,7 @@ int         test_cb_CounterOverflow(
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg, -1);
+        fRc = cb_Get(cbp, &msg);
         XCTAssertTrue( (fRc) );
         //STAssertTrue( (aVal == i), @"cb8_Get value failed" );
         
