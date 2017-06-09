@@ -150,8 +150,10 @@
     "tests":
     {
         "test_appl.c":null,
+        "test_cb.c":null,
         "test_clo.c":null,
         "test_cloOpt.c":null,
+        "test_msgBus.c":null,
         "test_name.c":null,
         "test_node.c":null,
         "test_psxLock.c":null,

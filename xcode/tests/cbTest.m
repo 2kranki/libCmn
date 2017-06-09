@@ -53,25 +53,90 @@
 #include    "cb_internal.h"           // We cheat!
 
 
-#define NUM_STR     10
+#define NUM_STR     20
 
-/* Other variables */
+/* String Variables */
+// Length == 10 (includes ending NUL)
 static
 char        *StrArray[NUM_STR] = {
-//   123456789
-	"String  1",
-	"String  2",
-	"String  3",
-	"String  4",
-	"String  5",
-	"String  6",
-	"String  7",
-	"String  8",
-	"String  9",
-	"String 10"
+    //   123456789
+    "String  1",
+    "String  2",
+    "String  3",
+    "String  4",
+    "String  5",
+    "String  6",
+    "String  7",
+    "String  8",
+    "String  9",
+    "String 10",
+    "String 11",
+    "String 12",
+    "String 13",
+    "String 14",
+    "String 15",
+    "String 16",
+    "String 17",
+    "String 18",
+    "String 19",
+    "String 20"
 };
 
 
+typedef struct buffer_entry_s {
+    const
+    char            *pStr;
+} BUFFER_ENTRY;
+
+
+// Output Queue is written by the separate task.
+static
+BUFFER_ENTRY    outputQueue[NUM_STR * 2] = {0};
+static
+int             outputQueueEnd = -1;
+
+
+
+static
+void            addOutput (const char *pStr)
+{
+    
+    ++outputQueueEnd;
+    outputQueue[outputQueueEnd].pStr = pStr;
+    printf("addOutput()  %3d - %s\n", outputQueueEnd, outputQueue[outputQueueEnd].pStr);
+    
+}
+
+
+
+static
+CB_DATA     *pCB = OBJ_NIL;
+
+
+
+
+
+
+
+static
+void *          getRoutine(
+    void            *pVoid
+)
+{
+    const
+    char            *pStr = NULL;
+    
+    while (1) {
+        pStr = NULL;
+        cb_Get(pCB, &pStr, -1);
+        if (pStr) {
+            addOutput(pStr);
+        }
+        usleep(500000);
+    }
+    
+    return NULL;
+}
 
 
 
@@ -110,7 +175,7 @@ char        *StrArray[NUM_STR] = {
 {
 	CB_DATA			*cbp;
 
-	cbp = cb_Alloc(8,8);
+	cbp = cb_Alloc(10, 8);
     XCTAssertFalse( (NULL == cbp) );
 	cbp = cb_Init( cbp );
     XCTAssertFalse( (NULL == cbp) );
@@ -130,7 +195,7 @@ char        *StrArray[NUM_STR] = {
     bool            fRc;
     char            msg[10];
     
-	cbp = cb_Alloc(8, 10);
+	cbp = cb_Alloc(10, 10);
     XCTAssertFalse( (NULL == cbp) );
 	cbp = cb_Init( cbp );
     XCTAssertFalse( (NULL == cbp) );

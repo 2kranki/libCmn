@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "psxThread_internal.h"
+#include    <psxThread_internal.h>
+#include    <trace.h>
 
 
 
@@ -198,6 +199,20 @@ extern "C" {
     }
 
 
+    void            psxThread_Wait(
+        uint32_t        msWait
+    )
+    {
+#if defined(__MACOSX_ENV__)
+        usleep(msWait * 1000);
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        Sleep(msWait);
+#endif
+    }
+    
+    
+    
     
     
 
@@ -709,6 +724,91 @@ extern "C" {
     }
 
 
+    //---------------------------------------------------------------
+    //                        I s E n d e d
+    //---------------------------------------------------------------
+    
+    bool            psxThread_IsEnded(
+        PSXTHREAD_DATA	*this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->state == PSXTHREAD_STATE_ENDED) {
+            return true;
+        }
+        
+        // Return to caller.
+        return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        I s P a u s e d
+    //---------------------------------------------------------------
+    
+    bool            psxThread_IsPaused(
+        PSXTHREAD_DATA	*this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->state == PSXTHREAD_STATE_PAUSED) {
+            return true;
+        }
+        
+        // Return to caller.
+        return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        I s R u n n i n g
+    //---------------------------------------------------------------
+    
+    bool            psxThread_IsRunning(
+        PSXTHREAD_DATA	*this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if ((this->state == PSXTHREAD_STATE_RUNNING)
+            || (this->state == PSXTHREAD_STATE_DELAYING)) {
+            return true;
+        }
+        
+        // Return to caller.
+        return false;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       J o i n
     //---------------------------------------------------------------

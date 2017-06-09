@@ -58,19 +58,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    void *          timer_task_body(
-        void            *pData
-    )
-    {
-        TIMER_DATA  *this = pData;
-        
-        if (this->timerBody) {
-            this->timerBody(this->timerData);
-        }
-        
-        return NULL;
-    }
 
 
 
@@ -506,7 +493,6 @@ extern "C" {
         this->msWait = msWait;
         this->timerBody = timerRoutine;
         this->timerData = routineData;
-        //this->pThread = psxThread_New(timer_task_body, this, 0);
         this->pThread = psxThread_New(timerRoutine, routineData, 0);
         if (this->pThread == OBJ_NIL) {
             DEBUG_BREAK();

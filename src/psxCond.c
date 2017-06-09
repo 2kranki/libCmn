@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "psxCond_internal.h"
+#include    <psxCond_internal.h>
+#include    <trace.h>
 
 
 
@@ -183,10 +184,12 @@ extern "C" {
         PSXCOND_DATA    *this
     )
     {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -199,7 +202,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
         if (!(iRc == 0)) {
             DEBUG_BREAK();
@@ -217,7 +220,9 @@ extern "C" {
             return false;
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (tnRc == TN_RC_OK) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
@@ -240,10 +245,12 @@ extern "C" {
     )
     {
         PSXCOND_DATA    *this = objId;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
 
@@ -266,22 +273,26 @@ extern "C" {
 #endif
 
         if (obj_IsFlag(this, PSXCOND_FLAG_COND_INIT)) {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
             iRc = pthread_cond_destroy(&this->cond);
             if (iRc) {
                 DEBUG_BREAK();
             }
             obj_FlagOff(this,PSXCOND_FLAG_MUTEX_INIT);
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
         }
 
         if (obj_IsFlag(this, PSXCOND_FLAG_MUTEX_INIT)) {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
             iRc = pthread_mutex_destroy(&this->mutex);
             if (iRc) {
                 DEBUG_BREAK();
             }
             obj_FlagOff(this,PSXCOND_FLAG_MUTEX_INIT);
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
         }
         
@@ -365,10 +376,12 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(PSXCOND_DATA);
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -399,7 +412,7 @@ extern "C" {
         
         this->condRoutine = condRoutine;
         this->condData = condData;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         // this->mutex = PTHREAD_MUTEX_INITIALIZER;
         iRc = pthread_mutex_init(&this->mutex, NULL);
         if (iRc) {
@@ -417,7 +430,9 @@ extern "C" {
         }
         obj_FlagOn(this, PSXCOND_FLAG_COND_INIT);
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_create(&this->mutex,TN_MUTEX_PROT_INHERIT,0);
         if (tnRc == TN_RC_OK) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
@@ -475,10 +490,12 @@ extern "C" {
         PSXCOND_DATA    *this
     )
     {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -491,7 +508,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
         if (!(iRc == 0)) {
             DEBUG_BREAK();
@@ -509,7 +526,9 @@ extern "C" {
             return false;
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (tnRc == TN_RC_OK) {
             obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
@@ -614,10 +633,12 @@ extern "C" {
         PSXCOND_DATA    *this
     )
     {
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         int             iRc;
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
 #endif
         
@@ -630,7 +651,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
         if (!(iRc == 0)) {
             return false;
@@ -646,7 +667,9 @@ extern "C" {
             return false;
         }
 #endif
-#if defined(__TNEO__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (!(tnRc == TN_RC_OK)) {
             return false;

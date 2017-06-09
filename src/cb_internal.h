@@ -66,10 +66,17 @@ extern "C" {
          */
         OBJ_DATA        super;
         OBJ_IUNKNOWN    *pSuperVtbl;
+        #define CB_FLAG_TERM 5
 
+#ifdef XYZZY
         PSXSEM_DATA     *pSemEmpty;
         PSXSEM_DATA     *pSemFull;
         PSXLOCK_DATA    *pLock;
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_t mutex;
+        pthread_cond_t  cond;
+#endif
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements

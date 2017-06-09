@@ -66,11 +66,11 @@ struct psxSem_data_s	{
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
 #endif
-#if defined(__PIC32MX_TNEO_ENV__)
-    struct TN_Sem   sem;
-#endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     HANDLE          m_hSem;
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    struct TN_Sem   sem;
 #endif
 
 };

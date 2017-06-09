@@ -101,12 +101,18 @@ extern "C" {
     //---------------------------------------------------------------
     
     /* Alloc() allocates an area large enough for 'size' entries.
-     * The same sizes should be passed to Init() without change.
      */
     CB_DATA *      cb_Alloc(
-        uint16_t        size,           // Number of Elements in Buffer
-        uint16_t        elemSize        // Element Size in bytes
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size            // Number of Elements in Buffer
     );
+    
+    
+    CB_DATA *       cb_New(
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size            // Number of Elements in Buffer
+    );
+    
     
     
     
@@ -128,11 +134,23 @@ extern "C" {
         CB_DATA         *this
     );
         
-        
+
+    /*!
+     Get the next element from the buffer if available within the given time.
+     Normally, this method is called from one thread and Put() from a different
+     thread.
+     @param:    this    CB object pointer
+     @param:    pValue  ptr to returned element data area
+     @param:    msWait  the maximum number of milliseconds to wait for
+                        data. 0 means do not wait, -1 (0xFFFFFFFF) means
+                        perform an infinite wait
+     @return:   If successful, true and the element is moved to pValue,
+                otherwise false.
+     */
     bool            cb_Get(
         CB_DATA         *this,
         void            *pValue,        // Copies element into the provided buffer
-        uint32_t        timeout         // in ms
+        uint32_t        msWait
     );
 
 
@@ -156,12 +174,33 @@ extern "C" {
     );
 
 
+    bool            cb_Pause(
+        CB_DATA         *this
+    );
+    
+    
+    /*!
+     Add an element to the end of the buffer if space is available. If space
+     is not available, wait until it is.
+     Normally, this method is called from one thread and Get() from a different
+     thread.
+     @param:    this    CB object pointer
+     @param:    pValue  ptr to returned element data area
+     @return:   If successful, true and the element is moved to pValue,
+                otherwise false.
+     */
     bool            cb_Put(
         CB_DATA         *this,
         void            *pValue
     );
 
 
+    bool            cb_Resume(
+        CB_DATA         *this
+    );
+    
+    
+    
 
 #ifdef	__cplusplus
 }

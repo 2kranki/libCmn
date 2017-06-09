@@ -65,11 +65,11 @@ struct psxCond_data_s	{
     // Common Data
     bool            (*condRoutine)(void *);
     void            *condData;
-#if defined(__APPLE__)
+#if defined(__MACOSX_ENV__)
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
 #endif
-#if defined(__TNEO__)
+#if defined(__PIC32MX_TNEO_ENV__)
     struct TN_Mutex mutex;
 #endif
 

@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "psxMutex_internal.h"
+#include    <psxMutex_internal.h>
+#include    <trace.h>
 
 
 
@@ -297,6 +298,7 @@ extern "C" {
             return false;
         }
 #endif
+        TRC_OBJ(this, "psxMutex_Lock(%p)...\n", this);
         
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
@@ -470,6 +472,7 @@ extern "C" {
             return false;
         }
 #endif
+        TRC_OBJ(this, "psxMutex_Unlock(%p)...\n", this);
         
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_unlock(&this->mutex);

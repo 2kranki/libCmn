@@ -38,6 +38,8 @@
 
 
 #include    <consumer.h>
+#include    <cb.h>
+#include    <psxLock.h>
 #include    <psxMutex.h>
 #include    <psxSem.h>
 #include    <psxThread.h>
@@ -64,11 +66,10 @@ struct consumer_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    PSXSEM_DATA     *pSemEmpty;
-    PSXSEM_DATA     *pSemFull;
-    PSXMUTEX_DATA   *pMutex;
+    PSXLOCK_DATA    *pLock;
     PSXTHREAD_DATA  *pThread;
-    
+    CB_DATA         *pBuffer;
+
     uint16_t        szDQueBuf;          // Buffer/Msg Size
     uint16_t        cDQueBufs;          // Number of Buffers/Msgs in Queue
     uint8_t         *pData;             // The buffers and index are here.

@@ -221,7 +221,10 @@ extern "C" {
             return;
         }
 #endif
-
+        
+        if (this->pFileOut) {
+            fflush(this->pFileOut);
+        }
         if (this->fOpened && this->pFileOut) {
             fclose(this->pFileOut);
             this->pFileOut = NULL;

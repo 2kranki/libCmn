@@ -36,7 +36,10 @@
 
 
 
-#include "cb_internal.h"
+#include    <cb_internal.h>
+#include    <trace.h>
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -49,6 +52,15 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    void *          cb_GetPtr(
+        CB_DATA         *this,
+        uint16_t        index
+    );
+    
+    uint16_t        cb_NumEntries(
+        CB_DATA         *this
+    );
+    
 #ifdef NDEBUG
 #else
     static
@@ -58,7 +70,31 @@ extern "C" {
 #endif
 
 
-    static
+    
+#ifdef NDEBUG
+#else
+    void                cb_DumpBuffer(
+        CB_DATA             *this
+    )
+    {
+        uint32_t        i;
+        
+        if (obj_Trace(this)) {
+            TRC_OBJ(
+                    this,
+                    "Buffer(%d) currently:%d\n",
+                    this->cEntries,
+                    cb_NumEntries(this)
+            );
+            for (i=0; i<cb_NumEntries(this); ++i) {
+                TRC_OBJ(this, "\t%d - %s\n", i, cb_GetPtr(this, i));
+            }
+        }
+    }
+#endif
+    
+    
+    
     void *          cb_GetPtr(
         CB_DATA         *this,
         uint16_t        index
@@ -69,10 +105,6 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cb_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
         if( index >= this->cEntries ) {
             DEBUG_BREAK();
             return NULL;
@@ -86,7 +118,23 @@ extern "C" {
 
 
 
+    uint16_t        cb_NumEntries(
+        CB_DATA         *this
+    )
+    {
+        uint16_t        numEntries = 0;
+        
+        numEntries = (uint16_t)(this->numWritten - this->numRead);
+        
+        // Return to caller.
+        return numEntries;
+    }
+    
+    
+    
 
+    
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -101,8 +149,8 @@ extern "C" {
     //---------------------------------------------------------------
 
     CB_DATA *       cb_Alloc(
-        uint16_t        size,           // Number of Elements in Buffer
-        uint16_t        elemSize        // Element Size in bytes
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size            // Number of Elements in Buffer
     )
     {
         CB_DATA         *this;
@@ -121,6 +169,7 @@ extern "C" {
         }
 #endif
         
+        elemSize = ROUNDUP4(elemSize);
         cbSize = size * elemSize;
         cbSize += sizeof(CB_DATA);
         if ((64 * 1024) <= cbSize) {
@@ -135,6 +184,42 @@ extern "C" {
         return this;
     }
 
+
+    //---------------------------------------------------------------
+    //                          N e w
+    //---------------------------------------------------------------
+    
+    CB_DATA *       cb_New(
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size            // Number of Elements in Buffer
+    )
+    {
+        CB_DATA         *this;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (0 == size) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        if (0 == elemSize) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        this = cb_Alloc(elemSize, size);
+        if (this) {
+            this = cb_Init(this);
+        }
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
+    
 
 
     
@@ -158,12 +243,13 @@ extern "C" {
 #endif
 
         // Return to caller.
-        return( this->cEntries );
+        return this->cEntries;
     }
 
 
 
 
+    
     //===============================================================
     //                          M e t h o d s
     //===============================================================
@@ -188,7 +274,21 @@ extern "C" {
         }
 #endif
         
+#ifdef XYZZY
+        psxLock_Lock(this->pLock);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_lock(&this->mutex);
+#endif
+        
         count = (uint16_t)(this->numWritten - this->numRead);
+        
+#ifdef XYZZY
+        psxLock_Unlock(this->pLock);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_unlock(&this->mutex);
+#endif
         
         // Return to caller.
         return( count );
@@ -205,6 +305,9 @@ extern "C" {
     )
     {
         CB_DATA		*this = objId;
+#if defined(__MACOSX_ENV__)
+        int             iRc;
+#endif
         
         // Do initialization.
 #ifdef NDEBUG
@@ -215,6 +318,7 @@ extern "C" {
         }
 #endif
         
+#ifdef XYZZY
         if (this->pSemEmpty) {
             obj_Release(this->pSemEmpty);
             this->pSemEmpty = OBJ_NIL;
@@ -227,6 +331,22 @@ extern "C" {
             obj_Release(this->pLock);
             this->pLock = OBJ_NIL;
         }
+#endif
+#if defined(__MACOSX_ENV__)
+        // We must release any Get()s/Put()s.
+        obj_FlagSet(this, CB_FLAG_TERM, true);
+        pthread_cond_broadcast(&this->cond);
+        usleep(500000);
+        
+        iRc = pthread_cond_destroy(&this->cond);
+        if (iRc) {
+            DEBUG_BREAK();
+        }
+        iRc = pthread_mutex_destroy(&this->mutex);
+        if (iRc) {
+            DEBUG_BREAK();
+        }
+#endif
         
         obj_setVtbl(this, this->pSuperVtbl);
         obj_Dealloc(this);
@@ -249,6 +369,7 @@ extern "C" {
     {
         bool            fRc = false;
         uint8_t         *pElem;
+        bool            fNotFull = false;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -259,32 +380,63 @@ extern "C" {
         }
     #endif
         
+#ifdef XYZZY
         psxSem_Wait(this->pSemFull);
-        
         psxLock_Lock(this->pLock);
-        
-        if ( (pData == NULL) || (((uint16_t)(this->numWritten - this->numRead)) == 0) ) {
+#endif
+#if defined(__MACOSX_ENV__)
+        if (obj_Flag(this, CB_FLAG_TERM)) {
+            return false;
         }
-        else {
-            pElem = cb_GetPtr(this, this->start );
-            if( pElem ) {
-                if( pData ) {
-                    memmove( pData, pElem, this->elemSize );
+        pthread_mutex_lock(&this->mutex);
+        while (cb_NumEntries(this) == 0) { // queue is empty
+            if (obj_Flag(this, CB_FLAG_TERM)) {
+                pthread_mutex_unlock(&this->mutex);
+                return false;
+            }
+            pthread_cond_wait(&this->cond, &this->mutex);
+        }
+#endif
+        
+        if (cb_NumEntries(this)) {
+            if (cb_NumEntries(this) < this->cEntries) {
+                fNotFull = true;
+            }
+            if (pData) {
+                pElem = cb_GetPtr(this, this->start);
+                if( pElem ) {
+                    TRC_OBJ(
+                            this,
+                            "cb_Get(%p):  %d Entries  start: %d - %s\n",
+                            this,
+                            cb_NumEntries(this),
+                            this->start,
+                            pElem
+                    );
+                    memmove(pData, pElem, this->elemSize);
+                    // below needed if multi-processor (???)
+                    //__sync_fetch_and_add( &this->numRead, 1 );
+                    ++this->numRead;
+                    ++this->start;
+                    if (this->start == this->cEntries) {
+                        this->start = 0;
+                    }
+                    fRc = true;
                 }
-                // below needed if multi-processor
-                //__sync_fetch_and_add( &cbp->numRead, 1 ); 
-                ++this->numRead;
-                ++this->start;
-                if (this->start == this->cEntries) {
-                    this->start = 0;
-                }
-                fRc = true;
             }
         }
         
+#ifdef XYZZY
+        pthread_mutex_unlock(&this-mutex);
         psxLock_Unlock(this->pLock);
-        
         psxSem_Post(this->pSemEmpty);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_unlock(&this->mutex);
+        if (fNotFull) {
+            pthread_cond_signal(&this->cond);
+        }
+#endif
         
         return fRc;
     }
@@ -306,12 +458,27 @@ extern "C" {
     #else
         if ( !cb_Validate(this) ) {
             DEBUG_BREAK();
-            return this;
+            return false;
         }
     #endif
 
-        if (((uint16_t)(this->numWritten - this->numRead)) == 0)
+#ifdef XYZZY
+        psxLock_Lock(this->pLock);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_lock(&this->mutex);
+#endif
+        
+        if (cb_NumEntries(this) == 0) {
             fRc = true;
+        }
+        
+#ifdef XYZZY
+        psxLock_Unlock(this->pLock);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_unlock(&this->mutex);
+#endif
         
         return fRc;
     }
@@ -337,9 +504,23 @@ extern "C" {
         }
     #endif
 
-        if (((uint16_t)(this->numWritten - this->numRead)) == this->cEntries) {
+#ifdef XYZZY
+        psxLock_Lock(this->pLock);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_lock(&this->mutex);
+#endif
+        
+        if (cb_NumEntries(this) == this->cEntries) {
             fRc = true;
         }
+        
+#ifdef XYZZY
+        psxLock_Unlock(this->pLock);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_unlock(&this->mutex);
+#endif
         
         return fRc;
     }
@@ -358,7 +539,9 @@ extern "C" {
         uint32_t        dataSize;
         uint16_t        size =  obj_getMisc1(this);
         uint16_t        elemSize =  obj_getMisc2(this);
-
+#if defined(__MACOSX_ENV__)
+        int             iRc;
+#endif
 
         // Do initialization.
         if (NULL == this) {
@@ -399,6 +582,7 @@ extern "C" {
         this->cEntries = size;
         this->elemSize = elemSize;
         
+#ifdef XYZZY
         this->pSemEmpty = psxSem_New(size,size);
         if (OBJ_NIL == this->pSemEmpty) {
             DEBUG_BREAK();
@@ -423,12 +607,58 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+#endif
+#if defined(__MACOSX_ENV__)
+        //this->mutex = PTHREAD_MUTEX_INITIALIZER;
+        iRc = pthread_mutex_init(&this->mutex, NULL);
+        if (iRc) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        // this->cond = PTHREAD_COND_INITIALIZER;
+        iRc = pthread_cond_init(&this->cond, NULL);
+        if (iRc) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
         
         return this;
     }
 
      
 
+    //---------------------------------------------------------------
+    //                       P a u s e
+    //---------------------------------------------------------------
+    
+    bool            cb_Pause(
+        CB_DATA         *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#if defined(__MACOSX_ENV__)
+        obj_FlagSet(this, CB_FLAG_TERM, true);
+        pthread_cond_broadcast(&this->cond);
+        usleep(100000);
+#endif
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                            P u t
     //---------------------------------------------------------------
@@ -450,34 +680,83 @@ extern "C" {
         }
     #endif
 
+#ifdef XYZZY
         psxSem_Wait(this->pSemEmpty);
-        
         psxLock_Lock(this->pLock);
-        
-        if ( (((uint16_t)(this->numWritten - this->numRead)) == this->cEntries) ) {
+#endif
+#if defined(__MACOSX_ENV__)
+        if (obj_Flag(this, CB_FLAG_TERM)) {
+            return false;
         }
-        else {
-            pElem = cb_GetPtr(this, this->end );
-            if (pElem) {
-                memmove(pElem, pValue, this->elemSize);
-                ++this->numWritten;
-                ++this->end;
-                if (this->end == this->cEntries) {
-                    this->end = 0;
-                }
-                fRc = true;
+        pthread_mutex_lock(&this->mutex);
+        while (cb_NumEntries(this) == this->cEntries) { // queue is full
+            if (obj_Flag(this, CB_FLAG_TERM)) {
+                pthread_mutex_unlock(&this->mutex);
+                return false;
             }
+            pthread_cond_wait (&this->cond, &this->mutex);
+        }
+#endif
+        
+        TRC_OBJ(
+                this,
+                "cb_Put(%p): %d Entries  end: %d\n",
+                this,
+                cb_NumEntries(this),
+                this->end
+        );
+        pElem = cb_GetPtr(this, this->end);
+        if (pElem) {
+            memmove(pElem, pValue, this->elemSize);
+            ++this->numWritten;
+            ++this->end;
+            if (this->end == this->cEntries) {
+                this->end = 0;
+            }
+            fRc = true;
         }
 
+#ifdef XYZZY
         psxLock_Unlock(this->pLock);
-        
         psxSem_Post(this->pSemFull);
+#endif
+#if defined(__MACOSX_ENV__)
+        pthread_mutex_unlock(&this->mutex);
+        pthread_cond_signal(&this->cond);
+#endif
         
         return fRc;
     }
 
 
 
+    //---------------------------------------------------------------
+    //                       R e s u m e
+    //---------------------------------------------------------------
+    
+    bool            cb_Resume(
+        CB_DATA         *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#if defined(__MACOSX_ENV__)
+        obj_FlagSet(this, CB_FLAG_TERM, false);
+#endif
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        V a l i d a t e
     //---------------------------------------------------------------

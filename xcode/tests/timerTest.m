@@ -88,7 +88,11 @@ void *          timerRoutine(
     struct timeval  endTime;
     int             iRc;
 #endif
-   
+
+    fprintf(stderr, "WARNING: this does not run correctly in the Obj-C environment!\n");
+    fprintf(stderr, "(Probably, because the Obj-C environment has its own threading)\n");
+    fprintf(stderr, "\n");
+    
     fprintf(stderr, "timerRoutine = %p\n", timerRoutine);
     pObj = timer_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );

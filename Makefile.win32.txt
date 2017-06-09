@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 7/2017 15:41:45.000)
+# ( 6/ 8/2017 12:21:24.000)
 
 
 LIBNAM=libCmn
@@ -215,6 +215,14 @@ test_appl:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_cb
+
+test_cb:
+	$(CC) $(CFLAGS) /Itests tests\test_cb.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_clo
 
 test_clo:
@@ -227,6 +235,14 @@ TESTS = $(TESTS) test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) /Itests tests\test_cloOpt.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_msgBus
+
+test_msgBus:
+	$(CC) $(CFLAGS) /Itests tests\test_msgBus.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

@@ -131,7 +131,16 @@ extern "C" {
     );
     
     
+    /*!
+     Wait in the current thread for msWait milli-seconds.
+     */
+    void            psxThread_Wait(
+        uint32_t        msWait
+    );
+    
+    
 
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
@@ -213,6 +222,21 @@ extern "C" {
     );
 
 
+    bool            psxThread_IsEnded(
+        PSXTHREAD_DATA	*this
+    );
+    
+    
+    bool        psxThread_IsPaused(
+        PSXTHREAD_DATA	*this
+    );
+    
+    
+    bool            psxThread_IsRunning(
+        PSXTHREAD_DATA	*this
+    );
+    
+    
     /*!
      Join the worker thread (ie wait for the worker thread to end its execution).
      This is called from an external thread that wants to wait for the completion

@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <psxLock_internal.h>
+#include    <psxLock_internal.h>
+#include    <trace.h>
 
 
 

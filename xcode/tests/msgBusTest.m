@@ -30,6 +30,48 @@
 
 
 
+#define NUM_OBJ      4
+#define NUM_STR     10
+
+/* Other variables */
+static
+char        *StrObj[NUM_OBJ] = {
+    //   1234567890
+    "Obj1",
+    "Obj2",
+    "Obj3",
+    "Obj4"
+};
+
+static
+char        *StrArray[NUM_STR] = {
+    //   1234567890
+    "String  1",
+    "String  2",
+    "String  3",
+    "String  4",
+    "String  5",
+    "String  6",
+    "String  7",
+    "String  8",
+    "String  9",
+    "String 10"
+};
+
+
+
+
+void        printMsg(
+    void        *pObj,
+    void        *pMsg
+)
+{
+    fprintf(stderr, "%s  %s\n", pObj, pMsg);
+}
+
+
+
+
 @interface msgBusTests : XCTestCase
 
 @end
@@ -65,12 +107,25 @@
 - (void)testOpenClose
 {
     MSGBUS_DATA	*pObj = OBJ_NIL;
-   
+    ERESULT     eRc;
+    int         i;
+    
     pObj = msgBus_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = msgBus_Init( pObj, 8, 10 );
+    pObj = msgBus_Init( pObj, 10, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_TraceSet(pObj, true);
     if (pObj) {
+        
+        for (i=0; i<NUM_OBJ; ++i) {
+            eRc = msgBus_Register(pObj, printMsg, StrObj[i]);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        }
+        for (i=0; i<NUM_STR; ++i) {
+            eRc = msgBus_Broadcast(pObj, (void *)0, (uint8_t *)StrArray[0]);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        }
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

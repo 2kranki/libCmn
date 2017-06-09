@@ -40,10 +40,13 @@
 
 
 #include    <msgBus.h>
-#include    <consumer_internal.h>
+#include    <cb.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <psxLock.h>
+#include    <psxMutex.h>
+#include    <psxSem.h>
+#include    <psxThread.h>
 
 
 
@@ -57,19 +60,29 @@ extern "C" {
 #endif
 
 
+    typedef struct msg_entry {
+        OBJ_ID      pObj;
+        uint8_t     msg[0];
+    } MSG_ENTRY;
 
 
 #pragma pack(push, 1)
 struct msgBus_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    CONSUMER_DATA   super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
     PSXLOCK_DATA    *pLock;
     NODEARRAY_DATA  *pRegistry;
+    PSXTHREAD_DATA  *pThread;
+    CB_DATA         *pBuffer;
+    volatile
+    uint32_t        msWait;
+    uint16_t        messageSize;
+    uint16_t        rsvd16;
 
 };
 #pragma pack(pop)

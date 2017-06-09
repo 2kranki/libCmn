@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 7/2017 15:41:46.000)
+# ( 6/ 8/2017 12:21:25.000)
 
 
 LIBNAM=libCmn
@@ -1399,6 +1399,13 @@ test_appl:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_cb
+
+test_cb:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_clo
 
 test_clo:
@@ -1410,6 +1417,13 @@ TESTS += test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_msgBus
+
+test_msgBus:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_msgBus.c 
 	$(OBJDIR)/$(@F)
 
 

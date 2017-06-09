@@ -213,19 +213,14 @@ extern "C" {
             this->pData = NULL;
         }
         
-        if (this->pSemEmpty) {
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
+        if (this->pLock) {
+            obj_Release(this->pLock);
+            this->pLock = OBJ_NIL;
         }
         
-        if (this->pSemFull) {
-            obj_Release(this->pSemFull);
-            this->pSemFull = OBJ_NIL;
-        }
-        
-        if (this->pMutex) {
-            obj_Release(this->pMutex);
-            this->pMutex = OBJ_NIL;
+        if (this->pBuffer) {
+            obj_Release(this->pBuffer);
+            this->pBuffer = OBJ_NIL;
         }
         
         obj_setVtbl(this, this->pSuperVtbl);
@@ -334,39 +329,15 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&consumer_Vtbl);
         
-        // Allocate buffers now so that we have the space available.
-        this->szDQueBuf  = messageSize;
-        this->cDQueBufs  = messageCount;
-        cbSize = this->cDQueBufs * this->szDQueBuf;
-        cbSize += this->cDQueBufs * sizeof(void *);
-        this->pData = mem_Malloc(cbSize);
-        if (NULL == this->pData) {
+        this->pBuffer = cb_New(messageSize, messageCount);
+        if (OBJ_NIL == this->pBuffer) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-
-        this->pSemEmpty = psxSem_New(messageCount, messageCount);
-        if (OBJ_NIL == this->pSemEmpty) {
+        this->pLock = psxLock_New();
+        if (OBJ_NIL == this->pLock) {
             DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        this->pSemFull = psxSem_New(0, messageCount);
-        if (OBJ_NIL == this->pSemFull) {
-            DEBUG_BREAK();
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        this->pMutex = psxMutex_New();
-        if (OBJ_NIL == this->pMutex) {
-            DEBUG_BREAK();
-            obj_Release(this->pSemFull);
-            this->pSemFull = OBJ_NIL;
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
             obj_Release(this);
             return OBJ_NIL;
         }

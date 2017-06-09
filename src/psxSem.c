@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "psxSem_internal.h"
+#include    <psxSem_internal.h>
+#include    <trace.h>
 
 
 
@@ -135,6 +136,8 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         count = this->count;
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         count = 0;      //FIXME:
 #endif
@@ -219,6 +222,8 @@ extern "C" {
         PSXSEM_DATA     *this = objId;
 #if defined(__MACOSX_ENV__)
         int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         enum TN_RCode   tnRc;
@@ -466,6 +471,8 @@ extern "C" {
         fRc = psxSem_Post(this);
         return fRc;
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_isignal(&cbp->sem);
         if (TN_RC_OK == tRc)
@@ -679,6 +686,8 @@ extern "C" {
         }
         pthread_mutex_unlock(&this->mutex);
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_wait_polling(&cbp->sem);
         if (TN_RC_OK == tRc) {
@@ -714,6 +723,8 @@ extern "C" {
         
 #if defined(__MACOSX_ENV__)
         fRc = psxSem_Wait(this);
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tRc = tn_sem_iwait_polling(&cbp->sem);

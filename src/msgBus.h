@@ -126,11 +126,21 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     msgBus_getLastError(
+    ERESULT         msgBus_getLastError(
         MSGBUS_DATA		*this
     );
 
 
+    uint32_t        msgBus_getWait(
+        MSGBUS_DATA     *this
+    );
+    
+    bool            msgBus_setWait(
+        MSGBUS_DATA     *this,
+        uint32_t        value
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -141,7 +151,8 @@ extern "C" {
      Broadcast a message to all objects registered on the message bus
      except the originator if the originator is identified.
      @param:    this    MSGBUS object pointer
-     @param:    pObj    OBJ_ID of the message originator otherwise OBJ_NIL.
+     @param:    pRcvData Ptr to receive routine data area which is used
+                        as the routine/data for identification or NULL.
                         If an object id is supplied, that object will
                         not receive the message otherwise all registered
                         objects will receive the message.
@@ -150,7 +161,7 @@ extern "C" {
      */
     ERESULT     msgBus_Broadcast(
         MSGBUS_DATA		*this,
-        OBJ_ID          pObj,
+        void            *pRcvData,
         uint8_t         *pMsg
     );
     
@@ -180,14 +191,16 @@ extern "C" {
     /*!
      Add an object to the message bus giving its method for message reception.
      @param:    this    MSGBUS object pointer
-     @param:    pObj    OBJ_ID of object to receive messages
-     @param:    pRcv    method within pObj that receives the messages
+     @param:    pRcvData Ptr to receive routine data area and the key used to
+                        identify the routine/data for message transmission
+     @param:    pRcv    a routine that will receive the msg as its second parameter
+                        and its data ptr as its first parameter
      @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_Register(
         MSGBUS_DATA		*this,
-        OBJ_ID          pObj,
-        ERESULT         (*pReceive)(OBJ_ID, void *)
+        void            (*pRcv)(void *, void *),
+        void            *pRcvData
     );
     
     
@@ -212,12 +225,13 @@ extern "C" {
     /*!
      Remove an object from the message bus.
      @param:    this    MSGBUS object pointer
-     @param:    pObj    OBJ_ID of object to receive messages
+     @param:    pRcvData Ptr to receive routine data area and the key used to
+                        identify the routine/data for message transmission
      @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_UnregisterObject(
         MSGBUS_DATA		*this,
-        OBJ_ID          pObj
+        void            *pRcvData
     );
     
     
