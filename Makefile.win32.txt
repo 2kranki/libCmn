@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/ 9/2017 20:19:05.000)
+# ( 6/10/2017 14:20:53.000)
 
 
 LIBNAM=libCmn
@@ -235,6 +235,14 @@ TESTS = $(TESTS) test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) /Itests tests\test_cloOpt.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_consumer
+
+test_consumer:
+	$(CC) $(CFLAGS) /Itests tests\test_consumer.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

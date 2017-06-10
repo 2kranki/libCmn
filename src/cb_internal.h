@@ -75,11 +75,13 @@ extern "C" {
 #endif
 #if defined(__MACOSX_ENV__)
         pthread_mutex_t mutex;
-        pthread_cond_t  cond;
+        pthread_cond_t  condEmpty;
+        pthread_cond_t  condFull;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         CRITICAL_SECTION    csMutex;
-        CONDITION_VARIABLE  cvCond;
+        CONDITION_VARIABLE  cvCondEmpty;
+        CONDITION_VARIABLE  cvCondFull;
 #endif
         
         // Common Data

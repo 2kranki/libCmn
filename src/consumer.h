@@ -96,7 +96,9 @@ extern "C" {
     
     CONSUMER_DATA *     consumer_New(
         uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+        uint16_t        messageCount,        // Max Message Queue size
+        void *          (*pMsgRcvRoutine)(void *, void *),
+        void            *pRoutineData
     );
     
     
@@ -105,18 +107,23 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         consumer_getLastError(
+        CONSUMER_DATA   *this
+    );
+    
 
+    
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool        consumer_Disable(
+    bool            consumer_Disable(
         CONSUMER_DATA	*this
     );
 
 
-    bool        consumer_Enable(
+    bool            consumer_Enable(
         CONSUMER_DATA	*this
     );
 
@@ -124,15 +131,23 @@ extern "C" {
     CONSUMER_DATA * consumer_Init(
         CONSUMER_DATA   *this,
         uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+        uint16_t        messageCount,       // Max Message Queue size
+        void *          (*pMsgRoutine)(void *, void *),
+        void            *pRoutineData
     );
 
 
-    bool        consumer_IsEnabled(
+    bool            consumer_IsEnabled(
         CONSUMER_DATA	*this
     );
     
  
+    ERESULT         consumer_SendMessage(
+        CONSUMER_DATA	*this,
+        void            *pMsg
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -145,7 +160,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *    consumer_ToDebugString(
+    ASTR_DATA *     consumer_ToDebugString(
         CONSUMER_DATA   *this,
         int             indent
     );

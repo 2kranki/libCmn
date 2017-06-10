@@ -125,7 +125,7 @@ extern "C" {
      @return:   pointer to PSXThread object if successful, otherwise OBJ_NIL.
      */
     PSXTHREAD_DATA * psxThread_New(
-        void            *(*startRoutine)(void *),
+        void  *         (*pStartRoutine)(void *),
         void            *routineData,
         uint32_t        stackSize           // Stack Size in Bytes (optional)
     );
@@ -161,7 +161,7 @@ extern "C" {
     
     bool        psxThread_setRoutine(
         PSXTHREAD_DATA	*this,
-        void            *(*startRoutine)(void *),
+        void *          (*pStartRoutine)(void *),
         void            *routineData
     );
     

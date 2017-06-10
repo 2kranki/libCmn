@@ -342,10 +342,15 @@ extern "C" {
         // We must release any Get()s/Put()s.
         obj_FlagSet(this, CB_FLAG_PAUSE, true);
 #if defined(__MACOSX_ENV__)
-        pthread_cond_broadcast(&this->cond);
+        pthread_cond_broadcast(&this->condEmpty);
+        pthread_cond_broadcast(&this->condFull);
         usleep(500000);
         
-        iRc = pthread_cond_destroy(&this->cond);
+        iRc = pthread_cond_destroy(&this->condEmpty);
+        if (iRc) {
+            DEBUG_BREAK();
+        }
+        iRc = pthread_cond_destroy(&this->condFull);
         if (iRc) {
             DEBUG_BREAK();
         }
@@ -355,7 +360,8 @@ extern "C" {
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        WakeAllConditionVariable(&this->cvCond);
+        WakeAllConditionVariable(&this->cvCondEmpty);
+        WakeAllConditionVariable(&this->cvCondFull);
         Sleep(500);
 #endif
         
@@ -404,7 +410,7 @@ extern "C" {
                 pthread_mutex_unlock(&this->mutex);
                 return false;
             }
-            pthread_cond_wait(&this->cond, &this->mutex);
+            pthread_cond_wait(&this->condFull, &this->mutex);
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -414,7 +420,7 @@ extern "C" {
                 LeaveCriticalSection(&this->csMutex);
                 return false;
             }
-            SleepConditionVariableCS(&this->cvCond, &this->csMutex, INFINITE);
+            SleepConditionVariableCS(&this->cvCondFull, &this->csMutex, INFINITE);
         }
 #endif
         
@@ -452,15 +458,11 @@ extern "C" {
 #endif
 #if defined(__MACOSX_ENV__)
         pthread_mutex_unlock(&this->mutex);
-        if (fNotFull) {
-            pthread_cond_signal(&this->cond);
-        }
+        pthread_cond_signal(&this->condEmpty);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         LeaveCriticalSection(&this->csMutex);
-        if (fNotFull) {
-            WakeConditionVariable(&this->cvCond);
-        }
+        WakeConditionVariable(&this->cvCondEmpty);
 #endif
         
         return fRc;
@@ -653,8 +655,15 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        // this->cond = PTHREAD_COND_INITIALIZER;
-        iRc = pthread_cond_init(&this->cond, NULL);
+        // this->condEmpty = PTHREAD_COND_INITIALIZER;
+        iRc = pthread_cond_init(&this->condEmpty, NULL);
+        if (iRc) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        // this->condFull = PTHREAD_COND_INITIALIZER;
+        iRc = pthread_cond_init(&this->condFull, NULL);
         if (iRc) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -663,7 +672,8 @@ extern "C" {
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         InitializeCriticalSection(&this->csMutex);
-        InitializeConditionVariable(&this->cvCond);
+        InitializeConditionVariable(&this->cvCondEmpty);
+        InitializeConditionVariable(&this->cvCondFull);
 #endif
         
         return this;
@@ -691,11 +701,13 @@ extern "C" {
         
         obj_FlagSet(this, CB_FLAG_PAUSE, true);
 #if defined(__MACOSX_ENV__)
-        pthread_cond_broadcast(&this->cond);
+        pthread_cond_broadcast(&this->condEmpty);
+        pthread_cond_broadcast(&this->condFull);
         usleep(100000);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        WakeAllConditionVariable(&this->cvCond);
+        WakeAllConditionVariable(&this->cvCondEmpty);
+        WakeAllConditionVariable(&this->cvCondFull);
         Sleep(500);
 #endif
         
@@ -739,7 +751,7 @@ extern "C" {
                 pthread_mutex_unlock(&this->mutex);
                 return false;
             }
-            pthread_cond_wait (&this->cond, &this->mutex);
+            pthread_cond_wait (&this->condEmpty, &this->mutex);
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -749,7 +761,7 @@ extern "C" {
                 LeaveCriticalSection(&this->csMutex);
                 return false;
             }
-            SleepConditionVariableCS(&this->cvCond, &this->csMutex, INFINITE);
+            SleepConditionVariableCS(&this->cvCondEmpty, &this->csMutex, INFINITE);
         }
 #endif
         
@@ -779,11 +791,11 @@ extern "C" {
 #endif
 #if defined(__MACOSX_ENV__)
         pthread_mutex_unlock(&this->mutex);
-        pthread_cond_signal(&this->cond);
+        pthread_cond_signal(&this->condFull);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         LeaveCriticalSection(&this->csMutex);
-        WakeConditionVariable(&this->cvCond);
+        WakeConditionVariable(&this->cvCondFull);
 #endif
         
         return fRc;

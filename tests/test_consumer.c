@@ -28,6 +28,37 @@
 
 
 
+#define NUM_STR     10
+
+static
+char        *StrArray[NUM_STR] = {
+//   1234567890
+    "String  1",
+    "String  2",
+    "String  3",
+    "String  4",
+    "String  5",
+    "String  6",
+    "String  7",
+    "String  8",
+    "String  9",
+    "String 10"
+};
+
+
+
+static
+void        printMsg(
+    void        *pObj,
+    void        *pMsg
+)
+{
+    fprintf(stderr, "  Recieved - %s\n", pMsg);
+}
+
+
+
+
 
 
 int             setUp(
@@ -70,16 +101,22 @@ int             test_consumer_OpenClose(
     char            *pTestName
 )
 {
-    CONSUMER_DATA   *pObj = OBJ_NIL;
+    CONSUMER_DATA	*pObj = OBJ_NIL;
+    int             i;
    
-    pObj = consumer_Alloc(0);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = consumer_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = consumer_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = consumer_Init( pObj, 10, 4, (void *)printMsg, pObj);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-
-        // Test something.
-
+        
+        printf("Sending Messages...\n");
+        for (i=0; i<NUM_STR; ++i) {
+            printf("  Sending %s...\n", StrArray[i]);
+            consumer_SendMessage(pObj, StrArray[i]);
+        }
+       
+        psxThread_Wait(2000); 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

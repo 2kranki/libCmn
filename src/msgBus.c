@@ -657,7 +657,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pThread = psxThread_New(msgBus_task_body, this ,0);
+        this->pThread = psxThread_New(msgBus_task_body, this, 0);
         if (OBJ_NIL == this->pThread) {
             DEBUG_BREAK();
             obj_Release(this);

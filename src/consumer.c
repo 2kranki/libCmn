@@ -58,16 +58,26 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef TO_BE_USED_LATER
     static
-    void            consumer_task_body(
+    void *          consumer_task_body(
         void            *pData
     )
     {
         CONSUMER_DATA   *this = pData;
+        uint8_t         msg[512];
+        uint8_t         *pEntry = (void *)msg;
+        bool            fRc;
         
+        // WARNING: We had to make this pausible.
+        fRc = cb_Get(this->pBuffer, pEntry);
+        if (fRc) {
+            if (this->pMsgRcvRoutine) {
+                this->pMsgRcvRoutine(this->pRoutineData, pEntry);
+            }
+         }
+        
+        return NULL;
     }
-#endif
 
 
 
@@ -98,14 +108,22 @@ extern "C" {
 
     CONSUMER_DATA * consumer_New(
         uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+        uint16_t        messageCount,       // Max Message Queue size
+        void *          (*pMsgRoutine)(void *, void *),
+        void            *pRoutineData
     )
     {
         CONSUMER_DATA   *this;
         
         this = consumer_Alloc( );
         if (this) {
-            this = consumer_Init( this, messageSize, messageCount );
+            this =  consumer_Init(
+                                 this,
+                                 messageSize,
+                                 messageCount,
+                                 pMsgRoutine,
+                                 pRoutineData
+                    );
         } 
         return( this );
     }
@@ -118,6 +136,49 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         consumer_getLastError(
+        CONSUMER_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !consumer_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            consumer_setLastError(
+        CONSUMER_DATA   *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !consumer_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
     uint16_t        consumer_getPriority(
         CONSUMER_DATA   *this
     )
@@ -203,14 +264,14 @@ extern "C" {
         }
 #endif
 
+        // WARNING: Order is important here!
+        
+        cb_Pause(this->pBuffer);
+        psxThread_Terminate(this->pThread);
+        
         if (this->pThread) {
             obj_Release(this->pThread);
             this->pThread = OBJ_NIL;
-        }
-        
-        if (this->pData) {
-            mem_Free(this->pData);
-            this->pData = NULL;
         }
         
         if (this->pLock) {
@@ -299,7 +360,9 @@ extern "C" {
     CONSUMER_DATA * consumer_Init(
         CONSUMER_DATA   *this,
         uint16_t        messageSize,
-        uint16_t        messageCount        // Max Message Queue size
+        uint16_t        messageCount,       // Max Message Queue size
+        void *          (*pMsgRoutine)(void *, void *),
+        void            *pRoutineData
     )
     {
         uint32_t        cbSize = sizeof(CONSUMER_DATA);
@@ -329,6 +392,9 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&consumer_Vtbl);
         
+        this->pMsgRcvRoutine = pMsgRoutine;
+        this->pRoutineData = pRoutineData;
+        
         this->pBuffer = cb_New(messageSize, messageCount);
         if (OBJ_NIL == this->pBuffer) {
             DEBUG_BREAK();
@@ -337,6 +403,13 @@ extern "C" {
         }
         this->pLock = psxLock_New();
         if (OBJ_NIL == this->pLock) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this->pThread = psxThread_New(consumer_task_body, this, 0);
+        if (OBJ_NIL == this->pThread) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -380,6 +453,39 @@ extern "C" {
         
         // Return to caller.
         return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    S e n d  M e s s a g e
+    //---------------------------------------------------------------
+    
+    ERESULT         consumer_SendMessage(
+        CONSUMER_DATA	*this,
+        void            *pMsg
+    )
+    {
+        bool            fRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !consumer_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        fRc = cb_Put(this->pBuffer, pMsg);
+        if (!fRc) {
+            consumer_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        // Return to caller.
+        consumer_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     

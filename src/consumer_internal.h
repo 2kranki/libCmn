@@ -66,15 +66,12 @@ struct consumer_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
+    ERESULT         eRc;
     PSXLOCK_DATA    *pLock;
     PSXTHREAD_DATA  *pThread;
     CB_DATA         *pBuffer;
-
-    uint16_t        szDQueBuf;          // Buffer/Msg Size
-    uint16_t        cDQueBufs;          // Number of Buffers/Msgs in Queue
-    uint8_t         *pData;             // The buffers and index are here.
-    uint32_t        *pDQueBufs;         // Points into data[0] below
-    uint32_t        **ppDQueBufs;       // Points into data[0] below
+    void *          (*pMsgRcvRoutine)(void *, void *);
+    void            *pRoutineData;
 
     uint16_t        size;               // maximum number of elements
     uint16_t        reserved;

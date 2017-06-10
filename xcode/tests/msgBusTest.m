@@ -61,6 +61,7 @@ char        *StrArray[NUM_STR] = {
 
 
 
+static
 void        printMsg(
     void        *pObj,
     void        *pMsg
