@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   mon.c
+ * File:   scanhex32.c
  * Author: bob
  *
  * Created on October 25, 2014
@@ -87,18 +87,20 @@ bool            scanHex32(
 		// Handle Quoted Arguments.
 		if( ('0' <= chr) && ('9' >= chr) ) {
             value = (value << 4) + (chr - '0');
+            ++cHex;
         }
         else if( ('a' <= chr) && ('f' >= chr) ) {
             value = (value << 4) + (chr - 'a' + 10);
+            ++cHex;
         }
         else if( ('A' <= chr) && ('F' >= chr) ) {
             value = (value << 4) + (chr - 'A' + 10);
+            ++cHex;
         }
         else {
             break;
         }
         ++cLen;
-        ++cHex;
         ++pCurChr;
 	}
 

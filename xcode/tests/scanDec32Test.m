@@ -28,7 +28,6 @@
  */
 
 #import <XCTest/XCTest.h>
-#import <libCmn/libCmn.h>
 
 
 // All code under test must be linked into the Unit Test bundle

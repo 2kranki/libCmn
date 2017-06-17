@@ -109,8 +109,16 @@ extern "C" {
     );
     
     
-    bool            hex_ScanUint32(
+    /*!
+     Try to convert the string to a unsigned 32-bit number with format of 
+     "[+ | -][0..9a..fA..F]*". Overflow is not detected in the scan.
+     @return:
+     if successful, the scanned number. Otherwise, 0 is returned if the number
+     is malformed.
+     */
+    bool            hex_ScanUint32A(
         uint32_t        cLen,
+        const
         char            *pInputBuffer,
         uint32_t        *pAmount
     );

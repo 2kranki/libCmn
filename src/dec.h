@@ -105,10 +105,14 @@ extern "C" {
     );
     
     
-    // getInt32() tries to convert the string to a signed 32-bit
-    // number with format [+ | -][0..9]*
-    // 0 is returned if the number is mal-formed and overflow is
-    // not checked.
+    /*!
+     Try to convert the string to a signed 32-bit number with format [+ | -][0..9]*
+     @return:
+             if successful, the scanned number. Otherwise, 0 is returned if the number
+             is malformed.
+     @Warning:
+            Overflow is not checked.
+     */
     int32_t          dec_getInt32A(
         const
         char            *pStr

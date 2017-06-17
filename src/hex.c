@@ -264,8 +264,9 @@ extern "C" {
     //                     S c a n  H e x
     //---------------------------------------------------------------
     
-    bool            hex_ScanUint32(
+    bool            hex_ScanUint32A(
         uint32_t        cLen,
+        const
         char            *pInputBuffer,
         uint32_t        *pAmount
     )

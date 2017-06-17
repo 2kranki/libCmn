@@ -138,7 +138,7 @@ bool            scanString(
                         if (('\0' == *pCurChr) || ('\0' == *(pCurChr+1))) {
                             return false;
                         }
-                        fRc = hex_ScanUint32( 2, pCurChr, &hexNumber );
+                        fRc = hex_ScanUint32A(2, pCurChr, &hexNumber);
                         if (fRc) {
                             *pOutput++ = (char)hexNumber;
                             ++cOutput;
