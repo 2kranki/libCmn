@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/10/2017 14:20:53.000)
+# ( 6/18/2017 17:45:28.000)
 
 
 LIBNAM=libCmn
@@ -203,6 +203,35 @@ $(OBJS: =  )
 
 
 
+PROGS =
+
+
+
+PROGS = $(PROGS) genGetterSetter
+
+genGetterSetter:
+	$(CC) $(CFLAGS) /Iprograms\genGetterSetter programs\genGetterSetter\genGetterSetter.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+PROGS = $(PROGS) genMake
+
+genMake:
+	$(CC) $(CFLAGS) /Iprograms\genMake programs\genMake\genMake.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+
+
+programs:  $(PROGS)
+
+
+
+
+
+
 TESTS =
 
 
@@ -243,6 +272,14 @@ TESTS = $(TESTS) test_consumer
 
 test_consumer:
 	$(CC) $(CFLAGS) /Itests tests\test_consumer.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_dbCsv
+
+test_dbCsv:
+	$(CC) $(CFLAGS) /Itests tests\test_dbCsv.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

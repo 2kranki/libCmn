@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/10/2017 14:20:54.000)
+# ( 6/18/2017 17:45:29.000)
 
 
 LIBNAM=libCmn
@@ -1388,6 +1388,34 @@ $(LIBPATH):  $(OBJS)
 
 
 
+PROGS =
+
+
+
+PROGS += genGetterSetter
+
+genGetterSetter:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genGetterSetter $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genGetterSetter/genGetterSetter.c 
+	echo $(OBJDIR)/$(@F)
+
+
+PROGS += genMake
+
+genMake:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genMake $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genMake/genMake.c 
+	echo $(OBJDIR)/$(@F)
+
+
+
+
+.PHONY: programs
+programs:  $(PROGS)
+
+
+
+
+
+
 TESTS =
 
 
@@ -1424,6 +1452,13 @@ TESTS += test_consumer
 
 test_consumer:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_consumer.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_dbCsv
+
+test_dbCsv:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dbCsv.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1492,6 +1527,7 @@ test_trace:
 
 
 
+.PHONY: test
 test:  $(TESTS)
 
 

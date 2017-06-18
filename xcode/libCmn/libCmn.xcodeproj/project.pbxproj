@@ -2562,7 +2562,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../src/*";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../src",
+					"$(PROJECT_DIR)/../../src/macosx",
+				);
 				INFOPLIST_FILE = libCmn/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -2582,7 +2585,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../src/*";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../src",
+					"$(PROJECT_DIR)/../../src/macosx",
+				);
 				INFOPLIST_FILE = libCmn/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -2602,8 +2608,8 @@
 					"DEBUG=1",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../../src",
-					"$(PROJECT_DIR)/../../src/macosx",
+					/Users/bob/git/libCmn/src,
+					/Users/bob/git/libCmn/src/macosx,
 				);
 				INFOPLIST_FILE = libCmnTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
@@ -2624,8 +2630,8 @@
 				);
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../../src",
-					"$(PROJECT_DIR)/../../src/macosx",
+					/Users/bob/git/libCmn/src,
+					/Users/bob/git/libCmn/src/macosx,
 				);
 				INFOPLIST_FILE = libCmnTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";

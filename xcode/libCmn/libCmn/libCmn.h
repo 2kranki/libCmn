@@ -17,6 +17,7 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <libCmn/PublicHeader.h>
 
+#import <libCmn/appl.h>
 #import <libCmn/arrayExpand.h>
 #import <libCmn/ascii.h>
 #import <libCmn/AStr.h>
@@ -35,6 +36,8 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/cb32.h>
 #import <libCmn/cfa.h>
 #import <libCmn/chario.h>
+#import <libCmn/clo.h>
+#import <libCmn/cloOpt.h>
 #import <libCmn/cmdutl.h>
 #import <libCmn/cmn_defs.h>
 #import <libCmn/cmn_osx.h>

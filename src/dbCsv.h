@@ -170,6 +170,13 @@ extern "C" {
     );
     
     
+    bool            dbCsv_setRecordProcess(
+        DBCSV_DATA      *this,
+        bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord),
+        void            *pRecordData
+    );
+    
+    
     
     
     //---------------------------------------------------------------
@@ -198,10 +205,10 @@ extern "C" {
 
     
     /*!
-     Parse the string/file given and return ??? that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+     Parse the string/file given and return an object array of records where
+     each record is an object array of fields. The fields are always strings.
+     @return:   If successful, an ObjArray object which must be released,
+                otherwise OBJ_NIL.
      */
     OBJARRAY_DATA * dbCsv_ParseFile(
         DBCSV_DATA		*this

@@ -32,7 +32,6 @@
 
 
 #import <XCTest/XCTest.h>
-#import <libCmn/libCmn.h>
 
 
 
@@ -55,6 +54,7 @@
 //      XCTAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
+#include    <cmn_defs.h>
 #include    "dbCsv_internal.h"
 #include    "szTbl.h"
 

@@ -61,6 +61,7 @@ struct dbCsv_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     SRCFILE_DATA    *pSrc;
@@ -71,6 +72,11 @@ struct dbCsv_data_s	{
     uint16_t        sizeFld;            // Size of pFld including NUL
     uint16_t        lenFld;             // Used Length in pFld excluding NUL
     int32_t         *pFld;              // Work String
+    
+    bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord);
+    //                                  // Returns: true == Add Record to Records
+    //                                  //          false == Don't add Record
+    void            *pRecordData;
 
 };
 //#pragma pack(pop)

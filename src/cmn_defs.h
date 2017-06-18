@@ -214,12 +214,6 @@ extern "C" {
         OBJ_IDENT_DBFIELD_CLASS,
         OBJ_IDENT_DEC,                  // Decimal (Base 10)
         OBJ_IDENT_DEC_CLASS,
-        OBJ_IDENT_DEVBASE,              // Device Driver Base/Lower Object
-        OBJ_IDENT_DEVBASE_CLASS,
-        OBJ_IDENT_DEVICE,               // Device Virtual Object
-        OBJ_IDENT_DEVICE_CLASS,
-        OBJ_IDENT_DEVMGR,               // Device Manager
-        OBJ_IDENT_DEVMGR_CLASS,
         OBJ_IDENT_DIR,
         OBJ_IDENT_DIR_CLASS,
         OBJ_IDENT_DIRENTRY,
@@ -250,12 +244,6 @@ extern "C" {
         OBJ_IDENT_HASH32_CLASS,
         OBJ_IDENT_HEX,                  // Hex Input/Output
         OBJ_IDENT_HEX_CLASS,
-        OBJ_IDENT_HISTBASE,             // ???
-        OBJ_IDENT_HISTBASE_CLASS,
-        OBJ_IDENT_IOMGR,                // I/O Manager
-        OBJ_IDENT_IOMGR_CLASS,
-        OBJ_IDENT_IORCD,                // Record I/O
-        OBJ_IDENT_IORCD_CLASS,
         OBJ_IDENT_JSON,                 // JSON Parser
         OBJ_IDENT_JSON_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner

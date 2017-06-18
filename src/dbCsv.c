@@ -76,7 +76,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !dbCsv_Validate( this ) ) {
+        if( !dbCsv_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -310,6 +310,7 @@ extern "C" {
         ERESULT         eRc;
         OBJARRAY_DATA   *pRecords = OBJ_NIL;
         OBJARRAY_DATA   *pRecord = OBJ_NIL;
+        bool            fRc = true;;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -335,14 +336,20 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        eRc = objArray_AppendObj(pRecords, pRecord, NULL);
-        if (ERESULT_HAS_FAILED(eRc)) {
-            TOKEN_DATA      *pToken;
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            token_ErrorFatalFLC(
-                                  pToken,
-                                  "Could not save record"
-                                  );
+        fRc = true;
+        if (this->pRecordProcess) {
+            fRc = this->pRecordProcess(this->pRecordData, pRecord);
+        }
+        if (fRc) {
+            eRc = objArray_AppendObj(pRecords, pRecord, NULL);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                TOKEN_DATA      *pToken;
+                pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                token_ErrorFatalFLC(
+                                    pToken,
+                                    "Could not save record"
+                                    );
+            }
         }
         obj_Release(pRecord);
         pRecord = OBJ_NIL;
@@ -356,14 +363,20 @@ extern "C" {
                 break;
             }
             ++recordNo;
-            eRc = objArray_AppendObj(pRecords, pRecord, NULL);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                TOKEN_DATA      *pToken;
-                pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                token_ErrorFatalFLC(
-                                    pToken,
-                                    "Could not save record"
-                );
+            fRc = true;
+            if (this->pRecordProcess) {
+                fRc = this->pRecordProcess(this->pRecordData, pRecord);
+            }
+            if (fRc) {
+                eRc = objArray_AppendObj(pRecords, pRecord, NULL);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    TOKEN_DATA      *pToken;
+                    pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                    token_ErrorFatalFLC(
+                                        pToken,
+                                        "Could not save record"
+                                        );
+                }
             }
             obj_Release(pRecord);
             pRecord = OBJ_NIL;
@@ -716,8 +729,29 @@ extern "C" {
     
     
     
-
+    bool            dbCsv_setRecordProcess(
+        DBCSV_DATA      *this,
+        bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord),
+        void            *pRecordData
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dbCsv_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
     
+        this->pRecordProcess = pRecordProcess;
+        this->pRecordData = pRecordData;
+        
+        return true;
+    }
+
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -764,34 +798,35 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        DBCSV_DATA      *cbp = objId;
+        DBCSV_DATA      *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !dbCsv_Validate( cbp ) ) {
+        if( !dbCsv_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
-        if (cbp->pSrc) {
-            obj_Release(cbp->pSrc);
-            cbp->pSrc = OBJ_NIL;
+        if (this->pSrc) {
+            obj_Release(this->pSrc);
+            this->pSrc = OBJ_NIL;
         }
         
-        if (cbp->pFld) {
-            mem_Free(cbp->pFld);
-            cbp->pFld    = NULL;
-            cbp->sizeFld = 0;
-            cbp->lenFld  = 0;
+        if (this->pFld) {
+            mem_Free(this->pFld);
+            this->pFld    = NULL;
+            this->sizeFld = 0;
+            this->lenFld  = 0;
         }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -834,47 +869,48 @@ extern "C" {
     //---------------------------------------------------------------
 
     DBCSV_DATA *   dbCsv_Init(
-        DBCSV_DATA       *cbp
+        DBCSV_DATA       *this
     )
     {
         uint32_t        cbSize;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbSize = obj_getSize(cbp);
-        cbp = (DBCSV_DATA *)obj_Init( cbp, cbSize, OBJ_IDENT_DBCSV );
-        if (OBJ_NIL == cbp) {
+        cbSize = obj_getSize(this);
+        this = (DBCSV_DATA *)obj_Init( this, cbSize, OBJ_IDENT_DBCSV );
+        if (OBJ_NIL == this) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(cbp, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_DBCSV);
-        obj_setVtbl(cbp, &dbCsv_Vtbl);
+        this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
+        obj_setVtbl(this, &dbCsv_Vtbl);
         
-        cbp->sizeFld = DBCSV_FIELD_MAX;
-        cbp->pFld = mem_Calloc(cbp->sizeFld, sizeof(int32_t));
-        if (cbp->pFld == NULL) {
-            cbp->sizeFld = 0;
+        this->sizeFld = DBCSV_FIELD_MAX;
+        this->pFld = mem_Calloc(this->sizeFld, sizeof(int32_t));
+        if (this->pFld == NULL) {
+            this->sizeFld = 0;
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        cbp->fieldSeparator = ',';
+        this->fieldSeparator = ',';
 
     #ifdef NDEBUG
     #else
-        if( !dbCsv_Validate( cbp ) ) {
+        if( !dbCsv_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         //BREAK_NOT_BOUNDARY4(&cbp->pInputs);
     #endif
 
-        return cbp;
+        return this;
     }
 
      

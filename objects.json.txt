@@ -147,6 +147,10 @@
         "memWin32.c":null,
         "memWin32_object.c":null
     },
+    "programs": {
+        "genGetterSetter.c":null,
+        "genMake.c":null
+    },
     "tests":
     {
         "test_appl.c":null,
@@ -154,6 +158,7 @@
         "test_clo.c":null,
         "test_cloOpt.c":null,
         "test_consumer.c":null,
+        "test_dbCsv.c":null,
         "test_msgBus.c":null,
         "test_name.c":null,
         "test_node.c":null,

@@ -1,5 +1,4 @@
 //
-//  main.m
 //  genGetterSetter
 //
 //  Created by bob on 4/8/17.
@@ -34,7 +33,6 @@
  */
 
 
-#import     <Foundation/Foundation.h>
 #include    <cmn_defs.h>
 #include    <AStr.h>
 #include    <dbCsv.h>
@@ -613,25 +611,24 @@ int             main(
 {
     bool            fRc;
     
-    @autoreleasepool {
-        fRc = parseArgs(argc, argv, &options);
-        if (!fRc) {
-            show_usage(NULL);
-        }
-        if (options.pArg1 == NULL) {
-            show_usage("Missing Input File Path");
-        }
-        
-        fRc = readCSV(options.pArg1);
-        if (!fRc) {
-            fprintf(stderr, "FATAL ERROR - Could not parse csv file!");
-            exit(99);
-        }
-        fRc = printCSV();
-        if (!fRc) {
-            fprintf(stderr, "FATAL ERROR - Could not print csv file!");
-            exit(99);
-        }
+    fRc = parseArgs(argc, argv, &options);
+    if (!fRc) {
+        show_usage(NULL);
     }
+    if (options.pArg1 == NULL) {
+        show_usage("Missing Input File Path");
+    }
+    
+    fRc = readCSV(options.pArg1);
+    if (!fRc) {
+        fprintf(stderr, "FATAL ERROR - Could not parse csv file!");
+        exit(99);
+    }
+    fRc = printCSV();
+    if (!fRc) {
+        fprintf(stderr, "FATAL ERROR - Could not print csv file!");
+        exit(99);
+    }
+
     return 0;
 }

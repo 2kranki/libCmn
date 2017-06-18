@@ -752,6 +752,224 @@ void            genMakeFile_library(
 
 
 
+void            genMakeFile_programs(
+    ARGS            *pResults,
+    NODEHASH_DATA   *pTests
+)
+{
+    ERESULT         eRc;
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray =  OBJ_NIL;
+    NODEARRAY_DATA  *pDeps =  OBJ_NIL;
+    NODE_DATA       *pDep;
+    ASTR_DATA       *pStr;
+    ASTR_DATA       *pPgmWrk;
+    int             i;
+    int             iMax;
+    int             j;
+    int             jMax;
+    
+    BREAK_NULL(pResults);
+    BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
+    
+    switch (pResults->makeType) {
+            
+        case MAKETYPE_MACOSX:
+            if (pTests) {
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "PROGS =\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                eRc = nodeHash_Nodes(pTests, &pArray);
+                if (ERESULT_FAILED(eRc)) {
+                }
+                else {
+                    BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
+                    iMax = nodeArray_getSize(pArray);
+                    for (i=0; i<iMax; ++i) {
+                        pNode = nodeArray_Get(pArray, i+1);
+                        if (pNode) {
+                            ASTR_DATA       *pWrk;
+                            BREAK_FALSE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
+                            pStr = name_getStrA(node_getName(pNode));
+                            pWrk = AStr_Copy(pStr);
+                            if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
+                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
+                            }
+                            pPgmWrk = AStr_Copy(pWrk);
+                            fprintf(pResults->pOutput, "PROGS += %s\n", AStr_getData(pWrk));
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "%s:\n", AStr_getData(pWrk));
+                            fprintf(pResults->pOutput,
+                                    "\t$(CC) "
+                                    "$(CFLAGS) "
+                                    "$(CFLAGS_LIBS) "
+                                    "-L$(LIBDIR) "
+                                    "-Iprograms/%s "
+                                    "$(LIBPATH) "
+                                    "-o $(OBJDIR)/$(@F) "
+                                    "programs/%s/%s ",
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pStr)
+                            );
+                            pDep = node_getData(pNode);
+                            if (pDep) {
+                                BREAK_FALSE((obj_IsKindOf(pDep, OBJ_IDENT_NODE)));
+                                pDeps = node_getData(pDep);
+                            }
+                            else {
+                                pDeps = OBJ_NIL;
+                            }
+                            if (pDeps && obj_IsKindOf(pDeps, OBJ_IDENT_NODEARRAY)) {
+                                jMax = nodeArray_getSize(pDeps);
+                                for (j=0; j<jMax; ++j) {
+                                    pNode = nodeArray_Get(pDeps, j+1);
+                                    if (pNode) {
+                                        ASTR_DATA       *pWrk;
+                                        pWrk = node_getData(pNode);
+                                        if (pWrk && obj_IsKindOf(pWrk, OBJ_IDENT_ASTR)) {
+                                            fprintf(pResults->pOutput,
+                                                    "programs/%s/%s ",
+                                                    AStr_getData(pPgmWrk),
+                                                    AStr_getData(pWrk)
+                                                    );
+                                        }
+                                    }
+                                }
+                                obj_Release(pDeps);
+                                pDeps = OBJ_NIL;
+                                obj_Release(pPgmWrk);
+                                pPgmWrk = OBJ_NIL;
+                            }
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\techo $(OBJDIR)/$(@F)\n");
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\n");
+                            
+                            obj_Release(pWrk);
+                        }
+                    }
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                }
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, ".PHONY: programs\n");
+                fprintf(pResults->pOutput, "programs:  $(PROGS)\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+            }
+            break;
+            
+        case MAKETYPE_MSC32:
+            if (pTests) {
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "PROGS =\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                eRc = nodeHash_Nodes(pTests, &pArray);
+                if (ERESULT_FAILED(eRc)) {
+                }
+                else {
+                    BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
+                    iMax = nodeArray_getSize(pArray);
+                    for (i=0; i<iMax; ++i) {
+                        pNode = nodeArray_Get(pArray, i+1);
+                        if (pNode) {
+                            ASTR_DATA       *pWrk;
+                            BREAK_FALSE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
+                            pStr = name_getStrA(node_getName(pNode));
+                            BREAK_FALSE((obj_IsKindOf(pStr, OBJ_IDENT_ASTR)));
+                            pWrk = AStr_Copy(pStr);
+                            if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
+                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
+                            }
+                            pPgmWrk = AStr_Copy(pWrk);
+                            fprintf(
+                                    pResults->pOutput,
+                                    "PROGS = $(PROGS) %s\n",
+                                    AStr_getData(pWrk)
+                                    );
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "%s:\n", AStr_getData(pWrk));
+                            fprintf(pResults->pOutput,
+                                    "\t$(CC) $(CFLAGS) /Iprograms\\%s "
+                                    "programs\\%s\\%s ",
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pStr)
+                            );
+                            pDep = node_getData(pNode);
+                            if (pDep) {
+                                BREAK_FALSE((obj_IsKindOf(pDep, OBJ_IDENT_NODE)));
+                                pDeps = node_getData(pDep);
+                            }
+                            else {
+                                pDeps = OBJ_NIL;
+                            }
+                            if (pDeps && obj_IsKindOf(pDeps, OBJ_IDENT_NODEARRAY)) {
+                                jMax = nodeArray_getSize(pDeps);
+                                for (j=0; j<jMax; ++j) {
+                                    pNode = nodeArray_Get(pDeps, j+1);
+                                    if (pNode) {
+                                        ASTR_DATA       *pWrk;
+                                        pWrk = node_getData(pNode);
+                                        if (pWrk && obj_IsKindOf(pWrk, OBJ_IDENT_ASTR)) {
+                                            fprintf(pResults->pOutput,
+                                                    "programs\\%s\\%s ",
+                                                    AStr_getData(pPgmWrk),
+                                                    AStr_getData(pWrk)
+                                                    );
+                                        }
+                                    }
+                                }
+                                obj_Release(pDeps);
+                                pDeps = OBJ_NIL;
+                            }
+                            fprintf(pResults->pOutput,
+                                    "/link "
+                                    "/out:$(OBJDIR)\\$(@F).exe "
+                                    "$(LIBPATH) $(LIBS) "
+                                    );
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\tdel *.obj\n");
+                            fprintf(pResults->pOutput, "\t$(OBJDIR)\\$(@F).exe\n");
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\n");
+                            
+                            obj_Release(pWrk);
+                            obj_Release(pPgmWrk);
+                            pPgmWrk = OBJ_NIL;
+                        }
+                    }
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                }
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "programs:  $(PROGS)\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+
+
 void            genMakeFile_tests(
     ARGS            *pResults,
     NODEHASH_DATA   *pTests
@@ -849,6 +1067,7 @@ void            genMakeFile_tests(
                 }
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, ".PHONY: test\n");
                 fprintf(pResults->pOutput, "test:  $(TESTS)\n");
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "\n");
@@ -1062,6 +1281,7 @@ int             genMakeFile(
     NODEARRAY_DATA  *pLibDeps = OBJ_NIL;
     NODEHASH_DATA   *pPrimaryHash;
     NODEHASH_DATA   *pObjects;
+    NODEHASH_DATA   *pPrograms = OBJ_NIL;
     NODEARRAY_DATA  *pRoutines = OBJ_NIL;
     NODEHASH_DATA   *pTests = OBJ_NIL;
     NODEHASH_DATA   *pMacosx = OBJ_NIL;
@@ -1105,6 +1325,14 @@ int             genMakeFile(
             pNode = node_getData(pNode);
             pRoutines = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
+        }
+        eRc = nodeHash_FindA(pPrimaryHash, "programs", &pNode);
+        if (ERESULT_FAILED(eRc)) {
+        }
+        else {
+            pNode = node_getData(pNode);
+            pPrograms = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEHASH)));
         }
         eRc = nodeHash_FindA(pPrimaryHash, "tests", &pNode);
         if (ERESULT_FAILED(eRc)) {
@@ -1152,6 +1380,9 @@ int             genMakeFile(
             break;
     }
     genMakeFile_library(pResults);
+    if (pPrograms) {
+        genMakeFile_programs(pResults, pPrograms);
+    }
     genMakeFile_tests(pResults, pTests);
     genMakeFile_final(pResults);
     
