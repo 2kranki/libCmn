@@ -28,7 +28,6 @@
  */
 
 #import <XCTest/XCTest.h>
-#import <libCmn/libCmn.h>
 
 
 // All code under test must be linked into the Unit Test bundle
@@ -50,7 +49,7 @@
 //      STAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
 
 
-#include    "dec_internal.h"
+#include    <dec_internal.h>
 
 
 
@@ -177,6 +176,174 @@
     
 }
 
+
+
+- (void)testInt64Dec
+{
+    char            num[32] = {0};
+    uint32_t        cNum = 32;
+    char            *pStr = num;
+    uint32_t        i;
+    int32_t         j;
+    bool            fRc;
+    
+    
+    fRc =   dec_putInt64DecA(
+                    -123,                       // Input Number
+                    0,                          // Sign: -1 == leading, 0 == none, 1 == trailing
+                    false,                      // Align: false == left, true == right
+                    false,                      // Fill: false == space fill, true == zero fill
+                    8,                          // Field Width
+                    2,                          // Decimal Point Position
+                    &cNum,                      // Buffer Length
+                    &pStr                       // Buffer Ptr
+            );
+    XCTAssertTrue( (fRc) );
+    pStr = num;
+    fprintf(stderr, "Need: |1.23    |  Got: |%s|\n", pStr);
+    j = strcmp(pStr, "1.23    ");
+    XCTAssertTrue( (0 == j) );
+
+    
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                    -123,                       // Input Number
+                    -1,                         // Sign: -1 == leading, 0 == none, 1 == trailing
+                    false,                      // Align: false == left, true == right
+                    false,                      // Fill: false == space fill, true == zero fill
+                    8,                          // Field Width
+                    2,                          // Decimal Point Position
+                    &cNum,                      // Buffer Length
+                    &pStr                       // Buffer Ptr
+            );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: |-1.23   | is |%s|\n", num);
+    j = strcmp(num, "-1.23   ");
+    XCTAssertTrue( (0 == j) );
+    
+    
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                    -123,                       // Input Number
+                    1,                          // Sign: -1 == leading, 0 == none, 1 == trailing
+                    false,                      // Align: false == left, true == right
+                    false,                      // Fill: false == space fill, true == zero fill
+                    8,                          // Field Width
+                    2,                          // Decimal Point Position
+                    &cNum,                      // Buffer Length
+                    &pStr                       // Buffer Ptr
+            );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: |1.23-   | = |%s|\n", num);
+    j = strcmp(num, "1.23-   ");
+    XCTAssertTrue( (0 == j) );
+
+    
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                    0,                          // Input Number
+                    -1,                         // Sign: -1 == leading, 0 == none, 1 == trailing
+                    true,                       // Align: false == left, true == right
+                    false,                      // Fill: false == space fill, true == zero fill
+                    8,                          // Field Width
+                    2,                          // Decimal Point Position
+                    &cNum,                      // Buffer Length
+                    &pStr                       // Buffer Ptr
+            );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: |    0.00|  Got: |%s|\n", num);
+    j = strcmp(num, "    0.00");
+    XCTAssertTrue( (0 == j) );
+
+    
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                    0,                          // Input Number
+                    -1,                         // Sign: -1 == leading, 0 == none, 1 == trailing
+                    false,                      // Align: false == left, true == right
+                    false,                      // Fill: false == space fill, true == zero fill
+                    8,                          // Field Width
+                    2,                          // Decimal Point Position
+                    &cNum,                      // Buffer Length
+                    &pStr                       // Buffer Ptr
+            );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: | 0.00   |  Got: |%s|\n", num);
+    j = strcmp(num, " 0.00   ");
+    XCTAssertTrue( (0 == j) );
+
+    
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                             0,                          // Input Number
+                             0,                          // Sign: -1 == leading, 0 == none, 1 == trailing
+                             false,                      // Align: false == left, true == right
+                             false,                      // Fill: false == space fill, true == zero fill
+                             8,                          // Field Width
+                             0,                          // Decimal Point Position
+                             &cNum,                      // Buffer Length
+                             &pStr                       // Buffer Ptr
+                             );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: |0       |  Got: |%s|\n", num);
+    j = strcmp(num, "0       ");
+    XCTAssertTrue( (0 == j) );
+    
+    
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                             0,                          // Input Number
+                             0,                          // Sign: -1 == leading, 0 == none, 1 == trailing
+                             true,                       // Align: false == left, true == right
+                             false,                      // Fill: false == space fill, true == zero fill
+                             8,                          // Field Width
+                             0,                          // Decimal Point Position
+                             &cNum,                      // Buffer Length
+                             &pStr                       // Buffer Ptr
+                             );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: |       0|  Got: |%s|\n", num);
+    j = strcmp(num, "       0");
+    XCTAssertTrue( (0 == j) );
+    
+    
+}
 
 
 

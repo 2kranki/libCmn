@@ -346,6 +346,131 @@ void            dec_putInt64A(
 }
 
 
+bool            dec_putInt64DecA(
+    int64_t			input,
+    int8_t          signFlag,           // -1 == leading, 0 == none, 1 == trailing
+    bool            fAlignRight,        // false == left, true == right
+    bool            fZeroFill,          // false == space fill, true == zero fill
+    uint8_t         width,              // total field width
+    uint8_t         dec,                // decimal point position
+    uint32_t        *pLen,              // Remaining length of buffer
+    //                                  // (Decremented if char added)
+    char            **ppBuffer          // buffer ptr which will be advanced
+)
+{
+    bool            fRc;
+    char            buffer[22];
+    char            *pBuffer = buffer;
+    uint32_t        cLen = 22;
+    uint32_t        cLeadingZeroes = 0;
+    int             i;
+    int             iMax;
+    char            sign;
+    char            fill = ' ';
+    int             dataSize = 0;
+    
+    // Do initialization.
+    if ((width == 0) || ((width + 1) > *pLen) || (dec >= width)) {
+        return false;
+    }
+    if ((NULL == ppBuffer) || (NULL == *ppBuffer)) {
+        return false;
+    }
+    if (fZeroFill) {
+        fill = '0';
+    }
+    
+    dec_putInt64A(input, &cLen, &pBuffer);
+    // First char of returned buffer is sign. Last char is trailing NUL.
+    
+    // Set up for scanning.
+    cLen = 22 - cLen - 1;
+    pBuffer = buffer;
+    if (dec >= cLen) {
+        return false;
+    }
+
+    // Set up buffer for scanning.
+    sign = buffer[0];
+    buffer[0] = '0';
+    
+    //Insert decimal point if needed.
+    if (dec) {
+        i = cLen - dec - 1;
+        memmove(&buffer[0], &buffer[1], i);
+        buffer[i] = '.';
+    }
+    
+    iMax = cLen - dec - 1 - (dec ? 1 : 0);                  // Leave one leading character.
+    for (i=0; i < iMax; ++i) {
+        if (buffer[i] == '0') {
+            ++cLeadingZeroes;
+            buffer[i] = fill;
+        }
+    }
+    
+    dataSize = cLen - cLeadingZeroes;
+    if (signFlag) {
+        ++dataSize;
+    }
+    
+    if (dataSize <= width) {
+    }
+    else {
+        return false;
+    }
+    
+    // Initialize the output area.
+    if (fAlignRight) {
+        iMax = width - dataSize;
+        for (i=0; i<iMax; ++i) {
+            fRc = dec_putChar(' ', pLen, ppBuffer);
+            --width;
+        }
+    }
+    
+    // Leading Sign
+    if (signFlag < 0) {
+        if( input < 0 ) {
+            fRc = dec_putChar('-', pLen, ppBuffer);
+        }
+        else {
+            fRc = dec_putChar(' ', pLen, ppBuffer);
+        }
+        --width;
+    }
+    
+    // transfer the value
+    i = cLen - dataSize + (signFlag ? 1 : 0);
+    iMax = cLen;
+    for (; i<iMax; ++i) {
+        fRc = dec_putChar(buffer[i], pLen, ppBuffer);
+        --width;
+    }
+    
+    // Trailing Sign
+    if (signFlag > 0) {
+        if( input < 0 ) {
+            fRc = dec_putChar('-', pLen, ppBuffer);
+        }
+        else {
+            fRc = dec_putChar(' ', pLen, ppBuffer);
+        }
+        --width;
+    }
+    
+    // Trailing Blanks
+    for (i=0; i<width; ++i) {
+        fRc = dec_putChar(' ', pLen, ppBuffer);
+    }
+    
+    fRc = dec_putChar('\0', pLen, ppBuffer);
+    
+    // Return to caller.
+    return true;
+}
+
+
 
 //----------------------------------------------------------------
 //						dec_putUint32
@@ -435,7 +560,7 @@ void            dec_putUint32AObj(
 //						dec_putUint64
 //----------------------------------------------------------------
 
-// Maximum values should be 0 to 18446744073709551615.
+// Maximum values should be 0 to 18,446,744,073,709,551,615.
 
 void            dec_putUint64A(
     uint64_t        input,
@@ -456,8 +581,9 @@ void            dec_putUint64A(
     
     // Initialize the output area.
     pChr = buffer;
-    for( i=0; i<20; ++i )
+    for( i=0; i<20; ++i ) {
         *pChr++ = '0';
+    }
     *pChr = '\0';
     
     // set the value;

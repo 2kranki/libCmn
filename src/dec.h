@@ -133,9 +133,9 @@ extern "C" {
      @param:    pLen    buffer len ptr (len must be greater than 0)
      @param:    ppBuffer buffer ptr (12 bytes required minimum)
      @return:
-     if successful, buffer will contain ascii representation of number
-     with leading zeros and trailing NUL char. First byte will be '-'
-     for negative value or ' '.
+                if successful, buffer will contain ascii representation of number
+                with leading zeros and trailing NUL char. First byte will be '-'
+                for negative value or ' '.
      */
     void            dec_putInt32A(
         int32_t			input,
@@ -155,15 +155,36 @@ extern "C" {
      @param:    pLen    buffer len ptr (len must be greater than 0)
      @param:    ppBuffer buffer ptr (22 bytes required minimum)
      @return:
-     if successful, buffer will contain ascii representation of number
-     with leading zeros and trailing NUL char. First byte will be '-'
-     for negative value or ' '.
+                if successful, buffer will contain ascii representation of number
+                with leading zeros and trailing NUL char. First byte will be '-'
+                for negative value or ' '.
      */
     void            dec_putInt64A(
         int64_t			input,
         uint32_t        *pLen,              // Remaining length of buffer
         //                                  // (Decremented if char added)
         char            **ppBuffer          // buffer ptr which will be advanced
+    );
+    
+    /*!
+     Format an int16_t with or without leading zeroes and with an implied
+     decimal point if needed.
+     @param:    pLen    buffer len ptr (len must be greater than 0)
+     @param:    ppBuffer buffer ptr (11 bytes required minimum)
+     @return:
+     if successful, buffer will contain ascii representation of number
+     with leading zeros and trailing NUL char.
+     */
+    bool            dec_putInt64DecA(
+        int64_t         input,
+        int8_t          sign,               // -1 == leading, 0 == none, 1 == trailing
+        bool            fAlignRight,        // false == left, true == right
+        bool            fZeroFill,          // false == space fill, true == zero fill
+        uint8_t         width,              // total field width
+        uint8_t         dec,                // decimal point position
+        uint32_t        *pLen,              // Remaining length of buffer
+        //                                  // (Decremented if char added)
+        char           **ppBuffer           // buffer ptr which will be advanced
     );
     
     void            dec_putInt64AObj(
@@ -177,8 +198,8 @@ extern "C" {
      @param:    pLen    buffer len ptr (len must be greater than 0)
      @param:    ppBuffer buffer ptr (11 bytes required minimum)
      @return:
-     if successful, buffer will contain ascii representation of number
-     with leading zeros and trailing NUL char.
+                if successful, buffer will contain ascii representation of number
+                with leading zeros and trailing NUL char.
      */
     void            dec_putUint32A(
         uint32_t		input,
