@@ -343,6 +343,29 @@
     XCTAssertTrue( (0 == j) );
     
     
+    // Reset buffer for next.
+    for (j=0; j<32; ++j) {
+        num[j] = 0;
+    }
+    cNum = 32;
+    pStr = num;
+    
+    fRc =   dec_putInt64DecA(
+                             1300000,                    // Input Number
+                             0,                          // Sign: -1 == leading, 0 == none, 1 == trailing
+                             true,                       // Align: false == left, true == right
+                             false,                      // Fill: false == space fill, true == zero fill
+                             10,                         // Field Width
+                             3,                          // Decimal Point Position
+                             &cNum,                      // Buffer Length
+                             &pStr                       // Buffer Ptr
+                             );
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "Need: |  1300.000|  Got: |%s|\n", num);
+    j = strcmp(num, "  1300.000");
+    XCTAssertTrue( (0 == j) );
+    
+    
 }
 
 

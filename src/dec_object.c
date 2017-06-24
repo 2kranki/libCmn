@@ -407,6 +407,9 @@ bool            dec_putInt64DecA(
             ++cLeadingZeroes;
             buffer[i] = fill;
         }
+        else {
+            break;
+        }
     }
     
     dataSize = cLen - cLeadingZeroes;
