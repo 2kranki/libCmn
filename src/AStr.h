@@ -416,6 +416,17 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new string that consists of the right-most characters of the current
+     string.
+     @param:    this    object pointer
+     @param:    len     number of characters on the right of the current string
+     @param:    ppOther returned string object pointer
+     @return:   If successful, an AStr object which must be released is placed in
+                *ppOther and ERESULT_SUCCESS is returned, otherwise an ERESULT_*
+                error is returned.
+     @warning: Remember to release the returned AStr object.
+     */
     ERESULT         AStr_Right(
         ASTR_DATA		*this,
         uint32_t        len,

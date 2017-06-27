@@ -37,5 +37,29 @@ is ANSI C and should be compilable with any ANSI C compiler. Use
 using Xcode, you will find a test program for almost every object.
 Some tests are pretty complete, but they are always a work in-progress.
 
+I am slowly moving my testing environment from Xcode to the command line and
+make/nmake. I use the "objects.json.txt" file to generate make files using
+the program, genMake, found in the "programs" directory.  genMake will 
+generate a makefile for either MacOSX and Windows right now. The make file
+does contain specific locations for the libraries and programs that I use.
+To generate everything and test it, I use the following:
+
+    ./genMake.sh                            # generates Windows and MacOSX make files
+    make -f Makefile.macosx.txt all         # compile library routines to /tmp
+    make -f Makefile.macosx.txt install     # Install library to ~/Support/lib/macosx
+    make -f Makefile.macosx.txt tests       # Perform all library tests
+    make -f Makefile.macosx.txt programs    # compile utility programs such as genmake
+
+You can run specific tests using: 
+    make -f Makefile.macosx.txt test_abc    # Run test abc
+
+In Windows, the system works the same way:
+    #genMake  --msc32  -o Makefile.win32.txt  objects.json.txt  # I actually do this in MacOSX.
+    nmake /f Makefile.win32.txt all         # compile library routines to /tmp
+    nmake /f Makefile.win32.txt install     # Install library to ~/Support/lib/macosx
+    nmake /f Makefile.win32.txt tests       # Perform all library tests
+    nmake /f Makefile.win32.txt programs    # compile utility programs such as genmake
+
+It is my plan to add other environments such as PIC32MX and PIC32MZ as neeeded.
 
 *** Use at your own risk. ***
