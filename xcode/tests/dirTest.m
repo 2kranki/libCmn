@@ -154,9 +154,9 @@ bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
     
     pDir = getenv("HOME");
     pObj = dir_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  DIR_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = dir_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  DIR_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         pPath = path_NewA(pDir);

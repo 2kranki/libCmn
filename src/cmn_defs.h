@@ -222,6 +222,8 @@ extern "C" {
         OBJ_IDENT_EBCDIC_CLASS,
         OBJ_IDENT_ENDIAN,               // Little/Big Endian Manipulation
         OBJ_IDENT_ENDIAN_CLASS,
+        OBJ_IDENT_ENUM,                 // Enumerator Base Class
+        OBJ_IDENT_ENUM_CLASS,
         OBJ_IDENT_ERESULT,
         OBJ_IDENT_ERESULT_CLASS,
         OBJ_IDENT_EXECARRAY,            // An Array of Function/Object(s) pairs

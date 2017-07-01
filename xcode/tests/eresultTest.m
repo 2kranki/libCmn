@@ -94,9 +94,9 @@
     ERESULT_DATA	*pObj = OBJ_NIL;
    
     pObj = eResult_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  ERESULT_DATA" );
+    XCTAssertFalse((OBJ_NIL == pObj));
     pObj = eResult_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  ERESULT_DATA" );
+    XCTAssertFalse((OBJ_NIL == pObj));
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;

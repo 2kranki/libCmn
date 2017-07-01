@@ -60,7 +60,7 @@ extern "C" {
 
     static
     ERESULT         ptrArray_ExpandArray(
-        PTRARRAY_DATA   *cbp,
+        PTRARRAY_DATA   *this,
         uint16_t        num
     )
     {
@@ -70,41 +70,41 @@ extern "C" {
         uint16_t        elemSize = sizeof(uint8_t *);
         
         // Do initialization.
-        if( cbp == NULL )
+        if( this == NULL )
             return ERESULT_INVALID_OBJECT;
-        if (num < cbp->max) {
+        if (num < this->max) {
             return ERESULT_SUCCESSFUL_COMPLETION;
         }
         
         // Expand the Array.
-        oldMax = cbp->max;
+        oldMax = this->max;
         if (0 == oldMax) {
             oldMax = 1;
         }
-        cbp->max = oldMax << 1;             // max *= 2
-        while (num > cbp->max) {
-            cbp->max = cbp->max << 1;
+        this->max = oldMax << 1;             // max *= 2
+        while (num > this->max) {
+            this->max = this->max << 1;
         }
-        cbSize = cbp->max * elemSize;
-        pWork = (void *)mem_Malloc( cbSize );
+        cbSize = this->max * elemSize;
+        pWork = (void *)mem_Malloc(cbSize);
         if( NULL == pWork ) {
-            cbp->max = oldMax;
+            this->max = oldMax;
             return ERESULT_INSUFFICIENT_MEMORY;
         }
         
         // Copy the old entries into the new array.
-        if( cbp->ppArray == NULL )
+        if( this->ppArray == NULL )
             ;
         else {
-            memmove( pWork, cbp->ppArray, (oldMax * elemSize) );
-            mem_Free( cbp->ppArray );
-            // cbp->pArray = NULL;
+            memmove(pWork, this->ppArray, (oldMax * elemSize));
+            mem_Free(this->ppArray);
+            // this->ppArray = NULL;
         }
-        cbp->ppArray = pWork;
-        memset( &cbp->ppArray[oldMax], 0, ((cbp->max - oldMax) * elemSize) );
+        this->ppArray = pWork;
+        memset(&this->ppArray[oldMax], 0, ((this->max - oldMax) * elemSize));
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -123,12 +123,12 @@ extern "C" {
     PTRARRAY_DATA * ptrArray_Alloc(
     )
     {
-        PTRARRAY_DATA   *cbp;
+        PTRARRAY_DATA   *this;
         uint32_t        cbSize = sizeof(PTRARRAY_DATA);
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
-        return( cbp );
+        return this;
     }
 
 
@@ -136,15 +136,15 @@ extern "C" {
     PTRARRAY_DATA * ptrArray_New(
     )
     {
-        PTRARRAY_DATA   *cbp;
+        PTRARRAY_DATA   *this;
         
         // Do initialization.
         
-        cbp = ptrArray_Alloc(  );
-        cbp = ptrArray_Init(cbp);
+        this = ptrArray_Alloc(  );
+        this = ptrArray_Init(this);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -156,16 +156,16 @@ extern "C" {
     //===============================================================
 
     uint32_t        ptrArray_getSize(
-        PTRARRAY_DATA   *cbp
+        PTRARRAY_DATA   *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !ptrArray_Validate( cbp ) ) {
+        if( !ptrArray_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        return cbp->size;
+        return this->size;
     }
 
 
@@ -186,27 +186,29 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        PTRARRAY_DATA   *cbp = objId;
+        PTRARRAY_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !ptrArray_Validate( cbp ) ) {
+        if( !ptrArray_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        mem_Free(cbp->ppArray);
-        cbp->ppArray = NULL;
-        cbp->max = 0;
-        cbp->size = 0;
+        if (this->ppArray) {
+            mem_Free(this->ppArray);
+            this->ppArray = NULL;
+            this->max = 0;
+            this->size = 0;
+        }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
