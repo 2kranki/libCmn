@@ -328,6 +328,7 @@ extern "C" {
     int32_t *       token_getTextW(
         TOKEN_DATA      *this
     );
+
     
     /* Type is the internal type of the token itself
      * such as Text, Char, StmIdx, etc. Class is used

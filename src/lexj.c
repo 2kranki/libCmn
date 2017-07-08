@@ -88,7 +88,7 @@ extern "C" {
             if ((cls == ':') || (cls == ',')
                 || (cls == '{') || (cls == '}')
                 || (cls == '[') || (cls == ']')
-                || (cls == '\n') || (cls == -1)) {
+                || (cls == ASCII_LEXICAL_EOL) || (cls == -1)) {
                 break;
             }
             else {
@@ -701,12 +701,12 @@ extern "C" {
         }
 #endif
         
-        fRc = lexj_ParseTokenJson(this, &this->token);
+        fRc = lexj_ParseTokenJson(this, &this->super.token);
         
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA           *pStr = token_ToDebugString(&this->token, 0);
+            ASTR_DATA           *pStr = token_ToDebugString(&this->super.token, 0);
             TRC_OBJ( this, "lexj_ParseToken:  %s \n", AStr_getData(pStr) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -714,7 +714,7 @@ extern "C" {
 #endif
         
         // Return to caller.
-        return &this->token;
+        return &this->super.token;
     }
     
     
@@ -746,9 +746,10 @@ extern "C" {
         TOKEN_DATA      *pInput;
         int32_t         cls;
         int32_t         newCls = 0;
-        int32_t         chr;
+        //int32_t         chr;
         bool            fMore = true;
         bool            fSaveStr = true;
+        ASTR_DATA       *pStr = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -778,38 +779,78 @@ extern "C" {
             switch (cls) {
                     
                 case ASCII_LEXICAL_WHITESPACE:
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    for (;;) {
+                        pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+                        cls = token_getClass(pInput);
+                        if (cls == ASCII_LEXICAL_WHITESPACE) {
+                        }
+                        else {
+                            break;
+                        }
+                    }
                     break;
                     
                 case ASCII_LEXICAL_EOL:
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    for (;;) {
+                        pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+                        cls = token_getClass(pInput);
+                        if (cls == ASCII_LEXICAL_WHITESPACE) {
+                        }
+                        else {
+                            break;
+                        }
+                    }
                     break;
                     
                 case ASCII_LEXICAL_ALPHA_LOWER:
                 case ASCII_LEXICAL_ALPHA_UPPER:
                     lexj_ParseQuotelessString(this);
-                    newCls = LEX_CONSTANT_STRING;
+                    pStr = AStr_NewFromStrW(this->super.pStr);
+                    if (pStr) {
+                        AStr_Trim(pStr);
+                        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "null")) {
+                            newCls = LEXJ_KWD_NULL;
+                            fMore = false;
+                            obj_Release(pStr);
+                            break;
+                        }
+                        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "false")) {
+                            newCls = LEXJ_KWD_FALSE;
+                            fMore = false;
+                            obj_Release(pStr);
+                            break;
+                        }
+                        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "true")) {
+                            newCls = LEXJ_KWD_TRUE;
+                            fMore = false;
+                            obj_Release(pStr);
+                            break;
+                        }
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                    newCls = LEXJ_CONSTANT_STRING;
                     fMore = false;
                     break;
                     
                 case ASCII_LEXICAL_NUMBER:
                     newCls = lex_ParseNumber((LEX_DATA *)this);
                     if (newCls) {
-                        uint16_t        type;
+                        uint16_t            type;
                         type = lex_ParseIntegerSuffix((LEX_DATA *)this);
-                        token_setMisc(&this->token, type);
+                        token_setMisc(&this->super.token, type);
                     }
                     fMore = false;
                     break;
                     
                 case '"':           /*** '"' ***/
                     lex_InputAdvance((LEX_DATA *)this, 1);
+                    lex_ParseStringTruncate((LEX_DATA *)this);
                     while(lex_ParseChrCon((LEX_DATA *)this, '"'))
                         ;
                     pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
                     cls = token_getClass(pInput);
                     if (cls == '"') {
-                        lex_ParseAddTokenToString((LEX_DATA *)this, pInput);
                         lex_InputAdvance((LEX_DATA *)this, 1);
                         newCls = LEX_CONSTANT_STRING;
                         fMore = false;
@@ -853,6 +894,7 @@ extern "C" {
                             pInput = lex_InputAdvance((LEX_DATA *)this, 1);
                             cls = token_getClass(pInput);
                             if (cls == ASCII_LEXICAL_EOL) {
+                                lex_InputAdvance((LEX_DATA *)this, 1); // Skip over '\n'.
                                 break;
                             }
                         }
@@ -862,7 +904,7 @@ extern "C" {
                         uint32_t        depth = 1;
                         bool            fMore2 = true;
                         // Multi-line comment - /* ... */
-                        pInput = lex_InputLookAhead((LEX_DATA *)this, 2);
+                        pInput = lex_InputAdvance((LEX_DATA *)this, 2);
                         while (fMore2) {
                             pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
                             cls = token_getClass(pInput);

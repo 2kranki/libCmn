@@ -35,13 +35,13 @@ static
 const
 char        *pTestInput01 =
 "// Test01 Input\n"
-"{ /* test comment */\n"
-    "\"one\": 123,\n"
-    "\"two\":\"xyz\",\n"
-    "\"three\":[a, b, c],\n"
-    "\"four\":null,\n"
-    "\"five\":true,\n"
-    "\"six\":false\n"
+"{ /* test comment */\n\n\n"
+    "\t\"one\" : 123,\n"
+    "\ttwo : \"xyz\",\n"
+    "\tthree : [a, b, c],\n"
+    "\tfour : null,\n"
+    "\t\"five\" : true,\n"
+    "\t\"six\" : false\n"
 "}\n";
 
 
@@ -104,6 +104,7 @@ char        *pTestInput01 =
     LEXJ_DATA       *pLexJ = OBJ_NIL;
     TOKEN_DATA      *pToken;
     PATH_DATA       *pPath = path_NewA("source is a string");
+    ASTR_DATA       *pStr = OBJ_NIL;
     
     pBuf = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
@@ -122,6 +123,10 @@ char        *pTestInput01 =
             pToken = lexj_TokenLookAhead(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"one\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
             
@@ -140,6 +145,204 @@ char        *pTestInput01 =
             pToken = lexj_TokenLookAhead(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"two \"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COLON == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"xyz\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"three \"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COLON == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_LBRACKET == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"a\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"b\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"c\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_RBRACKET == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"four \"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COLON == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_KWD_NULL == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"five\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COLON == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_KWD_TRUE == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
+            pStr = token_ToDataString(pToken);
+            XCTAssertTrue( (0 == strcmp("\"six\"", AStr_getData(pStr))) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_COLON == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_KWD_FALSE == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEXJ_SEP_RBRACE == token_getClass(pToken)) );
+            pToken = lexj_TokenAdvance(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            
+            pToken = lexj_TokenLookAhead(pLexJ, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue( (LEX_CLASS_EOF == token_getClass(pToken)) );
             pToken = lexj_TokenAdvance(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
             

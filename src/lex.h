@@ -97,6 +97,8 @@ extern "C" {
         
         LEX_CLASS_GROUP_LOWEST=256,
         
+        LEX_CLASS_COMMENT_GROUP=256,
+        
         LEX_CLASS_CONSTANT_GROUP=512,
         LEX_CONSTANT_CHAR,
         LEX_CONSTANT_INTEGER,
@@ -105,7 +107,11 @@ extern "C" {
         
         LEX_CLASS_SEP_GROUP=756,
         
-        LEX_CLASS_OTHER=1024,
+        LEX_CLASS_OP_GROUP=1024,
+        
+        LEX_CLASS_KWD_GROUP=1280,
+        
+        LEX_CLASS_OTHER=2048,
         
     } LEX_CLASS;
     
@@ -333,7 +339,7 @@ extern "C" {
      Advance in the output token stream num tokens, refilling the
      empty positions in the parsed output queue.
      @return:   If successful, a token which must NOT be released,
-     otherwise OBJ_NIL.
+                otherwise OBJ_NIL.
      */
     TOKEN_DATA *    lex_TokenAdvance(
         LEX_DATA		*this,
@@ -345,7 +351,7 @@ extern "C" {
      Look Ahead in the token stream to the num'th token in the
      parsed output queue.
      @return:   If successful, a token which must NOT be released,
-     otherwise OBJ_NIL.
+                otherwise OBJ_NIL.
      */
     TOKEN_DATA *    lex_TokenLookAhead(
         LEX_DATA        *this,
@@ -359,7 +365,7 @@ extern "C" {
      return from this queue first if it contains any tokens
      before looking at the parsed input queue.
      @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
-     otherwise ERESULT_ERROR_???.
+                otherwise ERESULT_ERROR_???.
      */
     ERESULT         lex_TokenPush(
         LEX_DATA        *this,

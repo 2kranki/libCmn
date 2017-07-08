@@ -58,6 +58,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <lex.h>
 #include        <token.h>
 
 
@@ -99,24 +100,24 @@ extern "C" {
         
         LEXJ_CLASS_GROUP_LOWEST=128,
         
-        LEXJ_CLASS_CONSTANT_GROUP=256,
+        LEXJ_CLASS_CONSTANT_GROUP=LEX_CLASS_CONSTANT_GROUP,
         LEXJ_CONSTANT_CHAR,
         LEXJ_CONSTANT_INTEGER,
         LEXJ_CONSTANT_FLOAT,
         LEXJ_CONSTANT_STRING,
         
-        LEXJ_KW_LOWEST=512,
-        LEXJ_KW_FALSE,                      // false
-        LEXJ_KW_NULL,                       // null
-        LEXJ_KW_TRUE,                       // true
-
-        LEXJ_SEP_LOWEST=756,
+        LEXJ_SEP_LOWEST=LEX_CLASS_SEP_GROUP,
         LEXJ_SEP_COLON,                     // :
         LEXJ_SEP_COMMA,                     // ,
         LEXJ_SEP_LBRACKET,                  // [
         LEXJ_SEP_LBRACE,                    // {
         LEXJ_SEP_RBRACKET,                  // ]
         LEXJ_SEP_RBRACE,                    // }
+        
+        LEXJ_KWD_LOWEST=LEX_CLASS_KWD_GROUP,
+        LEXJ_KWD_FALSE,                     // false
+        LEXJ_KWD_NULL,                      // null
+        LEXJ_KWD_TRUE,                      // true
         
     } LEXJ_CLASS;
     

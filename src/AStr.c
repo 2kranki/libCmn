@@ -2325,7 +2325,7 @@ extern "C" {
 #endif
         lenStr = AStr_getLength(this);
         if ( 0 == lenStr ) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
+            return ERESULT_SUCCESS;
         }
         
         // Remove leading characters.
@@ -2346,7 +2346,7 @@ extern "C" {
         
         lenStr = AStr_getLength(this);
         if ( 0 == lenStr ) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
+            return ERESULT_SUCCESS;
         }
         
         // Remove trailing characters.
@@ -2366,7 +2366,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

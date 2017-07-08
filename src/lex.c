@@ -759,7 +759,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1079,7 +1079,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1163,12 +1163,17 @@ extern "C" {
     }
     
     
+    /*!
+     Look for an integer suffix of [lL][lL]?[uU] | [uU][lL][lL]? on the end
+     of an integer parse.
+     @return:   integer type as defined by TOKEN_MISC
+     */
     uint16_t        lex_ParseIntegerSuffix(
         LEX_DATA        *this
     )
     {
         int16_t         chr;
-        int32_t         clsNew = TOKEN_MISC_SI;
+        int16_t         clsNew = TOKEN_MISC_SI;
         TOKEN_DATA      *pInput;
         
 #ifdef NDEBUG
@@ -1390,7 +1395,34 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //--------------------------------------------------------------
+    //            P a r s e  S t r i n g  T r u n c a t e
+    //--------------------------------------------------------------
+    
+    ERESULT         lex_ParseStringTruncate(
+        LEX_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        WStr_Truncate(this->pStr, 0);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1728,7 +1760,7 @@ extern "C" {
         this->curOutputs = (this->curOutputs + 1) % this->sizeOutputs;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1767,7 +1799,7 @@ extern "C" {
         tokenList_Add2Tail(this->pFIFO, pToken);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

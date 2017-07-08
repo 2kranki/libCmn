@@ -113,7 +113,7 @@ extern "C" {
     );
     
     
-    ASTR_DATA *    AStr_NewFromStrA(
+    ASTR_DATA *    AStr_NewFromStrW(
         WSTR_DATA       *pStr
     );
     
@@ -494,6 +494,11 @@ extern "C" {
     );
     
     
+    /*!
+     Remove white-space from the beginning and ending of the string.
+     @return:   If successful, an new AStr object which must be released,
+     otherwise OBJ_NIL.
+     */
     ERESULT         AStr_Trim(
         ASTR_DATA		*this
     );

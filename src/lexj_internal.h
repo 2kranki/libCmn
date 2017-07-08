@@ -67,7 +67,6 @@ struct lexj_data_s	{
     ERESULT         eRc;
     SRCFILE_DATA    *pInput;
     bool            (*pParser)(OBJ_ID, TOKEN_DATA *);
-    TOKEN_DATA      token;              // Next Output Token (output of pParser)
 
 };
 #pragma pack(pop)

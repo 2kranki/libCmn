@@ -286,6 +286,11 @@ struct lex_data_s	{
     );
     
     
+    ERESULT         lex_ParseStringTruncate(
+        LEX_DATA        *this
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			lex_Validate(
