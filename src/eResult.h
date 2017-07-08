@@ -172,6 +172,9 @@ extern "C" {
         ERESULT_KEY_NOT_FOUND               = -140,
         ERESULT_KEY_OUT_OF_RANGE            = -141,
         ERESULT_INDEX_FULL                  = -142,
+        ERESULT_BIT_SYNTAX                  = -143,
+        ERESULT_HEX_SYNTAX                  = -144,
+        ERESULT_OCT_SYNTAX                  = -145,
        
         ERESULT_BUSY                        = -256,
         ERESULT_NOT_BUSY                    = -257,

@@ -15,9 +15,10 @@
  *          for use in a parser to construct phrases.
  *
  *          The input token stream is provided by two functions
- *          which must be supplied. Those function allow the lexer
- *          to look-ahead in the input stream and then advance
- *          the input pointer as needed.
+ *          which must be supplied. Those functions must allow 
+ *          the lexer to look-ahead in the input stream and then
+ *          advance the input pointer as needed.  Since we use
+ *          look ahead, we will never scan backwards.
  *
  *          The lexical parser is provided at initialization
  *          and creates the output stream. A default one that
@@ -29,7 +30,10 @@
  *          overriding the normal lexical parsing output queue.
  *
  * Remarks
- *	1.      None
+ *	1.      To utilize this base class, you need to provide the
+ *          input look ahead and advance function.  In addition,
+ *          you probably want to provide a parse function and
+ *          possibly error functions.
  *
  * History
  *	09/07/2015 Generated
@@ -83,14 +87,26 @@ extern "C" {
     
 
     typedef enum lex_class_e {
-        /* Values below 128 are a character by itself that makes
+        /* Values below 256 are a character by itself that makes
          * its own token class. All other classes for groups of
          * characters should be allocated in the range above
          * LEX_CLASS_GROUP_LOWEST.
          */
         LEX_CLASS_EOF=-1,
         LEX_CLASS_RESERVED=0,
-        LEX_CLASS_GROUP_LOWEST=128
+        
+        LEX_CLASS_GROUP_LOWEST=256,
+        
+        LEX_CLASS_CONSTANT_GROUP=512,
+        LEX_CONSTANT_CHAR,
+        LEX_CONSTANT_INTEGER,
+        LEX_CONSTANT_FLOAT,
+        LEX_CONSTANT_STRING,
+        
+        LEX_CLASS_SEP_GROUP=756,
+        
+        LEX_CLASS_OTHER=1024,
+        
     } LEX_CLASS;
     
     
@@ -165,19 +181,19 @@ extern "C" {
             uint16_t        num
         );
         
-        ERESULT         (*pPushToken)(
+        TOKEN_DATA *    (*pTokenAdvance)(
+            LEX_DATA        *this,
+            uint16_t        num
+        );
+        
+        TOKEN_DATA *    (*pTokenLookAhead)(
+            LEX_DATA        *this,
+            uint16_t        num
+        );
+        
+        ERESULT         (*pTokenPush)(
             LEX_DATA        *this,
             TOKEN_DATA      *pChr
-        );
-        
-        TOKEN_DATA *    (*pSrcAdvance)(
-            LEX_DATA        *this,
-            uint16_t        num
-        );
-        
-        TOKEN_DATA *    (*pSrcLookAhead)(
-            LEX_DATA        *this,
-            uint16_t        num
         );
         
     } LEX_VTBL;
@@ -224,6 +240,11 @@ extern "C" {
     bool            lex_setErrors(
         LEX_DATA        *this,
         ERESULT_DATA    *pValue
+    );
+    
+    
+    ERESULT         lex_getLastError(
+        LEX_DATA        *this
     );
     
     
@@ -285,50 +306,12 @@ extern "C" {
 
 
     /*!
-     Advance in the output token stream num tokens, refilling the
-     empty positions in the parsed output queue.
-     @return:   If successful, a token which must NOT be released,
-                otherwise OBJ_NIL.
-     */
-    TOKEN_DATA *    lex_InputAdvance(
-        LEX_DATA		*this,
-        uint16_t        numChrs
-    );
-    
-    
-    /*!
-     Look Ahead in the token stream to the num'th token in the
-     parsed output queue.
-     @return:   If successful, a token which must NOT be released,
-                otherwise OBJ_NIL.
-     */
-    TOKEN_DATA *    lex_InputLookAhead(
-        LEX_DATA        *this,
-        uint16_t        num
-    );
-    
-
-    /*!
-     This routine adds the given token onto the tail of the
-     FIFO output queue. Both, InputAdvance() and InputLookAhead(), 
-     return from this queue first if it contains any tokens
-     before looking at the parsed input queue.
-     @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
-     otherwise ERESULT_ERROR_???.
-     */
-    ERESULT         lex_PushToken(
-        LEX_DATA        *this,
-        TOKEN_DATA      *pChr
-    );
-    
-    
-    /*!
      Advance in the input token stream num tokens, refilling the
      empty positions in the unparsed input queue.
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lex_SrcAdvance(
+    TOKEN_DATA *    lex_InputAdvance(
         LEX_DATA        *this,
         uint16_t        num
     );
@@ -340,9 +323,47 @@ extern "C" {
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lex_SrcLookAhead(
+    TOKEN_DATA *    lex_InputLookAhead(
         LEX_DATA        *this,
         uint16_t        num
+    );
+    
+    
+    /*!
+     Advance in the output token stream num tokens, refilling the
+     empty positions in the parsed output queue.
+     @return:   If successful, a token which must NOT be released,
+     otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    lex_TokenAdvance(
+        LEX_DATA		*this,
+        uint16_t        numChrs
+    );
+    
+    
+    /*!
+     Look Ahead in the token stream to the num'th token in the
+     parsed output queue.
+     @return:   If successful, a token which must NOT be released,
+     otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    lex_TokenLookAhead(
+        LEX_DATA        *this,
+        uint16_t        num
+    );
+    
+    
+    /*!
+     This routine adds the given token onto the tail of the
+     FIFO output queue. Both, InputAdvance() and InputLookAhead(),
+     return from this queue first if it contains any tokens
+     before looking at the parsed input queue.
+     @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
+     otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         lex_TokenPush(
+        LEX_DATA        *this,
+        TOKEN_DATA      *pChr
     );
     
     

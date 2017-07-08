@@ -1,10 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   token_internal.h
- *	Generated 05/26/2015 13:40:16
+ * File:   lexj_internal.h
+ *	Generated 07/02/2017 09:15:13
  *
- * Created on September 26, 2014, 3:39 PM
+ * Notes:
+ *  --	N/A
+ *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -36,61 +39,79 @@
 
 
 
-#ifndef TOKEN_INTERNAL_H
-#define	TOKEN_INTERNAL_H
+#include    <lexj.h>
+#include    <lex_internal.h>
+#include    <srcFile.h>
 
 
-#include    "token.h"
+#ifndef LEXJ_INTERNAL_H
+#define	LEXJ_INTERNAL_H
+
+
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
+
+
 #pragma pack(push, 1)
-struct token_data_s	{
+struct lexj_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    LEX_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    const
-    char            *pFileName;
-	uint32_t        lineNo; 			/* Source Input Line Number */
-    int32_t         cls;				/* Character/Token Class (Optional) */
-	uint16_t        misc;
-	uint16_t        colNo;				/* Source Input Column Number */
-	uint16_t        len;				/* Character/Token Length (Optional) */
-	uint16_t        offset;				/* offset into token string (Optional) */
-    uint16_t        type;               /* Type in union below*/
-    uint16_t        rsvd;
-    union {
-        int32_t         wchr[2];            // Wide Character w/ NUL
-        int64_t			integer;			/* Integer */
-        OBJ_ID			pObj;               /* an object */
-        uint32_t        strToken;
-    };
-    const
-    int32_t         zero;				/* Used to return a zero length string */
+    ERESULT         eRc;
+    SRCFILE_DATA    *pInput;
+    bool            (*pParser)(OBJ_ID, TOKEN_DATA *);
+    TOKEN_DATA      token;              // Next Output Token (output of pParser)
 
 };
 #pragma pack(pop)
 
     extern
     const
-    TOKEN_VTBL      token_Vtbl;
+    struct lexj_class_data_s  lexj_ClassObj;
 
+    extern
+    const
+    LEXJ_VTBL         lexj_Vtbl;
 
 
     // Internal Functions
-    void            token_Dealloc(
+    bool            lexj_setLastError(
+        LEXJ_DATA       *this,
+        ERESULT         value
+    );
+    
+    
+    void            lexj_Dealloc(
         OBJ_ID          objId
     );
 
+    bool            lexj_ParseTokenJson(
+        LEXJ_DATA       *this,
+        TOKEN_DATA      *pTokenOut          // Optional Output Token
+    );
+    
+    
+    void *          lexj_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			token_Validate(
-        TOKEN_DATA       *cbp
+    bool			lexj_Validate(
+        LEXJ_DATA       *this
     );
 #endif
 
@@ -100,5 +121,5 @@ struct token_data_s	{
 }
 #endif
 
-#endif	/* TOKEN_INTERNAL_H */
+#endif	/* LEXJ_INTERNAL_H */
 

@@ -467,7 +467,7 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                   P a r s e  D i g i t  0-9
+    //                   P a r s e  D i g i t  0 - 9
     //---------------------------------------------------------------
     
     int32_t         json_ParseDigit0To9(
@@ -1187,11 +1187,15 @@ extern "C" {
         for (;;) {
             chr = json_InputLookAhead(this, 1);
             TRC_OBJ(this,"\tinput: %c  line: %d  col: %d\n", chr, this->lineNo, this->colNo);
-            if ((chr == '#') && (this->colNo == 1)) {
-                do {
-                    json_InputAdvance(this, 1);
-                    chr = json_InputLookAhead(this, 1);
-                } while (chr != '\n');
+            if (this->colNo == 1) {
+                // Skip over '#' or "//" comments.
+                if ((chr == '#')
+                    || ((chr == '/') && (json_InputLookAhead(this, 2) == '/'))) {
+                    do {
+                        json_InputAdvance(this, 1);
+                        chr = json_InputLookAhead(this, 1);
+                    } while (chr != '\n');
+                }
             }
             fRc = WStr_IsWhiteSpaceW(chr);
             if( fRc ) {

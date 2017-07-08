@@ -38,6 +38,7 @@
 
 
 #include    <lex.h>
+#include    <ascii.h>
 #include    <objArray.h>
 #include    <szTbl.h>
 #include    <token_internal.h>
@@ -63,10 +64,12 @@ struct lex_data_s	{
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 #define LEX_INIT_DONE   5
+    
+    ERESULT         eRc;
 
     // Input Data/Routines
-    TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t);
-    TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t);
+    TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t);
+    TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
     OBJ_ID          pSrcObj;
     
     // Output Data/Routines
@@ -83,7 +86,8 @@ struct lex_data_s	{
     OBJ_ID          pParseObj;
     TOKEN_DATA      token;              // Next Output Token (output of pParser)
     WSTR_DATA       *pStr;              // String from accumulated tokens
-    bool            fUseStringTable;
+    uint8_t         fUseStringTable;
+    uint8_t         rsvd[3];
     
     // Error Output Routines
     ERESULT_DATA    *pErrors;
@@ -102,12 +106,18 @@ struct lex_data_s	{
 
 
     // Internal Functions
+    bool            lex_setLastError(
+        LEX_DATA        *this,
+        ERESULT         value
+    );
+    
+    
     void            lex_Dealloc(
         OBJ_ID          objId
     );
 
 
-    ERESULT         lex_InputNextChar(
+    ERESULT         lex_TokenNext(
         LEX_DATA		*this
     );
     
@@ -188,6 +198,30 @@ struct lex_data_s	{
     );
     
     
+    bool            lex_ParseChrCon(
+        LEX_DATA        *this,
+        int32_t         ending
+    );
+    
+    
+    bool            lex_ParseDigitHex(
+        LEX_DATA        *this
+    );
+    
+    bool            lex_ParseDigitsHex(
+        LEX_DATA       *this
+    );
+    
+    
+    bool            lex_ParseDigitOct(
+        LEX_DATA        *this
+    );
+    
+    bool            lex_ParseDigitsOct(
+        LEX_DATA        *this
+    );
+    
+    
     TOKEN_DATA *    lex_ParseEOF(
         LEX_DATA        *cbp
     );
@@ -213,6 +247,21 @@ struct lex_data_s	{
         LEX_DATA        *this,
         int32_t         newClass,
         bool            fSaveStr
+    );
+    
+    
+    uint16_t        lex_ParseIntegerSuffix(
+        LEX_DATA        *this
+    );
+    
+    
+    bool            lex_ParseName(
+        LEX_DATA        *this
+    );
+    
+    
+    uint16_t        lex_ParseNumber(
+        LEX_DATA        *this
     );
     
     

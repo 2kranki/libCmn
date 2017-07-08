@@ -58,14 +58,12 @@
 #include    <srcFile.h>
 
 
-#ifdef XYZZY
 static
 const
 char        *pTestInput01 =
     "+ ++ +=\n"
     "\t* *=\n"
     "abc2\n";
-#endif
 
 
 

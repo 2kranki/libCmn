@@ -250,6 +250,10 @@ extern "C" {
         OBJ_IDENT_JSON_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner
         OBJ_IDENT_LEX_CLASS,
+        OBJ_IDENT_LEXJ,                 // Simple Lexical Scanner for HJSON
+        OBJ_IDENT_LEXJ_CLASS,
+        OBJ_IDENT_LEXS,                 // Simple Lexical Scanner for JSON, CSV, etc
+        OBJ_IDENT_LEXS_CLASS,
         OBJ_IDENT_LISTDL,               // Generic Doubly-linked List
         OBJ_IDENT_LISTDL_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching

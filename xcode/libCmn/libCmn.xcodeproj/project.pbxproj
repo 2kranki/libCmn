@@ -548,6 +548,9 @@
 		C4C6D83F1F068344006D6C5E /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D83B1F068344006D6C5E /* enum.c */; };
 		C4C6D8401F068344006D6C5E /* enum.h in Headers */ = {isa = PBXBuildFile; fileRef = C4C6D83C1F068344006D6C5E /* enum.h */; };
 		C4C6D8421F0683ED006D6C5E /* enumTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D8411F0683ED006D6C5E /* enumTest.m */; };
+		C4C6D8511F0929BB006D6C5E /* lexj_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D84E1F0929BB006D6C5E /* lexj_object.c */; };
+		C4C6D8521F0929BB006D6C5E /* lexj.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D84F1F0929BB006D6C5E /* lexj.c */; };
+		C4C6D8541F0929F7006D6C5E /* lexjTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D8531F0929F6006D6C5E /* lexjTest.m */; };
 		C4EDA3E21DBFDC2A005FBE6E /* endian_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4EDA3DE1DBFDC2A005FBE6E /* endian_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C4EDA3E31DBFDC2A005FBE6E /* endian_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EDA3DF1DBFDC2A005FBE6E /* endian_object.c */; };
 		C4EDA3E41DBFDC2A005FBE6E /* endian.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EDA3E01DBFDC2A005FBE6E /* endian.c */; };
@@ -1131,6 +1134,11 @@
 		C4C6D83B1F068344006D6C5E /* enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = enum.c; sourceTree = "<group>"; };
 		C4C6D83C1F068344006D6C5E /* enum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = enum.h; sourceTree = "<group>"; };
 		C4C6D8411F0683ED006D6C5E /* enumTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = enumTest.m; sourceTree = "<group>"; };
+		C4C6D84D1F0929BB006D6C5E /* lexj_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lexj_internal.h; sourceTree = "<group>"; };
+		C4C6D84E1F0929BB006D6C5E /* lexj_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lexj_object.c; sourceTree = "<group>"; };
+		C4C6D84F1F0929BB006D6C5E /* lexj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lexj.c; sourceTree = "<group>"; };
+		C4C6D8501F0929BB006D6C5E /* lexj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lexj.h; sourceTree = "<group>"; };
+		C4C6D8531F0929F6006D6C5E /* lexjTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lexjTest.m; sourceTree = "<group>"; };
 		C4EDA3DE1DBFDC2A005FBE6E /* endian_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endian_internal.h; sourceTree = "<group>"; };
 		C4EDA3DF1DBFDC2A005FBE6E /* endian_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = endian_object.c; sourceTree = "<group>"; };
 		C4EDA3E01DBFDC2A005FBE6E /* endian.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = endian.c; sourceTree = "<group>"; };
@@ -1407,6 +1415,10 @@
 				C41F01571EC50C2B0039F0EB /* lex_object.c */,
 				C41F01581EC50C2B0039F0EB /* lex.c */,
 				C41F01591EC50C2B0039F0EB /* lex.h */,
+				C4C6D84D1F0929BB006D6C5E /* lexj_internal.h */,
+				C4C6D84E1F0929BB006D6C5E /* lexj_object.c */,
+				C4C6D84F1F0929BB006D6C5E /* lexj.c */,
+				C4C6D8501F0929BB006D6C5E /* lexj.h */,
 				C46704921C6B9CFA0091FC0E /* listdl.c */,
 				C46704931C6B9CFA0091FC0E /* listdl.h */,
 				C411A1CD1DBB139F001832EE /* lru_internal.h */,
@@ -1708,6 +1720,7 @@
 				C411A1971DAD3D51001832EE /* hexTest.m */,
 				C467078A1C6BAE0D0091FC0E /* jsonTest.m */,
 				C41F015E1EC50C8C0039F0EB /* lexTest.m */,
+				C4C6D8531F0929F6006D6C5E /* lexjTest.m */,
 				C467078C1C6BAE0D0091FC0E /* listdlTest.m */,
 				C411A1D51DBB13FC001832EE /* lruTest.m */,
 				C467078E1C6BAE0D0091FC0E /* memOSXTest.m */,
@@ -2366,6 +2379,7 @@
 				C467073A1C6BA6D90091FC0E /* AStrArrayTest.m in Sources */,
 				C46707401C6BA6D90091FC0E /* block16Test.m in Sources */,
 				C46708351C6BAE0D0091FC0E /* scanDec32Test.m in Sources */,
+				C4C6D8521F0929BB006D6C5E /* lexj.c in Sources */,
 				C46707FE1C6BAE0D0091FC0E /* eresultTest.m in Sources */,
 				C46708011C6BAE0D0091FC0E /* fbsTest.m in Sources */,
 				C467083C1C6BAE0D0091FC0E /* srcLocTest.m in Sources */,
@@ -2375,6 +2389,7 @@
 				C46708091C6BAE0D0091FC0E /* listdlTest.m in Sources */,
 				C46707E21C6BAE0D0091FC0E /* common.m in Sources */,
 				C442136A1D6F183600974569 /* dateTimeTest.m in Sources */,
+				C4C6D8541F0929F7006D6C5E /* lexjTest.m in Sources */,
 				C46707DC1C6BAE0D0091FC0E /* cb32Test.m in Sources */,
 				C467084C1C6BAE0D0091FC0E /* u8ArrayTest.m in Sources */,
 				C411A1D61DBB13FC001832EE /* lruTest.m in Sources */,
@@ -2386,6 +2401,7 @@
 				C46707FF1C6BAE0D0091FC0E /* execArrayTest.m in Sources */,
 				C467083E1C6BAE0D0091FC0E /* szHashTest.m in Sources */,
 				C46708151C6BAE0D0091FC0E /* nodeTreeTest.m in Sources */,
+				C4C6D8511F0929BB006D6C5E /* lexj_object.c in Sources */,
 				C46708401C6BAE0D0091FC0E /* tableTest.m in Sources */,
 				C46708461C6BAE0D0091FC0E /* traceTest.m in Sources */,
 				C4EDA3E71DBFDCB1005FBE6E /* endianTest.m in Sources */,

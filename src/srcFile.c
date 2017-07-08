@@ -94,7 +94,7 @@ extern "C" {
         }
         *pChar = chr;
         
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
 
     
@@ -145,7 +145,7 @@ extern "C" {
         }
         *pChar = chr;
         
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -533,8 +533,14 @@ extern "C" {
         if( fExpandTabs )
             this->flags |= FLG_TAB;
         this->flags  |= FLG_EOF;
-        this->pPath  = path_Copy(pPath);
-        eRc = szTbl_StringToString(szTbl_Shared(), path_getData(this->pPath), &this->pFileName);
+        if (pPath) {
+            this->pPath  = path_Copy(pPath);
+            eRc =   szTbl_StringToString(
+                                szTbl_Shared(),
+                                path_getData(this->pPath),
+                                &this->pFileName
+                    );
+        }
         this->lineNo  = 1;
         this->colNo   = 0;
         this->tabSize = tabSize;
@@ -889,7 +895,7 @@ extern "C" {
         this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

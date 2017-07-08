@@ -11,40 +11,48 @@
  *          constructing JSON data. An 'object' is a hash with
  *          keys and data entries.
  *
+ *          Comments are allowed and include from the start of the
+ *          comment, '#' or "//", to the end of that line.
+ *
  *          json    : value+
  *                  ;
- *          value   : array | object | string | number
+ *          value   : array | object | string | number | ws*
  *                  ;
- *          object  : '{' ws* object_value (',' ws* object_value)* ws* '}'
+ *          object  : '{' ws* object_value ((',')? ws* object_value)* (',')? ws* '}'
  *                  ;
  *          object_value
  *                  : string ws* ':' ws* value
  *                  ;
- *          array   : '[' ws* value ws* (',' ws* value)* ws* ']'
+ *          array   : '[' ws* value ws* ((',')? ws* value)* ws* ']'
  *                  ;
  *          ws      : ' ' | '\n' | '\r' | '\t'
  *                  ;
- *          string  : '"' string_chars* '"'
+ *          string  : '"' string_char* '"'
+ *                  | string_char_non_blank
  *                  ;
- *          string_chars  
- *                  : [\b\f\n\r\t\\\/ !] 
- *                  | [#-~]
- *                  | '\\' '"' 
+ *          string_char
+ *                  : [\b\f\n\r\t\\\/ ]
+ *                  | string_char_non_blank
+ *                  ;
+ *          string_char_non_blank
+ *                  : [!#-~]
+ *                  | '\\' '"'
  *                  | '\\' ('u'|'U') hexdigit*
  *                  | '\\' '\\'
  *                  ;
- *          number  : ('-')? [1-9][0-9]* ('.' [0-9]+)? exp?
+ *          number  : ('-' | '+')? [1-9][0-9]* ('.' [0-9]+)? exp?
  *                  ;
  *          exp     : ('e' | 'E') ('-' | '+')? [0-9]+
  *                  ;
  *
- *      Arrays returned are node children and objects are hashes.
+ *      Arrays returned are Node children and objects are hashes.
  *
  * Remarks
  *	1.      None
  *
  * History
  *	10/18/2015 Generated
+ *  07/01/2017 Started relaxing grammer to HJSON specifications
  */
 
 

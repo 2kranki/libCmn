@@ -74,7 +74,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -104,15 +104,15 @@ extern "C" {
     LEX_DATA *     lex_Alloc(
     )
     {
-        LEX_DATA       *cbp;
+        LEX_DATA       *this;
         uint32_t        cbSize = sizeof(LEX_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -148,39 +148,82 @@ extern "C" {
     //===============================================================
 
     ERESULT_DATA *  lex_getErrors(
-        LEX_DATA        *cbp
-                                     )
+        LEX_DATA        *this
+    )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pErrors;
+        return this->pErrors;
     }
     
     
     bool            lex_setErrors(
-        LEX_DATA        *cbp,
+        LEX_DATA        *this,
         ERESULT_DATA    *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pErrors) {
-            obj_Release(cbp->pErrors);
+        if (this->pErrors) {
+            obj_Release(this->pErrors);
         }
-        cbp->pErrors = pValue;
+        this->pErrors = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         lex_getLastError(
+        LEX_DATA        *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            lex_setLastError(
+        LEX_DATA        *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
         
         return true;
     }
@@ -218,7 +261,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -241,7 +284,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -258,7 +301,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -269,39 +312,39 @@ extern "C" {
     
     
     TOKENLIST_DATA * lex_getTokens(
-        LEX_DATA        *cbp
+        LEX_DATA        *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pFIFO;
+        return this->pFIFO;
     }
     
     
     bool            lex_setTokens(
-        LEX_DATA        *cbp,
+        LEX_DATA        *this,
         TOKENLIST_DATA  *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pFIFO) {
-            obj_Release(cbp->pFIFO);
+        if (this->pFIFO) {
+            obj_Release(this->pFIFO);
         }
-        cbp->pFIFO = pValue;
+        this->pFIFO = pValue;
         
         return true;
     }
@@ -332,7 +375,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -375,7 +418,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     void            lex_Error(
-        LEX_DATA        *cbp,
+        LEX_DATA        *this,
         const
         char            *pFileName,
         uint32_t		linnum,
@@ -390,14 +433,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
         va_start( argsp, fmt );
-        eResult_ErrorArg(cbp->pErrors, fmt, argsp);
+        eResult_ErrorArg(this->pErrors, fmt, argsp);
         va_end( argsp );
         
         // Return to caller.
@@ -405,7 +448,7 @@ extern "C" {
     
     
     void            lex_ErrorFatal(
-        LEX_DATA        *cbp,
+        LEX_DATA        *this,
         const
         char			*fmt,
         ...
@@ -416,14 +459,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
         va_start( argsp, fmt );
-        eResult_ErrorFatalArg(cbp->pErrors, fmt, argsp);
+        eResult_ErrorFatalArg(this->pErrors, fmt, argsp);
         va_end( argsp );
 
         // Return to caller.
@@ -497,6 +540,7 @@ extern "C" {
             return OBJ_NIL;
         }
         //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(LEX_DATA));
     #endif
 
         return this;
@@ -504,208 +548,6 @@ extern "C" {
 
      
 
-    //--------------------------------------------------------------
-    //                  I n p u t  A d v a n c e
-    //--------------------------------------------------------------
-    
-    TOKEN_DATA *    lex_InputAdvance(
-        LEX_DATA		*this,
-        uint16_t        numChrs
-    )
-    {
-        uint32_t        i;
-        uint16_t        idx;
-        TOKEN_DATA      *pToken = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !lex_Validate( this ) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        if (this->pFIFO ) {
-            idx = tokenList_getSize(this->pFIFO);
-            if (idx) {
-                while (numChrs && idx) {
-                    tokenList_DeleteHead(this->pFIFO);
-                    idx = tokenList_getSize(this->pFIFO);
-                    --numChrs;
-                }
-            }
-            if (numChrs > 0) {
-            }
-            else {
-                pToken = tokenList_Head(this->pFIFO);
-                if (pToken) {
-#ifdef NDEBUG
-#else
-                    if (obj_Trace(this)) {
-                        ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
-                        TRC_OBJ( this, "lex_InputAdvance:  %s \n", AStr_getData(pStr) );
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                    }
-#endif
-                    return pToken;
-                }
-            }
-        }
-        
-        if (!obj_IsFlag(this, LEX_INIT_DONE)) {
-            for (i=0; i<this->sizeOutputs; ++i) {
-                pToken = &this->pOutputs[i];
-                token_InitCharW(pToken, "", 1, 1, 0, 0);
-            }
-            for (i=0; i<this->sizeOutputs; ++i) {
-                lex_InputNextChar(this);
-            }
-            obj_FlagOn(this, LEX_INIT_DONE);
-        }
-        
-        // Shift inputs.
-        for (i=0; i<numChrs; ++i) {
-            lex_InputNextChar(this);
-        }
-        
-        // Return to caller.
-        pToken = &this->pOutputs[this->curOutputs];
-#ifdef NDEBUG
-#else
-        if (obj_Trace(this)) {
-            ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
-            TRC_OBJ( this, "lex_InputAdvance:  %s \n", AStr_getData(pStr) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-#endif
-        return pToken;
-    }
-    
-    
-    
-    //--------------------------------------------------------------
-    //               I n p u t  L o o k  A h e a d
-    //--------------------------------------------------------------
-    
-    TOKEN_DATA *    lex_InputLookAhead(
-        LEX_DATA        *this,
-        uint16_t        num
-    )
-    {
-        uint16_t        idx;
-        TOKEN_DATA      *pToken;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !lex_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        if (this->pFIFO ) {
-            idx = tokenList_getSize(this->pFIFO);
-            if (num > idx) {
-                num -= idx;
-            }
-            else {
-                pToken = tokenList_Index(this->pFIFO,num);
-#ifdef NDEBUG
-#else
-                if (obj_Trace(this)) {
-                    ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
-                    TRC_OBJ( this, "lex_InputLookAhead:  %s \n", AStr_getData(pStr) );
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-#endif
-                return pToken;
-            }
-        }
-        
-        if (!obj_IsFlag(this, LEX_INIT_DONE)) {
-#ifdef NDEBUG
-#else
-            for (idx=0; idx<this->sizeOutputs; ++idx) {
-                pToken = &this->pOutputs[idx];
-                token_InitCharW(pToken, "", 1, 1, LEX_CLASS_EOF, 0);
-            }
-#endif
-            for (idx=0; idx<this->sizeOutputs; ++idx) {
-                lex_InputNextChar(this);
-            }
-            obj_FlagOn(this, LEX_INIT_DONE);
-        }
-        
-        idx = (this->curOutputs + num - 1) % this->sizeOutputs;
-        pToken = &this->pOutputs[idx];
-        
-        // Return to caller.
-#ifdef NDEBUG
-#else
-        if (obj_Trace(this)) {
-            ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
-            TRC_OBJ( this, "lex_InputLookAhead:  %s \n", AStr_getData(pStr) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-#endif
-        return pToken;
-    }
-    
-    
-    
-    
-    //--------------------------------------------------------------
-    //                  I n p u t  N e x t  C h a r
-    //--------------------------------------------------------------
-    
-    // This method is called when we need to parse a new phrase and
-    // save it into the current token.
-    
-    ERESULT         lex_InputNextChar(
-        LEX_DATA		*this
-    )
-    {
-        TOKEN_DATA      *pToken;
-        bool            fRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !lex_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        // Release current token data;
-        token_ReleaseDataIfObj(&this->pOutputs[this->curOutputs]);
-
-        fRc = this->pParser(this->pParseObj, &this->token);
-        if (!fRc) {
-            return ERESULT_GENERAL_FAILURE;
-        }
-        // The lexical parser should have called the parse???
-        // methods to build the token and it should now reside
-        // in this->token.
-        
-        // Add the next char to the queue.
-        pToken = &this->pOutputs[this->curOutputs];
-        token_Assign(&this->token, pToken);
-        
-        this->curOutputs = (this->curOutputs + 1) % this->sizeOutputs;
-        
-        // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
-    }
-    
-    
-    
     //--------------------------------------------------------------
     //                 M a t c h  I n p u t  C h r
     //--------------------------------------------------------------
@@ -721,7 +563,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -755,7 +597,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -791,7 +633,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -827,7 +669,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -872,7 +714,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
@@ -923,6 +765,236 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                    P a r s e  C h a r s
+    //---------------------------------------------------------------
+    
+    // The first character of the name has already been parsed, but
+    // not advanced. So, we just keep accumulating the proper letters
+    // until there are no more that are acceptable.
+    
+    bool            lex_ParseChrCon(
+        LEX_DATA        *this,
+        int32_t         ending
+    )
+    {
+        int32_t         cls;
+        int32_t         chr;
+        TOKEN_DATA      *pInput;
+        int             i;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        cls = token_getClass(pInput);
+        chr = token_getChrW(pInput);
+        if ((chr == '\n') || (chr == '\r')) {
+            return false;
+        }
+        if (chr == ending) {
+            return false;
+        }
+        if ( cls == '\\') {
+            lex_ParseAddTokenToString(this, pInput);
+            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+            cls = token_getClass(pInput);
+            switch (cls) {
+                    
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                    lex_ParseAddTokenToString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    if (lex_ParseDigitOct(this)) {
+                        if (lex_ParseDigitOct(this)) {
+                        }
+                    }
+                    return true;
+                    
+                case '?':
+                case 'b':
+                case 'f':
+                case 'n':
+                case 'r':
+                case 't':
+                case 'v':
+                case '\\':
+                case '\'':
+                case '\"':
+                    lex_ParseAddTokenToString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    return true;
+                    
+                case 'u':
+                    lex_ParseAddTokenToString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    for (i=0; i<4; ++i) {
+                        if (lex_ParseDigitHex(this)) {
+                        }
+                        else {
+                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            return false;
+                        }
+                    }
+                    break;
+                    
+                case 'x':
+                    lex_ParseAddTokenToString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    for (i=0; i<2; ++i) {
+                        if (lex_ParseDigitHex(this)) {
+                        }
+                        else {
+                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            return false;
+                        }
+                    }
+                    break;
+                    
+                default:
+                    return false;
+                    break;
+            }
+        }
+        else {
+            lex_ParseAddTokenToString(this, pInput);
+            this->pSrcChrAdvance(this->pSrcObj, 1);
+        }
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   P a r s e  D i g i t
+    //---------------------------------------------------------------
+    
+    bool            lex_ParseDigitHex(
+        LEX_DATA        *this
+    )
+    {
+        bool            fRc = false;
+        int32_t         cls;
+        int32_t         chr;
+        TOKEN_DATA      *pInput;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        cls = token_getClass(pInput);
+        chr = token_getChrW(pInput);
+        
+        if(   ((chr >= '0') && (chr <= '9'))
+           || ((chr >= 'a') && (chr <= 'f'))
+           || ((chr >= 'A') && (chr <= 'F'))
+           ) {
+            lex_ParseAddTokenToString(this, pInput);
+            this->pSrcChrAdvance(this->pSrcObj, 1);
+            fRc = true;
+        }
+        
+        // Return to caller.
+        return fRc;
+    }
+    
+    
+    
+    bool            lex_ParseDigitsHex(
+        LEX_DATA       *this
+    )
+    {
+        bool            rc = false;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        while (lex_ParseDigitHex(this)) {
+        }
+        
+        // Return to caller.
+        return rc;
+    }
+    
+    
+    
+    bool            lex_ParseDigitOct(
+        LEX_DATA        *this
+    )
+    {
+        bool            fRc = false;
+        int32_t         cls;
+        char            chr;
+        TOKEN_DATA      *pInput;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        cls = token_getClass(pInput);
+        chr = token_getChrW(pInput);
+        
+        if( ((chr >= '0') && (chr <= '7')) ) {
+            lex_ParseAddTokenToString(this, pInput);
+            this->pSrcChrAdvance(this->pSrcObj, 1);
+            fRc = true;
+        }
+        
+        // Return to caller.
+        return fRc;
+    }
+    
+    
+    bool            lex_ParseDigitsOct(
+        LEX_DATA        *this
+    )
+    {
+        bool            rc = false;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        while (lex_ParseDigitOct(this)) {
+        }
+        
+        // Return to caller.
+        return rc;
+    }
+    
+    
+    
     //--------------------------------------------------------------
     //                      P a r s e  E O F
     //--------------------------------------------------------------
@@ -931,7 +1003,7 @@ extern "C" {
      *  where it will be retrieved by NextToken().
      */
     TOKEN_DATA *    lex_ParseEOF(
-        LEX_DATA        *cbp
+        LEX_DATA        *this
     )
     {
         TOKEN_DATA      *pToken;
@@ -939,15 +1011,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( cbp ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        obj_setSize(&cbp->token, sizeof(TOKEN_DATA));
+        obj_setSize(&this->token, sizeof(TOKEN_DATA));
         pToken =    token_InitCharW(
-                        &cbp->token,
+                        &this->token,
                         NULL,
                         0,
                         0,
@@ -981,7 +1053,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1013,6 +1085,270 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      P a r s e  N u m b e r
+    //---------------------------------------------------------------
+    
+    // The first character of the number has already been parsed and
+    // appended, but not advanced over. So, we can look at it and
+    // make decisions based on it.
+    
+    uint16_t        lex_ParseNumber(
+        LEX_DATA        *this
+    )
+    {
+        int32_t         chr;
+        int32_t         cls;
+        int32_t         clsNew = 0;
+        TOKEN_DATA      *pInput;
+        bool            fRc;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return clsNew;
+        }
+#endif
+        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        cls = token_getClass(pInput);
+        chr = token_getChrW(pInput);
+        
+        switch (chr) {
+            case '0':
+                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                chr = token_getChrW(pInput);
+                if ((chr == 'x') || (chr == 'X')) {
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    if( !lex_ParseDigitsHex(this) ) {
+                        lex_setLastError(this, ERESULT_HEX_SYNTAX);
+                        return false;
+                    }
+                    clsNew = LEX_CONSTANT_INTEGER;
+                }
+                else {
+                    fRc = lex_ParseDigitsOct(this);
+                    clsNew = LEX_CONSTANT_INTEGER;
+                }
+                break;
+                
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                for (;;) {
+                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if ((chr >= '0') && (chr <= '9')) {
+                        lex_ParseAddTokenToString(this, pInput);
+                    }
+                    else
+                        break;
+                }
+                clsNew = LEX_CONSTANT_INTEGER;
+                break;
+                
+            default:
+                break;
+        }
+        fRc = lex_ParseIntegerSuffix(this);
+        
+        lex_setLastError(this, ERESULT_SUCCESS);
+        return clsNew;
+    }
+    
+    
+    uint16_t        lex_ParseIntegerSuffix(
+        LEX_DATA        *this
+    )
+    {
+        int16_t         chr;
+        int32_t         clsNew = TOKEN_MISC_SI;
+        TOKEN_DATA      *pInput;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return clsNew;
+        }
+#endif
+        
+        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        chr = token_getChrW(pInput);
+        switch (chr) {
+            case 'l':
+                lex_ParseAddTokenToString(this, pInput);
+                clsNew = TOKEN_MISC_SL;
+                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                chr = token_getChrW(pInput);
+                if ('l' == chr) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_SLL;
+                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if (('u' == chr) || ('U' == chr)) {
+                        lex_ParseAddTokenToString(this, pInput);
+                        clsNew = TOKEN_MISC_ULL;
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    return clsNew;
+                }
+                if (('u' == chr) || ('U' == chr)) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_UL;
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                }
+                return clsNew;
+                break;
+                
+            case 'L':
+                lex_ParseAddTokenToString(this, pInput);
+                clsNew = TOKEN_MISC_SL;
+                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                chr = token_getChrW(pInput);
+                if ('L' == chr) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_SLL;
+                    pInput = ((LEX_DATA *)this)->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if (('u' == chr) || ('U' == chr)) {
+                        lex_ParseAddTokenToString((LEX_DATA *)this, pInput);
+                        clsNew = TOKEN_MISC_ULL;
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    return clsNew;
+                }
+                if (('u' == chr) || ('U' == chr)) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_UL;
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    return clsNew;
+                }
+                return clsNew;
+                break;
+                
+            case 'u':
+                lex_ParseAddTokenToString(this, pInput);
+                clsNew = TOKEN_MISC_UI;
+                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                chr = token_getChrW(pInput);
+                if ('l' == chr) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_UL;
+                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if ('l' == chr) {
+                        lex_ParseAddTokenToString(this, pInput);
+                        clsNew = TOKEN_MISC_ULL;
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    return clsNew;
+                }
+                if ('L' == chr) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_UL;
+                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if ('L' == chr) {
+                        lex_ParseAddTokenToString(this, pInput);
+                        clsNew = TOKEN_MISC_ULL;
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    return clsNew;
+                }
+                return clsNew;
+                break;
+                
+            case 'U':
+                lex_ParseAddTokenToString(this, pInput);
+                clsNew = TOKEN_MISC_UI;
+                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                chr = token_getChrW(pInput);
+                if ('l' == chr) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_UL;
+                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if ('l' == chr) {
+                        lex_ParseAddTokenToString(this, pInput);
+                        clsNew = TOKEN_MISC_ULL;
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    return clsNew;
+                }
+                if ('L' == chr) {
+                    lex_ParseAddTokenToString(this, pInput);
+                    clsNew = TOKEN_MISC_UL;
+                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+                    chr = token_getChrW(pInput);
+                    if ('L' == chr) {
+                        lex_ParseAddTokenToString(this, pInput);
+                        clsNew = TOKEN_MISC_ULL;
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    return clsNew;
+                }
+                return clsNew;
+                break;
+                
+            default:
+                break;
+        }
+        
+        return clsNew;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      P a r s e  N a m e
+    //---------------------------------------------------------------
+    
+    // The first character of the name has already been parsed, but
+    // not advanced. So, we just keep accumulating the proper letters
+    // until there are no more that are acceptable.
+    
+    bool            lex_ParseName(
+        LEX_DATA        *this
+    )
+    {
+        int32_t         cls;
+        TOKEN_DATA      *pInput;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        for (;;) {
+            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+            cls = token_getClass(pInput);
+            if (    (cls == ASCII_LEXICAL_ALPHA_LOWER)
+                || (cls == ASCII_LEXICAL_ALPHA_UPPER)
+                || (cls == ASCII_LEXICAL_NUMBER)
+                || (cls == '_')
+                || (cls == '$')
+                ) {
+                lex_ParseAddTokenToString(this, pInput);
+            }
+            else
+                break;
+        }
+        
+        return true;
+    }
+    
+    
+    
     //--------------------------------------------------------------
     //                      P a r s e  S e t u p
     //--------------------------------------------------------------
@@ -1030,7 +1366,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1074,7 +1410,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1098,44 +1434,44 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                P a r s e  W h i t e  S p a c e
+    //---------------------------------------------------------------
     
-    //--------------------------------------------------------------
-    //                      P u s h  T o k e n
-    //--------------------------------------------------------------
-    
-    /*  This routine will save the current character on a queue
-     *  where it will be retrieved by NextToken().
+    /* Parse white space until eol.
      */
-    ERESULT         lex_PushToken(
-        LEX_DATA        *this,
-        TOKEN_DATA      *pToken
+    bool            lex_ParseWhiteSpace(
+        LEX_DATA        *this
     )
     {
+        int32_t         cls;
+        TOKEN_DATA      *pInput;
+        int32_t         chr;
         
-        // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return false;
         }
 #endif
-
-        if (this->pFIFO == OBJ_NIL) {
-            this->pFIFO = tokenList_New( );
-            if (OBJ_NIL == this->pFIFO) {
-                DEBUG_BREAK();
-                return ERESULT_INSUFFICIENT_MEMORY;
+        
+        for (;;) {
+            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+            cls = token_getClass(pInput);
+            chr = token_getChrW(pInput);
+            if ( chr == '\n' ) {
+                break;
             }
-            
+            if ( cls == ASCII_LEXICAL_WHITESPACE ) {
+                lex_ParseAddTokenToString(this, pInput);
+            }
+            else
+                break;
         }
         
-        tokenList_Add2Tail(this->pFIFO, pToken);
-        
-        // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return true;
     }
-    
     
     
     
@@ -1143,7 +1479,7 @@ extern "C" {
     //                   S o u r c e  A d v a n c e
     //--------------------------------------------------------------
     
-    TOKEN_DATA *    lex_SrcAdvance(
+    TOKEN_DATA *    lex_InputAdvance(
         LEX_DATA        *this,
         uint16_t        num
     )
@@ -1153,7 +1489,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1171,7 +1507,7 @@ extern "C" {
     //               S o u r c e  L o o k  A h e a d
     //--------------------------------------------------------------
     
-    TOKEN_DATA *    lex_SrcLookAhead(
+    TOKEN_DATA *    lex_InputLookAhead(
         LEX_DATA        *this,
         uint16_t        num
     )
@@ -1181,13 +1517,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lex_Validate( this ) ) {
+        if( !lex_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pToken = this->pSrcChrLookAhead(this->pSrcObj,num);
+        pToken = this->pSrcChrLookAhead(this->pSrcObj, num);
         
         // Return to caller.
         return pToken;
@@ -1195,6 +1531,247 @@ extern "C" {
     
     
     
+    //--------------------------------------------------------------
+    //                  T o k e n  A d v a n c e
+    //--------------------------------------------------------------
+    
+    TOKEN_DATA *    lex_TokenAdvance(
+        LEX_DATA		*this,
+        uint16_t        numChrs
+    )
+    {
+        uint32_t        i;
+        uint16_t        idx;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        if (this->pFIFO ) {
+            idx = tokenList_getSize(this->pFIFO);
+            if (idx) {
+                while (numChrs && idx) {
+                    tokenList_DeleteHead(this->pFIFO);
+                    idx = tokenList_getSize(this->pFIFO);
+                    --numChrs;
+                }
+            }
+            if (numChrs > 0) {
+            }
+            else {
+                pToken = tokenList_Head(this->pFIFO);
+                if (pToken) {
+#ifdef NDEBUG
+#else
+                    if (obj_Trace(this)) {
+                        ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
+                        TRC_OBJ( this, "lex_InputAdvance:  %s \n", AStr_getData(pStr) );
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+#endif
+                    return pToken;
+                }
+            }
+        }
+        
+        if (!obj_IsFlag(this, LEX_INIT_DONE)) {
+            for (i=0; i<this->sizeOutputs; ++i) {
+                pToken = &this->pOutputs[i];
+                token_InitCharW(pToken, "", 1, 1, 0, 0);
+            }
+            for (i=0; i<this->sizeOutputs; ++i) {
+                lex_TokenNext(this);
+            }
+            obj_FlagOn(this, LEX_INIT_DONE);
+        }
+        
+        // Shift inputs.
+        for (i=0; i<numChrs; ++i) {
+            lex_TokenNext(this);
+        }
+        
+        // Return to caller.
+        pToken = &this->pOutputs[this->curOutputs];
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
+            TRC_OBJ( this, "lex_InputAdvance:  %s \n", AStr_getData(pStr) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+#endif
+        return pToken;
+    }
+    
+    
+    
+    //--------------------------------------------------------------
+    //               T o k e n  L o o k  A h e a d
+    //--------------------------------------------------------------
+    
+    TOKEN_DATA *    lex_TokenLookAhead(
+        LEX_DATA        *this,
+        uint16_t        num
+    )
+    {
+        uint16_t        idx;
+        TOKEN_DATA      *pToken;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->pFIFO ) {
+            idx = tokenList_getSize(this->pFIFO);
+            if (num > idx) {
+                num -= idx;
+            }
+            else {
+                pToken = tokenList_Index(this->pFIFO,num);
+#ifdef NDEBUG
+#else
+                if (obj_Trace(this)) {
+                    ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
+                    TRC_OBJ( this, "lex_InputLookAhead:  %s \n", AStr_getData(pStr) );
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+#endif
+                return pToken;
+            }
+        }
+        
+        if (!obj_IsFlag(this, LEX_INIT_DONE)) {
+#ifdef NDEBUG
+#else
+            for (idx=0; idx<this->sizeOutputs; ++idx) {
+                pToken = &this->pOutputs[idx];
+                token_InitCharW(pToken, "", 1, 1, LEX_CLASS_EOF, 0);
+            }
+#endif
+            for (idx=0; idx<this->sizeOutputs; ++idx) {
+                lex_TokenNext(this);
+            }
+            obj_FlagOn(this, LEX_INIT_DONE);
+        }
+        
+        idx = (this->curOutputs + num - 1) % this->sizeOutputs;
+        pToken = &this->pOutputs[idx];
+        
+        // Return to caller.
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
+            TRC_OBJ( this, "lex_InputLookAhead:  %s \n", AStr_getData(pStr) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+#endif
+        return pToken;
+    }
+    
+    
+    
+    
+    //--------------------------------------------------------------
+    //                      T o k e n  N e x t
+    //--------------------------------------------------------------
+    
+    // This method is called when we need to parse a new phrase and
+    // save it into the current token.
+    
+    ERESULT         lex_TokenNext(
+        LEX_DATA		*this
+    )
+    {
+        TOKEN_DATA      *pToken;
+        bool            fRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Release current token data;
+        token_ReleaseDataIfObj(&this->pOutputs[this->curOutputs]);
+        
+        fRc = this->pParser(this->pParseObj, &this->token);
+        if (!fRc) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+        // The lexical parser should have called the parse???
+        // methods to build the token and it should now reside
+        // in this->token.
+        
+        // Add the next char to the queue.
+        pToken = &this->pOutputs[this->curOutputs];
+        token_Assign(&this->token, pToken);
+        
+        this->curOutputs = (this->curOutputs + 1) % this->sizeOutputs;
+        
+        // Return to caller.
+        return ERESULT_SUCCESSFUL_COMPLETION;
+    }
+    
+    
+    
+    //--------------------------------------------------------------
+    //                      T o k e n  P u s h
+    //--------------------------------------------------------------
+    
+    /*  This routine will save the current character on a queue
+     *  where it will be retrieved by NextToken().
+     */
+    ERESULT         lex_TokenPush(
+        LEX_DATA        *this,
+        TOKEN_DATA      *pToken
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pFIFO == OBJ_NIL) {
+            this->pFIFO = tokenList_New( );
+            if (OBJ_NIL == this->pFIFO) {
+                DEBUG_BREAK();
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            
+        }
+        
+        tokenList_Add2Tail(this->pFIFO, pToken);
+        
+        // Return to caller.
+        return ERESULT_SUCCESSFUL_COMPLETION;
+    }
+    
+    
+        
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

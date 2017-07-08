@@ -993,13 +993,13 @@ extern "C" {
     //---------------------------------------------------------------
     
     TOKEN_DATA *   token_Copy(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
         TOKEN_DATA      *pOther;
         ERESULT         eRc;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
 
@@ -1009,7 +1009,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        eRc = token_Assign(cbp, pOther);
+        eRc = token_Assign(this, pOther);
         if (ERESULT_HAS_FAILED(eRc)) {
             obj_Release(pOther);
             pOther = OBJ_NIL;
@@ -1029,24 +1029,24 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        TOKEN_DATA   *cbp = objId;
+        TOKEN_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !token_Validate( cbp ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        token_ReleaseDataIfObj(cbp);
+        token_ReleaseDataIfObj(this);
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -1152,15 +1152,16 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        BREAK_NULL(pFileName);
         
         this = token_Init( this );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
-        BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
+        if (pFileName) {
+            eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
+            BREAK_TRUE(ERESULT_FAILED(eRc));
+        }
         this->pFileName = pSavedFileName;
         this->lineNo    = lineNo;
         this->colNo     = colNo;
@@ -1469,12 +1470,11 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (pFileName == NULL) {
-            return ERESULT_INVALID_PARAMETER;
-        }
-        eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
+        if (pFileName) {
+            eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
         }
         
         token_ReleaseDataIfObj(this);
@@ -1611,7 +1611,7 @@ extern "C" {
     
     
     ASTR_DATA *     token_ToDebugString(
-        TOKEN_DATA      *cbp,
+        TOKEN_DATA      *this,
         int             indent
     )
     {
@@ -1620,7 +1620,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -1633,15 +1633,15 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(token) fileName=%s line=%d col=%d cls=%d ",
-                     cbp,
-                     cbp->pFileName,
-                     cbp->lineNo,
-                     cbp->colNo,
-                     cbp->cls
+                     this,
+                     (this->pFileName ? this->pFileName : ""),
+                     this->lineNo,
+                     this->colNo,
+                     this->cls
                      );
         AStr_AppendA(pStr, str);
         
-        switch (cbp->type) {
+        switch (this->type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 AStr_AppendA(pStr, "type=UNKNOWN ");
@@ -1652,16 +1652,16 @@ extern "C" {
                             str,
                             sizeof(str),
                             "type=CHAR char=(0x%X)%c ",
-                            cbp->wchr[0],
-                            (((cbp->wchr[0] >= ' ') && (cbp->wchr[0] < 0x7F))
-                                ? cbp->wchr[0] : ' ')
+                            this->wchr[0],
+                            (((this->wchr[0] >= ' ') && (this->wchr[0] < 0x7F))
+                                ? this->wchr[0] : ' ')
                     );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case TOKEN_TYPE_WSTRING:
                 AStr_AppendA(pStr, "type=STRING text=\"");
-                AStr_AppendW(pStr, WStr_getLength(cbp->pObj), WStr_getData(cbp->pObj));
+                AStr_AppendW(pStr, WStr_getLength(this->pObj), WStr_getData(this->pObj));
                 AStr_AppendA(pStr, "\"");
                 break;
                 
@@ -1670,7 +1670,7 @@ extern "C" {
                             str,
                             sizeof(str),
                             "type=INTEGER integer=%lld ",
-                            cbp->integer
+                            this->integer
                             );
                 AStr_AppendA(pStr, str);
                 break;
@@ -1680,7 +1680,7 @@ extern "C" {
                              str,
                              sizeof(str),
                              "type=STRTOKEN token=%d ",
-                             cbp->strToken
+                             this->strToken
                              );
                 AStr_AppendA(pStr, str);
                 break;
@@ -1694,7 +1694,7 @@ extern "C" {
         AStr_AppendA(pStr, "\n");
 
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), " %p(token)}\n", cbp );
+        j = snprintf( str, sizeof(str), " %p(token)}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -1729,7 +1729,7 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{\"objectType\":\"token\",\"fileName\":\"%s\",\"lineNo\":%d,\"colNo\":%d,\"cls\":%d,",
-                     this->pFileName,
+                     (this->pFileName ? this->pFileName : ""),
                      this->lineNo,
                      this->colNo,
                      this->cls

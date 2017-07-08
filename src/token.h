@@ -14,7 +14,8 @@
  *
  * Remarks
  *	1.      The file name should remain constant and valid for the
- *          life of this object.
+ *          life of this object. The file name is saved in szTbl
+ *          internally.
  *  2.      String Tokens must be unique per string so that they can 
  *          be used in lieu of an actual string.
  *
@@ -180,9 +181,9 @@ extern "C" {
     
     /*!
      Create a new token object with the given parameter of a String Token Number.
-     Normally, String Token Numbers are indexes into an szTbl object that
-     will return the string.
-     @param:    pFileName pointer to a nul-terminated path character string
+     Normally, String Token Numbers are indexes into an szTbl object that will 
+     return the string.
+     @param:    pFileName pointer to a nul-terminated path character string (optional)
      @param:    lineNo  Line Number for the start of the token
      @param:    colNo   Column Number for the start of the token
      @param:    cls     Token class (see PPLEX.H for examples)

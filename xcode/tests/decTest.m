@@ -183,7 +183,6 @@
     char            num[32] = {0};
     uint32_t        cNum = 32;
     char            *pStr = num;
-    uint32_t        i;
     int32_t         j;
     bool            fRc;
     

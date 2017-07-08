@@ -148,7 +148,7 @@ extern "C" {
     SRCFILE_DATA *  srcFile_InitAStr(
         SRCFILE_DATA    *this,
         ASTR_DATA       *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,
+        PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs

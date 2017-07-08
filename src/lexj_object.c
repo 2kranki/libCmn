@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'lex'
-//	Generated 01/28/2016 13:46:58
+//	Class Object Metods and Tables for 'lexj'
+//	Generated 07/02/2017 09:15:13
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,7 +32,9 @@
  */
 
 
-#include        "lex_internal.h"
+
+#define			LEXJ_OBJECT_C	    1
+#include        <lexj_internal.h>
 
 
 
@@ -39,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct lex_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct lexj_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct lex_class_data_s LEX_CLASS_DATA;
+typedef struct lexj_class_data_s LEXJ_CLASS_DATA;
 
 
 
@@ -60,23 +62,26 @@ typedef struct lex_class_data_s LEX_CLASS_DATA;
 
 static
 const
-OBJ_INFO        lex_Info;            // Forward Reference
+OBJ_INFO        lexj_Info;            // Forward Reference
 
 
 
-OBJ_ID          lex_Class(
+OBJ_ID          lexj_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            lex_ClassIsKindOf(
+bool            lexj_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_LEX_CLASS == classID) {
+    if (OBJ_IDENT_LEXJ_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_LEX_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -90,15 +95,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_LEX_CLASS;
+    return OBJ_IDENT_LEXJ_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&lex_Info,
-    lex_ClassIsKindOf,
+	&lexj_Info,
+    lexj_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -113,20 +118,23 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-LEX_CLASS_DATA  lex_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_LEX_CLASS, 0, 1},
+LEXJ_CLASS_DATA  lexj_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_LEXJ_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            lex_IsKindOf(
+bool            lexj_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_LEX == classID) {
+    if (OBJ_IDENT_LEXJ == classID) {
        return true;
+    }
+    if (OBJ_IDENT_LEX == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -137,74 +145,65 @@ bool            lex_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            lex_Dealloc(
+void            lexj_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          lex_Class(
+OBJ_ID          lexj_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&lex_ClassObj;
+    return (OBJ_ID)&lexj_ClassObj;
 }
 
 
 static
-uint16_t		lex_WhoAmI(
+uint16_t		lexj_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_LEX;
+    return OBJ_IDENT_LEXJ;
 }
 
 
 const
-LEX_VTBL        lex_Vtbl = {
+LEXJ_VTBL     lexj_Vtbl = {
     {
-        &lex_Info,
-        lex_IsKindOf,
+        &lexj_Info,
+        lexj_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        lex_Dealloc,
-        lex_Class,
-        lex_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
-        (P_OBJ_TOSTRING)lex_ToDebugString,
-        NULL,			// lex_Enable,
-        NULL,			// lex_Disable,
-        NULL,			// (P_OBJ_ASSIGN)lex_Assign,
-        NULL,			// (P_OBJ_COMPARE)lex_Compare,
-        NULL, 			// (P_OBJ_PTR)lex_Copy,
-        NULL 			// (P_OBJ_HASH)lex_Hash
+        lexj_Dealloc,
+        lexj_Class,
+        lexj_WhoAmI,
+        (P_OBJ_QUERYINFO)lexj_QueryInfo,
+        (P_OBJ_TOSTRING)lexj_ToDebugString,
+        NULL,			// lexj_Enable,
+        NULL,			// lexj_Disable,
+        NULL,			// (P_OBJ_ASSIGN)lexj_Assign,
+        NULL,			// (P_OBJ_COMPARE)lexj_Compare,
+        NULL, 			// (P_OBJ_PTR)lexj_Copy,
+        NULL 			// (P_OBJ_HASH)lexj_Hash,
     },
-    lex_getErrors,
-    lex_setErrors,
-    lex_setParserFunction,
-    lex_setSourceFunction,
-    lex_getString,
-    lex_getToken,
-    lex_Error,
-    lex_ErrorFatal,
-    lex_InputAdvance,
-    lex_InputLookAhead,
-    lex_TokenAdvance,
-    lex_TokenLookAhead,
-    lex_TokenPush
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //lexj_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        lex_Info = {
-    "lex",
-    "Lexical Analyzer Base",				// <-- Fill in description
+OBJ_INFO        lexj_Info = {
+    "lexj",
+    "lexical scanner for HJSON",
+    (OBJ_DATA *)&lexj_ClassObj,
     (OBJ_DATA *)&lex_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_IUNKNOWN *)&lexj_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

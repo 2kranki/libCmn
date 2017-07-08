@@ -706,7 +706,7 @@ extern "C" {
     
     
     ERESULT         path_CompareA(
-        PATH_DATA		*cbp,
+        PATH_DATA		*this,
         const
         char            *pOther
     )
@@ -716,13 +716,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if( !path_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = AStr_CompareA( (ASTR_DATA *)cbp, pOther );
+        eRc = AStr_CompareA( (ASTR_DATA *)this, pOther );
         
         // Return to caller.
         return eRc;
@@ -759,20 +759,20 @@ extern "C" {
     //---------------------------------------------------------------
     
     PATH_DATA *   path_Copy(
-        PATH_DATA       *cbp
+        PATH_DATA       *this
     )
     {
         PATH_DATA       *pOther;
         
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if( !path_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = path_NewFromAStr((ASTR_DATA *)cbp);
+        pOther = path_NewFromAStr((ASTR_DATA *)this);
         
         return pOther;
     }
