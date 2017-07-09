@@ -596,6 +596,30 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          T r i m
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *   AStrC_Trim(
+        ASTRC_DATA       *this
+    )
+    {
+        ASTRC_DATA      *pNew = OBJ_NIL;
+        
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        return pNew;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 

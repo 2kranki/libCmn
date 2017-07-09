@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/18/2017 17:45:28.000)
+# ( 7/ 9/2017 22:47:06.000)
 
 
 LIBNAM=libCmn
@@ -72,6 +72,7 @@ OBJS = $(OBJS) $(OBJDIR)\dirEntry.obj $(OBJDIR)\dirEntry_object.obj
 OBJS = $(OBJS) $(OBJDIR)\eResult.obj $(OBJDIR)\eResult_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ebcdic.obj $(OBJDIR)\ebcdic_object.obj
 OBJS = $(OBJS) $(OBJDIR)\endian.obj $(OBJDIR)\endian_object.obj
+OBJS = $(OBJS) $(OBJDIR)\enum.obj $(OBJDIR)\enum_object.obj
 OBJS = $(OBJS) $(OBJDIR)\execArray.obj $(OBJDIR)\execArray_object.obj
 OBJS = $(OBJS) $(OBJDIR)\false.obj $(OBJDIR)\false_object.obj
 OBJS = $(OBJS) $(OBJDIR)\fbsi.obj $(OBJDIR)\fbsi_object.obj
@@ -81,8 +82,10 @@ OBJS = $(OBJS) $(OBJDIR)\fileio.obj $(OBJDIR)\fileio_object.obj
 OBJS = $(OBJS) $(OBJDIR)\greg.obj $(OBJDIR)\greg_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hash32.obj $(OBJDIR)\hash32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hex.obj $(OBJDIR)\hex_object.obj
+OBJS = $(OBJS) $(OBJDIR)\hjson.obj $(OBJDIR)\hjson_object.obj
 OBJS = $(OBJS) $(OBJDIR)\json.obj $(OBJDIR)\json_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
+OBJS = $(OBJS) $(OBJDIR)\lexj.obj $(OBJDIR)\lexj_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lru.obj $(OBJDIR)\lru_object.obj
 OBJS = $(OBJS) $(OBJDIR)\misc.obj $(OBJDIR)\misc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\msgBus.obj $(OBJDIR)\msgBus_object.obj
@@ -280,6 +283,30 @@ TESTS = $(TESTS) test_dbCsv
 
 test_dbCsv:
 	$(CC) $(CFLAGS) /Itests tests\test_dbCsv.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_enum
+
+test_enum:
+	$(CC) $(CFLAGS) /Itests tests\test_enum.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_hjson
+
+test_hjson:
+	$(CC) $(CFLAGS) /Itests tests\test_hjson.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_lexj
+
+test_lexj:
+	$(CC) $(CFLAGS) /Itests tests\test_lexj.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

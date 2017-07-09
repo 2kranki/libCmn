@@ -1408,7 +1408,7 @@ extern "C" {
         LEX_DATA        *this
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG

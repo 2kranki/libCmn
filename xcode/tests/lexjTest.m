@@ -27,6 +27,7 @@
 
 
 #include    <lexj_internal.h>
+#include    <trace.h>
 #include    <srcFile.h>
 
 
@@ -36,12 +37,12 @@ const
 char        *pTestInput01 =
 "// Test01 Input\n"
 "{ /* test comment */\n\n\n"
-    "\t\"one\" : 123,\n"
-    "\ttwo : \"xyz\",\n"
-    "\tthree : [a, b, c],\n"
-    "\tfour : null,\n"
-    "\t\"five\" : true,\n"
-    "\t\"six\" : false\n"
+    "\t\"one\": 123,\n"
+    "\ttwo: \"xyz\",\n"
+    "\tthree: [a, b, c] // Another comment\n"
+    "\tfour: null,\n"
+    "\t\"five\": true,\n"
+    "\t\"six\": false\n"
 "}\n";
 
 
@@ -103,7 +104,6 @@ char        *pTestInput01 =
     ASTR_DATA       *pBuf = OBJ_NIL;
     LEXJ_DATA       *pLexJ = OBJ_NIL;
     TOKEN_DATA      *pToken;
-    PATH_DATA       *pPath = path_NewA("source is a string");
     ASTR_DATA       *pStr = OBJ_NIL;
     
     pBuf = AStr_NewA(pTestInput01);
@@ -112,6 +112,7 @@ char        *pTestInput01 =
         
         pLexJ = lexj_NewAStr(pBuf, 4, true);
         XCTAssertFalse( (OBJ_NIL == pLexJ) );
+        obj_TraceSet(pLexJ, true);
         if (pLexJ) {
             
             pToken = lexj_TokenLookAhead(pLexJ, 1);
@@ -124,7 +125,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"one\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("one", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -152,7 +153,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"two \"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("two", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -168,7 +169,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"xyz\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -184,7 +185,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"three \"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("three", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -206,7 +207,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"a\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("a", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -222,7 +223,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"b\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("b", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -238,7 +239,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"c\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -252,15 +253,9 @@ char        *pTestInput01 =
             
             pToken = lexj_TokenLookAhead(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
-            XCTAssertTrue( (LEXJ_SEP_COMMA == token_getClass(pToken)) );
-            pToken = lexj_TokenAdvance(pLexJ, 1);
-            XCTAssertFalse( (OBJ_NIL == pToken) );
-            
-            pToken = lexj_TokenLookAhead(pLexJ, 1);
-            XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"four \"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("four", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -288,7 +283,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"five\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("five", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -316,7 +311,7 @@ char        *pTestInput01 =
             XCTAssertFalse( (OBJ_NIL == pToken) );
             XCTAssertTrue( (LEXJ_CONSTANT_STRING == token_getClass(pToken)) );
             pStr = token_ToDataString(pToken);
-            XCTAssertTrue( (0 == strcmp("\"six\"", AStr_getData(pStr))) );
+            XCTAssertTrue( (0 == strcmp("six", AStr_getData(pStr))) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
             pToken = lexj_TokenAdvance(pLexJ, 1);
@@ -354,9 +349,8 @@ char        *pTestInput01 =
         pBuf = OBJ_NIL;
     }
     
-    obj_Release(pPath);
-    pPath = OBJ_NIL;
-    szTbl_SharedReset();
+    szTbl_SharedReset( );
+    trace_SharedReset( );
 }
 
 

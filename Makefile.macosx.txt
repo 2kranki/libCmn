@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 6/18/2017 17:45:29.000)
+# ( 7/ 9/2017 22:47:07.000)
 
 
 LIBNAM=libCmn
@@ -504,6 +504,18 @@ $(OBJDIR)/endian_object.o: $(SRCDIR)/endian_object.c
 
 
 
+OBJS += $(OBJDIR)/enum.o $(OBJDIR)/enum_object.o
+
+
+$(OBJDIR)/enum.o: $(SRCDIR)/enum.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/enum_object.o: $(SRCDIR)/enum_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/execArray.o $(OBJDIR)/execArray_object.o
 
 
@@ -612,6 +624,18 @@ $(OBJDIR)/hex_object.o: $(SRCDIR)/hex_object.c
 
 
 
+OBJS += $(OBJDIR)/hjson.o $(OBJDIR)/hjson_object.o
+
+
+$(OBJDIR)/hjson.o: $(SRCDIR)/hjson.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/json.o $(OBJDIR)/json_object.o
 
 
@@ -632,6 +656,18 @@ $(OBJDIR)/lex.o: $(SRCDIR)/lex.c
 
 
 $(OBJDIR)/lex_object.o: $(SRCDIR)/lex_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/lexj.o $(OBJDIR)/lexj_object.o
+
+
+$(OBJDIR)/lexj.o: $(SRCDIR)/lexj.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/lexj_object.o: $(SRCDIR)/lexj_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1459,6 +1495,27 @@ TESTS += test_dbCsv
 
 test_dbCsv:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dbCsv.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_enum
+
+test_enum:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_enum.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_hjson
+
+test_hjson:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hjson.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_lexj
+
+test_lexj:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_lexj.c 
 	$(OBJDIR)/$(@F)
 
 

@@ -380,6 +380,7 @@ extern "C" {
         pBuffer = buffer;
         hex_putBytes16_32(64, pData, 2048, &pBuffer);
         fprintf(stderr, "%s\n\n", buffer);
+        //DEBUG_BREAK();
     
         // Return to caller.
     }

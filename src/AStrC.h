@@ -187,6 +187,16 @@ extern "C" {
     );
     
     
+    /*!
+     Remove white-space from the beginning and ending of the current string.
+     @return:   If successful, an new AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTRC_DATA *    AStrC_Trim(
+        ASTRC_DATA		*this
+    );
+    
+    
 
     
 #ifdef	__cplusplus

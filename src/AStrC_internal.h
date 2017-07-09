@@ -43,7 +43,7 @@
 
 
 #include    <AStrC.h>
-#include    <objArray.h>
+#include    <AStr_internal.h>
 
 
 #ifdef	__cplusplus

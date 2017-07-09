@@ -1059,7 +1059,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseString(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         bool            fRc = false;
@@ -1070,24 +1070,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
-        cbp->lenFld = 0;
-        cbp->pFld[0] = 0;
+        TRC_OBJ(this, "%s:\n", __func__);
+        this->lenFld = 0;
+        this->pFld[0] = 0;
         
-        json_ParseWS(cbp);
-        chr = json_InputLookAhead(cbp, 1);
+        json_ParseWS(this);
+        chr = json_InputLookAhead(this, 1);
         if (chr == '"') {
-            json_InputAdvance(cbp, 1);
+            json_InputAdvance(this, 1);
         }
         else
             return false;
         
         for (;;) {
-            if (json_ParseChrCon(cbp,'"')) {
+            if (json_ParseChrCon(this,'"')) {
                 // Do something, maybe!
             }
             else {
@@ -1095,17 +1095,17 @@ extern "C" {
             }
         }
         
-        chr = json_InputLookAhead(cbp, 1);
+        chr = json_InputLookAhead(this, 1);
         if (chr == '"') {
-            json_InputAdvance(cbp, 1);
+            json_InputAdvance(this, 1);
             fRc = true;
         }
         
         if (fRc) {
-            pStr = AStr_NewW(cbp->pFld);
+            pStr = AStr_NewW(this->pFld);
 #ifdef NDEBUG
 #else
-            TRC_OBJ(cbp,"\tstring: %s\n", AStr_getData(pStr));
+            TRC_OBJ(this, "\tstring: %s\n", AStr_getData(pStr));
 #endif
             if (pStr) {
                 pNode = node_NewWithUTF8Con("string", pStr);
@@ -1124,7 +1124,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     json_ParseValue(
-        JSON_DATA       *cbp
+        JSON_DATA       *this
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
@@ -1133,28 +1133,28 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !json_Validate( cbp ) ) {
+        if( !json_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        pNode = json_ParseHash(cbp);
+        pNode = json_ParseHash(this);
         if (pNode) {
             return pNode;
         }
-        pNode = json_ParseArray(cbp);
+        pNode = json_ParseArray(this);
         if (pNode) {
             return pNode;
         }
-        pNode = json_ParseString(cbp);
+        pNode = json_ParseString(this);
         if (pNode) {
             return pNode;
         }
-        pNode = json_ParseNumber(cbp);
+        pNode = json_ParseNumber(this);
         if (pNode) {
             return pNode;
         }
-        pNode = json_ParseKeyWord(cbp);
+        pNode = json_ParseKeyWord(this);
         if (pNode) {
             return pNode;
         }

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   lexj_internal.h
- *	Generated 07/02/2017 09:15:13
+ * File:   hjson_internal.h
+ *	Generated 07/08/2017 17:18:30
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,12 @@
 
 
 
+#include    <hjson.h>
 #include    <lexj.h>
-#include    <lex_internal.h>
-#include    <srcFile.h>
 
 
-#ifndef LEXJ_INTERNAL_H
-#define	LEXJ_INTERNAL_H
+#ifndef HJSON_INTERNAL_H
+#define	HJSON_INTERNAL_H
 
 
 
@@ -57,53 +56,88 @@ extern "C" {
 
 
 #pragma pack(push, 1)
-struct lexj_data_s	{
+struct hjson_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    LEX_DATA        super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    SRCFILE_DATA    *pInput;
-    bool            (*pParser)(OBJ_ID, TOKEN_DATA *);
+    //PATH_DATA       *pPath;
+    LEXJ_DATA       *pLexJ;
+    NODEHASH_DATA   *pFileObject;
+    uint16_t        tabSize;
+    uint16_t        rsvd16;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct lexj_class_data_s  lexj_ClassObj;
+    struct hjson_class_data_s  hjson_ClassObj;
 
     extern
     const
-    LEXJ_VTBL         lexj_Vtbl;
+    HJSON_VTBL         hjson_Vtbl;
 
 
     // Internal Functions
-    bool            lexj_setLastError(
-        LEXJ_DATA       *this,
-        ERESULT         value
-    );
-    
-    
-    void            lexj_Dealloc(
+    void            hjson_Dealloc(
         OBJ_ID          objId
     );
 
-    
-    LEXJ_DATA *     lexj_Init(
-        LEXJ_DATA       *this
-    );
-
-    
-    bool            lexj_ParseTokenJson(
-        LEXJ_DATA       *this,
-        TOKEN_DATA      *pTokenOut          // Optional Output Token
+    HJSON_DATA *    hjson_Init(
+        HJSON_DATA      *this
     );
     
     
-    void *          lexj_QueryInfo(
+    NODE_DATA *     hjson_ParseArray(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseFileObject(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseHash(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseKeyWord(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseName(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseNumber(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParsePair(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseString(
+        HJSON_DATA      *this
+    );
+    
+    
+    NODE_DATA *     hjson_ParseValue(
+        HJSON_DATA      *this
+    );
+    
+    
+    void *          hjson_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
@@ -111,12 +145,18 @@ struct lexj_data_s	{
     );
 
 
+    bool            hjson_setLastError(
+        HJSON_DATA     *this,
+        ERESULT         value
+    );
+
+
 
 
 #ifdef NDEBUG
 #else
-    bool			lexj_Validate(
-        LEXJ_DATA       *this
+    bool			hjson_Validate(
+        HJSON_DATA       *this
     );
 #endif
 
@@ -126,5 +166,5 @@ struct lexj_data_s	{
 }
 #endif
 
-#endif	/* LEXJ_INTERNAL_H */
+#endif	/* HJSON_INTERNAL_H */
 

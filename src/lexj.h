@@ -142,11 +142,14 @@ extern "C" {
     );
     
     
-    LEXJ_DATA *     lexj_New(
-    );
-    
     LEXJ_DATA *     lexj_NewAStr(
         ASTR_DATA       *pStr,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    );
+    
+    LEXJ_DATA *     lexj_NewFile(
+        PATH_DATA       *pFilePath,
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     );
@@ -168,10 +171,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    LEXJ_DATA *   lexj_Init(
-        LEXJ_DATA     *this
-    );
-
     LEXJ_DATA *     lexj_InitAStr(
         LEXJ_DATA       *this,
         ASTR_DATA       *pStr,
@@ -179,6 +178,12 @@ extern "C" {
         bool            fExpandTabs
     );
     
+    LEXJ_DATA *     lexj_InitFile(
+        LEXJ_DATA       *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    );
     
 
     /*!

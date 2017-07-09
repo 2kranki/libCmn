@@ -159,6 +159,23 @@ extern "C" {
     
     
     
+    LEXJ_DATA *     lexj_NewFile(
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    )
+    {
+        LEXJ_DATA       *this;
+        
+        this = lexj_Alloc( );
+        if (this) {
+            this = lexj_InitFile(this, pFilePath, tabSize, fExpandTabs);
+        }
+        return this;
+    }
+    
+    
+    
 
     
 
@@ -651,6 +668,66 @@ extern "C" {
     }
     
     
+    LEXJ_DATA *     lexj_InitFile(
+        LEXJ_DATA       *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    )
+    {
+        bool            fRc;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this = (OBJ_ID)lexj_Init(this);
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        this->pInput = srcFile_Alloc( );
+        this->pInput =  srcFile_InitFile(
+                            this->pInput,
+                            pFilePath,
+                            tabSize,
+                            fExpandTabs,
+                            false
+                        );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        fRc =   lex_setSourceFunction(
+                    (LEX_DATA *)this,
+                    (void *)srcFile_InputAdvance,
+                    (void *)srcFile_InputLookAhead,
+                    this->pInput
+                );
+        if (!fRc) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+#ifdef NDEBUG
+#else
+        if( !lexj_Validate(this) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        BREAK_NOT_BOUNDARY4(&this->eRc);
+        BREAK_NOT_BOUNDARY4(sizeof(LEXJ_DATA));
+#endif
+        
+        return this;
+    }
+    
+    
 
     //---------------------------------------------------------------
     //                       I s E n a b l e d
@@ -759,6 +836,8 @@ extern "C" {
             return false;
         }
 #endif
+        TRC_OBJ(this, "%s:\n", __func__);
+        
         while (fMore) {
             pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
             if (pInput) {
@@ -812,18 +891,21 @@ extern "C" {
                             newCls = LEXJ_KWD_NULL;
                             fMore = false;
                             obj_Release(pStr);
+                            TRC_OBJ(this, "\tkeyword: null\n");
                             break;
                         }
                         if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "false")) {
                             newCls = LEXJ_KWD_FALSE;
                             fMore = false;
                             obj_Release(pStr);
+                            TRC_OBJ(this, "\tkeyword: false\n");
                             break;
                         }
                         if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "true")) {
                             newCls = LEXJ_KWD_TRUE;
                             fMore = false;
                             obj_Release(pStr);
+                            TRC_OBJ(this, "\tkeyword: true\n");
                             break;
                         }
                         obj_Release(pStr);
@@ -831,6 +913,11 @@ extern "C" {
                     }
                     newCls = LEXJ_CONSTANT_STRING;
                     fMore = false;
+                    TRC_OBJ(
+                            this,
+                            "\tquote-less string: \"%ls\"\n",
+                            WStr_getData(this->super.pStr)
+                    );
                     break;
                     
                 case ASCII_LEXICAL_NUMBER:
@@ -840,6 +927,11 @@ extern "C" {
                         type = lex_ParseIntegerSuffix((LEX_DATA *)this);
                         token_setMisc(&this->super.token, type);
                     }
+                    TRC_OBJ(
+                            this,
+                            "\tnumber: \"%ls\"\n",
+                            WStr_getData(this->super.pStr)
+                            );
                     fMore = false;
                     break;
                     
@@ -854,6 +946,11 @@ extern "C" {
                         lex_InputAdvance((LEX_DATA *)this, 1);
                         newCls = LEX_CONSTANT_STRING;
                         fMore = false;
+                        TRC_OBJ(
+                                this,
+                                "\tquoted string: \"%ls\"\n",
+                                WStr_getData(this->super.pStr)
+                        );
                         break;
                     }
                     else {
@@ -882,6 +979,7 @@ extern "C" {
                     newCls = LEXJ_SEP_COMMA;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
+                    TRC_OBJ(this, "\tseperator: ,\n");
                     break;
                     
                 case '/':           /*** '/' ***/
@@ -951,36 +1049,46 @@ extern "C" {
                     newCls = LEXJ_SEP_COLON;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
+                    TRC_OBJ(this, "\tseperator: :\n");
                     break;
                     
                 case '[':           /*** '[' ***/
                     newCls = LEXJ_SEP_LBRACKET;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
+                    TRC_OBJ(this, "\tseperator: [\n");
                     break;
                     
                 case ']':           /*** ']' ***/
                     newCls = LEXJ_SEP_RBRACKET;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
+                    TRC_OBJ(this, "\tseperator: ]\n");
                     break;
                     
                 case '{':           /*** '{' ***/
                     newCls = LEXJ_SEP_LBRACE;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
+                    TRC_OBJ(this, "\tseperator: {\n");
                     break;
                     
                 case '}':           /*** '}' ***/
                     newCls = LEXJ_SEP_RBRACE;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
+                    TRC_OBJ(this, "\tseperator: }\n");
                     break;
                     
                 default:
                     lexj_ParseQuotelessString(this);
                     newCls = LEX_CONSTANT_STRING;
                     fMore = false;
+                    TRC_OBJ(
+                            this,
+                            "\tquote-less string: \"%ls\"\n",
+                            WStr_getData(this->super.pStr)
+                    );
                     break;
             }
             

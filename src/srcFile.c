@@ -624,7 +624,7 @@ extern "C" {
     
     
     SRCFILE_DATA *  srcFile_InitAStr(
-        SRCFILE_DATA    *cbp,
+        SRCFILE_DATA    *this,
         ASTR_DATA       *pStr,        // Buffer of file data
         PATH_DATA       *pFilePath,
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
@@ -633,34 +633,34 @@ extern "C" {
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         if (OBJ_NIL == pStr) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         obj_Retain(pStr);
         
-        cbp = srcFile_Init( cbp, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
+        this = srcFile_Init( this, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
+        if (OBJ_NIL == this) {
+            //obj_Release(this);
             obj_Release(pStr);
             return OBJ_NIL;
         }
         
         // Open the file.
-        cbp->type = OBJ_IDENT_ASTR;
-        cbp->pAStr = pStr;
-        cbp->flags &= ~FLG_EOF;
-        cbp->flags |= FLG_OPN;
-        cbp->fileOffset = 1;
+        this->type = OBJ_IDENT_ASTR;
+        this->pAStr = pStr;
+        this->flags &= ~FLG_EOF;
+        this->flags |= FLG_OPN;
+        this->fileOffset = 1;
         
-        srcFile_InputAdvance(cbp, cbp->sizeInputs);
+        srcFile_InputAdvance(this, this->sizeInputs);
         
-        return cbp;
+        return this;
     }
     
     

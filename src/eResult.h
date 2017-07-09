@@ -233,7 +233,7 @@ extern "C" {
      Shared Result is the ERESULT which is a part of the shared singleton
      and can be used as a process result code.
      */
-    ERESULT     eResult_getSharedResult(
+    ERESULT         eResult_getSharedResult(
     );
     
     bool            eResult_setSharedResult(

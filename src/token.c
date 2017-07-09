@@ -1568,9 +1568,9 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_WSTRING:
-                AStr_AppendA(pStr, "\"");
+                //AStr_AppendA(pStr, "\"");
                 AStr_AppendW(pStr, WStr_getLength(this->pObj), WStr_getData(this->pObj));
-                AStr_AppendA(pStr, "\"");
+                //AStr_AppendA(pStr, "\"");
                 break;
                 
             case TOKEN_TYPE_INTEGER:
@@ -1587,7 +1587,7 @@ extern "C" {
                 pStr = NULL;
                 eRc = szTbl_TokenToString(szTbl_Shared(), this->strToken, &pString);
                 if (pString) {
-                    AStr_AppendA(pStr, "\"");
+                    //AStr_AppendA(pStr, "\"");
                     j = snprintf(
                                  str,
                                  sizeof(str),
@@ -1595,7 +1595,7 @@ extern "C" {
                                  pString
                                  );
                     AStr_AppendA(pStr, str);
-                    AStr_AppendA(pStr, "\"");
+                    //AStr_AppendA(pStr, "\"");
                 }
                 break;
                 

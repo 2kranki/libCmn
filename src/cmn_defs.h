@@ -246,6 +246,8 @@ extern "C" {
         OBJ_IDENT_HASH32_CLASS,
         OBJ_IDENT_HEX,                  // Hex Input/Output
         OBJ_IDENT_HEX_CLASS,
+        OBJ_IDENT_HJSON,                // HJSON Parser
+        OBJ_IDENT_HJSON_CLASS,
         OBJ_IDENT_JSON,                 // JSON Parser
         OBJ_IDENT_JSON_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner

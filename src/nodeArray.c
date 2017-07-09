@@ -191,15 +191,15 @@ extern "C" {
     NODEARRAY_DATA *     nodeArray_Alloc(
     )
     {
-        NODEARRAY_DATA       *cbp;
+        NODEARRAY_DATA       *this;
         uint32_t        cbSize = sizeof(NODEARRAY_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -207,17 +207,17 @@ extern "C" {
     NODEARRAY_DATA *     nodeArray_New(
     )
     {
-        NODEARRAY_DATA       *cbp;
+        NODEARRAY_DATA       *this;
         
         // Do initialization.
         
-        cbp = nodeArray_Alloc( );
-        if (cbp) {
-            cbp = nodeArray_Init(cbp);
+        this = nodeArray_Alloc( );
+        if (this) {
+            this = nodeArray_Init(this);
         }
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -266,39 +266,39 @@ extern "C" {
     //===============================================================
 
     OBJARRAY_DATA *  nodeArray_getArray(
-        NODEARRAY_DATA  *cbp
+        NODEARRAY_DATA  *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pArray;
+        return this->pArray;
     }
     
     
     bool            nodeArray_setArray(
-        NODEARRAY_DATA  *cbp,
+        NODEARRAY_DATA  *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pArray) {
-            obj_Release(cbp->pArray);
+        if (this->pArray) {
+            obj_Release(this->pArray);
         }
-        cbp->pArray = pValue;
+        this->pArray = pValue;
         
         return true;
     }
@@ -306,18 +306,18 @@ extern "C" {
     
     
     bool            nodeArray_setCompare(
-        NODEARRAY_DATA  *cbp,
+        NODEARRAY_DATA  *this,
         int             (*pCompare)(NODE_DATA *,NODE_DATA *)
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        cbp->pCompare = pCompare;
+        this->pCompare = pCompare;
         
         return true;
     }
@@ -325,20 +325,21 @@ extern "C" {
     
     
     uint32_t        nodeArray_getSize(
-        NODEARRAY_DATA  *cbp
+        NODEARRAY_DATA  *this
     )
     {
         uint32_t        i = 0;
         
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
-        if (cbp->pArray) {
-            i = objArray_getSize(cbp->pArray);
+        if (this->pArray) {
+            i = objArray_getSize(this->pArray);
         }
         return i;
     }
@@ -434,7 +435,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeArray_Assign(
-        NODEARRAY_DATA	*cbp,
+        NODEARRAY_DATA	*this,
         NODEARRAY_DATA	*pOther
     )
     {
@@ -443,7 +444,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -453,8 +454,8 @@ extern "C" {
         }
 #endif
         
-        eRc = objArray_Assign(cbp->pArray, pOther->pArray);
-        pOther->pCompare = cbp->pCompare;
+        eRc = objArray_Assign(this->pArray, pOther->pArray);
+        pOther->pCompare = this->pCompare;
         
         // Return to caller.
         return eRc;
@@ -467,7 +468,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODEARRAY_DATA * nodeArray_Copy(
-        NODEARRAY_DATA	*cbp
+        NODEARRAY_DATA	*this
     )
     {
         NODEARRAY_DATA  *pOther;
@@ -475,7 +476,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -487,9 +488,9 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pOther->pArray = objArray_Copy(cbp->pArray);
+        pOther->pArray = objArray_Copy(this->pArray);
         if (pOther->pArray) {
-            pOther->pCompare = cbp->pCompare;
+            pOther->pCompare = this->pCompare;
             return pOther;
         }
         
@@ -847,25 +848,25 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeArray_SortAscending(
-        NODEARRAY_DATA	*cbp
+        NODEARRAY_DATA	*this
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return false;
         }
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (cbp->pArray) {
-            eRc = objArray_SortAscending(cbp->pArray, (OBJ_COMPARE)cbp->pCompare);
+        if (this->pArray) {
+            eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)this->pCompare);
         }
         
         // Return to caller.
@@ -879,7 +880,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     nodeArray_ToDebugString(
-        NODEARRAY_DATA  *cbp,
+        NODEARRAY_DATA  *this,
         int             indent
     )
     {
@@ -889,7 +890,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
         NODE_DATA       *pNode;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -900,14 +901,14 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(nodeArray) Size=%d\n",
-                     cbp,
-                     objArray_getSize(cbp->pArray)
+                     this,
+                     objArray_getSize(this->pArray)
                 );
         AStr_AppendA(pStr, str);
         
-        if (cbp->pArray) {
-            for (j=0; j<objArray_getSize(cbp->pArray); ++j) {
-                pNode = objArray_Get(cbp->pArray, j+1);
+        if (this->pArray) {
+            for (j=0; j<objArray_getSize(this->pArray); ++j) {
+                pNode = objArray_Get(this->pArray, j+1);
                 if ( pNode && ((OBJ_DATA *)(pNode))->pVtbl->pToDebugString) {
                     pWrkStr =   ((OBJ_DATA *)(pNode))->pVtbl->pToDebugString(
                                         pNode,
@@ -921,7 +922,7 @@ extern "C" {
         
         AStr_AppendCharA(pStr, '\n');
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), "%p(nodeArray)}\n", cbp );
+        j = snprintf( str, sizeof(str), "%p(nodeArray)}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -936,18 +937,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            nodeArray_Validate(
-        NODEARRAY_DATA      *cbp
+        NODEARRAY_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_NODEARRAY) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODEARRAY) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(NODEARRAY_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODEARRAY_DATA)) )
             return false;
 
         // Return to caller.
@@ -962,7 +963,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeArray_VisitAscending(
-        NODEARRAY_DATA	*cbp,
+        NODEARRAY_DATA	*this,
         void            (pVisitor)(
                                    OBJ_ID,             // Object supplied below
                                    NODE_DATA *         // Current Node
@@ -978,17 +979,17 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeArray_Validate( cbp ) ) {
+        if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
-        BREAK_NULL(cbp->pArray);
+        BREAK_NULL(this->pArray);
 #endif
         
-        iMax = objArray_getSize(cbp->pArray);
+        iMax = objArray_getSize(this->pArray);
         for (i=1; i<=iMax; ++i) {
-            pNode = objArray_Get(cbp->pArray, i);
-            pVisitor(pObject,pNode);
+            pNode = objArray_Get(this->pArray, i);
+            pVisitor(pObject, pNode);
         }
         
         // Return to caller.
