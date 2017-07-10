@@ -101,9 +101,13 @@ extern "C" {
         
         LEX_CLASS_CONSTANT_GROUP=512,
         LEX_CONSTANT_CHAR,
-        LEX_CONSTANT_INTEGER,
+        LEX_CONSTANT_CHAR_WIDE,
         LEX_CONSTANT_FLOAT,
+        LEX_CONSTANT_INTEGER,
         LEX_CONSTANT_STRING,
+        LEX_CONSTANT_STRING_WIDE,
+        
+        LEX_IDENTIFIER=750,
         
         LEX_CLASS_SEP_GROUP=756,
         
@@ -111,7 +115,9 @@ extern "C" {
         
         LEX_CLASS_KWD_GROUP=1280,
         
-        LEX_CLASS_OTHER=2048,
+        LEX_CLASS_SPCL_GROUP=1536,
+        
+        LEX_CLASS_HIGHEST=2048,
         
     } LEX_CLASS;
     

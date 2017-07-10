@@ -1527,7 +1527,7 @@ extern "C" {
         }
 #endif
         
-        pToken = this->pSrcChrAdvance(this->pSrcObj,num);
+        pToken = this->pSrcChrAdvance(this->pSrcObj, num);
         
         // Return to caller.
         return pToken;
