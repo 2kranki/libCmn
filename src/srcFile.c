@@ -250,8 +250,67 @@ extern "C" {
 
 
 
+    SRCFILE_DATA *  srcFile_NewFromAStr(
+        ASTR_DATA       *pStr,        // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    )
+    {
+        SRCFILE_DATA    *this = OBJ_NIL;
+        
+        this = srcFile_Alloc( );
+        if (this) {
+            this = srcFile_InitAStr(this, pStr, pFilePath, tabSize, fExpandTabs, fRemoveNLs);
+        }
+        
+        return this;
+    }
+        
     
 
+    SRCFILE_DATA *  srcFile_NewFromFile(
+        FILE            *pFile,
+        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    )
+    {
+        SRCFILE_DATA    *this = OBJ_NIL;
+        
+        this = srcFile_Alloc( );
+        if (this) {
+            this = srcFile_InitFile(this, pFile, tabSize, fExpandTabs, fRemoveNLs);
+        }
+        
+        return this;
+    }
+    
+    
+    
+    SRCFILE_DATA *  srcFile_NewFromPath(
+        PATH_DATA       *pFilePath,
+        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    )
+    {
+        SRCFILE_DATA    *this = OBJ_NIL;
+        
+        this = srcFile_Alloc( );
+        if (this) {
+            this = srcFile_InitPath(this, pFilePath, tabSize, fExpandTabs, fRemoveNLs);
+        }
+        
+        return this;
+    }
+    
+    
+    
+    
+    
+    
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
@@ -442,19 +501,20 @@ extern "C" {
         }
 #endif
 
+        if ((this->type == OBJ_IDENT_ASTR) && (this->pAStr)) {
+            obj_Release(this->pAStr);
+            this->pAStr = OBJ_NIL;
+        }
+        
         if ((this->type == OBJ_IDENT_FBSI) && (this->pFbsi)) {
             obj_Release(this->pFbsi);
             this->pFbsi = OBJ_NIL;
         }
         
-        if ((this->type == OBJ_IDENT_FILE) && (this->pFile)) {
+        if ((this->type == OBJ_IDENT_FILE) && (this->pFile)
+            && !(this->flags & FLG_FILE)) {
             fclose(this->pFile);
             this->pFile = NULL;
-        }
-        
-        if ((this->type == OBJ_IDENT_ASTR) && (this->pAStr)) {
-            obj_Release(this->pAStr);
-            this->pAStr = OBJ_NIL;
         }
         
         if ((this->type == OBJ_IDENT_U8ARRAY) && (this->pU8Array)) {
@@ -512,7 +572,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = obj_Init( this, obj_getSize(this), OBJ_IDENT_SRCFILE );
+        this = obj_Init(this, obj_getSize(this), OBJ_IDENT_SRCFILE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             return OBJ_NIL;
@@ -568,61 +628,6 @@ extern "C" {
 
      
 
-    SRCFILE_DATA *  srcFile_InitFile(
-        SRCFILE_DATA    *cbp,
-        PATH_DATA       *pFilePath,
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        char            *pszFileName;
-        
-        if (OBJ_NIL == cbp) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pFilePath) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(cbp);
-            return OBJ_NIL;
-        }
-        
-        cbp = srcFile_Init( cbp, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == cbp) {
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        cbp->type = OBJ_IDENT_FILE;
-        pszFileName = path_CStringA(pFilePath);
-        if (pszFileName) {
-            cbp->pFile = fopen( pszFileName, "r" );
-            if (NULL == cbp->pFile) {
-                fprintf(    stderr,
-                            "Fatal Error - Could not open Input File - %s.\n",
-                            pszFileName
-                );
-                obj_Release(cbp);
-                return OBJ_NIL;
-            }
-            cbp->flags &= ~FLG_EOF;
-            cbp->flags |= FLG_OPN;
-            mem_Free(pszFileName);
-            pszFileName = NULL;
-        }
-        else {
-            obj_Release(cbp);
-            return OBJ_NIL;
-        }
-        
-        srcFile_InputAdvance(cbp, cbp->sizeInputs);
-        
-        return cbp;
-    }
-    
-    
-    
     SRCFILE_DATA *  srcFile_InitAStr(
         SRCFILE_DATA    *this,
         ASTR_DATA       *pStr,        // Buffer of file data
@@ -657,6 +662,99 @@ extern "C" {
         this->flags &= ~FLG_EOF;
         this->flags |= FLG_OPN;
         this->fileOffset = 1;
+        
+        srcFile_InputAdvance(this, this->sizeInputs);
+        
+        return this;
+    }
+    
+    
+    
+    SRCFILE_DATA *  srcFile_InitFile(
+        SRCFILE_DATA    *this,
+        FILE            *pFile,
+        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (OBJ_NIL == pFile) {
+            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = srcFile_Init( this, OBJ_NIL, tabSize, fExpandTabs, fRemoveNLs );
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        // Open the file.
+        this->type = OBJ_IDENT_FILE;
+        this->pFile = pFile;
+        this->flags &= ~FLG_EOF;
+        this->flags |= FLG_OPN;
+        this->flags |= FLG_FILE;
+        
+        srcFile_InputAdvance(this, this->sizeInputs);
+        
+        return this;
+    }
+    
+    
+    
+    SRCFILE_DATA *  srcFile_InitPath(
+        SRCFILE_DATA    *this,
+        PATH_DATA       *pFilePath,
+        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    )
+    {
+        char            *pszFileName;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (OBJ_NIL == pFilePath) {
+            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = srcFile_Init( this, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        // Open the file.
+        this->type = OBJ_IDENT_FILE;
+        pszFileName = path_CStringA(pFilePath);
+        if (pszFileName) {
+            this->pFile = fopen( pszFileName, "r" );
+            if (NULL == this->pFile) {
+                fprintf(    stderr,
+                        "Fatal Error - Could not open Input File - %s.\n",
+                        pszFileName
+                        );
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            this->flags &= ~FLG_EOF;
+            this->flags |= FLG_OPN;
+            mem_Free(pszFileName);
+            pszFileName = NULL;
+        }
+        else {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
         srcFile_InputAdvance(this, this->sizeInputs);
         
@@ -763,7 +861,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if( !srcFile_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1008,18 +1106,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            srcFile_Validate(
-        SRCFILE_DATA      *cbp
+        SRCFILE_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_SRCFILE) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_SRCFILE) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(SRCFILE_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(SRCFILE_DATA)) )
             return false;
 
         // Return to caller.

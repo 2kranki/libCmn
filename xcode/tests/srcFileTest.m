@@ -212,7 +212,7 @@ char        *pTest02 =  "\xC2\xA0" "class" "\xE2\x81\xA0" "abc;\n";
     
     pObj = srcFile_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
-    pObj = srcFile_InitFile( pObj, pPath, 4, true, false );
+    pObj = srcFile_InitPath( pObj, pPath, 4, true, false );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     if (pObj) {
 

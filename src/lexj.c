@@ -142,7 +142,7 @@ extern "C" {
     }
 
 
-    LEXJ_DATA *     lexj_NewAStr(
+    LEXJ_DATA *     lexj_NewFromAStr(
         ASTR_DATA       *pStr,
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
@@ -159,7 +159,24 @@ extern "C" {
     
     
     
-    LEXJ_DATA *     lexj_NewFile(
+    LEXJ_DATA *     lexj_NewFromFile(
+        FILE            *pFile,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    )
+    {
+        LEXJ_DATA       *this;
+        
+        this = lexj_Alloc( );
+        if (this) {
+            this = lexj_InitFile(this, pFile, tabSize, fExpandTabs);
+        }
+        return this;
+    }
+    
+    
+    
+    LEXJ_DATA *     lexj_NewFromPath(
         PATH_DATA       *pFilePath,
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
@@ -169,7 +186,7 @@ extern "C" {
         
         this = lexj_Alloc( );
         if (this) {
-            this = lexj_InitFile(this, pFilePath, tabSize, fExpandTabs);
+            this = lexj_InitPath(this, pFilePath, tabSize, fExpandTabs);
         }
         return this;
     }
@@ -670,7 +687,7 @@ extern "C" {
     
     LEXJ_DATA *     lexj_InitFile(
         LEXJ_DATA       *this,
-        PATH_DATA       *pFilePath,
+        FILE            *pFile,
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     )
@@ -687,10 +704,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pInput = srcFile_Alloc( );
-        this->pInput =  srcFile_InitFile(
-                            this->pInput,
-                            pFilePath,
+        this->pInput =  srcFile_NewFromFile(
+                            pFile,
                             tabSize,
                             fExpandTabs,
                             false
@@ -726,6 +741,65 @@ extern "C" {
         
         return this;
     }
+    
+    
+    LEXJ_DATA *     lexj_InitPath(
+        LEXJ_DATA       *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    )
+    {
+        bool            fRc;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this = (OBJ_ID)lexj_Init(this);
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        this->pInput =  srcFile_NewFromPath(
+                                         pFilePath,
+                                         tabSize,
+                                         fExpandTabs,
+                                         false
+                        );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        fRc =   lex_setSourceFunction(
+                                      (LEX_DATA *)this,
+                                      (void *)srcFile_InputAdvance,
+                                      (void *)srcFile_InputLookAhead,
+                                      this->pInput
+                                      );
+        if (!fRc) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+#ifdef NDEBUG
+#else
+        if( !lexj_Validate(this) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        BREAK_NOT_BOUNDARY4(&this->eRc);
+        BREAK_NOT_BOUNDARY4(sizeof(LEXJ_DATA));
+#endif
+        
+        return this;
+    }
+    
     
     
 

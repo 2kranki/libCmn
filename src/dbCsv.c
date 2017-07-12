@@ -619,7 +619,7 @@ extern "C" {
 
 
 
-    DBCSV_DATA *    dbCsv_NewAStr(
+    DBCSV_DATA *    dbCsv_NewFromAStr(
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
@@ -636,7 +636,7 @@ extern "C" {
 
     
     
-    DBCSV_DATA *    dbCsv_NewFile(
+    DBCSV_DATA *    dbCsv_NewFromPath(
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -645,7 +645,7 @@ extern "C" {
         
         cbp = dbCsv_Alloc( );
         if (cbp) {
-            cbp = dbCsv_InitFile( cbp, pPath, tabSize );
+            cbp = dbCsv_InitPath( cbp, pPath, tabSize );
         }
         return( cbp );
     }
@@ -914,39 +914,6 @@ extern "C" {
     }
 
      
-    DBCSV_DATA *    dbCsv_InitFile(
-        DBCSV_DATA      *this,
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pPath) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            return OBJ_NIL;
-        }
-        
-        this = dbCsv_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this->pSrc = srcFile_Alloc();
-        this->pSrc = srcFile_InitFile(this->pSrc, pPath, tabSize, false, false);
-        if (OBJ_NIL == this->pSrc) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        return this;
-    }
-    
-    
-    
     DBCSV_DATA *    dbCsv_InitAStr(
         DBCSV_DATA      *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
@@ -971,6 +938,37 @@ extern "C" {
         
         this->pSrc = srcFile_Alloc();
         this->pSrc = srcFile_InitAStr(this->pSrc, pAStr, pPath, tabSize, false, false);
+        if (OBJ_NIL == this->pSrc) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        return this;
+    }
+    
+    
+    DBCSV_DATA *    dbCsv_InitPath(
+        DBCSV_DATA      *this,
+        PATH_DATA       *pPath,
+        uint16_t		tabSize         // Tab Spacing if any
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (OBJ_NIL == pPath) {
+            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
+            return OBJ_NIL;
+        }
+        
+        this = dbCsv_Init( this );
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this->pSrc = srcFile_NewFromPath(pPath, tabSize, false, false);
         if (OBJ_NIL == this->pSrc) {
             obj_Release(this);
             return OBJ_NIL;

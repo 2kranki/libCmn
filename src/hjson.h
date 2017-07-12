@@ -117,7 +117,14 @@ extern "C" {
     
     
     HJSON_DATA *    hjson_NewFromFile(
-        PATH_DATA       *pFilePath,     // Input File Path
+        FILE            *pFile,         // Input File
+        uint16_t		tabSize         // Tab Spacing if any
+    );
+    
+    
+
+    HJSON_DATA *    hjson_NewFromPath(
+        PATH_DATA       *pPath,         // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
     );
     
@@ -162,6 +169,12 @@ extern "C" {
     
     HJSON_DATA *    hjson_InitFile(
         HJSON_DATA      *this,
+        FILE            *pFile,         // Input File
+        uint16_t        tabSize         // Tab Spacing if any
+    );
+    
+    HJSON_DATA *    hjson_InitPath(
+        HJSON_DATA       *this,
         PATH_DATA       *pFilePath,
         uint16_t        tabSize         // Tab Spacing if any
     );

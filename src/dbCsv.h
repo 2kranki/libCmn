@@ -134,13 +134,13 @@ extern "C" {
     DBCSV_DATA *     dbCsv_New(
     );
     
-    DBCSV_DATA *    dbCsv_NewAStr(
+    DBCSV_DATA *    dbCsv_NewFromAStr(
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     );
     
-    DBCSV_DATA *    dbCsv_NewFile(
+    DBCSV_DATA *    dbCsv_NewFromPath(
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     );
@@ -183,19 +183,19 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    DBCSV_DATA *    dbCsv_InitFile(
-        DBCSV_DATA      *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize                 // Tab Spacing if any
-    );
-    
     DBCSV_DATA *    dbCsv_InitAStr(
         DBCSV_DATA      *this,
         ASTR_DATA       *pSzStr,        // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     );
-
+    
+    DBCSV_DATA *    dbCsv_InitPath(
+        DBCSV_DATA      *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize                 // Tab Spacing if any
+    );
+    
     DBCSV_DATA *    dbCsv_InitWStr(
         DBCSV_DATA      *this,
         WSTR_DATA       *pWStr,         // Buffer of file data

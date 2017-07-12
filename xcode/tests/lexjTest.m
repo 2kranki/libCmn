@@ -110,7 +110,7 @@ char        *pTestInput01 =
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pLexJ = lexj_NewAStr(pBuf, 4, true);
+        pLexJ = lexj_NewFromAStr(pBuf, 4, true);
         XCTAssertFalse( (OBJ_NIL == pLexJ) );
         obj_TraceSet(pLexJ, true);
         if (pLexJ) {

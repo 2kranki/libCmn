@@ -105,6 +105,31 @@ extern "C" {
     );
     
     
+    SRCFILE_DATA *  srcFile_NewFromAStr(
+        ASTR_DATA       *pStr,          // Buffer of file data
+        PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    );
+    
+    
+    SRCFILE_DATA *  srcFile_NewFromFile(
+        FILE            *pFile,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    );
+    
+    
+    SRCFILE_DATA *  srcFile_NewFromPath(
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -136,19 +161,28 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SRCFILE_DATA *  srcFile_InitFile(
+    SRCFILE_DATA *  srcFile_InitAStr(
         SRCFILE_DATA    *this,
-        PATH_DATA       *pFilePath,
+        ASTR_DATA       *pStr,          // Buffer of file data
+        PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
     );
     
     
-    SRCFILE_DATA *  srcFile_InitAStr(
+    SRCFILE_DATA *  srcFile_InitFile(
         SRCFILE_DATA    *this,
-        ASTR_DATA       *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
+        FILE            *pFile,
+        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs,
+        bool            fRemoveNLs
+    );
+    
+    
+    SRCFILE_DATA *  srcFile_InitPath(
+        SRCFILE_DATA    *this,
+        PATH_DATA       *pFilePath,
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs

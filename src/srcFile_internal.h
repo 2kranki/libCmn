@@ -79,7 +79,7 @@ struct srcFile_data_s	{
 #define FLG_NNL         0x2000                  /* Remove all '\n's. */
 #define FLG_OPN         0x1000                  /* File is open and useable. */
 #define FLG_TAB         0x0800                  /* Expand Horizontal Tabs. */
-#define FLG_FILE        0x0400                  /* FILE fi was provided */
+#define FLG_FILE        0x0400                  /* FILE file was provided */
     uint32_t        lineNo;             /* Current Line Number */
     uint16_t        colNo;              /* Current Column Number */
     uint16_t        tabSize;            /* Tab Spacing Size */

@@ -750,6 +750,22 @@ extern "C" {
     
     
     HJSON_DATA *    hjson_NewFromFile(
+        FILE            *pFile,         // Input File
+        uint16_t		tabSize         // Tab Spacing if any
+    )
+    {
+        HJSON_DATA      *this;
+        
+        this = hjson_Alloc( );
+        if (this) {
+            this = hjson_InitFile(this, pFile, tabSize);
+        }
+        return this;
+    }
+    
+    
+    
+    HJSON_DATA *    hjson_NewFromPath(
         PATH_DATA       *pFilePath,     // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -758,7 +774,7 @@ extern "C" {
         
         this = hjson_Alloc( );
         if (this) {
-            this = hjson_InitFile(this, pFilePath, tabSize);
+            this = hjson_InitPath(this, pFilePath, tabSize);
         }
         return this;
     }
@@ -1228,7 +1244,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pLexJ = lexj_NewAStr(pAStr, tabSize, true);
+        this->pLexJ = lexj_NewFromAStr(pAStr, tabSize, true);
         if (OBJ_NIL == this->pLexJ) {
             obj_Release(this);
             return OBJ_NIL;
@@ -1249,6 +1265,37 @@ extern "C" {
     
     HJSON_DATA *    hjson_InitFile(
         HJSON_DATA      *this,
+        FILE            *pFile,
+        uint16_t		tabSize         // Tab Spacing if any
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        if (OBJ_NIL == pFile) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = hjson_Init(this);
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this->pLexJ = lexj_NewFromFile(pFile, tabSize, true);
+        if (OBJ_NIL == this->pLexJ) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        return this;
+    }
+    
+    
+    HJSON_DATA *    hjson_InitPath(
+        HJSON_DATA      *this,
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -1268,7 +1315,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pLexJ = lexj_NewFile(pPath, tabSize, true);
+        this->pLexJ = lexj_NewFromPath(pPath, tabSize, true);
         if (OBJ_NIL == this->pLexJ) {
             obj_Release(this);
             return OBJ_NIL;

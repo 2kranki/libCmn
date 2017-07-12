@@ -39,7 +39,7 @@
 #include <cmn_defs.h>
 #include <ascii.h>
 #include <dateTime.h>
-#include <json.h>
+#include <hjson.h>
 #include <node.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
@@ -1645,7 +1645,7 @@ int         parseJsonFile(
 )
 {
     //ERESULT         eRc;
-    JSON_DATA       *pObj = OBJ_NIL;
+    HJSON_DATA      *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     //NODEHASH_DATA   *pHash;
     NODE_DATA       *pFileNode;
@@ -1654,13 +1654,13 @@ int         parseJsonFile(
     
     BREAK_NULL(pResults);
     
-    pObj = json_NewFromFile( pResults->pInput, 4 );
+    pObj = hjson_NewFromFile( pResults->pInput, 4 );
     if (pObj) {
         
         if  (pResults->fDebug) {
             obj_TraceSet(pObj, true);
         }
-        pFileNode = json_ParseFile(pObj);
+        pFileNode = hjson_ParseFile(pObj);
         if (pFileNode) {
             pResults->pNodes = pFileNode;
             if (pResults->fDebug) {
