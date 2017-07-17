@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/ 9/2017 22:47:07.000)
+# ( 7/17/2017  2:29:41.000)
 
 
 LIBNAM=libCmn
@@ -1512,6 +1512,13 @@ test_hjson:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_lex
+
+test_lex:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_lex.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_lexj
 
 test_lexj:
@@ -1537,6 +1544,13 @@ TESTS += test_node
 
 test_node:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_node.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_psxCond
+
+test_psxCond:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxCond.c 
 	$(OBJDIR)/$(@F)
 
 

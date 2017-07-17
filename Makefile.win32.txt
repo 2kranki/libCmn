@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/ 9/2017 22:47:06.000)
+# ( 7/17/2017  2:29:40.000)
 
 
 LIBNAM=libCmn
@@ -303,6 +303,14 @@ test_hjson:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_lex
+
+test_lex:
+	$(CC) $(CFLAGS) /Itests tests\test_lex.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_lexj
 
 test_lexj:
@@ -331,6 +339,14 @@ TESTS = $(TESTS) test_node
 
 test_node:
 	$(CC) $(CFLAGS) /Itests tests\test_node.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_psxCond
+
+test_psxCond:
+	$(CC) $(CFLAGS) /Itests tests\test_psxCond.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

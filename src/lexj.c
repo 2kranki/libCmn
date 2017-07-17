@@ -92,7 +92,7 @@ extern "C" {
                 break;
             }
             else {
-                lex_ParseAddTokenToString((LEX_DATA *)this, pInput);
+                lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
             }
         }
         
@@ -922,7 +922,7 @@ extern "C" {
                 cls = token_getClass(pInput);
                 DEBUG_BREAK();
             }
-            eRc = lex_ParseSetup(((LEX_DATA *)this), pInput);
+            eRc = lex_ParseTokenSetup(((LEX_DATA *)this), pInput);
             if (cls == EOF) {
                 fSaveStr = false;
                 newCls = LEX_CLASS_EOF;
@@ -1169,7 +1169,7 @@ extern "C" {
         }
         
         // Return to caller.
-        eRc = lex_ParseFinish((LEX_DATA *)this, newCls, fSaveStr);
+        eRc = lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
         BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
         return true;
     }

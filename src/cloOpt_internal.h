@@ -64,6 +64,7 @@ struct cloOpt_data_s	{
     // Common Data
     ERESULT         eRc;
     uint16_t        type;
+    uint16_t        rsvd16;
     union {
         ASTR_DATA       *pStr;
     };

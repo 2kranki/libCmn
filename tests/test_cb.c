@@ -29,31 +29,32 @@
 
 
 
+#define ELEM_SIZE   12          /* includes NUL */
 #define NUM_STR     20
 
 static
 char        *StrArray[NUM_STR] = {
-//   123456789
-	"String  1",
-	"String  2",
-	"String  3",
-	"String  4",
-	"String  5",
-	"String  6",
-	"String  7",
-	"String  8",
-	"String  9",
-    "String 10",
-    "String 11",
-    "String 12",
-    "String 13",
-    "String 14",
-    "String 15",
-    "String 16",
-    "String 17",
-    "String 18",
-    "String 19",
-    "String 20"
+//   123456789012
+	"String    1",
+	"String    2",
+	"String    3",
+	"String    4",
+	"String    5",
+	"String    6",
+	"String    7",
+	"String    8",
+	"String    9",
+    "String   10",
+    "String   11",
+    "String   12",
+    "String   13",
+    "String   14",
+    "String   15",
+    "String   16",
+    "String   17",
+    "String   18",
+    "String   19",
+    "String   20"
 };
 
 
@@ -136,8 +137,12 @@ int         tearDown(
 
     
     trace_SharedReset( ); 
+    fprintf(stderr, "\ttrace_SharedReset()\n");
     mem_Dump( );
+    fprintf(stderr, "\tmem_Dump()\n");
     mem_Release( );
+    fprintf(stderr, "\tmem_Release()\n");
+    pCB = OBJ_NIL;
     
     return 1; 
 }
@@ -154,7 +159,7 @@ int         test_cb_OpenClose(
 {
     CB_DATA	*pObj = OBJ_NIL;
    
-    pObj = cb_Alloc(10, 8);
+    pObj = cb_Alloc(ELEM_SIZE, 8);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = cb_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -176,71 +181,79 @@ int         test_cb_CounterOverflow(
     char        *pTestName
 )
 {
-	CB_DATA			*cbp;
+	CB_DATA			*pCB;
     uint16_t        i;
     uint16_t        j;
     bool            fRc;
-    char            msg[10];
+    char            msg[ELEM_SIZE];
     
-	cbp = cb_Alloc(10, 10);
-    XCTAssertFalse( (NULL == cbp) );
-	cbp = cb_Init( cbp );
-    XCTAssertFalse( (NULL == cbp) );
+	pCB = cb_Alloc(ELEM_SIZE, 10);
+    fprintf(stderr, "\tAlloc(12,10) = %p\n", pCB);
+    XCTAssertFalse( (NULL == pCB) );
+	pCB = cb_Init( pCB );
+    fprintf(stderr, "\tInit(12,10) = %p\n", pCB);
+    XCTAssertFalse( (NULL == pCB) );
     
     // Empty Queue - positive to negative overflow
-    cbp->numRead = 32766;
-    cbp->numWritten = 32766;
+    pCB->numRead = 32766;
+    pCB->numWritten = 32766;
     
-    fRc = cb_isEmpty(cbp);
+    fRc = cb_isEmpty(pCB);
     XCTAssertTrue( (fRc) );
 
     for (i=0; i<8; ++i) {
-        fRc = cb_Put(cbp, StrArray[i]);
+        fRc = cb_Put(pCB, StrArray[i]);
+        fprintf(stderr, "\tPut(%d)(%c) = %s\n", i, (fRc ? 't' : 'f'), StrArray[i]);
         XCTAssertTrue( (fRc) );
-        fRc = cb_isEmpty(cbp);
+        fRc = cb_isEmpty(pCB);
         XCTAssertFalse( (fRc) );
-        j = cb_Count(cbp);
+        j = cb_Count(pCB);
         XCTAssertTrue( (j == (i+1)) );
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg);
+        fRc = cb_Get(pCB, &msg);
+        fprintf(stderr, "\tGet(%d)(%c) = %s\n", i, (fRc ? 't' : 'f'), msg);
         XCTAssertTrue( (fRc) );
         XCTAssertTrue( (0 == strcmp(msg,StrArray[i])) );
         
     }
     
-    fRc = cb_isEmpty(cbp);
+    fRc = cb_isEmpty(pCB);
     XCTAssertTrue( (fRc) );
     
     // Empty Queue - negative to positive overflow
-    cbp->numRead = -32766;
-    cbp->numWritten = -32766;
+    pCB->numRead = -32766;
+    pCB->numWritten = -32766;
     
-    fRc = cb_isEmpty(cbp);
+    fRc = cb_isEmpty(pCB);
     XCTAssertTrue( (fRc) );
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Put(cbp, StrArray[i]);
+        fRc = cb_Put(pCB, StrArray[i]);
+        fprintf(stderr, "\tPut(%d)(%c) = %s\n", i, (fRc ? 't' : 'f'), StrArray[i]);
         XCTAssertTrue( (fRc) );
-        fRc = cb_isEmpty(cbp);
+        fRc = cb_isEmpty(pCB);
         XCTAssertFalse( (fRc) );
-        j = cb_Count(cbp);
+        j = cb_Count(pCB);
         XCTAssertTrue( (j == (i+1)) );
     }
     
     for (i=0; i<8; ++i) {
-        fRc = cb_Get(cbp, &msg);
+        fRc = cb_Get(pCB, &msg);
+        fprintf(stderr, "\tGet(%d)(%c) = %s\n", i, (fRc ? 't' : 'f'), msg);
         XCTAssertTrue( (fRc) );
         //STAssertTrue( (aVal == i), @"cb8_Get value failed" );
         
     }
     
-    fRc = cb_isEmpty(cbp);
+    fRc = cb_isEmpty(pCB);
+    fprintf(stderr, "\tisEMpty(%c)\n", (fRc ? 't' : 'f'));
     XCTAssertTrue( (fRc) );
     
-	obj_Release( cbp );
-    cbp = NULL;
+	obj_Release( pCB );
+    fprintf(stderr, "\tobj_Release()\n");
+    pCB = NULL;
     
     return 1;
 }
@@ -318,7 +331,7 @@ int         test_cb_Operation(
 
 TINYTEST_START_SUITE(test_cb);
   TINYTEST_ADD_TEST(test_cb_Operation,setUp,tearDown);
-  //TINYTEST_ADD_TEST(test_cb_CounterOverflow,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_cb_CounterOverflow,setUp,tearDown);
   TINYTEST_ADD_TEST(test_cb_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

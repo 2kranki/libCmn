@@ -128,7 +128,7 @@ int         test_dbCsv_Input01(
     pPath = path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
-    pObj = dbCsv_NewAStr( pStr, pPath, 4 );
+    pObj = dbCsv_NewFromAStr( pStr, pPath, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -222,7 +222,7 @@ int         test_dbCsv_Input02(
     pPath = path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
-    pObj = dbCsv_NewAStr( pStr, pPath, 4 );
+    pObj = dbCsv_NewFromAStr( pStr, pPath, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

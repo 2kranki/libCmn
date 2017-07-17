@@ -340,7 +340,7 @@ extern "C" {
                     pActual->pMem
                     );
             this = pActual->pMem;       // Oops, it was malloc'd from
-            // a different memOSX object.
+            //                          // a different memOSX object.
         }
         
         // Check for Underrun.
@@ -360,11 +360,62 @@ extern "C" {
                 OBJ_INFO        *pInfo = obj_getInfo((OBJ_ID)pData);
                 fprintf(
                         stderr,
-                        "Object:  Type: (%d)%s\n",
+                        "\tObject:\n\t\tType: (%d)%s\n",
                         obj_getType((OBJ_ID)pData),
                         (pInfo ? pInfo->pClassName : "???")
                 );
-                fprintf(stderr, "\tRetain Count: %d\n", obj_getRetainCount(&pActual->data));
+                fprintf(stderr, "\t\tRetain Count: %d\n", obj_getRetainCount(&pActual->data));
+                fprintf(stderr, "\t\tMisc: %d\n", obj_getMisc(&pActual->data));
+                fprintf(stderr, "\t\tMisc1: %d\n", obj_getMisc1(&pActual->data));
+                fprintf(stderr, "\t\tMisc2: %d\n", obj_getMisc2(&pActual->data));
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_ALLOC)) {
+                    fprintf(stderr, "\t\tFlag: Alloc\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_INIT)) {
+                    fprintf(stderr, "\t\tFlag: Init\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_ENABLED)) {
+                    fprintf(stderr, "\t\tFlag: Enabled\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_TRACE)) {
+                    fprintf(stderr, "\t\tFlag: Trace\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER1)) {
+                    fprintf(stderr, "\t\tFlag: User1\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER2)) {
+                    fprintf(stderr, "\t\tFlag: User2\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER3)) {
+                    fprintf(stderr, "\t\tFlag: User3\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER4)) {
+                    fprintf(stderr, "\t\tFlag: User4\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER5)) {
+                    fprintf(stderr, "\t\tFlag: User5\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER6)) {
+                    fprintf(stderr, "\t\tFlag: User6\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER7)) {
+                    fprintf(stderr, "\t\tFlag: User7\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER8)) {
+                    fprintf(stderr, "\t\tFlag: User8\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER9)) {
+                    fprintf(stderr, "\t\tFlag: User9\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER10)) {
+                    fprintf(stderr, "\t\tFlag: User10\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER11)) {
+                    fprintf(stderr, "\t\tFlag: User11\n");
+                }
+                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER12)) {
+                    fprintf(stderr, "\t\tFlag: User12\n");
+                }
                 pObj = (OBJ_DATA *)pData;
                 if (pObj->pVtbl->pToDebugString) {
                     pStr = pObj->pVtbl->pToDebugString(pObj,0);

@@ -1,5 +1,5 @@
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 05/19/2017 21:15:36
  */
 
 
@@ -23,8 +23,8 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <trace.h>
-#include    <clo_internal.h>
+#include    <psxCond_internal.h>
+
 
 
 
@@ -34,7 +34,7 @@ int         setUp(
 )
 {
     mem_Init( );
-    trace_Shared( ); 
+    
     // Put setup code here. This method is called before the invocation of each
     // test method in the class.
     
@@ -51,10 +51,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
     mem_Dump( );
     mem_Release( );
-    
     return 1; 
 }
 
@@ -62,22 +60,34 @@ int         tearDown(
 
 
 
-
-int         test_clo_OpenClose(
+int         test_psxLock_OpenClose(
     const
     char        *pTestName
 )
 {
-    CLO_DATA	*pObj = OBJ_NIL;
+    PSXCOND_DATA	*pObj = OBJ_NIL;
+    bool            fRc;
    
-    pObj = clo_Alloc(0);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = clo_Init( pObj, 0, NULL );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = psxCond_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = psxCond_Init( pObj, NULL, NULL );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        // Test something.
-
+#ifdef XYZZY
+        fRc = psxLock_IsLocked(pObj);
+        XCTAssertTrue( (!fRc) );
+        
+        fRc = psxLock_Lock(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        fRc = psxLock_IsLocked(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        fRc = psxLock_Unlock(pObj);
+        XCTAssertTrue( (fRc) );
+#endif
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -88,11 +98,11 @@ int         test_clo_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_clo);
-  TINYTEST_ADD_TEST(test_clo_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_psxLock);
+  TINYTEST_ADD_TEST(test_psxLock_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_clo);
+TINYTEST_MAIN_SINGLE_SUITE(test_psxLock);
 
 
 

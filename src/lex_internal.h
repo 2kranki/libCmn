@@ -166,8 +166,7 @@ struct lex_data_s	{
     );
     
     
-    /*** @protected
-     ***/
+    /*** @protected ***/
     /*!
      Check for a match with the character set (ie nul-terminated list
      of characters) and if it does advance the input tokens before
@@ -178,23 +177,6 @@ struct lex_data_s	{
     TOKEN_DATA *    lex_MatchInputSet(
         LEX_DATA		*this,
         int32_t         *pSet
-    );
-    
-    
-    /*** @protected
-     ***/
-    /*!
-     This routine is generally called by the lexical parser
-     and it appends the token data to the string only.
-     @param     pToken
-                the token of this phrase which will be
-                appended to the string
-     @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
-                otherwise ERESULT_ERROR_???.
-     */
-    ERESULT         lex_ParseAddTokenToString(
-        LEX_DATA        *this,
-        TOKEN_DATA      *pToken
     );
     
     
@@ -227,29 +209,6 @@ struct lex_data_s	{
     );
     
     
-    /*** @protected
-     ***/
-    /*!
-     This routine is generally called by the lexical parser
-     and it finalizes the string being built by the parser
-     creating the token to be returned.
-     @param     newClass
-                newClass will be substituted into the token
-                being built if it is non-zero.
-     @param     fSaveStr
-                If true, the string token is saved into the
-                token being built and a new string replaces
-                the old one.
-     @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
-                otherwise ERESULT_ERROR_???.
-     */
-    ERESULT         lex_ParseFinish(
-        LEX_DATA        *this,
-        int32_t         newClass,
-        bool            fSaveStr
-    );
-    
-    
     uint16_t        lex_ParseIntegerSuffix(
         LEX_DATA        *this
     );
@@ -265,29 +224,60 @@ struct lex_data_s	{
     );
     
     
-    /*** @protected
-     ***/
+    ERESULT         lex_ParseStringTruncate(
+        LEX_DATA        *this
+    );
+    
+    
+    /*** @protected ***/
     /*!
-     This routine is generally called by the lexical parser
-     and it resets the string and token being built by the
-     parser. The string is set to the value contained in the
-     token and the token given is saved into the token being
-     built.
-     @param     pToken
-                the first token of this phrase which will be
-                saved as the token with its character set
-                as the first char of the string.
-     @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
-                otherwise ERESULT_ERROR_???.
+     Append the token data to the parse string and ignore the other
+     token properties.
+     @param:    this    LEX object pointer
+     @param     pToken  pointer to the token of this phrase which
+     will be appended to the string
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
-    ERESULT         lex_ParseSetup(
+    ERESULT         lex_ParseTokenAppendString(
         LEX_DATA        *this,
         TOKEN_DATA      *pToken
     );
     
     
-    ERESULT         lex_ParseStringTruncate(
-        LEX_DATA        *this
+    /*** @protected ***/
+    /*!
+     Finalize the string being built by the parser creating the token
+     to be returned.
+     @param:    this    LEX object pointer
+     @param     newClass If non-zero, use this class for the token
+     being built.
+     @param     fSaveStr
+     If true, the string being built by the parse is saved
+     into the token being built replacing the original string.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     */
+    ERESULT         lex_ParseTokenFinalize(
+        LEX_DATA        *this,
+        int32_t         newClass,
+        bool            fSaveStr
+    );
+    
+    
+    /*** @protected ***/
+    /*!
+     Setup the given token as the beginning of the next parse output
+     token (ie First element of the next parse) and initialize the ac-
+     cumulation string to the contents of the given token.
+     @param:    this    LEX object pointer
+     @param     pInput pointer to a token that is used to define the
+     next parsed output token. The string/char within the
+     token is used as the first char/string of the new
+     parsed token.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     */
+    ERESULT         lex_ParseTokenSetup(
+        LEX_DATA        *this,
+        TOKEN_DATA      *pToken
     );
     
     

@@ -589,6 +589,7 @@ extern "C" {
         uint32_t        cbSize = sizeof(MSGBUS_DATA);
         uint16_t        actualSize = messageSize + sizeof(MSG_ENTRY);
         
+        actualSize = ROUNDUP4(actualSize);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }

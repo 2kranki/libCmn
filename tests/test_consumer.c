@@ -32,17 +32,17 @@
 
 static
 char        *StrArray[NUM_STR] = {
-//   1234567890
-    "String  1",
-    "String  2",
-    "String  3",
-    "String  4",
-    "String  5",
-    "String  6",
-    "String  7",
-    "String  8",
-    "String  9",
-    "String 10"
+//   123456789012
+    "String    1",
+    "String    2",
+    "String    3",
+    "String    4",
+    "String    5",
+    "String    6",
+    "String    7",
+    "String    8",
+    "String    9",
+    "String   10"
 };
 
 
@@ -106,7 +106,7 @@ int             test_consumer_OpenClose(
    
     pObj = consumer_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = consumer_Init( pObj, 10, 4, (void *)printMsg, pObj);
+    pObj = consumer_Init( pObj, 12, 4, (void *)printMsg, pObj);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

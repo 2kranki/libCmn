@@ -149,7 +149,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     CB_DATA *       cb_Alloc(
-        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        elemSize,       // Element Size in bytes (multiple of 4)
         uint16_t        size            // Number of Elements in Buffer
     )
     {
@@ -163,7 +163,7 @@ extern "C" {
             DEBUG_BREAK();
             return NULL;
         }
-        if (0 == elemSize) {
+        if ((0 == elemSize) || (elemSize & (4-1))) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -228,6 +228,26 @@ extern "C" {
     //                    P r o p e r t i e s
     //===============================================================
 
+    uint16_t        cb_getElementSize(
+        CB_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        // Return to caller.
+        return this->elemSize;
+    }
+    
+    
+    
     uint16_t        cb_getSize(
         CB_DATA       *this
     )
@@ -605,7 +625,7 @@ extern "C" {
         cbSize += size * elemSize;
 
         
-        this = obj_Init( this, cbSize, OBJ_IDENT_CB );
+        this = obj_Init(this, cbSize, OBJ_IDENT_CB);
         if (NULL == this) {
             return NULL;
         }

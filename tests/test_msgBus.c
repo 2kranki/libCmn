@@ -65,6 +65,8 @@ typedef struct buffer_entry_s {
 } BUFFER_ENTRY;
 
 
+
+
 // Output Queue is written by the separate task.
 static
 BUFFER_ENTRY    outputQueue[NUM_STR * (NUM_OBJ * 2)] = {0};
@@ -151,7 +153,7 @@ int         test_msgBus_Broadcast01(
 
         printf("Registering Receivers...\n");
         for (i=0; i<NUM_OBJ; ++i) {
-            eRc = msgBus_Register(pObj, printMsg, StrObj[i]);
+            eRc = msgBus_Register(pObj, (void *)printMsg, StrObj[i]);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
         TINYTEST_TRUE( (msgBus_getRegistrySize(pObj) == NUM_OBJ) );

@@ -100,10 +100,19 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
     
-    /* Alloc() allocates an area large enough for 'size' entries.
+    /*!
+     Allocate one contiguous object large enough to all the entries
+     of the Circular Buffer.  Round the element size up to a multiple
+     of 4 before calculating object size. The total object size is
+     limited to <64k.
+     @param:    elemSize the size of one element. This must be a
+                mutiple of 4.
+     @param:    size    the number of elements in the Circular Buffer
+     @return:   If successful, a pointer to the new object,
+                otherwise OBJ_NIL.
      */
     CB_DATA *      cb_Alloc(
-        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        elemSize,       // Element Size in bytes (multiple of 4)
         uint16_t        size            // Number of Elements in Buffer
     );
     
@@ -120,10 +129,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint16_t        cb_getElementSize(
+        CB_DATA       *this
+    );
+    
+    
     uint16_t        cb_getSize(
         CB_DATA        *this
     );
 
+    
 
 
     //---------------------------------------------------------------

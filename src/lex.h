@@ -14,6 +14,10 @@
  *          keywords, etc. It then emits an output token stream
  *          for use in a parser to construct phrases.
  *
+ *          This base uses a base output token and wide-char
+ *          work string which are manipulated by protected
+ *          methods.
+ *
  *          The input token stream is provided by two functions
  *          which must be supplied. Those functions must allow 
  *          the lexer to look-ahead in the input stream and then
