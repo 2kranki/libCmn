@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'dirEntry'
-//	Generated 09/30/2015 15:57:35
+//	Generated 07/17/2017 10:31:14
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "dirEntry_internal.h"
+
+#define			DIRENTRY_OBJECT_C	    1
+#include        <dirEntry_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct dirEntry_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct dirEntry_class_data_s DIRENTRY_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        dirEntry_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&dirEntry_Info,
     dirEntry_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,13 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						dirEntry Class Object
+//						Class Object
 //-----------------------------------------------------------
 
-static
 const
-OBJ_DATA        dirEntry_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_DIRENTRY_CLASS,
-    0,
-    1
+DIRENTRY_CLASS_DATA  dirEntry_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DIRENTRY_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +162,42 @@ uint16_t		dirEntry_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    dirEntry_Vtbl = {
-    NULL,
-    dirEntry_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    dirEntry_Dealloc,
-    dirEntry_Class,
-    dirEntry_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))dirEntry_ToDebugString,
-    NULL,			// dirEntry_Enable()
-    NULL,			// dirEntry_Disable(
-    NULL,			// dirEntry_Assign()
-    NULL,			// dirEntry_Compare()
-    NULL 			// dirEntry_Copy()
+DIRENTRY_VTBL     dirEntry_Vtbl = {
+    {
+        &dirEntry_Info,
+        dirEntry_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        dirEntry_Dealloc,
+        dirEntry_Class,
+        dirEntry_WhoAmI,
+        (P_OBJ_QUERYINFO)dirEntry_QueryInfo,
+        (P_OBJ_TOSTRING)dirEntry_ToDebugString,
+        NULL,			// dirEntry_Enable,
+        NULL,			// dirEntry_Disable,
+        NULL,			// (P_OBJ_ASSIGN)dirEntry_Assign,
+        NULL,			// (P_OBJ_COMPARE)dirEntry_Compare,
+        NULL, 			// (P_OBJ_PTR)dirEntry_Copy,
+        NULL 			// (P_OBJ_HASH)dirEntry_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //dirEntry_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        dirEntry_Info = {
+    "dirEntry",
+    "Universal Directory Entry",
+    (OBJ_DATA *)&dirEntry_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&dirEntry_Vtbl
+};
 
 
 

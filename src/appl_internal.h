@@ -52,7 +52,11 @@
 extern "C" {
 #endif
 
-
+    typedef enum appl_parse_rc {
+        APPL_PARSE_RC_ERROR=0,
+        APPL_PARSE_RC_BUMP,             /* Bump one character */
+        APPL_PARSE_RC_NEXT              /* Go to the next parameter */
+    } APPL_PARSE_RC;
 
 
 #pragma pack(push, 1)
@@ -68,11 +72,20 @@ struct appl_data_s	{
     uint8_t         fDebug;
     uint8_t         fForce;
     uint16_t        iVerbose;
+    uint16_t        cOptions;
     uint16_t        cArgs;
-    uint16_t        resvd16;
     const
-    char            **pArgs;
+    char            **ppArgs;
+    const
+    char            **ppOptions;
 
+    void            (*pParseArgsDefaults)(OBJ_ID);
+    int             (*pParseArgsLong)(OBJ_ID, const char *);
+    int             (*pParseArgsShort)(OBJ_ID, const char *);
+    
+    void            (*pUsageProgLine)(OBJ_ID, FILE *pOutput);
+    void            (*pUsageDesc)(OBJ_ID, FILE *pOutput);
+    void            (*pUsageSwitches)(OBJ_ID, FILE *pOutput);
 };
 #pragma pack(pop)
 
@@ -90,6 +103,19 @@ struct appl_data_s	{
         OBJ_ID          objId
     );
 
+
+    bool            appl_setParseArgsDefaults(
+        APPL_DATA       *this,
+        void            (*pValue)(OBJ_ID)
+    );
+    
+    
+    bool            appl_setParseArgsKeywords(
+        APPL_DATA       *this,
+        void            (*pValue)(OBJ_ID, const char *)
+    );
+    
+    
     void *          appl_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

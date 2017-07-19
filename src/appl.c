@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <appl_internal.h>
+#include <trace.h>
 
 
 
@@ -119,6 +120,56 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    bool            appl_getDebug(
+        APPL_DATA       *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        
+        if (this->fDebug) {
+            fRc = true;
+        }
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return fRc;
+    }
+    
+
+    
+    bool            appl_getForce(
+        APPL_DATA       *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        
+        if (this->fForce) {
+            fRc = true;
+        }
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return fRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
@@ -162,6 +213,70 @@ extern "C" {
     
     
 
+    bool            appl_setParseArgs(
+        APPL_DATA       *this,
+        void            (*pValueDefaults)(OBJ_ID),
+        int             (*pValueLong)(OBJ_ID, const char *),
+        int             (*pValueShort)(OBJ_ID, const char *)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pParseArgsDefaults = pValueDefaults;
+        this->pParseArgsLong = pValueLong;
+        this->pParseArgsShort = pValueShort;
+        
+        return true;
+    }
+    
+    
+    
+    bool            appl_setParseArgsDefaults(
+        APPL_DATA       *this,
+        void            (*pValue)(OBJ_ID)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pParseArgsDefaults = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    bool            appl_setParseArgsLong(
+        APPL_DATA       *this,
+        int             (*pValue)(OBJ_ID, const char *)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pParseArgsLong = pValue;
+        
+        return true;
+    }
+    
+
+    
     uint16_t        appl_getPriority(
         APPL_DATA     *this
     )
@@ -413,7 +528,7 @@ extern "C" {
         }
 #endif
         
-        //FIXME: pOther = appl_New(obj_getSize(this));
+        pOther = appl_New(this->cArgs, this->ppArgs);
         if (pOther) {
             eRc = appl_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -540,7 +655,7 @@ extern "C" {
         APPL_DATA       *this,
         uint16_t        cArgs,
         const
-        char            **pArgs
+        char            **ppArgs
     )
     {
         uint32_t        cbSize = sizeof(APPL_DATA);
@@ -573,7 +688,7 @@ extern "C" {
         
         appl_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->cArgs = cArgs;
-        this->pArgs = pArgs;
+        this->ppArgs = ppArgs;
 
     #ifdef NDEBUG
     #else
@@ -645,6 +760,248 @@ extern "C" {
         
         // Return to caller.
         return num;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  A r g u m e n t s
+    //---------------------------------------------------------------
+    
+    int             appl_ParseArgs(
+        APPL_DATA       *this
+    )
+    {
+        int             wrkArgC = this->cArgs;
+        const
+        char            **ppWrkArgV = this->ppArgs;
+        int             i;
+        int             offset;
+        int             len;
+        char            wrkstr[64];
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        TRC_OBJ(this,"%s:\n", __func__);
+        
+        // Set option defaults here;
+        this->fDebug = 0;
+        this->fForce = 0;
+        this->iVerbose = 0;
+        if (this->pParseArgsDefaults) {
+            this->pParseArgsDefaults(this);
+        }
+
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            fprintf(stdout, "\tcArgs = %d\n", wrkArgC);
+            for (i=0; i<wrkArgC; ++i) {
+                fprintf(stdout, "\targ[%d]=\"%s\"\n", i, ppWrkArgV[i]);
+            }
+            fprintf(stdout, "\n");
+        }
+#endif
+        
+        // Validate some of the input.
+#ifdef XYZZY
+        pResults->pProgramPath = argv[0];
+        if( wrkArgC <= 1 ) {
+            usage( "No arguments" );
+        }
+#endif
+#ifdef XYZZY
+        if( wrkArgC == 2 && ppWrkArgV[1][0] == '?' && ppWrkArgV[1][1] == 0) {
+            appl_Usage( );
+            exit(99);
+        }
+#endif
+        
+        // Process the switches.
+        for (wrkArgC--,ppWrkArgV++; wrkArgC>0; wrkArgC--,ppWrkArgV++) {
+            if (0 == strcmp(*ppWrkArgV, "--debug")) {
+                ++this->fDebug;
+            }
+            else if (0 == strcmp(*ppWrkArgV, "--no-debug")) {
+                --this->fDebug;
+            }
+            else if (0 == strcmp(*ppWrkArgV, "--force")) {
+                ++this->fForce;
+            }
+            else if (0 == strcmp(*ppWrkArgV, "--no-force")) {
+                --this->fForce;
+            }
+            else if (this->pParseArgsLong) {
+                iRc = APPL_PARSE_RC_ERROR;
+                iRc = this->pParseArgsLong(this, *ppWrkArgV);
+                switch (iRc) {
+                    case APPL_PARSE_RC_BUMP:
+                        break;
+                        
+                    case APPL_PARSE_RC_NEXT:
+                        break;
+                        
+                    default:
+                        //appl_Usage(this, "Unknown flag");
+                        break;
+                }
+            }
+#ifdef  XYZZY
+            else if (0 == strncmp(*ppWrkArgV, "--file", 6)) {
+                if (*(*ppWrkArgV+6) == '\0') {
+                    ++ppWrkArgV;
+                    --wrkArgC;
+                    if (wrkArgC <= 0) {
+                        usage("ERROR: --file is missing the path!\n");
+                        return 99;
+                    }
+                    pResults->pFile = strdup(*ppWrkArgV);
+                }
+                else {
+                    pResults->pFile = strdup(*ppWrkArgV+6);
+                }
+            }
+#endif
+#ifdef  XYZZY
+            else if (0 == strncmp(*argv, "--name", 6)) {
+                wrkstr[0] = '\0';
+                len = (int)strlen(*argv) - 6;
+                offset = 6;
+                if ('=' == *(*argv + offset)) {
+                    ++offset;
+                    --len;
+                }
+                if ('"' == *(*argv + offset)) {
+                    ++offset;
+                    len -= 2;
+                }
+                if (len > 63) {
+                    len =  63;
+                    fprintf(stderr, "WARNING - name is too long! Limiting length to 63!\n");
+                }
+                strncat(wrkstr, (*argv + offset), len);
+                if (len) {
+                    pResults->pName = strdup(wrkstr);
+                }
+            }
+#endif
+            else if (0 == strcmp(*ppWrkArgV, "--")) {
+                --wrkArgC;
+                ++ppWrkArgV;
+                break;
+            }
+            else if (**ppWrkArgV == '-') {
+                const
+                char        *pWrk = *ppWrkArgV + 1;
+                while (*pWrk) {
+                    switch(tolower(*pWrk)) {
+                        case 'd':
+                            ++this->fDebug;
+                            break;
+#ifdef  XYZZY
+                        case 'f':
+                            ++pWrk;
+                            if (*pWrk == '\0') {
+                                ++ppWrkArgV;
+                                --wrkArgC;
+                                if (wrkArgC <= 0) {
+                                    usage("ERROR: --file is missing the path!\n");
+                                    return 99;
+                                }
+                                pResults->pFile = strdup(*ppWrkArgV);
+                            }
+                            else {
+                                pResults->pFile = strdup(*ppWrkArgV);
+                            }
+                            pWrk = "";
+                            continue;
+                            break;
+#endif
+#ifdef  XYZZY
+                        case 'm':
+                            ++pResults->mFlag;
+                            break;
+                        case 'n':
+                            ++pResults->nFlag;
+                            break;
+                        case 'r':       // -r<string> or -r=<string> or -r <string>
+                            ++pWrk;
+                            if (*pWrk == '=') {
+                                ++pWrk;
+                                if (*pWrk == '\0') {
+                                    usage("ERROR: -r is missing its string!\n");
+                                    return 99;
+                                }
+                                else {
+                                    pResults->pR = strdup(pWrk);
+                                }
+                                pWrk = "";
+                                continue;
+                            }
+                            else if (*pWrk == '\0') {
+                                ++ppWrkArgV;
+                                --wrkArgC;
+                                if (wrkArgC <= 0) {
+                                    usage("ERROR: -r is missing its string!\n");
+                                    return 99;
+                                }
+                                pResults->pR = strdup(*ppWrkArgV);
+                            }
+                            else {
+                                if (*pWrk == '\0') {
+                                    usage("ERROR: -r is missing its string!\n");
+                                    return 99;
+                                }
+                                else {
+                                    pResults->pR = strdup(pWrk);
+                                }
+                                pWrk = "";
+                                continue;
+                            }
+                            break;
+#endif
+                        default:
+                            iRc = APPL_PARSE_RC_ERROR;
+                            if (this->pParseArgsShort) {
+                                iRc = this->pParseArgsShort(this, pWrk);
+                            }
+                            switch (iRc) {
+                                case APPL_PARSE_RC_BUMP:
+                                    ++pWrk;
+                                    if (*pWrk == '\0') {
+                                        ++ppWrkArgV;
+                                        --wrkArgC;
+                                    }
+                                    break;
+                                    
+                                case APPL_PARSE_RC_NEXT:
+                                    ++ppWrkArgV;
+                                    --wrkArgC;
+                                    break;
+                                    
+                                default:
+                                    appl_Usage(this, "Unknown flag");
+                                    break;
+                            }
+                    }
+                    ++pWrk;
+                }
+            }
+            else
+                break;
+        }
+        
+        this->cOptions = wrkArgC;
+        this->ppOptions = ppWrkArgV;
+        
+        return 0;
     }
     
     
@@ -814,6 +1171,53 @@ extern "C" {
         
         appl_setLastError(this, ERESULT_SUCCESS);
         return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       U s a g e
+    //---------------------------------------------------------------
+    
+    void            appl_Usage(
+        APPL_DATA       *this,
+        char            *pMsg,
+                        ...
+    )
+    {
+        FILE            *pOutput = stderr;
+        char            szMsg[1024];
+        static
+        const
+        char            *pProgramName = "ll1";
+        
+        if (pMsg) {
+            va_list     values;
+            va_start(values, pMsg);
+            vsnprintf(szMsg, sizeof(szMsg), pMsg, values);
+            va_end(values);
+            fprintf(pOutput, "?%s - %s\n\n", pProgramName, szMsg);
+        }
+        
+        if (this->pUsageProgLine) {
+            this->pUsageProgLine(this, pOutput);
+        }
+        else {
+            fprintf(
+                pOutput,
+                "Usage: %s -[dfh]\n",
+                pProgramName
+            );
+        }
+        if (this->pUsageDesc) {
+            this->pUsageDesc(this, pOutput);
+        }
+        fprintf( pOutput, "\t--[no-]debug   Set debug mode\n");
+        fprintf( pOutput, "\t--[no-]force   Set force mode\n");
+        fprintf( pOutput, "\t-h,--help      Display this help and exit\n");
+        if (this->pUsageSwitches) {
+            this->pUsageSwitches(this, pOutput);
+        }
     }
     
     

@@ -1,22 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          DIRENTRY Console Transmit Task (direntry) Header
+//          Directory Entry (direntry) Header
 //****************************************************************
 /*
  * Program
- *				Separate direntry (direntry)
+ *				Directory Entry (direntry)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate direntry to run things without complications
- *              of interfering with the main direntry. A direntry may be 
- *              called a direntry on other O/S's.
+ *				This object encapsulates Directory Entries from many
+ *              different operating system for a common interface.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal direntry. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	06/23/2015 Generated
@@ -76,6 +71,16 @@ extern "C" {
 
     typedef struct dirEntry_data_s	DIRENTRY_DATA;
 
+    typedef struct dirEntry_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in hjson_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(DIRENTRY_DATA *);
+    } DIRENTRY_VTBL;
+    
+    
 
     typedef enum dirEntry_types_e {
         DIRENTRY_TYPE_UNKNOWN=0,
@@ -181,10 +186,37 @@ extern "C" {
      * and initializes other fields needed. Init() assumes 
      * that the size of the stack is passed to in obj_misc1.
      */
-    DIRENTRY_DATA *     dirEntry_Init(
+    DIRENTRY_DATA * dirEntry_Init(
         DIRENTRY_DATA       *this
     );
 
+
+    void *          dirEntry_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code:
+     ASTR_DATA      *pDesc = dirEntry_ToDebugString(this, 4);
+     @endcode:
+     @param:    this    DIRENTRY object pointer
+     @param:    indent  number of characters to indent every line of output, can be 0
+     @return:   If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     dirEntry_ToDebugString(
+        DIRENTRY_DATA   *this,
+        int             indent
+    );
+
+    
 
     
 #ifdef	__cplusplus

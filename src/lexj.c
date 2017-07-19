@@ -1217,7 +1217,7 @@ extern "C" {
                         break;
 
                     case 'E':
-                        if (str_Compare("Ensable", (char *)pStr) == 0) {
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
                             return lexj_Enable;
                         }
                         break;

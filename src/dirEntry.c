@@ -289,6 +289,8 @@ extern "C" {
         (void)dirEntry_setDir(this, OBJ_NIL);
         (void)dirEntry_setName(this, OBJ_NIL);
 
+        obj_setVtbl(this, this->pSuperVtbl);
+        //other_Dealloc(this);          // Needed for inheritance
         obj_Dealloc(this);
         this = NULL;
 
@@ -314,7 +316,8 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(this, &dirEntry_Vtbl);
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&dirEntry_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
 
@@ -332,6 +335,134 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          dirEntry_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        DIRENTRY_DATA   *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return dirEntry_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code:
+     ASTR_DATA      *pDesc = dirEntry_ToDebugString(this, 4);
+     @endcode:
+     @param:    this    DIRENTRY object pointer
+     @param:    indent  number of characters to indent every line of output, can be 0
+     @return:   If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     dirEntry_ToDebugString(
+        DIRENTRY_DATA   *this,
+        int             indent
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+#ifdef  XYZZY
+        ASTR_DATA       *pWrkStr;
+#endif
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (indent) {
+            AStr_AppendCharRepeatW(pStr, indent, ' ');
+        }
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{%p(dirEntry)\n",
+                     this
+                     );
+        AStr_AppendA(pStr, str);
+        
+#ifdef  XYZZY
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                                               this->pData,
+                                                                               indent+3
+                                                                               );
+                AStr_Append(pStr, pWrkStr);
+                obj_Release(pWrkStr);
+            }
+        }
+#endif
+        
+        if (indent) {
+            AStr_AppendCharRepeatW(pStr, indent, ' ');
+        }
+        j = snprintf(str, sizeof(str), " %p(dirEntry)}\n", this);
+        AStr_AppendA(pStr, str);
+        
+        //dirEntry_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

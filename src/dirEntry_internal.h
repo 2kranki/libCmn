@@ -55,6 +55,7 @@ struct dirEntry_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     PATH_DATA       *pDir;
@@ -72,7 +73,11 @@ struct dirEntry_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    dirEntry_Vtbl;
+    struct dirEntry_class_data_s  dirEntry_ClassObj;
+    
+    extern
+    const
+    DIRENTRY_VTBL   dirEntry_Vtbl;
 
 
 

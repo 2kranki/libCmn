@@ -118,6 +118,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            appl_getDebug(
+        APPL_DATA     *this
+    );
+    
+    
+    bool            appl_getForce(
+        APPL_DATA     *this
+    );
+    
+    
     ERESULT         appl_getLastError(
         APPL_DATA		*this
     );
@@ -185,6 +195,13 @@ extern "C" {
     ASTR_DATA *     appl_ToDebugString(
         APPL_DATA       *this,
         int             indent
+    );
+    
+    
+    void            appl_Usage(
+        APPL_DATA       *this,
+        char            *pMsg,
+        ...
     );
     
     
