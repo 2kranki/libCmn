@@ -1208,7 +1208,9 @@ void            genMakeFile_final(
             );
             fprintf(pResults->pOutput, "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n");
             fprintf(pResults->pOutput, "\tcp src/*.h $(INSTALLDIR)/include/\n");
-            fprintf(pResults->pOutput, "\t-cp src/$(SYS)/*.h $(INSTALLDIR)/include/\n");
+            fprintf(pResults->pOutput, "\tif [ -d src/$(SYS) ]; then \\\n");
+            fprintf(pResults->pOutput, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/; \\\n");
+            fprintf(pResults->pOutput, "\tfi\n");
             fprintf(pResults->pOutput, "\n");
             fprintf(pResults->pOutput, "\n");
             fprintf(pResults->pOutput, ".PHONY: create_dirs\n");
