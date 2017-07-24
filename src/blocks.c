@@ -80,10 +80,10 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BLOCKS_DATA * blocks_Alloc(
+    BLOCKS_DATA *   blocks_Alloc(
     )
     {
-        BLOCKS_DATA   *this;
+        BLOCKS_DATA     *this;
         uint32_t        cbSize = sizeof(BLOCKS_DATA);
         
         // Do initialization.
@@ -96,25 +96,34 @@ extern "C" {
 
 
 
-    BLOCKS_DATA * blocks_New(
-        uint16_t        blockSize
+    BLOCKS_DATA *   blocks_New(
+        uint32_t        blockSize
     )
     {
         BLOCKS_DATA   *this;
         
         this = blocks_Alloc( );
         if (this) {
-            this = blocks_Init(this,blockSize);
+            this = blocks_Init(this, blockSize);
         } 
         return this;
     }
 
 
 
-    uint16_t    blocks_Overhead(
+    uint16_t        blocks_Overhead(
     )
     {
         return sizeof(BLOCKS_BLOCK);
+    }
+    
+    
+    
+    uint32_t        blocks_Useable(
+        uint32_t        blockSize
+    )
+    {
+        return (blockSize - blocks_Overhead());
     }
     
     
@@ -125,7 +134,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    uint16_t        blocks_getBlockSize(
+    uint32_t        blocks_getBlockSize(
         BLOCKS_DATA     *this
     )
     {
@@ -454,7 +463,7 @@ extern "C" {
 
     BLOCKS_DATA *   blocks_Init(
         BLOCKS_DATA     *this,
-        uint16_t        blockSize
+        uint32_t        blockSize
     )
     {
         uint32_t        cbSize = sizeof(BLOCKS_DATA);
@@ -569,30 +578,6 @@ extern "C" {
         AStr_AppendA(pStr, str);
         
         return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                         U s e a b l e
-    //---------------------------------------------------------------
-    
-    uint32_t        blocks_Useable(
-        BLOCKS_DATA		*this
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        // Return to caller.
-        return (this->blockSize - blocks_Overhead());
     }
     
     

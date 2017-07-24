@@ -427,6 +427,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(TERNARY_DATA);
+        uint32_t        blockSize = 4096;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -434,7 +435,7 @@ extern "C" {
         
         //cbSize = obj_getSize(this);
         //this = (TERNARY_DATA *)obj_Init( this, cbSize, OBJ_IDENT_TERNARY );
-        this = (TERNARY_DATA *)blocks_Init((BLOCKS_DATA *)this, 2048 );
+        this = (TERNARY_DATA *)blocks_Init((BLOCKS_DATA *)this, blockSize );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -445,7 +446,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ternary_Vtbl);
 
-        this->nodesPerBLock = blocks_Useable((BLOCKS_DATA *)this) / sizeof(TERNARY_NODE);
+        this->nodesPerBLock = blocks_Useable(blockSize) / sizeof(TERNARY_NODE);
         
     #ifdef NDEBUG
     #else

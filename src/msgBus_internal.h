@@ -101,6 +101,7 @@ struct msgBus_data_s	{
         OBJ_ID          objId
     );
 
+    
     bool            msgBus_setLastError(
         MSGBUS_DATA     *this,
         ERESULT         value

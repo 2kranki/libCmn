@@ -98,15 +98,26 @@ struct node_data_s	{
         OBJ_ID          objId
     );
 
+    
     NODE_DATA *     node_Init(
         NODE_DATA       *cbp
     );
+
     
     NODE_DATA *     node_InitWithName(
         NODE_DATA       *cbp,
         NAME_DATA       *pName,
         OBJ_ID          pData
     );
+
+    
+    NODE_DATA *     node_InitWithPtr(
+        NODE_DATA       *this,
+        const
+        void            *pValue,
+        OBJ_ID          pData
+    );
+    
     
 #ifdef NDEBUG
 #else

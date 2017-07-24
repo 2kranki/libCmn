@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/24/2017 14:00:01.000)
+# ( 7/24/2017 17:41:35.000)
 
 
 LIBNAM=libCmn
@@ -1463,6 +1463,13 @@ test_appl:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_blocks
+
+test_blocks:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_blocks.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_cb
 
 test_cb:
@@ -1600,6 +1607,13 @@ TESTS += test_szTbl
 
 test_szTbl:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_szTbl.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_ternary
+
+test_ternary:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ternary.c 
 	$(OBJDIR)/$(@F)
 
 

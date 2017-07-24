@@ -88,9 +88,18 @@ struct name_data_s	{
         OBJ_ID          objId
     );
 
+    
     NAME_DATA *     name_Init(
         NAME_DATA       *this
     );
+
+    
+    NAME_DATA *   name_InitPtr(
+        NAME_DATA       *this,
+        const
+        void            *pValue
+    );
+    
     
     void            name_ReleaseDataIfObj(
         NAME_DATA       *this

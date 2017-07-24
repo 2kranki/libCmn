@@ -137,7 +137,7 @@ extern "C" {
         const
         char            *pStr,          // [in]
         const
-        char            **ppStr         // [out] Returned String (stored in table)
+        char            **ppStr         // [out] Returned String Pointer (stored in table)
     );
     
     ERESULT          szTbl_StringWToString(
@@ -145,7 +145,7 @@ extern "C" {
         const
         int32_t         *pStr,          // [in]
         const
-        char            **ppStr         // [out] Returned String (stored in table)
+        char            **ppStr         // [out] Returned String Pointer (stored in table)
     );
     
     
@@ -169,7 +169,7 @@ extern "C" {
         SZTBL_DATA      *this,
         uint32_t        token,          // [in]
         const
-        char            **ppStr         // [out] Returned String (stored in table)
+        char            **ppStr         // [out] Returned String Pointer (stored in table)
     );
     
     

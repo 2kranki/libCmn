@@ -72,7 +72,7 @@ struct blocks_data_s	{
     // Common Data
     ERESULT         eRc;
     LISTDL_DATA     blockList;
-    uint16_t        blockSize;
+    uint32_t        blockSize;
 
 };
 //#pragma pack(pop)

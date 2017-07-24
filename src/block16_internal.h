@@ -111,6 +111,7 @@ struct block16_data_s	{
         OBJ_ID          objId
     );
 
+    
 #ifdef NDEBUG
 #else
     bool			block16_Validate(

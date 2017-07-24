@@ -95,12 +95,12 @@ extern "C" {
      released.
      @return:   pointer to blocks object if successful, otherwise OBJ_NIL.
      */
-    BLOCKS_DATA * blocks_Alloc(
+    BLOCKS_DATA *   blocks_Alloc(
     );
     
     
-    BLOCKS_DATA * blocks_New(
-        uint16_t    blockSize
+    BLOCKS_DATA *   blocks_New(
+        uint32_t        blockSize
     );
     
     
@@ -116,7 +116,12 @@ extern "C" {
      @return:   The amount needed from the blocksize for blocks_ to operate
                 successfully.
      */
-    uint16_t    blocks_Overhead(
+    uint16_t        blocks_Overhead(
+    );
+    
+    
+    uint32_t        blocks_Useable(
+        uint32_t        blockSize
     );
     
     
@@ -125,12 +130,12 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint16_t        blocks_getBlockSize(
+    uint32_t        blocks_getBlockSize(
         BLOCKS_DATA     *this
     );
     
     
-    ERESULT     blocks_getLastError(
+    ERESULT         blocks_getLastError(
         BLOCKS_DATA		*this
     );
 
@@ -155,26 +160,26 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    void *      blocks_Add(
-        BLOCKS_DATA *this
+    void *          blocks_Add(
+        BLOCKS_DATA     *this
     );
 
 
-    void *      blocks_Block(
-        BLOCKS_DATA *this,
-        uint32_t    index           // Relative to 1
+    void *          blocks_Block(
+        BLOCKS_DATA     *this,
+        uint32_t        index           // Relative to 1
     );
     
     
-    ERESULT     blocks_Delete(
-        BLOCKS_DATA	*this,
-        void        *pBlock
+    ERESULT         blocks_Delete(
+        BLOCKS_DATA     *this,
+        void            *pBlock
     );
 
    
-    BLOCKS_DATA * blocks_Init(
-        BLOCKS_DATA *this,
-        uint16_t    blockSize
+    BLOCKS_DATA *   blocks_Init(
+        BLOCKS_DATA     *this,
+        uint32_t        blockSize
     );
 
 
@@ -193,11 +198,6 @@ extern "C" {
     ASTR_DATA *    blocks_ToDebugString(
         BLOCKS_DATA     *this,
         int             indent
-    );
-    
-    
-    uint32_t        blocks_Useable(
-        BLOCKS_DATA		*this
     );
     
     

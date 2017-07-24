@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/24/2017 14:00:00.000)
+# ( 7/24/2017 17:41:34.000)
 
 
 LIBNAM=libCmn
@@ -247,6 +247,14 @@ test_appl:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_blocks
+
+test_blocks:
+	$(CC) $(CFLAGS) /Itests tests\test_blocks.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_cb
 
 test_cb:
@@ -403,6 +411,14 @@ TESTS = $(TESTS) test_szTbl
 
 test_szTbl:
 	$(CC) $(CFLAGS) /Itests tests\test_szTbl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_ternary
+
+test_ternary:
+	$(CC) $(CFLAGS) /Itests tests\test_ternary.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
