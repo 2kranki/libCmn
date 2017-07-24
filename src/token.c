@@ -1714,6 +1714,8 @@ extern "C" {
         uint32_t        lenChars;
         const
         int32_t         *pWStr = NULL;
+        const
+        OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
@@ -1722,13 +1724,15 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+        pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"token\",\"fileName\":\"%s\",\"lineNo\":%d,\"colNo\":%d,\"cls\":%d,",
+                     "{\"objectType\":\"%s\",\"fileName\":\"%s\",\"lineNo\":%d,\"colNo\":%d,\"cls\":%d,",
+                     pInfo->pClassName,
                      (this->pFileName ? this->pFileName : ""),
                      this->lineNo,
                      this->colNo,

@@ -83,6 +83,7 @@ struct hash32_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
 #ifdef XYZZY        // Thoughts for another version for szStrings
@@ -105,13 +106,13 @@ struct hash32_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    hash32_Vtbl;
+    HASH32_VTBL     hash32_Vtbl;
 
 
 
     // Internal Functions
     bool            hash32_AddBlock(
-        HASH32_DATA     *cbp
+        HASH32_DATA     *this
     );
     
     void            hash32_Dealloc(
@@ -119,17 +120,17 @@ struct hash32_data_s	{
     );
     
     HASH32_NODE *   hash32_FindEntry(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     );
     
     uint16_t        hash32_IndexFromKey(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     );
     
     HASH32_NODE *   hash32_NodeFromKey(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     );
     
@@ -137,7 +138,7 @@ struct hash32_data_s	{
 #ifdef NDEBUG
 #else
     bool			hash32_Validate(
-        HASH32_DATA       *cbp
+        HASH32_DATA       *this
     );
 #endif
 

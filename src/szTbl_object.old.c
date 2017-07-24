@@ -1,8 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'szHash'
-//	Generated 07/24/2017 09:29:41
-
+//	Class Object Metods and Tables for 'szTbl'
+//	Generated 01/26/2016 17:01:52
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -32,9 +31,8 @@
  */
 
 
-
-#define			SZHASH_OBJECT_C	    1
-#include        <szHash_internal.h>
+#include        "obj.h"
+#include        "szTbl_internal.h"
 
 
 
@@ -42,14 +40,15 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct szHash_class_data_s	{
-    // Warning - OBJ_DATA must be first in this object!
+struct szTbl_class_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
+     */
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct szHash_class_data_s SZHASH_CLASS_DATA;
+typedef struct szTbl_class_data_s SZTBL_CLASS_DATA;
 
 
 
@@ -62,22 +61,22 @@ typedef struct szHash_class_data_s SZHASH_CLASS_DATA;
 
 static
 const
-OBJ_INFO        szHash_Info;            // Forward Reference
+OBJ_INFO        szTbl_Info;            // Forward Reference
 
 
 
-OBJ_ID          szHash_Class(
+OBJ_ID          szTbl_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            szHash_ClassIsKindOf(
+bool            szTbl_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SZHASH_CLASS == classID) {
+    if (OBJ_IDENT_SZTBL_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -92,15 +91,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_SZHASH_CLASS;
+    return OBJ_IDENT_SZTBL_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&szHash_Info,
-    szHash_ClassIsKindOf,
+	&szTbl_Info,
+    szTbl_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -116,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 static
 const
-SZHASH_CLASS_DATA  szHash_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SZHASH_CLASS, 0, 1},
+SZTBL_CLASS_DATA  szTbl_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SZTBL_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            szHash_IsKindOf(
+bool            szTbl_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SZHASH == classID) {
+    if (OBJ_IDENT_SZTBL == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -140,65 +139,59 @@ bool            szHash_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            szHash_Dealloc(
+void            szTbl_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          szHash_Class(
+OBJ_ID          szTbl_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&szHash_ClassObj;
+    return (OBJ_ID)&szTbl_ClassObj;
 }
 
 
 static
-uint16_t		szHash_WhoAmI(
+uint16_t		szTbl_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_SZHASH;
+    return OBJ_IDENT_SZTBL;
 }
 
 
 const
-SZHASH_VTBL     szHash_Vtbl = {
-    {
-        &szHash_Info,
-        szHash_IsKindOf,
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-        szHash_Dealloc,
-        szHash_Class,
-        szHash_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)szHash_QueryInfo,
-        (P_OBJ_TOSTRING)szHash_ToDebugString,
-        NULL,			// szHash_Enable,
-        NULL,			// szHash_Disable,
-        NULL,			// (P_OBJ_ASSIGN)szHash_Assign,
-        NULL,			// (P_OBJ_COMPARE)szHash_Compare,
-        NULL, 			// (P_OBJ_PTR)szHash_Copy,
-        NULL 			// (P_OBJ_HASH)szHash_Hash,
-    },
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    //szHash_IsEnabled,
- 
+OBJ_IUNKNOWN    szTbl_Vtbl = {
+	&szTbl_Info,
+    szTbl_IsKindOf,
+    obj_RetainStandard,
+    obj_ReleaseStandard,
+    szTbl_Dealloc,
+    szTbl_Class,
+    szTbl_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)szTbl_ToDebugString,
+    NULL,			// szTbl_Enable,
+    NULL,			// szTbl_Disable,
+    NULL,			// (P_OBJ_ASSIGN)szTbl_Assign,
+    NULL,			// (P_OBJ_COMPARE)szTbl_Compare,
+    NULL, 			// (P_OBJ_PTR)szTbl_Copy,
+    NULL 			// (P_OBJ_HASH)szTbl_Hash
 };
 
 
 
 static
 const
-OBJ_INFO        szHash_Info = {
-    "szHash",
-    "NUL-Terminated String Hash Table",
-    (OBJ_DATA *)&szHash_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&szHash_Vtbl
+OBJ_INFO        szTbl_Info = {
+    "szTbl",
+    "Static String Table",
+    (OBJ_DATA *)&szTbl_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj
 };
+//#warning -- adjust super class object in Info above 
+//			if object inherits from another class
 
 
 

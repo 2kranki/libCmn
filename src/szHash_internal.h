@@ -80,6 +80,7 @@ struct szHash_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Compare two keys returning -1 if key1 < key2, 0 if key1 == key2,
     // 1 if key1 > key2
@@ -102,7 +103,7 @@ struct szHash_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    szHash_Vtbl;
+    SZHASH_VTBL     szHash_Vtbl;
 
 
 

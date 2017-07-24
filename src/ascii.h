@@ -219,6 +219,11 @@ extern "C" {
     );
     
     
+    bool                ascii_isPrintableA(
+        char                asciiChar
+    );
+    
+    
     bool                ascii_isQuoteA(
         char                asciiChar
     );

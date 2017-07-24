@@ -54,6 +54,7 @@
 #include        "ascii.h"
 #include        "str.h"
 #include        "dec.h"
+#include        "hex.h"
 #include        "utf8.h"
 #include        <stdio.h>
 #include        <time.h>
@@ -1946,7 +1947,7 @@ extern "C" {
         
         // Return to caller.
         *ppOther = pNew;
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
 
@@ -2059,7 +2060,7 @@ extern "C" {
         *((uint32_t *)pwr2Array_Ptr((PWR2ARRAY_DATA *)cbp, offset)) = chr;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2111,7 +2112,7 @@ extern "C" {
                 ;
             else {
                 *pIndex = i;
-                return ERESULT_SUCCESSFUL_COMPLETION;
+                return ERESULT_SUCCESS;
             }
         }
         
@@ -2123,11 +2124,91 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       T o  C h r  C o n
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     WStr_ToChrCon(
+        WSTR_DATA       *this
+    )
+    {
+        const
+        int32_t         *pData;
+        int32_t         wchr;
+        ASTR_DATA       *pWrkStr;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pWrkStr = AStr_New();
+        if (OBJ_NIL == pWrkStr) {
+            return pWrkStr;
+        }
+        
+        pData = WStr_getData(this);
+        while ((wchr = *pData)) {
+            if (ascii_isAsciiW(wchr) && ascii_isPrintableA(wchr)) {
+                AStr_AppendCharA(pWrkStr, wchr);
+            }
+            else if (wchr < 256) {
+                switch (wchr) {
+                        
+                    case 9:
+                        AStr_AppendA(pWrkStr, "\\t");
+                        break;
+                        
+                    case 10:
+                        AStr_AppendA(pWrkStr, "\\n");
+                        break;
+                        
+                    case 12:
+                        AStr_AppendA(pWrkStr, "\\f");
+                        break;
+                        
+                    case 13:
+                        AStr_AppendA(pWrkStr, "\\r");
+                        break;
+                        
+                    default:
+                        AStr_AppendA(pWrkStr, "\\x");
+                        AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                        AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+                        break;
+                }
+            }
+            else if (wchr < 65236) {
+                AStr_AppendA(pWrkStr, "\\u");
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 12) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 8) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+            }
+            else {
+                AStr_AppendA(pWrkStr, "\\U");
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 28) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 24) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 20) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 16) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 12) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 8) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+            }
+            ++pData;
+        }
+        
+        
+        return pWrkStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     T o  I n t 3 2
     //---------------------------------------------------------------
     
     int32_t         WStr_ToInt32(
-        WSTR_DATA		*cbp
+        WSTR_DATA		*this
     )
     {
         int32_t         i = 0;
@@ -2135,15 +2216,55 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStr_Validate( cbp ) ) {
+        if( !WStr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        //FIXME: i = dec_getInt32W(cbp->pData);
+        
+        i = dec_getInt32W(WStr_getData(this));
 
         // Return to caller.
         return i;
+    }
+    
+    
+    
+    ASTR_DATA *     WStr_ToJSON(
+        WSTR_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !WStr_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        pWrkStr = WStr_ToChrCon(this);
+        if (pWrkStr == OBJ_NIL) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStr_New();
+        if (pWrkStr == OBJ_NIL) {
+            obj_Release(pWrkStr);
+            return OBJ_NIL;
+        }
+        AStr_AppendA(pStr, "{\"objectType\":\"");
+        AStr_AppendA(pStr, pInfo->pClassName);
+        AStr_AppendA(pStr, "\",\"data\":\"");
+        AStr_Append(pStr, pWrkStr);
+        AStr_AppendA(pStr, "\"}\n");
+        obj_Release(pWrkStr);
+        
+        return pStr;
     }
     
     
@@ -2207,7 +2328,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA * WStr_ToDebugString(
-        WSTR_DATA       *cbp,
+        WSTR_DATA       *this,
         int             indent
     )
     {
@@ -2216,7 +2337,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -2229,29 +2350,30 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(WStr)\n",
-                     cbp
+                     this
                      );
         AStr_AppendA(pStr, str);
         
-        pWrkStr = pwr2Array_ToDebugString( &cbp->super, indent+3 );
+        pWrkStr = pwr2Array_ToDebugString( &this->super, indent+3 );
         if (pWrkStr) {
             AStr_Append(pStr, pWrkStr);
             obj_Release(pWrkStr);
         }
         
-        j = snprintf( str, sizeof(str), " %p(WStr)}\n", cbp );
+        j = snprintf(str, sizeof(str), " %p(WStr)}\n", this);
         AStr_AppendA(pStr, str);
         
         return pStr;
     }
     
+
     
     //---------------------------------------------------------------
     //                          T r i m
     //---------------------------------------------------------------
     
     ERESULT         WStr_Trim(
-        WSTR_DATA		*cbp
+        WSTR_DATA		*this
     )
     {
         ERESULT         eRc;
@@ -2264,18 +2386,18 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStr_Validate( cbp ) ) {
+        if( !WStr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
 #endif
-        lenStr = WStr_getLength(cbp);
+        lenStr = WStr_getLength(this);
         if ( 0 == lenStr ) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
+            return ERESULT_SUCCESS;
         }
 
         // Remove leading characters.
-        pData = (int32_t *)WStr_getData(cbp);
+        pData = (int32_t *)WStr_getData(this);
         k = 0;
         for (i=1; i<=lenStr; ++i) {
             j = WStr_ChrInStr(*pData, whiteSpaceW);
@@ -2286,16 +2408,16 @@ extern "C" {
             ++pData;
         }
         if (k) {
-            eRc = WStr_Remove(cbp, 1, k);
+            eRc = WStr_Remove(this, 1, k);
         }
         
-        lenStr = WStr_getLength(cbp);
+        lenStr = WStr_getLength(this);
         if ( 0 == lenStr ) {
             return ERESULT_SUCCESSFUL_COMPLETION;
         }
         
         // Remove trailing characters.
-        pData = (int32_t *)WStr_getData(cbp);
+        pData = (int32_t *)WStr_getData(this);
         k = 0;
         for (i=lenStr; i; --i) {
             j = WStr_ChrInStr(pData[i-1], whiteSpaceW);
@@ -2305,11 +2427,11 @@ extern "C" {
             ++k;
         }
         if (k) {
-            eRc = WStr_Truncate(cbp, (lenStr - k));
+            eRc = WStr_Truncate(this, (lenStr - k));
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2347,7 +2469,7 @@ extern "C" {
         pwr2Array_setSize((PWR2ARRAY_DATA *)this, (len + 1));
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2357,7 +2479,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         WStr_Upper(
-        WSTR_DATA		*cbp
+        WSTR_DATA		*this
     )
     {
         int32_t         *pData;
@@ -2366,15 +2488,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStr_Validate( cbp ) ) {
+        if( !WStr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
 #endif
-        lenStr = WStr_getLength(cbp);
+        lenStr = WStr_getLength(this);
         
         if (lenStr) {
-            pData = pwr2Array_Ptr((PWR2ARRAY_DATA *)cbp,1);
+            pData = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, 1);
             while( *pData && lenStr-- ) {
                 if( (*pData >= 'a') && (*pData <= 'z') )
                     *pData = (char)(*pData - ('a' - 'A'));
@@ -2383,7 +2505,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2399,7 +2521,7 @@ extern "C" {
     )
     {
         if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_WSTR) )
+            if ( obj_IsKindOf(cbp, OBJ_IDENT_WSTR) )
                 ;
             else
                 return false;

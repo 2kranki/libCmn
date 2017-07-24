@@ -95,6 +95,7 @@ struct szTbl_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     SZHASH_DATA     *pHashTable;
@@ -108,7 +109,7 @@ struct szTbl_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    szTbl_Vtbl;
+    SZTBL_VTBL      szTbl_Vtbl;
 
 
 

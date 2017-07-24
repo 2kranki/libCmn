@@ -77,6 +77,16 @@ extern "C" {
 
     typedef struct szTbl_data_s	SZTBL_DATA;
 
+    typedef struct szTbl_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in timer_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(TIMER_DATA *);
+    } SZTBL_VTBL;
+    
+    
 
 
 
@@ -179,6 +189,7 @@ extern "C" {
         SZTBL_DATA      *this,
         int             indent
     );
+
     
 #ifdef	__cplusplus
 }

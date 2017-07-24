@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/17/2017  2:29:40.000)
+# ( 7/24/2017 14:00:00.000)
 
 
 LIBNAM=libCmn
@@ -295,6 +295,14 @@ test_enum:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_hash32
+
+test_hash32:
+	$(CC) $(CFLAGS) /Itests tests\test_hash32.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_hjson
 
 test_hjson:
@@ -383,6 +391,22 @@ test_psxThread:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_szHash
+
+test_szHash:
+	$(CC) $(CFLAGS) /Itests tests\test_szHash.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_szTbl
+
+test_szTbl:
+	$(CC) $(CFLAGS) /Itests tests\test_szTbl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_timer
 
 test_timer:
@@ -395,6 +419,14 @@ TESTS = $(TESTS) test_trace
 
 test_trace:
 	$(CC) $(CFLAGS) /Itests tests\test_trace.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_u8Array
+
+test_u8Array:
+	$(CC) $(CFLAGS) /Itests tests\test_u8Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

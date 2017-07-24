@@ -110,6 +110,26 @@ extern "C" {
     
     
     /*!
+     Convert 0-15 to an ascii character. For instance, 10 becomes 'a'.
+     @return:   if successful, the converted character. Otherwise, '?' is returned.
+     */
+    char            hex_DigitToChrA(
+        int             value
+    );
+    
+    
+    /*!
+     Try to convert the ascii character (ie one hex digit) with format of
+     "[0..9a..fA..F]" to an integer. For instance, 'a' or 'A' becomes 10.
+     @return:   if successful, the converted number. Otherwise, -1 is returned.
+     */
+    int             hex_DigitToIntA(
+        const
+        char            chr
+    );
+    
+    
+    /*!
      Try to convert the string to a unsigned 32-bit number with format of 
      "[+ | -][0..9a..fA..F]*". Overflow is not detected in the scan.
      @return:

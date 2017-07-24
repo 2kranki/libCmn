@@ -1,8 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'szHash'
-//	Generated 07/24/2017 09:29:41
-
+//	Generated 01/24/2016 22:37:57
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -32,9 +31,8 @@
  */
 
 
-
-#define			SZHASH_OBJECT_C	    1
-#include        <szHash_internal.h>
+#include        "obj.h"
+#include        "szHash_internal.h"
 
 
 
@@ -43,7 +41,8 @@
 //-----------------------------------------------------------
 
 struct szHash_class_data_s	{
-    // Warning - OBJ_DATA must be first in this object!
+    /* Warning - OBJ_DATA must be first in this object!
+     */
     OBJ_DATA        super;
     
     // Common Data
@@ -163,29 +162,22 @@ uint16_t		szHash_WhoAmI(
 
 
 const
-SZHASH_VTBL     szHash_Vtbl = {
-    {
-        &szHash_Info,
-        szHash_IsKindOf,
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-        szHash_Dealloc,
-        szHash_Class,
-        szHash_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)szHash_QueryInfo,
-        (P_OBJ_TOSTRING)szHash_ToDebugString,
-        NULL,			// szHash_Enable,
-        NULL,			// szHash_Disable,
-        NULL,			// (P_OBJ_ASSIGN)szHash_Assign,
-        NULL,			// (P_OBJ_COMPARE)szHash_Compare,
-        NULL, 			// (P_OBJ_PTR)szHash_Copy,
-        NULL 			// (P_OBJ_HASH)szHash_Hash,
-    },
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    //szHash_IsEnabled,
- 
+OBJ_IUNKNOWN    szHash_Vtbl = {
+	&szHash_Info,
+    szHash_IsKindOf,
+    obj_RetainStandard,
+    obj_ReleaseStandard,
+    szHash_Dealloc,
+    szHash_Class,
+    szHash_WhoAmI,
+    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_TOSTRING)szHash_ToDebugString,
+    NULL,			// szHash_Enable,
+    NULL,			// szHash_Disable,
+    NULL,			// (P_OBJ_ASSIGN)szHash_Assign,
+    NULL,			// (P_OBJ_COMPARE)szHash_Compare,
+    NULL, 			// (P_OBJ_PTR)szHash_Copy,
+    NULL 			// (P_OBJ_HASH)szHash_Hash
 };
 
 
@@ -196,8 +188,7 @@ OBJ_INFO        szHash_Info = {
     "szHash",
     "NUL-Terminated String Hash Table",
     (OBJ_DATA *)&szHash_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&szHash_Vtbl
+    (OBJ_DATA *)&obj_ClassObj
 };
 
 

@@ -73,6 +73,16 @@ extern "C" {
 
     typedef struct hash32_data_s	HASH32_DATA;
 
+    typedef struct hash32_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in hex_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(HEX_DATA *);
+    } HASH32_VTBL;
+    
+    
 
     // Prime numbers for hash table sizes within 16 bits
     // (Maximum size is 65535)

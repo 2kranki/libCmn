@@ -442,6 +442,19 @@ extern "C" {
     );
     
     
+    /*!
+     Convert this string to an ascii character constant format using escape
+     sequences for non-printable character.
+     @param:    this    object pointer
+     @return:   If successful, an AStr object which must be released,
+     otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     AStr_ToChrCon(
+        ASTR_DATA       *this
+    );
+    
+    
     ASTR_DATA *     AStr_ToLower(
         ASTR_DATA       *this
     );
@@ -468,6 +481,17 @@ extern "C" {
     
     int64_t         AStr_ToInt64(
         ASTR_DATA		*this
+    );
+    
+    
+    /*!
+     Create a JSON string that describes this object.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     AStr_ToJSON(
+        ASTR_DATA       *this
     );
     
     

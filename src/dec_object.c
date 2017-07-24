@@ -198,7 +198,7 @@ int32_t          dec_getInt32A(
 
 int32_t          dec_getInt32W(
     const
-    uint32_t        *pStr
+    int32_t         *pStr
 )
 {
     int32_t         i = 0;
@@ -270,6 +270,164 @@ int64_t          dec_getInt64A(
 }
 
 
+
+
+
+//----------------------------------------------------------------
+//						dec_Int32ToChr
+//----------------------------------------------------------------
+
+// Maximum values should be -2,147,483,648 to 2,147,483,647.
+
+void            dec_Int32ToChr(
+    int32_t			input,
+    char            *pBuffer			// On return, will have
+    //                                  // Ascii representation of
+    //                                  // number with leading zeros
+    //                                  // and trailing NUL char.
+    //                                  // (12-bytes required)
+)
+{
+    
+    // Do initialization.
+    if( NULL == pBuffer ) {
+        return;
+    }
+    
+    // Initialize the output area.
+    if( input < 0 ) {
+        *pBuffer = '-';
+        input = -input;
+    }
+    else {
+        *pBuffer = ' ';
+    }
+    
+    // set the value;
+    dec_Uint32ToChr(input, pBuffer+1);
+    
+    // Return to caller.
+}
+
+
+
+//----------------------------------------------------------------
+//						dec_putInt64
+//----------------------------------------------------------------
+
+// Maximum values should be -9,223,372,036,854,775,807 to 9,223,372,036,854,775,807.
+
+void            dec_Int64ToChr(
+    int64_t			input,
+    char            *pBuffer			// On return, will have
+    //                                  // Ascii representation of
+    //                                  // number with leading zeros
+    //                                  // and trailing NUL char.
+    //                                  // (22-bytes required)
+)
+{
+    
+    // Do initialization.
+    if( NULL == pBuffer ) {
+        return;
+    }
+    
+    // Initialize the output area.
+    if( input < 0 ) {
+        *pBuffer = '-';
+        input = -input;
+    }
+    else {
+        *pBuffer = ' ';
+    }
+    
+    // set the value;
+    dec_Uint64ToChr(input, pBuffer+1);
+    
+    // Return to caller.
+}
+
+
+
+//----------------------------------------------------------------
+//						dec_putUint32
+//----------------------------------------------------------------
+
+// Maximum values should be 0 to 4,294,967,295.
+
+void            dec_Uint32ToChr(
+    uint32_t        input,
+    char            *pBuffer			// On return, will have
+    //                                  // Ascii representation of
+    //                                  // number with leading zeros
+    //                                  // and trailing NUL char.
+    //                                  // (11-bytes required)
+)
+{
+    uint32_t		i;
+    char			*pChr;
+    
+    // Do initialization.
+    if( NULL == pBuffer ) {
+        return;
+    }
+    
+    // Initialize the output area.
+    pChr = pBuffer;
+    for( i=0; i<10; ++i )
+        *pChr++ = '0';
+    *pChr = '\0';
+    
+    // set the value;
+    pChr = pBuffer + 10 - 1;
+    while( input ) {
+        *pChr-- = (input % 10) + '0';
+        input /= 10;
+    }
+    
+    // Return to caller.
+}
+
+
+
+//----------------------------------------------------------------
+//						dec_Uint64ToChr
+//----------------------------------------------------------------
+
+// Maximum values should be 0 to 18,446,744,073,709,551,615.
+
+void            dec_Uint64ToChr(
+    uint64_t        input,
+    char            *pBuffer			// On return, will have
+    //                                  // Ascii representation of
+    //                                  // number with leading zeros
+    //                                  // and trailing NUL char.
+    //                                  // (21-bytes required)
+)
+{
+    uint64_t		i;
+    char			*pChr;
+    
+    // Do initialization.
+    if( NULL == pBuffer ) {
+        return;
+    }
+    
+    // Initialize the output area.
+    pChr = pBuffer;
+    for( i=0; i<10; ++i )
+        *pChr++ = '0';
+    *pChr = '\0';
+    
+    // set the value;
+    pChr = pBuffer + 10 - 1;
+    while( input ) {
+        *pChr-- = (input % 10) + '0';
+        input /= 10;
+    }
+    
+    // Return to caller.
+}
 
 
 

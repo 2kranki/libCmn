@@ -112,6 +112,10 @@ extern "C" {
 
 
 
+    // dec_getInt32A, dec_getInt32W, dec_getInt64A
+    // dec_putInt32A, dec_putInt32AObj, dec_putInt64A, dec_putInt64AObj
+    // are in dec_object.c
+    
     
 
     //===============================================================

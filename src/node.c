@@ -930,6 +930,7 @@ extern "C" {
         }
         
         if (pValue) {
+            DEBUG_BREAK();                  /* Temporary */
             this->pName = name_NewPtr(pValue);
             if (OBJ_NIL == this->pName) {
                 DEBUG_BREAK();

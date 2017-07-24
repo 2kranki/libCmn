@@ -97,11 +97,11 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    DEC_DATA *     dec_Alloc(
+    DEC_DATA *      dec_Alloc(
     );
     
     
-    DEC_DATA *     dec_New(
+    DEC_DATA *      dec_New(
     );
     
     
@@ -113,19 +113,39 @@ extern "C" {
      @Warning:
             Overflow is not checked.
      */
-    int32_t          dec_getInt32A(
+    int32_t         dec_getInt32A(
         const
         char            *pStr
     );
     
-    int32_t          dec_getInt32W(
+    int32_t         dec_getInt32W(
         const
-        uint32_t        *pStr
+        int32_t         *pStr
     );
     
-    int64_t          dec_getInt64A(
+    int64_t         dec_getInt64A(
         const
         char             *pStr
+    );
+    
+    
+    void            dec_Int32ToChr(
+        int32_t			input,
+        char            *pBuffer			// On return, will have
+        //                                  // Ascii representation of
+        //                                  // number with leading zeros
+        //                                  // and trailing NUL char.
+        //                                  // (12-bytes required)
+    );
+    
+    
+    void            dec_Int64ToChr(
+        int64_t			input,
+        char            *pBuffer			// On return, will have
+        //                                  // Ascii representation of
+        //                                  // number with leading zeros
+        //                                  // and trailing NUL char.
+        //                                  // (22-bytes required)
     );
     
     
@@ -234,6 +254,27 @@ extern "C" {
         void            *pObject,
         bool            (*pPutChar)(void *, uint8_t)
     );
+    
+    
+    void            dec_Uint32ToChr(
+        uint32_t        input,
+        char            *pBuffer			// On return, will have
+        //                                  // Ascii representation of
+        //                                  // number with leading zeros
+        //                                  // and trailing NUL char.
+        //                                  // (11-bytes required)
+    );
+    
+    
+    void            dec_Uint64ToChr(
+        uint64_t        input,
+        char            *pBuffer			// On return, will have
+        //                                  // Ascii representation of
+        //                                  // number with leading zeros
+        //                                  // and trailing NUL char.
+        //                                  // (21-bytes required)
+    );
+    
     
     
 

@@ -41,9 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "u8Array_internal.h"
-#include "file.h"
-#include <stdio.h>
+#include    <u8Array_internal.h>
+#include    <ascii.h>
+#include    <file.h>
+#include    <hex.h>
+#include    <stdio.h>
 
 
 
@@ -295,8 +297,7 @@ extern "C" {
     
     ERESULT         u8Array_AppendData(
         U8ARRAY_DATA	*this,
-        uint8_t         data,
-        uint32_t        *pIndex
+        uint8_t         data
     )
     {
         ERESULT         eRc;
@@ -359,7 +360,7 @@ extern "C" {
             return ERESULT_FILE_NOT_FOUND;
         }
         while ( (chr = fgetc(pFile)) != EOF ) {
-            u8Array_AppendData(this, (chr & 0xFF), NULL);
+            u8Array_AppendData(this, (chr & 0xFF));
         }
         fclose(pFile);
         pFile = NULL;
@@ -987,7 +988,7 @@ extern "C" {
 #endif
         
         while (index > pwr2Array_getSize(this->pData)) {
-            eRc = u8Array_AppendData(this, 0, NULL);
+            eRc = u8Array_AppendData(this, 0);
         }
         
         *((uint8_t *)pwr2Array_Ptr(this->pData, index)) = data;
@@ -1024,7 +1025,7 @@ extern "C" {
 #endif
         
         while ((index + 1) > pwr2Array_getSize(this->pData)) {
-            eRc = u8Array_AppendData(this, 0, NULL);
+            eRc = u8Array_AppendData(this, 0);
         }
         
         pChr = (uint8_t *)pwr2Array_Ptr(this->pData, index);
@@ -1069,7 +1070,7 @@ extern "C" {
 #endif
         
         while ((index + 2) > pwr2Array_getSize(this->pData)) {
-            eRc = u8Array_AppendData(this, 0, NULL);
+            eRc = u8Array_AppendData(this, 0);
         }
         
         pChr = (uint8_t *)pwr2Array_Ptr(this->pData, index);
@@ -1116,7 +1117,7 @@ extern "C" {
 #endif
         
         while ((index + 3) > pwr2Array_getSize(this->pData)) {
-            eRc = u8Array_AppendData(this, 0, NULL);
+            eRc = u8Array_AppendData(this, 0);
         }
         
         pChr = (uint8_t *)pwr2Array_Ptr(this->pData, index);
@@ -1142,6 +1143,71 @@ extern "C" {
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
+    
+    ASTR_DATA *     u8Array_ToConstantString(
+        U8ARRAY_DATA    *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint8_t         *pData;
+        uint8_t         wchr;
+        ASTR_DATA       *pWrkStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pWrkStr = AStr_New();
+        if (pWrkStr == OBJ_NIL) {
+            return pWrkStr;
+        }
+        
+        iMax = pwr2Array_getSize(this->pData);
+        pData = pwr2Array_Ptr(this->pData, 1);
+        if (iMax) {
+            for (i=0; i<iMax; ++i) {
+                wchr = *pData++;
+                if (ascii_isAsciiW(wchr) && ascii_isPrintableA(wchr)) {
+                    AStr_AppendCharA(pWrkStr, wchr);
+                }
+                else {
+                    switch (wchr) {
+                            
+                        case 9:
+                            AStr_AppendA(pWrkStr, "\\t");
+                            break;
+                            
+                        case 10:
+                            AStr_AppendA(pWrkStr, "\\n");
+                            break;
+                            
+                        case 12:
+                            AStr_AppendA(pWrkStr, "\\f");
+                            break;
+                            
+                        case 13:
+                            AStr_AppendA(pWrkStr, "\\r");
+                            break;
+                            
+                        default:
+                            AStr_AppendA(pWrkStr, "\\x");
+                            AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                            AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+                            break;
+                    }
+                }
+            }
+        }
+        
+        return pWrkStr;
+    }
+    
     
     ASTR_DATA *     u8Array_ToDebugString(
         U8ARRAY_DATA    *this,

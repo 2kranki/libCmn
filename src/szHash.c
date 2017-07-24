@@ -397,33 +397,34 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        SZHASH_DATA     *cbp = objId;
+        SZHASH_DATA     *this = objId;
         SZHASH_BLOCK    *pBlock;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        while ( listdl_Count(&cbp->blocks) ) {
-            pBlock = listdl_DeleteHead(&cbp->blocks);
+        while ( listdl_Count(&this->blocks) ) {
+            pBlock = listdl_DeleteHead(&this->blocks);
             mem_Free( pBlock );
         }
         
-        if( cbp->pHash ) {
-            mem_Free( cbp->pHash );
-            cbp->pHash = NULL;
+        if( this->pHash ) {
+            mem_Free( this->pHash );
+            this->pHash = NULL;
         }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -561,7 +562,7 @@ extern "C" {
         if (OBJ_NIL == cbp) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &szHash_Vtbl);
+        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&szHash_Vtbl);
         
         cbp->cHash = cHash;
         cbSize = 4096 - sizeof(SZHASH_BLOCK);

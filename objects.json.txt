@@ -163,6 +163,7 @@
         "test_consumer.c":null,
         "test_dbCsv.c":null,
         "test_enum.c":null,
+        "test_hash32.c":null,
         "test_hjson.c":null,
         "test_lex.c":null,
         "test_lexj.c":null,
@@ -174,7 +175,10 @@
         "test_psxMutex.c":null,
         "test_psxSem.c":null,
         "test_psxThread.c":null,
+        "test_szHash.c":null,
+        "test_szTbl.c":null,
         "test_timer.c":null,
-        "test_trace.c":null
+        "test_trace.c":null,
+        "test_u8Array.c":null
     }
 }

@@ -112,25 +112,25 @@ extern "C" {
         
         switch (this->header.waveFormat.wBitsPerSample) {
             case 8:
-                u8Array_AppendData(this->pFrames, data & 0xFF, NULL);
+                u8Array_AppendData(this->pFrames, data & 0xFF);
                 break;
                 
             case 16:
-                u8Array_AppendData(this->pFrames, data & 0xFF, NULL);
-                u8Array_AppendData(this->pFrames, (data >> 8) & 0xFF, NULL);
+                u8Array_AppendData(this->pFrames, data & 0xFF);
+                u8Array_AppendData(this->pFrames, (data >> 8) & 0xFF);
                 break;
                 
             case 24:
-                u8Array_AppendData(this->pFrames, data & 0xFF, NULL);
-                u8Array_AppendData(this->pFrames, (data >> 8) & 0xFF, NULL);
-                u8Array_AppendData(this->pFrames, (data >> 16) & 0xFF, NULL);
+                u8Array_AppendData(this->pFrames, data & 0xFF);
+                u8Array_AppendData(this->pFrames, (data >> 8) & 0xFF);
+                u8Array_AppendData(this->pFrames, (data >> 16) & 0xFF);
                 break;
                 
             case 32:
-                u8Array_AppendData(this->pFrames, data & 0xFF, NULL);
-                u8Array_AppendData(this->pFrames, (data >> 8) & 0xFF, NULL);
-                u8Array_AppendData(this->pFrames, (data >> 16) & 0xFF, NULL);
-                u8Array_AppendData(this->pFrames, (data >> 24) & 0xFF, NULL);
+                u8Array_AppendData(this->pFrames, data & 0xFF);
+                u8Array_AppendData(this->pFrames, (data >> 8) & 0xFF);
+                u8Array_AppendData(this->pFrames, (data >> 16) & 0xFF);
+                u8Array_AppendData(this->pFrames, (data >> 24) & 0xFF);
                 break;
                 
             default:

@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Wide NUL-terminated String (WStr) Header
+//          Wide (32 bit) NUL-terminated String (WStr) Header
 //****************************************************************
 /*
  * Program
- *			Wide NUL-terminated String (WStr)
+ *			Wide (32 bit) NUL-terminated String (WStr)
  * Purpose
  *			This object provides a NUL-terminated Wide string
  *          and its manipulation.
@@ -448,6 +448,19 @@ extern "C" {
     
     
     /*!
+     Convert this string to an ascii character constant format using escape
+     sequences for non-printable character.
+     @param:    this    object pointer
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     WStr_ToChrCon(
+        WSTR_DATA       *this
+    );
+    
+    
+    /*!
      Create a string that describes this object and the
      objects within it.
      Example:
@@ -471,6 +484,17 @@ extern "C" {
     // 0 is returned if the number is mal-formed.
     int32_t         WStr_ToInt32(
         WSTR_DATA		*this
+    );
+    
+    
+    /*!
+     Create a JSON string that describes this object.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning: Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     WStr_ToJSON(
+        WSTR_DATA       *this
     );
     
     

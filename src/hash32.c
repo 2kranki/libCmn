@@ -60,32 +60,32 @@ extern "C" {
     ****************************************************************/
 
     bool            hash32_AddBlock(
-        HASH32_DATA     *cbp
+        HASH32_DATA     *this
     )
     {
         HASH32_BLOCK    *pBlock;
         uint32_t        i;
         
         // Do initialization.
-        if ( NULL == cbp->pDeletedHead )
+        if ( NULL == this->pDeletedHead )
             ;
         else {
             return true;
         }
         
         // Get a new block.
-        i = sizeof(HASH32_BLOCK) + (cbp->cBlock * sizeof(HASH32_NODE));
+        i = sizeof(HASH32_BLOCK) + (this->cBlock * sizeof(HASH32_NODE));
         pBlock = (HASH32_BLOCK *)mem_Malloc( i );
         if( NULL == pBlock ) {
             return false;
         }
-        pBlock->pNext = cbp->pBlocks;
-        cbp->pBlocks = pBlock;
+        pBlock->pNext = this->pBlocks;
+        this->pBlocks = pBlock;
         
         // Now chain the entries to the Deleted chain.
-        for (i=0; i<cbp->cBlock; ++i) {
-            pBlock->node[i].pNext = cbp->pDeletedHead;
-            cbp->pDeletedHead = &pBlock->node[i];
+        for (i=0; i<this->cBlock; ++i) {
+            pBlock->node[i].pNext = this->pDeletedHead;
+            this->pDeletedHead = &pBlock->node[i];
         }
         
         // Return to caller.
@@ -95,14 +95,14 @@ extern "C" {
     
     
     HASH32_NODE *   hash32_FindEntry(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     )
     {
         HASH32_NODE     *pNode;
         
         // Do initialization.
-        pNode = hash32_NodeFromKey( cbp, key );
+        pNode = hash32_NodeFromKey(this, key);
         
         while (pNode) {
             if (pNode->key == key) {
@@ -118,26 +118,26 @@ extern "C" {
     
     
     uint16_t        hash32_IndexFromKey(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     )
     {
         uint16_t        index;
         
-        index = key % cbp->cHash;
+        index = key % this->cHash;
         return index;
     }
     
     
     
     HASH32_NODE *   hash32_NodeFromKey(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     )
     {
         HASH32_NODE     *pNode;
         
-        pNode = cbp->pHash[hash32_IndexFromKey(cbp,key)];
+        pNode = this->pHash[hash32_IndexFromKey(this, key)];
         return( pNode );
     }
     
@@ -156,15 +156,15 @@ extern "C" {
     HASH32_DATA *     hash32_Alloc(
     )
     {
-        HASH32_DATA     *cbp;
+        HASH32_DATA     *this;
         uint32_t        cbSize = sizeof(HASH32_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -176,19 +176,19 @@ extern "C" {
     //===============================================================
 
     uint32_t        hash32_getCount(
-        HASH32_DATA     *cbp
+        HASH32_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        return cbp->num;
+        return this->num;
     }
 
 
@@ -205,7 +205,7 @@ extern "C" {
     //----------------------------------------------------------
     
     bool            hash32_Add(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key,
         void			*pData
     )
@@ -215,32 +215,32 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (hash32_FindEntry(cbp, key)) {
+        if (hash32_FindEntry(this, key)) {
             return false;
         }
         
         // Determine the entry number.
-        if ( hash32_AddBlock(cbp) )
+        if ( hash32_AddBlock(this) )
             ;
         else {
             return false;
         }
-        pNode = cbp->pDeletedHead;
-        cbp->pDeletedHead = pNode->pNext;
+        pNode = this->pDeletedHead;
+        this->pDeletedHead = pNode->pNext;
         
         // Add it to the table.
         pNode->key = key;
         pNode->pData = pData;
-        index = hash32_IndexFromKey( cbp, key );
-        pNode->pNext = cbp->pHash[index];
-        cbp->pHash[index] = pNode;
-        ++cbp->num;
+        index = hash32_IndexFromKey(this, key);
+        pNode->pNext = this->pHash[index];
+        this->pHash[index] = pNode;
+        ++this->num;
         
         // Return to caller.
         return true;
@@ -256,24 +256,24 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        HASH32_DATA     *cbp = objId;
+        HASH32_DATA     *this = objId;
         HASH32_BLOCK    *pBlock;
         HASH32_BLOCK    *pBlockNext;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if( cbp->pBlocks ) {
-            pBlock = cbp->pBlocks;
+        if( this->pBlocks ) {
+            pBlock = this->pBlocks;
             while (pBlock) {
                 pBlockNext = pBlock->pNext;
                 mem_Free( pBlock );
@@ -281,13 +281,14 @@ extern "C" {
             }
         }
         
-        if( cbp->pHash ) {
-            mem_Free( cbp->pHash );
-            cbp->pHash = NULL;
+        if( this->pHash ) {
+            mem_Free( this->pHash );
+            this->pHash = NULL;
         }
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -303,7 +304,7 @@ extern "C" {
      */
     
     bool            hash32_Delete(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     )
     {
@@ -314,20 +315,20 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        index = hash32_IndexFromKey( cbp, key );
-        if (cbp->pHash[index]) {
-            pNode = cbp->pHash[index];
+        index = hash32_IndexFromKey(this, key);
+        if (this->pHash[index]) {
+            pNode = this->pHash[index];
             if (pNode->key == key) {
-                cbp->pHash[index] = pNode->pNext;
-                pNode->pNext = cbp->pDeletedHead;
-                cbp->pDeletedHead = pNode;
-                --cbp->num;
+                this->pHash[index] = pNode->pNext;
+                pNode->pNext = this->pDeletedHead;
+                this->pDeletedHead = pNode;
+                --this->num;
                 return true;
             }
         }
@@ -345,9 +346,9 @@ extern "C" {
         
         // Delete the node.
         pNodePrev->pNext = pNode->pNext;
-        pNode->pNext = cbp->pDeletedHead;
-        cbp->pDeletedHead = pNode;
-        --cbp->num;
+        pNode->pNext = this->pDeletedHead;
+        this->pDeletedHead = pNode;
+        --this->num;
         
         // Return to caller.
         return true;
@@ -360,7 +361,7 @@ extern "C" {
     //----------------------------------------------------------
     
     void *          hash32_Find(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key
     )
     {
@@ -369,13 +370,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        pNode = hash32_FindEntry( cbp, key );
+        pNode = hash32_FindEntry(this, key);
         if (pNode) {
             return pNode->pData;
         }
@@ -391,49 +392,50 @@ extern "C" {
     //---------------------------------------------------------------
 
     HASH32_DATA *   hash32_Init(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint16_t        cHash           // Hash Table Size (Prime Number)
     )
     {
         uint16_t        cbSize;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_HASH32 );
-        if (OBJ_NIL == cbp) {
+        this = obj_Init( this, obj_getSize(this), OBJ_IDENT_HASH32 );
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &hash32_Vtbl);
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&hash32_Vtbl);
         
         // Initialize the fields.
         cbSize = 4096 - sizeof(HASH32_BLOCK);
         cbSize /= sizeof(HASH32_NODE);
-        cbp->cBlock = cbSize;
-        cbp->cHash = cHash;
+        this->cBlock = cbSize;
+        this->cHash = cHash;
         
         // Allocate the Hash Table.
         cbSize = cHash * sizeof(HASH32_NODE *);
-        cbp->pHash = (HASH32_NODE **)mem_Malloc( cbSize );
-        if(NULL == cbp->pHash) {
+        this->pHash = (HASH32_NODE **)mem_Malloc( cbSize );
+        if(NULL == this->pHash) {
             DEBUG_BREAK();
-            obj_Release(cbp);
-            cbp = OBJ_NIL;
-            return cbp;
+            obj_Release(this);
+            this = OBJ_NIL;
+            return this;
         }
-        memset(cbp->pHash, 0, cbSize);
+        memset(this->pHash, 0, cbSize);
         
 #ifdef NDEBUG
     #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(HASH32_DATA));
     #endif
 
-        return cbp;
+        return this;
     }
 
      
@@ -443,7 +445,7 @@ extern "C" {
     //----------------------------------------------------------
     
     bool            hash32_Update(
-        HASH32_DATA     *cbp,
+        HASH32_DATA     *this,
         uint32_t        key,
         void            *pData
     )
@@ -453,13 +455,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !hash32_Validate( cbp ) ) {
+        if( !hash32_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        pNode = hash32_FindEntry( cbp, key );
+        pNode = hash32_FindEntry(this, key);
         if (pNode) {
             pNode->pData = pData;
         }
@@ -479,18 +481,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            hash32_Validate(
-        HASH32_DATA      *cbp
+        HASH32_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_HASH32) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_HASH32) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(HASH32_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(HASH32_DATA)) )
             return false;
 
         // Return to caller.

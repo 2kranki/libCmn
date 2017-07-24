@@ -166,8 +166,7 @@ extern "C" {
     
     ERESULT         u8Array_AppendData(
         U8ARRAY_DATA	*this,
-        uint8_t         data,
-        uint32_t        *pIndex
+        uint8_t         data
     );
     
     
@@ -337,6 +336,11 @@ extern "C" {
         uint32_t        index,
         const
         uint32_t        data
+    );
+    
+    
+    ASTR_DATA *     u8Array_ToConstantString(
+        U8ARRAY_DATA    *this
     );
     
     

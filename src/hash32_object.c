@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'hash32'
-//	Generated 09/30/2015 16:03:53
+//	Generated 07/24/2017 08:23:20
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "hash32_internal.h"
+
+#define			HASH32_OBJECT_C	    1
+#include        <hash32_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct hash32_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct hash32_class_data_s HASH32_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        hash32_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&hash32_Info,
     hash32_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,13 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						hash32 Class Object
+//						Class Object
 //-----------------------------------------------------------
 
-static
 const
-OBJ_DATA        hash32_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_HASH32_CLASS,
-    0,
-    1
+HASH32_CLASS_DATA  hash32_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_HASH32_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +162,42 @@ uint16_t		hash32_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    hash32_Vtbl = {
-    NULL,
-    hash32_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    hash32_Dealloc,
-    hash32_Class,
-    hash32_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))hash32_ToDebugString,
-    NULL,			// hash32_Enable()
-    NULL,			// hash32_Disable(
-    NULL,			// hash32_Assign()
-    NULL,			// hash32_Compare()
-    NULL 			// hash32_Copy()
+HASH32_VTBL     hash32_Vtbl = {
+    {
+        &hash32_Info,
+        hash32_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        hash32_Dealloc,
+        hash32_Class,
+        hash32_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)hash32_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)hash32_ToDebugString,
+        NULL,			// hash32_Enable,
+        NULL,			// hash32_Disable,
+        NULL,			// (P_OBJ_ASSIGN)hash32_Assign,
+        NULL,			// (P_OBJ_COMPARE)hash32_Compare,
+        NULL, 			// (P_OBJ_PTR)hash32_Copy,
+        NULL 			// (P_OBJ_HASH)hash32_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //hash32_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        hash32_Info = {
+    "hash32",
+    "Open Chained Hash with uint32_t Keys",
+    (OBJ_DATA *)&hash32_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&hash32_Vtbl
+};
 
 
 

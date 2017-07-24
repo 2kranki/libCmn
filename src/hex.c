@@ -260,6 +260,40 @@ extern "C" {
 
 
 
+    char            hex_DigitToChrA(
+        int             value
+    )
+    {
+        char            chr = '?';
+        
+        if ((value >= 0) && (value < 16)) {
+            chr = pHexChr[value];
+        }
+        
+        return chr;
+    }
+    
+    
+    
+    int             hex_DigitToIntA(
+        const
+        char            chr
+    )
+    {
+        int             value = -1;
+        
+        if( (chr >= 'A') && (chr <= 'F') )
+            value = chr - 'A' + 10;
+        else if( (chr >= 'a') && (chr <= 'f') )
+            value = chr - 'a' + 10;
+        else if( (chr >= '0') && (chr <= '9') )
+            value = chr - '0';
+        
+        return value;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                     S c a n  H e x
     //---------------------------------------------------------------

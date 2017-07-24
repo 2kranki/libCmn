@@ -777,6 +777,43 @@ char        whiteSpaceA[22] = {
 
 
 
+- (void)testToChrCon01
+{
+    ERESULT     eRc;
+    ASTR_DATA	*pObj = OBJ_NIL;
+    ASTR_DATA   *pNew;
+    const
+    char        *pChrCon = "def\u0414\n";
+    const
+    char        *pChrCon2 = "def\\u0414\\n";
+    
+    pObj = AStr_NewA("def");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    eRc = AStr_AppendCharW(pObj, 0x0414);   // Cyrillic Capital D
+    XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+    eRc = AStr_AppendCharA(pObj, '\n');
+    fprintf(stderr, "inputLen=%d\n", AStr_getLength(pObj));
+    XCTAssertTrue( (5 == AStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == memcmp(pChrCon, AStr_getData(pObj), 5)) );
+    if (pObj) {
+        
+        pNew = AStr_ToChrCon(pObj);
+        XCTAssertFalse( (OBJ_NIL == pNew) );
+        XCTAssertTrue( (11 == AStr_getLength(pNew)) );
+        fprintf(stderr, "outputLen=%d\n", AStr_getLength(pNew));
+        fprintf(stderr, "output=%s\n", AStr_getData(pNew));
+        XCTAssertTrue( (0 == memcmp(pChrCon2, AStr_getData(pNew), 11)) );
+        obj_Release(pNew);
+        pNew = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
 @end
 
 

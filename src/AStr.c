@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include "AStr_internal.h"
+#include "ascii.h"
 #include "dec.h"
 #include "hex.h"
 #include "str.h"
@@ -2074,6 +2075,91 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       T o  C h r  C o n
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     AStr_ToChrCon(
+        ASTR_DATA       *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        int32_t         wchr;
+        ASTR_DATA       *pWrkStr;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pWrkStr = AStr_New();
+        if (OBJ_NIL == pWrkStr) {
+            return pWrkStr;
+        }
+        iMax = AStr_getLength(this);
+        
+        for (i=0; i<iMax; ++i) {
+            wchr = AStr_CharGetW(this, i+1);
+            if (wchr) {
+            }
+            else {
+                break;
+            }
+            if (ascii_isAsciiW(wchr) && ascii_isPrintableA(wchr)) {
+                AStr_AppendCharA(pWrkStr, wchr);
+            }
+            else if (wchr < 256) {
+                switch (wchr) {
+
+                    case 9:
+                        AStr_AppendA(pWrkStr, "\\t");
+                        break;
+                        
+                    case 10:
+                        AStr_AppendA(pWrkStr, "\\n");
+                        break;
+                        
+                    case 12:
+                        AStr_AppendA(pWrkStr, "\\f");
+                        break;
+                        
+                    case 13:
+                        AStr_AppendA(pWrkStr, "\\r");
+                        break;
+                        
+                    default:
+                        AStr_AppendA(pWrkStr, "\\x");
+                        AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                        AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+                        break;
+                }
+            }
+            else if (wchr < 65236) {
+                AStr_AppendA(pWrkStr, "\\u");
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 12) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 8) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+            }
+            else {
+                AStr_AppendA(pWrkStr, "\\U");
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 28) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 24) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 20) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 16) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 12) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 8) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
+                AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
+            }
+        }
+        
+        
+        return pWrkStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     T o  I n t 6 4
     //---------------------------------------------------------------
     
@@ -2186,6 +2272,45 @@ extern "C" {
         
         return pStr;
     }
+    
+    
+    ASTR_DATA *     AStr_ToJSON(
+        ASTR_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        pWrkStr = AStr_ToChrCon(this);
+        if (pWrkStr == OBJ_NIL) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStr_New();
+        if (pWrkStr == OBJ_NIL) {
+            obj_Release(pWrkStr);
+            return OBJ_NIL;
+        }
+        AStr_AppendA(pStr, "{\"objectType\":\"");
+        AStr_AppendA(pStr, pInfo->pClassName);
+        AStr_AppendA(pStr, "\",\"data\":\"");
+        AStr_Append(pStr, pWrkStr);
+        AStr_AppendA(pStr, "\"}\n");
+        obj_Release(pWrkStr);
+        
+        return pStr;
+    }
+    
     
     
     WSTR_DATA *     AStr_ToWStr(

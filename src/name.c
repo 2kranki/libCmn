@@ -270,7 +270,7 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
                 pValue = AStr_NewW(WStr_getData(this->pObj));
                 break;
                 
@@ -302,7 +302,7 @@ extern "C" {
 #endif
         obj_Retain(pValue);
         name_ReleaseDataIfObj(this);
-        this->type = NAME_TYPE_STR;
+        this->type = NAME_TYPE_WSTR;
         this->pObj = AStr_ToWStr(pValue);
         
         return true;
@@ -341,7 +341,7 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
                 pValue = WStr_Copy(this->pObj);
                 break;
                 
@@ -373,7 +373,7 @@ extern "C" {
 #endif
         obj_Retain(pValue);
         name_ReleaseDataIfObj(this);
-        this->type = NAME_TYPE_STR;
+        this->type = NAME_TYPE_WSTR;
         this->pObj = pValue;
         
         return true;
@@ -429,7 +429,7 @@ extern "C" {
                 obj_Release(pHex);
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
                 pValue = WStr_CStringA(this->pObj, NULL);
                 break;
                 
@@ -489,7 +489,7 @@ extern "C" {
                 pOther->integer = this->integer;
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
             {
                 OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
                 if (pVtbl->pCopy) {
@@ -564,8 +564,8 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_STR:
-                if (pOther->type == NAME_TYPE_STR) {
+            case NAME_TYPE_WSTR:
+                if (pOther->type == NAME_TYPE_WSTR) {
                     eRc = AStr_CompareW(this->pObj, WStr_getData(pOther->pObj));
                     return eRc;
                 }
@@ -584,7 +584,7 @@ extern "C" {
                 else if (pOther->type == NAME_TYPE_UTF8_CON) {
                     i = strcmp(this->pChrs, pOther->pChrs);
                 }
-                if (pOther->type == NAME_TYPE_STR) {
+                if (pOther->type == NAME_TYPE_WSTR) {
                     eRc = WStr_Compare(this->pObj, pOther->pObj);
                     return eRc;
                 }
@@ -641,7 +641,7 @@ extern "C" {
                 mem_Free((void *)pStr1);
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
                 eRc = WStr_CompareA(this->pObj, pOther);
                 return eRc;
                 break;
@@ -699,7 +699,7 @@ extern "C" {
                 mem_Free((void *)pStr1);
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
                 eRc = WStr_CompareW(this->pObj, pOther);
                 return eRc;
                 break;
@@ -951,7 +951,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = NAME_TYPE_STR;
+        this->type = NAME_TYPE_WSTR;
         this->pObj = AStr_ToWStr(pValue);
         
         return this;
@@ -983,7 +983,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = NAME_TYPE_STR;
+        this->type = NAME_TYPE_WSTR;
         this->pObj = obj_Retain(pValue);
         
         return this;
@@ -1089,7 +1089,7 @@ extern "C" {
                     // nothing to release.
                     break;
                     
-                case NAME_TYPE_STR:
+                case NAME_TYPE_WSTR:
                     obj_Release(this->pObj);
                     this->pObj = OBJ_NIL;
                     break;
@@ -1153,6 +1153,96 @@ extern "C" {
         
         return pStr;
     }
+    
+    
+    ASTR_DATA *     name_ToJSON(
+        NAME_DATA       *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        char            str2[256];
+        uint32_t        len;
+        uint32_t        lenChars;
+        const
+        int32_t         *pWStr = NULL;
+        
+#ifdef NDEBUG
+#else
+        if( !name_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"name\","
+            );
+        AStr_AppendA(pStr, str);
+        
+        switch (this->type) {
+                
+            case NAME_TYPE_UNKNOWN:
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UNKNOWN\"");
+                break;
+                
+            case NAME_TYPE_INTEGER:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "\"type\":\"NAME_TYPE_INTEGER\",\"data\":%lld",
+                             this->integer
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case NAME_TYPE_WSTR:
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_WSTR\",\"data\":\"");
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case NAME_TYPE_UTF8:
+#ifdef XYZZY
+                AStr_AppendA(pStr, "\"type\":\"STRING\",\"data\":\"");
+                if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
+                    pWStr = WStr_getData(this->pObj);
+                }
+                if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
+                    pWStr = WStrC_getData(this->pObj);
+                }
+                len = utf8_StrLenW(pWStr);
+                for (j=0; j<len; ++j) {
+                    if (*pWStr == '"') {
+                        AStr_AppendA(pStr, "\\");
+                    }
+                    lenChars = utf8_WCToUtf8(*pWStr, str2);
+                    if (lenChars) {
+                        AStr_AppendA(pStr, str2);
+                    }
+                    ++pWStr;
+                }
+                AStr_AppendA(pStr, "\"");
+#endif
+                break;
+                
+            case NAME_TYPE_UTF8_CON:
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_STR\",\"data\":\"");
+                AStr_AppendA(pStr, str);
+                break;
+                
+        }
+        AStr_AppendA(pStr, "}\n");
+        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
+        
+        return pStr;
+    }
+    
     
     
     ASTR_DATA *     name_ToString(
@@ -1228,7 +1318,7 @@ extern "C" {
                 obj_Release(pHex);
                 break;
                 
-            case NAME_TYPE_STR:
+            case NAME_TYPE_WSTR:
                 pValue = WStr_CStringA(this->pObj, NULL);
                 break;
                 

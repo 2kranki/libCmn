@@ -2,14 +2,6 @@
 
 /*
  * File:   rrds_internal.h
- * Author: bob
- *
- * Notes:
- *   1	Before including define the following to customize the config bits for
- *		the development environment needed:
- *		_EXPLORER_16		Microchip Explorer 16 board
- *		_MAX32              Diligent MAX 32 board
- *		_NETWORK_SHIELD     Diligent Network Shield
  *
  * Created on September 26, 2014, 3:39 PM
  */

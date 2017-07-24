@@ -182,7 +182,7 @@ extern "C" {
             return ERESULT_FILE_NOT_FOUND;
         }
         while ( (chr = fgetc(pFile)) != EOF ) {
-            u8Array_AppendData(pArray, (chr & 0xFF), NULL);
+            u8Array_AppendData(pArray, (chr & 0xFF));
         }
         fclose(pFile);
         pFile = NULL;

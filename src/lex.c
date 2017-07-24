@@ -836,6 +836,19 @@ extern "C" {
                     }
                     break;
                     
+                case 'U':
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    for (i=0; i<8; ++i) {
+                        if (lex_ParseDigitHex(this)) {
+                        }
+                        else {
+                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            return false;
+                        }
+                    }
+                    break;
+                    
                 case 'x':
                     lex_ParseTokenAppendString(this, pInput);
                     this->pSrcChrAdvance(this->pSrcObj, 1);
@@ -1821,7 +1834,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     lex_ToDebugString(
-        LEX_DATA        *cbp,
+        LEX_DATA        *this,
         int             indent
     )
     {
@@ -1830,7 +1843,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         //ASTR_DATA      *pWrkStr;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -1843,15 +1856,15 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(lex) ",
-                     cbp
+                     this
             );
         AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
-        if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                    cbp->pData,
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -1860,7 +1873,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf( str, sizeof(str), " %p}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -1875,18 +1888,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            lex_Validate(
-        LEX_DATA      *cbp
+        LEX_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_LEX) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_LEX) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(LEX_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(LEX_DATA)) )
             return false;
 
         // Return to caller.

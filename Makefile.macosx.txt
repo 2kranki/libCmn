@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/17/2017  2:29:41.000)
+# ( 7/24/2017 14:00:01.000)
 
 
 LIBNAM=libCmn
@@ -1505,6 +1505,13 @@ test_enum:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_hash32
+
+test_hash32:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hash32.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_hjson
 
 test_hjson:
@@ -1582,6 +1589,20 @@ test_psxThread:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_szHash
+
+test_szHash:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_szHash.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_szTbl
+
+test_szTbl:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_szTbl.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_timer
 
 test_timer:
@@ -1593,6 +1614,13 @@ TESTS += test_trace
 
 test_trace:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_trace.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_u8Array
+
+test_u8Array:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u8Array.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1618,7 +1646,9 @@ install:
 	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include
 	cp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a
 	cp src/*.h $(INSTALLDIR)/include/
-	-cp src/$(SYS)/*.h $(INSTALLDIR)/include/
+	if [ -d src/$(SYS) ]; then \
+		cp src/$(SYS)/*.h $(INSTALLDIR)/include/; \
+	fi
 
 
 .PHONY: create_dirs
