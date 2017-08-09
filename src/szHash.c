@@ -41,10 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "szHash_internal.h"
+#include    <szHash_internal.h>
+#include    <enum_internal.h>
 #include    <stdio.h>
-#include    "str.h"
-#include    "utf8.h"
+#include    <str.h>
+#include    <utf8.h>
 
 
 
@@ -129,7 +130,7 @@ extern "C" {
         int             iRc;
         
         // Do initialization.
-        pNodeList = szHash_NodeListFromHash( this, hash );
+        pNodeList = szHash_NodeListFromHash(this, hash);
         
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
@@ -470,11 +471,65 @@ extern "C" {
         --cbp->num;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
     
+    //----------------------------------------------------------
+    //                        E n u m
+    //----------------------------------------------------------
+    
+    ERESULT         szHash_EnumKeys(
+        SZHASH_DATA     *this,
+        ENUM_DATA       **ppEnum
+    )
+    {
+        ENUM_DATA       *pEnum = OBJ_NIL;
+        uint32_t        i;
+        LISTDL_DATA     *pNodeList;
+        SZHASH_NODE     *pNode;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !szHash_Validate(this) ) {
+            DEBUG_BREAK();
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEnum = enum_New( );
+        if (pEnum) {
+        }
+        else {
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                enum_Append(pEnum, (void *)pNode->pszKey, NULL);
+                pNode = listdl_Next(pNodeList, pNode);
+            }
+        }
+        
+        // Return to caller.
+        if (ppEnum) {
+            *ppEnum = pEnum;
+        }
+        return ERESULT_SUCCESS;
+    }
+    
+    
+
     //----------------------------------------------------------
     //                        F i n d
     //----------------------------------------------------------

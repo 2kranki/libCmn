@@ -1159,15 +1159,10 @@ extern "C" {
         NAME_DATA       *this
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
-        char            str2[256];
-        uint32_t        len;
-        uint32_t        lenChars;
+        ASTR_DATA       *pWrkStr;
         const
-        int32_t         *pWStr = NULL;
+        OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
@@ -1176,16 +1171,21 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+        pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{\"objectType\":\"name\","
-            );
-        AStr_AppendA(pStr, str);
+        if (pStr == OBJ_NIL) {
+            //obj_Release(pWrkStr);
+            return OBJ_NIL;
+        }
+        AStr_AppendA(pStr, "{\"objectType\":\"");
+        AStr_AppendA(pStr, pInfo->pClassName);
+        AStr_AppendA(pStr, "\",\"data\":\"");
+        //FIXME: AStr_Append(pStr, pWrkStr);
+        AStr_AppendA(pStr, "\"}\n");
+        //FIXME: obj_Release(pWrkStr);
         
+#ifdef XYZZY
         switch (this->type) {
                 
             case NAME_TYPE_UNKNOWN:
@@ -1232,12 +1232,13 @@ extern "C" {
                 break;
                 
             case NAME_TYPE_UTF8_CON:
-                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_STR\",\"data\":\"");
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UTF8\",\"data\":\"");
                 AStr_AppendA(pStr, str);
                 break;
                 
         }
-        AStr_AppendA(pStr, "}\n");
+#endif
+        AStr_AppendA(pStr, "\"}\n");
         //BREAK_TRUE(AStr_getLength(pStr) > 2048);
         
         return pStr;

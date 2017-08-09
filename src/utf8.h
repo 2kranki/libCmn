@@ -196,6 +196,11 @@ extern "C" {
     );
     
     
+    bool            utf8_isValidWC(
+        int32_t         ch
+    );
+    
+    
     // Utf8ToWC() converts the UTF-8 string to one UNICODE character
     // if possible and returns the length used of the UTF-8 string.
     // If an error occurred, -1 is returned for both the UNICODE
@@ -211,6 +216,35 @@ extern "C" {
     int32_t         utf8_Utf8ToWC_Scan(
         const
         char            **ppSrc
+    );
+    
+    
+    /*!
+     utf8_WCToChrCon() converts the given UNICODE character to a
+     NUL-terminated ascii string and returns its length.
+     If pDest is NULL, we simply return the length needed
+     excluding the NUL-terminator.
+     */
+    int             utf8_WCToChrCon(
+        int32_t         chr,            // Input
+        char            *pDest          // max 11-byte buffer
+    );
+    
+    
+    /*!
+     WCToChrConStr() converts an input string to a character
+     constant string and returns the size of the new string 
+     excluding the NUL-terminator. If pDest is NULL, we cal-
+     culate the size of area needed including NUL-terminator 
+     and return that.
+     */
+    uint32_t         utf8_WCToUtf8Str(
+        uint32_t        lenStr,       // Input String Length (if zero,
+                                      // we use NUL-terminator to stop)
+        const
+        int32_t         *pStr,        // Input String pointer
+        uint32_t        lenDest,      // In bytes including NUL
+        char            *pDest
     );
     
     

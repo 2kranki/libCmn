@@ -736,41 +736,6 @@ bool 			listdl_Sort(
                 break;
         }
     }
-/* Non-working bubble sort
-    for (pass=0; (pass < (pCB->cCount - 1)) && fSwap; ++pass) {
-        fSwap = false;
-        pNode1 = pCB->pHead;
-        while (pNode1) {
-            if (pNode1->pNext) {
-                pNode2 = pNode1->pNext;
-                rc = (*pCompare)(Node2Ptr(pNode1), Node2Ptr(pNode2));
-                if (rc > 0) {
-                    fSwap = true;
-                    pSave  = pNode1->pNext;
-                    pNode1->pNext = pNode2->pNext;
-                    pNode2->pNext = pSave;
-                    pSave = pNode1->pPrev;
-                    pNode1->pPrev = pNode2->pPrev;
-                    pNode2->pPrev = pSave;
-                    if (pCB->pHead == pNode1) {
-                        pCB->pHead = pNode2;
-                    }
-                    if (pCB->pTail == pNode2) {
-                        pCB->pTail = pNode1;
-                    }
-                    // pNode1 is now below pNode2.
-                    // So, it is again the node to look at.
-                }
-                else {
-                    pNode1 = pNode1->pNext;
-                }
-            }
-            else {
-                pNode1 = pNode1->pNext;
-            }
-        }
-    }
- */
     
     // Return to caller.
     return true;

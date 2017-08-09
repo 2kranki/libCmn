@@ -202,6 +202,8 @@ extern "C" {
         OBJ_IDENT_CONSUMER_CLASS,
         OBJ_IDENT_CONXMT,
         OBJ_IDENT_CONXMT_CLASS,
+        OBJ_IDENT_CRC,                  // CRC Calculations
+        OBJ_IDENT_CRC_CLASS,
         OBJ_IDENT_CSV,
         OBJ_IDENT_CSV_CLASS,
         OBJ_IDENT_DATETIME,             // Date & Time

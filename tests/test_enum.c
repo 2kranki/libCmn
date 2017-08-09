@@ -27,6 +27,20 @@
 #include    <enum_internal.h>
 
 
+static
+char	*stringTable[] = {
+    "now",
+    "before",
+    "after",
+    "tomorrow",
+    "today",
+    "someday"
+};
+static
+int             cStringTable = 6;
+
+
+
 
 int         setUp(
     const
@@ -76,8 +90,79 @@ int         test_enum_OpenClose(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        // Test something.
+        XCTAssertTrue( (0 == pObj->max) );
+        XCTAssertTrue( (0 == pObj->size) );
+        XCTAssertTrue( (0 == pObj->current) );
+        XCTAssertTrue( (NULL == pObj->ppArray) );
 
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    return 1;
+}
+
+
+
+int         test_enum_Test01(
+    const
+    char        *pTestName
+)
+{
+    ENUM_DATA	*pObj = OBJ_NIL;
+    ERESULT     eRc;
+    int         i;
+    uint32_t    idx = 0;
+    const
+    char        *pStr = NULL;
+    
+    pObj = enum_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = enum_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        XCTAssertTrue( (0 == pObj->max) );
+        XCTAssertTrue( (0 == pObj->size) );
+        XCTAssertTrue( (0 == pObj->current) );
+        XCTAssertTrue( (NULL == pObj->ppArray) );
+        
+        eRc = enum_Append(pObj, stringTable[0], &idx);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (2 == pObj->max) );
+        XCTAssertTrue( (1 == pObj->size) );
+        XCTAssertTrue( (0 == pObj->current) );
+        XCTAssertFalse( (NULL == pObj->ppArray) );
+        
+        for (i=1; i<cStringTable; ++i) {
+            eRc = enum_Append(pObj, stringTable[i], &idx);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            //XCTAssertTrue( (2 == pObj->max) );
+            XCTAssertTrue( (idx == pObj->size) );
+            XCTAssertTrue( (0 == pObj->current) );
+            XCTAssertFalse( (NULL == pObj->ppArray) );
+        }
+        XCTAssertTrue( (cStringTable == pObj->size) );
+        
+        eRc = enum_Next(pObj, 1, (void **)&pStr, &idx);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (idx == 1) );
+        XCTAssertTrue( (0 == strcmp(pStr, stringTable[0])) );
+        XCTAssertTrue( (1 == pObj->current) );
+        
+        for (i=1; i<cStringTable; ++i) {
+            eRc = enum_Next(pObj, 1, (void **)&pStr, &idx);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            XCTAssertTrue( (idx == 1) );
+            XCTAssertTrue( (0 == strcmp(pStr, stringTable[i])) );
+            XCTAssertTrue( (i+1 == pObj->current) );
+            XCTAssertFalse( (NULL == pObj->ppArray) );
+        }
+        
+        eRc = enum_Next(pObj, 1, (void **)&pStr, &idx);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (idx == 0) );
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -89,6 +174,7 @@ int         test_enum_OpenClose(
 
 
 TINYTEST_START_SUITE(test_enum);
+  TINYTEST_ADD_TEST(test_enum_Test01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_enum_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

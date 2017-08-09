@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   enum_internal.h
- *	Generated 06/30/2017 09:01:13
+ * File:   crc_internal.h
+ *	Generated 07/25/2017 10:42:33
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,11 @@
 
 
 
-#include    <enum.h>
+#include    <crc.h>
 
 
-#ifndef ENUM_INTERNAL_H
-#define	ENUM_INTERNAL_H
+#ifndef CRC_INTERNAL_H
+#define	CRC_INTERNAL_H
 
 
 
@@ -51,51 +51,53 @@
 extern "C" {
 #endif
 
+    typedef struct crc_def_s {
+        char        *pDesc;
+        uint32_t    width;              // Number of bits (generally 16 or 32)
+        uint32_t    poly;               // The algorithm's polynomial
+        uint32_t    init;               // Initial CRC register value
+        uint16_t    fRefIn;             // Reflect input bytes
+        uint16_t    fRefOut;            // Reflect output CRC
+        uint32_t    xorout;             // XOR this to output CRC
+        uint32_t    check;              // checksum of "123456789"
+    } CRC_DEF;
 
 
 
 #pragma pack(push, 1)
-struct enum_data_s	{
+struct crc_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-    #define ENUM_FREE_ARRAY OBJ_FLAG_USER1         
 
     // Common Data
     ERESULT         eRc;
-    
-    uint32_t        max;                // Total size of ppArray
-    uint32_t        size;               // Number of elements in use in ppArray
-    uint32_t        current;            // Current element index
-    uint8_t         **ppArray;
+    uint32_t		type;				// Type of CRC (See rmwCrcType)
+    uint32_t		crc;                // CRC Value
+    uint32_t        topbit;             // Highest bit
+    uint32_t        crcMask;            // CRC Mask
+    uint32_t		*pCrc32Table;		// 32-Bit CRC Table
+    CRC_DEF         *pDef;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct enum_class_data_s  enum_ClassObj;
+    struct crc_class_data_s  crc_ClassObj;
 
     extern
     const
-    ENUM_VTBL         enum_Vtbl;
+    CRC_VTBL         crc_Vtbl;
 
 
     // Internal Functions
-    ERESULT         enum_Append(
-        ENUM_DATA       *this,
-        void            *pObject,
-        uint32_t        *pIndex
-    );
-    
-    
-    void            enum_Dealloc(
+    void            crc_Dealloc(
         OBJ_ID          objId
     );
 
-    
-    void *          enum_QueryInfo(
+    void *          crc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
@@ -103,8 +105,14 @@ struct enum_data_s	{
     );
 
 
-    bool            enum_setLastError(
-        ENUM_DATA     *this,
+    uint32_t        crc_Reflect(
+        uint32_t        v,
+        int             cBits
+    );
+    
+    
+    bool            crc_setLastError(
+        CRC_DATA     *this,
         ERESULT         value
     );
 
@@ -113,8 +121,8 @@ struct enum_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			enum_Validate(
-        ENUM_DATA       *this
+    bool			crc_Validate(
+        CRC_DATA       *this
     );
 #endif
 
@@ -124,5 +132,5 @@ struct enum_data_s	{
 }
 #endif
 
-#endif	/* ENUM_INTERNAL_H */
+#endif	/* CRC_INTERNAL_H */
 

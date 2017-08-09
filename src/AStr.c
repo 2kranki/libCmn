@@ -2086,6 +2086,7 @@ extern "C" {
         uint32_t        iMax;
         int32_t         wchr;
         ASTR_DATA       *pWrkStr;
+        char            work[16];
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -2104,53 +2105,8 @@ extern "C" {
             else {
                 break;
             }
-            if (ascii_isAsciiW(wchr) && ascii_isPrintableA(wchr)) {
-                AStr_AppendCharA(pWrkStr, wchr);
-            }
-            else if (wchr < 256) {
-                switch (wchr) {
-
-                    case 9:
-                        AStr_AppendA(pWrkStr, "\\t");
-                        break;
-                        
-                    case 10:
-                        AStr_AppendA(pWrkStr, "\\n");
-                        break;
-                        
-                    case 12:
-                        AStr_AppendA(pWrkStr, "\\f");
-                        break;
-                        
-                    case 13:
-                        AStr_AppendA(pWrkStr, "\\r");
-                        break;
-                        
-                    default:
-                        AStr_AppendA(pWrkStr, "\\x");
-                        AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
-                        AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
-                        break;
-                }
-            }
-            else if (wchr < 65236) {
-                AStr_AppendA(pWrkStr, "\\u");
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 12) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 8) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
-            }
-            else {
-                AStr_AppendA(pWrkStr, "\\U");
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 28) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 24) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 20) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 16) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 12) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 8) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA((wchr >> 4) & 0xF));
-                AStr_AppendCharA(pWrkStr, hex_DigitToChrA(wchr & 0xF));
-            }
+            utf8_WCToChrCon(wchr, work);
+            AStr_AppendA(pWrkStr, work);
         }
         
         

@@ -41,7 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "utf8_internal.h"
+#include    <utf8_internal.h>
+#include    <ascii.h>
+#include    <hex.h>
 #include    <stdarg.h>
 #include    <stdbool.h>
 #include    <stdint.h>
@@ -531,6 +533,225 @@ extern "C" {
         }
         
         return ch;
+    }
+    
+    
+    
+    bool            utf8_isValidWC(
+        int32_t         ch
+    )
+    {
+        if ((ch <= 0x0000) && (ch <= 0x07BF)) {
+            return true;
+        }
+        if ((ch <= 0x0900) && (ch <= 0x137F)) {
+            return true;
+        }
+        if ((ch <= 0x13A0) && (ch <= 0x18AF)) {
+            return true;
+        }
+        if ((ch <= 0x1900) && (ch <= 0x197F)) {
+            return true;
+        }
+        if ((ch <= 0x19E0) && (ch <= 0x19FF)) {
+            return true;
+        }
+        if ((ch <= 0x1D00) && (ch <= 0x1D7F)) {
+            return true;
+        }
+        if ((ch <= 0x1E00) && (ch <= 0x2BFF)) {
+            return true;
+        }
+        if ((ch <= 0x2E80) && (ch <= 0x2FDF)) {
+            return true;
+        }
+        if ((ch <= 0x2FF0) && (ch <= 0x31BF)) {
+            return true;
+        }
+        if ((ch <= 0x31F0) && (ch <= 0xA4CF)) {
+            return true;
+        }
+        if ((ch <= 0xAC00) && (ch <= 0xFE0F)) {
+            return true;
+        }
+        if ((ch <= 0xFE20) && (ch <= 0x1013F)) {
+            return true;
+        }
+        if ((ch <= 0x10300) && (ch <= 0x1034F)) {
+            return true;
+        }
+        if ((ch <= 0x10380) && (ch <= 0x1039F)) {
+            return true;
+        }
+        if ((ch <= 0x10400) && (ch <= 0x104AF)) {
+            return true;
+        }
+        if ((ch <= 0x10800) && (ch <= 0x1083F)) {
+            return true;
+        }
+        if ((ch <= 0x1D000) && (ch <= 0x1D1FF)) {
+            return true;
+        }
+        if ((ch <= 0x1D300) && (ch <= 0x1D35F)) {
+            return true;
+        }
+        if ((ch <= 0x1D400) && (ch <= 0x1D7FF)) {
+            return true;
+        }
+        if ((ch <= 0x20000) && (ch <= 0x2A6DF)) {
+            return true;
+        }
+        if ((ch <= 0x2F800) && (ch <= 0x2FA1F)) {
+            return true;
+        }
+        if ((ch <= 0xE0000) && (ch <= 0xE007F)) {
+            return true;
+        }
+        if ((ch <= 0xE0100) && (ch <= 0xE01EF)) {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
+    int             utf8_WCToChrCon(
+        int32_t         ch,
+        char            *pDest          // max 10-byte buffer.
+    )
+    {
+        if (ch < 256) {
+            switch (ch) {
+                    
+                case 9:
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = 't';
+                        *pDest = '\0';
+                    }
+                    return 2;
+                    break;
+                    
+                case 10:
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = 'n';
+                        *pDest = '\0';
+                    }
+                    return 2;
+                    break;
+                    
+                case 12:
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = 'f';
+                        *pDest = '\0';
+                    }
+                    return 2;
+                    break;
+                    
+                case 13:
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = 'f';
+                        *pDest = '\0';
+                    }
+                    return 2;
+                    break;
+                    
+                default:
+                    if (ascii_isAsciiW(ch) && ascii_isPrintableA(ch)) {
+                        if (pDest) {
+                            *pDest++ = ch;
+                            *pDest = '\0';
+                        }
+                        return 1;
+                    }
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = 'x';
+                        *pDest++ = hex_DigitToChrA((ch >> 4) & 0xF);
+                        *pDest++ = hex_DigitToChrA(ch & 0xF);
+                        *pDest = '\0';
+                    }
+                    return 4;
+                    break;
+            }
+        }
+        else if (ch < 65236) {
+            if (pDest) {
+                *pDest++ = '\\';
+                *pDest++ = 'u';
+                *pDest++ = hex_DigitToChrA((ch >> 12) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 8) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 4) & 0xF);
+                *pDest++ = hex_DigitToChrA(ch & 0xF);
+                *pDest = '\0';
+            }
+            return 6;
+        }
+        else {
+            if (pDest) {
+                *pDest++ = '\\';
+                *pDest++ = 'U';
+                *pDest++ = hex_DigitToChrA((ch >> 28) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 24) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 20) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 16) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 12) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 8) & 0xF);
+                *pDest++ = hex_DigitToChrA((ch >> 4) & 0xF);
+                *pDest++ = hex_DigitToChrA(ch & 0xF);
+                *pDest = '\0';
+            }
+            return 10;
+        }
+        return 0;
+    }
+    
+    
+    
+    uint32_t         utf8_WCToChrConStr(
+        uint32_t        lenStr,         // Input String Length (if zero,
+        //                              // we use NUL-terminator to stop)
+        const
+        int32_t         *pStr,          // Input String pointer
+        uint32_t        lenDest,        // in bytes including NUL
+        char            *pDest
+    )
+    {
+        uint32_t        lenUsed = 0;    // In bytes exluding NUL
+        uint32_t        lenChr;
+        
+        if (0 == lenStr) {
+            lenStr = -1;
+        }
+        
+        while (lenStr && *pStr) {
+            lenChr = utf8_WCToChrCon(*pStr, NULL);
+            if (pDest) {
+                if (lenChr <= lenDest) {
+                    lenUsed += utf8_WCToChrCon(*pStr, pDest);
+                    pDest += lenChr;
+                    lenDest -= lenChr;
+                }
+                else
+                    break;
+            }
+            else {
+                lenUsed += lenChr;
+            }
+            ++pStr;
+            --lenStr;
+        }
+        if (pDest && lenDest) {
+            *pDest = '\0';
+        }
+        else {
+            ++lenUsed;      // bump for NUL-terminator
+        }
+        
+        return lenUsed;
     }
     
     

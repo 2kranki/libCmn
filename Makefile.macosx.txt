@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/24/2017 17:41:35.000)
+# ( 7/25/2017 16:44:21.000)
 
 
 LIBNAM=libCmn
@@ -368,6 +368,18 @@ $(OBJDIR)/consumer.o: $(SRCDIR)/consumer.c
 
 
 $(OBJDIR)/consumer_object.o: $(SRCDIR)/consumer_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/crc.o $(OBJDIR)/crc_object.o
+
+
+$(OBJDIR)/crc.o: $(SRCDIR)/crc.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/crc_object.o: $(SRCDIR)/crc_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1495,6 +1507,13 @@ TESTS += test_consumer
 
 test_consumer:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_consumer.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_crc
+
+test_crc:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_crc.c 
 	$(OBJDIR)/$(@F)
 
 
