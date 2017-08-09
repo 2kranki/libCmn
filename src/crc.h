@@ -97,7 +97,8 @@ extern "C" {
         CRC_TYPE_16			= 1,	// CRC-16 (Old used in PKARC)
         CRC_TYPE_CCITT_16	= 2,	// 16-Bit CCITT CRC
         CRC_TYPE_32			= 3,	// CRC-32 (New used in PKZIP)(Default)
-        CRC_TYPE_IEEE_32	= 4		// 32-Bit IEEEE-802 CRC
+        CRC_TYPE_IEEE_32	= 4,	// 32-Bit IEEEE-802 CRC
+        CRC_TYPE_MPEG2_32	= 5		// 32-Bit MPEG2 CRC
     } CRC_TYPE;
     
     

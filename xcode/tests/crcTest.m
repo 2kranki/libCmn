@@ -121,7 +121,7 @@
     if (pObj) {
         
         crc = crc_AccumBlock(pObj, 9, (uint8_t *)"123456789");
-        fprintf(stderr, "CRC_TYPE_16 crc=%08X check=%08X\n", crc, crc_getCheck(pObj));
+        fprintf(stderr, "CRC_TYPE_32 crc=%08X check=%08X\n", crc, crc_getCheck(pObj));
         XCTAssertTrue((crc == crc_getCheck(pObj)));
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -143,7 +143,29 @@
     if (pObj) {
         
         crc = crc_AccumBlock(pObj, 9, (uint8_t *)"123456789");
-        fprintf(stderr, "CRC_TYPE_16 crc=%08X check=%08X\n", crc, crc_getCheck(pObj));
+        fprintf(stderr, "CRC_TYPE_IEEE_32 crc=%08X check=%08X\n", crc, crc_getCheck(pObj));
+        XCTAssertTrue((crc == crc_getCheck(pObj)));
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
+- (void)testCrc3203
+{
+    CRC_DATA	*pObj = OBJ_NIL;
+    uint32_t    crc;
+    
+    pObj = crc_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = crc_Init(pObj, CRC_TYPE_MPEG2_32);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        crc = crc_AccumBlock(pObj, 9, (uint8_t *)"123456789");
+        fprintf(stderr, "CRC_TYPE_MPEG2_32 crc=%08X check=%08X\n", crc, crc_getCheck(pObj));
         XCTAssertTrue((crc == crc_getCheck(pObj)));
         obj_Release(pObj);
         pObj = OBJ_NIL;

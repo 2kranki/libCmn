@@ -50,7 +50,7 @@ extern "C" {
 #endif
     
 
-    CRC_DEF         crcDefs[4] = {
+    CRC_DEF         crcDefs[5] = {
         {   "CRC-16 (ARC)",
             16,                     // Width
             0x8005,                 // Poly
@@ -88,6 +88,16 @@ extern "C" {
             1,                      // fReflectOutput
             0xFFFFFFFF,             // Xor Output
             0xCBF43926              // Checksum for "123456789"
+        },
+        {
+            "CRC-32 (MPEG2)",
+            32,                     // Width
+            0x04C11DB7,             // Poly
+            0xFFFFFFFF,             // Initial Value
+            0,                      // fReflectInput
+            0,                      // fReflectOutput
+            0x00000000,             // Xor Output
+            0x0376E6E7              // Checksum for "123456789"
         }
     };
 
@@ -678,6 +688,14 @@ extern "C" {
                 }
                 break;
             case	CRC_TYPE_IEEE_32:					// 32-Bit IEEEE-802 CRC
+                eRc = crc_BuildCrc32Table( this );
+                if( ERESULT_FAILED(eRc) ) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+                break;
+            case	CRC_TYPE_MPEG2_32:					// 32-Bit MPEG2 CRC
                 eRc = crc_BuildCrc32Table( this );
                 if( ERESULT_FAILED(eRc) ) {
                     DEBUG_BREAK();
