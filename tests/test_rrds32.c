@@ -23,7 +23,40 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <dec.h>
 #include    <rrds32_internal.h>
+
+
+
+int         setUp(
+    const
+    char        *pTestName
+)
+{
+    mem_Init( );
+    
+    // Put setup code here. This method is called before the invocation of each
+    // test method in the class.
+    
+    return 1; 
+}
+
+
+int         tearDown(
+    const
+    char        *pTestName
+)
+{
+    // Put teardown code here. This method is called after the invocation of each
+    // test method in the class.
+
+    
+    mem_Dump( );
+    mem_Release( );
+    return 1; 
+}
+
+
 
 
 
@@ -38,7 +71,7 @@ int         test_rrds32_OpenClose(
    
     pObj = rrds32_Alloc(0);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = rrds32_Init( pObj );
+    pObj = rrds32_Init( pObj, 0 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -87,11 +120,7 @@ int         test_rrds32_NoBuffers(
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             eRc = rrds32_BlockRead(cbp, i+1, (uint8_t *)block2);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-            if (0 == memcmp(block, block2, 12) )
-                ;
-            else {
-                XCTFail(@"rrds_BlockWrite()/rrds_BlockRead() did not compare well!");
-            }
+            XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
         }
         
         eRc = rrds32_Close( cbp );
@@ -112,11 +141,7 @@ int         test_rrds32_NoBuffers(
         //STAssertTrue( (fRc), @"rrds_BlockWrite failed!" );
         eRc = rrds32_BlockRead(cbp, i+1, (uint8_t *)block2);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        if (0 == memcmp(block, block2, 12) )
-            ;
-        else {
-            XCTFail(@"rrds32_BlockWrite()/rrds_BlockRead() did not compare well!");
-        }
+        XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
     }
     
 	eRc = rrds32_Destroy( cbp );
@@ -132,8 +157,8 @@ int         test_rrds32_NoBuffers(
 
 
 TINYTEST_START_SUITE(test_rrds32);
-  TINYTEST_ADD_TEST(test_rrds32_NoBuffers);
-  TINYTEST_ADD_TEST(test_rrds32_OpenClose);
+  TINYTEST_ADD_TEST(test_rrds32_NoBuffers,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_rrds32_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_rrds32);

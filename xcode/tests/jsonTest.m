@@ -181,7 +181,7 @@ char        *pTestInput02 =
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
-            XCTAssertTrue( (0 == strcmp("number", pStrA)) );
+            XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
             mem_Free((void *)pStrA);
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))) );
