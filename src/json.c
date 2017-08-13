@@ -949,9 +949,9 @@ extern "C" {
 
         if (fRc) {
             pStr = AStr_NewW(this->pFld);
-            TRC_OBJ(this,"\tnumber: %s\n", AStr_getData(pStr));
+            TRC_OBJ(this,"\tinteger: %s\n", AStr_getData(pStr));
             if (pStr) {
-                pNode = node_NewWithUTF8Con("number", pStr);
+                pNode = node_NewWithUTF8Con("integer", pStr);
             }
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -1146,15 +1146,15 @@ extern "C" {
         if (pNode) {
             return pNode;
         }
-        pNode = json_ParseString(this);
-        if (pNode) {
-            return pNode;
-        }
         pNode = json_ParseNumber(this);
         if (pNode) {
             return pNode;
         }
         pNode = json_ParseKeyWord(this);
+        if (pNode) {
+            return pNode;
+        }
+        pNode = json_ParseString(this);
         if (pNode) {
             return pNode;
         }

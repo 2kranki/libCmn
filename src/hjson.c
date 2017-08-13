@@ -673,15 +673,15 @@ extern "C" {
         if (pNode) {
             return pNode;
         }
-        pNode = hjson_ParseString(this);
-        if (pNode) {
-            return pNode;
-        }
         pNode = hjson_ParseNumber(this);
         if (pNode) {
             return pNode;
         }
         pNode = hjson_ParseKeyWord(this);
+        if (pNode) {
+            return pNode;
+        }
+        pNode = hjson_ParseString(this);
         if (pNode) {
             return pNode;
         }

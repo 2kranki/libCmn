@@ -46,7 +46,7 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "json.h"
+#include    "hjson.h"
 #include    "node.h"
 #include    "nodeHash.h"
 #include    "utf8.h"
@@ -83,7 +83,7 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        JSON_DATA       *pParser;
+        HJSON_DATA      *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
@@ -99,11 +99,11 @@ extern "C" {
         TOKEN_DATA      *pToken = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
         
-        pParser = json_NewAStr(pString, pPath, 4);
+        pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
             goto exit00;
         }
-        pFileNode = json_ParseFile(pParser);
+        pFileNode = hjson_ParseFile(pParser);
         if (OBJ_NIL == pFileNode) {
             goto exit00;
         }
@@ -133,12 +133,12 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 lineNo = AStr_ToInt64(pStr) & 0xFFFFFFFF;
             }
             else {
-                fprintf(stderr, "ERROR - lineNo should have a number!\n");
+                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
@@ -149,12 +149,12 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 colNo = AStr_ToInt64(pStr) & 0xFFFF;
             }
             else {
-                fprintf(stderr, "ERROR - colNo should have a number!\n");
+                fprintf(stderr, "ERROR - colNo should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
@@ -165,12 +165,12 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 cls = (int32_t)AStr_ToInt64(pStr);
             }
             else {
-                fprintf(stderr, "ERROR - cls should have a number!\n");
+                fprintf(stderr, "ERROR - cls should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
@@ -204,7 +204,7 @@ extern "C" {
             pName = node_getName(pNode);
         }
         if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "CHAR")) {
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 pToken =    token_NewCharW(
                                            pFileName,
@@ -215,14 +215,14 @@ extern "C" {
                                            );
             }
             else {
-                fprintf(stderr, "ERROR - CHAR should have a number!\n");
+                fprintf(stderr, "ERROR - CHAR should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "NUMBER")) {
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 pToken =    token_NewInteger(
                                              pFileName,
@@ -232,8 +232,9 @@ extern "C" {
                                              AStr_ToInt64(pStr)
                                              );
             }
+            //TODO: Add float support!
             else {
-                fprintf(stderr, "ERROR - NUMBER should have a number!\n");
+                fprintf(stderr, "ERROR - NUMBER should have a integer or float!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;

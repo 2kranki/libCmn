@@ -37,8 +37,11 @@ char        *pTestInput01 =
 "{ /* test comment */\n\n\n"
     "\t\"one\" : 123,\n"
     "\ttwo : \"xyz\"\n"
+    "\t#two_a : \"xyz\"\n"
     "\tthree : [a, b, c],\n"
-    "\tfour : null,\n"
+    "\t//three_b : [a, b, c],\n"
+    "\tfour : null\n"       // Note <=== missing comma
+    "\t#four_c : null,\n"
     "\t\"five\" : true,\n"
     "\t\"six\" : false\n"
 "}\n";

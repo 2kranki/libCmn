@@ -7,18 +7,18 @@
  * Program
  *			Indexed Data Block (blkidx16)
  * Purpose
- *				These subroutines provide a general purpose set of
- *				routines to build and manipulate dynamic tables of
- *				variable length data.
+ *			These subroutines provide a general purpose set of
+ *			routines to build and manipulate dynamic tables of
+ *			variable length data.
  *
- *              All offsets within the block are numeric. No addresses
- *              are maintained in the block. So, it can be safely
- *              written to disk if needed.
+ *          All offsets within the block are numeric. No addresses
+ *          are maintained in the block. So, it can be safely
+ *          written to disk if needed.
  *
- *              The block header can contain an area reserved for
- *              any use. Just specify the amount at open time.
- *              Also, each record contains a uint32_t amount which
- *              can be used for anything.
+ *          The block header can contain an area reserved for
+ *          any use. Just specify the amount at open time.
+ *          Also, each record contains a uint32_t amount which
+ *          can be used for anything.
  *
  *
  * Remarks

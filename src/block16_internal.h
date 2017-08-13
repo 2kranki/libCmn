@@ -107,6 +107,12 @@ struct block16_data_s	{
 
 
     // Internal Functions
+    bool            block16_setBlock(
+        BLOCK16_DATA    *this,
+        void            *pValue
+    );
+    
+    
     void            block16_Dealloc(
         OBJ_ID          objId
     );

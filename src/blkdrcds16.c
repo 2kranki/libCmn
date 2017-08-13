@@ -544,13 +544,11 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_BLKDRCDS16);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_BLKDRCDS16); // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&blkdrcds16_Vtbl);
         
         blkdrcds16_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
         
 #ifdef NDEBUG
 #else
@@ -559,7 +557,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(BLKDRCDS16_DATA));
 #endif
         
         return this;

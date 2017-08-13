@@ -53,8 +53,86 @@ int         test_rrds32_OpenClose(
 
 
 
+int         test_rrds32_NoBuffers(
+    const
+    char        *test_name
+)
+{
+	RRDS32_DATA		*cbp;
+    uint32_t        i;
+    //bool            fRc;
+	char			*pPath     = "/tmp/test.rrds";
+    char            block[12]  = "            ";
+    char            block2[12] = "            ";
+    uint32_t        numRcds = 512;
+    uint32_t        cBlock;
+    char            *pBlock;
+    ERESULT         eRc;
+
+    cbp = rrds32_Alloc();
+    XCTAssertFalse( (NULL == cbp));
+    cbp = rrds32_Init(cbp, 0);
+    XCTAssertFalse( (NULL == cbp));
+
+	eRc = rrds32_Create(cbp, pPath, 12, 0);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (12 == rrds32_getRecordSize(cbp)));
+    
+    if (!ERESULT_FAILED(eRc)) {
+        for (i=0; i<numRcds; ++i) {
+            cBlock = 12;
+            pBlock = block;
+            dec_putInt32A( i, &cBlock, &pBlock );
+            eRc = rrds32_BlockWrite(cbp, i+1, (uint8_t *)block);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            eRc = rrds32_BlockRead(cbp, i+1, (uint8_t *)block2);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            if (0 == memcmp(block, block2, 12) )
+                ;
+            else {
+                XCTFail(@"rrds_BlockWrite()/rrds_BlockRead() did not compare well!");
+            }
+        }
+        
+        eRc = rrds32_Close( cbp );
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+    }
+    
+	eRc = rrds32_Open( cbp, pPath );
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (12 == rrds32_getRecordSize(cbp)) );
+    XCTAssertTrue( ('\0' == rrds32_getFillChar(cbp)) );
+    
+    for (i=0; i<numRcds; ++i) {
+        cBlock = 12;
+        pBlock = block;
+        dec_putInt32A( i, &cBlock, &pBlock );
+        //fRc = rrds_BlockWrite(cbp, i+1, block);
+        //STAssertTrue( (fRc), @"rrds_BlockWrite failed!" );
+        eRc = rrds32_BlockRead(cbp, i+1, (uint8_t *)block2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        if (0 == memcmp(block, block2, 12) )
+            ;
+        else {
+            XCTFail(@"rrds32_BlockWrite()/rrds_BlockRead() did not compare well!");
+        }
+    }
+    
+	eRc = rrds32_Destroy( cbp );
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+    obj_Release(cbp);
+    cbp = OBJ_NIL;
+
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_rrds32);
+  TINYTEST_ADD_TEST(test_rrds32_NoBuffers);
   TINYTEST_ADD_TEST(test_rrds32_OpenClose);
 TINYTEST_END_SUITE();
 

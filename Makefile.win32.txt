@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/25/2017 16:44:20.000)
+# ( 8/13/2017 17:32:26.000)
 
 
 LIBNAM=libCmn
@@ -47,7 +47,6 @@ OBJS = $(OBJS) $(OBJDIR)\audioWAV.obj $(OBJDIR)\audioWAV_object.obj
 OBJS = $(OBJS) $(OBJDIR)\bitMatrix.obj $(OBJDIR)\bitMatrix_object.obj
 OBJS = $(OBJS) $(OBJDIR)\bitSet.obj $(OBJDIR)\bitSet_object.obj
 OBJS = $(OBJS) $(OBJDIR)\blkdrcds16.obj $(OBJDIR)\blkdrcds16_object.obj
-OBJS = $(OBJS) $(OBJDIR)\blkidx16.obj $(OBJDIR)\blkidx16_object.obj
 OBJS = $(OBJS) $(OBJDIR)\block16.obj $(OBJDIR)\block16_object.obj
 OBJS = $(OBJS) $(OBJDIR)\block32.obj $(OBJDIR)\block32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\blocks.obj $(OBJDIR)\blocks_object.obj
@@ -248,6 +247,14 @@ test_appl:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_blkdrcds16
+
+test_blkdrcds16:
+	$(CC) $(CFLAGS) /Itests tests\test_blkdrcds16.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_blocks
 
 test_blocks:
@@ -408,6 +415,14 @@ test_psxThread:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_rrds32
+
+test_rrds32:
+	$(CC) $(CFLAGS) /Itests tests\test_rrds32.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_szHash
 
 test_szHash:
@@ -436,6 +451,14 @@ TESTS = $(TESTS) test_timer
 
 test_timer:
 	$(CC) $(CFLAGS) /Itests tests\test_timer.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_token
+
+test_token:
+	$(CC) $(CFLAGS) /Itests tests\test_token.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

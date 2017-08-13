@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 7/25/2017 16:44:21.000)
+# ( 8/13/2017 17:32:27.000)
 
 
 LIBNAM=libCmn
@@ -200,18 +200,6 @@ $(OBJDIR)/blkdrcds16.o: $(SRCDIR)/blkdrcds16.c
 
 
 $(OBJDIR)/blkdrcds16_object.o: $(SRCDIR)/blkdrcds16_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/blkidx16.o $(OBJDIR)/blkidx16_object.o
-
-
-$(OBJDIR)/blkidx16.o: $(SRCDIR)/blkidx16.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/blkidx16_object.o: $(SRCDIR)/blkidx16_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1475,6 +1463,13 @@ test_appl:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_blkdrcds16
+
+test_blkdrcds16:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_blkdrcds16.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_blocks
 
 test_blocks:
@@ -1615,6 +1610,13 @@ test_psxThread:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_rrds32
+
+test_rrds32:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_rrds32.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_szHash
 
 test_szHash:
@@ -1640,6 +1642,13 @@ TESTS += test_timer
 
 test_timer:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_timer.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_token
+
+test_token:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_token.c 
 	$(OBJDIR)/$(@F)
 
 

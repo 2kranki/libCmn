@@ -478,8 +478,6 @@
 		C47E78E51D7C8E4000A76B8E /* blocks.c in Sources */ = {isa = PBXBuildFile; fileRef = C47E78E11D7C8E4000A76B8E /* blocks.c */; };
 		C47E78E61D7C8E4000A76B8E /* blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = C47E78E21D7C8E4000A76B8E /* blocks.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C483532B1C99FA1600C6D2E6 /* ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = C483532A1C99FA1600C6D2E6 /* ascii.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C49E7C741E6C5AB3002A08A5 /* blkidx16_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49E7C711E6C5AB3002A08A5 /* blkidx16_object.c */; };
-		C49E7C751E6C5AB3002A08A5 /* blkidx16.c in Sources */ = {isa = PBXBuildFile; fileRef = C49E7C721E6C5AB3002A08A5 /* blkidx16.c */; };
 		C49E7C7C1E6C6914002A08A5 /* bptree_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49E7C791E6C6914002A08A5 /* bptree_object.c */; };
 		C49E7C7D1E6C6914002A08A5 /* bptree.c in Sources */ = {isa = PBXBuildFile; fileRef = C49E7C7A1E6C6914002A08A5 /* bptree.c */; };
 		C49E7C7F1E6C6941002A08A5 /* bptreeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C49E7C7E1E6C6941002A08A5 /* bptreeTest.m */; };
@@ -1048,10 +1046,6 @@
 		C47E78E11D7C8E4000A76B8E /* blocks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blocks.c; sourceTree = "<group>"; };
 		C47E78E21D7C8E4000A76B8E /* blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blocks.h; sourceTree = "<group>"; };
 		C483532A1C99FA1600C6D2E6 /* ascii.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ascii.h; sourceTree = "<group>"; };
-		C49E7C701E6C5AB3002A08A5 /* blkidx16_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blkidx16_internal.h; sourceTree = "<group>"; };
-		C49E7C711E6C5AB3002A08A5 /* blkidx16_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blkidx16_object.c; sourceTree = "<group>"; };
-		C49E7C721E6C5AB3002A08A5 /* blkidx16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blkidx16.c; sourceTree = "<group>"; };
-		C49E7C731E6C5AB3002A08A5 /* blkidx16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blkidx16.h; sourceTree = "<group>"; };
 		C49E7C781E6C6914002A08A5 /* bptree_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bptree_internal.h; sourceTree = "<group>"; };
 		C49E7C791E6C6914002A08A5 /* bptree_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bptree_object.c; sourceTree = "<group>"; };
 		C49E7C7A1E6C6914002A08A5 /* bptree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bptree.c; sourceTree = "<group>"; };
@@ -1240,10 +1234,6 @@
 				C49E7C811E737FCA002A08A5 /* blkdrcds16_object.c */,
 				C49E7C821E737FCA002A08A5 /* blkdrcds16.c */,
 				C49E7C831E737FCA002A08A5 /* blkdrcds16.h */,
-				C49E7C701E6C5AB3002A08A5 /* blkidx16_internal.h */,
-				C49E7C711E6C5AB3002A08A5 /* blkidx16_object.c */,
-				C49E7C721E6C5AB3002A08A5 /* blkidx16.c */,
-				C49E7C731E6C5AB3002A08A5 /* blkidx16.h */,
 				C46703EB1C6B9CFA0091FC0E /* block16_internal.h */,
 				C4529A9F1ECF705600D898DE /* block16_object.c */,
 				C46703EC1C6B9CFA0091FC0E /* block16.c */,
@@ -2363,7 +2353,6 @@
 				C46707421C6BA6D90091FC0E /* btpTest.m in Sources */,
 				C46707E11C6BAE0D0091FC0E /* cmdutlTest.m in Sources */,
 				C43F50171EE5A4AB00A8AA0B /* applTest.m in Sources */,
-				C49E7C751E6C5AB3002A08A5 /* blkidx16.c in Sources */,
 				C46707FF1C6BAE0D0091FC0E /* execArrayTest.m in Sources */,
 				C46708151C6BAE0D0091FC0E /* nodeTreeTest.m in Sources */,
 				C46708401C6BAE0D0091FC0E /* tableTest.m in Sources */,
@@ -2394,7 +2383,6 @@
 				C46004CF1DA7EBB700FE04F6 /* arrayExpandTest.m in Sources */,
 				C46708001C6BAE0D0091FC0E /* falseTest.m in Sources */,
 				C467082E1C6BAE0D0091FC0E /* ptrArrayTest.m in Sources */,
-				C49E7C741E6C5AB3002A08A5 /* blkidx16_object.c in Sources */,
 				C43918DF1D77BAED00083689 /* nodeATreeTest.m in Sources */,
 				C46708121C6BAE0D0091FC0E /* nodeListTest.m in Sources */,
 				C46708381C6BAE0D0091FC0E /* scanwhiteTest.m in Sources */,

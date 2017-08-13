@@ -118,7 +118,7 @@ extern "C" {
     );
     
     
-    uint16_t		blkdrcds16_CalcBlockSize(
+    uint16_t        blkdrcds16_CalcBlockSize(
         uint16_t        rsvdSize,
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size

@@ -27,7 +27,6 @@
         "bitMatrix":["cmn","AStr","bitSet","u16Matrix"],
         "bitSet":["cmn","AStr"],
         "blkdrcds16":["cmn","AStr"],
-        "blkidx16":["cmn","AStr"],
         "block16":["cmn","AStr"],
         "block32":["cmn","AStr"],
         "blocks":["cmn","AStr","listdl"],
@@ -158,6 +157,7 @@
     "tests":
     {
         "test_appl.c":null,
+        "test_blkdrcds16.c":null,
         "test_blocks.c":null,
         "test_cb.c":null,
         "test_clo.c":null,
@@ -178,10 +178,12 @@
         "test_psxMutex.c":null,
         "test_psxSem.c":null,
         "test_psxThread.c":null,
+        "test_rrds32.c":null,
         "test_szHash.c":null,
         "test_szTbl.c":null,
         "test_ternary.c":null,
         "test_timer.c":null,
+        "test_token.c":null,
         "test_trace.c":null,
         "test_u8Array.c":null
     }
