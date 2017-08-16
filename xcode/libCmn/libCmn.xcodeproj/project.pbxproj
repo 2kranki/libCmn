@@ -534,6 +534,8 @@
 		C4C6D8601F1262F4006D6C5E /* lexj_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D84E1F0929BB006D6C5E /* lexj_object.c */; };
 		C4C6D8611F1262FB006D6C5E /* lexj.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C6D84F1F0929BB006D6C5E /* lexj.c */; };
 		C4C6D8621F126302006D6C5E /* lexj.h in Headers */ = {isa = PBXBuildFile; fileRef = C4C6D8501F0929BB006D6C5E /* lexj.h */; };
+		C4CBB3C41F428FFD00726413 /* nameFromJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CBB3C31F428FFD00726413 /* nameFromJSON.c */; };
+		C4CBB3C61F42901900726413 /* nodeFromJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CBB3C51F42901900726413 /* nodeFromJSON.c */; };
 		C4EDA3E21DBFDC2A005FBE6E /* endian_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4EDA3DE1DBFDC2A005FBE6E /* endian_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C4EDA3E31DBFDC2A005FBE6E /* endian_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EDA3DF1DBFDC2A005FBE6E /* endian_object.c */; };
 		C4EDA3E41DBFDC2A005FBE6E /* endian.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EDA3E01DBFDC2A005FBE6E /* endian.c */; };
@@ -1101,6 +1103,8 @@
 		C4C6D8561F1183C7006D6C5E /* hjson_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hjson_object.c; sourceTree = "<group>"; };
 		C4C6D8571F1183C7006D6C5E /* hjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hjson.c; sourceTree = "<group>"; };
 		C4C6D8581F1183C7006D6C5E /* hjson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hjson.h; sourceTree = "<group>"; };
+		C4CBB3C31F428FFD00726413 /* nameFromJSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nameFromJSON.c; sourceTree = "<group>"; };
+		C4CBB3C51F42901900726413 /* nodeFromJSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeFromJSON.c; sourceTree = "<group>"; };
 		C4EDA3DE1DBFDC2A005FBE6E /* endian_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endian_internal.h; sourceTree = "<group>"; };
 		C4EDA3DF1DBFDC2A005FBE6E /* endian_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = endian_object.c; sourceTree = "<group>"; };
 		C4EDA3E01DBFDC2A005FBE6E /* endian.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = endian.c; sourceTree = "<group>"; };
@@ -1399,10 +1403,12 @@
 				C42AF19C1EDF90A400C3924E /* msgBus_object.c */,
 				C42AF19D1EDF90A400C3924E /* msgBus.c */,
 				C42AF19E1EDF90A400C3924E /* msgBus.h */,
+				C4CBB3C31F428FFD00726413 /* nameFromJSON.c */,
 				C46704A11C6B9CFA0091FC0E /* name_internal.h */,
 				C46704A21C6B9CFA0091FC0E /* name_object.c */,
 				C46704A31C6B9CFA0091FC0E /* name.c */,
 				C46704A41C6B9CFA0091FC0E /* name.h */,
+				C4CBB3C51F42901900726413 /* nodeFromJSON.c */,
 				C46704A51C6B9CFA0091FC0E /* node_internal.h */,
 				C46704A61C6B9CFA0091FC0E /* node_object.c */,
 				C46704A81C6B9CFA0091FC0E /* node.c */,
@@ -2112,6 +2118,7 @@
 				C44213661D6F180C00974569 /* dateTime_object.c in Sources */,
 				C46705EF1C6B9D120091FC0E /* path.c in Sources */,
 				C46705B31C6B9CFB0091FC0E /* nodeArray.c in Sources */,
+				C4CBB3C61F42901900726413 /* nodeFromJSON.c in Sources */,
 				C4C6D85B1F1183C7006D6C5E /* hjson.c in Sources */,
 				C46705AA1C6B9CFB0091FC0E /* name.c in Sources */,
 				C4529AA81ECFD0D500D898DE /* psxLock_object.c in Sources */,
@@ -2190,6 +2197,7 @@
 				C46706BB1C6B9DD40091FC0E /* scanhex32.c in Sources */,
 				C46705BE1C6B9CFB0091FC0E /* nodeScan_object.c in Sources */,
 				C46704FB1C6B9CFB0091FC0E /* cb.c in Sources */,
+				C4CBB3C41F428FFD00726413 /* nameFromJSON.c in Sources */,
 				C46705341C6B9CFB0091FC0E /* dbf.c in Sources */,
 				C46706C71C6B9DD40091FC0E /* srcFile_object.c in Sources */,
 				C445DA081F2790C80066ED6D /* crc_object.c in Sources */,

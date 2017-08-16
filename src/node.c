@@ -319,7 +319,7 @@ extern "C" {
     
     
     
-    void *          node_getExtra(
+    OBJ_ID          node_getExtra(
         NODE_DATA       *this
     )
     {
@@ -338,8 +338,8 @@ extern "C" {
     
     bool            node_setExtra(
         NODE_DATA       *this,
-        void            *pValue
-                                 )
+        OBJ_ID          pValue
+    )
     {
 #ifdef NDEBUG
 #else
@@ -349,6 +349,10 @@ extern "C" {
         }
 #endif
         
+        obj_Retain(pValue);
+        if (this->pExtra) {
+            obj_Release(this->pExtra);
+        }
         this->pExtra = pValue;
         
         return true;
@@ -1172,6 +1176,59 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          node_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        NODE_DATA       *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return node_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1255,6 +1312,56 @@ extern "C" {
         AStr_AppendCharRepeatA(pStr, indent, ' ');
         j = snprintf( str, sizeof(str), " %p(node)}\n", this );
         AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     node_ToJSON(
+        NODE_DATA       *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr;
+        char            str2[256];
+        uint32_t        len;
+        uint32_t        lenChars;
+        const
+        int32_t         *pWStr = NULL;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !node_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\",\"class\":\"%d\",\"index\":%d,",
+                     pInfo->pClassName,
+                     this->cls,
+                     this->index
+            );
+        AStr_AppendA(pStr, str);
+        
+        pWrkStr = name_ToJSON(this->pName);
+        AStr_AppendA(pStr, "\"name\":");
+        AStr_Append(pStr, pWrkStr);\
+        obj_Release(pWrkStr);
+        pWrkStr = OBJ_NIL;
+
+        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }

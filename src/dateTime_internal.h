@@ -77,11 +77,28 @@ struct dateTime_data_s	{
 
 
     // Internal Functions
+    int64_t         dateTime_getTime(
+        DATETIME_DATA   *this
+    );
+    
+    bool            dateTime_setTime(
+        DATETIME_DATA   *this,
+        int64_t         value
+    );
+    
+    
     void            dateTime_Dealloc(
         OBJ_ID          objId
     );
 
 
+    void *          dateTime_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
 
 #ifdef NDEBUG
 #else

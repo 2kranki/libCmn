@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/13/2017 17:32:26.000)
+# ( 8/16/2017 12:45:25.000)
 
 
 LIBNAM=libCmn
@@ -142,6 +142,8 @@ OBJS = $(OBJS) $(OBJDIR)\utf8.obj $(OBJDIR)\utf8_object.obj
 OBJS = $(OBJS) $(OBJDIR)\wav.obj $(OBJDIR)\wav_object.obj
 OBJS = $(OBJS) $(OBJDIR)\xml.obj $(OBJDIR)\xml_object.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
+OBJS = $(OBJS) $(OBJDIR)\nameFromJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\nodeFromJSON.obj
 OBJS = $(OBJS) $(OBJDIR)\obj.obj
 OBJS = $(OBJS) $(OBJDIR)\scandec32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanhex32.obj
@@ -303,6 +305,14 @@ test_crc:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_dateTime
+
+test_dateTime:
+	$(CC) $(CFLAGS) /Itests tests\test_dateTime.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_dbCsv
 
 test_dbCsv:
@@ -315,6 +325,14 @@ TESTS = $(TESTS) test_enum
 
 test_enum:
 	$(CC) $(CFLAGS) /Itests tests\test_enum.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_false
+
+test_false:
+	$(CC) $(CFLAGS) /Itests tests\test_false.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -371,6 +389,14 @@ TESTS = $(TESTS) test_node
 
 test_node:
 	$(CC) $(CFLAGS) /Itests tests\test_node.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_null
+
+test_null:
+	$(CC) $(CFLAGS) /Itests tests\test_null.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -467,6 +493,14 @@ TESTS = $(TESTS) test_trace
 
 test_trace:
 	$(CC) $(CFLAGS) /Itests tests\test_trace.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_true
+
+test_true:
+	$(CC) $(CFLAGS) /Itests tests\test_true.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

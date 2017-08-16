@@ -56,6 +56,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <AStr.h>
 
 
 #ifndef         GREG_H
@@ -149,6 +150,12 @@ extern "C" {
     uint32_t        greg_JulianDay(
         GREG_DATA		*this
     );
+    
+    
+    ASTR_DATA *     greg_ToJSON(
+        GREG_DATA       *this
+    );
+    
     
     
     

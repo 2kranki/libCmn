@@ -83,6 +83,13 @@ struct nodeTree_data_s	{
         NODE_DATA       *pValue
     );
     
+    void *          nodeTree_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
     
 #ifdef NDEBUG
 #else

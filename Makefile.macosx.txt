@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/13/2017 17:32:27.000)
+# ( 8/16/2017 12:45:26.000)
 
 
 LIBNAM=libCmn
@@ -1338,6 +1338,18 @@ $(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c
 
 
 OBJS += $(OBJDIR)/listdl.o
+$(OBJDIR)/nameFromJSON.o: $(SRCDIR)/nameFromJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nameFromJSON.o
+$(OBJDIR)/nodeFromJSON.o: $(SRCDIR)/nodeFromJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeFromJSON.o
 $(OBJDIR)/obj.o: $(SRCDIR)/obj.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1512,6 +1524,13 @@ test_crc:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_dateTime
+
+test_dateTime:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dateTime.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_dbCsv
 
 test_dbCsv:
@@ -1523,6 +1542,13 @@ TESTS += test_enum
 
 test_enum:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_enum.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_false
+
+test_false:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_false.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1572,6 +1598,13 @@ TESTS += test_node
 
 test_node:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_node.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_null
+
+test_null:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_null.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1656,6 +1689,13 @@ TESTS += test_trace
 
 test_trace:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_trace.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_true
+
+test_true:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_true.c 
 	$(OBJDIR)/$(@F)
 
 

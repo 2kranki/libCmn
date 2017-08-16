@@ -258,6 +258,62 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          false_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        FALSE_DATA      *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !false_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return false_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return false_ToJSON;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -306,6 +362,42 @@ extern "C" {
         
         j = snprintf( str, sizeof(str), " %p}\n", cbp );
         AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     false_ToJSON(
+        FALSE_DATA      *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !false_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }

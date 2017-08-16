@@ -84,7 +84,14 @@ struct nodeArc_data_s	{
     );
 
 
-
+    void *          nodeArc_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeArc_Validate(

@@ -192,6 +192,11 @@ extern "C" {
     );
     
     
+    /*!
+     Clean up the path by removing "//", "/./" or "/../"
+        - replacingstring that describes this object and the objects within it.
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
+     */
     ERESULT         path_Clean(
         PATH_DATA		*this
     );

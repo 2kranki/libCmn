@@ -59,18 +59,9 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            srcLoc_task_body(
-        void            *pData
-    )
-    {
-        //SRCLOC_DATA  *cbp = pData;
-        
-    }
-#endif
 
-
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -84,15 +75,15 @@ extern "C" {
     SRCLOC_DATA *     srcLoc_Alloc(
     )
     {
-        SRCLOC_DATA     *cbp;
+        SRCLOC_DATA     *this;
         uint32_t        cbSize = sizeof(SRCLOC_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -104,13 +95,13 @@ extern "C" {
         uint16_t        colNo
     )
     {
-        SRCLOC_DATA       *cbp;
+        SRCLOC_DATA     *this;
         
-        cbp = srcLoc_Alloc( );
-        if (cbp) {
-            cbp = srcLoc_InitFLC( cbp, pFileName, lineNo, colNo );
+        this = srcLoc_Alloc( );
+        if (this) {
+            this = srcLoc_InitFLC(this, pFileName, lineNo, colNo);
         } 
-        return( cbp );
+        return this;
     }
 
 
@@ -139,87 +130,87 @@ extern "C" {
     
     
     bool            srcLoc_setColNo(
-        SRCLOC_DATA     *cbp,
+        SRCLOC_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->colNo = value;
+        this->colNo = value;
         return true;
     }
     
     
     
     const char *    srcLoc_getFileName(
-        SRCLOC_DATA      *cbp
+        SRCLOC_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        return cbp->pFileName;
+        return this->pFileName;
     }
     
     
     bool            srcLoc_setFileName(
-        SRCLOC_DATA      *cbp,
+        SRCLOC_DATA     *this,
         const
         char            *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        cbp->pFileName = pValue;
+        this->pFileName = pValue;
         return true;
     }
     
     
     
     uint32_t        srcLoc_getLineNo(
-        SRCLOC_DATA     *cbp
+        SRCLOC_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->lineNo;
+        return this->lineNo;
     }
     
     bool            srcLoc_setLineNo(
-        SRCLOC_DATA     *cbp,
+        SRCLOC_DATA     *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->lineNo = value;
+        this->lineNo = value;
         return true;
     }
     
@@ -241,22 +232,22 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        SRCLOC_DATA     *cbp = objId;
+        SRCLOC_DATA     *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -268,17 +259,17 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            srcLoc_Disable(
-        SRCLOC_DATA     *cbp
+        SRCLOC_DATA     *this
     )
     {
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return false;
         }
     #ifdef NDEBUG
     #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -286,7 +277,7 @@ extern "C" {
 
         // Put code here...
 
-        obj_Disable(cbp);
+        obj_Disable(this);
         
         // Return to caller.
         return true;
@@ -299,20 +290,20 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            srcLoc_Enable(
-        SRCLOC_DATA		*cbp
+        SRCLOC_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
     #endif
         
-        obj_Enable(cbp);
+        obj_Enable(this);
 
         // Put code here...
         
@@ -327,45 +318,45 @@ extern "C" {
     //---------------------------------------------------------------
 
     SRCLOC_DATA *   srcLoc_Init(
-        SRCLOC_DATA       *cbp
+        SRCLOC_DATA       *this
     )
     {
         uint32_t        cbSize;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbSize = obj_getSize(cbp);
-        cbp = (SRCLOC_DATA *)obj_Init( cbp, cbSize, OBJ_IDENT_SRCLOC );
-        if (OBJ_NIL == cbp) {
+        cbSize = obj_getSize(this);
+        this = (SRCLOC_DATA *)obj_Init(this, cbSize, OBJ_IDENT_SRCLOC);
+        if (OBJ_NIL == this) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(cbp, cbSize);         // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_SRCLOC);
-        obj_setVtbl(cbp, &srcLoc_Vtbl);
+        //obj_setSize(this, cbSize);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCLOC);
+        obj_setVtbl(this, &srcLoc_Vtbl);
         
-        //cbp->stackSize = obj_getMisc1(cbp);
-        //cbp->pArray = objArray_New( );
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
     SRCLOC_DATA *   srcLoc_InitFLC(
-        SRCLOC_DATA     *cbp,
+        SRCLOC_DATA     *this,
         const
         char            *pFileName,
         uint32_t        lineNo,
@@ -373,26 +364,26 @@ extern "C" {
     )
     {
         
-        cbp = srcLoc_Init(cbp);
-        if (OBJ_NIL == cbp) {
+        this = srcLoc_Init(this);
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        srcLoc_setFileName(cbp, pFileName);
-        srcLoc_setLineNo(cbp, lineNo);
-        srcLoc_setColNo(cbp, colNo);
+        srcLoc_setFileName(this, pFileName);
+        srcLoc_setLineNo(this, lineNo);
+        srcLoc_setColNo(this, colNo);
         
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
 #endif
         
-        return cbp;
+        return this;
     }
     
     
@@ -402,20 +393,20 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            srcLoc_IsEnabled(
-        SRCLOC_DATA		*cbp
+        SRCLOC_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( cbp ) ) {
+        if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (obj_IsEnabled(cbp))
+        if (obj_IsEnabled(this))
             return true;
         
         // Return to caller.
@@ -425,11 +416,64 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          srcLoc_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        SRCLOC_DATA     *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return srcLoc_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
     ASTR_DATA *     srcLoc_ToDebugString(
-        SRCLOC_DATA      *cbp,
+        SRCLOC_DATA     *this,
         int             indent
     )
     {
@@ -440,7 +484,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -453,18 +497,18 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(srcLoc) file=%s line=%d col=%d ",
-                     cbp,
-                     srcLoc_getFileName(cbp),
-                     srcLoc_getLineNo(cbp),
-                     srcLoc_getColNo(cbp)
+                     this,
+                     srcLoc_getFileName(this),
+                     srcLoc_getLineNo(this),
+                     srcLoc_getColNo(this)
             );
         AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
-        if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                    cbp->pData,
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -473,7 +517,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf(str, sizeof(str), " %p}\n", this);
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -488,18 +532,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            srcLoc_Validate(
-        SRCLOC_DATA      *cbp
+        SRCLOC_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_SRCLOC) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_SRCLOC) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(SRCLOC_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(SRCLOC_DATA)) )
             return false;
 
         // Return to caller.

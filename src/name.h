@@ -105,6 +105,16 @@ extern "C" {
     );
     
     
+    NAME_DATA *     name_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+    
+    NAME_DATA *     name_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+    
+    
     uint32_t        name_NewUnique(
         OBJ_ID          objId
     );
@@ -289,6 +299,17 @@ extern "C" {
     ASTR_DATA *     name_ToDebugString(
         NAME_DATA       *this,
         int             indent
+    );
+    
+    
+    /*!
+     Create a string that describes this object and the
+     objects within it in JSON format.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     name_ToJSON(
+        NAME_DATA       *this
     );
     
     

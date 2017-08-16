@@ -99,6 +99,15 @@ struct nodeList_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          nodeList_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeList_Validate(

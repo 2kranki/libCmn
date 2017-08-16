@@ -169,7 +169,7 @@ OBJ_IUNKNOWN    srcLoc_Vtbl = {
     srcLoc_Dealloc,
     srcLoc_Class,
     srcLoc_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_QUERYINFO)srcLoc_QueryInfo,
     (P_OBJ_TOSTRING)srcLoc_ToDebugString,
     NULL,			// srcLoc_Enable,
     NULL,			// srcLoc_Disable,

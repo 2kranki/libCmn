@@ -123,6 +123,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     null_ToJSON(
+        NULL_DATA       *this
+    );
+    
+    
 
     
 #ifdef	__cplusplus

@@ -79,6 +79,15 @@ struct greg_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          greg_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			greg_Validate(

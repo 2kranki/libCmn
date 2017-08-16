@@ -1,16 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          DATETIME Console Transmit Task (DateTime) Header
+//          Date/Time Value (DateTime) Header
 //****************************************************************
 /*
  * Program
- *			Separate dateTime (dateTime)
+ *			Date/Time Value (dateTime)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate DateTime to run things without complications
- *          of interfering with the main DateTime. A DateTime may be 
- *          called a DateTime on other O/S's.
+ *			This object provides a Date/Time Value.
  *
  * Remarks
  *	1.      None

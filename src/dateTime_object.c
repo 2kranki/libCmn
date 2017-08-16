@@ -169,7 +169,7 @@ DATETIME_VTBL     dateTime_Vtbl = {
         dateTime_Dealloc,
         dateTime_Class,
         dateTime_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        dateTime_QueryInfo,
         (P_OBJ_TOSTRING)dateTime_ToDebugString,
         NULL,			// dateTime_Enable,
         NULL,			// dateTime_Disable,

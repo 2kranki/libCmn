@@ -92,7 +92,14 @@ struct nodeATree_data_s	{
     );
 
 
-
+    void *          nodeATree_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeATree_Validate(

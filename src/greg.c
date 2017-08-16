@@ -85,15 +85,15 @@ extern "C" {
     GREG_DATA *     greg_Alloc(
     )
     {
-        GREG_DATA       *cbp;
+        GREG_DATA       *this;
         uint32_t        cbSize = sizeof(GREG_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -179,34 +179,34 @@ extern "C" {
     //===============================================================
 
     uint16_t        greg_getPriority(
-        GREG_DATA     *cbp
+        GREG_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !greg_Validate( cbp ) ) {
+        if( !greg_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        //return cbp->priority;
+        //return this->priority;
         return 0;
     }
 
     bool            greg_setPriority(
-        GREG_DATA     *cbp,
+        GREG_DATA       *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !greg_Validate( cbp ) ) {
+        if( !greg_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        //cbp->priority = value;
+        //this->priority = value;
         return true;
     }
 
@@ -227,22 +227,22 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        GREG_DATA   *cbp = objId;
+        GREG_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !greg_Validate( cbp ) ) {
+        if( !greg_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -253,33 +253,33 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    GREG_DATA *   greg_Init(
-        GREG_DATA       *cbp
+    GREG_DATA *     greg_Init(
+        GREG_DATA       *this
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_GREG );
-        if (OBJ_NIL == cbp) {
+        this = obj_Init( this, obj_getSize(this), OBJ_IDENT_GREG );
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &greg_Vtbl);
+        obj_setVtbl(this, &greg_Vtbl);
         
-        //cbp->priority  = TNEO_PRIORITY_NORMAL;
+        //this->priority  = TNEO_PRIORITY_NORMAL;
 
     #ifdef NDEBUG
     #else
-        if( !greg_Validate( cbp ) ) {
+        if( !greg_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
@@ -289,7 +289,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     uint32_t        greg_JulianDay(
-        GREG_DATA		*cbp
+        GREG_DATA		*this
     )
     {
         uint32_t        t1;
@@ -298,20 +298,116 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !greg_Validate( cbp ) ) {
+        if( !greg_Validate(this) ) {
             DEBUG_BREAK();
             return -1;
         }
 #endif
         
-        t1 = (cbp->mm - 14L) / 12L;
-        jd = (cbp->dd - 32075L)
-           + ((1461L * (cbp->yyyy + 4800 + t1)) / 4L)
-           + (367L * (cbp->mm - 2L - t1 * 12L) / 12L)
-           - (3L * ((cbp->yyyy + 4900L + t1) / 100L) / 4L);
+        t1 = (this->mm - 14L) / 12L;
+        jd = (this->dd - 32075L)
+           + ((1461L * (this->yyyy + 4800 + t1)) / 4L)
+           + (367L * (this->mm - 2L - t1 * 12L) / 12L)
+           - (3L * ((this->yyyy + 4900L + t1) / 100L) / 4L);
         
         // Return to caller.
         return jd;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          greg_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        GREG_DATA       *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !greg_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return greg_ToJSON;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     greg_ToJSON(
+        GREG_DATA       *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !greg_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\", \"day\":%d, \"month\":%d, \"year\":%d",
+                     pInfo->pClassName,
+                     this->dd,
+                     this->mm,
+                     this->yyyy
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
     }
     
     
@@ -323,18 +419,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            greg_Validate(
-        GREG_DATA      *cbp
+        GREG_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_GREG) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_GREG) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(GREG_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(GREG_DATA)) )
             return false;
 
         // Return to caller.

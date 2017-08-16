@@ -107,6 +107,32 @@
 
 
 
+- (void)testToJSON
+{
+    TRUE_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pAStr = OBJ_NIL;
+    
+    pObj = true_Alloc();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = true_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pAStr = true_ToJSON(pObj);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        fprintf(stderr, "JSON = '%s'\n", AStr_getData(pAStr));
+        XCTAssertTrue( (0 == strcmp("{\"objectType\":\"true\"}\n", AStr_getData(pAStr))) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+}
+
+
+
 @end
 
 

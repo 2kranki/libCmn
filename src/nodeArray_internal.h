@@ -76,6 +76,15 @@ struct nodeArray_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          nodeArray_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeArray_Validate(

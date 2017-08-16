@@ -128,6 +128,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     true_ToJSON(
+        TRUE_DATA       *this
+    );
+    
+    
 
     
 #ifdef	__cplusplus

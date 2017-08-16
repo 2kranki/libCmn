@@ -93,7 +93,7 @@
 {
     DATETIME_DATA       *pObj = OBJ_NIL;
    
-    pObj = dateTime_Alloc(0);
+    pObj = dateTime_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = dateTime_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

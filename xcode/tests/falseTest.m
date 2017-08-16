@@ -92,17 +92,44 @@
 
 - (void)testOpenClose
 {
-    FALSE_DATA	*pObj = OBJ_NIL;
+    FALSE_DATA      *pObj = OBJ_NIL;
    
     pObj = false_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = false_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
+}
+
+
+
+- (void)testToJSON
+{
+    FALSE_DATA      *pObj = OBJ_NIL;
+    ASTR_DATA       *pAStr = OBJ_NIL;
+    
+    pObj = false_Alloc();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = false_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pAStr = false_ToJSON(pObj);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        fprintf(stderr, "JSON = '%s'\n", AStr_getData(pAStr));
+        XCTAssertTrue( (0 == strcmp("{\"objectType\":\"false\"}\n", AStr_getData(pAStr))) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
 }
 
 

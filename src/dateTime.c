@@ -965,6 +965,45 @@ extern "C" {
     
     
     
+    int64_t         dateTime_getTime(
+        DATETIME_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->time;
+    }
+    
+    
+    bool            dateTime_setTime(
+        DATETIME_DATA   *this,
+        int64_t         value
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !dateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->time = value;
+        
+        return true;
+    }
+    
+    
+    
 
     
 
@@ -1196,7 +1235,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            dateTime_IsEnabled(
-        DATETIME_DATA		*this
+        DATETIME_DATA	*this
     )
     {
         
@@ -1214,6 +1253,59 @@ extern "C" {
         
         // Return to caller.
         return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          dateTime_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        DATETIME_DATA   *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !dateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return dateTime_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
     }
     
     
@@ -1326,6 +1418,43 @@ extern "C" {
                      milli
                      );
         AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     dateTime_ToJSON(
+        DATETIME_DATA      *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !dateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\", \"time\":%llu",
+                     pInfo->pClassName,
+                     this->time
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }

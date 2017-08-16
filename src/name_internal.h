@@ -101,6 +101,14 @@ struct name_data_s	{
     );
     
     
+    void *          name_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
     void            name_ReleaseDataIfObj(
         NAME_DATA       *this
     );

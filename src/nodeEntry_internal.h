@@ -87,7 +87,14 @@ struct nodeEntry_data_s	{
     );
 
 
-
+    void *          nodeEntry_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeEntry_Validate(

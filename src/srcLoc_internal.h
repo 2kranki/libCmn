@@ -75,6 +75,15 @@ struct srcLoc_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          srcLoc_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			srcLoc_Validate(

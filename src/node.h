@@ -146,6 +146,16 @@ extern "C" {
     );
     
     
+    NODE_DATA *     node_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+    
+    NODE_DATA *     node_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+    
+    
     NODE_DATA *     node_NewWithInt(
         int64_t         ident,
         OBJ_ID          pData
@@ -217,13 +227,13 @@ extern "C" {
     );
     
 
-    void *          node_getExtra(
+    OBJ_ID          node_getExtra(
         NODE_DATA       *this
     );
     
     bool            node_setExtra(
         NODE_DATA       *this,
-        void            *pValue
+        OBJ_ID          pValue
     );
     
     

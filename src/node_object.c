@@ -170,7 +170,7 @@ NODE_VTBL       node_Vtbl = {
         node_Dealloc,
         node_Class,
         node_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)node_QueryInfo,
         (P_OBJ_TOSTRING)node_ToDebugString,
         NULL,			// node_Enable,
         NULL,			// node_Disable,

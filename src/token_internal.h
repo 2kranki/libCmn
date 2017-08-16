@@ -87,6 +87,15 @@ struct token_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          token_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			token_Validate(

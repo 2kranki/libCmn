@@ -131,6 +131,8 @@
     "routines":
     [
         "listdl.c",
+        "nameFromJSON.c",
+        "nodeFromJSON.c",
         "obj.c",
         "scandec32.c",
         "scanhex32.c",
@@ -164,8 +166,10 @@
         "test_cloOpt.c":null,
         "test_consumer.c":null,
         "test_crc.c":null,
+        "test_dateTime.c":null,
         "test_dbCsv.c":null,
         "test_enum.c":null,
+        "test_false.c":null,
         "test_hash32.c":null,
         "test_hjson.c":null,
         "test_lex.c":null,
@@ -173,6 +177,7 @@
         "test_msgBus.c":null,
         "test_name.c":null,
         "test_node.c":null,
+        "test_null.c":null,
         "test_psxCond.c":null,
         "test_psxLock.c":null,
         "test_psxMutex.c":null,
@@ -185,6 +190,7 @@
         "test_timer.c":null,
         "test_token.c":null,
         "test_trace.c":null,
+        "test_true.c":null,
         "test_u8Array.c":null
     }
 }

@@ -169,7 +169,7 @@ OBJ_IUNKNOWN    true_Vtbl = {
     NULL,
     true_Class,
     true_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_QUERYINFO)true_QueryInfo,
     (P_OBJ_TOSTRING)true_ToDebugString,
     NULL,			// true_Enable,
     NULL,			// true_Disable,

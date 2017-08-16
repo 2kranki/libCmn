@@ -71,7 +71,7 @@ struct node_data_s	{
     OBJ_ID          pData;
     OBJ_ID          pOther;
     NODEARRAY_DATA  *pProperties;
-    void            *pExtra;
+    OBJ_ID          pExtra;
 
 };
 #pragma pack(pop)
@@ -116,6 +116,14 @@ struct node_data_s	{
         const
         void            *pValue,
         OBJ_ID          pData
+    );
+    
+    
+    void *          node_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
     );
     
     

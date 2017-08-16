@@ -70,6 +70,13 @@ struct false_data_s	{
         OBJ_ID          objId
     );
 
+    void *          false_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
 #ifdef NDEBUG
 #else
     bool			false_Validate(

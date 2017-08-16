@@ -170,7 +170,7 @@ OBJ_IUNKNOWN    null_Vtbl = {
     NULL,
     null_Class,
     null_WhoAmI,
-    NULL,			// null_QueryInfo,
+    null_QueryInfo,
     (P_OBJ_TOSTRING)null_ToDebugString,
     NULL,			// null_Enable,
     NULL,			// null_Disable,
