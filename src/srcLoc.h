@@ -99,6 +99,18 @@ extern "C" {
     );
     
     
+    SRCLOC_DATA *   srcLoc_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+    
+    
+    SRCLOC_DATA *   srcLoc_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+    
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -141,6 +153,17 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     @result    ERESULT_SUCCESS_EQUAL if this == other,
+                ERESULT_SUCCESS_LESS_THAN if this < other or
+                ERESULT_SUCCESS_GREATER_THAN if this > other.
+     */
+    ERESULT         srcLoc_Compare(
+        SRCLOC_DATA		*this,
+        SRCLOC_DATA     *pOther
+    );
+    
+    
     SRCLOC_DATA *   srcLoc_Init(
         SRCLOC_DATA     *this
     );
@@ -163,6 +186,11 @@ extern "C" {
     ASTR_DATA *    srcLoc_ToDebugString(
         SRCLOC_DATA     *this,
         int             indent
+    );
+    
+    
+    ASTR_DATA *     srcLoc_ToJSON(
+        SRCLOC_DATA     *this
     );
     
     

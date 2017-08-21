@@ -446,7 +446,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ternary_Vtbl);
 
-        this->nodesPerBLock = blocks_Useable(blockSize) / sizeof(TERNARY_NODE);
+        this->nodesPerBLock = blockSize / sizeof(TERNARY_NODE);
         
     #ifdef NDEBUG
     #else

@@ -97,12 +97,12 @@ int         test_token_OpenClose01(
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con = "{\"objectType\":\"token\","
-                                "\"fileName\":\"abc\","
-                                "\"lineNo\":52,"
-                                "\"colNo\":22,"
-                                "\"cls\":11,"
-                                "\"type\":\"NUMBER\","
-                                "\"data\":64}\n";
+                                "\"FileName\":\"abc\","
+                                "\"LineNo\":52,"
+                                "\"ColNo\":22,"
+                                "\"Class\":11,"
+                                "\"Type\":\"NUMBER\","
+                                "\"Data\":64}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     
@@ -163,12 +163,12 @@ int         test_token_OpenClose02(
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con = "{\"objectType\":\"token\","
-    "\"fileName\":\"abc\","
-    "\"lineNo\":52,"
-    "\"colNo\":22,"
-    "\"cls\":11,"
-    "\"type\":\"CHAR\","
-    "\"data\":90}\n";
+                                "\"FileName\":\"abc\","
+                                "\"LineNo\":52,"
+                                "\"ColNo\":22,"
+                                "\"Class\":11,"
+                                "\"Type\":\"CHAR\","
+                                "\"Data\":90}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     
@@ -229,12 +229,12 @@ int         test_token_OpenClose03(
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con = "{\"objectType\":\"token\","
-    "\"fileName\":\"abc\","
-    "\"lineNo\":52,"
-    "\"colNo\":22,"
-    "\"cls\":11,"
-    "\"type\":\"STRING\","
-    "\"data\":\"12345\"}\n";
+    "\"FileName\":\"abc\","
+    "\"LineNo\":52,"
+    "\"ColNo\":22,"
+    "\"Class\":11,"
+    "\"Type\":\"STRING\","
+    "\"Data\":\"12345\"}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     WSTR_DATA   *pStrW;
@@ -301,12 +301,12 @@ int         test_token_OpenClose04(
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con = "{\"objectType\":\"token\","
-    "\"fileName\":\"abc\","
-    "\"lineNo\":52,"
-    "\"colNo\":22,"
-    "\"cls\":11,"
-    "\"type\":\"STRING\","
-    "\"data\":\"12345\"}\n";
+    "\"FileName\":\"abc\","
+    "\"LineNo\":52,"
+    "\"ColNo\":22,"
+    "\"Class\":11,"
+    "\"Type\":\"STRING\","
+    "\"Data\":\"12345\"}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     WSTR_DATA   *pStrW;

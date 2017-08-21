@@ -240,7 +240,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        return( 0 );
+        return ptrArray_getSize(this->pPtrArray);
     }
 
 
@@ -429,7 +429,7 @@ extern "C" {
         pNode->max = nodeSize - sizeof(SZTBL_NODE);
         pNode->len = strLen;
         str_Copy((char *)pNode->data, pNode->len+1, pStr);
-        eRc = ptrArray_AppendObj(this->pPtrArray, pNode, &index);
+        eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
             return ERESULT_GENERAL_FAILURE;
         }
@@ -515,7 +515,7 @@ extern "C" {
         pNode->max = nodeSize - sizeof(SZTBL_NODE);
         pNode->len = strLen;
         str_Copy((char *)pNode->data, pNode->len+1, pStr);
-        eRc = ptrArray_AppendObj(this->pPtrArray, pNode, &index);
+        eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
             return ERESULT_GENERAL_FAILURE;
         }
@@ -599,7 +599,7 @@ extern "C" {
         pNode->max = nodeSize - sizeof(SZTBL_NODE);
         pNode->len = utf8StrLen;
         i = utf8_WCToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
-        eRc = ptrArray_AppendObj(this->pPtrArray, pNode, &index);
+        eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
             return ERESULT_GENERAL_FAILURE;
         }
@@ -642,7 +642,7 @@ extern "C" {
         }
 #endif
         
-        pNode = (SZTBL_NODE *)ptrArray_Get(this->pPtrArray, token);
+        pNode = (SZTBL_NODE *)ptrArray_GetData(this->pPtrArray, token);
         if (NULL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -704,6 +704,96 @@ extern "C" {
         
         j = snprintf( str, sizeof(str), " %p(szTbl)}\n", this );
         AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    ASTR_DATA *     szTbl_ToJSON(
+        SZTBL_DATA      *this
+    )
+    {
+        char            str[256];
+        uint32_t        i;
+        uint32_t        j;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        uint32_t        size = szTbl_getSize(this);
+        const
+        OBJ_INFO        *pInfo;
+        SZTBL_NODE      *pNode;
+        
+#ifdef NDEBUG
+#else
+        if( !szTbl_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\",\"Count\":%u,",
+                     pInfo->pClassName,
+                     size
+            );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "\t\"Entries\":[\n");
+        for (i=0; i<(size - 1); ++i) {
+            pNode = ptrArray_GetData(this->pPtrArray, i+1);
+            if (pNode) {
+                AStr_AppendPrint(
+                            pStr,
+                            "\t{Length:%u,\"Hash\":%u,\"Ident\":%u,\n",
+                            pNode->len,
+                            pNode->hash,
+                            pNode->ident
+                );
+                if (pNode->len) {
+                    AStr_AppendA(pStr, "\t\t\"Data\":[");
+                    for (j=0; j<(pNode->len - 1); ++j) {
+                        AStr_AppendPrint(pStr, "%u,", pNode->data[j]);
+                    }
+                    AStr_AppendPrint(pStr, "%u", pNode->data[j]);
+                    AStr_AppendA(pStr, "]\n");
+                }
+                else {
+                    AStr_AppendA(pStr, "\t\t\"Data\":null");
+                }
+                AStr_AppendA(pStr, "\t},\n");
+            }
+        }
+        pNode = ptrArray_GetData(this->pPtrArray, i+1);
+        if (pNode) {
+            AStr_AppendPrint(
+                             pStr,
+                             "\t{Length:%u,\"Hash\":%u,\"Ident\":%u,\n",
+                             pNode->len,
+                             pNode->hash,
+                             pNode->ident
+                             );
+            if (pNode->len) {
+                AStr_AppendA(pStr, "\t\t\"Data\":[");
+                for (j=0; j<(pNode->len - 1); ++j) {
+                    AStr_AppendPrint(pStr, "%u,", pNode->data[j]);
+                }
+                AStr_AppendPrint(pStr, "%u", pNode->data[j]);
+                AStr_AppendA(pStr, "]\n");
+            }
+            else {
+                AStr_AppendA(pStr, "\t\t\"Data\":null");
+            }
+            AStr_AppendA(pStr, "\t}\n");
+        }
+        AStr_AppendA(pStr, "\t]\n");
+        
+        AStr_AppendA(pStr, "}\n");
+        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
         
         return pStr;
     }

@@ -139,6 +139,7 @@
         "scanstring.c",
         "scanwhite.c",
         "shellSortPtrs.c",
+        "srcLocFromJSON.c"
         "str.c",
         "tokenFromJSON.c"
     ],
@@ -184,6 +185,7 @@
         "test_psxSem.c":null,
         "test_psxThread.c":null,
         "test_rrds32.c":null,
+        "test_srcLoc.c":null,
         "test_szHash.c":null,
         "test_szTbl.c":null,
         "test_ternary.c":null,

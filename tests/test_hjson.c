@@ -25,8 +25,8 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <hjson_internal.h>
-#include    <nodearray.h>
-#include    <nodehash.h>
+#include    <nodeArray.h>
+#include    <nodeHash.h>
 
 
 

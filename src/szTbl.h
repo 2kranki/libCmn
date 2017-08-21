@@ -191,6 +191,13 @@ extern "C" {
     );
 
     
+    ASTR_DATA *     szTbl_ToJSON(
+        SZTBL_DATA      *this
+    );
+    
+    
+
+
 #ifdef	__cplusplus
 }
 #endif

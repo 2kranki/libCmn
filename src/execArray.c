@@ -230,7 +230,7 @@ extern "C" {
 
         eRc = objArray_AppendObj(cbp->pObjects, pObject, &objIndex);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            eRc = ptrArray_AppendObj(cbp->pMethods, pMethod, &mthIndex);
+            eRc = ptrArray_AppendData(cbp->pMethods, pMethod, &mthIndex);
         }
 #ifdef NDEBUG
 #else
@@ -312,7 +312,7 @@ extern "C" {
         
         iMax = objArray_getSize(cbp->pObjects);
         for (i=1; i<=iMax; ++i) {
-            pMethod = ptrArray_Get(cbp->pMethods, i);
+            pMethod = ptrArray_GetData(cbp->pMethods, i);
             pObject = objArray_Get(cbp->pObjects, i);
             pPtr = pMethod(pObject);
         }

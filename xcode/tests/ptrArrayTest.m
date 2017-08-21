@@ -111,24 +111,24 @@ int             num = 6;
     pObj = ptrArray_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = ptrArray_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         for (i=0; i<num; ++i) {
-            eRc = ptrArray_AppendObj(pObj, stringTable[i], NULL);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)), @"" );
+            eRc = ptrArray_AppendData(pObj, stringTable[i], NULL);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         }
         
         for (i=0; i<num; ++i) {
-            pStr = ptrArray_Get(pObj, i+1);
-            XCTAssertFalse( (NULL == pStr), @"" );
-            XCTAssertTrue( (0 == strcmp(pStr, stringTable[i])), @"" );
+            pStr = ptrArray_GetData(pObj, i+1);
+            XCTAssertFalse( (NULL == pStr) );
+            XCTAssertTrue( (0 == strcmp(pStr, stringTable[i])) );
         }
         
         eRc = ptrArray_Sort(pObj, (PTR_COMPARE)&strcmp);
         
         for (i=0; i<num; ++i) {
-            pStr = ptrArray_Get(pObj, i+1);
+            pStr = ptrArray_GetData(pObj, i+1);
             fprintf( stderr, "%d - %s\n", i, pStr );
         }
         

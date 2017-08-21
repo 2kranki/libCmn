@@ -98,6 +98,7 @@
 		C46004CC1DA7EAA600FE04F6 /* arrayExpand.c in Sources */ = {isa = PBXBuildFile; fileRef = C46004C81DA7EAA600FE04F6 /* arrayExpand.c */; };
 		C46004CD1DA7EAA600FE04F6 /* arrayExpand.h in Headers */ = {isa = PBXBuildFile; fileRef = C46004C91DA7EAA600FE04F6 /* arrayExpand.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C46004CF1DA7EBB700FE04F6 /* arrayExpandTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46004CE1DA7EBB700FE04F6 /* arrayExpandTest.m */; };
+		C464B50C1F45D4F200CC91AA /* srcLocFromJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C464B50B1F45D4F200CC91AA /* srcLocFromJSON.c */; };
 		C46703B31C6B9C400091FC0E /* libCmn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C46703A81C6B9C400091FC0E /* libCmn.framework */; };
 		C46703B81C6B9C400091FC0E /* libCmnTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C46703B71C6B9C400091FC0E /* libCmnTests.m */; };
 		C46704D81C6B9CFB0091FC0E /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = C46703D11C6B9CFA0091FC0E /* ascii.c */; };
@@ -438,7 +439,6 @@
 		C46708391C6BAE0D0091FC0E /* sidxTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707BC1C6BAE0D0091FC0E /* sidxTest.m */; };
 		C467083A1C6BAE0D0091FC0E /* srcFilesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707BD1C6BAE0D0091FC0E /* srcFilesTest.m */; };
 		C467083B1C6BAE0D0091FC0E /* srcFileTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707BE1C6BAE0D0091FC0E /* srcFileTest.m */; };
-		C467083C1C6BAE0D0091FC0E /* srcLocTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707BF1C6BAE0D0091FC0E /* srcLocTest.m */; };
 		C467083D1C6BAE0D0091FC0E /* strTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707C01C6BAE0D0091FC0E /* strTest.m */; };
 		C46708401C6BAE0D0091FC0E /* tableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707C31C6BAE0D0091FC0E /* tableTest.m */; };
 		C46708441C6BAE0D0091FC0E /* tokenListTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707C71C6BAE0D0091FC0E /* tokenListTest.m */; };
@@ -661,6 +661,7 @@
 		C46004C81DA7EAA600FE04F6 /* arrayExpand.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = arrayExpand.c; sourceTree = "<group>"; };
 		C46004C91DA7EAA600FE04F6 /* arrayExpand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arrayExpand.h; sourceTree = "<group>"; };
 		C46004CE1DA7EBB700FE04F6 /* arrayExpandTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = arrayExpandTest.m; sourceTree = "<group>"; };
+		C464B50B1F45D4F200CC91AA /* srcLocFromJSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = srcLocFromJSON.c; sourceTree = "<group>"; };
 		C46703A81C6B9C400091FC0E /* libCmn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libCmn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C46703B21C6B9C400091FC0E /* libCmnTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = libCmnTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C46703B71C6B9C400091FC0E /* libCmnTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = libCmnTests.m; sourceTree = "<group>"; };
@@ -1004,7 +1005,6 @@
 		C46707BC1C6BAE0D0091FC0E /* sidxTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = sidxTest.m; sourceTree = "<group>"; };
 		C46707BD1C6BAE0D0091FC0E /* srcFilesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = srcFilesTest.m; sourceTree = "<group>"; };
 		C46707BE1C6BAE0D0091FC0E /* srcFileTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = srcFileTest.m; sourceTree = "<group>"; };
-		C46707BF1C6BAE0D0091FC0E /* srcLocTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = srcLocTest.m; sourceTree = "<group>"; };
 		C46707C01C6BAE0D0091FC0E /* strTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = strTest.m; sourceTree = "<group>"; };
 		C46707C31C6BAE0D0091FC0E /* tableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tableTest.m; sourceTree = "<group>"; };
 		C46707C71C6BAE0D0091FC0E /* tokenListTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tokenListTest.m; sourceTree = "<group>"; };
@@ -1549,6 +1549,7 @@
 				C46706331C6B9DD40091FC0E /* srcLoc_object.c */,
 				C46706341C6B9DD40091FC0E /* srcLoc.c */,
 				C46706351C6B9DD40091FC0E /* srcLoc.h */,
+				C464B50B1F45D4F200CC91AA /* srcLocFromJSON.c */,
 				C46706361C6B9DD40091FC0E /* str_internal.h */,
 				C46706371C6B9DD40091FC0E /* str.c */,
 				C46706381C6B9DD40091FC0E /* str.h */,
@@ -1717,7 +1718,6 @@
 				C46707BC1C6BAE0D0091FC0E /* sidxTest.m */,
 				C46707BD1C6BAE0D0091FC0E /* srcFilesTest.m */,
 				C46707BE1C6BAE0D0091FC0E /* srcFileTest.m */,
-				C46707BF1C6BAE0D0091FC0E /* srcLocTest.m */,
 				C46707C01C6BAE0D0091FC0E /* strTest.m */,
 				C46707C31C6BAE0D0091FC0E /* tableTest.m */,
 				C46707C71C6BAE0D0091FC0E /* tokenListTest.m */,
@@ -2219,6 +2219,7 @@
 				C46A5BE41D24138000C279F4 /* consumer.c in Sources */,
 				C4AF8D5E1E5BDCD2003AE67C /* token.c in Sources */,
 				C46705061C6B9CFB0091FC0E /* cb32.c in Sources */,
+				C464B50C1F45D4F200CC91AA /* srcLocFromJSON.c in Sources */,
 				C46706AA1C6B9DD40091FC0E /* ptrArray.c in Sources */,
 				C46705901C6B9CFB0091FC0E /* json_object.c in Sources */,
 				C46706F61C6B9DD40091FC0E /* trace.c in Sources */,
@@ -2340,7 +2341,6 @@
 				C46708351C6BAE0D0091FC0E /* scanDec32Test.m in Sources */,
 				C46707FE1C6BAE0D0091FC0E /* eresultTest.m in Sources */,
 				C46708011C6BAE0D0091FC0E /* fbsTest.m in Sources */,
-				C467083C1C6BAE0D0091FC0E /* srcLocTest.m in Sources */,
 				C4AF8D7A1E5BDDAB003AE67C /* ebcdicTest.m in Sources */,
 				C467084E1C6BAE0D0091FC0E /* u16MatrixTest.m in Sources */,
 				C46708091C6BAE0D0091FC0E /* listdlTest.m in Sources */,

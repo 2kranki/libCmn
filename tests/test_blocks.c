@@ -69,20 +69,12 @@ int         test_blocks_OpenClose(
 )
 {
     BLOCKS_DATA	    *pObj = OBJ_NIL;
-    uint32_t        wrk;
    
     pObj = blocks_Alloc(0);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = blocks_Init( pObj, 2048 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
-
-        wrk = blocks_Overhead();
-        fprintf(stderr, "overhead = %d\n", wrk);
-        XCTAssertTrue( (16 == wrk) );
-        wrk = blocks_Useable(2048);
-        fprintf(stderr, "useable = %d\n", wrk);
-        XCTAssertTrue( (2032 == wrk) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -98,56 +90,20 @@ int         test_blocks_Add(
     char            *pTestName
 )
 {
-    BLOCKS_DATA	*pObj = OBJ_NIL;
-    void        *pBlk1 = NULL;
-    void        *pBlk2 = NULL;
-    void        *pBlk3 = NULL;
-    void        *pBlk4 = NULL;
-    
-    pObj = blocks_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = blocks_Init( pObj, 2048 );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        pBlk1 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk1) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 1) );
-        pBlk2 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk2) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 2) );
-        pBlk3 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk3) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 3) );
-        pBlk4 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk4) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 4) );
-        
-        XCTAssertTrue( (blocks_Block(pObj, 1) == pBlk1) );
-        XCTAssertTrue( (blocks_Block(pObj, 2) == pBlk2) );
-        XCTAssertTrue( (blocks_Block(pObj, 3) == pBlk3) );
-        XCTAssertTrue( (blocks_Block(pObj, 4) == pBlk4) );
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    return 1;
-}
-
-
-
-int         test_blocks_Delete(
-    const
-    char            *pTestName
-)
-{
-    BLOCKS_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
+    BLOCKS_DATA	*pObj = OBJ_NIL;
     void        *pBlk1 = NULL;
     void        *pBlk2 = NULL;
     void        *pBlk3 = NULL;
     void        *pBlk4 = NULL;
+    void        *pWrk;
+    uint8_t     *pBlks[8] = {NULL};
+    uint32_t    cBlks = 0;
+    BLOCKS_GROUP    *pGroup;
+    BLOCKS_NODE     *pNode;
+    int             i;
+    ENUM_DATA       *pEnum = OBJ_NIL;
+    uint64_t        i64 = 0;
     
     pObj = blocks_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -157,37 +113,58 @@ int         test_blocks_Delete(
         
         pBlk1 = blocks_Add(pObj);
         XCTAssertFalse( (NULL == pBlk1) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 1) );
         pBlk2 = blocks_Add(pObj);
         XCTAssertFalse( (NULL == pBlk2) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 2) );
         pBlk3 = blocks_Add(pObj);
         XCTAssertFalse( (NULL == pBlk3) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 3) );
         pBlk4 = blocks_Add(pObj);
         XCTAssertFalse( (NULL == pBlk4) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 4) );
         
-        XCTAssertTrue( (blocks_Block(pObj, 1) == pBlk1) );
-        XCTAssertTrue( (blocks_Block(pObj, 2) == pBlk2) );
-        XCTAssertTrue( (blocks_Block(pObj, 3) == pBlk3) );
-        XCTAssertTrue( (blocks_Block(pObj, 4) == pBlk4) );
-        
-        eRc = blocks_Delete(pObj, pBlk2);
+        eRc = blocks_Enum(pObj, &pEnum);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 3) );
-        
-        eRc = blocks_Delete(pObj, pBlk3);
+        eRc = enum_Next(pEnum, 8, (void**)pBlks, &cBlks);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 2) );
+        XCTAssertTrue( (pBlks[0] == pBlk1) );
+        XCTAssertTrue( (pBlks[1] == pBlk2) );
+        XCTAssertTrue( (pBlks[2] == pBlk3) );
+        XCTAssertTrue( (pBlks[3] == pBlk4) );
+        obj_Release(pEnum);
+        pEnum = OBJ_NIL;
+
+        pWrk = blocks_Get(pObj, 1);
+        XCTAssertTrue( (pWrk == pBlk1) );
+        pWrk = blocks_Get(pObj, 2);
+        XCTAssertTrue( (pWrk == pBlk2) );
+        pWrk = blocks_Get(pObj, 3);
+        XCTAssertTrue( (pWrk == pBlk3) );
+        pWrk = blocks_Get(pObj, 4);
+        XCTAssertTrue( (pWrk == pBlk4) );
         
-        eRc = blocks_Delete(pObj, pBlk1);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 1) );
+        i64 = blocks_GetSpcl(pObj, 1);
+        XCTAssertTrue( (i64 == 0) );
+        i64 = blocks_GetSpcl(pObj, 2);
+        XCTAssertTrue( (i64 == 0) );
+        i64 = blocks_GetSpcl(pObj, 3);
+        XCTAssertTrue( (i64 == 0) );
+        i64 = blocks_GetSpcl(pObj, 4);
+        XCTAssertTrue( (i64 == 0) );
         
-        eRc = blocks_Delete(pObj, pBlk4);
+        eRc = blocks_PutSpcl(pObj, 1, 1);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (blocks_getSize(pObj) == 0) );
+        i64 = blocks_GetSpcl(pObj, 1);
+        XCTAssertTrue( (i64 == 1) );
+        eRc = blocks_PutSpcl(pObj, 2, 2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        i64 = blocks_GetSpcl(pObj, 2);
+        XCTAssertTrue( (i64 == 2) );
+        eRc = blocks_PutSpcl(pObj, 3, 3);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        i64 = blocks_GetSpcl(pObj, 3);
+        XCTAssertTrue( (i64 == 3) );
+        eRc = blocks_PutSpcl(pObj, 4, 4);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        i64 = blocks_GetSpcl(pObj, 4);
+        XCTAssertTrue( (i64 == 4) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -200,7 +177,6 @@ int         test_blocks_Delete(
 
 
 TINYTEST_START_SUITE(test_blocks);
-  TINYTEST_ADD_TEST(test_blocks_Delete,setUp,tearDown);
   TINYTEST_ADD_TEST(test_blocks_Add,setUp,tearDown);
   TINYTEST_ADD_TEST(test_blocks_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

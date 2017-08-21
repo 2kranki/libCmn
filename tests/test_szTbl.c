@@ -140,6 +140,7 @@ int         test_szTbl_Add(
     char        **ppStr;
     const
     char        *pStr;
+    ASTR_DATA	*pAStr = OBJ_NIL;
     
     pObj = szTbl_Shared();
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -175,6 +176,12 @@ int         test_szTbl_Add(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (token == tokenW) );
         
+        pAStr = szTbl_ToJSON(pObj);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

@@ -198,13 +198,13 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-     ASTR_DATA      *pDesc = szTbl_ToDebugString(this,4);
+     ASTR_DATA      *pDesc = szHash_EnumKeys(this, &pEnum);
      @endcode:
      @param:    this    SZTBL_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @param:    ppEnum  pointer to an Enumeration Object Pointer
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     @warning: Remember to release the returned Enumeration object.
      */
     ERESULT         szHash_EnumKeys(
         SZHASH_DATA     *this,

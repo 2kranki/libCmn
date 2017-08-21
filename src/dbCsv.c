@@ -44,7 +44,7 @@
 #include "dbCsv_internal.h"
 #include "ascii.h"
 #include "str.h"
-#include "wstr.h"
+#include "WStr.h"
 #include <stdio.h>
 #include <wchar.h>
 

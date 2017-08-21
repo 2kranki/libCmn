@@ -847,7 +847,7 @@ extern "C" {
         if( NULL == pActual ) {
             memOSX_DebugDumpBlock(this,pData);
             DEBUG_BREAK();
-            return( false );
+            return false;
         }
         
         // Check for Underrun.

@@ -437,7 +437,7 @@ extern "C" {
     //----------------------------------------------------------
     
     ERESULT         szHash_Delete(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         const
         char            *pszKey
     )
@@ -449,7 +449,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -459,16 +459,16 @@ extern "C" {
         }
 #endif
         
-        hash = (*cbp->pComputeHash)(pszKey,NULL);
-        pNode = szHash_FindNode(cbp, hash, pszKey);
+        hash = (*this->pComputeHash)(pszKey,NULL);
+        pNode = szHash_FindNode(this, hash, pszKey);
         if (NULL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
 
-        pNodeList = szHash_NodeListFromHash( cbp, hash );
+        pNodeList = szHash_NodeListFromHash(this, hash);
         listdl_Delete(pNodeList, pNode);
-        listdl_Add2Tail(&cbp->freeList, pNode);
-        --cbp->num;
+        listdl_Add2Tail(&this->freeList, pNode);
+        --this->num;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -535,7 +535,7 @@ extern "C" {
     //----------------------------------------------------------
     
     void *          szHash_Find(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         const
         char            *pszKey
     )
@@ -546,15 +546,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        hash = (*cbp->pComputeHash)(pszKey,NULL);
+        hash = (*this->pComputeHash)(pszKey,NULL);
         
-        pNode = szHash_FindNode( cbp, hash, pszKey );
+        pNode = szHash_FindNode(this, hash, pszKey);
         if (pNode) {
             return pNode->pData;
         }
@@ -565,7 +565,7 @@ extern "C" {
     
     
     void *          szHash_FindW(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         const
         int32_t         *pszKey
     )
@@ -576,15 +576,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        hash = (*cbp->pComputeHashW)(pszKey,NULL);
+        hash = (*this->pComputeHashW)(pszKey,NULL);
         
-        pNode = szHash_FindNodeW( cbp, hash, pszKey );
+        pNode = szHash_FindNodeW(this, hash, pszKey);
         if (pNode) {
             return pNode->pData;
         }
@@ -600,58 +600,58 @@ extern "C" {
     //---------------------------------------------------------------
 
     SZHASH_DATA *       szHash_Init(
-        SZHASH_DATA         *cbp,
+        SZHASH_DATA         *this,
         uint16_t            cHash
     )
     {
         uint32_t            cbSize;
         uint32_t            i;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         if ( cHash == 0 )
             return( OBJ_NIL );
         
-        cbp = obj_Init( cbp, obj_getSize(cbp), OBJ_IDENT_SZHASH );
-        if (OBJ_NIL == cbp) {
+        this = obj_Init(this, obj_getSize(this), OBJ_IDENT_SZHASH);
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&szHash_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&szHash_Vtbl);
         
-        cbp->cHash = cHash;
+        this->cHash = cHash;
         cbSize = 4096 - sizeof(SZHASH_BLOCK);
         cbSize /= sizeof(SZHASH_NODE);
-        cbp->cBlock = cbSize;
+        this->cBlock = cbSize;
         
         // Allocate the Hash Table.
         cbSize = cHash * sizeof(LISTDL_DATA);
-        cbp->pHash = (LISTDL_DATA *)mem_Malloc( cbSize );
-        if (NULL == cbp->pHash) {
+        this->pHash = (LISTDL_DATA *)mem_Malloc( cbSize );
+        if (NULL == this->pHash) {
             DEBUG_BREAK();
-            mem_Free(cbp);
-            cbp = NULL;
-            return cbp;
+            mem_Free(this);
+            this = NULL;
+            return this;
         }
         for (i=0; i<cHash; ++i) {
-            listdl_Init(&cbp->pHash[i], offsetof(SZHASH_NODE, list));
+            listdl_Init(&this->pHash[i], offsetof(SZHASH_NODE, list));
         }
-        listdl_Init(&cbp->freeList, offsetof(SZHASH_NODE, list));
+        listdl_Init(&this->freeList, offsetof(SZHASH_NODE, list));
         
         // Set Default Comparison Routines.
-        szHash_setComputeHash( cbp, str_HashA, str_HashW );
-        szHash_setCompare( cbp, utf8_StrCmp, utf8_StrCmpAW );
+        szHash_setComputeHash(this, str_HashA, str_HashW);
+        szHash_setCompare(this, utf8_StrCmp, utf8_StrCmpAW);
         
     #ifdef NDEBUG
     #else
-        if ( !szHash_Validate( cbp ) ) {
+        if ( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&cbp->pHash);
+        BREAK_NOT_BOUNDARY4(&this->pHash);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
@@ -661,7 +661,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     szHash_ToDebugString(
-        SZHASH_DATA      *cbp,
+        SZHASH_DATA     *this,
         int             indent
     )
     {
@@ -672,7 +672,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -685,15 +685,15 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(szHash) ",
-                     cbp
+                     this
                      );
         AStr_AppendA(pStr, str);
         
 #ifdef  XYZZY
-        if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                                             cbp->pData,
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                                             this->pData,
                                                                              indent+3
                                                                              );
                 AStr_Append(pStr, pWrkStr);
@@ -702,7 +702,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p(szHash)}\n", cbp );
+        j = snprintf(str, sizeof(str), " %p(szHash)}\n", this);
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -715,7 +715,7 @@ extern "C" {
     //----------------------------------------------------------
     
     ERESULT         szHash_Update(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         const
         char            *pszKey,
         void            *pData
@@ -727,14 +727,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        hash = (*cbp->pComputeHash)(pszKey,NULL);    
-        pNode = szHash_FindNode( cbp, hash, pszKey );
+        hash = (*this->pComputeHash)(pszKey,NULL);
+        pNode = szHash_FindNode(this, hash, pszKey);
         if (pNode) {
             pNode->pData = pData;
         }
@@ -742,7 +742,7 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -754,18 +754,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            szHash_Validate(
-        SZHASH_DATA      *cbp
+        SZHASH_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_SZHASH) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_SZHASH) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(SZHASH_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(SZHASH_DATA)) )
             return false;
 
         // Return to caller.

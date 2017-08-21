@@ -44,7 +44,7 @@
 #include    "lex_internal.h"
 #include    <szTbl.h>
 #include    <trace.h>
-#include    <wstr.h>
+#include    <WStr.h>
 #include    <stdarg.h>
 #include    <stdio.h>
 

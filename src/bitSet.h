@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          BITSET Console Transmit Task (bitset) Header
+//          Bit Set (bitset) Header
 //****************************************************************
 /*
  * Program
- *				Separate bitset (bitset)
+ *				Bit Set (bitset)
  * Purpose
  *				This object provides a standardized way of handling
- *              a separate bitset to run things without complications
- *              of interfering with the main bitset. A bitset may be 
- *              called a bitset on other O/S's.
+ *              a Bit Set.
  *
  * Remarks
  *	1.      All indices are relative to one.

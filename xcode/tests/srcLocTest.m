@@ -95,9 +95,9 @@
     SRCLOC_DATA	*pObj = OBJ_NIL;
    
     pObj = srcLoc_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = srcLoc_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;

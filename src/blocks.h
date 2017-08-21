@@ -50,6 +50,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <enum.h>
+
 
 
 #ifndef         BLOCKS_H
@@ -104,27 +106,6 @@ extern "C" {
     );
     
     
-    /*!
-     Return the amount of overhead space that will be required from the block
-     for blocks to provide proper support.  This amount should be added to the
-     blocksize needed when calling New() or Init(). Note that this is a class
-     method and does not need a reference to a BLOCKS_DATA.
-     Example:
-     @code:
-            uint16_t overhead = blocks_Overhead();
-     @endcode:
-     @return:   The amount needed from the blocksize for blocks_ to operate
-                successfully.
-     */
-    uint16_t        blocks_Overhead(
-    );
-    
-    
-    uint32_t        blocks_Useable(
-        uint32_t        blockSize
-    );
-    
-    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -165,24 +146,43 @@ extern "C" {
     );
 
 
-    void *          blocks_Block(
+    /*!
+     Create an Enumerator that will enumerate through all the blocks.
+     @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
+     error code.
+     @warning: Remember to release the returned Enumeration object.
+     */
+    ERESULT         blocks_Enum(
         BLOCKS_DATA     *this,
-        uint32_t        index           // Relative to 1
+        ENUM_DATA       **ppEnum
     );
     
     
-    ERESULT         blocks_Delete(
+    void *          blocks_Get(
         BLOCKS_DATA     *this,
-        void            *pBlock
+        uint32_t        index
     );
-
-   
+    
+    
+    uint64_t        blocks_GetSpcl(
+        BLOCKS_DATA     *this,
+        uint32_t        index
+    );
+    
+    
     BLOCKS_DATA *   blocks_Init(
         BLOCKS_DATA     *this,
         uint32_t        blockSize
     );
 
 
+    ERESULT         blocks_PutSpcl(
+        BLOCKS_DATA     *this,
+        uint32_t        index,
+        uint64_t        value
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <blocks_internal.h>
+#include <enum_internal.h>
 
 
 
@@ -58,19 +59,61 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            blocks_task_body(
-        void            *pData
+    // Groups are always added to the end of the group list.
+    BLOCKS_GROUP *  blocks_AddGroup(
+        BLOCKS_DATA     *this
     )
     {
-        //BLOCKS_DATA  *this = pData;
+        BLOCKS_GROUP    *pGroup = NULL;
         
+        pGroup = mem_Malloc(BLOCKS_GROUP_SIZE);
+        if (pGroup) {
+            pGroup->num = this->nodesPerGroup;
+            pGroup->used = 0;
+            listdl_Add2Tail(&this->groups, pGroup);
+        }
+        
+        return pGroup;
     }
-#endif
 
 
 
+    /*!
+     Add a new block to the current group using a node to define it. Nodes are always
+     added to the end of the group.
+     @return:   If successful, a pointer to a block. Otherwise, NULL.
+     */
+    uint8_t *       blocks_AddBlock(
+        BLOCKS_DATA     *this
+    )
+    {
+        BLOCKS_GROUP    *pGroup = NULL;
+        BLOCKS_NODE     *pNode = NULL;
+        uint8_t         *pData = NULL;
+        
+        pGroup = listdl_Tail(&this->groups);
+        if (pGroup->used < pGroup->num)
+            ;
+        else {
+            pGroup = blocks_AddGroup(this);
+            if (NULL == pGroup) {
+                return NULL;
+            }
+        }
+        
+        pData = mem_Malloc(this->blockSize);
+        if (pData) {
+            pNode = (BLOCKS_NODE *)(pGroup->data + (pGroup->used * sizeof(BLOCKS_NODE)));
+            pNode->pData = pData;
+            pNode->spcl = 0;
+            ++pGroup->used;
+        }
+        
+        return pData;
+    }
+    
+    
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -111,23 +154,6 @@ extern "C" {
 
 
 
-    uint16_t        blocks_Overhead(
-    )
-    {
-        return sizeof(BLOCKS_BLOCK);
-    }
-    
-    
-    
-    uint32_t        blocks_Useable(
-        uint32_t        blockSize
-    )
-    {
-        return (blockSize - blocks_Overhead());
-    }
-    
-    
-    
     
 
     //===============================================================
@@ -182,7 +208,7 @@ extern "C" {
         }
 #endif
         this->eRc = ERESULT_SUCCESS;
-        return listdl_Count(&this->blockList);
+        return this->cBlocks;
     }
 
 
@@ -203,7 +229,7 @@ extern "C" {
         BLOCKS_DATA     *this
     )
     {
-        BLOCKS_BLOCK    *pBlock;
+        uint8_t         *pBlk;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -214,17 +240,17 @@ extern "C" {
         }
 #endif
         
-        pBlock = mem_Malloc(this->blockSize);
-        if (pBlock == NULL) {
+        pBlk = blocks_AddBlock(this);
+        if (pBlk == NULL) {
             this->eRc = ERESULT_OUT_OF_MEMORY;
             return NULL;
         }
-        memset(pBlock, 0, this->blockSize);
-        listdl_Add2Tail(&this->blockList, pBlock);
+        memset(pBlk, 0, this->blockSize);
+        ++this->cBlocks;
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
-        return pBlock->data;
+        return pBlk;
     }
     
     
@@ -304,39 +330,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          B l o c k
-    //---------------------------------------------------------------
-    
-    void *          blocks_Block(
-        BLOCKS_DATA     *this,
-        uint32_t        index
-    )
-    {
-        BLOCKS_BLOCK    *pBlock;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        pBlock = listdl_Index(&this->blockList, index);
-        if (pBlock == NULL) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return NULL;
-        }
-        
-        // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return pBlock->data;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -393,6 +386,9 @@ extern "C" {
     )
     {
         BLOCKS_DATA     *this = objId;
+        BLOCKS_GROUP    *pGroup;
+        BLOCKS_NODE     *pNode;
+        int             i;
 
         // Do initialization.
         if (NULL == this) {
@@ -406,11 +402,18 @@ extern "C" {
         }
 #endif
 
-        while (listdl_Count(&this->blockList)) {
-            void *pBlock = listdl_DeleteHead(&this->blockList);
-            mem_Free(pBlock);
+        while (listdl_Count(&this->groups)) {
+            pGroup = listdl_DeleteTail(&this->groups);
+            for (i=0; i<pGroup->used; ++i) {
+                pNode = (BLOCKS_NODE *)(pGroup->data + (i * sizeof(BLOCKS_NODE)));
+                if (pNode->pData) {
+                    mem_Free(pNode->pData);
+                    pNode->pData = NULL;
+                }
+            }
+            mem_Free(pGroup);
         }
-
+        
         obj_setVtbl(this, this->pSuperVtbl);
         //other_Dealloc(this);          // Needed for inheritance
         obj_Dealloc(this);
@@ -421,42 +424,151 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                          D e l e t e
-    //---------------------------------------------------------------
-
-    ERESULT         blocks_Delete(
-        BLOCKS_DATA		*this,
-        void            *pBlock
+    //----------------------------------------------------------
+    //                        E n u m
+    //----------------------------------------------------------
+    
+    ERESULT         blocks_Enum(
+        BLOCKS_DATA     *this,
+        ENUM_DATA       **ppEnum
     )
     {
-        BLOCKS_BLOCK    *pBlockInternal;
-
+        ENUM_DATA       *pEnum = OBJ_NIL;
+        uint32_t        i;
+        BLOCKS_GROUP    *pGroup;
+        BLOCKS_NODE     *pNode;
+        
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if( !blocks_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_INVALID_OBJECT;
         }
-    #endif
-        pBlockInternal = (BLOCKS_BLOCK *)((uint8_t *)pBlock - offsetof(BLOCKS_BLOCK, data));
+#endif
         
-        if (listdl_Delete(&this->blockList,pBlockInternal)) {
-            this->eRc = ERESULT_SUCCESS;
-            mem_Free(pBlockInternal);
-            pBlockInternal = NULL;
+        pEnum = enum_New( );
+        if (pEnum) {
         }
         else {
-            this->eRc = ERESULT_DATA_NOT_FOUND;
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_OUT_OF_MEMORY;
         }
-
+        
+        pGroup = listdl_Head(&this->groups);
+        for (; pGroup; ) {
+            for (i=0; i<pGroup->used; ++i) {
+                pNode = (BLOCKS_NODE *)(pGroup->data + (i * sizeof(BLOCKS_NODE)));
+                if (pNode->pData) {
+                    enum_Append(pEnum, (void *)pNode->pData, NULL);
+                }
+            }
+            pGroup = listdl_Next(&this->groups, pGroup);
+        }
+        
         // Return to caller.
-        return this->eRc;
+        if (ppEnum) {
+            *ppEnum = pEnum;
+        }
+        return ERESULT_SUCCESS;
     }
-
-
-
+    
+    
+    
+    //----------------------------------------------------------
+    //                        G e t
+    //----------------------------------------------------------
+    
+    void *          blocks_Get(
+        BLOCKS_DATA     *this,
+        uint32_t        index
+    )
+    {
+        uint32_t        i;
+        BLOCKS_GROUP    *pGroup;
+        BLOCKS_NODE     *pNode;
+        uint32_t        count = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return NULL;
+        }
+#endif
+        
+        pGroup = listdl_Head(&this->groups);
+        for (; pGroup; ) {
+            for (i=0; i<pGroup->used; ++i) {
+                pNode = (BLOCKS_NODE *)(pGroup->data + (i * sizeof(BLOCKS_NODE)));
+                if (pNode->pData) {
+                    ++count;
+                    if (count == index) {
+                        this->eRc = ERESULT_SUCCESS;
+                        return pNode->pData;
+                    }
+                    //enum_Append(pEnum, (void *)pNode->pData, NULL);
+                }
+            }
+            pGroup = listdl_Next(&this->groups, pGroup);
+        }
+        
+        // Return to caller.
+        this->eRc = ERESULT_DATA_NOT_FOUND;
+        return NULL;
+    }
+    
+    
+    uint64_t        blocks_GetSpcl(
+        BLOCKS_DATA     *this,
+        uint32_t        index
+    )
+    {
+        uint32_t        i;
+        BLOCKS_GROUP    *pGroup;
+        BLOCKS_NODE     *pNode;
+        uint32_t        count = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+        
+        pGroup = listdl_Head(&this->groups);
+        for (; pGroup; ) {
+            for (i=0; i<pGroup->used; ++i) {
+                pNode = (BLOCKS_NODE *)(pGroup->data + (i * sizeof(BLOCKS_NODE)));
+                if (pNode->pData) {
+                    ++count;
+                    if (count == index) {
+                        this->eRc = ERESULT_SUCCESS;
+                        return pNode->spcl;
+                    }
+                    //enum_Append(pEnum, (void *)pNode->pData, NULL);
+                }
+            }
+            pGroup = listdl_Next(&this->groups, pGroup);
+        }
+        
+        // Return to caller.
+        this->eRc = ERESULT_DATA_NOT_FOUND;
+        return 0;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -467,6 +579,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(BLOCKS_DATA);
+        BLOCKS_GROUP    *pGroup = NULL;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -495,7 +608,16 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&blocks_Vtbl);
         
         this->blockSize = blockSize;
-        listdl_Init( &this->blockList,  offsetof(BLOCKS_BLOCK, node) );
+        this->nodesPerGroup = (BLOCKS_GROUP_SIZE - sizeof(BLOCKS_GROUP)) / sizeof(BLOCKS_NODE);
+        listdl_Init( &this->groups,  offsetof(BLOCKS_GROUP, list) );
+        pGroup = blocks_AddGroup(this);
+        if (pGroup) {
+        }
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -512,6 +634,54 @@ extern "C" {
 
      
 
+    //----------------------------------------------------------
+    //                        P u t
+    //----------------------------------------------------------
+    
+    ERESULT         blocks_PutSpcl(
+        BLOCKS_DATA     *this,
+        uint32_t        index,
+        uint64_t        value
+    )
+    {
+        uint32_t        i;
+        BLOCKS_GROUP    *pGroup;
+        BLOCKS_NODE     *pNode;
+        uint32_t        count = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pGroup = listdl_Head(&this->groups);
+        for (; pGroup; ) {
+            for (i=0; i<pGroup->used; ++i) {
+                pNode = (BLOCKS_NODE *)(pGroup->data + (i * sizeof(BLOCKS_NODE)));
+                if (pNode->pData) {
+                    ++count;
+                    if (count == index) {
+                        pNode->spcl = value;
+                        this->eRc = ERESULT_SUCCESS;
+                        return ERESULT_SUCCESS;
+                    }
+                    //enum_Append(pEnum, (void *)pNode->pData, NULL);
+                }
+            }
+            pGroup = listdl_Next(&this->groups, pGroup);
+        }
+        
+        // Return to caller.
+        this->eRc = ERESULT_DATA_NOT_FOUND;
+        return ERESULT_DATA_NOT_FOUND;
+    }
+    
+    
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -552,9 +722,8 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(blocks) size=%d\n",
-                     this,
-                     blocks_getSize(this)
+                     "{%p(blocks)\n",
+                     this
             );
         AStr_AppendA(pStr, str);
 

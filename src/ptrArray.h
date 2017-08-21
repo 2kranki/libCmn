@@ -5,18 +5,14 @@
 //****************************************************************
 /*
  * Program
- *				Array of Pointers (ptrArray)
+ *			Array of Pointers (ptrArray)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate ptrArray to run things without complications
- *              of interfering with the main ptrArray. A ptrArray may be 
- *              called a ptrArray on other O/S's.
+ *			This object provides an Array of Pointers.  It only looks
+ *          at the pointers as data to be stored in a table. It does
+ *          not actually do anything with the pointers themselves.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal ptrArray. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	07/02/2015 Generated
@@ -55,6 +51,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <enum.h>
 
 
 #ifndef         PTRARRAY_H
@@ -111,10 +108,16 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         ptrArray_AppendObj(
+    ERESULT         ptrArray_AppendData(
         PTRARRAY_DATA	*this,
-        void            *pObject,
+        void            *pData,
         uint32_t        *pIndex
+    );
+    
+    
+    void *          ptrArray_Delete(
+        PTRARRAY_DATA   *this,
+        uint32_t        index       // Relative to 1
     );
     
     
@@ -128,9 +131,23 @@ extern "C" {
     );
 
 
-    void *          ptrArray_Get(
+    void *          ptrArray_GetData(
         PTRARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
+    );
+    
+    
+    /*!
+     Create an Enumerator that will enumerate through all the pointers.
+     @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
+                error code.
+     @warning:  Remember to release the returned Enumeration object and
+                the Pointer Array should not be altered while the enumerator
+                exists.
+     */
+    ERESULT         ptrArray_Enum(
+        PTRARRAY_DATA   *this,
+        ENUM_DATA       **ppEnum
     );
     
     
@@ -139,10 +156,10 @@ extern "C" {
     );
 
 
-    ERESULT         ptrArray_InsertObj(
+    ERESULT         ptrArray_InsertData(
         PTRARRAY_DATA	*this,
         uint32_t        index,
-        void            *pObject
+        void            *pData
     );
     
     

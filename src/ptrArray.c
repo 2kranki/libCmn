@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "ptrArray_internal.h"
+#include        <ptrArray_internal.h>
+#include        <enum_internal.h>
 
 
 
@@ -219,8 +220,8 @@ extern "C" {
     //                    A p p e n d  O b j e c t
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_AppendObj(
-        PTRARRAY_DATA	*cbp,
+    ERESULT         ptrArray_AppendData(
+        PTRARRAY_DATA	*this,
         void            *pObject,
         uint32_t        *pIndex
     )
@@ -230,7 +231,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ptrArray_Validate( cbp ) ) {
+        if( !ptrArray_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -240,15 +241,15 @@ extern "C" {
         }
 #endif
         
-        ++cbp->size;
-        eRc = ptrArray_ExpandArray(cbp, cbp->size);
+        ++this->size;
+        eRc = ptrArray_ExpandArray(this, this->size);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
         }
-        cbp->ppArray[cbp->size-1] = (uint8_t *)pObject;
+        this->ppArray[this->size-1] = (uint8_t *)pObject;
         if (pIndex) {
-            *pIndex = cbp->size;
+            *pIndex = this->size;
         }
         
         return ERESULT_SUCCESS;
@@ -260,20 +261,21 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    void *          ptrArray_DeleteFirst(
-        PTRARRAY_DATA	*cbp
+    void *          ptrArray_Delete(
+        PTRARRAY_DATA   *this,
+        uint32_t        index       // Relative to 1
     )
     {
-        void            *pObj = NULL;
+        uint8_t        *pData = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ptrArray_Validate( cbp ) ) {
+        if( !ptrArray_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
-        if (cbp->size)
+        if (index && (index <= this->size))
             ;
         else {
             DEBUG_BREAK();
@@ -281,13 +283,52 @@ extern "C" {
         }
 #endif
         
-        --cbp->size;
-        if (cbp->ppArray) {
-            pObj = cbp->ppArray[0];
+        if (this->ppArray) {
+            pData = this->ppArray[index-1];
+            
+            // Now shift array as needed.
+            if (this->size - index) {
+                memmove(
+                        &this->ppArray[index-1],
+                        &this->ppArray[index],
+                        ((this->size - index) * sizeof(uint8_t *))
+                );
+            }
+            --this->size;
+        }
+        
+        return (void *)pData;
+    }
+    
+    
+    void *          ptrArray_DeleteFirst(
+        PTRARRAY_DATA	*this
+    )
+    {
+        void            *pObj = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        if (this->size)
+            ;
+        else {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        --this->size;
+        if (this->ppArray) {
+            pObj = this->ppArray[0];
             memmove(
-                    &cbp->ppArray[0],
-                    &cbp->ppArray[1],
-                    (cbp->size * sizeof(OBJ_DATA *))
+                    &this->ppArray[0],
+                    &this->ppArray[1],
+                    (this->size * sizeof(OBJ_DATA *))
                     );
         }
         
@@ -296,7 +337,7 @@ extern "C" {
     
     
     void *          ptrArray_DeleteLast(
-        PTRARRAY_DATA	*cbp
+        PTRARRAY_DATA	*this
     )
     {
         void            *pObj = NULL;
@@ -304,11 +345,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ptrArray_Validate( cbp ) ) {
+        if( !ptrArray_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
-        if (cbp->size)
+        if (this->size)
             ;
         else {
             DEBUG_BREAK();
@@ -316,13 +357,62 @@ extern "C" {
         }
 #endif
         
-        --cbp->size;
-        if (cbp->ppArray) {
-            pObj = cbp->ppArray[cbp->size];
-            cbp->ppArray[cbp->size] = NULL;
+        --this->size;
+        if (this->ppArray) {
+            pObj = this->ppArray[this->size];
+            this->ppArray[this->size] = NULL;
         }
         
         return pObj;
+    }
+    
+    
+    
+    //----------------------------------------------------------
+    //                        E n u m
+    //----------------------------------------------------------
+    
+    ERESULT         ptrArray_Enum(
+        PTRARRAY_DATA   *this,
+        ENUM_DATA       **ppEnum
+    )
+    {
+        ENUM_DATA       *pEnum = OBJ_NIL;
+        uint32_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEnum = enum_New( );
+        if (pEnum) {
+        }
+        else {
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        for (i=0; i<this->size; ++i) {
+            if (this->ppArray[i]) {
+                enum_Append(pEnum, (void *)this->ppArray[i], NULL);
+            }
+        }
+        
+        // Return to caller.
+        if (ppEnum) {
+            *ppEnum = pEnum;
+        }
+        return ERESULT_SUCCESS;
     }
     
     
@@ -331,7 +421,7 @@ extern "C" {
     //                            G e t
     //---------------------------------------------------------------
     
-    void *          ptrArray_Get(
+    void *          ptrArray_GetData(
         PTRARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     )
@@ -399,7 +489,7 @@ extern "C" {
     //                          I n s e r t
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_InsertObj(
+    ERESULT         ptrArray_InsertData(
         PTRARRAY_DATA	*this,
         uint32_t        index,
         void            *pObject
@@ -450,7 +540,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         ptrArray_Sort(
-        PTRARRAY_DATA	*cbp,
+        PTRARRAY_DATA	*this,
         PTR_COMPARE     pCompare
     )
     {
@@ -459,7 +549,7 @@ extern "C" {
         uint32_t        j;
         void            *pSave;
         
-        /*      Insertion Sort from Wikipedia
+        /*  Insertion Sort from Wikipedia
          *
          *  for i = 1 to length(A)
          *      j = i
@@ -473,24 +563,24 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ptrArray_Validate( cbp ) ) {
+        if( !ptrArray_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        if (cbp->size < 2) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
+        if (this->size < 2) {
+            return ERESULT_SUCCESS;
         }
         
-        for (i=1; i<cbp->size; ++i) {
+        for (i=1; i<this->size; ++i) {
             j = i;
             while (j > 0) {
-                eRc = (*pCompare)(cbp->ppArray[j-1], cbp->ppArray[j]);
+                eRc = (*pCompare)(this->ppArray[j-1], this->ppArray[j]);
                 if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                    pSave = cbp->ppArray[j-1];
-                    cbp->ppArray[j-1] = cbp->ppArray[j];
-                    cbp->ppArray[j] = pSave;
+                    pSave = this->ppArray[j-1];
+                    this->ppArray[j-1] = this->ppArray[j];
+                    this->ppArray[j] = pSave;
                     --j;
                 }
                 else
@@ -498,7 +588,7 @@ extern "C" {
             }
         }
         
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

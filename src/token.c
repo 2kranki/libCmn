@@ -1787,7 +1787,7 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"%s\",\"fileName\":\"%s\",\"lineNo\":%d,\"colNo\":%d,\"cls\":%d,",
+                     "{\"objectType\":\"%s\",\"FileName\":\"%s\",\"LineNo\":%d,\"ColNo\":%d,\"Class\":%d,",
                      pInfo->pClassName,
                      (this->pFileName ? this->pFileName : ""),
                      this->lineNo,
@@ -1799,21 +1799,21 @@ extern "C" {
         switch (this->type) {
                 
             case TOKEN_TYPE_UNKNOWN:
-                AStr_AppendA(pStr, "\"type\":\"UNKNOWN\"");
+                AStr_AppendA(pStr, "\"Type\":\"UNKNOWN\"");
                 break;
                 
             case TOKEN_TYPE_WCHAR:
                 j = snprintf(
                              str,
                              sizeof(str),
-                             "\"type\":\"CHAR\",\"data\":%d",
+                             "\"Type\":\"CHAR\",\"Data\":%d",
                              this->wchr[0]
                              );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case TOKEN_TYPE_WSTRING:
-                AStr_AppendA(pStr, "\"type\":\"STRING\",\"data\":\"");
+                AStr_AppendA(pStr, "\"Type\":\"STRING\",\"Data\":\"");
                 if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
                     pWStr = WStr_getData(this->pObj);
                 }
@@ -1838,7 +1838,7 @@ extern "C" {
                 j = snprintf(
                              str,
                              sizeof(str),
-                             "\"type\":\"NUMBER\",\"data\":%lld",
+                             "\"Type\":\"NUMBER\",\"Data\":%lld",
                              this->integer
                              );
                 AStr_AppendA(pStr, str);
@@ -1848,7 +1848,7 @@ extern "C" {
                 j = snprintf(
                              str,
                              sizeof(str),
-                             "\"type\":\"STRTOKEN\",\"data\":%lld",
+                             "\"Type\":\"STRTOKEN\",\"Data\":%lld",
                              this->integer
                              );
                 AStr_AppendA(pStr, str);
@@ -1856,7 +1856,7 @@ extern "C" {
                 
             default:
                 DEBUG_BREAK();
-                AStr_AppendA(pStr, "\"type\":\"UNKNOWN\"");
+                AStr_AppendA(pStr, "\"Type\":\"UNKNOWN\"");
                 break;
                 
         }

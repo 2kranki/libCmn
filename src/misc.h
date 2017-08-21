@@ -265,7 +265,7 @@ extern "C" {
      with it.
      */
     ASTR_DATA *    misc_ToDebugString(
-        MISC_DATA     *this,
+        MISC_DATA       *this,
         int             indent
     );
     

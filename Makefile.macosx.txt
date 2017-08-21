@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/16/2017 12:45:26.000)
+# ( 8/18/2017 14:34:57.000)
 
 
 LIBNAM=libCmn
@@ -1386,6 +1386,12 @@ $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c
 
 
 OBJS += $(OBJDIR)/shellSortPtrs.o
+$(OBJDIR)/srcLocFromJSON.o: $(SRCDIR)/srcLocFromJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/srcLocFromJSON.o
 $(OBJDIR)/str.o: $(SRCDIR)/str.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1647,6 +1653,13 @@ TESTS += test_rrds32
 
 test_rrds32:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_rrds32.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_srcLoc
+
+test_srcLoc:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcLoc.c 
 	$(OBJDIR)/$(@F)
 
 

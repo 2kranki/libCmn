@@ -1,22 +1,17 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          BITMATRIX Console Transmit Task (bitMatrix) Header
+//          Bit Matrix (bitMatrix) Header
 //****************************************************************
 /*
  * Program
- *				Separate bitMatrix (bitMatrix)
+ *			Bit Matrix (bitMatrix)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate bitMatrix to run things without complications
- *              of interfering with the main bitMatrix. A bitMatrix may be 
- *              called a bitMatrix on other O/S's.
+ *			This object provides a standardized way of handling
+ *          a Bit Matrix.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal bitMatrix. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	07/21/2015 Generated
@@ -55,7 +50,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <bitset.h>
+#include        <bitSet.h>
 #include        <AStr.h>
 #include        <u16Matrix.h>
 

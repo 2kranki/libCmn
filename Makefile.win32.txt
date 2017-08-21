@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/16/2017 12:45:25.000)
+# ( 8/18/2017 14:34:56.000)
 
 
 LIBNAM=libCmn
@@ -150,6 +150,7 @@ OBJS = $(OBJS) $(OBJDIR)\scanhex32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanstring.obj
 OBJS = $(OBJS) $(OBJDIR)\scanwhite.obj
 OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
+OBJS = $(OBJS) $(OBJDIR)\srcLocFromJSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\tokenFromJSON.obj
 
@@ -445,6 +446,14 @@ TESTS = $(TESTS) test_rrds32
 
 test_rrds32:
 	$(CC) $(CFLAGS) /Itests tests\test_rrds32.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_srcLoc
+
+test_srcLoc:
+	$(CC) $(CFLAGS) /Itests tests\test_srcLoc.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

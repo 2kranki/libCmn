@@ -225,6 +225,72 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       C o m p a r e
+    //---------------------------------------------------------------
+    
+    ERESULT         srcLoc_Compare(
+        SRCLOC_DATA		*this,
+        SRCLOC_DATA     *pOther
+    )
+    {
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !srcLoc_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if ((NULL == this->pFileName) && (NULL == pOther->pFileName)) {
+        }
+        else if ((NULL == this->pFileName) && pOther->pFileName) {
+            return ERESULT_SUCCESS_LESS_THAN;
+        }
+        else if (this->pFileName && (NULL == pOther->pFileName)) {
+            return ERESULT_SUCCESS_GREATER_THAN;
+        }
+        else {
+            iRc = strcmp(this->pFileName, pOther->pFileName);
+            if (iRc < 0) {
+                return ERESULT_SUCCESS_LESS_THAN;
+            }
+            if (iRc > 0) {
+                return ERESULT_SUCCESS_GREATER_THAN;
+            }
+        }
+        if( OBJ_NIL == pOther ) {
+            DEBUG_BREAK();
+            return ERESULT_SUCCESS_GREATER_THAN;
+        }
+                
+        if (this->lineNo < pOther->lineNo) {
+            return ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (this->lineNo > pOther->lineNo) {
+            return ERESULT_SUCCESS_GREATER_THAN;
+        }
+
+        if (this->colNo < pOther->colNo) {
+            return ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (this->colNo > pOther->colNo) {
+            return ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS_EQUAL;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -452,6 +518,9 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return srcLoc_ToDebugString;
                         }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return srcLoc_ToJSON;
+                        }
                         break;
                         
                     default:
@@ -519,6 +588,47 @@ extern "C" {
         
         j = snprintf(str, sizeof(str), " %p}\n", this);
         AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     srcLoc_ToJSON(
+        SRCLOC_DATA     *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                 str,
+                 sizeof(str),
+                 "{\"objectType\":\"%s\",\"FileName\":\"%s\",\"LineNo\":%d,\"ColNo\":%d",
+                 pInfo->pClassName,
+                 (this->pFileName ? this->pFileName : ""),
+                 this->lineNo,
+                 this->colNo
+            );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
+        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
         
         return pStr;
     }

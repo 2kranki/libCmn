@@ -1149,7 +1149,7 @@ extern "C" {
         WSTR_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1181,7 +1181,7 @@ extern "C" {
         char            *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        str1len;
         const
         int32_t         *pStr1;
@@ -1246,7 +1246,7 @@ extern "C" {
         int32_t         *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        str1len;
         const
         int32_t         *pStr1;
@@ -1551,7 +1551,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     uint32_t        WStr_Hash(
-        WSTR_DATA       *cbp
+        WSTR_DATA       *this
     )
     {
         uint32_t        hash = 0;
@@ -1559,12 +1559,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !WStr_Validate( cbp ) ) {
+        if( !WStr_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        pStr = pwr2Array_Ptr((PWR2ARRAY_DATA *)cbp, 1);
+        pStr = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, 1);
         if (pStr) {
             hash = str_HashW( pStr, NULL );
         }
@@ -1618,7 +1618,7 @@ extern "C" {
         for ( i=index; i<lenStr; ++i,++pChr ) {
             if (WStr_ChrInStr(*pChr,pSetStr)) {
                 *pIndex = i;
-                return ERESULT_SUCCESSFUL_COMPLETION;
+                return ERESULT_SUCCESS;
             }
         }
         
@@ -1734,7 +1734,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1782,7 +1782,7 @@ extern "C" {
         WSTR_DATA		*cbp
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         int32_t         *pData;
         uint32_t        lenStr;
     
@@ -1888,7 +1888,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

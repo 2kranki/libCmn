@@ -47,7 +47,7 @@
 #include "hex.h"
 #include "str.h"
 #include "utf8.h"
-#include "wstr.h"
+#include "WStr.h"
 #include <stdio.h>
 #include <time.h>
 
