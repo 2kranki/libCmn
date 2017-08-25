@@ -93,9 +93,9 @@
     PATH_DATA	*pObj = OBJ_NIL;
    
     pObj = path_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = path_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -112,13 +112,13 @@
     uint32_t    index;
     
     pObj = path_NewA("file://Users/bob/x/tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         index = 0;      // Start at the beginning.
         eRc = AStr_CharFindNextW((ASTR_DATA *)pObj, &index, '/');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == index), @"" );
+        XCTAssertTrue( (6 == index) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -134,7 +134,7 @@
     ERESULT     eRc;
     
     pObj = path_NewFromEnv("HOME");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  AStr_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_CompareA(pObj, "/Users/bob");
@@ -159,31 +159,31 @@
     ASTR_DATA   *pFileE = OBJ_NIL;
     
     pObj = path_NewA("file://Users/bob/x/tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
 
-        XCTAssertTrue( (pDrive), @"" );
-        XCTAssertTrue( (4 == AStr_getLength(pDrive)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pDrive), "file")), @"" );
+        XCTAssertTrue( (pDrive) );
+        XCTAssertTrue( (4 == AStr_getLength(pDrive)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pDrive), "file")) );
         if (pDrive) {
             obj_Release(pDrive);
             pDrive = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pPath), @"" );
-        XCTAssertTrue( (12 == AStr_getLength((ASTR_DATA *)pPath)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/Users/bob/x")), @"" );
+        XCTAssertTrue( (pPath) );
+        XCTAssertTrue( (12 == AStr_getLength((ASTR_DATA *)pPath)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/Users/bob/x")) );
         if (pPath) {
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
 
-        XCTAssertTrue( (pFileName), @"" );
-        XCTAssertTrue( (7 == AStr_getLength((ASTR_DATA *)pFileName)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pFileName), "tmp.txt")), @"" );
+        XCTAssertTrue( (pFileName) );
+        XCTAssertTrue( (7 == AStr_getLength((ASTR_DATA *)pFileName)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pFileName), "tmp.txt")) );
         
         eRc = path_SplitFile(pFileName, &pFileN, &pFileE);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -192,17 +192,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -227,17 +227,17 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA("/Users/bob/x/tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (NULL == pDrive), @"" );
+        XCTAssertTrue( (NULL == pDrive) );
         
-        XCTAssertTrue( (pPath), @"" );
-        XCTAssertTrue( (12 == AStr_getLength((ASTR_DATA *)pPath)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/Users/bob/x")), @"" );
+        XCTAssertTrue( (pPath) );
+        XCTAssertTrue( (12 == AStr_getLength((ASTR_DATA *)pPath)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/Users/bob/x")) );
         if (pPath) {
             obj_Release(pPath);
             pPath = OBJ_NIL;
@@ -250,17 +250,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -285,15 +285,15 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA("tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (NULL == pDrive), @"" );
+        XCTAssertTrue( (NULL == pDrive) );
         
-        XCTAssertTrue( (NULL == pPath), @"" );
+        XCTAssertTrue( (NULL == pPath) );
         
         eRc = path_SplitFile(pFileName, &pFileN, &pFileE);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -302,17 +302,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -337,17 +337,17 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA("/tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (NULL == pDrive), @"" );
+        XCTAssertTrue( (NULL == pDrive) );
         
-        XCTAssertTrue( (pPath), @"" );
-        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pPath)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/")), @"" );
+        XCTAssertTrue( (pPath) );
+        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pPath)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/")) );
         if (pPath) {
             obj_Release(pPath);
             pPath = OBJ_NIL;
@@ -360,17 +360,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -395,21 +395,21 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA("file:tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (pDrive), @"" );
-        XCTAssertTrue( (4 == AStr_getLength(pDrive)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pDrive), "file")), @"" );
+        XCTAssertTrue( (pDrive) );
+        XCTAssertTrue( (4 == AStr_getLength(pDrive)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pDrive), "file")) );
         if (pDrive) {
             obj_Release(pDrive);
             pDrive = OBJ_NIL;
         }
         
-        XCTAssertTrue( (NULL == pPath), @"" );
+        XCTAssertTrue( (NULL == pPath) );
         
         eRc = path_SplitFile(pFileName, &pFileN, &pFileE);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -418,17 +418,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -453,23 +453,23 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA("file:/tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (pDrive), @"" );
-        XCTAssertTrue( (4 == AStr_getLength(pDrive)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pDrive), "file")), @"" );
+        XCTAssertTrue( (pDrive) );
+        XCTAssertTrue( (4 == AStr_getLength(pDrive)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pDrive), "file")) );
         if (pDrive) {
             obj_Release(pDrive);
             pDrive = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pPath), @"" );
-        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pPath)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/")), @"" );
+        XCTAssertTrue( (pPath) );
+        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pPath)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/")) );
         if (pPath) {
             obj_Release(pPath);
             pPath = OBJ_NIL;
@@ -482,17 +482,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -517,17 +517,17 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA(":/tmp.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (NULL == pDrive), @"" );
+        XCTAssertTrue( (NULL == pDrive) );
         
-        XCTAssertTrue( (pPath), @"" );
-        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pPath)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/")), @"" );
+        XCTAssertTrue( (pPath) );
+        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pPath)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/")) );
         if (pPath) {
             obj_Release(pPath);
             pPath = OBJ_NIL;
@@ -540,17 +540,17 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileE), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileE)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")), @"" );
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
         if (pFileE) {
             obj_Release(pFileE);
             pFileE = OBJ_NIL;
@@ -575,15 +575,15 @@
     ASTR_DATA  *pFileE = OBJ_NIL;
     
     pObj = path_NewA("tmp");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        XCTAssertTrue( (NULL == pDrive), @"" );
+        XCTAssertTrue( (NULL == pDrive) );
         
-        XCTAssertTrue( (NULL == pPath), @"" );
+        XCTAssertTrue( (NULL == pPath) );
         
         eRc = path_SplitFile(pFileName, &pFileN, &pFileE);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -592,15 +592,15 @@
             pFileName = OBJ_NIL;
         }
         
-        XCTAssertTrue( (pFileN), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pFileN)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")), @"" );
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "tmp")) );
         if (pFileN) {
             obj_Release(pFileN);
             pFileN = OBJ_NIL;
         }
         
-        XCTAssertTrue( (NULL == pFileE), @"" );
+        XCTAssertTrue( (NULL == pFileE) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -616,13 +616,13 @@
     ERESULT     eRc;
     
     pObj = path_NewA("//tmp/");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_Clean(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (4 == AStr_getLength((ASTR_DATA *)pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "/tmp")), @"" );
+        XCTAssertTrue( (4 == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "/tmp")) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -638,13 +638,13 @@
     ERESULT     eRc;
     
     pObj = path_NewA("/");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_Clean(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "/")), @"" );
+        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "/")) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -660,13 +660,13 @@
     ERESULT     eRc;
     
     pObj = path_NewA("/./");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_Clean(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "/")), @"" );
+        XCTAssertTrue( (1 == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "/")) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -682,13 +682,13 @@
     ERESULT     eRc;
     
     pObj = path_NewA("x/./y");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_Clean(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == AStr_getLength((ASTR_DATA *)pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "x/y")), @"" );
+        XCTAssertTrue( (3 == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "x/y")) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -704,13 +704,13 @@
     ERESULT     eRc;
     
     pObj = path_NewA("x//y");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_Clean(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == AStr_getLength((ASTR_DATA *)pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "x/y")), @"" );
+        XCTAssertTrue( (3 == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pObj), "x/y")) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -729,7 +729,7 @@
     uint32_t    i;
     
     pObj = path_NewA("~/y.tmp");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_Clean(pObj);
@@ -737,7 +737,7 @@
         i = AStr_getLength((ASTR_DATA *)pObj);
         XCTAssertTrue( (16 == i), @"" );
         pszStr = AStr_getData((ASTR_DATA *)pObj);
-        XCTAssertTrue( (0 == strcmp(pszStr, "/Users/bob/y.tmp")), @"" );
+        XCTAssertTrue( (0 == strcmp(pszStr, "/Users/bob/y.tmp")) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -754,7 +754,7 @@
     ASTR_DATA   *pStr;
     
     pObj = path_NewA("xy z.txt");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc PATH_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = path_ToBash(pObj,&pStr);

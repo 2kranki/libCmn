@@ -361,7 +361,8 @@ extern "C" {
     
     
     /*!
-     Compare this token with the other specified.
+     Compare this token with the other specified. Only
+     the type and the actual value are compared.
      @return:   
         ERESULT_SUCCESS_LESS_THAN    (this < pOther)
         ERESULT_SUCCESS_EQUAL        (this == pOther)

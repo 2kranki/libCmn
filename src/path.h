@@ -5,22 +5,18 @@
 //****************************************************************
 /*
  * Program
- *				Separate path (path)
+ *			Separate path (path)
  * Purpose
- *				This object provides a standardized way of handling
- *              a path.
- *                  
- *              This path is based partially on url format and Unix
- *              path format. The general form of a path is:
+ *			This object provides a standardized way of handling a path
+ *
+ *          This path is based partially on url format and Unix path
+ *          format. The general form of a path is:
  *              [driveSpecifier:] [/directory]* fileName [.ext]
- *              of interfering with the main path. A path may be 
- *              called a path on other O/S's.
+ *          of interfering with the main path. A path may be called a 
+ *          path on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal path. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	06/09/2015 Generated
@@ -342,12 +338,10 @@ extern "C" {
     );
     
     
-#ifdef NDEBUG
-#else
-    bool			path_Validate(
-        PATH_DATA       *this
+    ERESULT         path_ToWin(
+        PATH_DATA		*this,
+        ASTR_DATA       **ppAStr
     );
-#endif
     
     
     

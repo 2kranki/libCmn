@@ -1535,6 +1535,64 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      T o  W i n
+    //---------------------------------------------------------------
+    
+    ERESULT         path_ToWin(
+        PATH_DATA		*this,
+        ASTR_DATA       **ppAStr
+    )
+    {
+        uint32_t        i;
+        uint32_t        lenStr;
+        int32_t         chr;
+        ASTR_DATA       *pStr = AStr_New();
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == ppAStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (OBJ_NIL == pStr) {
+            eRc = ERESULT_MEMORY_EXCEEDED;
+            goto eom;
+        }
+        
+        // Get data length needed.
+        lenStr = AStr_getLength((ASTR_DATA *)this);
+        if (0 == lenStr) {
+            return ERESULT_BAD_LENGTH;
+        }
+        for (i=0; i<lenStr; ++i) {
+            chr = AStr_CharGetW((ASTR_DATA *)this, i+1);
+            if (chr == '/') {
+                AStr_AppendCharA(pStr, '\\');
+            }
+            else {
+                AStr_AppendCharA(pStr, chr);
+            }
+        }
+        
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    eom:
+        if (ppAStr) {
+            *ppAStr = pStr;
+        }
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 

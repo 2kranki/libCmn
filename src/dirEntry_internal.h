@@ -55,12 +55,12 @@ struct dirEntry_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     PATH_DATA       *pDir;
     ASTR_DATA       *pName;
-    uint8_t         type;
+    uint8_t         type;           // See DIRENTRY_TYPES
     uint8_t         reserved8;
     uint16_t        reserved16;
 #if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)

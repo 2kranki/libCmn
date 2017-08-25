@@ -126,7 +126,7 @@ extern "C" {
 
     /* Size() returns the current number of used entries.
      * Returns:
-     *		Current Number of Entries in Table
+     *		Current Number of Entries in the Hash
      */
     uint32_t        nodeHash_getSize(
         NODEHASH_DATA   *this
@@ -139,7 +139,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Add() adds the node if it is not already in the table.
+    /* Add() adds the node if it is not already in the hash.
      */
     ERESULT         nodeHash_Add(
         NODEHASH_DATA   *this,
@@ -148,7 +148,7 @@ extern "C" {
 
 
     /*!
-     Copy the hash table. Any element of the table that has a copy method
+     Copy the hash. Any element of the Hash that has a copy method
      will have that used to create a new object. Otherwise, the object
      is just retained and added to the new hash.
      @return:   If successful, return a new hash table that must be released

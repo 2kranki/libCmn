@@ -447,7 +447,7 @@ extern "C" {
      sequences for non-printable character.
      @param:    this    object pointer
      @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+                otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
     ASTR_DATA *     AStr_ToChrCon(

@@ -79,6 +79,14 @@ struct path_data_s	{
     );
 
 
+#ifdef NDEBUG
+#else
+    bool			path_Validate(
+        PATH_DATA       *this
+    );
+#endif
+    
+    
 #ifdef	__cplusplus
 }
 #endif

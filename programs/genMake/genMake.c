@@ -2,7 +2,7 @@
 //  main.c
 //  genMake
 //
-//  Created by bob on 5/10/17.
+//  Created on 5/10/17.
 //
 
 
@@ -43,6 +43,7 @@
 #include <node.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
+#include <szHash.h>
 
 
 
@@ -114,7 +115,7 @@ ARGS args = {
 };
 
 
-
+SZHASH_DATA     *pHash = OBJ_NIL;
 
 
 
@@ -153,6 +154,7 @@ void            genMakeFile_initial(
             fprintf(pResults->pOutput, "CFLAGS_LIBS = \n");
             fprintf(pResults->pOutput, "CFLAGS += -g -Isrc -Isrc/$(SYS)\n");
             if (pLibDeps) {
+                char            *pLibIncludePrefix = szHash_Find(pHash, "libIncludePrefix");
                 iMax = nodeArray_getSize(pLibDeps);
                 for (i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pLibDeps, i+1);
@@ -160,8 +162,10 @@ void            genMakeFile_initial(
                         pStr = node_getData(pNode);
                         fprintf(
                                 pResults->pOutput,
-                                "CFLAGS += -I../lib%s/src -I../lib%s/src/$(SYS)\n",
+                                "CFLAGS += -I%s%s/src -I%s%s/src/$(SYS)\n",
+                                pLibIncludePrefix,
                                 AStr_getData(pStr),
+                                pLibIncludePrefix,
                                 AStr_getData(pStr)
                         );
                         fprintf(
@@ -217,6 +221,7 @@ void            genMakeFile_initial(
             fprintf(pResults->pOutput, "LIBS = \n");
             fprintf(pResults->pOutput, "CFLAGS = $(CFLAGS) /Isrc /Isrc\\$(SYS)\n");
             if (pLibDeps) {
+                char            *pLibIncludePrefix = szHash_Find(pHash, "libIncludePrefix");
                 iMax = nodeArray_getSize(pLibDeps);
                 for (i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pLibDeps, i+1);
@@ -1409,6 +1414,9 @@ int         parseArgs(
     const
     char        **ppWrkArgV = argv;
     int         i;
+    NODE_DATA   *pNode = OBJ_NIL;
+    ASTR_DATA   *pStr = OBJ_NIL;
+    ERESULT     eRc;
     
     BREAK_NULL(pResults);
     if (pResults && pResults->fDebug) {
@@ -1433,7 +1441,27 @@ int         parseArgs(
         return 1;
     }
     
-    // Process the switches.
+    pHash = szHash_New(SZHASH_TABLE_SIZE_XXSMALL);
+    if (OBJ_NIL == pHash) {
+        fprintf(stderr, "FATAL - Out of Memory\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Set up type default;
+    eRc = szHash_Add(pHash, "type", "lib");
+    if (ERESULT_FAILED(eRc) ) {
+        fprintf(stderr, "FATAL - Failed to add 'type' to Hash\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Set up libPrefix default;
+    eRc = szHash_Add(pHash, "libIncludePrefix", "../lib");
+    if (ERESULT_FAILED(eRc) ) {
+        fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Hash\n");
+        exit(EXIT_FAILURE);
+    }
+
+   // Process the switches.
     for (wrkArgC--,ppWrkArgV++; wrkArgC>0; wrkArgC--,ppWrkArgV++) {
         if (0 == strcmp(*ppWrkArgV, "--debug")) {
             ++pResults->fDebug;
@@ -1797,7 +1825,7 @@ int             main(
     //test_fileno(stdin);
     //test_fileno(stdout);
     //test_fileno(stderr);
-    
+
     iRc = parseArgs(argc, argv, &args);
     if (iRc) {
         exit(iRc);

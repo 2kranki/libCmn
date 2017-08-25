@@ -45,6 +45,7 @@
 #include    <ascii.h>
 #include    <file.h>
 #include    <hex.h>
+#include    <path_internal.h>
 #include    <stdio.h>
 
 

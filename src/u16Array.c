@@ -41,9 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "u16Array_internal.h"
-#include    "file.h"
-#include    "path.h"
+#include    <u16Array_internal.h>
+#include    <file.h>
+#include    <path_internal.h>
 #include    <stdio.h>
 
 

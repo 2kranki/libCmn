@@ -90,6 +90,15 @@ extern "C" {
     memOSX_DebugCalloc( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
 #endif
 
+#undef mem_CallocAbort
+#if		defined(NDEBUG)
+#	define	mem_CallocAbort( Num, Size )\
+    memOSX_CallocAbort( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
+#else
+#	define	mem_CallocAbort( Num, Size )\
+    memOSX_DebugCallocAbort( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
+#endif
+    
 #undef mem_Dump
 #if		defined(NDEBUG)
 #	define	mem_Dump( )\
@@ -131,6 +140,15 @@ malloc( size )
 #else
 #   define  mem_Malloc( size ) \
     memOSX_DebugMalloc( memOSX_Shared(), size, __FILE__, __LINE__ )
+#endif
+    
+#undef mem_MallocAbort
+#if		defined(NDEBUG)
+#   define  mem_MallocAbort( size ) \
+    memOSX_CallocAbort( memOSX_Shared(), 1, (size), __FILE__, __LINE__ )
+#else
+#   define  mem_MallocAbort( size ) \
+    memOSX_DebugCallocAbort( memOSX_Shared(), 1, (size), __FILE__, __LINE__ )
 #endif
     
 #undef mem_MallocObject
@@ -210,7 +228,27 @@ memOSX_SharedReset()
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    void *          memOSX_CallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cNum,
+        size_t			cSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    );
+    
+    
     void *          memOSX_DebugCalloc(
+        MEMOSX_DATA		*this,
+        size_t			cNum,
+        size_t			cSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    );
+    
+    
+    void *          memOSX_DebugCallocAbort(
         MEMOSX_DATA		*this,
         size_t			cNum,
         size_t			cSize,
@@ -290,6 +328,15 @@ memOSX_SharedReset()
     );
     
     
+    void *			memOSX_DebugMallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cbSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    );
+    
+    
     void *			memOSX_DebugMallocObject(
         MEMOSX_DATA		*this,
         size_t			cbSize,
@@ -324,6 +371,15 @@ memOSX_SharedReset()
     );
 
 
+    void *			memOSX_MallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cbSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    );
+    
+    
     /*!
      Create a string that describes this object and the
      objects within it.

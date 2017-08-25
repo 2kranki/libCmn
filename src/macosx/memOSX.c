@@ -670,6 +670,51 @@ extern "C" {
     //===============================================================
 
 
+    void *          memOSX_CallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cNum,
+        size_t			cSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    )
+    {
+        void			*pRet = NULL;
+        
+        // Do initialization.
+        if ((cSize == 0) || (cNum == 0)) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Calloc(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        pRet = calloc(cNum, cSize);
+        if (pRet == NULL) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Out of Memory - Calloc(%zu,%zu) called from %s, line: %zu\n\n",
+                    cNum,
+                    cSize,
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        // Return to caller.
+        return( pRet );
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
@@ -726,6 +771,17 @@ extern "C" {
         size_t          cbRequest;
         
         // Do initialization.
+        if ((cSize == 0) || (cNum == 0)) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Calloc(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+            );
+            //exit(EXIT_FAILURE);
+            return NULL;
+        }
         //fprintf(stderr, "mem_DebugCalloc &this=%p\n", &this);
         cbRequest = cNum * cSize;
         
@@ -744,6 +800,48 @@ extern "C" {
         if (pRet && !(((int)pRet & 0x03) == 0) ) {
             DEBUG_BREAK();
         }      
+        return( pRet );
+    }
+    
+    
+    void *          memOSX_DebugCallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cNum,
+        size_t			cSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    )
+    {
+        void			*pRet = NULL;
+        
+        // Do initialization.
+        if ((cSize == 0) || (cNum == 0)) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Calloc(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        pRet = memOSX_DebugCalloc(this, cNum, cSize, pFilePath, iLine);
+        if (pRet == NULL) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Out of Memory - Calloc() called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        // Return to caller.
         return( pRet );
     }
     
@@ -1206,7 +1304,14 @@ extern "C" {
             ;
         else {
             DEBUG_BREAK();
-            return( NULL );
+            fprintf(
+                    stderr,
+                    "FATAL: Calloc(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            //exit(EXIT_FAILURE);
+            return NULL;
         }
         
         pActual = memOSX_DebugInternalMalloc( this, cbSize, pFilePath, iLine );
@@ -1217,6 +1322,47 @@ extern "C" {
         if (pRet && !(((int)pRet & 0x03) == 0) ) {
             DEBUG_BREAK();
         }
+        return( pRet );
+    }
+    
+    
+    void *          memOSX_DebugMallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    )
+    {
+        void			*pRet = NULL;
+        
+        // Do initialization.
+        if (cSize == 0) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Malloc(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        pRet = memOSX_DebugMalloc(this, cSize, pFilePath, iLine);
+        if (pRet == NULL) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Out of Memory - Malloc() called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        // Return to caller.
         return( pRet );
     }
     
@@ -1247,14 +1393,31 @@ extern "C" {
             return NULL;
         }
 #endif
-        if( cbSize > 0 )
-            ;
-        else {
+        if (cbSize == 0) {
             DEBUG_BREAK();
-            return( NULL );
+            fprintf(
+                    stderr,
+                    "FATAL: MallocObject(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
         }
         
         pActual = memOSX_DebugInternalMalloc( this, cbSize, pFilePath, iLine );
+        if (pActual == NULL) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: MallocObject(%zu) called from %s, line: %zu\n\n",
+                    cbSize,
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
         pActual->flags |= MEM_FLAG_OBJECT;
         
         // Return to caller.
@@ -1451,6 +1614,49 @@ extern "C" {
         
         return this;
     }
+    
+    
+    
+    void *          memOSX_MallocAbort(
+        MEMOSX_DATA		*this,
+        size_t			cSize,
+        const
+        char			*pFilePath,
+        size_t			iLine
+    )
+    {
+        void			*pRet = NULL;
+        
+        // Do initialization.
+        if (cSize == 0) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Malloc(0) called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        pRet = malloc(cSize);
+        if (pRet == NULL) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL: Out of Memory - Malloc() called from %s, line: %zu\n\n",
+                    pFilePath,
+                    iLine
+                    );
+            exit(EXIT_FAILURE);
+            //return NULL;
+        }
+        
+        // Return to caller.
+        return( pRet );
+    }
+    
     
     
     
