@@ -227,19 +227,38 @@ extern "C" {
     SZHASH_DATA *     szHash_Alloc(
     )
     {
-        SZHASH_DATA       *cbp;
-        uint32_t        cbSize = sizeof(SZHASH_DATA);
+        SZHASH_DATA         *this;
+        uint32_t            cbSize = sizeof(SZHASH_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
 
+    SZHASH_DATA *       szHash_New(
+        uint16_t            cHash
+    )
+    {
+        SZHASH_DATA         *this;
+        
+        // Do initialization.
+        
+        this = szHash_Alloc( );
+        if (this) {
+            this = szHash_Init(this, cHash);
+        }
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
+    
 
     
 

@@ -1,9 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   token.c
- *	Generated 05/26/2015 13:40:16
+ * File:   hexDataFromJSON.c
  *
- * Created on December 30, 2014
+ * Created on August 27, 2017
  */
 
 
@@ -42,14 +41,14 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "token_internal.h"
+#include    <hex_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "hjson.h"
-#include    "node.h"
-#include    "nodeHash.h"
-#include    "utf8.h"
+#include    <hjson.h>
+#include    <node.h>
+#include    <nodeHash.h>
+#include    <utf8.h>
 
 
 
@@ -79,15 +78,17 @@ extern "C" {
     //===============================================================
     
 
-    NODE_DATA *     node_NewFromJSONString(
-        ASTR_DATA       *pString
+    ERESULT         hex_DataFromJSONString(
+        ASTR_DATA       *pString,
+        uint32_t        *pLength,
+        void            **ppData
     )
     {
         HJSON_DATA      *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         //NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         const
         char            *pFileName = "";
 #ifdef XYZZY
@@ -97,8 +98,8 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pType = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
+        NAME_DATA       *pNameOut = OBJ_NIL;
 #endif
-        NODE_DATA       *pNodeOut = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
         
         pParser = hjson_NewAStr(pString, 4);
@@ -307,29 +308,31 @@ extern "C" {
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        return pNodeOut;
+        return eRc;
     }
     
     
 
-    NODE_DATA *     node_NewFromJSONStringA(
+#ifdef XYZZY
+    NAME_DATA *     name_NewFromJSONStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
+        NAME_DATA       *pName = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pNode = node_NewFromJSONString(pStr);
+            pName = name_NewFromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
         // Return to caller.
-        return pNode;
+        return pName;
     }
+#endif
     
     
     

@@ -57,7 +57,7 @@ will depend upon time and resources.
         to use their own internal structures removing left,parent,right and Children from
         the Node itself.
     --  why do we need nodeArray and nodeList?
-    --  nodeList does not use built in pointers.
+    --  nodeList does not use built-in pointers.
     --  nodeTree relies on children not left,parent,right.
     --  nodeTree is effectively a list of lists.
     --  nodeArray does not use built in pointers
@@ -163,6 +163,13 @@ The following are things that need to be followed up on:
 
 
 - scanOpt/cmdutl/clo (Command Line Option Scanning)
+    - types of parameters (Use JSON like grammar)
+        - '{'...'}' == dictionary
+        - '['...']' == array
+        - parameters basic types - int32_t, float, string - all stored as value object
+        - named parameters of format, xxx=yyy, are stored as 'xxx' key
+        - non-named parameters are stored by their relative position number on the line
+        - a NodeHash (possibly szHash) is returned
     - cmnutl is to be the final object. However, the example parsing of
         command line options from Compiler/Languages/RIR/main.c shows
         that it is not all that complicated to do by hand.

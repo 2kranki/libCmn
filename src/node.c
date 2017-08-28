@@ -1326,11 +1326,11 @@ extern "C" {
         int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
-        char            str2[256];
-        uint32_t        len;
-        uint32_t        lenChars;
-        const
-        int32_t         *pWStr = NULL;
+        //char            str2[256];
+        //uint32_t        len;
+        //uint32_t        lenChars;
+        //const
+        //int32_t         *pWStr = NULL;
         const
         OBJ_INFO        *pInfo;
         

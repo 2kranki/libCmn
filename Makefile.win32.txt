@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/18/2017 14:34:56.000)
+# ( 8/28/2017 12:44:54.000)
 
 
 LIBNAM=libCmn
@@ -84,6 +84,7 @@ OBJS = $(OBJS) $(OBJDIR)\hash32.obj $(OBJDIR)\hash32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hex.obj $(OBJDIR)\hex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hjson.obj $(OBJDIR)\hjson_object.obj
 OBJS = $(OBJS) $(OBJDIR)\json.obj $(OBJDIR)\json_object.obj
+OBJS = $(OBJS) $(OBJDIR)\jsonOut.obj $(OBJDIR)\jsonOut_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lexj.obj $(OBJDIR)\lexj_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lru.obj $(OBJDIR)\lru_object.obj
@@ -139,8 +140,11 @@ OBJS = $(OBJS) $(OBJDIR)\u32Array.obj $(OBJDIR)\u32Array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\u8Array.obj $(OBJDIR)\u8Array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\uint128.obj $(OBJDIR)\uint128_object.obj
 OBJS = $(OBJS) $(OBJDIR)\utf8.obj $(OBJDIR)\utf8_object.obj
+OBJS = $(OBJS) $(OBJDIR)\value.obj $(OBJDIR)\value_object.obj
 OBJS = $(OBJS) $(OBJDIR)\wav.obj $(OBJDIR)\wav_object.obj
 OBJS = $(OBJS) $(OBJDIR)\xml.obj $(OBJDIR)\xml_object.obj
+OBJS = $(OBJS) $(OBJDIR)\hexDataFromJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\hexDataToJSON.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
 OBJS = $(OBJS) $(OBJDIR)\nameFromJSON.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeFromJSON.obj
@@ -153,6 +157,7 @@ OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLocFromJSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\tokenFromJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\valueFromJSON.obj
 
 
 {src}.asm{$(OBJDIR)}.obj:
@@ -346,10 +351,26 @@ test_hash32:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_hex
+
+test_hex:
+	$(CC) $(CFLAGS) /Itests tests\test_hex.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) /Itests tests\test_hjson.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_jsonOut
+
+test_jsonOut:
+	$(CC) $(CFLAGS) /Itests tests\test_jsonOut.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -518,6 +539,14 @@ TESTS = $(TESTS) test_u8Array
 
 test_u8Array:
 	$(CC) $(CFLAGS) /Itests tests\test_u8Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_value
+
+test_value:
+	$(CC) $(CFLAGS) /Itests tests\test_value.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

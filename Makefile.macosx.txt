@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/18/2017 14:34:57.000)
+# ( 8/28/2017 12:44:55.000)
 
 
 LIBNAM=libCmn
@@ -644,6 +644,18 @@ $(OBJDIR)/json.o: $(SRCDIR)/json.c
 
 
 $(OBJDIR)/json_object.o: $(SRCDIR)/json_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/jsonOut.o $(OBJDIR)/jsonOut_object.o
+
+
+$(OBJDIR)/jsonOut.o: $(SRCDIR)/jsonOut.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/jsonOut_object.o: $(SRCDIR)/jsonOut_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1308,6 +1320,18 @@ $(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c
 
 
 
+OBJS += $(OBJDIR)/value.o $(OBJDIR)/value_object.o
+
+
+$(OBJDIR)/value.o: $(SRCDIR)/value.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/value_object.o: $(SRCDIR)/value_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/wav.o $(OBJDIR)/wav_object.o
 
 
@@ -1332,6 +1356,18 @@ $(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c
 
 
 
+$(OBJDIR)/hexDataFromJSON.o: $(SRCDIR)/hexDataFromJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/hexDataFromJSON.o
+$(OBJDIR)/hexDataToJSON.o: $(SRCDIR)/hexDataToJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/hexDataToJSON.o
 $(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1404,6 +1440,12 @@ $(OBJDIR)/tokenFromJSON.o: $(SRCDIR)/tokenFromJSON.c
 
 
 OBJS += $(OBJDIR)/tokenFromJSON.o
+$(OBJDIR)/valueFromJSON.o: $(SRCDIR)/valueFromJSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/valueFromJSON.o
 
 
 
@@ -1565,10 +1607,24 @@ test_hash32:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_hex
+
+test_hex:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hex.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hjson.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_jsonOut
+
+test_jsonOut:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_jsonOut.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1716,6 +1772,13 @@ TESTS += test_u8Array
 
 test_u8Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u8Array.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_value
+
+test_value:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_value.c 
 	$(OBJDIR)/$(@F)
 
 

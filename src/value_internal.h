@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   hex_internal.h
- *	Generated 10/08/2016 09:17:56
+ * File:   value_internal.h
+ *	Generated 08/26/2017 09:50:28
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,11 +38,12 @@
 
 
 
-#include    <hex.h>
+
+#include    <value.h>
 
 
-#ifndef HEX_INTERNAL_H
-#define	HEX_INTERNAL_H
+#ifndef VALUE_INTERNAL_H
+#define	VALUE_INTERNAL_H
 
 
 
@@ -52,8 +54,12 @@ extern "C" {
 
 
 
-#pragma pack(push, 1)
-struct hex_data_s	{
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+ #pragma pack(push, 1)
+struct value_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -61,59 +67,72 @@ struct hex_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint32_t        *pLen;              // Remaining length of buffer
-    //                                  // (Decremented if char added)
-    char            **ppBuffer;         // Ascii representation of digit stored
-    //                                  // at ptr and ptr is advanced
+    uint16_t        type;           // Value Type (see VALUE_TYPE)
+    uint16_t        reserved;
+    union {
+        int16_t         i16;                // int16
+        int32_t         i32;                // int32
+        int64_t			i64;                // int64
+        //        int128_t		i128;               // int128
+        uint16_t        u16;                // uint16
+        uint32_t        u32;                // uint32
+        uint64_t		u64;                // uint64
+        //        uint128_t		u128;               // uint128
+        double          flt;
+        OBJ_ID          pObject;
+        struct {
+            uint32_t        length;
+            void            *pData;
+        } data;
+    } value;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct hex_class_data_s  hex_ClassObj;
+    struct value_class_data_s  value_ClassObj;
 
     extern
     const
-    HEX_VTBL         hex_Vtbl;
+    VALUE_VTBL         value_Vtbl;
 
 
-    // Internal Functions
-    void            hex_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            value_setLastError(
+        VALUE_DATA     *this,
+        ERESULT         value
+    );
+
+
+    void            value_Dealloc(
         OBJ_ID          objId
     );
 
-    
-    uint32_t        hex_putBytes16Obj(
-        HEX_DATA        *this,
-        bool            f64,
-        uint64_t        offset,
-        uint32_t        cData,
-        const
-        void            *pData,
-        void            *pObject,
-        bool            (*pPutChar)(void *, uint8_t)
-    );
 
-    
-    bool            hex_putChar(
-        HEX_DATA        *this,
-        uint8_t         data
-    );
-
-
-    void *          hex_QueryInfo(
+    void *          value_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
         char            *pStr
     );
-    
-    
+
+
+    ASTR_DATA *     value_ToJSON(
+        VALUE_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			hex_Validate(
-        HEX_DATA       *cbp
+    bool			value_Validate(
+        VALUE_DATA       *this
     );
 #endif
 
@@ -123,5 +142,5 @@ struct hex_data_s	{
 }
 #endif
 
-#endif	/* HEX_INTERNAL_H */
+#endif	/* VALUE_INTERNAL_H */
 

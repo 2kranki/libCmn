@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'hex'
-//	Generated 10/08/2016 09:17:56
+//	Class Object Metods and Tables for 'value'
+//	Generated 08/26/2017 09:50:28
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,9 @@
  */
 
 
-#define			HEX_OBJECT_C	    1
-#include        "hex_internal.h"
+
+#define			VALUE_OBJECT_C	    1
+#include        <value_internal.h>
 
 
 
@@ -40,14 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct hex_class_data_s	{
+struct value_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct hex_class_data_s HEX_CLASS_DATA;
+typedef struct value_class_data_s VALUE_CLASS_DATA;
 
 
 
@@ -60,22 +62,22 @@ typedef struct hex_class_data_s HEX_CLASS_DATA;
 
 static
 const
-OBJ_INFO        hex_Info;            // Forward Reference
+OBJ_INFO        value_Info;            // Forward Reference
 
 
 
-OBJ_ID          hex_Class(
+OBJ_ID          value_Class(
     OBJ_ID          objId
 );
 
 
 
 static
-bool            hex_ClassIsKindOf(
+bool            value_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HEX_CLASS == classID) {
+    if (OBJ_IDENT_VALUE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -90,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_HEX_CLASS;
+    return OBJ_IDENT_VALUE_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&hex_Info,
-    hex_ClassIsKindOf,
+	&value_Info,
+    value_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -113,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-HEX_CLASS_DATA  hex_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_HEX_CLASS, 0, 1},
+VALUE_CLASS_DATA  value_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_VALUE_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            hex_IsKindOf(
+bool            value_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HEX == classID) {
+    if (OBJ_IDENT_VALUE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -137,51 +139,51 @@ bool            hex_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            hex_Dealloc(
+void            value_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          hex_Class(
+OBJ_ID          value_Class(
     OBJ_ID          objId
 )
 {
-    return (OBJ_ID)&hex_ClassObj;
+    return (OBJ_ID)&value_ClassObj;
 }
 
 
 static
-uint16_t		hex_WhoAmI(
+uint16_t		value_WhoAmI(
     OBJ_ID          objId
 )
 {
-    return OBJ_IDENT_HEX;
+    return OBJ_IDENT_VALUE;
 }
 
 
 const
-HEX_VTBL     hex_Vtbl = {
+VALUE_VTBL     value_Vtbl = {
     {
-        &hex_Info,
-        hex_IsKindOf,
+        &value_Info,
+        value_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        hex_Dealloc,
-        hex_Class,
-        hex_WhoAmI,
-        (P_OBJ_QUERYINFO)hex_QueryInfo,
-        (P_OBJ_TOSTRING)hex_ToDebugString,
-        NULL,			// hex_Enable,
-        NULL,			// hex_Disable,
-        NULL,			// (P_OBJ_ASSIGN)hex_Assign,
-        NULL,			// (P_OBJ_COMPARE)hex_Compare,
-        NULL, 			// (P_OBJ_PTR)hex_Copy,
-        NULL 			// (P_OBJ_HASH)hex_Hash
+        value_Dealloc,
+        value_Class,
+        value_WhoAmI,
+        (P_OBJ_QUERYINFO)value_QueryInfo,
+        (P_OBJ_TOSTRING)value_ToDebugString,
+        NULL,			// value_Enable,
+        NULL,			// value_Disable,
+        NULL,			// (P_OBJ_ASSIGN)value_Assign,
+        NULL,			// (P_OBJ_COMPARE)value_Compare,
+        NULL, 			// (P_OBJ_PTR)value_Copy,
+        NULL 			// (P_OBJ_HASH)value_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //hex_IsEnabled,
+    //value_IsEnabled,
  
 };
 
@@ -189,12 +191,12 @@ HEX_VTBL     hex_Vtbl = {
 
 static
 const
-OBJ_INFO        hex_Info = {
-    "hex",
-    "Hexadecimal Conversion",
-    (OBJ_DATA *)&hex_ClassObj,
+OBJ_INFO        value_Info = {
+    "value",
+    "Value",
+    (OBJ_DATA *)&value_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&hex_Vtbl
+    (OBJ_IUNKNOWN *)&value_Vtbl
 };
 
 

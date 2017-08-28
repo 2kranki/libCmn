@@ -66,6 +66,7 @@
         "hjson":["cmn"],
         "json":["cmn","AStr","false","name","node","nodeArray",
                 "nodeHash","nodeTree","null","path","true"],
+        "jsonOut":["cmn"],
         "lex":["cmn"],
         "lexj":["cmn"],
         "lru":["cmn","AStr","listdl"],
@@ -122,6 +123,7 @@
         "u32Array":["cmn","AStr","pwr2Array"],
         "uint128":["cmn"],
         "utf8":["cmn"],
+        "value":["cmn"],
         "wav":["cmn"],
         "WStr":["cmn"],
         "WStrArray":["cmn"],
@@ -130,6 +132,8 @@
     },
     "routines":
     [
+        "hexDataFromJSON.c",
+        "hexDataToJSON.c",
         "listdl.c",
         "nameFromJSON.c",
         "nodeFromJSON.c",
@@ -141,7 +145,8 @@
         "shellSortPtrs.c",
         "srcLocFromJSON.c"
         "str.c",
-        "tokenFromJSON.c"
+        "tokenFromJSON.c",
+        "valueFromJSON.c"
     ],
     "macosx": {
         "cmn_osx.c":null,
@@ -172,7 +177,9 @@
         "test_enum.c":null,
         "test_false.c":null,
         "test_hash32.c":null,
+        "test_hex.c":null,
         "test_hjson.c":null,
+        "test_jsonOut.c":null,
         "test_lex.c":null,
         "test_lexj.c":null,
         "test_msgBus.c":null,
@@ -193,6 +200,7 @@
         "test_token.c":null,
         "test_trace.c":null,
         "test_true.c":null,
-        "test_u8Array.c":null
+        "test_u8Array.c":null,
+        "test_value.c":null
     }
 }

@@ -109,6 +109,19 @@ extern "C" {
     );
     
     
+    ERESULT         hex_DataFromJSONString(
+        ASTR_DATA       *pString,
+        uint32_t        *pLength,
+        void            **ppData
+    );
+    
+    
+    ASTR_DATA *     hex_DataToJSON(
+        uint32_t        length,
+        void            *pData
+    );
+    
+    
     /*!
      Convert 0-15 to an ascii character. For instance, 10 becomes 'a'.
      @return:   if successful, the converted character. Otherwise, '?' is returned.
@@ -381,9 +394,14 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *    hex_ToDebugString(
-        HEX_DATA     *this,
+    ASTR_DATA *     hex_ToDebugString(
+        HEX_DATA        *this,
         int             indent
+    );
+    
+    
+    ASTR_DATA *     hex_ToJSON(
+        HEX_DATA        *this
     );
     
     

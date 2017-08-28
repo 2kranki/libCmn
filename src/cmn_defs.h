@@ -252,6 +252,8 @@ extern "C" {
         OBJ_IDENT_HJSON_CLASS,
         OBJ_IDENT_JSON,                 // JSON Parser
         OBJ_IDENT_JSON_CLASS,
+        OBJ_IDENT_JSONOUT,              // Standardized JSON Output
+        OBJ_IDENT_JSONOUT_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner
         OBJ_IDENT_LEX_CLASS,
         OBJ_IDENT_LEXJ,                 // Simple Lexical Scanner for HJSON
@@ -411,6 +413,8 @@ extern "C" {
         OBJ_IDENT_UINT128_CLASS,
         OBJ_IDENT_UTF8,
         OBJ_IDENT_UTF8_CLASS,
+        OBJ_IDENT_VALUE,                // Any type of value
+        OBJ_IDENT_VALUE_CLASS,
         OBJ_IDENT_WAV,                  // WAV File
         OBJ_IDENT_WAV_CLASS,
         OBJ_IDENT_WSTR,

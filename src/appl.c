@@ -776,9 +776,11 @@ extern "C" {
         const
         char            **ppWrkArgV = this->ppArgs;
         int             i;
+#ifdef XYZZY
         int             offset;
         int             len;
         char            wrkstr[64];
+#endif
         int             iRc;
         
         // Do initialization.

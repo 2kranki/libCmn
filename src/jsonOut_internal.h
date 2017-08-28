@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   hex_internal.h
- *	Generated 10/08/2016 09:17:56
+ * File:   jsonOut_internal.h
+ *	Generated 08/27/2017 10:50:36
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,11 +38,12 @@
 
 
 
-#include    <hex.h>
+
+#include    <jsonOut.h>
 
 
-#ifndef HEX_INTERNAL_H
-#define	HEX_INTERNAL_H
+#ifndef JSONOUT_INTERNAL_H
+#define	JSONOUT_INTERNAL_H
 
 
 
@@ -52,8 +54,12 @@ extern "C" {
 
 
 
-#pragma pack(push, 1)
-struct hex_data_s	{
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+ #pragma pack(push, 1)
+struct jsonOut_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -61,59 +67,62 @@ struct hex_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint32_t        *pLen;              // Remaining length of buffer
-    //                                  // (Decremented if char added)
-    char            **ppBuffer;         // Ascii representation of digit stored
-    //                                  // at ptr and ptr is advanced
+    uint16_t        size;		/* maximum number of elements           */
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct hex_class_data_s  hex_ClassObj;
+    struct jsonOut_class_data_s  jsonOut_ClassObj;
 
     extern
     const
-    HEX_VTBL         hex_Vtbl;
+    JSONOUT_VTBL         jsonOut_Vtbl;
 
 
-    // Internal Functions
-    void            hex_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            jsonOut_setLastError(
+        JSONOUT_DATA     *this,
+        ERESULT         value
+    );
+
+
+    void            jsonOut_Dealloc(
         OBJ_ID          objId
     );
 
-    
-    uint32_t        hex_putBytes16Obj(
-        HEX_DATA        *this,
-        bool            f64,
-        uint64_t        offset,
-        uint32_t        cData,
-        const
-        void            *pData,
-        void            *pObject,
-        bool            (*pPutChar)(void *, uint8_t)
-    );
 
-    
-    bool            hex_putChar(
-        HEX_DATA        *this,
-        uint8_t         data
-    );
-
-
-    void *          hex_QueryInfo(
+    void *          jsonOut_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
         char            *pStr
     );
-    
-    
+
+
+    ASTR_DATA *     jsonOut_ToJSON(
+        JSONOUT_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			hex_Validate(
-        HEX_DATA       *cbp
+    bool			jsonOut_Validate(
+        JSONOUT_DATA       *this
     );
 #endif
 
@@ -123,5 +132,5 @@ struct hex_data_s	{
 }
 #endif
 
-#endif	/* HEX_INTERNAL_H */
+#endif	/* JSONOUT_INTERNAL_H */
 

@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "hex_internal.h"
+#include    <hex_internal.h>
+#include    <crc.h>
 
 
 
@@ -361,6 +362,7 @@ extern "C" {
     
     
     
+
     
 
     //===============================================================
@@ -1138,6 +1140,74 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          hex_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        HEX_DATA        *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !hex_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'D':
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return hex_Disable;
+                        }
+                        break;
+                        
+                    case 'E':
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return hex_Enable;
+                        }
+                        break;
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return hex_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return hex_ToJSON;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1201,6 +1271,55 @@ extern "C" {
         }
         j = snprintf(str, sizeof(str), " %p(hex)}\n", this);
         AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    ASTR_DATA *     hex_ToJSON(
+        HEX_DATA        *this
+    )
+    {
+        char            str[256];
+        //uint32_t        i;
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        //ASTR_DATA       *pWrk;
+        //char            *pChr;
+        //char            chrs[12];
+        
+#ifdef NDEBUG
+#else
+        if( !hex_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
+        
+#ifdef XYZZY
+        AStr_AppendA(pStr, ", \"type\":\"VALUE_TYPE_DATA_FREE\", \"data\":");
+        pChr = this->value.data.pData;
+        for (i=0; i<this->value.data.length; ++i) {
+            utf8_WCToChrCon(*pChr++, chrs);
+            AStr_AppendA(pStr, chrs);
+        }
+        AStr_AppendA(pStr, "\"");
+#endif
+        
+        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }

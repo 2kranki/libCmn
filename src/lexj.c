@@ -1010,6 +1010,8 @@ extern "C" {
                     break;
                     
                 case '"':           /*** '"' ***/
+                    // Quoted String
+                    //TODO: "..." {<white-space> "..."}
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     lex_ParseStringTruncate((LEX_DATA *)this);
                     while(lex_ParseChrCon((LEX_DATA *)this, '"'))

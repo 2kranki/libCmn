@@ -85,17 +85,19 @@ extern "C" {
     {
         HJSON_DATA      *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
-        NODE_DATA       *pNode;
+        //NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         const
         char            *pFileName = "";
+#ifdef XYZZY
         uint32_t        lineNo = 0;
         uint16_t        colNo = 0;
         int32_t         cls = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pType = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
+#endif
         NAME_DATA       *pNameOut = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
         
