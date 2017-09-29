@@ -67,7 +67,7 @@ OBJ_INFO        enum_Info;            // Forward Reference
 
 
 OBJ_ID          enum_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            enum_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ENUM_CLASS;
@@ -145,7 +145,7 @@ void            enum_Dealloc(
 
 
 OBJ_ID          enum_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&enum_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          enum_Class(
 
 static
 uint16_t		enum_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ENUM;

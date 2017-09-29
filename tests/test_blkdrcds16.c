@@ -113,7 +113,8 @@ int         test_blkdrcds16_OpenClose(
     ASTR_DATA       *pStr;
     char            data[16];
    
-    pObj = blkdrcds16_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = blkdrcds16_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = blkdrcds16_InitWithSizes(pObj, 32, 0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -214,6 +215,7 @@ int         test_blkdrcds16_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -226,10 +228,12 @@ int         test_blkdrcds16_Calc(
 {
     uint16_t        size = 0;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     size = blkdrcds16_CalcBlockSize(10, 8, 64);
     XCTAssertTrue( (562 == size) );
     
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

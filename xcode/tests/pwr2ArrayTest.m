@@ -97,7 +97,7 @@
     char            *pStr;
     uint32_t        i;
    
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -130,7 +130,7 @@
     char            *pStr;
     uint32_t        i;
     
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -166,7 +166,7 @@
     char            *pStr;
     uint32_t        i;
     
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -208,7 +208,7 @@
     char            *pStr;
     uint32_t        i;
     
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -252,7 +252,7 @@
     char            chr;
     char            chrs[7];
     
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -311,7 +311,7 @@
     char            *pStr;
     uint32_t        i;
     
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -366,7 +366,7 @@
     char            *pStr;
     uint32_t        i;
     
-    pObj = pwr2Array_Alloc(0);
+    pObj = pwr2Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = pwr2Array_Init( pObj, 0 );           // 1 byte per element
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

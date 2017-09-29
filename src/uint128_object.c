@@ -39,7 +39,7 @@
 
 
 OBJ_ID          uint128_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            uint128_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_UINT128_CLASS;
@@ -121,7 +121,7 @@ void            uint128_Dealloc(
 
 
 OBJ_ID          uint128_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&uint128_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          uint128_Class(
 
 static
 uint16_t		uint128_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_UINT128;

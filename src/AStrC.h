@@ -87,10 +87,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     ASTRC_DATA *    AStrC_Alloc(
+        void
     );
     
     
     ASTRC_DATA *    AStrC_New(
+        void
     );
     
     

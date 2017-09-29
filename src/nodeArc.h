@@ -102,10 +102,12 @@ extern "C" {
      @return:   pointer to nodeArc object if successful, otherwise OBJ_NIL.
      */
     NODEARC_DATA *  nodeArc_Alloc(
+        void
     );
     
     
     NODEARC_DATA *  nodeArc_New(
+        void
     );
     
     

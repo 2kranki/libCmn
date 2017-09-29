@@ -39,7 +39,7 @@
 
 
 OBJ_ID          dbf_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            dbf_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DBF_CLASS;
@@ -121,7 +121,7 @@ void            dbf_Dealloc(
 
 
 OBJ_ID          dbf_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&dbf_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          dbf_Class(
 
 static
 uint16_t		dbf_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DBF;

@@ -87,6 +87,9 @@ extern "C" {
         }
         tableSize = ROUNDUP2(tableSize);
         cbSize += (tableSize * sizeof(SIDX_ENTRY));
+        if (cbSize >= (64 * 1024)) {
+            return OBJ_NIL;
+        }
         this = obj_Alloc( cbSize );
         obj_setMisc1(this, tableSize);
         
@@ -164,7 +167,7 @@ extern "C" {
     bool            sidx_AddIndex(
         SIDX_DATA       *cbp,
         uint32_t        index,
-        uint32_t        offset
+        size_t          offset
     )
     {
         uint32_t        i;
@@ -252,7 +255,7 @@ extern "C" {
         SIDX_DATA		*this,
         uint32_t        index,
         uint32_t        *pIndex,
-        uint32_t        *pOffset
+        size_t          *pOffset
     )
     {
         uint32_t        i;
@@ -385,7 +388,7 @@ extern "C" {
             j = snprintf(
                          str,
                          sizeof(str),
-                         "[%d,%d], ",
+                         "[%d,%zu], ",
                          pEntry->index,
                          pEntry->offset
                 );
@@ -395,7 +398,7 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "[%d,%d] ",
+                     "[%d,%zu] ",
                      pEntry->index,
                      pEntry->offset
                      );

@@ -69,7 +69,8 @@ int         test_rrds32_OpenClose(
 {
     RRDS32_DATA	*pObj = OBJ_NIL;
    
-    pObj = rrds32_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = rrds32_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = rrds32_Init( pObj, 0 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -81,6 +82,7 @@ int         test_rrds32_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -102,6 +104,7 @@ int         test_rrds32_NoBuffers(
     char            *pBlock;
     ERESULT         eRc;
 
+    fprintf(stderr, "Performing: %s\n", pTestName);
     cbp = rrds32_Alloc();
     XCTAssertFalse( (NULL == cbp));
     cbp = rrds32_Init(cbp, 0);
@@ -150,6 +153,7 @@ int         test_rrds32_NoBuffers(
     obj_Release(cbp);
     cbp = OBJ_NIL;
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

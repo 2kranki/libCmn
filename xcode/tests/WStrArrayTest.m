@@ -74,7 +74,7 @@
 {
     WSTRARRAY_DATA	*pObj = OBJ_NIL;
    
-    pObj = WStrArray_Alloc(0);
+    pObj = WStrArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = WStrArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

@@ -88,10 +88,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     NULL_DATA *     null_Alloc(
+        void
     );
     
     
     NULL_DATA *     null_New(
+        void
     );
     
     

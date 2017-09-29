@@ -110,6 +110,7 @@ extern "C" {
      @return:   pointer to nodeEntry object if successful, otherwise OBJ_NIL.
      */
     NODEENTRY_DATA * nodeEntry_Alloc(
+        void
     );
     
     

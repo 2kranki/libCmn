@@ -65,7 +65,7 @@ OBJ_INFO        nodeMatrix_Info;            // Forward Reference
 
 
 OBJ_ID          nodeMatrix_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            nodeMatrix_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEMATRIX_CLASS;
@@ -143,7 +143,7 @@ void            nodeMatrix_Dealloc(
 
 
 OBJ_ID          nodeMatrix_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeMatrix_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          nodeMatrix_Class(
 
 static
 uint16_t		nodeMatrix_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEMATRIX;

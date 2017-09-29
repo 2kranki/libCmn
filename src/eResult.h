@@ -210,18 +210,22 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT_DATA *  eResult_Alloc(
+        void
     );
     
 
     ERESULT_DATA *  eResult_New(
+        void
     );
     
     
     ERESULT_DATA *  eResult_Shared(
+        void
     );
     
     
     bool            eResult_SharedReset(
+        void
     );
     
 
@@ -234,6 +238,7 @@ extern "C" {
      and can be used as a process result code.
      */
     ERESULT         eResult_getSharedResult(
+        void
     );
     
     bool            eResult_setSharedResult(

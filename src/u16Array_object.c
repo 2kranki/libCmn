@@ -39,7 +39,7 @@
 
 
 OBJ_ID          u16Array_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -64,7 +64,7 @@ bool            u16Array_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U16ARRAY_CLASS;
@@ -127,7 +127,7 @@ void            u16Array_Dealloc(
 
 
 OBJ_ID          u16Array_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&u16Array_ClassObj;
@@ -136,7 +136,7 @@ OBJ_ID          u16Array_Class(
 
 static
 uint16_t		u16Array_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U16ARRAY;

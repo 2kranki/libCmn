@@ -68,7 +68,7 @@ OBJ_INFO        bptree_Info;            // Forward Reference
 
 
 OBJ_ID          bptree_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -90,7 +90,7 @@ bool            bptree_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BPTREE_CLASS;
@@ -146,7 +146,7 @@ void            bptree_Dealloc(
 
 
 OBJ_ID          bptree_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&bptree_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          bptree_Class(
 
 static
 uint16_t		bptree_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BPTREE;

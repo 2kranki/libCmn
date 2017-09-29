@@ -88,10 +88,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     ASTRARRAY_DATA * AStrArray_Alloc(
+        void
     );
     
     
     ASTRARRAY_DATA * AStrArray_New(
+        void
     );
     
     

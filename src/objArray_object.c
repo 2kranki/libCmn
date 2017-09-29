@@ -66,7 +66,7 @@ OBJ_INFO        objArray_Info;            // Forward Reference
 
 
 OBJ_ID          objArray_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            objArray_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJARRAY_CLASS;
@@ -144,7 +144,7 @@ void            objArray_Dealloc(
 
 
 OBJ_ID          objArray_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&objArray_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          objArray_Class(
 
 static
 uint16_t		objArray_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJARRAY;

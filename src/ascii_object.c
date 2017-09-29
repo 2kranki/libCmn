@@ -66,7 +66,7 @@ OBJ_INFO        ascii_Info;            // Forward Reference
 
 
 OBJ_ID          ascii_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            ascii_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ASCII_CLASS;
@@ -145,7 +145,7 @@ void            ascii_Dealloc(
 
 
 OBJ_ID          ascii_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&ascii_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          ascii_Class(
 
 static
 uint16_t		ascii_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ASCII;

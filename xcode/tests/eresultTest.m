@@ -93,7 +93,7 @@
 {
     ERESULT_DATA	*pObj = OBJ_NIL;
    
-    pObj = eResult_Alloc(0);
+    pObj = eResult_Alloc( );
     XCTAssertFalse((OBJ_NIL == pObj));
     pObj = eResult_Init( pObj );
     XCTAssertFalse((OBJ_NIL == pObj));

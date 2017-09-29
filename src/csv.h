@@ -151,6 +151,7 @@ extern "C" {
     
     
     OBJ_ID          csv_Class(
+        void
     );
     
     

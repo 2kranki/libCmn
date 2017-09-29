@@ -70,7 +70,8 @@ int         test_blocks_OpenClose(
 {
     BLOCKS_DATA	    *pObj = OBJ_NIL;
    
-    pObj = blocks_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = blocks_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = blocks_Init( pObj, 2048 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -80,6 +81,7 @@ int         test_blocks_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -105,7 +107,8 @@ int         test_blocks_Add(
     ENUM_DATA       *pEnum = OBJ_NIL;
     uint64_t        i64 = 0;
     
-    pObj = blocks_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = blocks_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = blocks_Init( pObj, 2048 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -170,6 +173,7 @@ int         test_blocks_Add(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

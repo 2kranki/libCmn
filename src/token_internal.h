@@ -40,7 +40,11 @@
 #define	TOKEN_INTERNAL_H
 
 
+
 #include    "token.h"
+#include    "srcLoc_internal.h"
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -48,30 +52,30 @@ extern "C" {
 
 
 #pragma pack(push, 1)
+    typedef struct token_s    {
+        SRCLOC          src;
+        int32_t         cls;                // Character/Token Class (Optional)
+        uint16_t        misc;
+        uint16_t        len;                // Character/Token Length (Optional)
+        uint16_t        offset;                // offset into token string (Optional)
+        uint16_t        type;               // Type in union below
+        union {
+            int32_t         wchr[2];            // Wide Character w/ Trailing NUL
+            int64_t            integer;            // Integer
+            OBJ_ID            pObj;               // an object
+            uint32_t        strToken;
+        };
+    } TOKEN;
+#pragma pack(pop)
+    
+#pragma pack(push, 1)
 struct token_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
 
     // Common Data
-    const
-    char            *pFileName;
-	uint32_t        lineNo; 			/* Source Input Line Number */
-    int32_t         cls;				/* Character/Token Class (Optional) */
-	uint16_t        misc;
-	uint16_t        colNo;				/* Source Input Column Number */
-	uint16_t        len;				/* Character/Token Length (Optional) */
-	uint16_t        offset;				/* offset into token string (Optional) */
-    uint16_t        type;               /* Type in union below*/
-    uint16_t        rsvd;
-    union {
-        int32_t         wchr[2];            // Wide Character w/ NUL
-        int64_t			integer;			/* Integer */
-        OBJ_ID			pObj;               /* an object */
-        uint32_t        strToken;
-    };
-    const
-    int32_t         zero;				/* Used to return a zero length string */
+    TOKEN           data;
 
 };
 #pragma pack(pop)

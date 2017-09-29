@@ -117,6 +117,7 @@ extern "C" {
      @return:   pointer to PSXThread object if successful, otherwise OBJ_NIL.
      */
     PSXTHREAD_DATA * psxThread_Alloc(
+        void
     );
     
     

@@ -93,7 +93,7 @@
 {
     ASTRARRAY_DATA	*pObj = OBJ_NIL;
    
-    pObj = AStrArray_Alloc(0);
+    pObj = AStrArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = AStrArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

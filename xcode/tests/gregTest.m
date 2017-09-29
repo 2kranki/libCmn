@@ -93,7 +93,7 @@
 {
     GREG_DATA	*pObj = OBJ_NIL;
    
-    pObj = greg_Alloc(0);
+    pObj = greg_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  GREG_DATA" );
     pObj = greg_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  GREG_DATA" );

@@ -41,7 +41,7 @@
 
 
 OBJ_ID          sidx_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -63,7 +63,7 @@ bool            sidx_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SIDX_CLASS;
@@ -123,7 +123,7 @@ void            sidx_Dealloc(
 
 
 OBJ_ID          sidx_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&sidx_ClassObj;
@@ -132,7 +132,7 @@ OBJ_ID          sidx_Class(
 
 static
 uint16_t		sidx_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SIDX;

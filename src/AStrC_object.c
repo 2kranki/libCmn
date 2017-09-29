@@ -67,7 +67,7 @@ OBJ_INFO        AStrC_Info;            // Forward Reference
 
 
 OBJ_ID          AStrC_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            AStrC_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ASTRC_CLASS;
@@ -145,7 +145,7 @@ void            AStrC_Dealloc(
 
 
 OBJ_ID          AStrC_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&AStrC_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          AStrC_Class(
 
 static
 uint16_t		AStrC_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ASTRC;

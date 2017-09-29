@@ -96,10 +96,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     PSXMUTEX_DATA *     psxMutex_Alloc(
+        void
     );
     
     
     PSXMUTEX_DATA *     psxMutex_New(
+        void
     );
     
     

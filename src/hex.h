@@ -102,15 +102,24 @@ extern "C" {
      @return:   pointer to hex object if successful, otherwise OBJ_NIL.
      */
     HEX_DATA *     hex_Alloc(
+        void
     );
     
     
     HEX_DATA *     hex_New(
+        void
     );
     
     
     ERESULT         hex_DataFromJSONString(
         ASTR_DATA       *pString,
+        uint32_t        *pLength,
+        void            **ppData
+    );
+    
+    ERESULT         hex_DataFromJSONStringA(
+        const
+        char            *pString,
         uint32_t        *pLength,
         void            **ppData
     );

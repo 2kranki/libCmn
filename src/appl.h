@@ -103,6 +103,7 @@ extern "C" {
      @return:   pointer to appl object if successful, otherwise OBJ_NIL.
      */
     APPL_DATA *     appl_Alloc(
+        void
     );
     
     

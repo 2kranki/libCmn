@@ -93,7 +93,7 @@
     WSTRC_DATA	*pObj = OBJ_NIL;
     WSTRC_DATA	*pCopy = OBJ_NIL;
    
-    pObj = WStrC_Alloc(0);
+    pObj = WStrC_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = WStrC_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

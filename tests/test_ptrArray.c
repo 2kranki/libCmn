@@ -110,6 +110,7 @@ int         test_ptrArray_OpenClose(
     const
     char            *pStr;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = ptrArray_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = ptrArray_Init(pObj);
@@ -149,6 +150,7 @@ int         test_ptrArray_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

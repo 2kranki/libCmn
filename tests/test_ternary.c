@@ -70,6 +70,7 @@ int         test_ternary_OpenClose(
 {
     TERNARY_DATA *pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = ternary_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = ternary_Init( pObj, 16 );
@@ -82,6 +83,7 @@ int         test_ternary_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -96,7 +98,8 @@ int         test_ternary_AddFind(
     ERESULT         eRc;
     void            *pResult;
     
-    pObj = ternary_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = ternary_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = ternary_Init( pObj, 16 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -205,6 +208,7 @@ int         test_ternary_AddFind(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

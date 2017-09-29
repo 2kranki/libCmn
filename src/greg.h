@@ -94,10 +94,12 @@ extern "C" {
      * via obj_misc1.
      */
     GREG_DATA *     greg_Alloc(
+        void
     );
     
     
     OBJ_ID          greg_Class(
+        void
     );
     
     

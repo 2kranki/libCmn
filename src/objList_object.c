@@ -65,7 +65,7 @@ OBJ_INFO        objList_Info;            // Forward Reference
 
 
 OBJ_ID          objList_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            objList_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJLIST_CLASS;
@@ -143,7 +143,7 @@ void            objList_Dealloc(
 
 
 OBJ_ID          objList_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&objList_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          objList_Class(
 
 static
 uint16_t		objList_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJLIST;

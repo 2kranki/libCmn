@@ -115,7 +115,8 @@ int         test_szHash_OpenClose(
 {
     SZHASH_DATA	*pObj = OBJ_NIL;
    
-    pObj = szHash_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = szHash_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = szHash_Init( pObj, 5 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -127,6 +128,7 @@ int         test_szHash_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -143,6 +145,7 @@ int         test_szHash_AddFindDelete1(
     ERESULT         eRc;
     void            *pVoid;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pHash = szHash_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pHash) );
     pHash = szHash_Init( pHash, 5 );
@@ -189,6 +192,7 @@ int         test_szHash_AddFindDelete1(
         pHash = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

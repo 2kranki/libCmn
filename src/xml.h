@@ -88,10 +88,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     XML_DATA *     xml_Alloc(
+        void
     );
     
     
     XML_DATA *     xml_New(
+        void
     );
     
     

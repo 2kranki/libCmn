@@ -67,7 +67,7 @@ OBJ_INFO        szHash_Info;            // Forward Reference
 
 
 OBJ_ID          szHash_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            szHash_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SZHASH_CLASS;
@@ -146,7 +146,7 @@ void            szHash_Dealloc(
 
 
 OBJ_ID          szHash_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&szHash_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          szHash_Class(
 
 static
 uint16_t		szHash_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SZHASH;

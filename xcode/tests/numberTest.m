@@ -94,7 +94,7 @@
 {
     NUMBER_DATA	*pObj = OBJ_NIL;
    
-    pObj = number_Alloc(0);
+    pObj = number_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = number_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

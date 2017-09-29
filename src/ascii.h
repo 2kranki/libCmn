@@ -182,10 +182,12 @@ extern "C" {
      * via obj_misc1.
      */
     ASCII_DATA *        ascii_Alloc(
+        void
     );
     
     
     ASCII_DATA *        ascii_New(
+        void
     );
     
     

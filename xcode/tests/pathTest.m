@@ -92,7 +92,7 @@
 {
     PATH_DATA	*pObj = OBJ_NIL;
    
-    pObj = path_Alloc(0);
+    pObj = path_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = path_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

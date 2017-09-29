@@ -66,7 +66,7 @@ OBJ_INFO        objHash_Info;            // Forward Reference
 
 
 OBJ_ID          objHash_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            objHash_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJHASH_CLASS;
@@ -145,7 +145,7 @@ void            objHash_Dealloc(
 
 
 OBJ_ID          objHash_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&objHash_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          objHash_Class(
 
 static
 uint16_t		objHash_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJHASH;

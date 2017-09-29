@@ -65,7 +65,7 @@ OBJ_INFO        arrayExpand_Info;            // Forward Reference
 
 
 OBJ_ID          arrayExpand_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            arrayExpand_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ARRAYEXPAND_CLASS;
@@ -143,7 +143,7 @@ void            arrayExpand_Dealloc(
 
 
 OBJ_ID          arrayExpand_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&arrayExpand_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          arrayExpand_Class(
 
 static
 uint16_t		arrayExpand_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ARRAYEXPAND;

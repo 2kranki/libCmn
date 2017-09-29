@@ -95,10 +95,12 @@ extern "C" {
      * via obj_misc1.
      */
     EXECARRAY_DATA * execArray_Alloc(
+        void
     );
     
     
     EXECARRAY_DATA * execArray_New(
+        void
     );
     
     

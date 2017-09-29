@@ -66,7 +66,7 @@ OBJ_INFO        memMSC_Info;            // Forward Reference
 
 
 OBJ_ID          memMSC_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            memMSC_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MEMMSC_CLASS;
@@ -145,7 +145,7 @@ void            memMSC_Dealloc(
 
 
 OBJ_ID          memMSC_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&memMSC_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          memMSC_Class(
 
 static
 uint16_t		memMSC_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MEMMSC;

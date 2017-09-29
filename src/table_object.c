@@ -66,7 +66,7 @@ OBJ_INFO        table_Info;            // Forward Reference
 
 
 OBJ_ID          table_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            table_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TABLE_CLASS;
@@ -144,7 +144,7 @@ void            table_Dealloc(
 
 
 OBJ_ID          table_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&table_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          table_Class(
 
 static
 uint16_t		table_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TABLE;

@@ -146,6 +146,7 @@ extern "C" {
      @return:   pointer to clo object if successful, otherwise OBJ_NIL.
      */
     CLO_DATA *      clo_Alloc(
+        void
     );
     
     

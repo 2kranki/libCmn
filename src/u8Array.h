@@ -87,10 +87,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     U8ARRAY_DATA *  u8Array_Alloc(
+        void
     );
     
     
     U8ARRAY_DATA *  u8Array_New(
+        void
     );
     
     

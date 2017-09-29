@@ -67,7 +67,7 @@ OBJ_INFO        clo_Info;            // Forward Reference
 
 
 OBJ_ID          clo_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            clo_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CLO_CLASS;
@@ -145,7 +145,7 @@ void            clo_Dealloc(
 
 
 OBJ_ID          clo_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&clo_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          clo_Class(
 
 static
 uint16_t		clo_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CLO;

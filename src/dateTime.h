@@ -96,14 +96,17 @@ extern "C" {
      @return:   pointer to DateTime object if successful, otherwise OBJ_NIL.
      */
     DATETIME_DATA *     dateTime_Alloc(
+        void
     );
     
     
     DATETIME_DATA *     dateTime_New(
+        void
     );
     
     
     DATETIME_DATA *     dateTime_NewCurrent(
+        void
     );
     
     

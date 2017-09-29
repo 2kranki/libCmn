@@ -70,7 +70,8 @@ int         test_hash32_OpenClose(
 {
     HASH32_DATA	*pObj = OBJ_NIL;
    
-    pObj = hash32_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = hash32_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = hash32_Init( pObj, 17 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_hash32_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -98,6 +100,7 @@ int         test_hash32_AddFindDelete_1(
     bool            fRc;
     void            *pVoid;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = hash32_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = hash32_Init( pObj, 3 );
@@ -137,6 +140,7 @@ int         test_hash32_AddFindDelete_1(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1; 
 }
 

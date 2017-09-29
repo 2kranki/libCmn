@@ -66,7 +66,7 @@ OBJ_INFO        memOSX_Info;            // Forward Reference
 
 
 OBJ_ID          memOSX_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            memOSX_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MEMOSX_CLASS;
@@ -145,7 +145,7 @@ void            memOSX_Dealloc(
 
 
 OBJ_ID          memOSX_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&memOSX_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          memOSX_Class(
 
 static
 uint16_t		memOSX_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MEMOSX;

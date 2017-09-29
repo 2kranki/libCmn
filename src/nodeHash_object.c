@@ -66,7 +66,7 @@ OBJ_INFO        nodeHash_Info;            // Forward Reference
 
 
 OBJ_ID          nodeHash_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            nodeHash_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEHASH_CLASS;
@@ -145,7 +145,7 @@ void            nodeHash_Dealloc(
 
 
 OBJ_ID          nodeHash_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeHash_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          nodeHash_Class(
 
 static
 uint16_t		nodeHash_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEHASH;

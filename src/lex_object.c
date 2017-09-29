@@ -65,7 +65,7 @@ OBJ_INFO        lex_Info;            // Forward Reference
 
 
 OBJ_ID          lex_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            lex_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_LEX_CLASS;
@@ -143,7 +143,7 @@ void            lex_Dealloc(
 
 
 OBJ_ID          lex_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&lex_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          lex_Class(
 
 static
 uint16_t		lex_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_LEX;

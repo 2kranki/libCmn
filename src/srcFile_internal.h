@@ -84,9 +84,9 @@ struct srcFile_data_s	{
     uint16_t        colNo;              /* Current Column Number */
     uint16_t        tabSize;            /* Tab Spacing Size */
     size_t          fileOffset;
-    TOKEN_DATA      curchr;             /*   "     Character */
+    TOKEN_DATA      curchr;             /*  Current Character */
     bool            fStripCR;
-    bool            fReuse;
+    bool            fBackTrack;
 
     // Input Routines
     TOKENLIST_DATA  *pTokens;

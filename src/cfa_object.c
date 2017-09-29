@@ -39,7 +39,7 @@
 
 
 OBJ_ID          cfa_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            cfa_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CFA_CLASS;
@@ -121,7 +121,7 @@ void            cfa_Dealloc(
 
 
 OBJ_ID          cfa_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&cfa_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          cfa_Class(
 
 static
 uint16_t		cfa_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CFA;

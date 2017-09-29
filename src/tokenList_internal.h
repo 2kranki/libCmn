@@ -80,6 +80,7 @@ struct tokenList_data_s	{
     OBJ_DATA        super;
 
     // Common Data
+    ERESULT         eRc;
     uint32_t        size;
 
     LISTDL_DATA     freeList;       // Free Node Linked List

@@ -68,7 +68,7 @@ OBJ_INFO        nodeScan_Info;            // Forward Reference
 
 
 OBJ_ID          nodeScan_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -90,7 +90,7 @@ bool            nodeScan_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODESCAN_CLASS;
@@ -146,7 +146,7 @@ void            nodeScan_Dealloc(
 
 
 OBJ_ID          nodeScan_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeScan_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          nodeScan_Class(
 
 static
 uint16_t		nodeScan_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODESCAN;

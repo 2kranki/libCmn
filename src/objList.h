@@ -91,10 +91,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     OBJLIST_DATA *  objList_Alloc(
+        void
     );
     
     
     OBJLIST_DATA *  objList_New(
+        void
     );
     
     

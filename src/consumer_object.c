@@ -66,7 +66,7 @@ OBJ_INFO        consumer_Info;            // Forward Reference
 
 
 OBJ_ID          consumer_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            consumer_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CONSUMER_CLASS;
@@ -144,7 +144,7 @@ void            consumer_Dealloc(
 
 
 OBJ_ID          consumer_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&consumer_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          consumer_Class(
 
 static
 uint16_t		consumer_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CONSUMER;

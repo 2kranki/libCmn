@@ -65,7 +65,7 @@ OBJ_INFO        misc_Info;            // Forward Reference
 
 
 OBJ_ID          misc_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            misc_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MISC_CLASS;
@@ -144,7 +144,7 @@ void            misc_Dealloc(
 
 
 OBJ_ID          misc_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&misc_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          misc_Class(
 
 static
 uint16_t		misc_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MISC;

@@ -84,7 +84,8 @@ int         test_enum_OpenClose(
 {
     ENUM_DATA	*pObj = OBJ_NIL;
    
-    pObj = enum_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = enum_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = enum_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -99,6 +100,7 @@ int         test_enum_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -116,6 +118,7 @@ int         test_enum_Test01(
     const
     char        *pStr = NULL;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = enum_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = enum_Init( pObj );
@@ -167,6 +170,7 @@ int         test_enum_Test01(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

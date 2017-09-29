@@ -126,7 +126,7 @@ char        *pTestInput02 =
 {
     JSON_DATA	*pObj = OBJ_NIL;
    
-    pObj = json_Alloc(0);
+    pObj = json_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = json_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

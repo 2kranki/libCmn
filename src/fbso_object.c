@@ -65,7 +65,7 @@ OBJ_INFO        fbso_Info;            // Forward Reference
 
 
 OBJ_ID          fbso_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            fbso_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_FBSO_CLASS;
@@ -144,7 +144,7 @@ void            fbso_Dealloc(
 
 
 OBJ_ID          fbso_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&fbso_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          fbso_Class(
 
 static
 uint16_t		fbso_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_FBSO;

@@ -39,7 +39,7 @@
 
 
 OBJ_ID          dbField_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            dbField_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DBFIELD_CLASS;
@@ -121,7 +121,7 @@ void            dbField_Dealloc(
 
 
 OBJ_ID          dbField_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&dbField_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          dbField_Class(
 
 static
 uint16_t		dbField_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DBFIELD;

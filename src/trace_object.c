@@ -66,7 +66,7 @@ OBJ_INFO        trace_Info;            // Forward Reference
 
 
 OBJ_ID          trace_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            trace_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TRACE_CLASS;
@@ -145,7 +145,7 @@ void            trace_Dealloc(
 
 
 OBJ_ID          trace_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&trace_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          trace_Class(
 
 static
 uint16_t		trace_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TRACE;

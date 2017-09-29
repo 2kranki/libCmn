@@ -65,7 +65,7 @@ OBJ_INFO        u32Array_Info;            // Forward Reference
 
 
 OBJ_ID          u32Array_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -90,7 +90,7 @@ bool            u32Array_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U32ARRAY_CLASS;
@@ -150,7 +150,7 @@ void            u32Array_Dealloc(
 
 
 OBJ_ID          u32Array_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&u32Array_ClassObj;
@@ -159,7 +159,7 @@ OBJ_ID          u32Array_Class(
 
 static
 uint16_t		u32Array_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U32ARRAY;

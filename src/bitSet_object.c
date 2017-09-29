@@ -66,7 +66,7 @@ OBJ_INFO        bitSet_Info;            // Forward Reference
 
 
 OBJ_ID          bitSet_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            bitSet_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BITSET_CLASS;
@@ -145,7 +145,7 @@ void            bitSet_Dealloc(
 
 
 OBJ_ID          bitSet_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&bitSet_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          bitSet_Class(
 
 static
 uint16_t		bitSet_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BITSET;

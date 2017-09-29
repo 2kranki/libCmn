@@ -159,6 +159,7 @@ int         test_cb_OpenClose(
 {
     CB_DATA	*pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = cb_Alloc(ELEM_SIZE, 8);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = cb_Init( pObj );
@@ -171,6 +172,7 @@ int         test_cb_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -187,6 +189,7 @@ int         test_cb_CounterOverflow(
     bool            fRc;
     char            msg[ELEM_SIZE];
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
 	pCB = cb_Alloc(ELEM_SIZE, 10);
     fprintf(stderr, "\tAlloc(12,10) = %p\n", pCB);
     XCTAssertFalse( (NULL == pCB) );
@@ -255,6 +258,7 @@ int         test_cb_CounterOverflow(
     fprintf(stderr, "\tobj_Release()\n");
     pCB = NULL;
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -269,6 +273,7 @@ int         test_cb_Operation(
     PSXTHREAD_DATA  *pThread = OBJ_NIL;
     bool            fRc;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     printf("Creating Buffer...\n");
     pCB = cb_Alloc(sizeof(BUFFER_ENTRY), 4);
     XCTAssertFalse( (OBJ_NIL == pCB) );
@@ -322,6 +327,7 @@ int         test_cb_Operation(
         pCB = NULL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

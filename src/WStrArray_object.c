@@ -66,7 +66,7 @@ OBJ_INFO        WStrArray_Info;            // Forward Reference
 
 
 OBJ_ID          WStrArray_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -91,7 +91,7 @@ bool            WStrArray_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_WSTRARRAY_CLASS;
@@ -150,7 +150,7 @@ void            WStrArray_Dealloc(
 
 
 OBJ_ID          WStrArray_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&WStrArray_ClassObj;
@@ -159,7 +159,7 @@ OBJ_ID          WStrArray_Class(
 
 static
 uint16_t		WStrArray_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_WSTRARRAY;

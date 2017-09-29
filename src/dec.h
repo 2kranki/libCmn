@@ -98,10 +98,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     DEC_DATA *      dec_Alloc(
+        void
     );
     
     
     DEC_DATA *      dec_New(
+        void
     );
     
     

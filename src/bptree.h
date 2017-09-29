@@ -98,10 +98,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     BPTREE_DATA *   bptree_Alloc(
+        void
     );
     
     
     BPTREE_DATA *   bptree_New(
+        void
     );
     
     

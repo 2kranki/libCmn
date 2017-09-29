@@ -68,6 +68,7 @@ int         test_psxSem_OpenClose(
     PSXSEM_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = psxSem_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = psxSem_Init( pObj, 0, 2 );
@@ -94,6 +95,7 @@ int         test_psxSem_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

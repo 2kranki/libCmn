@@ -66,7 +66,7 @@ OBJ_INFO        cmdutl_Info;            // Forward Reference
 
 
 OBJ_ID          cmdutl_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            cmdutl_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CMDUTL_CLASS;
@@ -145,7 +145,7 @@ void            cmdutl_Dealloc(
 
 
 OBJ_ID          cmdutl_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&cmdutl_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          cmdutl_Class(
 
 static
 uint16_t		cmdutl_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CMDUTL;

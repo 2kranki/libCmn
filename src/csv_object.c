@@ -67,7 +67,7 @@ OBJ_INFO        csv_Info;            // Forward Reference
 
 
 OBJ_ID          csv_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            csv_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CSV_CLASS;
@@ -146,7 +146,7 @@ void            csv_Dealloc(
 
 
 OBJ_ID          csv_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&csv_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          csv_Class(
 
 static
 uint16_t		csv_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CSV;

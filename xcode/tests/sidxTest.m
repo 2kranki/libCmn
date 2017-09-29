@@ -98,7 +98,7 @@
     bool            fRc;
     ASTR_DATA       *pStr;
     uint32_t        index;
-    uint32_t        offset;
+    size_t          offset;
    
     pObj = sidx_Alloc(4);
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

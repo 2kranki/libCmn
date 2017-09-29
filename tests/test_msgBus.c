@@ -144,7 +144,8 @@ int         test_msgBus_Broadcast01(
     ERESULT     eRc;
     int         i;
    
-    pObj = msgBus_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = msgBus_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = msgBus_Init( pObj, sizeof(const char *), 4 );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -190,6 +191,7 @@ int         test_msgBus_Broadcast01(
         
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

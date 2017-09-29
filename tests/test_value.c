@@ -70,7 +70,8 @@ int         test_value_OpenClose(
 {
     VALUE_DATA	*pObj = OBJ_NIL;
    
-    pObj = value_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = value_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = value_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_value_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

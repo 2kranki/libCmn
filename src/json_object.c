@@ -66,7 +66,7 @@ OBJ_INFO        json_Info;            // Forward Reference
 
 
 OBJ_ID          json_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            json_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_JSON_CLASS;
@@ -145,7 +145,7 @@ void            json_Dealloc(
 
 
 OBJ_ID          json_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&json_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          json_Class(
 
 static
 uint16_t		json_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_JSON;

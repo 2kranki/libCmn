@@ -100,6 +100,7 @@ extern "C" {
      @return:   pointer to arrayExpand object if successful, otherwise OBJ_NIL.
      */
     ARRAYEXPAND_DATA * arrayExpand_Alloc(
+        void
     );
     
     

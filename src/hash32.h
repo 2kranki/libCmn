@@ -114,10 +114,12 @@ extern "C" {
      * via obj_misc1.
      */
     HASH32_DATA *     hash32_Alloc(
+        void
     );
     
     
     OBJ_ID          hash32_Class(
+        void
     );
     
     

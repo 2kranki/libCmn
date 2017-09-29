@@ -70,7 +70,8 @@ int         test_jsonOut_OpenClose(
 {
     JSONOUT_DATA	*pObj = OBJ_NIL;
    
-    pObj = jsonOut_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = jsonOut_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = jsonOut_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_jsonOut_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

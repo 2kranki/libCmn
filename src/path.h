@@ -92,6 +92,7 @@ extern "C" {
      * via obj_misc1.
      */
     PATH_DATA *     path_Alloc(
+        void
     );
     
     
@@ -107,6 +108,7 @@ extern "C" {
     
 
     PATH_DATA *     path_NewFromCurrentDirectory(
+        void
     );
     
     

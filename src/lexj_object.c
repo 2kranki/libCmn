@@ -67,7 +67,7 @@ OBJ_INFO        lexj_Info;            // Forward Reference
 
 
 OBJ_ID          lexj_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -92,7 +92,7 @@ bool            lexj_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_LEXJ_CLASS;
@@ -151,7 +151,7 @@ void            lexj_Dealloc(
 
 
 OBJ_ID          lexj_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&lexj_ClassObj;
@@ -160,7 +160,7 @@ OBJ_ID          lexj_Class(
 
 static
 uint16_t		lexj_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_LEXJ;

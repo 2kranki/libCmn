@@ -102,6 +102,7 @@ extern "C" {
     
     
     OBJ_ID          bitSet_Class(
+        void
     );
     
     

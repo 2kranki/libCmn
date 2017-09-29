@@ -103,6 +103,7 @@ extern "C" {
      @return:   pointer to fileio object if successful, otherwise OBJ_NIL.
      */
     FILEIO_DATA *   fileio_Alloc(
+        void
     );
     
     

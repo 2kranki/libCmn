@@ -102,10 +102,12 @@ extern "C" {
      @return:   pointer to psxLock object if successful, otherwise OBJ_NIL.
      */
     PSXLOCK_DATA *  psxLock_Alloc(
+        void
     );
     
     
     PSXLOCK_DATA *  psxLock_New(
+        void
     );
     
     

@@ -87,10 +87,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     WSTRARRAY_DATA *     WStrArray_Alloc(
+        void
     );
     
     
     WSTRARRAY_DATA *     WStrArray_New(
+        void
     );
     
     

@@ -98,6 +98,7 @@ extern "C" {
      @return:   pointer to blocks object if successful, otherwise OBJ_NIL.
      */
     BLOCKS_DATA *   blocks_Alloc(
+        void
     );
     
     

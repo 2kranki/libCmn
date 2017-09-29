@@ -66,7 +66,7 @@ OBJ_INFO        psxMutex_Info;            // Forward Reference
 
 
 OBJ_ID          psxMutex_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            psxMutex_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXMUTEX_CLASS;
@@ -145,7 +145,7 @@ void            psxMutex_Dealloc(
 
 
 OBJ_ID          psxMutex_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&psxMutex_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          psxMutex_Class(
 
 static
 uint16_t		psxMutex_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXMUTEX;

@@ -65,7 +65,7 @@ OBJ_INFO        endian_Info;            // Forward Reference
 
 
 OBJ_ID          endian_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            endian_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ENDIAN_CLASS;
@@ -143,7 +143,7 @@ void            endian_Dealloc(
 
 
 OBJ_ID          endian_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&endian_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          endian_Class(
 
 static
 uint16_t		endian_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ENDIAN;

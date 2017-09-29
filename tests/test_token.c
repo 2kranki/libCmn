@@ -71,7 +71,8 @@ int         test_token_OpenClose00(
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
    
-    pObj = token_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = token_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = token_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -83,6 +84,7 @@ int         test_token_OpenClose00(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -106,6 +108,7 @@ int         test_token_OpenClose01(
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = token_InitInteger(pObj, "abc", 52, 22, 11, 64);
@@ -149,6 +152,7 @@ int         test_token_OpenClose01(
     }
     
     szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -172,6 +176,7 @@ int         test_token_OpenClose02(
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = token_InitCharW(pObj, "abc", 52, 22, 11, 'Z');
@@ -215,6 +220,7 @@ int         test_token_OpenClose02(
     }
     
     szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -239,6 +245,7 @@ int         test_token_OpenClose03(
     TOKEN_DATA  *pToken;
     WSTR_DATA   *pStrW;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = token_InitStrW(pObj, "abc", 52, 22, 11, L"12345");
@@ -287,6 +294,7 @@ int         test_token_OpenClose03(
     }
     
     szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -311,6 +319,7 @@ int         test_token_OpenClose04(
     TOKEN_DATA  *pToken;
     WSTR_DATA   *pStrW;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = token_InitStrA(pObj, "abc", 52, 22, 11, "12345");
@@ -359,6 +368,7 @@ int         test_token_OpenClose04(
     }
     
     szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

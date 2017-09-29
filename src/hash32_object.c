@@ -67,7 +67,7 @@ OBJ_INFO        hash32_Info;            // Forward Reference
 
 
 OBJ_ID          hash32_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            hash32_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_HASH32_CLASS;
@@ -145,7 +145,7 @@ void            hash32_Dealloc(
 
 
 OBJ_ID          hash32_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&hash32_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          hash32_Class(
 
 static
 uint16_t		hash32_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_HASH32;

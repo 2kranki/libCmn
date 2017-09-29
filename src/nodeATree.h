@@ -107,6 +107,7 @@ extern "C" {
      @return:   pointer to nodeATree object if successful, otherwise OBJ_NIL.
      */
     NODEATREE_DATA *     nodeATree_Alloc(
+        void
     );
     
     
@@ -129,9 +130,11 @@ extern "C" {
     
     
     NODE_DATA *     nodeATree_CloseNode(
+        void
     );
     
     NODE_DATA *     nodeATree_OpenNode(
+        void
     );
     
     

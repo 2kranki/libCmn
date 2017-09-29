@@ -129,7 +129,7 @@ OBJ_INFO        ebcdic_Info;            // Forward Reference
 
 
 OBJ_ID          ebcdic_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -176,7 +176,7 @@ bool            ebcdic_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_EBCDIC_CLASS;
@@ -232,7 +232,7 @@ void            ebcdic_Dealloc(
 
 
 OBJ_ID          ebcdic_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&ebcdic_ClassObj;
@@ -241,7 +241,7 @@ OBJ_ID          ebcdic_Class(
 
 static
 uint16_t		ebcdic_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_EBCDIC;

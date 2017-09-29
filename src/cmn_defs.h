@@ -476,9 +476,9 @@ extern "C" {
 #include    "obj.h"
 
 
-    typedef uint32_t    (*GET_SFR)( );
+    typedef uint32_t    (*GET_SFR)(void);
     typedef void        (*PUT_SFR)(uint32_t);
-    typedef void        (*PUTCLR_SFR)( );
+    typedef void        (*PUTCLR_SFR)(void);
     typedef void        (*PUTCLRSET_SFR)(uint32_t);
 
     // Comparison Routine: returns 0 if *p0 == *p1,

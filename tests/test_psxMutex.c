@@ -68,6 +68,7 @@ int         test_psxMutex_OpenClose(
     PSXMUTEX_DATA	*pObj = OBJ_NIL;
     bool            fRc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = psxMutex_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = psxMutex_Init( pObj );
@@ -90,6 +91,7 @@ int         test_psxMutex_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

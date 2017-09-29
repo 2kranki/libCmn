@@ -95,6 +95,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     BLOCK16_DATA *  block16_Alloc(
+        void
     );
     
     
@@ -105,6 +106,7 @@ extern "C" {
     
     
     BLOCK16_DATA *  block16_New(
+        void
     );
     
     BLOCK16_DATA *  block16_NewWithSizes(

@@ -110,7 +110,7 @@ int             num = 7;
     uint32_t        i;
     ASTR_DATA       *pStr;
    
-    pObj = objArray_Alloc(0);
+    pObj = objArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -155,7 +155,7 @@ int             num = 7;
     uint32_t        i;
     ASTR_DATA       *pStr;
     
-    pObj = objArray_Alloc(0);
+    pObj = objArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -206,7 +206,7 @@ int             num = 7;
     uint32_t        i;
     ASTR_DATA       *pStr;
     
-    pObj = objArray_Alloc(0);
+    pObj = objArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -257,7 +257,7 @@ int             num = 7;
     uint32_t        i;
     ASTR_DATA       *pStr;
     
-    pObj = objArray_Alloc(0);
+    pObj = objArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -308,7 +308,7 @@ int             num = 7;
     uint32_t        i;
     ASTR_DATA       *pStr;
     
-    pObj = objArray_Alloc(0);
+    pObj = objArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -373,7 +373,7 @@ int             num = 7;
     ASTR_DATA       *pStr1;
     ASTR_DATA       *pStr2;
     
-    pObj = objArray_Alloc(0);
+    pObj = objArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

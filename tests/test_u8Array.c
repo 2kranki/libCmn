@@ -70,7 +70,8 @@ int         test_u8Array_OpenClose(
 {
     U8ARRAY_DATA *pObj = OBJ_NIL;
    
-    pObj = u8Array_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = u8Array_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_u8Array_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -97,6 +99,7 @@ int         test_u8Array_AddGet01(
     ERESULT         eRc;
     uint8_t         data;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
@@ -118,6 +121,7 @@ int         test_u8Array_AddGet01(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -139,6 +143,7 @@ int         test_u8Array_InsertData01(
     const
     char            *pTest3 = "abdefc";
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
@@ -173,6 +178,7 @@ int         test_u8Array_InsertData01(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -194,6 +200,7 @@ int         test_u8Array_InsertData02(
     const
     char            *pTest3 = "abcdef";
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
@@ -228,6 +235,7 @@ int         test_u8Array_InsertData02(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -249,6 +257,7 @@ int         test_u8Array_InsertData03(
     const
     char            *pTest3 = "defabc";
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
@@ -283,6 +292,7 @@ int         test_u8Array_InsertData03(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -299,6 +309,7 @@ int         test_u8Array_PutGet01(
     uint16_t        data16 = 0;
     uint32_t        data32 = 0;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
@@ -342,6 +353,7 @@ int         test_u8Array_PutGet01(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -366,6 +378,7 @@ int         test_u8Array_ToCostantString01(
                                 "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
                                 "`abcdefghijklmnopqrstuvwxyz{|}~\\x7F";
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc(0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
@@ -400,6 +413,7 @@ int         test_u8Array_ToCostantString01(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

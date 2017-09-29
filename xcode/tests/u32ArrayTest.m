@@ -94,7 +94,7 @@
 {
     U32ARRAY_DATA	*pObj = OBJ_NIL;
    
-    pObj = u32Array_Alloc(0);
+    pObj = u32Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = u32Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -114,7 +114,7 @@
     ERESULT         eRc;
     uint32_t         data;
     
-    pObj = u32Array_Alloc(0);
+    pObj = u32Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = u32Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

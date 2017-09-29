@@ -57,6 +57,7 @@ bool            chrInputGet(
 );
 
 void            chrInputReset(
+    void
 );
 
 
@@ -72,6 +73,7 @@ char *          chrOutputData(
 );
 
 void            chrOutputReset(
+    void
 );
 
 

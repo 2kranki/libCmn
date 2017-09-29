@@ -102,10 +102,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     NUMBER_DATA *   number_Alloc(
+        void
     );
     
     
     NUMBER_DATA *   number_New(
+        void
     );
 
     
@@ -125,7 +127,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint16_t        number_getType(
-        NUMBER_DATA     *cbp
+        NUMBER_DATA     *this
     );
     
     

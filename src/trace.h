@@ -123,14 +123,17 @@ extern "C" {
      * via obj_misc1.
      */
     TRACE_DATA *    trace_Alloc(
+        void
     );
     
     
     TRACE_DATA *    trace_Shared(
+        void
     );
     
     
     bool            trace_SharedReset(
+        void
     );
     
     

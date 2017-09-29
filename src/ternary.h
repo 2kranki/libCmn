@@ -102,6 +102,7 @@ extern "C" {
      * via obj_misc1.
      */
     TERNARY_DATA *  ternary_Alloc(
+        void
     );
     
     

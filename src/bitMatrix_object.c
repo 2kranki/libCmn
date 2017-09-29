@@ -66,7 +66,7 @@ OBJ_INFO        bitMatrix_Info;            // Forward Reference
 
 
 OBJ_ID          bitMatrix_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            bitMatrix_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BITMATRIX_CLASS;
@@ -145,7 +145,7 @@ void            bitMatrix_Dealloc(
 
 
 OBJ_ID          bitMatrix_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&bitMatrix_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          bitMatrix_Class(
 
 static
 uint16_t		bitMatrix_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BITMATRIX;

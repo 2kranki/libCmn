@@ -65,7 +65,7 @@ OBJ_INFO        true_Info;            // Forward Reference
 
 
 OBJ_ID          true_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            true_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TRUE_CLASS;
@@ -144,7 +144,7 @@ void            true_Dealloc(
 
 
 OBJ_ID          true_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&true_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          true_Class(
 
 static
 uint16_t		true_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TRUE;

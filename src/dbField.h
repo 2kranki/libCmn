@@ -138,11 +138,13 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    DBFIELD_DATA *     dbField_Alloc(
+    DBFIELD_DATA *  dbField_Alloc(
+        void
     );
     
     
     OBJ_ID          dbField_Class(
+        void
     );
     
     

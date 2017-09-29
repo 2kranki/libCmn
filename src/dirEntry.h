@@ -110,6 +110,7 @@ extern "C" {
      * via obj_misc1.
      */
     DIRENTRY_DATA *     dirEntry_Alloc(
+        void
     );
     
     

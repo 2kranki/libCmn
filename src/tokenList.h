@@ -8,9 +8,10 @@
  *			A List of Tokens (tokenList)
  * Purpose
  *			This object provides a list of tokens.
- *
  * Remarks
- *	1.      None
+ *	1.      Each token in the list must only be referenced for use
+ *          and never copied or released. They can be assigned.
+
  *
  * History
  *	07/22/2015 Generated
@@ -49,6 +50,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <enum.h>
 #include        <token.h>
 
 
@@ -102,10 +104,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     TOKENLIST_DATA * tokenList_Alloc(
+        void
     );
     
     
     TOKENLIST_DATA * tokenList_New(
+        void
     );
     
     
@@ -141,6 +145,21 @@ extern "C" {
     );
     
     
+    /*!
+     This routine appends (adds to the tail) the other list to this list.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         tokenList_Append(
+        TOKENLIST_DATA	*this,
+        TOKENLIST_DATA	*other
+    );
+    
+    
+    ERESULT         tokenList_DeleteAll(
+        TOKENLIST_DATA	*this
+    );
+    
+    
     ERESULT         tokenList_DeleteHead(
         TOKENLIST_DATA	*this
     );
@@ -148,6 +167,12 @@ extern "C" {
     
     ERESULT         tokenList_DeleteTail(
         TOKENLIST_DATA	*this
+    );
+    
+    
+    ERESULT         tokenList_Enum(
+        TOKENLIST_DATA	*this,
+        ENUM_DATA       **ppEnum
     );
     
     
@@ -165,10 +190,11 @@ extern "C" {
     
     /*!
      Index() returns the Ith entry from the Head of the List.
-     @param     index
-     index relative to 1 from the Head of the List.
-     @result
-    	Token Ptr if Successful, otherwise NULL
+     @param     index is relative to 1 from the Head of the List
+     @return    Token Ptr if successful, otherwise NULL
+     @warning:  This method must starts at the head and moves toward
+                 the index'th token in the list every time that it is
+                 called.
      */
     TOKEN_DATA *    tokenList_Index(
         TOKENLIST_DATA	*this,
@@ -181,6 +207,16 @@ extern "C" {
     );
 
 
+    /*!
+     This routine prepends (adds to the head) the other list to this list.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         tokenList_Prepend(
+        TOKENLIST_DATA	*this,
+        TOKENLIST_DATA	*other
+    );
+    
+    
     TOKEN_DATA *    tokenList_Tail(
         TOKENLIST_DATA	*this
     );

@@ -232,6 +232,7 @@ extern "C" {
      * via obj_misc1.
      */
     LEX_DATA *     lex_Alloc(
+        void
     );
     
     
@@ -242,6 +243,7 @@ extern "C" {
     
     const
     int32_t *       lex_SetWhiteSpace(
+        void
     );
 
     
@@ -295,6 +297,29 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     This routine starts/restarts the checkpoint process for backtracking
+     parsers by accumulating all tokens which are advanced over. The
+     accumulated tokens can be re-used by calling the Restore() method 
+     or abandoned by the Discard() method. If a restart is being requested,
+     it is the same as a Discard() followed by a Checkpoint().
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         lex_Checkpoint(
+        LEX_DATA        *this
+    );
+    
+    
+    /*!
+     This routine discards all tokens accumulated since the last checkpoint
+     and terminates the checkpoint process.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         lex_Restart(
+                                LEX_DATA		*this
+                                );
+    
+    
     void            lex_Error(
         LEX_DATA        *this,
         const
@@ -342,6 +367,16 @@ extern "C" {
     TOKEN_DATA *    lex_InputLookAhead(
         LEX_DATA        *this,
         uint16_t        num
+    );
+    
+    
+    /*!
+     This routine restarts token the flow from the last checkpoint and
+     terminates the checkpoint process.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         lex_Restart(
+        LEX_DATA		*this
     );
     
     

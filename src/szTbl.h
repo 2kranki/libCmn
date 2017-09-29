@@ -100,15 +100,18 @@ extern "C" {
     //---------------------------------------------------------------
 
     SZTBL_DATA *     szTbl_Alloc(
+        void
     );
     
     
     SZTBL_DATA *     szTbl_Shared(
+        void
     );
     
     
     // Release the Shared String Table.
     SZTBL_DATA *     szTbl_SharedReset(
+        void
     );
     
     

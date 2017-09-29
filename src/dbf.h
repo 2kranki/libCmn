@@ -91,12 +91,13 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    DBF_DATA *     dbf_Alloc(
+    DBF_DATA *      dbf_Alloc(
         uint16_t        stackSize           // Stack Size in Words
     );
     
     
     OBJ_ID          dbf_Class(
+        void
     );
     
     

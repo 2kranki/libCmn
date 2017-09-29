@@ -93,7 +93,7 @@
 {
     ARRAYEXPAND_DATA	*pObj = OBJ_NIL;
    
-    pObj = arrayExpand_Alloc(0);
+    pObj = arrayExpand_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = arrayExpand_Init(pObj, 4);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -112,7 +112,7 @@
     ARRAYEXPAND_DATA *pObj = OBJ_NIL;
     uint8_t         *pData;
     
-    pObj = arrayExpand_Alloc(0);
+    pObj = arrayExpand_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = arrayExpand_Init(pObj, 1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -146,7 +146,7 @@
     ARRAYEXPAND_DATA *pObj = OBJ_NIL;
     ERESULT         eRc;
     
-    pObj = arrayExpand_Alloc(0);
+    pObj = arrayExpand_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = arrayExpand_Init(pObj, 1);
     XCTAssertFalse( (OBJ_NIL == pObj) );

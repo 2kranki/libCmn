@@ -96,6 +96,7 @@ extern "C" {
      @return:   pointer to timer object if successful, otherwise OBJ_NIL.
      */
     TIMER_DATA *     timer_Alloc(
+        void
     );
     
     

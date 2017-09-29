@@ -93,7 +93,7 @@
 {
     NODEGRAPH_DATA	*pObj = OBJ_NIL;
    
-    pObj = nodeGraph_Alloc(0);
+    pObj = nodeGraph_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = nodeGraph_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

@@ -108,7 +108,7 @@ int             num = 6;
     uint32_t        i;
     char            *pStr;
    
-    pObj = ptrArray_Alloc(0);
+    pObj = ptrArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = ptrArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

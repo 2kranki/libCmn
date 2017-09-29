@@ -67,7 +67,7 @@ OBJ_INFO        timer_Info;            // Forward Reference
 
 
 OBJ_ID          timer_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            timer_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TIMER_CLASS;
@@ -145,7 +145,7 @@ void            timer_Dealloc(
 
 
 OBJ_ID          timer_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&timer_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          timer_Class(
 
 static
 uint16_t		timer_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TIMER;

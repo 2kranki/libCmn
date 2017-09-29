@@ -48,7 +48,18 @@
 extern "C" {
 #endif
 
+#pragma pack(push, 1)
+    typedef struct srcLoc_s    {
+        const
+        char            *pFileName;
+        uint32_t        lineNo;             /* Source Input Line Number */
+        uint16_t        colNo;              /* Source Input Column Number */
+        uint16_t        misc;
+    } SRCLOC;
+#pragma pack(pop)
+    
 
+    
 #pragma pack(push, 1)
 struct srcLoc_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
@@ -56,10 +67,7 @@ struct srcLoc_data_s	{
     OBJ_DATA        super;
 
     // Common Data
-    const
-    char            *pFileName;
-    uint32_t        lineNo; 			/* Source Input Line Number */
-    uint16_t        colNo;				/* Source Input Column Number */
+    SRCLOC          data;
 
 };
 #pragma pack(pop)

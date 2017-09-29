@@ -95,6 +95,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     BLOCK32_DATA *  block32_Alloc(
+        void
     );
     
     
@@ -105,6 +106,7 @@ extern "C" {
     
     
     BLOCK32_DATA *  block32_New(
+        void
     );
     
     BLOCK32_DATA *  block32_NewWithSizes(

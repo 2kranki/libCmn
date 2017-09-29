@@ -92,7 +92,7 @@
 {
     ASCII_DATA	*pObj = OBJ_NIL;
    
-    pObj = ascii_Alloc(0);
+    pObj = ascii_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = ascii_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

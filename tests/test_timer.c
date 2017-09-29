@@ -90,8 +90,9 @@ int         test_timer_OpenClose(
     int             iRc;
 #endif
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     fprintf(stderr, "timerRoutine = %p\n", timerRoutine);
-    pObj = timer_Alloc(0);
+    pObj = timer_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = timer_Init(pObj, 500, timerRoutine, NULL);
     // 500ms or 2 counts per second
@@ -204,6 +205,7 @@ int         test_timer_OpenClose(
     }
 
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

@@ -107,6 +107,14 @@ extern "C" {
      @return:   pointer to hjson object if successful, otherwise OBJ_NIL.
      */
     HJSON_DATA *     hjson_Alloc(
+        void
+    );
+    
+    
+    HJSON_DATA *    hjson_NewA(
+        const
+        char            *pSzStr,        // Buffer of file data
+        uint16_t        tabSize         // Tab Spacing if any
     );
     
     

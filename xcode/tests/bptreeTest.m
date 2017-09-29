@@ -93,7 +93,7 @@
 {
     BPTREE_DATA	*pObj = OBJ_NIL;
    
-    pObj = bptree_Alloc(0);
+    pObj = bptree_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = bptree_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

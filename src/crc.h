@@ -119,6 +119,7 @@ extern "C" {
      @return:   pointer to crc object if successful, otherwise OBJ_NIL.
      */
     CRC_DATA *      crc_Alloc(
+        void
     );
     
     

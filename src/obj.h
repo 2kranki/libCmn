@@ -170,8 +170,8 @@ extern	"C" {
         OBJ_ID      (*pRetain)(OBJ_ID);
         OBJ_ID      (*pRelease)(OBJ_ID);
         void        (*pDealloc)(OBJ_ID);
-        OBJ_ID      (*pClassObject)();
-        uint16_t    (*pWhoAmI)();
+        OBJ_ID      (*pClassObject)(void);
+        uint16_t    (*pWhoAmI)(void);
         // Everything before this is required and does not need to be
         // tested to see if it exists.  Everything after this must be
         // tested to see if it exists, because it may not be implemented
@@ -247,6 +247,7 @@ extern	"C" {
     
    
     OBJ_ID          obj_Class(
+        void
     );
     
     
@@ -274,11 +275,13 @@ extern	"C" {
 
     const
     OBJ_IUNKNOWN *  obj_StaticVtbl(
+        void
     );
 
 
     const
     OBJ_IUNKNOWN *  obj_StaticVtblShared(
+        void
     );
 
 

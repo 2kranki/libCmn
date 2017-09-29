@@ -39,7 +39,7 @@
 
 
 OBJ_ID          u16Matrix_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            u16Matrix_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U16MATRIX_CLASS;
@@ -121,7 +121,7 @@ void            u16Matrix_Dealloc(
 
 
 OBJ_ID          u16Matrix_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&u16Matrix_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          u16Matrix_Class(
 
 static
 uint16_t		u16Matrix_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U16MATRIX;

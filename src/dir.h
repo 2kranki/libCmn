@@ -101,7 +101,8 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    DIR_DATA *     dir_Alloc(
+    DIR_DATA *      dir_Alloc(
+        void
     );
     
     

@@ -67,7 +67,7 @@ OBJ_INFO        hjson_Info;            // Forward Reference
 
 
 OBJ_ID          hjson_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            hjson_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_HJSON_CLASS;
@@ -145,7 +145,7 @@ void            hjson_Dealloc(
 
 
 OBJ_ID          hjson_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&hjson_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          hjson_Class(
 
 static
 uint16_t		hjson_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_HJSON;

@@ -68,6 +68,7 @@ int         test_psxLock_OpenClose(
     PSXCOND_DATA	*pObj = OBJ_NIL;
     bool            fRc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = psxCond_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = psxCond_Init( pObj, NULL, NULL );
@@ -92,6 +93,7 @@ int         test_psxLock_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

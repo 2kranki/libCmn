@@ -66,7 +66,7 @@ OBJ_INFO        path_Info;            // Forward Reference
 
 
 OBJ_ID          path_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -94,7 +94,7 @@ bool            path_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PATH_CLASS;
@@ -157,7 +157,7 @@ void            path_Dealloc(
 
 
 OBJ_ID          path_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&path_ClassObj;
@@ -166,7 +166,7 @@ OBJ_ID          path_Class(
 
 static
 uint16_t		path_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PATH;

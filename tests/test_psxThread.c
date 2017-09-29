@@ -96,6 +96,7 @@ int         test_psxThread_OpenClose(
     uint32_t        start;
 #endif
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     fprintf(stderr, "OpenClose_StartCount = %d\n",count);
     pObj = psxThread_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -124,6 +125,7 @@ int         test_psxThread_OpenClose(
         fprintf(stderr, "OpenClose_EndCount = %d\n",count);
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -144,6 +146,7 @@ int         test_psxThread_Run01(
     uint32_t        start;
 #endif
       
+    fprintf(stderr, "Performing: %s\n", pTestName);
     fprintf(stderr, "Run01_StartCount = %d\n",count);
     pObj = psxThread_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -262,6 +265,7 @@ int         test_psxThread_Run01(
         fprintf(stderr, "Run01_EndCount = %d\n",count);
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1; 
 }
 

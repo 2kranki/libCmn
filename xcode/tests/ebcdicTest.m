@@ -77,7 +77,7 @@
 {
     EBCDIC_DATA	*pObj = OBJ_NIL;
    
-    pObj = ebcdic_Alloc(0);
+    pObj = ebcdic_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = ebcdic_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

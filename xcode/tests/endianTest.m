@@ -107,7 +107,7 @@
     uint32_t    u32 = 0x01020304;
     uint64_t    u64 = 0x0102030405060708;
    
-    pObj = endian_Alloc(0);
+    pObj = endian_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = endian_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

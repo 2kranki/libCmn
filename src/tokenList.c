@@ -41,8 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "tokenList_internal.h"
-#include "utf8.h"
+#include    <tokenList_internal.h>
+#include    <enum_internal.h>
+#include    <utf8.h>
 
 
 
@@ -144,35 +145,78 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         tokenList_getLastError(
+        TOKENLIST_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !tokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            tokenList_setLastError(
+        TOKENLIST_DATA  *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !tokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
     uint16_t        tokenList_getPriority(
-        TOKENLIST_DATA     *cbp
+        TOKENLIST_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !tokenList_Validate( cbp ) ) {
+        if( !tokenList_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        //return cbp->priority;
+        //return this->priority;
         return 0;
     }
 
     bool            tokenList_setPriority(
-        TOKENLIST_DATA   *cbp,
+        TOKENLIST_DATA   *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !tokenList_Validate( cbp ) ) {
+        if( !tokenList_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        //cbp->priority = value;
+        //this->priority = value;
         return true;
     }
 
@@ -237,6 +281,7 @@ extern "C" {
         if (NULL == pEntry) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
+        memset(&pEntry->token, 0, sizeof(TOKEN_DATA));
         token_Init(&pEntry->token);
         token_Assign(pToken, &pEntry->token);
         listdl_Add2Head(&this->list, pEntry);
@@ -278,6 +323,7 @@ extern "C" {
         if (NULL == pEntry) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
+        memset(&pEntry->token, 0, sizeof(TOKEN_DATA));
         token_Init(&pEntry->token);
         token_Assign(pToken, &pEntry->token);
         listdl_Add2Tail(&this->list, pEntry);
@@ -288,6 +334,42 @@ extern "C" {
     
     
 
+    //----------------------------------------------------------
+    //                      A p p e n d
+    //----------------------------------------------------------
+    
+    ERESULT         tokenList_Append(
+        TOKENLIST_DATA	*this,
+        TOKENLIST_DATA	*other
+    )
+    {
+        TOKENLIST_TOKEN *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !tokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !tokenList_Validate(other) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEntry = listdl_Head(&other->list);
+        while ( pEntry ) {
+            tokenList_Add2Tail(this, &pEntry->token);
+            pEntry = listdl_Next(&other->list, pEntry);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
@@ -337,6 +419,39 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
+    ERESULT         tokenList_DeleteAll(
+        TOKENLIST_DATA	*this
+    )
+    {
+        TOKENLIST_TOKEN   *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !tokenList_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        for (;;) {
+            pEntry = listdl_Head(&this->list);
+            if (NULL == pEntry) {
+                break;
+            }
+            
+            if (obj_getType(&pEntry->token)) {
+                token_ReleaseDataIfObj(&pEntry->token);
+            }
+            listdl_Delete(&this->list, pEntry);
+            listdl_Add2Tail(&this->freeList, pEntry);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
     ERESULT         tokenList_DeleteHead(
         TOKENLIST_DATA	*this
     )
@@ -364,7 +479,7 @@ extern "C" {
         listdl_Add2Tail(&this->freeList, pEntry);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -395,7 +510,58 @@ extern "C" {
         listdl_Add2Tail(&this->freeList, pEntry);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //----------------------------------------------------------
+    //                        E n u m
+    //----------------------------------------------------------
+    
+    ERESULT         tokenList_Enum(
+        TOKENLIST_DATA	*this,
+        ENUM_DATA       **ppEnum
+    )
+    {
+        ENUM_DATA       *pEnum = OBJ_NIL;
+        //uint32_t        i;
+        //LISTDL_DATA     *pNodeList;
+        TOKENLIST_TOKEN *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !tokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEnum = enum_New( );
+        if (pEnum) {
+        }
+        else {
+            if (ppEnum) {
+                *ppEnum = pEnum;
+            }
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        pEntry = listdl_Head(&this->list);
+        while ( pEntry ) {
+            enum_Append(pEnum, (void *)&pEntry->token, NULL);
+            pEntry = listdl_Next(&this->list, pEntry);
+        }
+        
+        // Return to caller.
+        if (ppEnum) {
+            *ppEnum = pEnum;
+        }
+        return ERESULT_SUCCESS;
     }
     
     
@@ -410,7 +576,7 @@ extern "C" {
         OBJ_ID          pObj            // Used as first parameter of scan method
     )
     {
-        TOKENLIST_TOKEN   *pEntry = OBJ_NIL;
+        TOKENLIST_TOKEN *pEntry = OBJ_NIL;
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
        
         // Do initialization.
@@ -545,6 +711,42 @@ extern "C" {
 
      
 
+    //----------------------------------------------------------
+    //                  P r e p e n d
+    //----------------------------------------------------------
+    
+    ERESULT         tokenList_Prepend(
+        TOKENLIST_DATA	*this,
+        TOKENLIST_DATA	*other
+    )
+    {
+        TOKENLIST_TOKEN *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !tokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !tokenList_Validate(other) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEntry = listdl_Tail(&other->list);
+        while ( pEntry ) {
+            tokenList_Add2Head(this, &pEntry->token);
+            pEntry = listdl_Prev(&other->list, pEntry);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          T a i l
     //---------------------------------------------------------------

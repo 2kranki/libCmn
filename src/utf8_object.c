@@ -65,7 +65,7 @@ OBJ_INFO        utf8_Info;            // Forward Reference
 
 
 OBJ_ID          utf8_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            utf8_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_UTF8_CLASS;
@@ -144,7 +144,7 @@ void            utf8_Dealloc(
 
 
 OBJ_ID          utf8_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&utf8_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          utf8_Class(
 
 static
 uint16_t		utf8_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_UTF8;

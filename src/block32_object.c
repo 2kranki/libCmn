@@ -66,7 +66,7 @@ OBJ_INFO        block32_Info;            // Forward Reference
 
 
 OBJ_ID          block32_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            block32_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BLOCK32_CLASS;
@@ -144,7 +144,7 @@ void            block32_Dealloc(
 
 
 OBJ_ID          block32_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&block32_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          block32_Class(
 
 static
 uint16_t		block32_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BLOCK32;

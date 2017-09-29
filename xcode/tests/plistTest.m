@@ -126,7 +126,7 @@ char        *pTestInput02 =
 {
     PLIST_DATA	*pObj = OBJ_NIL;
    
-    pObj = plist_Alloc(0);
+    pObj = plist_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = plist_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

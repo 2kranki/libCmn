@@ -125,7 +125,7 @@ extern "C" {
         }
 #endif
         
-        return this->colNo;
+        return this->data.colNo;
     }
     
     
@@ -140,7 +140,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        this->colNo = value;
+        this->data.colNo = value;
         return true;
     }
     
@@ -160,7 +160,7 @@ extern "C" {
         }
 #endif
         
-        return this->pFileName;
+        return this->data.pFileName;
     }
     
     
@@ -177,7 +177,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->pFileName = pValue;
+        this->data.pFileName = pValue;
         return true;
     }
     
@@ -196,7 +196,7 @@ extern "C" {
         }
 #endif
         
-        return this->lineNo;
+        return this->data.lineNo;
     }
     
     bool            srcLoc_setLineNo(
@@ -210,7 +210,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        this->lineNo = value;
+        this->data.lineNo = value;
         return true;
     }
     
@@ -248,16 +248,16 @@ extern "C" {
         }
 #endif
         
-        if ((NULL == this->pFileName) && (NULL == pOther->pFileName)) {
+        if ((NULL == this->data.pFileName) && (NULL == pOther->data.pFileName)) {
         }
-        else if ((NULL == this->pFileName) && pOther->pFileName) {
+        else if ((NULL == this->data.pFileName) && pOther->data.pFileName) {
             return ERESULT_SUCCESS_LESS_THAN;
         }
-        else if (this->pFileName && (NULL == pOther->pFileName)) {
+        else if (this->data.pFileName && (NULL == pOther->data.pFileName)) {
             return ERESULT_SUCCESS_GREATER_THAN;
         }
         else {
-            iRc = strcmp(this->pFileName, pOther->pFileName);
+            iRc = strcmp(this->data.pFileName, pOther->data.pFileName);
             if (iRc < 0) {
                 return ERESULT_SUCCESS_LESS_THAN;
             }
@@ -270,17 +270,17 @@ extern "C" {
             return ERESULT_SUCCESS_GREATER_THAN;
         }
                 
-        if (this->lineNo < pOther->lineNo) {
+        if (this->data.lineNo < pOther->data.lineNo) {
             return ERESULT_SUCCESS_LESS_THAN;
         }
-        if (this->lineNo > pOther->lineNo) {
+        if (this->data.lineNo > pOther->data.lineNo) {
             return ERESULT_SUCCESS_GREATER_THAN;
         }
 
-        if (this->colNo < pOther->colNo) {
+        if (this->data.colNo < pOther->data.colNo) {
             return ERESULT_SUCCESS_LESS_THAN;
         }
-        if (this->colNo > pOther->colNo) {
+        if (this->data.colNo > pOther->data.colNo) {
             return ERESULT_SUCCESS_GREATER_THAN;
         }
         
@@ -621,9 +621,9 @@ extern "C" {
                  sizeof(str),
                  "{\"objectType\":\"%s\",\"FileName\":\"%s\",\"LineNo\":%d,\"ColNo\":%d",
                  pInfo->pClassName,
-                 (this->pFileName ? this->pFileName : ""),
-                 this->lineNo,
-                 this->colNo
+                 (this->data.pFileName ? this->data.pFileName : ""),
+                 this->data.lineNo,
+                 this->data.colNo
             );
         AStr_AppendA(pStr, str);
         

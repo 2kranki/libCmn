@@ -87,10 +87,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     WSTRC_DATA *    WStrC_Alloc(
+        void
     );
     
     
     WSTRC_DATA *    WStrC_New(
+        void
     );
     
     WSTRC_DATA *    WStrC_NewA(

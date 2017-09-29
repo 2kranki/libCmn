@@ -143,10 +143,12 @@ extern "C" {
      * via obj_misc1.
      */
     PLIST_DATA *     plist_Alloc(
+        void
     );
     
     
     PLIST_DATA *     plist_New(
+        void
     );
     
     

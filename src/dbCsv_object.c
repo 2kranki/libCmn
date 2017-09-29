@@ -66,7 +66,7 @@ OBJ_INFO        dbCsv_Info;            // Forward Reference
 
 
 OBJ_ID          dbCsv_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            dbCsv_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DBCSV_CLASS;
@@ -145,7 +145,7 @@ void            dbCsv_Dealloc(
 
 
 OBJ_ID          dbCsv_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&dbCsv_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          dbCsv_Class(
 
 static
 uint16_t		dbCsv_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DBCSV;

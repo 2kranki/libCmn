@@ -98,10 +98,12 @@ extern "C" {
      * via obj_misc1.
      */
     PRT_DATA *     prt_Alloc(
+        void
     );
     
     
     OBJ_ID          prt_Class(
+        void
     );
     
     

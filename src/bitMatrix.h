@@ -100,6 +100,7 @@ extern "C" {
     
     
     OBJ_ID          bitMatrix_Class(
+        void
     );
     
     

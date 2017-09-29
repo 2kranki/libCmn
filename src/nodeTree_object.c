@@ -55,7 +55,7 @@ typedef struct nodeTree_class_data_s NODETREE_CLASS_DATA;
 
 
 OBJ_ID          nodeTree_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -77,7 +77,7 @@ bool            nodeTree_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODETREE_CLASS;
@@ -138,7 +138,7 @@ void            nodeTree_Dealloc(
 
 
 OBJ_ID          nodeTree_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeTree_ClassObj;
@@ -147,7 +147,7 @@ OBJ_ID          nodeTree_Class(
 
 static
 uint16_t		nodeTree_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODETREE;

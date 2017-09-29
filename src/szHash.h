@@ -132,7 +132,8 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SZHASH_DATA *   szHash_Alloc(
+    SZHASH_DATA *       szHash_Alloc(
+        void
     );
     
     

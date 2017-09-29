@@ -92,10 +92,10 @@
 {
     U16ARRAY_DATA	*pObj = OBJ_NIL;
    
-    pObj = u16Array_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    pObj = u16Array_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u16Array_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -112,10 +112,10 @@
     ERESULT         eRc;
     uint16_t        data;
     
-    pObj = u16Array_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    pObj = u16Array_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u16Array_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         for (i=1; i<=64; ++i) {

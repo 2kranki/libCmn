@@ -66,7 +66,7 @@ OBJ_INFO        wav_Info;               // Forward Reference
 
 
 OBJ_ID          wav_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            wav_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_WAV_CLASS;
@@ -145,7 +145,7 @@ void            wav_Dealloc(
 
 
 OBJ_ID          wav_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&wav_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          wav_Class(
 
 static
 uint16_t		wav_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_WAV;

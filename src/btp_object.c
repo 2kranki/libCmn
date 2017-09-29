@@ -67,7 +67,7 @@ OBJ_INFO        btp_Info;            // Forward Reference
 
 
 OBJ_ID          btp_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            btp_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BTP_CLASS;
@@ -146,7 +146,7 @@ void            btp_Dealloc(
 
 
 OBJ_ID          btp_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&btp_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          btp_Class(
 
 static
 uint16_t		btp_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BTP;

@@ -65,7 +65,7 @@ OBJ_INFO        hex_Info;            // Forward Reference
 
 
 OBJ_ID          hex_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            hex_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_HEX_CLASS;
@@ -143,7 +143,7 @@ void            hex_Dealloc(
 
 
 OBJ_ID          hex_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&hex_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          hex_Class(
 
 static
 uint16_t		hex_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_HEX;

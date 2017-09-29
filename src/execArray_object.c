@@ -66,7 +66,7 @@ OBJ_INFO        execArray_Info;            // Forward Reference
 
 
 OBJ_ID          execArray_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            execArray_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_EXECARRAY_CLASS;
@@ -145,7 +145,7 @@ void            execArray_Dealloc(
 
 
 OBJ_ID          execArray_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&execArray_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          execArray_Class(
 
 static
 uint16_t		execArray_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_EXECARRAY;

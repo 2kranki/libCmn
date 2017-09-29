@@ -70,6 +70,7 @@ int         test_name_OpenClose(
 {
     NAME_DATA	*pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = name_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = name_InitInt(pObj, 0);
@@ -82,6 +83,7 @@ int         test_name_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -98,6 +100,7 @@ int         test_name_UTF8(
     const
     char        *pChrs = NULL;
 
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pName1 = name_NewUTF8( "abc" );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
@@ -121,6 +124,7 @@ int         test_name_UTF8(
         pName1 = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -137,6 +141,7 @@ int         test_name_UTF8Con(
     const
     char        *pChrs = NULL;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pName1 = name_NewUTF8Con( "abc" );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
@@ -160,6 +165,7 @@ int         test_name_UTF8Con(
         pName1 = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -175,6 +181,7 @@ int         test_name_Int(
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pName1 = name_NewInt( 123456 );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
@@ -195,6 +202,7 @@ int         test_name_Int(
         pName1 = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -212,6 +220,7 @@ int         test_name_Ptr(
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pName1 = name_NewPtr( test_name_Ptr );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
@@ -225,6 +234,7 @@ int         test_name_Ptr(
         pName1 = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

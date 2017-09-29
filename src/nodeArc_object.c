@@ -65,7 +65,7 @@ OBJ_INFO        nodeArc_Info;            // Forward Reference
 
 
 OBJ_ID          nodeArc_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            nodeArc_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEARC_CLASS;
@@ -143,7 +143,7 @@ void            nodeArc_Dealloc(
 
 
 OBJ_ID          nodeArc_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeArc_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          nodeArc_Class(
 
 static
 uint16_t		nodeArc_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEARC;

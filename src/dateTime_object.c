@@ -65,7 +65,7 @@ OBJ_INFO        dateTime_Info;            // Forward Reference
 
 
 OBJ_ID          dateTime_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            dateTime_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DATETIME_CLASS;
@@ -143,7 +143,7 @@ void            dateTime_Dealloc(
 
 
 OBJ_ID          dateTime_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&dateTime_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          dateTime_Class(
 
 static
 uint16_t		dateTime_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DATETIME;

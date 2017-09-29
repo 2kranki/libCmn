@@ -64,8 +64,10 @@ struct lex_data_s	{
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 #define LEX_INIT_DONE   5
+#define LEX_CHECKPOINT  6
     
     ERESULT         eRc;
+    ERESULT_DATA    *pErrors;
 
     // Input Data/Routines
     TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t);
@@ -73,10 +75,11 @@ struct lex_data_s	{
     OBJ_ID          pSrcObj;
     
     // Output Data/Routines
-    uint16_t        sizeOutputs;
+    uint16_t        sizeOutputs;        // Circular Token Queue
     uint16_t        curOutputs;
     TOKEN_DATA      *pOutputs;
     TOKENLIST_DATA  *pFIFO;             // Token FIFO Queue
+    TOKENLIST_DATA  *pCheckPoint;       // Token Checkpoint Queue
     
     // Parse Routines
     //      pParse parses the pInputs into the token passed or ignores the
@@ -88,9 +91,6 @@ struct lex_data_s	{
     WSTR_DATA       *pStr;              // String from accumulated tokens
     uint8_t         fUseStringTable;
     uint8_t         rsvd[3];
-    
-    // Error Output Routines
-    ERESULT_DATA    *pErrors;
     
 };
 #pragma pack(pop)
@@ -219,12 +219,15 @@ struct lex_data_s	{
     );
     
     
+    /*** @protected ***/
+    /*!
+     Parse a number of varying formats. The first character of the number
+     has already been parsed and appended, but not advanced over. So, we
+     can look at it and make decisions based on it.
+     @return:   If successful, LEX_CONSTANT_* class, otherwise 0. Also,
+                 the token string is accumulated.
+     */
     uint16_t        lex_ParseNumber(
-        LEX_DATA        *this
-    );
-    
-    
-    ERESULT         lex_ParseStringTruncate(
         LEX_DATA        *this
     );
     
@@ -235,7 +238,7 @@ struct lex_data_s	{
      token properties.
      @param:    this    LEX object pointer
      @param     pToken  pointer to the token of this phrase which
-     will be appended to the string
+                         will be appended to the string
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenAppendString(
@@ -279,6 +282,19 @@ struct lex_data_s	{
         LEX_DATA        *this,
         TOKEN_DATA      *pToken
     );
+    
+    
+    /*** @protected ***/
+    /*!
+     Truncate the parse string accumulated so far.
+     @param:    this    LEX object pointer
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     */
+    ERESULT         lex_ParseTokenTruncate(
+        LEX_DATA        *this
+    );
+    
+    
     
     
 #ifdef NDEBUG

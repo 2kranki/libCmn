@@ -111,6 +111,7 @@ extern "C" {
      @return:   pointer to lru object if successful, otherwise OBJ_NIL.
      */
     LRU_DATA *     lru_Alloc(
+        void
     );
     
     

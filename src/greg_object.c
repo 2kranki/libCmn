@@ -39,7 +39,7 @@
 
 
 OBJ_ID          greg_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            greg_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_GREG_CLASS;
@@ -121,7 +121,7 @@ void            greg_Dealloc(
 
 
 OBJ_ID          greg_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&greg_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          greg_Class(
 
 static
 uint16_t		greg_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_GREG;

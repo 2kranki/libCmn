@@ -71,6 +71,7 @@ int         test_node_Utf8(
 {
     NODE_DATA	*pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = node_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = node_InitWithUTF8(pObj, "abc", NULL);
@@ -84,6 +85,7 @@ int         test_node_Utf8(
     }
 
     szTbl_SharedReset();    
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -96,6 +98,7 @@ int         test_node_Utf8Con(
 {
     NODE_DATA	*pObj = OBJ_NIL;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = node_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = node_InitWithUTF8Con( pObj, "abc", OBJ_NIL );
@@ -107,6 +110,7 @@ int         test_node_Utf8Con(
     }
     
     szTbl_SharedReset();    
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -119,6 +123,7 @@ int         test_node_Ptr(
 {
     NODE_DATA	*pObj = OBJ_NIL;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = node_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = node_InitWithPtr( pObj, test_node_Ptr, OBJ_NIL );
@@ -130,6 +135,7 @@ int         test_node_Ptr(
     }
     
     szTbl_SharedReset();    
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

@@ -86,11 +86,13 @@ extern	"C" {
     //---------------------------------------------------------------
     
     CFA_DATA *      cfa_Alloc(
+        void
     );
     
     
     
     OBJ_ID          cfa_Class(
+        void
     );
     
     

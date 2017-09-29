@@ -65,7 +65,7 @@ OBJ_INFO        srcLoc_Info;            // Forward Reference
 
 
 OBJ_ID          srcLoc_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            srcLoc_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SRCLOC_CLASS;
@@ -144,7 +144,7 @@ void            srcLoc_Dealloc(
 
 
 OBJ_ID          srcLoc_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&srcLoc_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          srcLoc_Class(
 
 static
 uint16_t		srcLoc_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SRCLOC;

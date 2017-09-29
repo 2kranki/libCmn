@@ -22,7 +22,7 @@
 
 
 OBJ_ID          trctbl_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -44,7 +44,7 @@ bool            trctbl_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TRCTBL_CLASS;
@@ -104,7 +104,7 @@ void            trctbl_Dealloc(
 
 
 OBJ_ID          trctbl_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&trctbl_ClassObj;
@@ -113,7 +113,7 @@ OBJ_ID          trctbl_Class(
 
 static
 uint16_t		trctbl_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TRCTBL;

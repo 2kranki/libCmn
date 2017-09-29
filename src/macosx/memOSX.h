@@ -193,17 +193,21 @@ memOSX_SharedReset()
     //---------------------------------------------------------------
 
     MEMOSX_DATA *     memOSX_Alloc(
+        void
     );
     
     
     MEMOSX_DATA *     memOSX_New(
+        void
     );
     
     
     MEMOSX_DATA *     memOSX_Shared(
+        void
     );
     
     MEMOSX_DATA *     memOSX_SharedReset(
+        void
     );
     
     

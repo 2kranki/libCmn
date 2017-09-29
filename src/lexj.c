@@ -142,6 +142,30 @@ extern "C" {
     }
 
 
+    LEXJ_DATA *     lexj_NewA(
+        const
+        char            *pStr,
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    )
+    {
+        LEXJ_DATA       *this = OBJ_NIL;
+        ASTR_DATA       *pStrA = OBJ_NIL;
+
+        pStrA = AStr_NewA(pStr);
+        if (pStrA) {
+            this = lexj_Alloc( );
+            if (this) {
+                this = lexj_InitAStr(this, pStrA, tabSize, fExpandTabs);
+            }
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+        }
+        return this;
+    }
+    
+    
+    
     LEXJ_DATA *     lexj_NewFromAStr(
         ASTR_DATA       *pStr,
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
@@ -897,7 +921,8 @@ extern "C" {
         TOKEN_DATA      *pInput;
         int32_t         cls;
         int32_t         newCls = 0;
-        //int32_t         chr;
+        TOKEN_DATA      *pNextInput;
+        int32_t         clsNext;
         bool            fMore = true;
         bool            fSaveStr = true;
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -913,7 +938,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         while (fMore) {
-            pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
+            pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
             if (pInput) {
                 cls = token_getClass(pInput);
             }
@@ -995,6 +1020,7 @@ extern "C" {
                     break;
                     
                 case ASCII_LEXICAL_NUMBER:
+                parseNumber:
                     newCls = lex_ParseNumber((LEX_DATA *)this);
                     if (newCls) {
                         uint16_t            type;
@@ -1013,7 +1039,7 @@ extern "C" {
                     // Quoted String
                     //TODO: "..." {<white-space> "..."}
                     lex_InputAdvance((LEX_DATA *)this, 1);
-                    lex_ParseStringTruncate((LEX_DATA *)this);
+                    lex_ParseTokenTruncate((LEX_DATA *)this);
                     while(lex_ParseChrCon((LEX_DATA *)this, '"'))
                         ;
                     pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
@@ -1051,11 +1077,25 @@ extern "C" {
                     }
                     break;
                     
+                case '+':           /*** '+' ***/
+                    newCls = LEXJ_SEP_PLUS;
+                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    fMore = false;
+                    TRC_OBJ(this, "\tseperator: +\n");
+                    break;
+                    
                 case ',':           /*** ',' ***/
                     newCls = LEXJ_SEP_COMMA;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ,\n");
+                    break;
+                    
+                case '-':           /*** '-' ***/
+                    newCls = LEXJ_SEP_MINUS;
+                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    fMore = false;
+                    TRC_OBJ(this, "\tseperator: -\n");
                     break;
                     
                 case '/':           /*** '/' ***/

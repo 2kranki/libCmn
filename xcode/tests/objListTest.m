@@ -95,7 +95,7 @@
 {
     OBJLIST_DATA	*pObj = OBJ_NIL;
    
-    pObj = objList_Alloc(0);
+    pObj = objList_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = objList_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

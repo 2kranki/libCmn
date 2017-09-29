@@ -53,7 +53,7 @@ extern "C" {
     
     struct sidx_entry_s {
         uint32_t        index;
-        uint32_t        offset;
+        size_t          offset;
     };
     
     typedef struct sidx_entry_s SIDX_ENTRY;

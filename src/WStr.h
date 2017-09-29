@@ -89,6 +89,7 @@ extern "C" {
      * via obj_misc1.
      */
     WSTR_DATA *     WStr_Alloc(
+        void
     );
     
     
@@ -127,6 +128,7 @@ extern "C" {
     
     
     WSTR_DATA *     WStr_New(
+        void
     );
     
     
@@ -150,6 +152,7 @@ extern "C" {
     
     
     WSTR_DATA *     WStr_NewFromTimeNow(
+        void
     );
     
 
@@ -162,6 +165,7 @@ extern "C" {
     // characters terminated with a NUL.
     const
     int32_t *       WStr_WhiteSpaceW(
+        void
     );
     
     

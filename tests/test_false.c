@@ -70,7 +70,8 @@ int         test_false_OpenClose(
 {
     FALSE_DATA	*pObj = OBJ_NIL;
    
-    pObj = false_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = false_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = false_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_false_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -95,6 +97,7 @@ int         test_false_ToJSON(
     FALSE_DATA      *pObj = OBJ_NIL;
     ASTR_DATA       *pAStr = OBJ_NIL;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = false_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = false_Init( pObj );
@@ -112,6 +115,7 @@ int         test_false_ToJSON(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

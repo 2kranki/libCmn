@@ -70,7 +70,8 @@ int         test_dateTime_OpenClose(
 {
     DATETIME_DATA   *pObj = OBJ_NIL;
    
-    pObj = dateTime_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = dateTime_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = dateTime_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_dateTime_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -97,6 +99,7 @@ int         test_dateTime_Current(
     struct tm           *pTime;
     int16_t             work;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     current = time(NULL);
     pTime = gmtime(&current);
     ++pTime->tm_mon;
@@ -126,6 +129,7 @@ int         test_dateTime_Current(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

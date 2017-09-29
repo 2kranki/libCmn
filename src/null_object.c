@@ -66,7 +66,7 @@ OBJ_INFO        null_Info;            // Forward Reference
 
 
 OBJ_ID          null_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            null_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NULL_CLASS;
@@ -145,7 +145,7 @@ void            null_Dealloc(
 
 
 OBJ_ID          null_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&null_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          null_Class(
 
 static
 uint16_t		null_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NULL;

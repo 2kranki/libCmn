@@ -67,7 +67,7 @@ OBJ_INFO        szTbl_Info;            // Forward Reference
 
 
 OBJ_ID          szTbl_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            szTbl_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SZTBL_CLASS;
@@ -146,7 +146,7 @@ void            szTbl_Dealloc(
 
 
 OBJ_ID          szTbl_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&szTbl_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          szTbl_Class(
 
 static
 uint16_t		szTbl_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_SZTBL;

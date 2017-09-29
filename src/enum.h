@@ -99,10 +99,12 @@ extern "C" {
      @return:   pointer to enum object if successful, otherwise OBJ_NIL.
      */
     ENUM_DATA *     enum_Alloc(
+        void
     );
     
     
     ENUM_DATA *     enum_New(
+        void
     );
     
     

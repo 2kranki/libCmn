@@ -315,6 +315,49 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    bool            srcFile_getBackTrack(
+        SRCFILE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcFile_Validate( this ) )
+            return false;
+#endif
+        
+        // Return to caller.
+        return this->fBackTrack;
+    }
+    
+    
+    bool            srcFile_setBackTrack(
+        SRCFILE_DATA    *this,
+        bool            fValue
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcFile_Validate( this ) )
+            return false;
+#endif
+        
+        if (fValue) {
+            this->fBackTrack = true;
+        }
+        else {
+            this->fBackTrack = false;
+        }
+        
+        // Return to caller.
+        return true;
+    }
+    
+    
+    
     bool            srcFile_getExpandTabs(
         SRCFILE_DATA    *this
     )
@@ -357,49 +400,6 @@ extern "C" {
     
     
     
-    bool            srcFile_getReuse(
-        SRCFILE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate( this ) )
-            return false;
-#endif
-        
-        // Return to caller.
-        return this->fReuse;
-    }
-    
-    
-    bool            srcFile_setReuse(
-        SRCFILE_DATA    *this,
-        bool            fValue
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate( this ) )
-            return false;
-#endif
-        
-        if (fValue) {
-            this->fReuse = true;
-        }
-        else {
-            this->fReuse = false;
-        }
-        
-        // Return to caller.
-        return true;
-    }
-    
-    
-    
     bool            srcFile_getStripCR(
         SRCFILE_DATA    *this
     )
@@ -416,7 +416,7 @@ extern "C" {
         return this->fStripCR;
     }
     
-    
+
     bool            srcFile_setStripCR(
         SRCFILE_DATA    *this,
         bool            fValue
@@ -1026,7 +1026,7 @@ extern "C" {
                      sizeof(str),
                      "{%p(srcFile) path=%s ",
                      this,
-                     path_getData(this->pPath)
+                     (this->pPath ? path_getData(this->pPath) : "")
                      );
         AStr_AppendA(pStr, str);
         

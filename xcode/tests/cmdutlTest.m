@@ -127,7 +127,7 @@ char        *pTestInput02 =
 {
     CMDUTL_DATA	*pObj = OBJ_NIL;
    
-    pObj = cmdutl_Alloc(0);
+    pObj = cmdutl_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = cmdutl_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

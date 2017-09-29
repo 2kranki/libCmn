@@ -68,7 +68,7 @@ OBJ_INFO        blkdrcds16_Info;            // Forward Reference
 
 
 OBJ_ID          blkdrcds16_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -90,7 +90,7 @@ bool            blkdrcds16_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BLKDRCDS16_CLASS;
@@ -146,7 +146,7 @@ void            blkdrcds16_Dealloc(
 
 
 OBJ_ID          blkdrcds16_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&blkdrcds16_ClassObj;
@@ -155,7 +155,7 @@ OBJ_ID          blkdrcds16_Class(
 
 static
 uint16_t		blkdrcds16_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BLKDRCDS16;

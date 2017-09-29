@@ -67,7 +67,7 @@ OBJ_INFO        prodcons_Info;            // Forward Reference
 
 
 OBJ_ID          prodcons_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            prodcons_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PRODCONS_CLASS;
@@ -145,7 +145,7 @@ void            prodcons_Dealloc(
 
 
 OBJ_ID          prodcons_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&prodcons_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          prodcons_Class(
 
 static
 uint16_t		prodcons_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PRODCONS;

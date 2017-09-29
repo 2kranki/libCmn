@@ -87,10 +87,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     U16ARRAY_DATA * u16Array_Alloc(
+        void
     );
     
     
     U16ARRAY_DATA * u16Array_New(
+        void
     );
     
     

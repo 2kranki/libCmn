@@ -66,7 +66,7 @@ OBJ_INFO        block16_Info;            // Forward Reference
 
 
 OBJ_ID          block16_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            block16_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BLOCK16_CLASS;
@@ -144,7 +144,7 @@ void            block16_Dealloc(
 
 
 OBJ_ID          block16_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&block16_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          block16_Class(
 
 static
 uint16_t		block16_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_BLOCK16;

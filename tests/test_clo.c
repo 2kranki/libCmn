@@ -70,7 +70,8 @@ int         test_clo_OpenClose(
 {
     CLO_DATA	*pObj = OBJ_NIL;
    
-    pObj = clo_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = clo_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = clo_Init( pObj, 0, NULL );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +83,7 @@ int         test_clo_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

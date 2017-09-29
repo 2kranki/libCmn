@@ -65,7 +65,7 @@ OBJ_INFO        nodeATree_Info;            // Forward Reference
 
 
 OBJ_ID          nodeATree_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            nodeATree_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEATREE_CLASS;
@@ -143,7 +143,7 @@ void            nodeATree_Dealloc(
 
 
 OBJ_ID          nodeATree_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeATree_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          nodeATree_Class(
 
 static
 uint16_t		nodeATree_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEATREE;

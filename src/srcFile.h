@@ -8,7 +8,7 @@
  *				Read a Source File (srcFile)
  * Purpose
  *				This takes a file from several different sources
- *              and tokenizes it into a stream of token to be used
+ *              and tokenizes it into a stream of tokens to be used
  *              for parsing. These routines are UTF-8 aware and
  *              will tokenize a multi-byte character into one token.
  *
@@ -16,6 +16,10 @@
  *	1.      EOF(-1) denotes the end of file. So, the token class
  *          and token character will be set to EOF for every
  *          access at EOF.
+ *  2.      Tokens use UCS-32 characters. For UTF-8 data, there are
+ *          two possible indices, the relative byte within the data 
+ *          and the relative UCS-32 character within the data.  We
+ *          use the relative UCS-32 character index.
  *
  * History
  *	06/17/2015 Generated
@@ -102,6 +106,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     SRCFILE_DATA *     srcFile_Alloc(
+        void
     );
     
     
@@ -136,11 +141,25 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            srcFile_getReuse(
+    /*!
+     The Back-Tracking property tells SrcFile that it must save all
+     tokens provided using a recovery mechanism of:
+        srcFile_BT_Start()
+            .
+            .
+            .
+        srcFile_BT_Restore() or srcFile_BT_Restart()
+            .
+            .
+            .
+        srcFile_BT_End()
+     See below for documentation srcFile_BT methods.
+     */
+    bool            srcFile_getBackTrack(
         SRCFILE_DATA    *this
     );
     
-    bool            srcFile_setReuse(
+    bool            srcFile_setBackTrack(
         SRCFILE_DATA    *this,
         bool            fValue
     );
@@ -161,6 +180,16 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Start accumulating advanced tokens for possible backtracking.
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an 
+                ERESULT_* error code.
+     */
+    ERESULT         srcFile_BT_Start(
+        SRCFILE_DATA    *this
+    );
+
+    
     SRCFILE_DATA *  srcFile_InitAStr(
         SRCFILE_DATA    *this,
         ASTR_DATA       *pStr,          // Buffer of file data

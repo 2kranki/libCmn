@@ -86,10 +86,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     PTRARRAY_DATA * ptrArray_Alloc(
+        void
     );
     
     
     PTRARRAY_DATA * ptrArray_New(
+        void
     );
     
     

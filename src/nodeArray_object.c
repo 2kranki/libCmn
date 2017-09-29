@@ -65,7 +65,7 @@ OBJ_INFO        nodeArray_Info;            // Forward Reference
 
 
 OBJ_ID          nodeArray_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            nodeArray_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEARRAY_CLASS;
@@ -144,7 +144,7 @@ void            nodeArray_Dealloc(
 
 
 OBJ_ID          nodeArray_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeArray_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          nodeArray_Class(
 
 static
 uint16_t		nodeArray_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEARRAY;

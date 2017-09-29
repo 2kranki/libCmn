@@ -88,14 +88,17 @@ extern "C" {
     //---------------------------------------------------------------
 
     TRUE_DATA *     true_Alloc(
+        void
     );
     
     
     TRUE_DATA *     true_New(
+        void
     );
     
     
     TRUE_DATA *     true_Shared(
+        void
     );
     
     

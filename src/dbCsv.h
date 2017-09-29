@@ -128,10 +128,12 @@ extern "C" {
      * via obj_misc1.
      */
     DBCSV_DATA *     dbCsv_Alloc(
+        void
     );
     
     
     DBCSV_DATA *     dbCsv_New(
+        void
     );
     
     DBCSV_DATA *    dbCsv_NewFromAStr(

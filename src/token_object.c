@@ -65,7 +65,7 @@ OBJ_INFO        token_Info;            // Forward Reference
 
 
 OBJ_ID          token_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            token_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TOKEN_CLASS;
@@ -144,7 +144,7 @@ void            token_Dealloc(
 
 
 OBJ_ID          token_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&token_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          token_Class(
 
 static
 uint16_t		token_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_TOKEN;

@@ -141,7 +141,7 @@ char        whiteSpaceA[22] = {
     ASTR_DATA	*pObj = OBJ_NIL;
     int32_t     chrW;
    
-    pObj = AStr_Alloc(0);
+    pObj = AStr_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = AStr_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

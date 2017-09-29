@@ -104,6 +104,7 @@ int             test_consumer_OpenClose(
     CONSUMER_DATA	*pObj = OBJ_NIL;
     int             i;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = consumer_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = consumer_Init( pObj, 12, 4, (void *)printMsg, pObj);
@@ -121,6 +122,7 @@ int             test_consumer_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

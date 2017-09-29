@@ -67,7 +67,7 @@ OBJ_INFO        crc_Info;            // Forward Reference
 
 
 OBJ_ID          crc_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            crc_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CRC_CLASS;
@@ -145,7 +145,7 @@ void            crc_Dealloc(
 
 
 OBJ_ID          crc_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&crc_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          crc_Class(
 
 static
 uint16_t		crc_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_CRC;

@@ -1170,6 +1170,51 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       C h a r  I n s e r t
+    //---------------------------------------------------------------
+    
+    ERESULT         AStr_CharInsertW(
+        ASTR_DATA        *this,
+        uint32_t        offset,
+        int32_t         chr
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        lenStr;
+        uint32_t        off;
+        char            *pChr;
+        uint32_t        chrsLen;
+        char            chrs[8];
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStr_getLength(this);
+        chrsLen = utf8_WCToUtf8(chr, chrs);
+        
+        if( (0 == offset) || (offset > lenStr) ) {
+            return -1;
+        }
+        off = utf8_StrOffset(AStr_getData(this), offset);
+        
+        pChr = pwr2Array_Ptr(this->pData, off);
+        lenStr = utf8_Utf8ToWC(pChr, NULL);
+        if (pChr && lenStr) {
+            eRc = pwr2Array_InsertData(this->pData, off, chrsLen, chrs);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       C h a r  P u t
     //---------------------------------------------------------------
     
@@ -2137,6 +2182,35 @@ extern "C" {
 
         pData  = pwr2Array_Ptr(this->pData, 1);
         num = dec_getInt64A(pData);
+        
+        // Return to caller.
+        return num;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     T o  U i n t 6 4
+    //---------------------------------------------------------------
+    
+    uint64_t        AStr_ToUint64(
+        ASTR_DATA		*this
+    )
+    {
+        uint64_t        num = 0;
+        char            *pData;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pData  = pwr2Array_Ptr(this->pData, 1);
+        num = (uint64_t)dec_getInt64A(pData);
         
         // Return to caller.
         return num;

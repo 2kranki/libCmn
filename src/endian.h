@@ -102,14 +102,17 @@ extern "C" {
      @return:   pointer to endian object if successful, otherwise OBJ_NIL.
      */
     ENDIAN_DATA *     endian_Alloc(
+        void
     );
     
     
     ENDIAN_DATA *     endian_New(
+        void
     );
     
     
     ENDIAN_DATA *    endian_Shared(
+        void
     );
     
     

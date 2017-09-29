@@ -94,7 +94,7 @@
 {
     XML_DATA	*pObj = OBJ_NIL;
    
-    pObj = xml_Alloc(0);
+    pObj = xml_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = xml_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

@@ -67,7 +67,7 @@ OBJ_INFO        appl_Info;            // Forward Reference
 
 
 OBJ_ID          appl_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            appl_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_APPL_CLASS;
@@ -145,7 +145,7 @@ void            appl_Dealloc(
 
 
 OBJ_ID          appl_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&appl_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          appl_Class(
 
 static
 uint16_t		appl_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_APPL;

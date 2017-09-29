@@ -39,7 +39,7 @@
 
 
 OBJ_ID          objCb_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            objCb_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJCB_CLASS;
@@ -121,7 +121,7 @@ void            objCb_Dealloc(
 
 
 OBJ_ID          objCb_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&objCb_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          objCb_Class(
 
 static
 uint16_t		objCb_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_OBJCB;

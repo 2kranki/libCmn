@@ -66,7 +66,7 @@ OBJ_INFO        name_Info;            // Forward Reference
 
 
 OBJ_ID          name_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            name_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NAME_CLASS;
@@ -143,7 +143,7 @@ void            name_Dealloc(
 
 
 OBJ_ID          name_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&name_ClassObj;
@@ -160,7 +160,7 @@ uint32_t        name_NewUnique(
 
 static
 uint16_t		name_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NAME;

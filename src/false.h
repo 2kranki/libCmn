@@ -95,14 +95,17 @@ extern "C" {
     //---------------------------------------------------------------
 
     FALSE_DATA *    false_Alloc(
+        void
     );
     
     
     FALSE_DATA *    false_New(
+        void
     );
     
     
     FALSE_DATA *    false_Shared(
+        void
     );
     
     

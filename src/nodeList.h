@@ -111,10 +111,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     NODELIST_DATA * nodeList_Alloc(
+        void
     );
     
     
     NODELIST_DATA * nodeList_New(
+        void
     );
     
     

@@ -105,10 +105,12 @@ extern "C" {
      @return:   pointer to nodeGraph object if successful, otherwise OBJ_NIL.
      */
     NODEGRAPH_DATA * nodeGraph_Alloc(
+        void
     );
     
     
     NODEGRAPH_DATA * nodeGraph_New(
+        void
     );
     
     

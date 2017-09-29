@@ -139,7 +139,7 @@ ERESULT         logicalRead(
         buffer1[i] = '\0';
         buffer2[i] = '\0';
     }
-    pObj = lru_Alloc(0);
+    pObj = lru_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = lru_Init(pObj, sectorSize, 2);
     XCTAssertFalse( (OBJ_NIL == pObj) );

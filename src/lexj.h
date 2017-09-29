@@ -113,6 +113,8 @@ extern "C" {
         LEXJ_SEP_COMMA,                     // ,
         LEXJ_SEP_LBRACKET,                  // [
         LEXJ_SEP_LBRACE,                    // {
+        LEXJ_SEP_MINUS,                     // -
+        LEXJ_SEP_PLUS,                      // +
         LEXJ_SEP_RBRACKET,                  // ]
         LEXJ_SEP_RBRACE,                    // }
         
@@ -141,8 +143,16 @@ extern "C" {
      @return:   pointer to lexj object if successful, otherwise OBJ_NIL.
      */
     LEXJ_DATA *     lexj_Alloc(
+        void
     );
     
+    
+    LEXJ_DATA *     lexj_NewA(
+        const
+        char            *pStr,
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
+        bool            fExpandTabs
+    );
     
     LEXJ_DATA *     lexj_NewFromAStr(
         ASTR_DATA       *pStr,

@@ -65,7 +65,7 @@ OBJ_INFO        file_Info;            // Forward Reference
 
 
 OBJ_ID          file_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            file_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_FILE_CLASS;
@@ -144,7 +144,7 @@ void            file_Dealloc(
 
 
 OBJ_ID          file_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&file_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          file_Class(
 
 static
 uint16_t		file_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_FILE;

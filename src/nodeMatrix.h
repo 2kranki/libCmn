@@ -103,6 +103,7 @@ extern "C" {
      @return:   pointer to nodeMatrix object if successful, otherwise OBJ_NIL.
      */
     NODEMATRIX_DATA * nodeMatrix_Alloc(
+        void
     );
     
     

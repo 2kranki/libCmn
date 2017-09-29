@@ -66,7 +66,7 @@ OBJ_INFO        rrds32_Info;            // Forward Reference
 
 
 OBJ_ID          rrds32_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            rrds32_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_RRDS32_CLASS;
@@ -145,7 +145,7 @@ void            rrds32_Dealloc(
 
 
 OBJ_ID          rrds32_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&rrds32_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          rrds32_Class(
 
 static
 uint16_t		rrds32_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_RRDS32;

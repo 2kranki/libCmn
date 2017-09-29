@@ -96,7 +96,7 @@
     ERESULT         eRc;
     PATH_DATA       *pPath = OBJ_NIL;
    
-    pObj = audioCW_Alloc(0);
+    pObj = audioCW_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = audioCW_Init( pObj, 1, 11025, 8, 740 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -128,7 +128,7 @@
     ERESULT         eRc;
     PATH_DATA       *pPath = OBJ_NIL;
     
-    pObj = audioCW_Alloc(0);
+    pObj = audioCW_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = audioCW_Init( pObj, 1, 11025, 8, 740 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -160,7 +160,7 @@
     ERESULT         eRc;
     PATH_DATA       *pPath = OBJ_NIL;
     
-    pObj = audioCW_Alloc(0);
+    pObj = audioCW_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = audioCW_Init( pObj, 1, 11025, 8, 740 );
     XCTAssertFalse( (OBJ_NIL == pObj) );

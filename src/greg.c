@@ -109,7 +109,7 @@ extern "C" {
     )
     {
         // wikipedia.org day of week
-        return (dd+=mm<3?yyyy--:yyyy-2,23*mm/9+dd+4+yyyy/4-yyyy/100+yyyy/400)%7;
+        return (dd+=mm<3?yyyy--:yyyy-2.23*mm/9+dd+4+yyyy/4-yyyy/100+yyyy/400) % 7;
     }
     
     

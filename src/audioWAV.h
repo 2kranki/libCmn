@@ -102,6 +102,7 @@ extern "C" {
      @return:   pointer to audioWAV object if successful, otherwise OBJ_NIL.
      */
     AUDIOWAV_DATA *     audioWAV_Alloc(
+        void
     );
     
     

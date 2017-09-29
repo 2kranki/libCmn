@@ -39,7 +39,7 @@
 
 
 OBJ_ID          xml_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            xml_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_XML_CLASS;
@@ -121,7 +121,7 @@ void            xml_Dealloc(
 
 
 OBJ_ID          xml_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&xml_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          xml_Class(
 
 static
 uint16_t		xml_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_XML;

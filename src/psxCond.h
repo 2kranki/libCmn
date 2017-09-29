@@ -108,6 +108,7 @@ extern "C" {
      @return:   pointer to psxCond object if successful, otherwise OBJ_NIL.
      */
     PSXCOND_DATA *     psxCond_Alloc(
+        void
     );
     
     

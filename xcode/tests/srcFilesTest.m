@@ -94,7 +94,7 @@
 {
     SRCFILES_DATA	*pObj = OBJ_NIL;
    
-    pObj = srcFiles_Alloc(0);
+    pObj = srcFiles_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = srcFiles_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

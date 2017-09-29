@@ -112,6 +112,7 @@ int         test_szTbl_OpenClose(
 {
     SZTBL_DATA	*pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = szTbl_Shared();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
@@ -122,6 +123,7 @@ int         test_szTbl_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -142,6 +144,7 @@ int         test_szTbl_Add(
     char        *pStr;
     ASTR_DATA	*pAStr = OBJ_NIL;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = szTbl_Shared();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
@@ -186,6 +189,7 @@ int         test_szTbl_Add(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1; 
 }
 

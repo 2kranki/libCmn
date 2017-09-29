@@ -65,7 +65,7 @@ OBJ_INFO        nodeList_Info;            // Forward Reference
 
 
 OBJ_ID          nodeList_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            nodeList_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODELIST_CLASS;
@@ -144,7 +144,7 @@ void            nodeList_Dealloc(
 
 
 OBJ_ID          nodeList_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeList_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          nodeList_Class(
 
 static
 uint16_t		nodeList_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODELIST;

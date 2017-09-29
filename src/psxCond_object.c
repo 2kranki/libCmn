@@ -66,7 +66,7 @@ OBJ_INFO        psxCond_Info;            // Forward Reference
 
 
 OBJ_ID          psxCond_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            psxCond_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXCOND_CLASS;
@@ -144,7 +144,7 @@ void            psxCond_Dealloc(
 
 
 OBJ_ID          psxCond_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&psxCond_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          psxCond_Class(
 
 static
 uint16_t		psxCond_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXCOND;

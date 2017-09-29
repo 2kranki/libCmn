@@ -57,7 +57,9 @@ extern "C" {
 #endif
     
 
-    
+    static
+    const
+    int32_t         zero = 0;
 
 
  
@@ -221,8 +223,8 @@ extern "C" {
         }
 #endif
         
-        if (TOKEN_TYPE_WCHAR == this->type) {
-            i = this->wchr[0];
+        if (TOKEN_TYPE_WCHAR == this->data.type) {
+            i = this->data.wchr[0];
         }
         return i;
     }
@@ -242,10 +244,10 @@ extern "C" {
 #endif
         
         token_ReleaseDataIfObj(this);
-        this->type = TOKEN_TYPE_WCHAR;
+        this->data.type = TOKEN_TYPE_WCHAR;
         //this->cls = value;
-        this->wchr[0] = value;
-        this->wchr[1] = 0;
+        this->data.wchr[0] = value;
+        this->data.wchr[1] = 0;
         
         return true;
     }
@@ -266,7 +268,7 @@ extern "C" {
         }
 #endif
         
-        return this->cls;
+        return this->data.cls;
     }
 
     
@@ -282,7 +284,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->cls = value;
+        this->data.cls = value;
         return true;
     }
     
@@ -302,7 +304,7 @@ extern "C" {
         }
 #endif
         
-        return this->colNo;
+        return this->data.src.colNo;
     }
 
     
@@ -318,7 +320,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->colNo = value;
+        this->data.src.colNo = value;
         return true;
     }
     
@@ -338,7 +340,7 @@ extern "C" {
         }
 #endif
         
-        return this->pFileName;
+        return this->data.src.pFileName;
     }
 
     
@@ -355,7 +357,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->pFileName = pValue;
+        this->data.src.pFileName = pValue;
         return true;
     }
     
@@ -375,8 +377,8 @@ extern "C" {
         }
 #endif
         
-        if (TOKEN_TYPE_INTEGER == this->type) {
-            return this->integer;
+        if (TOKEN_TYPE_INTEGER == this->data.type) {
+            return this->data.integer;
         }
         return 0;
     }
@@ -396,8 +398,8 @@ extern "C" {
 #endif
 
         token_ReleaseDataIfObj(this);
-        this->type = TOKEN_TYPE_INTEGER;
-        this->integer = value;
+        this->data.type = TOKEN_TYPE_INTEGER;
+        this->data.integer = value;
         
         return true;
     }
@@ -418,7 +420,7 @@ extern "C" {
         }
 #endif
         
-        return this->len;
+        return this->data.len;
     }
     
     
@@ -434,7 +436,7 @@ extern "C" {
             return 0;
         }
 #endif
-        this->len = value;
+        this->data.len = value;
         return true;
     }
     
@@ -454,7 +456,7 @@ extern "C" {
         }
 #endif
         
-        return this->lineNo;
+        return this->data.src.lineNo;
     }
     
     bool            token_setLineNo(
@@ -469,7 +471,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->lineNo = value;
+        this->data.src.lineNo = value;
         return true;
     }
     
@@ -489,7 +491,7 @@ extern "C" {
         }
 #endif
         
-        return this->misc;
+        return this->data.misc;
     }
     
     
@@ -505,7 +507,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->misc = value;
+        this->data.misc = value;
         return true;
     }
     
@@ -525,8 +527,8 @@ extern "C" {
         }
 #endif
         
-        if (TOKEN_TYPE_OBJECT == this->type) {
-            return this->pObj;
+        if (TOKEN_TYPE_OBJECT == this->data.type) {
+            return this->data.pObj;
         }
         return OBJ_NIL;
     }
@@ -547,8 +549,8 @@ extern "C" {
         obj_Retain(pValue);
         
         token_ReleaseDataIfObj(this);
-        this->type = TOKEN_TYPE_OBJECT;
-        this->pObj = pValue;
+        this->data.type = TOKEN_TYPE_OBJECT;
+        this->data.pObj = pValue;
         
         return true;
     }
@@ -569,8 +571,8 @@ extern "C" {
         }
 #endif
         
-        if (TOKEN_TYPE_WSTRING == this->type) {
-            return this->pObj;
+        if (TOKEN_TYPE_WSTRING == this->data.type) {
+            return this->data.pObj;
         }
         
         return OBJ_NIL;
@@ -599,8 +601,8 @@ extern "C" {
         obj_Retain(pValue);
         
         token_ReleaseDataIfObj(this);
-        this->type = TOKEN_TYPE_WSTRING;
-        this->pObj = pValue;
+        this->data.type = TOKEN_TYPE_WSTRING;
+        this->data.pObj = pValue;
         
         return true;
     }
@@ -621,8 +623,8 @@ extern "C" {
         }
 #endif
         
-        if (TOKEN_TYPE_STRTOKEN == this->type) {
-            return this->strToken;
+        if (TOKEN_TYPE_STRTOKEN == this->data.type) {
+            return this->data.strToken;
         }
         return 0;
     }
@@ -642,8 +644,8 @@ extern "C" {
 #endif
         
         token_ReleaseDataIfObj(this);
-        this->type = TOKEN_TYPE_STRTOKEN;
-        this->strToken = value;
+        this->data.type = TOKEN_TYPE_STRTOKEN;
+        this->data.strToken = value;
         
         return true;
     }
@@ -665,18 +667,18 @@ extern "C" {
         }
 #endif
 
-        switch (this->type) {
+        switch (this->data.type) {
 
             case TOKEN_TYPE_WCHAR:
-                return this->wchr;
+                return this->data.wchr;
                 break;
                 
             case TOKEN_TYPE_WSTRING:
-                if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
-                    return WStr_getData(this->pObj);
+                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
+                    return WStr_getData(this->data.pObj);
                 }
-                if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
-                    return WStrC_getData(this->pObj);
+                if (OBJ_IDENT_WSTRC == obj_getType(this->data.pObj)) {
+                    return WStrC_getData(this->data.pObj);
                 }
                 break;
                 
@@ -684,7 +686,7 @@ extern "C" {
                 break;
         }
 
-        return &this->zero;
+        return &zero;
     }
     
     
@@ -702,7 +704,7 @@ extern "C" {
         }
 #endif
         
-        return this->type;
+        return this->data.type;
     }
     
     
@@ -718,7 +720,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->type = value;
+        this->data.type = value;
         return true;
     }
     
@@ -756,14 +758,12 @@ extern "C" {
         
         token_ReleaseDataIfObj(pOther);
         
-        pOther->lineNo = this->lineNo;
-        pOther->pFileName = this->pFileName;
-        pOther->colNo = this->colNo;
-        pOther->cls = this->cls;
-        pOther->type = this->type;
-        pOther->len = this->len;
-        pOther->offset = this->offset;
-        switch (this->type) {
+        pOther->data.src = this->data.src;
+        pOther->data.cls = this->data.cls;
+        pOther->data.type = this->data.type;
+        pOther->data.len = this->data.len;
+        pOther->data.offset = this->data.offset;
+        switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 break;
@@ -771,25 +771,25 @@ extern "C" {
             case TOKEN_TYPE_WCHAR:
                 // Since integer is as large as anything,
                 // we just use it to copy the data.
-                pOther->integer = this->integer;
+                pOther->data.integer = this->data.integer;
                 break;
                 
             case TOKEN_TYPE_OBJECT:
             case TOKEN_TYPE_WSTRING:
             {
-                OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
+                OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->data.pObj);
                 if (pVtbl->pCopy) {
-                    pOther->pObj = pVtbl->pCopy(this->pObj);
+                    pOther->data.pObj = pVtbl->pCopy(this->data.pObj);
                 }
                 else {
-                    obj_Retain(this->pObj);
-                    pOther->pObj = this->pObj;
+                    obj_Retain(this->data.pObj);
+                    pOther->data.pObj = this->data.pObj;
                 }
             }
                 break;
                 
             case TOKEN_TYPE_INTEGER:
-                pOther->integer = this->integer;
+                pOther->data.integer = this->data.integer;
                 break;
                 
             default:
@@ -826,26 +826,26 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        if (this->type == pOther->type)
+        if (this->data.type == pOther->data.type)
             ;
         else {
             return ERESULT_SUCCESS_UNEQUAL;
         }
-        switch (this->type) {
+        switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 return ERESULT_GENERAL_FAILURE;
                 break;
                 
             case TOKEN_TYPE_WCHAR:
-                switch (pOther->type) {
+                switch (pOther->data.type) {
                         
                     case TOKEN_TYPE_UNKNOWN:
                         return ERESULT_GENERAL_FAILURE;
                         break;
                         
                     case TOKEN_TYPE_WCHAR:
-                        i = this->wchr[0] - pOther->wchr[0];
+                        i = this->data.wchr[0] - pOther->data.wchr[0];
                         break;
                         
                     case TOKEN_TYPE_OBJECT:
@@ -853,7 +853,7 @@ extern "C" {
                         break;
                         
                     case TOKEN_TYPE_WSTRING:
-                        eRc = WStr_Cmp(this->wchr, WStr_getData(pOther->pObj));
+                        eRc = WStr_Cmp(this->data.wchr, WStr_getData(pOther->data.pObj));
                         return eRc;
                         
                     case TOKEN_TYPE_INTEGER:
@@ -868,25 +868,25 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_OBJECT:
-                if (pOther->type == TOKEN_TYPE_OBJECT) {
-                    OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
+                if (pOther->data.type == TOKEN_TYPE_OBJECT) {
+                    OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->data.pObj);
                     if (pVtbl->pCompare) {
-                        return pVtbl->pCompare(this->pObj, pOther->pObj);
+                        return pVtbl->pCompare(this->data.pObj, pOther->data.pObj);
                     }
                 }
                 return ERESULT_GENERAL_FAILURE;
                 break;
                 
             case TOKEN_TYPE_WSTRING:
-                eRc = WStr_Compare(this->pObj, pOther->pObj);
-                switch (pOther->type) {
+                eRc = WStr_Compare(this->data.pObj, pOther->data.pObj);
+                switch (pOther->data.type) {
                         
                     case TOKEN_TYPE_UNKNOWN:
                         return ERESULT_GENERAL_FAILURE;
                         break;
                         
                     case TOKEN_TYPE_WCHAR:
-                        eRc = WStr_Cmp(WStr_getData(this->pObj), pOther->wchr);
+                        eRc = WStr_Cmp(WStr_getData(this->data.pObj), pOther->data.wchr);
                         break;
                         
                     case TOKEN_TYPE_OBJECT:
@@ -894,7 +894,7 @@ extern "C" {
                         break;
                         
                     case TOKEN_TYPE_WSTRING:
-                        eRc = WStr_Compare(this->pObj, pOther->pObj);
+                        eRc = WStr_Compare(this->data.pObj, pOther->data.pObj);
                         break;
                         
                     case TOKEN_TYPE_INTEGER:
@@ -909,8 +909,8 @@ extern "C" {
                 return eRc;
                 
             case TOKEN_TYPE_INTEGER:
-                if (pOther->type == TOKEN_TYPE_INTEGER) {
-                    i = (int)(this->integer - pOther->integer);
+                if (pOther->data.type == TOKEN_TYPE_INTEGER) {
+                    i = (int)(this->data.integer - pOther->data.integer);
                 }
                 break;
                 
@@ -951,22 +951,22 @@ extern "C" {
         }
 #endif
         
-        switch (this->type) {
+        switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 break;
                 
             case TOKEN_TYPE_WCHAR:
-                eRc = szTbl_StringWToToken(szTbl_Shared(), this->wchr, &token);
+                eRc = szTbl_StringWToToken(szTbl_Shared(), this->data.wchr, &token);
                 if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                    this->strToken = token;
+                    this->data.strToken = token;
                 }
                 break;
                 
             case TOKEN_TYPE_WSTRING:
-                eRc = szTbl_StringWToToken(szTbl_Shared(), WStr_getData(this->pObj), &token);
+                eRc = szTbl_StringWToToken(szTbl_Shared(), WStr_getData(this->data.pObj), &token);
                 if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                    this->strToken = token;
+                    this->data.strToken = token;
                 }
                 break;
                 
@@ -1129,7 +1129,7 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->integer);
+        BREAK_NOT_BOUNDARY4(&this->data.integer);
 #endif
 
         return this;
@@ -1162,10 +1162,10 @@ extern "C" {
             eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
             BREAK_TRUE(ERESULT_FAILED(eRc));
         }
-        this->pFileName = pSavedFileName;
-        this->lineNo    = lineNo;
-        this->colNo     = colNo;
-        this->cls       = cls;
+        token_setFileName(this, pSavedFileName);
+        token_setLineNo(this, lineNo);
+        token_setColNo(this, colNo);
+        this->data.cls       = cls;
         
         return this;
     }
@@ -1217,8 +1217,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type      = TOKEN_TYPE_INTEGER;
-        this->integer   = integer;
+        this->data.type      = TOKEN_TYPE_INTEGER;
+        this->data.integer   = integer;
         
         return this;
     }
@@ -1305,8 +1305,8 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pObj = pString;
-        this->type = TOKEN_TYPE_WSTRING;
+        this->data.pObj = pString;
+        this->data.type = TOKEN_TYPE_WSTRING;
         
         return this;
     }
@@ -1367,8 +1367,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->strToken = token;
-        this->type = TOKEN_TYPE_STRTOKEN;
+        this->data.strToken = token;
+        this->data.type = TOKEN_TYPE_STRTOKEN;
         
         return this;
     }
@@ -1449,13 +1449,13 @@ extern "C" {
          */
         if ( (obj_getType(this) == OBJ_IDENT_TOKEN)
             && (obj_getSize(this) >= cbSize)
-            && (this->pObj)
+            && (this->data.pObj)
         ) {
-            switch (this->type) {
+            switch (this->data.type) {
                 case TOKEN_TYPE_OBJECT:
                 case TOKEN_TYPE_WSTRING:
-                    obj_Release(this->pObj);
-                    this->pObj = OBJ_NIL;
+                    obj_Release(this->data.pObj);
+                    this->data.pObj = OBJ_NIL;
                     break;
                     
                 default:
@@ -1534,10 +1534,10 @@ extern "C" {
         }
         
         token_ReleaseDataIfObj(this);
-        this->pFileName = pSavedFileName;
-        this->lineNo    = lineNo;
-        this->colNo     = colNo;
-        this->cls       = cls;
+        token_setFileName(this, pSavedFileName);
+        token_setLineNo(this, lineNo);
+        token_setColNo(this, colNo);
+        this->data.cls       = cls;
         
         return ERESULT_SUCCESS;
     }
@@ -1580,8 +1580,8 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pObj = pString;
-        this->type = TOKEN_TYPE_WSTRING;
+        this->data.pObj = pString;
+        this->data.type = TOKEN_TYPE_WSTRING;
         
         return ERESULT_SUCCESS;
     }
@@ -1610,22 +1610,22 @@ extern "C" {
         pStr = AStr_New();
         str[0] = '\0';
         
-        switch (this->type) {
+        switch (this->data.type) {
                 
             case TOKEN_TYPE_WCHAR:
                 j = snprintf(
                              str,
                              sizeof(str),
                              "%c",
-                             (((this->wchr[0] >= ' ') && (this->wchr[0] < 0x7F))
-                                        ? this->wchr[0] : ' ')
+                             (((this->data.wchr[0] >= ' ') && (this->data.wchr[0] < 0x7F))
+                                        ? this->data.wchr[0] : ' ')
                              );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case TOKEN_TYPE_WSTRING:
                 //AStr_AppendA(pStr, "\"");
-                AStr_AppendW(pStr, WStr_getLength(this->pObj), WStr_getData(this->pObj));
+                AStr_AppendW(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
                 //AStr_AppendA(pStr, "\"");
                 break;
                 
@@ -1634,14 +1634,14 @@ extern "C" {
                              str,
                              sizeof(str),
                              "%lld ",
-                             this->integer
+                             this->data.integer
                              );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
                 pStr = NULL;
-                eRc = szTbl_TokenToString(szTbl_Shared(), this->strToken, &pString);
+                eRc = szTbl_TokenToString(szTbl_Shared(), this->data.strToken, &pString);
                 if (pString) {
                     //AStr_AppendA(pStr, "\"");
                     j = snprintf(
@@ -1690,14 +1690,14 @@ extern "C" {
                      sizeof(str),
                      "{%p(token) fileName=%s line=%d col=%d cls=%d ",
                      this,
-                     (this->pFileName ? this->pFileName : ""),
-                     this->lineNo,
-                     this->colNo,
-                     this->cls
+                     (token_getFileName(this) ? token_getFileName(this) : ""),
+                     token_getLineNo(this),
+                     token_getColNo(this),
+                     this->data.cls
                      );
         AStr_AppendA(pStr, str);
         
-        switch (this->type) {
+        switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 AStr_AppendA(pStr, "type=UNKNOWN ");
@@ -1708,16 +1708,16 @@ extern "C" {
                             str,
                             sizeof(str),
                             "type=CHAR char=(0x%X)%c ",
-                            this->wchr[0],
-                            (((this->wchr[0] >= ' ') && (this->wchr[0] < 0x7F))
-                                ? this->wchr[0] : ' ')
+                            this->data.wchr[0],
+                            (((this->data.wchr[0] >= ' ') && (this->data.wchr[0] < 0x7F))
+                                ? this->data.wchr[0] : ' ')
                     );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case TOKEN_TYPE_WSTRING:
                 AStr_AppendA(pStr, "type=STRING text=\"");
-                AStr_AppendW(pStr, WStr_getLength(this->pObj), WStr_getData(this->pObj));
+                AStr_AppendW(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
                 AStr_AppendA(pStr, "\"");
                 break;
                 
@@ -1726,7 +1726,7 @@ extern "C" {
                             str,
                             sizeof(str),
                             "type=INTEGER integer=%lld ",
-                            this->integer
+                            this->data.integer
                             );
                 AStr_AppendA(pStr, str);
                 break;
@@ -1736,7 +1736,7 @@ extern "C" {
                              str,
                              sizeof(str),
                              "type=STRTOKEN token=%d ",
-                             this->strToken
+                             this->data.strToken
                              );
                 AStr_AppendA(pStr, str);
                 break;
@@ -1789,14 +1789,14 @@ extern "C" {
                      sizeof(str),
                      "{\"objectType\":\"%s\",\"FileName\":\"%s\",\"LineNo\":%d,\"ColNo\":%d,\"Class\":%d,",
                      pInfo->pClassName,
-                     (this->pFileName ? this->pFileName : ""),
-                     this->lineNo,
-                     this->colNo,
-                     this->cls
+                     (token_getFileName(this) ? token_getFileName(this) : ""),
+                     token_getLineNo(this),
+                     token_getColNo(this),
+                     this->data.cls
                      );
         AStr_AppendA(pStr, str);
         
-        switch (this->type) {
+        switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 AStr_AppendA(pStr, "\"Type\":\"UNKNOWN\"");
@@ -1807,18 +1807,18 @@ extern "C" {
                              str,
                              sizeof(str),
                              "\"Type\":\"CHAR\",\"Data\":%d",
-                             this->wchr[0]
+                             this->data.wchr[0]
                              );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case TOKEN_TYPE_WSTRING:
                 AStr_AppendA(pStr, "\"Type\":\"STRING\",\"Data\":\"");
-                if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
-                    pWStr = WStr_getData(this->pObj);
+                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
+                    pWStr = WStr_getData(this->data.pObj);
                 }
-                if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
-                    pWStr = WStrC_getData(this->pObj);
+                if (OBJ_IDENT_WSTRC == obj_getType(this->data.pObj)) {
+                    pWStr = WStrC_getData(this->data.pObj);
                 }
                 len = utf8_StrLenW(pWStr);
                 for (j=0; j<len; ++j) {
@@ -1839,7 +1839,7 @@ extern "C" {
                              str,
                              sizeof(str),
                              "\"Type\":\"NUMBER\",\"Data\":%lld",
-                             this->integer
+                             this->data.integer
                              );
                 AStr_AppendA(pStr, str);
                 break;
@@ -1849,7 +1849,7 @@ extern "C" {
                              str,
                              sizeof(str),
                              "\"Type\":\"STRTOKEN\",\"Data\":%lld",
-                             this->integer
+                             this->data.integer
                              );
                 AStr_AppendA(pStr, str);
                 break;

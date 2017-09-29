@@ -66,7 +66,7 @@ OBJ_INFO        psxThread_Info;            // Forward Reference
 
 
 OBJ_ID          psxThread_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            psxThread_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXTHREAD_CLASS;
@@ -145,7 +145,7 @@ void            psxThread_Dealloc(
 
 
 OBJ_ID          psxThread_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&psxThread_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          psxThread_Class(
 
 static
 uint16_t		psxThread_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXTHREAD;

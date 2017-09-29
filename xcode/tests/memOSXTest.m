@@ -94,7 +94,7 @@
 {
     MEMOSX_DATA	*pObj = OBJ_NIL;
    
-    pObj = memOSX_Alloc(0);
+    pObj = memOSX_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = memOSX_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
@@ -114,7 +114,7 @@
     void        *pData2;
     bool        fRc;
     
-    pObj = memOSX_Alloc(0);
+    pObj = memOSX_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = memOSX_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -146,7 +146,7 @@
     void        *pData3;
     bool        fRc;
     
-    pObj = memOSX_Alloc(0);
+    pObj = memOSX_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = memOSX_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

@@ -97,10 +97,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     EBCDIC_DATA *   ebcdic_Alloc(
+        void
     );
     
     
     EBCDIC_DATA *   ebcdic_New(
+        void
     );
     
     

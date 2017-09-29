@@ -97,10 +97,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     OBJARRAY_DATA *     objArray_Alloc(
+        void
     );
     
     
     OBJARRAY_DATA *     objArray_New(
+        void
     );
     
     

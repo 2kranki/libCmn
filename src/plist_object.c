@@ -39,7 +39,7 @@
 
 
 OBJ_ID          plist_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            plist_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PLIST_CLASS;
@@ -121,7 +121,7 @@ void            plist_Dealloc(
 
 
 OBJ_ID          plist_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&plist_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          plist_Class(
 
 static
 uint16_t		plist_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PLIST;

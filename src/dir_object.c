@@ -65,7 +65,7 @@ OBJ_INFO        dir_Info;            // Forward Reference
 
 
 OBJ_ID          dir_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            dir_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DIR_CLASS;
@@ -144,7 +144,7 @@ void            dir_Dealloc(
 
 
 OBJ_ID          dir_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&dir_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          dir_Class(
 
 static
 uint16_t		dir_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_DIR;

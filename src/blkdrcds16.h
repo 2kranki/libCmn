@@ -115,6 +115,7 @@ extern "C" {
      @return:   pointer to blkdrcds16 object if successful, otherwise OBJ_NIL.
      */
     BLKDRCDS16_DATA * blkdrcds16_Alloc(
+        void
     );
     
     
@@ -126,6 +127,7 @@ extern "C" {
     
     
     BLKDRCDS16_DATA * blkdrcds16_New(
+        void
     );
     
     

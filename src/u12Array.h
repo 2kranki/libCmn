@@ -102,10 +102,12 @@ extern "C" {
      @return:   pointer to u12Array object if successful, otherwise OBJ_NIL.
      */
     U12ARRAY_DATA *     u12Array_Alloc(
+        void
     );
     
     
     U12ARRAY_DATA *     u12Array_New(
+        void
     );
     
     

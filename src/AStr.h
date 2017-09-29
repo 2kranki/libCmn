@@ -82,10 +82,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     ASTR_DATA *    AStr_Alloc(
+        void
     );
     
     
     ASTR_DATA *    AStr_New(
+        void
     );
 
     
@@ -119,6 +121,7 @@ extern "C" {
     
     
     ASTR_DATA *    AStr_NewFromTimeNow(
+        void
     );
  
     
@@ -138,7 +141,7 @@ extern "C" {
      constant within a program.
      @param:    this    object pointer
      @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+                 otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
     ASTR_DATA *    AStr_NewParenthesizedFromAStr(
@@ -290,6 +293,13 @@ extern "C" {
     int32_t         AStr_CharGetW(
         ASTR_DATA		*this,
         uint32_t        offset
+    );
+    
+    
+    ERESULT         AStr_CharInsertW(
+        ASTR_DATA       *this,
+        uint32_t        offset,
+        int32_t         chr
     );
     
     
@@ -503,6 +513,11 @@ extern "C" {
      */
     ASTR_DATA *     AStr_ToUpper(
         ASTR_DATA      *this
+    );
+    
+    
+    uint64_t        AStr_ToUint64(
+        ASTR_DATA		*this
     );
     
     

@@ -39,7 +39,7 @@
 
 
 OBJ_ID          prt_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            prt_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PRT_CLASS;
@@ -121,7 +121,7 @@ void            prt_Dealloc(
 
 
 OBJ_ID          prt_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&prt_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          prt_Class(
 
 static
 uint16_t		prt_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PRT;

@@ -442,6 +442,7 @@ extern "C" {
         int32_t         tokenClass;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
+        char            sign = '\0';
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -455,9 +456,22 @@ extern "C" {
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
         tokenClass = token_getClass(pToken);
+        if( (tokenClass == LEXJ_SEP_MINUS) || (tokenClass == LEXJ_SEP_MINUS) ) {
+            pStr = token_ToDataString(pToken);
+            if (pStr) {
+                TRC_OBJ(this, "\tsign: \"%s\"\n", AStr_getData(pStr));
+                sign = *AStr_getData(pStr);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            lexj_TokenAdvance(this->pLexJ, 1);
+        }
         if( tokenClass == LEXJ_CONSTANT_INTEGER ) {
             pStr = token_ToDataString(pToken);
             if (pStr) {
+                if (sign) {
+                    AStr_CharInsertW(pStr, 1, sign);
+                }
                 TRC_OBJ(this, "\tinteger: \"%s\"\n", AStr_getData(pStr));
                 pNode = node_NewWithUTF8Con("integer", pStr);
                 obj_Release(pStr);
@@ -468,6 +482,9 @@ extern "C" {
         else if( tokenClass == LEXJ_CONSTANT_FLOAT ) {
             pStr = token_ToDataString(pToken);
             if (pStr) {
+                if (sign) {
+                    AStr_CharInsertW(pStr, 1, sign);
+                }
                 TRC_OBJ(this, "\tfloat: \"%s\"\n", AStr_getData(pStr));
                 pNode = node_NewWithUTF8Con("float", pStr);
                 obj_Release(pStr);
@@ -733,6 +750,31 @@ extern "C" {
 
 
 
+    HJSON_DATA *    hjson_NewA(
+        const
+        char            *pSzStr,        // Buffer of file data
+        uint16_t        tabSize         // Tab Spacing if any
+    )
+    {
+        HJSON_DATA      *this = OBJ_NIL;
+        ASTR_DATA       *pAStr = OBJ_NIL;
+
+        pAStr = AStr_NewA(pSzStr);
+        if (pAStr) {
+            this = hjson_Alloc( );
+            if (this) {
+                this = hjson_InitAStr(this, pAStr, tabSize);
+            }
+
+            obj_Release(pAStr);
+            pAStr = OBJ_NIL;
+        }
+
+        return this;
+    }
+    
+    
+    
     HJSON_DATA *    hjson_NewAStr(
         ASTR_DATA       *pAStr,        // Buffer of file data
         uint16_t		tabSize         // Tab Spacing if any

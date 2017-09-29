@@ -68,6 +68,7 @@ int         test_trace_OpenClose(
 {
     TRACE_DATA	*pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = trace_Shared( );
     //TINYTEST_FALSE( (1) );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -88,6 +89,7 @@ int         test_trace_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

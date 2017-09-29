@@ -94,7 +94,7 @@
 {
     DBFIELD_DATA	*pObj = OBJ_NIL;
    
-    pObj = dbField_Alloc(0);
+    pObj = dbField_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  DBFIELD_DATA" );
     pObj = dbField_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  DBFIELD_DATA" );

@@ -67,7 +67,7 @@ OBJ_INFO        WStrC_Info;            // Forward Reference
 
 
 OBJ_ID          WStrC_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            WStrC_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_WSTRC_CLASS;
@@ -145,7 +145,7 @@ void            WStrC_Dealloc(
 
 
 OBJ_ID          WStrC_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&WStrC_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          WStrC_Class(
 
 static
 uint16_t		WStrC_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_WSTRC;

@@ -92,7 +92,8 @@ int         test_hjson_OpenClose(
 {
     HJSON_DATA	*pObj = OBJ_NIL;
    
-    pObj = hjson_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = hjson_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = hjson_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -104,6 +105,7 @@ int         test_hjson_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -125,6 +127,7 @@ int         test_hjson01(
     char            *pStrA;
     
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pStr) );
     
@@ -225,6 +228,135 @@ int         test_hjson01(
     
     szTbl_SharedReset( );
     trace_SharedReset( );
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hjson02(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pHJSON = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray;
+    const
+    char            *pStrA;
+    
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pHJSON = hjson_NewA("{\"one\" : +123}\n", 4);
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    XCTAssertFalse( (OBJ_NIL == pHJSON) );
+    if (pHJSON) {
+        
+        //obj_TraceSet(pHJSON, true);
+        pFileNode = hjson_ParseFile(pHJSON);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStrA = node_getNameUTF8(pFileNode);
+            XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pHash = node_getData(pFileNode);
+            XCTAssertFalse( (OBJ_NIL == pHash) );
+            fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
+            XCTAssertTrue( (6 == nodeHash_getSize(pHash)) );
+            
+            eRc = nodeHash_FindA(pHash, "one", &pNode);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = node_getData(pNode);
+            pStrA = node_getNameUTF8(pNode);
+            XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pStr = node_getData(pNode);
+            XCTAssertTrue( (0 == strcmp("+123", AStr_getData(pStr))) );
+            
+        }
+        
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pHJSON);
+        pHJSON = OBJ_NIL;
+    }
+    
+    szTbl_SharedReset( );
+    trace_SharedReset( );
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hjson03(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pHJSON = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray;
+    const
+    char            *pStrA;
+    
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pHJSON = hjson_NewA("{\"one\":-123}", 4);
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    XCTAssertFalse( (OBJ_NIL == pHJSON) );
+    if (pHJSON) {
+        
+        //obj_TraceSet(pHJSON, true);
+        pFileNode = hjson_ParseFile(pHJSON);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStrA = node_getNameUTF8(pFileNode);
+            XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pHash = node_getData(pFileNode);
+            XCTAssertFalse( (OBJ_NIL == pHash) );
+            fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
+            XCTAssertTrue( (6 == nodeHash_getSize(pHash)) );
+            
+            eRc = nodeHash_FindA(pHash, "one", &pNode);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = node_getData(pNode);
+            pStrA = node_getNameUTF8(pNode);
+            XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pStr = node_getData(pNode);
+            XCTAssertTrue( (0 == strcmp("-123", AStr_getData(pStr))) );
+            
+        }
+        
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pHJSON);
+        pHJSON = OBJ_NIL;
+    }
+    
+    szTbl_SharedReset( );
+    trace_SharedReset( );
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -232,6 +364,8 @@ int         test_hjson01(
 
 
 TINYTEST_START_SUITE(test_hjson);
+  TINYTEST_ADD_TEST(test_hjson03,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_hjson02,setUp,tearDown);
   TINYTEST_ADD_TEST(test_hjson01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_hjson_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

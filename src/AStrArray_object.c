@@ -39,7 +39,7 @@
 
 
 OBJ_ID          AStrArray_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            AStrArray_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ASTRARRAY_CLASS;
@@ -121,7 +121,7 @@ void            AStrArray_Dealloc(
 
 
 OBJ_ID          AStrArray_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&AStrArray_ClassObj;
@@ -130,7 +130,7 @@ OBJ_ID          AStrArray_Class(
 
 static
 uint16_t		AStrArray_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ASTRARRAY;

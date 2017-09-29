@@ -65,7 +65,7 @@ OBJ_INFO        u12Array_Info;            // Forward Reference
 
 
 OBJ_ID          u12Array_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            u12Array_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U12ARRAY_CLASS;
@@ -143,7 +143,7 @@ void            u12Array_Dealloc(
 
 
 OBJ_ID          u12Array_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&u12Array_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          u12Array_Class(
 
 static
 uint16_t		u12Array_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_U12ARRAY;

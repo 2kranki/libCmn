@@ -66,7 +66,7 @@ OBJ_INFO        psxSem_Info;            // Forward Reference
 
 
 OBJ_ID          psxSem_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            psxSem_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXSEM_CLASS;
@@ -144,7 +144,7 @@ void            psxSem_Dealloc(
 
 
 OBJ_ID          psxSem_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&psxSem_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          psxSem_Class(
 
 static
 uint16_t		psxSem_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXSEM;

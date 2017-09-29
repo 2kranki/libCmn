@@ -39,7 +39,7 @@
 
 
 OBJ_ID          eResult_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -61,7 +61,7 @@ bool            eResult_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ERESULT_CLASS;
@@ -123,7 +123,7 @@ void            eResult_Dealloc(
 
 
 OBJ_ID          eResult_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&eResult_ClassObj;
@@ -132,7 +132,7 @@ OBJ_ID          eResult_Class(
 
 static
 uint16_t		eResult_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_ERESULT;

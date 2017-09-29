@@ -131,7 +131,7 @@ extern "C" {
     bool            sidx_AddIndex(
         SIDX_DATA       *this,
         uint32_t        index,
-        uint32_t        offset
+        size_t          offset
     );
     
 
@@ -141,7 +141,7 @@ extern "C" {
         SIDX_DATA		*this,
         uint32_t        index,
         uint32_t        *pIndex,
-        uint32_t        *pOffset
+        size_t          *pOffset
     );
     
     

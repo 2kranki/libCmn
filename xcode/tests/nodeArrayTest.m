@@ -135,7 +135,7 @@ char        *strings[] = {
 {
     NODEARRAY_DATA	*pObj = OBJ_NIL;
    
-    pObj = nodeArray_Alloc(0);
+    pObj = nodeArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = nodeArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

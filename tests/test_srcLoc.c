@@ -83,7 +83,8 @@ int         test_srcLoc_OpenClose(
     ASTR_DATA       *pAStr = OBJ_NIL;
     SRCLOC_DATA	    *pObj2 = OBJ_NIL;
    
-    pObj = srcLoc_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = srcLoc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = srcLoc_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -105,6 +106,7 @@ int         test_srcLoc_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

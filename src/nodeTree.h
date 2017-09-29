@@ -105,18 +105,22 @@ extern "C" {
     //---------------------------------------------------------------
 
     NODETREE_DATA * nodeTree_Alloc(
+        void
     );
     
     
     NODE_DATA *     nodeTree_CloseNode(
+        void
     );
     
     
     NODETREE_DATA * nodeTree_New(
+        void
     );
     
     
     NODE_DATA *     nodeTree_OpenNode(
+        void
     );
     
     

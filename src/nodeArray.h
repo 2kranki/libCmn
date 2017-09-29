@@ -96,6 +96,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     NODEARRAY_DATA * nodeArray_Alloc(
+        void
     );
     
     
@@ -113,6 +114,7 @@ extern "C" {
     
     
     NODEARRAY_DATA * nodeArray_New(
+        void
     );
     
     

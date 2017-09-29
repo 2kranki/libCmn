@@ -91,10 +91,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     SRCFILES_DATA *  srcFiles_Alloc(
+        void
     );
     
     
     SRCFILES_DATA *  srcFiles_New(
+        void
     );
     
     

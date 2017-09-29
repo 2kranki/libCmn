@@ -70,6 +70,7 @@ int         test_appl_OpenClose(
 {
     APPL_DATA	*pObj = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = appl_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = appl_Init(pObj, 0, NULL);
@@ -82,6 +83,7 @@ int         test_appl_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

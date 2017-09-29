@@ -112,6 +112,7 @@ int         test_crc_16_1(
     uint32_t    i32;
     uint32_t    crc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = crc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = crc_Init(pObj, CRC_TYPE_16);
@@ -128,6 +129,7 @@ int         test_crc_16_1(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -143,6 +145,7 @@ int         test_crc_16_2(
     uint32_t    i32;
     uint32_t    crc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = crc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = crc_Init(pObj, CRC_TYPE_CCITT_16);
@@ -158,6 +161,7 @@ int         test_crc_16_2(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -173,6 +177,7 @@ int         test_crc_32_1(
     uint32_t    i32;
     uint32_t    crc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = crc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = crc_Init(pObj, CRC_TYPE_32);
@@ -188,6 +193,7 @@ int         test_crc_32_1(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -203,6 +209,7 @@ int         test_crc_32_2(
     uint32_t    i32;
     uint32_t    crc;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = crc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = crc_Init(pObj, CRC_TYPE_IEEE_32);
@@ -218,6 +225,7 @@ int         test_crc_32_2(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

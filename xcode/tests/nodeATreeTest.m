@@ -156,7 +156,7 @@ char        **ppVisit = NULL;
     char            *pStrA;
     ERESULT         eRc;
    
-    pObj = nodeATree_Alloc(0);
+    pObj = nodeATree_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = nodeATree_Init( pObj, 2 );
     XCTAssertFalse( (OBJ_NIL == pObj) );

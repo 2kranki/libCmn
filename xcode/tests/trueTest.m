@@ -94,7 +94,7 @@
 {
     TRUE_DATA	*pObj = OBJ_NIL;
    
-    pObj = true_Alloc(0);
+    pObj = true_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = true_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

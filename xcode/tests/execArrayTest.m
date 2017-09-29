@@ -94,7 +94,7 @@
 {
     EXECARRAY_DATA	*pObj = OBJ_NIL;
    
-    pObj = execArray_Alloc(0);
+    pObj = execArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = execArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

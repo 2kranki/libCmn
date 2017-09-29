@@ -93,7 +93,7 @@
 {
     NODEARC_DATA	*pObj = OBJ_NIL;
    
-    pObj = nodeArc_Alloc(0);
+    pObj = nodeArc_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = nodeArc_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

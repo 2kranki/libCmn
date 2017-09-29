@@ -94,7 +94,7 @@
 {
     DIRENTRY_DATA	*pObj = OBJ_NIL;
    
-    pObj = dirEntry_Alloc(0);
+    pObj = dirEntry_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  DIRENTRY_DATA" );
     pObj = dirEntry_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  DIRENTRY_DATA" );

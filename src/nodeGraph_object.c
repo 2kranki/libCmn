@@ -65,7 +65,7 @@ OBJ_INFO        nodeGraph_Info;            // Forward Reference
 
 
 OBJ_ID          nodeGraph_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            nodeGraph_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEGRAPH_CLASS;
@@ -143,7 +143,7 @@ void            nodeGraph_Dealloc(
 
 
 OBJ_ID          nodeGraph_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&nodeGraph_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          nodeGraph_Class(
 
 static
 uint16_t		nodeGraph_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_NODEGRAPH;

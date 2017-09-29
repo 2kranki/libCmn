@@ -67,7 +67,7 @@ OBJ_INFO        value_Info;            // Forward Reference
 
 
 OBJ_ID          value_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            value_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_VALUE_CLASS;
@@ -145,7 +145,7 @@ void            value_Dealloc(
 
 
 OBJ_ID          value_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&value_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          value_Class(
 
 static
 uint16_t		value_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_VALUE;

@@ -97,10 +97,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     U32ARRAY_DATA * u32Array_Alloc(
+        void
     );
     
     
     U32ARRAY_DATA * u32Array_New(
+        void
     );
     
     

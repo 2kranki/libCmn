@@ -67,7 +67,7 @@ OBJ_INFO        psxLock_Info;            // Forward Reference
 
 
 OBJ_ID          psxLock_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            psxLock_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXLOCK_CLASS;
@@ -145,7 +145,7 @@ void            psxLock_Dealloc(
 
 
 OBJ_ID          psxLock_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&psxLock_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          psxLock_Class(
 
 static
 uint16_t		psxLock_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PSXLOCK;

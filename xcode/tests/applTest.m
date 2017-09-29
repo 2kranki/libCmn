@@ -66,7 +66,7 @@
 {
     APPL_DATA	*pObj = OBJ_NIL;
    
-    pObj = appl_Alloc(0);
+    pObj = appl_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = appl_Init( pObj, 0, NULL );
     XCTAssertFalse( (OBJ_NIL == pObj) );

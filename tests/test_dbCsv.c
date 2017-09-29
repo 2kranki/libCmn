@@ -89,7 +89,8 @@ int         test_dbCsv_OpenClose(
 {
     DBCSV_DATA	*pObj = OBJ_NIL;
    
-    pObj = dbCsv_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = dbCsv_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = dbCsv_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -101,6 +102,7 @@ int         test_dbCsv_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -123,6 +125,7 @@ int         test_dbCsv_Input01(
     ASTR_DATA       *pField;
 
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
@@ -195,6 +198,7 @@ int         test_dbCsv_Input01(
     pStr = OBJ_NIL;
     szTbl_SharedReset();
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
@@ -217,6 +221,7 @@ int         test_dbCsv_Input02(
     ASTR_DATA       *pField;
     
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA(pTestInput02);
     XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
@@ -339,6 +344,7 @@ int         test_dbCsv_Input02(
     pStr = OBJ_NIL;
     szTbl_SharedReset();
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

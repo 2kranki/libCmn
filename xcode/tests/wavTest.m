@@ -94,7 +94,7 @@
 {
     WAV_DATA	*pObj = OBJ_NIL;
    
-    pObj = wav_Alloc(0);
+    pObj = wav_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = wav_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

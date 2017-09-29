@@ -112,6 +112,7 @@ extern "C" {
      @return:   pointer to msgBus object if successful, otherwise OBJ_NIL.
      */
     MSGBUS_DATA *     msgBus_Alloc(
+        void
     );
     
     

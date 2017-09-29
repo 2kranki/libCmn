@@ -93,7 +93,7 @@
 {
     AUDIOWAV_DATA	*pObj = OBJ_NIL;
    
-    pObj = audioWAV_Alloc(0);
+    pObj = audioWAV_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = audioWAV_Init( pObj, 2, 22050, 8 );
     XCTAssertFalse( (OBJ_NIL == pObj) );

@@ -66,7 +66,7 @@ OBJ_INFO        pwr2Array_Info;            // Forward Reference
 
 
 OBJ_ID          pwr2Array_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -88,7 +88,7 @@ bool            pwr2Array_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PWR2ARRAY_CLASS;
@@ -144,7 +144,7 @@ void            pwr2Array_Dealloc(
 
 
 OBJ_ID          pwr2Array_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&pwr2Array_ClassObj;
@@ -153,7 +153,7 @@ OBJ_ID          pwr2Array_Class(
 
 static
 uint16_t		pwr2Array_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_PWR2ARRAY;

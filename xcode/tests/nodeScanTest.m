@@ -213,7 +213,7 @@ NODEARRAY_DATA *    build_test_array01(
 {
     NODESCAN_DATA	*pObj = OBJ_NIL;
    
-    pObj = nodeScan_Alloc(0);
+    pObj = nodeScan_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );
     pObj = nodeScan_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj), @"" );

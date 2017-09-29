@@ -98,10 +98,12 @@ extern "C" {
      * via obj_misc1.
      */
     WAV_DATA *     wav_Alloc(
+        void
     );
     
     
     WAV_DATA *     wav_New(
+        void
     );
     
     

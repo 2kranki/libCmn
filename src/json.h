@@ -136,6 +136,7 @@ extern "C" {
      * via obj_misc1.
      */
     JSON_DATA *     json_Alloc(
+        void
     );
     
     

@@ -102,6 +102,7 @@ extern "C" {
      * via obj_misc1.
      */
     FBSI_DATA *     fbsi_Alloc(
+        void
     );
     
     

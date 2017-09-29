@@ -121,10 +121,12 @@ extern "C" {
      @return:   pointer to value object if successful, otherwise OBJ_NIL.
      */
     VALUE_DATA *     value_Alloc(
+        void
     );
     
     
     VALUE_DATA *     value_New(
+        void
     );
     
     VALUE_DATA *    value_NewData(

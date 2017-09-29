@@ -65,7 +65,7 @@ OBJ_INFO        lru_Info;            // Forward Reference
 
 
 OBJ_ID          lru_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -87,7 +87,7 @@ bool            lru_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_LRU_CLASS;
@@ -143,7 +143,7 @@ void            lru_Dealloc(
 
 
 OBJ_ID          lru_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&lru_ClassObj;
@@ -152,7 +152,7 @@ OBJ_ID          lru_Class(
 
 static
 uint16_t		lru_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_LRU;

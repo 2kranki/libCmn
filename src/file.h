@@ -86,6 +86,7 @@ extern "C" {
      * via obj_misc1.
      */
     FILE_DATA *     file_Alloc(
+        void
     );
     
     

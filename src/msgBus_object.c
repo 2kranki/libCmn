@@ -67,7 +67,7 @@ OBJ_INFO        msgBus_Info;            // Forward Reference
 
 
 OBJ_ID          msgBus_Class(
-    OBJ_ID          objId
+    void
 );
 
 
@@ -89,7 +89,7 @@ bool            msgBus_ClassIsKindOf(
 
 static
 uint16_t		obj_ClassWhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MSGBUS_CLASS;
@@ -145,7 +145,7 @@ void            msgBus_Dealloc(
 
 
 OBJ_ID          msgBus_Class(
-    OBJ_ID          objId
+    void
 )
 {
     return (OBJ_ID)&msgBus_ClassObj;
@@ -154,7 +154,7 @@ OBJ_ID          msgBus_Class(
 
 static
 uint16_t		msgBus_WhoAmI(
-    OBJ_ID          objId
+    void
 )
 {
     return OBJ_IDENT_MSGBUS;
