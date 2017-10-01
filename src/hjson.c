@@ -53,7 +53,21 @@ extern "C" {
 #endif
     
 
-    
+#ifdef NDEBUG
+#else
+    typedef struct lex_to_desc_s {
+        uint32_t            num;
+        const
+        char                *pDesc;
+    } LEX_TO_DESC;
+    static
+    const
+    LEX_TO_DESC     lexTbl[] = {
+        {LEXJ_KWD_FALSE, "KWD_FALSE"},
+        {LEXJ_KWD_NULL, "KWD_NULL"},
+        {LEXJ_KWD_TRUE, "KWD_TRUE"},
+    };
+#endif
 
 
  
@@ -456,15 +470,29 @@ extern "C" {
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
         tokenClass = token_getClass(pToken);
-        if( (tokenClass == LEXJ_SEP_MINUS) || (tokenClass == LEXJ_SEP_MINUS) ) {
-            pStr = token_ToDataString(pToken);
-            if (pStr) {
-                TRC_OBJ(this, "\tsign: \"%s\"\n", AStr_getData(pStr));
-                sign = *AStr_getData(pStr);
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
+        TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
+#ifdef NDEBUG
+#else
+        if (token_getTextW(pToken)) {
+            TRC_OBJ(this, "\ttoken string = \"%ls\"\n", token_getTextW(pToken));
+        }
+        //fprintf(stderr, "\tLEX_SEP_MINUS = %d\n", LEXJ_SEP_MINUS);
+#endif
+        if( (tokenClass == LEXJ_SEP_MINUS) || (tokenClass == LEXJ_SEP_PLUS) ) {
+            sign = *token_getTextW(pToken) & 0xFF;
             lexj_TokenAdvance(this->pLexJ, 1);
+            TRC_OBJ(this, "\tsign = %c\n", sign);
+
+            pToken = lexj_TokenLookAhead(this->pLexJ, 1);
+            BREAK_NULL(pToken);
+            tokenClass = token_getClass(pToken);
+            TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
+#ifdef NDEBUG
+#else
+            if (token_getTextW(pToken)) {
+                TRC_OBJ(this, "\ttoken string = \"%ls\"\n", token_getTextW(pToken));
+            }
+#endif
         }
         if( tokenClass == LEXJ_CONSTANT_INTEGER ) {
             pStr = token_ToDataString(pToken);
@@ -1291,6 +1319,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        //obj_TraceSet(this->pLexJ, true);
         
 #ifdef NDEBUG
 #else

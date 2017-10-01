@@ -73,7 +73,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     mem_Dump( );
     mem_Release( );
     
@@ -226,8 +227,6 @@ int         test_hjson01(
         pHJSON = OBJ_NIL;
     }
     
-    szTbl_SharedReset( );
-    trace_SharedReset( );
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -245,7 +244,7 @@ int         test_hjson02(
     NODEHASH_DATA   *pHash;
     NODE_DATA       *pFileNode;
     NODE_DATA       *pNode;
-    NODEARRAY_DATA  *pArray;
+    //NODEARRAY_DATA  *pArray;
     const
     char            *pStrA;
     
@@ -258,7 +257,7 @@ int         test_hjson02(
     XCTAssertFalse( (OBJ_NIL == pHJSON) );
     if (pHJSON) {
         
-        //obj_TraceSet(pHJSON, true);
+        obj_TraceSet(pHJSON, true);
         pFileNode = hjson_ParseFile(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
@@ -269,7 +268,7 @@ int         test_hjson02(
             pHash = node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
-            XCTAssertTrue( (6 == nodeHash_getSize(pHash)) );
+            XCTAssertTrue( (1 == nodeHash_getSize(pHash)) );
             
             eRc = nodeHash_FindA(pHash, "one", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -290,8 +289,6 @@ int         test_hjson02(
         pHJSON = OBJ_NIL;
     }
     
-    szTbl_SharedReset( );
-    trace_SharedReset( );
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -309,7 +306,7 @@ int         test_hjson03(
     NODEHASH_DATA   *pHash;
     NODE_DATA       *pFileNode;
     NODE_DATA       *pNode;
-    NODEARRAY_DATA  *pArray;
+    //NODEARRAY_DATA  *pArray;
     const
     char            *pStrA;
     
@@ -322,7 +319,7 @@ int         test_hjson03(
     XCTAssertFalse( (OBJ_NIL == pHJSON) );
     if (pHJSON) {
         
-        //obj_TraceSet(pHJSON, true);
+        obj_TraceSet(pHJSON, true);
         pFileNode = hjson_ParseFile(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
@@ -333,7 +330,7 @@ int         test_hjson03(
             pHash = node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
-            XCTAssertTrue( (6 == nodeHash_getSize(pHash)) );
+            XCTAssertTrue( (1 == nodeHash_getSize(pHash)) );
             
             eRc = nodeHash_FindA(pHash, "one", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -354,8 +351,106 @@ int         test_hjson03(
         pHJSON = OBJ_NIL;
     }
     
-    szTbl_SharedReset( );
-    trace_SharedReset( );
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_hjson_File01(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPath = path_NewA("/Users/bob/git/libCan/other/pic32mx/can.json.txt");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    
+    pObj = hjson_NewFromPath(pPath, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFile(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            
+        }
+        
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_hjson_File02(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+    FILE            *pInput = NULL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pInput = fopen("/Users/bob/git/libCan/other/pic32mx/can.json.txt", "r");
+    XCTAssertFalse( (OBJ_NIL == pInput) );
+    
+    pObj = hjson_NewFromFile( pInput, 4 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFile(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            
+        }
+        
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fclose(pInput);
+    pInput = NULL;
+    
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -364,10 +459,12 @@ int         test_hjson03(
 
 
 TINYTEST_START_SUITE(test_hjson);
-  TINYTEST_ADD_TEST(test_hjson03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hjson02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hjson01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hjson_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_hjson);

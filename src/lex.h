@@ -316,8 +316,8 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
      */
     ERESULT         lex_Restart(
-                                LEX_DATA		*this
-                                );
+        LEX_DATA        *this
+    );
     
     
     void            lex_Error(
