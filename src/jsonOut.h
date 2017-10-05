@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSONOUT Console Transmit Task (jsonOut) Header
+//          JSON Object Output (jsonOut) Header
 //****************************************************************
 /*
  * Program
- *			Separate jsonOut (jsonOut)
+ *			JSON Object Output (jsonOut)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate jsonOut to run things without complications
@@ -102,12 +102,12 @@ extern "C" {
      @return:   pointer to jsonOut object if successful, otherwise OBJ_NIL.
      */
     JSONOUT_DATA *     jsonOut_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
+        void
     );
     
     
     JSONOUT_DATA *     jsonOut_New(
-        uint16_t    stackSize           // Stack Size in Words
+        void
     );
     
     

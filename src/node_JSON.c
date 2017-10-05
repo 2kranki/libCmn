@@ -42,6 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
+#include    "node_internal.h"
 #include    "token_internal.h"
 #include    <stdio.h>
 #include    <stdlib.h>
@@ -329,6 +330,56 @@ extern "C" {
         
         // Return to caller.
         return pNode;
+    }
+    
+    
+    
+    ASTR_DATA *     node_ToJSON(
+        NODE_DATA       *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr;
+        //char            str2[256];
+        //uint32_t        len;
+        //uint32_t        lenChars;
+        //const
+        //int32_t         *pWStr = NULL;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !node_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\",\"class\":\"%d\",\"index\":%d,",
+                     pInfo->pClassName,
+                     this->cls,
+                     this->index
+                     );
+        AStr_AppendA(pStr, str);
+        
+        pWrkStr = name_ToJSON(this->pName);
+        AStr_AppendA(pStr, "\"name\":");
+        AStr_Append(pStr, pWrkStr);\
+        obj_Release(pWrkStr);
+        pWrkStr = OBJ_NIL;
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
     }
     
     

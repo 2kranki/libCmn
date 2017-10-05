@@ -104,21 +104,28 @@ extern "C" {
 
     extern
     const
-    OBJ_IUNKNOWN    cb_Vtbl;
+    CB_VTBL         cb_Vtbl;
 
 
     
 // Internal Functions
+    void            cb_Dealloc(
+        OBJ_ID          objId
+    );
+
+    void *          cb_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
 #ifdef RMW_DEBUG
-    bool			cb_Validate(
-        CB_DATA       *cbp
+    bool            cb_Validate(
+        CB_DATA         *this
     );
 #endif
-
-    void        cb_Dealloc(
-        OBJ_ID      objId
-    );
-
+    
 
 #ifdef	__cplusplus
 }

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'cb16'
-//	Generated 09/30/2015 15:50:05
+//	Generated 10/02/2017 12:42:11
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "cb16_internal.h"
+
+#define			CB16_OBJECT_C	    1
+#include        <cb16_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct cb16_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct cb16_class_data_s CB16_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        cb16_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&cb16_Info,
     cb16_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						cb16 Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        cb16_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_CB16_CLASS,
-    0,
-    1
+CB16_CLASS_DATA  cb16_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_CB16_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		cb16_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    cb16_Vtbl = {
-    NULL,
-    cb16_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    cb16_Dealloc,
-    cb16_Class,
-    cb16_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cb16_ToDebugString,
-    NULL,			// cb16_Enable()
-    NULL,			// cb16_Disable(
-    NULL,			// cb16_Assign()
-    NULL,			// cb16_Compare()
-    NULL 			// cb16_Copy()
+CB16_VTBL     cb16_Vtbl = {
+    {
+        &cb16_Info,
+        cb16_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        cb16_Dealloc,
+        cb16_Class,
+        cb16_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)cb16_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)cb16_ToDebugString,
+        NULL,			// cb16_Enable,
+        NULL,			// cb16_Disable,
+        NULL,			// (P_OBJ_ASSIGN)cb16_Assign,
+        NULL,			// (P_OBJ_COMPARE)cb16_Compare,
+        NULL, 			// (P_OBJ_PTR)cb16_Copy,
+        NULL 			// (P_OBJ_HASH)cb16_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //cb16_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        cb16_Info = {
+    "cb16",
+    "16 Bit Circular Buffer",
+    (OBJ_DATA *)&cb16_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&cb16_Vtbl
+};
 
 
 

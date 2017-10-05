@@ -174,22 +174,24 @@ uint16_t		path_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    path_Vtbl = {
-	&path_Info,
-    path_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    path_Dealloc,
-    path_Class,
-    path_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)path_ToDebugString,
-    NULL,			// path_Enable,
-    NULL,			// path_Disable,
-    (P_OBJ_ASSIGN)AStr_Assign,
-    (P_OBJ_COMPARE)AStr_Compare,
-    (P_OBJ_PTR)AStr_Copy,
-    (P_OBJ_HASH)AStr_Hash
+PATH_VTBL       path_Vtbl = {
+    {
+        &path_Info,
+        path_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        path_Dealloc,
+        path_Class,
+        path_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)path_ToDebugString,
+        NULL,            // path_Enable,
+        NULL,            // path_Disable,
+        (P_OBJ_ASSIGN)AStr_Assign,
+        (P_OBJ_COMPARE)AStr_Compare,
+        (P_OBJ_PTR)AStr_Copy,
+        (P_OBJ_HASH)AStr_Hash
+    }
 };
 
 
@@ -197,12 +199,10 @@ static
 const
 OBJ_INFO        path_Info = {
     "path",
-    "path",				// <-- Fill in description
+    "Path",
     (OBJ_DATA *)&path_ClassObj,
     (OBJ_DATA *)&AStr_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

@@ -94,7 +94,7 @@ struct tokenList_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    tokenList_Vtbl;
+    TOKENLIST_VTBL  tokenList_Vtbl;
 
 
 

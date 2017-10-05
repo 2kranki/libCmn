@@ -656,7 +656,7 @@ extern "C" {
         }
         //obj_setSize(this, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_NUMBER);
-        obj_setVtbl(this, &number_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&number_Vtbl);
         
         //this->stackSize = obj_getMisc1(cbp);
         //cbp->pArray = objArray_New( );

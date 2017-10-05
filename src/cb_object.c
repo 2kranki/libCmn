@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'cb'
-//	Generated 09/30/2015 15:49:37
+//	Generated 10/02/2017 11:03:33
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "cb_internal.h"
+
+#define			CB_OBJECT_C	    1
+#include        <cb_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct cb_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct cb_class_data_s CB_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        cb_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&cb_Info,
     cb_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						cb Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        cb_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_CB_CLASS,
-    0,
-    1
+CB_CLASS_DATA  cb_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_CB_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		cb_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    cb_Vtbl = {
-    NULL,
-    cb_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    cb_Dealloc,
-    cb_Class,
-    cb_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cb_ToDebugString,
-    NULL,			// cb_Enable()
-    NULL,			// cb_Disable(
-    NULL,			// cb_Assign()
-    NULL,			// cb_Compare()
-    NULL 			// cb_Copy()
+CB_VTBL     cb_Vtbl = {
+    {
+        &cb_Info,
+        cb_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        cb_Dealloc,
+        cb_Class,
+        cb_WhoAmI,
+        (P_OBJ_QUERYINFO)cb_QueryInfo,
+        (P_OBJ_TOSTRING)cb_ToDebugString,
+        NULL,			// cb_Enable,
+        NULL,			// cb_Disable,
+        NULL,			// (P_OBJ_ASSIGN)cb_Assign,
+        NULL,			// (P_OBJ_COMPARE)cb_Compare,
+        NULL, 			// (P_OBJ_PTR)cb_Copy,
+        NULL 			// (P_OBJ_HASH)cb_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //cb_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        cb_Info = {
+    "cb",
+    "Circular Buffer of Objects",
+    (OBJ_DATA *)&cb_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&cb_Vtbl
+};
 
 
 

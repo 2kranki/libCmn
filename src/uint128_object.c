@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'uint128'
-//	Generated 10/12/2015 19:40:43
+//	Generated 10/02/2017 11:15:54
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "uint128_internal.h"
+
+#define			UINT128_OBJECT_C	    1
+#include        <uint128_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct uint128_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct uint128_class_data_s UINT128_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        uint128_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&uint128_Info,
     uint128_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						uint128 Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        uint128_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_UINT128_CLASS,
-    0,
-    1
+UINT128_CLASS_DATA  uint128_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_UINT128_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,25 +163,42 @@ uint16_t		uint128_WhoAmI(
 
 
 const
-UINT128_VTBL    uint128_Vtbl = {
+UINT128_VTBL     uint128_Vtbl = {
     {
-        NULL,
+        &uint128_Info,
         uint128_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
         uint128_Dealloc,
         uint128_Class,
         uint128_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
-        (OBJ_ID (*)(OBJ_ID,int))uint128_ToDebugString,
-        NULL,			// uint128_Enable()
-        NULL,			// uint128_Disable(
-        NULL,			// uint128_Assign()
-        NULL,			// uint128_Compare()
-        NULL 			// uint128_Copy()
-    }
+        (P_OBJ_QUERYINFO)uint128_QueryInfo,
+        (P_OBJ_TOSTRING)uint128_ToDebugString,
+        NULL,			// uint128_Enable,
+        NULL,			// uint128_Disable,
+        NULL,			// (P_OBJ_ASSIGN)uint128_Assign,
+        NULL,			// (P_OBJ_COMPARE)uint128_Compare,
+        NULL, 			// (P_OBJ_PTR)uint128_Copy,
+        NULL 			// (P_OBJ_HASH)uint128_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //uint128_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        uint128_Info = {
+    "uint128",
+    "uint128",
+    (OBJ_DATA *)&uint128_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&uint128_Vtbl
+};
 
 
 

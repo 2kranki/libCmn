@@ -209,7 +209,44 @@ extern "C" {
     
     
     
-
+    ASTR_DATA *     srcLoc_ToJSON(
+                                  SRCLOC_DATA     *this
+                                  )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{ \"objectType\":\"%s\", \"FileName\":\"%s\", \"LineNo\":%d, \"ColNo\":%d ",
+                     pInfo->pClassName,
+                     (this->data.pFileName ? this->data.pFileName : ""),
+                     this->data.lineNo,
+                     this->data.colNo
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
+        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
+        
+        return pStr;
+    }
     
     
     

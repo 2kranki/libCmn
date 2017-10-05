@@ -70,7 +70,7 @@ struct eResult_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    eResult_Vtbl;
+    ERESULT_VTBL    eResult_Vtbl;
 
 
 

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'nodeTree'
-//	Generated 09/30/2015 16:05:28
+//	Generated 10/02/2017 12:10:57
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,9 @@
  */
 
 
-#include        "obj.h"
-#include        "nodeTree_internal.h"
 
-
+#define			NODETREE_OBJECT_C	    1
+#include        <nodeTree_internal.h>
 
 
 
@@ -51,6 +51,18 @@ struct nodeTree_class_data_s	{
 };
 typedef struct nodeTree_class_data_s NODETREE_CLASS_DATA;
 
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        nodeTree_Info;            // Forward Reference
 
 
 
@@ -87,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&nodeTree_Info,
     nodeTree_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -99,18 +111,13 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						nodeTree Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 const
-NODETREE_CLASS_DATA nodeTree_ClassObj = {
-    {
-        &obj_Vtbl,
-        sizeof(OBJ_DATA),
-        OBJ_IDENT_NODETREE_CLASS,
-        0,
-        1
-    },
+NODETREE_CLASS_DATA  nodeTree_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODETREE_CLASS, 0, 1},
+	//0
 };
 
 
@@ -155,23 +162,42 @@ uint16_t		nodeTree_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    nodeTree_Vtbl = {
-    NULL,
-    nodeTree_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    nodeTree_Dealloc,
-    nodeTree_Class,
-    nodeTree_WhoAmI,
-    NULL,
-    (OBJ_ID (*)(OBJ_ID,int))nodeTree_ToDebugString,
-    NULL,			// nodeTree_Enable()
-    NULL,			// nodeTree_Disable(
-    NULL,			// nodeTree_Assign()
-    NULL,			// nodeTree_Compare()
-    NULL 			// nodeTree_Copy()
+NODETREE_VTBL     nodeTree_Vtbl = {
+    {
+        &nodeTree_Info,
+        nodeTree_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        nodeTree_Dealloc,
+        nodeTree_Class,
+        nodeTree_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)nodeTree_QueryInfo,
+        (P_OBJ_TOSTRING)nodeTree_ToDebugString,
+        NULL,			// nodeTree_Enable,
+        NULL,			// nodeTree_Disable,
+        NULL,			// (P_OBJ_ASSIGN)nodeTree_Assign,
+        NULL,			// (P_OBJ_COMPARE)nodeTree_Compare,
+        NULL, 			// (P_OBJ_PTR)nodeTree_Copy,
+        NULL 			// (P_OBJ_HASH)nodeTree_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //nodeTree_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        nodeTree_Info = {
+    "nodeTree",
+    "Tree of Nodes",
+    (OBJ_DATA *)&nodeTree_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&nodeTree_Vtbl
+};
 
 
 

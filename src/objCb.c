@@ -405,7 +405,7 @@ extern "C" {
         if (NULL == this) {
             return NULL;
         }
-        obj_setVtbl(this, &objCb_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&objCb_Vtbl);
         
         this->cEntries = size;
         

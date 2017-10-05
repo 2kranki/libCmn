@@ -91,22 +91,22 @@ struct cb32_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    cb32_Vtbl;
+    CB32_VTBL       cb32_Vtbl;
 
 
 
     // Internal Functions
 #ifdef RMW_DEBUG
     bool			cb32_Validate(
-        CB32_DATA       *cbp
+        CB32_DATA       *this
     );
 #endif
     bool            cb32_iGet(
-        CB32_DATA       *cbp,
+        CB32_DATA       *this,
         uint32_t        *pData
     );
     bool            cb32_iPut(
-        CB32_DATA       *cbp,
+        CB32_DATA       *this,
         uint32_t        value
     );
 

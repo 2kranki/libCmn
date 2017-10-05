@@ -194,12 +194,10 @@ static
 const
 OBJ_INFO        name_Info = {
     "name",
-    "Name",				// <-- Fill in description
+    "Name",
     (OBJ_DATA *)&name_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

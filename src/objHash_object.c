@@ -162,22 +162,24 @@ uint16_t		objHash_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    objHash_Vtbl = {
-	&objHash_Info,
-    objHash_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    objHash_Dealloc,
-    objHash_Class,
-    objHash_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)objHash_ToDebugString,
-    NULL,			// objHash_Enable,
-    NULL,			// objHash_Disable,
-    NULL,			// (P_OBJ_ASSIGN)objHash_Assign,
-    NULL,			// (P_OBJ_COMPARE)objHash_Compare,
-    NULL, 			// (P_OBJ_PTR)objHash_Copy,
-    NULL 			// (P_OBJ_HASH)objHash_Hash
+OBJHASH_VTBL    objHash_Vtbl = {
+    {
+        &objHash_Info,
+        objHash_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        objHash_Dealloc,
+        objHash_Class,
+        objHash_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)objHash_ToDebugString,
+        NULL,            // objHash_Enable,
+        NULL,            // objHash_Disable,
+        NULL,            // (P_OBJ_ASSIGN)objHash_Assign,
+        NULL,            // (P_OBJ_COMPARE)objHash_Compare,
+        NULL,             // (P_OBJ_PTR)objHash_Copy,
+        NULL             // (P_OBJ_HASH)objHash_Hash
+    }
 };
 
 
@@ -186,12 +188,10 @@ static
 const
 OBJ_INFO        objHash_Info = {
     "objHash",
-    "objHash",				// <-- Fill in description
+    "Object Hash",
     (OBJ_DATA *)&objHash_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

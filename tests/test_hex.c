@@ -20,6 +20,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <hex_internal.h>
+#include    <szTbl.h>
 
 
 
@@ -29,7 +30,7 @@ int         setUp(
 )
 {
     mem_Init( );
-    trace_Shared( ); 
+    //trace_Shared( );
     // Put setup code here. This method is called before the invocation of each
     // test method in the class.
     
@@ -46,7 +47,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    //trace_SharedReset( );
     mem_Dump( );
     mem_Release( );
     
@@ -89,7 +91,7 @@ int         test_hex_DataFromJSON01(
     char        *pTestName
 )
 {
-    ASTR_DATA	*pStr = OBJ_NIL;
+    //ASTR_DATA	*pStr = OBJ_NIL;
     char        *pData = "\x00\x01\x02\x03\x04\x05\x06\x07";
     char        *pOutput =  "{\"objectType\":\"hex\", "
                             "\"len\":8, "

@@ -941,9 +941,9 @@ extern "C" {
         }
         
         // Find the Area in the Block Header List.
-        pActual = memOSX_DebugFind( this, pData );
+        pActual = memOSX_DebugFind(this, pData);
         if( NULL == pActual ) {
-            memOSX_DebugDumpBlock(this,pData);
+            memOSX_DebugDumpBlock(this, pData);
             DEBUG_BREAK();
             return false;
         }
@@ -1185,7 +1185,7 @@ extern "C" {
         }
         
         // Validate the Memory Block.
-        fRc = memOSX_DebugCheckArea( this, pData, pFilePath, iLine );
+        fRc = memOSX_DebugCheckArea(this, pData, pFilePath, iLine);
         if( !fRc ) {
             DEBUG_BREAK();
         }

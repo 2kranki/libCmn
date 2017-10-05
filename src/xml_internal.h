@@ -71,7 +71,7 @@ struct xml_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    xml_Vtbl;
+    XML_VTBL        xml_Vtbl;
 
 
 
@@ -80,6 +80,15 @@ struct xml_data_s	{
         OBJ_ID          objId
     );
 
+    
+    void *          xml_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			xml_Validate(

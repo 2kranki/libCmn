@@ -74,6 +74,16 @@ extern "C" {
 
     typedef struct objHash_data_s	OBJHASH_DATA;
 
+    typedef struct objHash_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } OBJHASH_VTBL;
+    
+    
 
     // Prime numbers for hash table sizes within 16 bits
     // (Maximum size is 65535)

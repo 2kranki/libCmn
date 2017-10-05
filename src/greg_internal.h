@@ -70,7 +70,7 @@ struct greg_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    greg_Vtbl;
+    GREG_VTBL       greg_Vtbl;
 
 
 

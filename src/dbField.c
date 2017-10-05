@@ -258,7 +258,7 @@ extern "C" {
         if (OBJ_NIL == cbp) {
             return OBJ_NIL;
         }
-        obj_setVtbl(cbp, &dbField_Vtbl);
+        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&dbField_Vtbl);
         
         //cbp->stackSize = obj_getMisc1(cbp);
 

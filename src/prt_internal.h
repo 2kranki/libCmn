@@ -104,7 +104,7 @@ struct prt_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    prt_Vtbl;
+    PRT_VTBL        prt_Vtbl;
 
 
 

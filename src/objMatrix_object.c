@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'objMatrix'
-//	Generated 10/07/2015 22:21:27
+//	Generated 10/02/2017 11:54:44
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "objMatrix_internal.h"
+
+#define			OBJMATRIX_OBJECT_C	    1
+#include        <objMatrix_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct objMatrix_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct objMatrix_class_data_s OBJMATRIX_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        objMatrix_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&objMatrix_Info,
     objMatrix_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						objMatrix Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        objMatrix_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_OBJMATRIX_CLASS,
-    0,
-    1
+OBJMATRIX_CLASS_DATA  objMatrix_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJMATRIX_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		objMatrix_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    objMatrix_Vtbl = {
-    NULL,
-    objMatrix_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    objMatrix_Dealloc,
-    objMatrix_Class,
-    objMatrix_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)objMatrix_ToDebugString,
-    NULL,			// objMatrix_Enable()
-    NULL,			// objMatrix_Disable(
-    (ERESULT (*)(OBJ_ID,OBJ_ID))objMatrix_Assign,
-    NULL,			// objMatrix_Compare()
-    (OBJ_ID (*)(OBJ_ID))objMatrix_Copy
+OBJMATRIX_VTBL     objMatrix_Vtbl = {
+    {
+        &objMatrix_Info,
+        objMatrix_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        objMatrix_Dealloc,
+        objMatrix_Class,
+        objMatrix_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)objMatrix_QueryInfo,
+        (P_OBJ_TOSTRING)objMatrix_ToDebugString,
+        NULL,			// objMatrix_Enable,
+        NULL,			// objMatrix_Disable,
+        NULL,			// (P_OBJ_ASSIGN)objMatrix_Assign,
+        NULL,			// (P_OBJ_COMPARE)objMatrix_Compare,
+        NULL, 			// (P_OBJ_PTR)objMatrix_Copy,
+        NULL 			// (P_OBJ_HASH)objMatrix_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //objMatrix_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        objMatrix_Info = {
+    "objMatrix",
+    "Matrix of Objects",
+    (OBJ_DATA *)&objMatrix_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&objMatrix_Vtbl
+};
 
 
 

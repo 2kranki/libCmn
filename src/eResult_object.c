@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'eResult'
-//	Generated 09/30/2015 16:01:56
+//	Generated 10/02/2017 12:25:37
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "eResult_internal.h"
+
+#define			ERESULT_OBJECT_C	    1
+#include        <eResult_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct eResult_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct eResult_class_data_s ERESULT_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        eResult_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&eResult_Info,
     eResult_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,19 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						eResult Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        eResult_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_ERESULT_CLASS,
-    0,
-    1,
-    {ERESULT_SUCCESS}               // We will use 'misc' as a
-    //                              // global ERESULT.
+ERESULT_CLASS_DATA  eResult_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_ERESULT_CLASS, 0, 1},
+	//0
 };
 
 
@@ -140,23 +163,42 @@ uint16_t		eResult_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    eResult_Vtbl = {
-    NULL,
-    eResult_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    eResult_Dealloc,
-    eResult_Class,
-    eResult_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))eResult_ToDebugString,
-    NULL,			// eResult_Enable()
-    NULL,			// eResult_Disable(
-    NULL,			// eResult_Assign()
-    NULL,			// eResult_Compare()
-    NULL 			// eResult_Copy()
+ERESULT_VTBL     eResult_Vtbl = {
+    {
+        &eResult_Info,
+        eResult_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        eResult_Dealloc,
+        eResult_Class,
+        eResult_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)eResult_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)eResult_ToDebugString,
+        NULL,			// eResult_Enable,
+        NULL,			// eResult_Disable,
+        NULL,			// (P_OBJ_ASSIGN)eResult_Assign,
+        NULL,			// (P_OBJ_COMPARE)eResult_Compare,
+        NULL, 			// (P_OBJ_PTR)eResult_Copy,
+        NULL 			// (P_OBJ_HASH)eResult_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //eResult_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        eResult_Info = {
+    "eResult",
+    "Error Result Code",
+    (OBJ_DATA *)&eResult_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&eResult_Vtbl
+};
 
 
 

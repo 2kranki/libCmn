@@ -888,7 +888,7 @@ extern "C" {
         //obj_setSize(cbp, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_DBCSV);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
-        obj_setVtbl(this, &dbCsv_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&dbCsv_Vtbl);
         
         this->sizeFld = DBCSV_FIELD_MAX;
         this->pFld = mem_Calloc(this->sizeFld, sizeof(int32_t));

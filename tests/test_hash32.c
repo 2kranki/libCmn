@@ -101,7 +101,7 @@ int         test_hash32_AddFindDelete_1(
     void            *pVoid;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = hash32_Alloc(0);
+    pObj = hash32_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = hash32_Init( pObj, 3 );
     XCTAssertFalse( (OBJ_NIL == pObj) );

@@ -71,7 +71,7 @@ struct plist_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    plist_Vtbl;
+    PLIST_VTBL      plist_Vtbl;
 
 
 

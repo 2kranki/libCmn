@@ -198,8 +198,6 @@ OBJ_INFO        nodeScan_Info = {
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&nodeScan_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

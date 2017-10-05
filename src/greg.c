@@ -266,7 +266,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(this, &greg_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&greg_Vtbl);
         
         //this->priority  = TNEO_PRIORITY_NORMAL;
 

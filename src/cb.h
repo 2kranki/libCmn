@@ -89,6 +89,16 @@ extern "C" {
 
     typedef struct cb_data_s	CB_DATA;
 
+    typedef struct cb_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } CB_VTBL;
+    
+    
 
 
 
@@ -219,7 +229,13 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     cb_ToDebugString(
+        CB_DATA         *this,
+        int             indent
+    );
     
+    
+
 
 #ifdef	__cplusplus
 }

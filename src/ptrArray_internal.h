@@ -65,7 +65,7 @@ struct ptrArray_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    ptrArray_Vtbl;
+    PTRARRAY_VTBL   ptrArray_Vtbl;
 
 
 

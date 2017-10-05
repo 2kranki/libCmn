@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'greg'
-//	Generated 09/30/2015 16:03:39
+//	Generated 10/02/2017 12:20:38
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "greg_internal.h"
+
+#define			GREG_OBJECT_C	    1
+#include        <greg_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct greg_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct greg_class_data_s GREG_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        greg_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&greg_Info,
     greg_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						greg Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        greg_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_GREG_CLASS,
-    0,
-    1
+GREG_CLASS_DATA  greg_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_GREG_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		greg_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    greg_Vtbl = {
-    NULL,
-    greg_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    greg_Dealloc,
-    greg_Class,
-    greg_WhoAmI,
-    greg_QueryInfo, // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))greg_ToDebugString,
-    NULL,			// greg_Enable()
-    NULL,			// greg_Disable(
-    NULL,			// greg_Assign()
-    NULL,			// greg_Compare()
-    NULL 			// greg_Copy()
+GREG_VTBL     greg_Vtbl = {
+    {
+        &greg_Info,
+        greg_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        greg_Dealloc,
+        greg_Class,
+        greg_WhoAmI,
+        (P_OBJ_QUERYINFO)greg_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)greg_ToDebugString,
+        NULL,			// greg_Enable,
+        NULL,			// greg_Disable,
+        NULL,			// (P_OBJ_ASSIGN)greg_Assign,
+        NULL,			// (P_OBJ_COMPARE)greg_Compare,
+        NULL, 			// (P_OBJ_PTR)greg_Copy,
+        NULL 			// (P_OBJ_HASH)greg_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //greg_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        greg_Info = {
+    "greg",
+    "Gregorian Date",
+    (OBJ_DATA *)&greg_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&greg_Vtbl
+};
 
 
 

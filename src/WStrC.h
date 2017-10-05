@@ -73,7 +73,7 @@ extern "C" {
     //****************************************************************
 
 
-    // WSTRC_DATA and WSTRC_VTBL are defined in "cmn.h"
+    // WSTRC_DATA and WSTRC_VTBL are defined in "cmn_defs.h"
 
 
 

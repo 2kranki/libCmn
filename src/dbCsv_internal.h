@@ -83,7 +83,7 @@ struct dbCsv_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    dbCsv_Vtbl;
+    DBCSV_VTBL      dbCsv_Vtbl;
 
 
 

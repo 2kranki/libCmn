@@ -73,7 +73,7 @@ extern "C" {
     //****************************************************************
 
 
-    // ASTRARRAY_DATA is defined in "str.h"
+    // ASTRARRAY_DATA and ASTRARRAY_VTBL is defined in "cmn_defs.h"
 
     
 

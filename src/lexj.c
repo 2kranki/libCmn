@@ -921,8 +921,6 @@ extern "C" {
         TOKEN_DATA      *pInput;
         int32_t         cls;
         int32_t         newCls = 0;
-        TOKEN_DATA      *pNextInput;
-        int32_t         clsNext;
         bool            fMore = true;
         bool            fSaveStr = true;
         ASTR_DATA       *pStr = OBJ_NIL;

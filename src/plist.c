@@ -325,7 +325,7 @@ extern "C" {
         }
         //obj_setSize(this, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_PLIST);
-        obj_setVtbl(this, &plist_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&plist_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );

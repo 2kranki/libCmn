@@ -75,6 +75,16 @@ extern "C" {
 
     typedef struct objMatrix_data_s	OBJMATRIX_DATA;
 
+    typedef struct objMatrix_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } OBJMATRIX_VTBL;
+    
+    
 
 
 

@@ -111,12 +111,12 @@ extern "C" {
      @return:   pointer to cloOpt object if successful, otherwise OBJ_NIL.
      */
     CLOOPT_DATA *     cloOpt_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
+        void
     );
     
     
     CLOOPT_DATA *     cloOpt_New(
-        uint16_t    stackSize           // Stack Size in Words
+        void
     );
     
     

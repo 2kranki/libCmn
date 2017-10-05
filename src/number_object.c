@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'number'
-//	Generated 10/22/2015 16:41:21
+//	Generated 10/02/2017 12:04:00
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "number_internal.h"
+
+#define			NUMBER_OBJECT_C	    1
+#include        <number_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct number_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct number_class_data_s NUMBER_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        number_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&number_Info,
     number_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						number Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        number_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_NUMBER_CLASS,
-    0,
-    1
+NUMBER_CLASS_DATA  number_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NUMBER_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		number_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    number_Vtbl = {
-    NULL,
-    number_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    number_Dealloc,
-    number_Class,
-    number_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)number_ToDebugString,
-    NULL,			// number_Enable()
-    NULL,			// number_Disable(
-    NULL,			// number_Assign()
-    NULL,			// number_Compare()
-    NULL 			// number_Copy()
+NUMBER_VTBL     number_Vtbl = {
+    {
+        &number_Info,
+        number_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        number_Dealloc,
+        number_Class,
+        number_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)number_QueryInfo,
+        (P_OBJ_TOSTRING)number_ToDebugString,
+        NULL,			// number_Enable,
+        NULL,			// number_Disable,
+        NULL,			// (P_OBJ_ASSIGN)number_Assign,
+        NULL,			// (P_OBJ_COMPARE)number_Compare,
+        NULL, 			// (P_OBJ_PTR)number_Copy,
+        NULL 			// (P_OBJ_HASH)number_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //number_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        number_Info = {
+    "number",
+    "Number",
+    (OBJ_DATA *)&number_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&number_Vtbl
+};
 
 
 

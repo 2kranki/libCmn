@@ -65,7 +65,7 @@ struct u16Array_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    u16Array_Vtbl;
+    U16ARRAY_VTBL   u16Array_Vtbl;
 
 
 
@@ -74,6 +74,13 @@ struct u16Array_data_s	{
         OBJ_ID          objId
     );
 
+    void *          u16Array_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
 #ifdef NDEBUG
 #else
     bool			u16Array_Validate(

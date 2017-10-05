@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   name.c
+ * File:   token.c
  *	Generated 05/26/2015 13:40:16
  *
  * Created on December 30, 2014
@@ -79,26 +79,24 @@ extern "C" {
     //===============================================================
     
 
-    NAME_DATA *     name_NewFromJSONString(
+    TOKEN_DATA *     token_NewFromJSONString(
         ASTR_DATA       *pString
     )
     {
         HJSON_DATA      *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
-        //NODE_DATA       *pNode;
+        NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        //ERESULT         eRc;
+        ERESULT         eRc;
         const
         char            *pFileName = "";
-#ifdef XYZZY
         uint32_t        lineNo = 0;
         uint16_t        colNo = 0;
         int32_t         cls = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pType = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
-#endif
-        NAME_DATA       *pNameOut = OBJ_NIL;
+        TOKEN_DATA      *pToken = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
         
         pParser = hjson_NewAStr(pString, 4);
@@ -114,9 +112,8 @@ extern "C" {
             goto exit00;
         }
         //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-
-#ifdef XYZZY
-        eRc = nodeHash_FindA(pHash, "fileName", &pNode);
+        
+        eRc = nodeHash_FindA(pHash, "FileName", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -132,7 +129,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "lineNo", &pNode);
+        eRc = nodeHash_FindA(pHash, "LineNo", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -148,7 +145,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "colNo", &pNode);
+        eRc = nodeHash_FindA(pHash, "ColNo", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -164,7 +161,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "cls", &pNode);
+        eRc = nodeHash_FindA(pHash, "Class", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -173,14 +170,14 @@ extern "C" {
                 cls = (int32_t)AStr_ToInt64(pStr);
             }
             else {
-                fprintf(stderr, "ERROR - cls should have a integer!\n");
+                fprintf(stderr, "ERROR - class should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "type", &pNode);
+        eRc = nodeHash_FindA(pHash, "Type", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -201,7 +198,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pStr = OBJ_NIL;
-        eRc = nodeHash_FindA(pHash, "data", &pNode);
+        eRc = nodeHash_FindA(pHash, "Data", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -287,7 +284,6 @@ extern "C" {
             DEBUG_BREAK();
             goto exit00;
         }
-#endif
         
         // Return to caller.
     exit00:
@@ -307,28 +303,139 @@ extern "C" {
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        return pNameOut;
+        return pToken;
     }
     
     
 
-    NAME_DATA *     name_NewFromJSONStringA(
+    TOKEN_DATA *     token_NewFromJSONStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NAME_DATA       *pName = OBJ_NIL;
+        TOKEN_DATA      *pToken = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pName = name_NewFromJSONString(pStr);
+            pToken = token_NewFromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
         // Return to caller.
-        return pName;
+        return pToken;
+    }
+    
+    
+    
+    ASTR_DATA *     token_ToJSON(
+                                 TOKEN_DATA      *this
+                                 )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        char            str2[256];
+        uint32_t        len;
+        uint32_t        lenChars;
+        const
+        int32_t         *pWStr = NULL;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !token_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\",\"FileName\":\"%s\",\"LineNo\":%d,\"ColNo\":%d,\"Class\":%d,",
+                     pInfo->pClassName,
+                     (token_getFileName(this) ? token_getFileName(this) : ""),
+                     token_getLineNo(this),
+                     token_getColNo(this),
+                     this->data.cls
+                     );
+        AStr_AppendA(pStr, str);
+        
+        switch (this->data.type) {
+                
+            case TOKEN_TYPE_UNKNOWN:
+                AStr_AppendA(pStr, "\"Type\":\"UNKNOWN\"");
+                break;
+                
+            case TOKEN_TYPE_WCHAR:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "\"Type\":\"CHAR\",\"Data\":%d",
+                             this->data.wchr[0]
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case TOKEN_TYPE_WSTRING:
+                AStr_AppendA(pStr, "\"Type\":\"STRING\",\"Data\":\"");
+                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
+                    pWStr = WStr_getData(this->data.pObj);
+                }
+                if (OBJ_IDENT_WSTRC == obj_getType(this->data.pObj)) {
+                    pWStr = WStrC_getData(this->data.pObj);
+                }
+                len = utf8_StrLenW(pWStr);
+                for (j=0; j<len; ++j) {
+                    if (*pWStr == '"') {
+                        AStr_AppendA(pStr, "\\");
+                    }
+                    lenChars = utf8_WCToUtf8(*pWStr, str2);
+                    if (lenChars) {
+                        AStr_AppendA(pStr, str2);
+                    }
+                    ++pWStr;
+                }
+                AStr_AppendA(pStr, "\"");
+                break;
+                
+            case TOKEN_TYPE_INTEGER:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "\"Type\":\"NUMBER\",\"Data\":%lld",
+                             this->data.integer
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case TOKEN_TYPE_STRTOKEN:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "\"Type\":\"STRTOKEN\",\"Data\":%lld",
+                             this->data.integer
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            default:
+                DEBUG_BREAK();
+                AStr_AppendA(pStr, "\"Type\":\"UNKNOWN\"");
+                break;
+                
+        }
+        AStr_AppendA(pStr, "}\n");
+        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
+        
+        return pStr;
     }
     
     

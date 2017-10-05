@@ -469,7 +469,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(this, &ptrArray_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ptrArray_Vtbl);
         
     #ifdef NDEBUG
     #else

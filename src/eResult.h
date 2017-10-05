@@ -75,7 +75,17 @@ extern "C" {
 
     typedef struct eResult_data_s	ERESULT_DATA;
     
+    typedef struct eResult_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } ERESULT_VTBL;
     
+    
+
     typedef enum eResult_codes_e {
         /* Codes greater than zero denote successful
          * completion and are user assignable.

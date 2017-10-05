@@ -186,11 +186,11 @@ extern "C" {
 #endif
         
         eRc =   pwr2Array_InsertData(
-                                     (PWR2ARRAY_DATA *)this,
-                                     pwr2Array_getSize((PWR2ARRAY_DATA *)this)+1,
-                                     1,
-                                     &data
-                                     );
+                     (PWR2ARRAY_DATA *)this,
+                     (pwr2Array_getSize((PWR2ARRAY_DATA *)this) + 1),
+                     1,
+                     &data
+                 );
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -546,7 +546,7 @@ extern "C" {
         obj_setSize(this, cbSize);
         obj_setIdent((OBJ_ID)this, OBJ_IDENT_U16ARRAY);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
-        obj_setVtbl(this, &u16Array_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&u16Array_Vtbl);
         
     #ifdef NDEBUG
     #else
@@ -593,6 +593,59 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          u16Array_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        U16ARRAY_DATA   *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !u16Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return u16Array_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
     }
     
     

@@ -208,8 +208,6 @@ OBJ_INFO        AStr_Info = {
     (OBJ_DATA *)&AStr_ClassObj,
     (OBJ_DATA *)&pwr2Array_ClassObj
 };
-//#warning -- adjust super class object in Info above 
-//			if object inherits from another class
 
 
 

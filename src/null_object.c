@@ -162,7 +162,7 @@ uint16_t		null_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    null_Vtbl = {
+NULL_VTBL       null_Vtbl = {
 	&null_Info,
     null_IsKindOf,
     obj_RetainNull,
@@ -186,12 +186,10 @@ static
 const
 OBJ_INFO        null_Info = {
     "null",
-    "null",				// <-- Fill in description
+    "Null",				
     (OBJ_DATA *)&null_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

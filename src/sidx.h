@@ -82,6 +82,16 @@ extern "C" {
 
     typedef struct sidx_data_s	SIDX_DATA;
 
+    typedef struct sidx_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } SIDX_VTBL;
+    
+    
 
 
 

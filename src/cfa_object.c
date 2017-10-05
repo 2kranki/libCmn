@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'cfa'
-//	Generated 09/30/2015 15:51:34
+//	Generated 10/02/2017 12:35:42
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "cfa_internal.h"
+
+#define			CFA_OBJECT_C	    1
+#include        <cfa_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct cfa_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct cfa_class_data_s CFA_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        cfa_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&cfa_Info,
     cfa_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						cfa Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        cfa_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_CFA_CLASS,
-    0,
-    1
+CFA_CLASS_DATA  cfa_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_CFA_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		cfa_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    cfa_Vtbl = {
-    NULL,
-    cfa_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    cfa_Dealloc,
-    cfa_Class,
-    cfa_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cfa_ToDebugString,
-    NULL,			// cfa_Enable()
-    NULL,			// cfa_Disable(
-    NULL,			// cfa_Assign()
-    NULL,			// cfa_Compare()
-    NULL 			// cfa_Copy()
+CFA_VTBL     cfa_Vtbl = {
+    {
+        &cfa_Info,
+        cfa_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        cfa_Dealloc,
+        cfa_Class,
+        cfa_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)cfa_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)cfa_ToDebugString,
+        NULL,			// cfa_Enable,
+        NULL,			// cfa_Disable,
+        NULL,			// (P_OBJ_ASSIGN)cfa_Assign,
+        NULL,			// (P_OBJ_COMPARE)cfa_Compare,
+        NULL, 			// (P_OBJ_PTR)cfa_Copy,
+        NULL 			// (P_OBJ_HASH)cfa_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //cfa_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        cfa_Info = {
+    "cfa",
+    "C Fixed Array",
+    (OBJ_DATA *)&cfa_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&cfa_Vtbl
+};
 
 
 

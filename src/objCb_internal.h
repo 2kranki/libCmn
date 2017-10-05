@@ -91,19 +91,19 @@ extern "C" {
 
     extern
     const
-    OBJ_IUNKNOWN    objCb_Vtbl;
+    OBJCB_VTBL      objCb_Vtbl;
 
 
     
 // Internal Functions
 #ifdef RMW_DEBUG
     bool			objCb_Validate(
-        OBJCB_DATA       *cbp
+        OBJCB_DATA      *this
     );
 #endif
 
-    void        objCb_Dealloc(
-        OBJ_ID      objId
+    void            objCb_Dealloc(
+        OBJ_ID          objId
     );
 
 

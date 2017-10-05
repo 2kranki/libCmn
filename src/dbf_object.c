@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'dbf'
-//	Generated 09/30/2015 15:55:26
+//	Generated 10/02/2017 12:31:18
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "dbf_internal.h"
+
+#define			DBF_OBJECT_C	    1
+#include        <dbf_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct dbf_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct dbf_class_data_s DBF_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        dbf_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&dbf_Info,
     dbf_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						dbf Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        dbf_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_DBF_CLASS,
-    0,
-    1
+DBF_CLASS_DATA  dbf_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DBF_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		dbf_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    dbf_Vtbl = {
-    NULL,
-    dbf_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    dbf_Dealloc,
-    dbf_Class,
-    dbf_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))dbf_ToDebugString,
-    NULL,			// dbf_Enable()
-    NULL,			// dbf_Disable(
-    NULL,			// dbf_Assign()
-    NULL,			// dbf_Compare()
-    NULL 			// dbf_Copy()
+DBF_VTBL     dbf_Vtbl = {
+    {
+        &dbf_Info,
+        dbf_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        dbf_Dealloc,
+        dbf_Class,
+        dbf_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)dbf_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)dbf_ToDebugString,
+        NULL,			// dbf_Enable,
+        NULL,			// dbf_Disable,
+        NULL,			// (P_OBJ_ASSIGN)dbf_Assign,
+        NULL,			// (P_OBJ_COMPARE)dbf_Compare,
+        NULL, 			// (P_OBJ_PTR)dbf_Copy,
+        NULL 			// (P_OBJ_HASH)dbf_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //dbf_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        dbf_Info = {
+    "dbf",
+    "Data Base File",	
+    (OBJ_DATA *)&dbf_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&dbf_Vtbl
+};
 
 
 

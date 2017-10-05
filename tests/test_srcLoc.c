@@ -30,11 +30,11 @@
 
 static
 const
-char        *pJsonA =   "{"
-                        "\"objectType\":\"srcLoc\","
-                        "\"FileName\":\"\","
-                        "\"LineNo\":0,"
-                         "\"ColNo\":0"
+char        *pJsonA =   "{ "
+                        "\"objectType\":\"srcLoc\", "
+                        "\"FileName\":\"\", "
+                        "\"LineNo\":0, "
+                         "\"ColNo\":0 "
                          "}\n";
 
 

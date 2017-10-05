@@ -59,7 +59,7 @@ struct nodeTree_data_s	{
     
     extern
     const
-    OBJ_IUNKNOWN    nodeTree_Vtbl;
+    NODETREE_VTBL   nodeTree_Vtbl;
 
 
 

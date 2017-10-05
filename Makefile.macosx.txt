@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/28/2017 12:44:55.000)
+# (10/ 2/2017 18:45:25.000)
 
 
 LIBNAM=libCmn
@@ -1356,36 +1356,30 @@ $(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c
 
 
 
-$(OBJDIR)/hexDataFromJSON.o: $(SRCDIR)/hexDataFromJSON.c
+$(OBJDIR)/hexData_JSON.o: $(SRCDIR)/hexData_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/hexDataFromJSON.o
-$(OBJDIR)/hexDataToJSON.o: $(SRCDIR)/hexDataToJSON.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/hexDataToJSON.o
+OBJS += $(OBJDIR)/hexData_JSON.o
 $(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
 OBJS += $(OBJDIR)/listdl.o
-$(OBJDIR)/nameFromJSON.o: $(SRCDIR)/nameFromJSON.c
+$(OBJDIR)/name_JSON.o: $(SRCDIR)/name_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/nameFromJSON.o
-$(OBJDIR)/nodeFromJSON.o: $(SRCDIR)/nodeFromJSON.c
+OBJS += $(OBJDIR)/name_JSON.o
+$(OBJDIR)/node_JSON.o: $(SRCDIR)/node_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/nodeFromJSON.o
+OBJS += $(OBJDIR)/node_JSON.o
 $(OBJDIR)/obj.o: $(SRCDIR)/obj.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1422,30 +1416,30 @@ $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c
 
 
 OBJS += $(OBJDIR)/shellSortPtrs.o
-$(OBJDIR)/srcLocFromJSON.o: $(SRCDIR)/srcLocFromJSON.c
+$(OBJDIR)/srcLoc_JSON.o: $(SRCDIR)/srcLoc_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/srcLocFromJSON.o
+OBJS += $(OBJDIR)/srcLoc_JSON.o
 $(OBJDIR)/str.o: $(SRCDIR)/str.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
 OBJS += $(OBJDIR)/str.o
-$(OBJDIR)/tokenFromJSON.o: $(SRCDIR)/tokenFromJSON.c
+$(OBJDIR)/token_JSON.o: $(SRCDIR)/token_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/tokenFromJSON.o
-$(OBJDIR)/valueFromJSON.o: $(SRCDIR)/valueFromJSON.c
+OBJS += $(OBJDIR)/token_JSON.o
+$(OBJDIR)/value_JSON.o: $(SRCDIR)/value_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/valueFromJSON.o
+OBJS += $(OBJDIR)/value_JSON.o
 
 
 

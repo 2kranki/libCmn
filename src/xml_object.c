@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'xml'
-//	Generated 10/18/2015 10:03:08
+//	Generated 10/02/2017 10:44:23
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "xml_internal.h"
+
+#define			XML_OBJECT_C	    1
+#include        <xml_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct xml_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct xml_class_data_s XML_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        xml_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&xml_Info,
     xml_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						xml Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        xml_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_XML_CLASS,
-    0,
-    1
+XML_CLASS_DATA  xml_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_XML_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		xml_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    xml_Vtbl = {
-    NULL,
-    xml_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    xml_Dealloc,
-    xml_Class,
-    xml_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (OBJ_ID (*)(OBJ_ID,int))xml_ToDebugString,
-    NULL,			// xml_Enable()
-    NULL,			// xml_Disable(
-    NULL,			// xml_Assign()
-    NULL,			// xml_Compare()
-    NULL 			// xml_Copy()
+XML_VTBL     xml_Vtbl = {
+    {
+        &xml_Info,
+        xml_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        xml_Dealloc,
+        xml_Class,
+        xml_WhoAmI,
+        (P_OBJ_QUERYINFO)xml_QueryInfo,
+        (P_OBJ_TOSTRING)xml_ToDebugString,
+        NULL,			// xml_Enable,
+        NULL,			// xml_Disable,
+        NULL,			// (P_OBJ_ASSIGN)xml_Assign,
+        NULL,			// (P_OBJ_COMPARE)xml_Compare,
+        NULL, 			// (P_OBJ_PTR)xml_Copy,
+        NULL 			// (P_OBJ_HASH)xml_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //xml_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        xml_Info = {
+    "xml",
+    "XML",
+    (OBJ_DATA *)&xml_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&xml_Vtbl
+};
 
 
 

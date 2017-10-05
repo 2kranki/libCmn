@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'dbField'
-//	Generated 09/30/2015 15:55:38
+//	Generated 10/02/2017 12:27:48
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "dbField_internal.h"
+
+#define			DBFIELD_OBJECT_C	    1
+#include        <dbField_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct dbField_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct dbField_class_data_s DBFIELD_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        dbField_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&dbField_Info,
     dbField_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						dbField Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        dbField_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_DBFIELD_CLASS,
-    0,
-    1
+DBFIELD_CLASS_DATA  dbField_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DBFIELD_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		dbField_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    dbField_Vtbl = {
-    NULL,
-    dbField_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    dbField_Dealloc,
-    dbField_Class,
-    dbField_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))dbField_ToDebugString,
-    NULL,			// dbField_Enable()
-    NULL,			// dbField_Disable(
-    NULL,			// dbField_Assign()
-    NULL,			// dbField_Compare()
-    NULL 			// dbField_Copy()
+DBFIELD_VTBL     dbField_Vtbl = {
+    {
+        &dbField_Info,
+        dbField_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        dbField_Dealloc,
+        dbField_Class,
+        dbField_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)dbField_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)dbField_ToDebugString,
+        NULL,			// dbField_Enable,
+        NULL,			// dbField_Disable,
+        NULL,			// (P_OBJ_ASSIGN)dbField_Assign,
+        NULL,			// (P_OBJ_COMPARE)dbField_Compare,
+        NULL, 			// (P_OBJ_PTR)dbField_Copy,
+        NULL 			// (P_OBJ_HASH)dbField_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //dbField_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        dbField_Info = {
+    "dbField",
+    "Data Base Field",
+    (OBJ_DATA *)&dbField_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&dbField_Vtbl
+};
 
 
 

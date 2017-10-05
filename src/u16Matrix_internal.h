@@ -82,7 +82,7 @@ struct u16Matrix_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    u16Matrix_Vtbl;
+    U16MATRIX_VTBL  u16Matrix_Vtbl;
 
 
 
@@ -103,6 +103,13 @@ struct u16Matrix_data_s	{
     bool            u16Matrix_setLastError(
         U16MATRIX_DATA  *this,
         ERESULT         value
+    );
+    
+    void *          u16Matrix_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
     );
     
 #ifdef NDEBUG

@@ -533,7 +533,7 @@ extern "C" {
             return OBJ_NIL;
         }
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, &prt_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&prt_Vtbl);
         
 #ifdef  CPM
         strcpy( this->lstnam, "LST:" );/* Default List Name */

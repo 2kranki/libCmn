@@ -170,7 +170,7 @@ PWR2ARRAY_VTBL  pwr2Array_Vtbl = {
         pwr2Array_Dealloc,
         pwr2Array_Class,
         pwr2Array_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)pwr2Array_QueryInfo,
         (P_OBJ_TOSTRING)pwr2Array_ToDebugString,
         NULL,			// pwr2Array_Enable,
         NULL,			// pwr2Array_Disable,
@@ -192,8 +192,6 @@ OBJ_INFO        pwr2Array_Info = {
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&pwr2Array_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

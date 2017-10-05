@@ -211,8 +211,6 @@ OBJ_INFO        WStr_Info = {
     (OBJ_DATA *)&WStr_ClassObj,
     (OBJ_DATA *)&pwr2Array_ClassObj
 };
-//#warning -- adjust super class object in Info above 
-//			if object inherits from another class
 
 
 

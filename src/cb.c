@@ -1,4 +1,4 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   cb.c
  * Author: bob
@@ -824,6 +824,59 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          cb_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        CB_DATA         *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return cb_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       R e s u m e
     //---------------------------------------------------------------
     
@@ -846,6 +899,97 @@ extern "C" {
 #endif
         
         return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     cb_ToDebugString(
+        CB_DATA         *this,
+        int             indent
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+#ifdef  XYZZY
+        ASTR_DATA       *pWrkStr;
+#endif
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStr_New();
+        if (indent) {
+            AStr_AppendCharRepeatW(pStr, indent, ' ');
+        }
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{%p(cb) side=%d ",
+                     this,
+                     cb_getSize(this)
+                     );
+        AStr_AppendA(pStr, str);
+        
+#ifdef  XYZZY
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                                             this->pData,
+                                                                             indent+3
+                                                                             );
+                AStr_Append(pStr, pWrkStr);
+                obj_Release(pWrkStr);
+            }
+        }
+#endif
+        
+        j = snprintf( str, sizeof(str), " %p(cb)}\n", this );
+        AStr_AppendA(pStr, str);
+        
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     cb_ToJSON(
+        CB_DATA         *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
     }
     
     

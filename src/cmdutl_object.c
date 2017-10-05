@@ -196,8 +196,6 @@ OBJ_INFO        cmdutl_Info = {
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&cmdutl_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

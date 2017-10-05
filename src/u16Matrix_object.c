@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'u16Matrix'
-//	Generated 09/30/2015 17:20:29
+//	Generated 10/02/2017 10:51:31
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "u16Matrix_internal.h"
+
+#define			U16MATRIX_OBJECT_C	    1
+#include        <u16Matrix_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct u16Matrix_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct u16Matrix_class_data_s U16MATRIX_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        u16Matrix_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&u16Matrix_Info,
     u16Matrix_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						u16Matrix Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        u16Matrix_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_U16MATRIX_CLASS,
-    0,
-    1
+U16MATRIX_CLASS_DATA  u16Matrix_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_U16MATRIX_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		u16Matrix_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    u16Matrix_Vtbl = {
-    NULL,
-    u16Matrix_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    u16Matrix_Dealloc,
-    u16Matrix_Class,
-    u16Matrix_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (OBJ_ID (*)(OBJ_ID,int))u16Matrix_ToDebugString,
-    NULL,			// u16Matrix_Enable()
-    NULL,			// u16Matrix_Disable(
-    NULL,			// u16Matrix_Assign()
-    NULL,			// u16Matrix_Compare()
-    NULL 			// u16Matrix_Copy()
+U16MATRIX_VTBL     u16Matrix_Vtbl = {
+    {
+        &u16Matrix_Info,
+        u16Matrix_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        u16Matrix_Dealloc,
+        u16Matrix_Class,
+        u16Matrix_WhoAmI,
+        (P_OBJ_QUERYINFO)u16Matrix_QueryInfo,
+        (P_OBJ_TOSTRING)u16Matrix_ToDebugString,
+        NULL,			// u16Matrix_Enable,
+        NULL,			// u16Matrix_Disable,
+        NULL,			// (P_OBJ_ASSIGN)u16Matrix_Assign,
+        NULL,			// (P_OBJ_COMPARE)u16Matrix_Compare,
+        NULL, 			// (P_OBJ_PTR)u16Matrix_Copy,
+        NULL 			// (P_OBJ_HASH)u16Matrix_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //u16Matrix_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        u16Matrix_Info = {
+    "u16Matrix",
+    "uint16 Matrix",
+    (OBJ_DATA *)&u16Matrix_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&u16Matrix_Vtbl
+};
 
 
 

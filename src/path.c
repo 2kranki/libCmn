@@ -920,7 +920,7 @@ extern "C" {
         obj_setSize(this, cbSize);
         obj_setIdent((OBJ_ID)this, OBJ_IDENT_PATH);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
-        obj_setVtbl(this, &path_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&path_Vtbl);
         
     #ifdef NDEBUG
     #else

@@ -64,7 +64,7 @@ int         tearDown(
 
 int         test_rrds32_OpenClose(
     const
-    char        *test_name
+    char        *pTestName
 )
 {
     RRDS32_DATA	*pObj = OBJ_NIL;
@@ -90,7 +90,7 @@ int         test_rrds32_OpenClose(
 
 int         test_rrds32_NoBuffers(
     const
-    char        *test_name
+    char        *pTestName
 )
 {
 	RRDS32_DATA		*cbp;

@@ -132,21 +132,20 @@
     },
     "routines":
     [
-        "hexDataFromJSON.c",
-        "hexDataToJSON.c",
+        "hexData_JSON.c",
         "listdl.c",
-        "nameFromJSON.c",
-        "nodeFromJSON.c",
+        "name_JSON.c",
+        "node_JSON.c",
         "obj.c",
         "scandec32.c",
         "scanhex32.c",
         "scanstring.c",
         "scanwhite.c",
         "shellSortPtrs.c",
-        "srcLocFromJSON.c"
+        "srcLoc_JSON.c"
         "str.c",
-        "tokenFromJSON.c",
-        "valueFromJSON.c"
+        "token_JSON.c",
+        "value_JSON.c"
     ],
     "macosx": {
         "cmn_osx.c":null,

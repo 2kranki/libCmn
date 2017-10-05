@@ -90,7 +90,7 @@ struct objHash_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    objHash_Vtbl;
+    OBJHASH_VTBL    objHash_Vtbl;
 
 
 

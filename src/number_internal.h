@@ -76,7 +76,7 @@ struct number_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    number_Vtbl;
+    NUMBER_VTBL     number_Vtbl;
 
 
 

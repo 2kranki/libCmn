@@ -75,6 +75,16 @@ extern "C" {
 
     typedef struct xml_data_s	XML_DATA;
 
+    typedef struct xml_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(XML_DATA *);
+    } XML_VTBL;
+    
+    
 
 
 

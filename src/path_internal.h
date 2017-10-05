@@ -69,7 +69,7 @@ struct path_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    path_Vtbl;
+    PATH_VTBL       path_Vtbl;
 
 
 

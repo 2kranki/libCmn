@@ -70,7 +70,7 @@ extern "C" {
     //****************************************************************
 
 
-    // WSTR_DATA and WSTR_VTBL are defined in "cmn.h"
+    // WSTR_DATA and WSTR_VTBL are defined in "cmn_defs.h"
 
 
 

@@ -66,7 +66,7 @@ struct AStrArray_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    AStrArray_Vtbl;
+    ASTRARRAY_VTBL  AStrArray_Vtbl;
 
 
 

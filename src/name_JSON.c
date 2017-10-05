@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   token.c
+ * File:   name_JSON.c
  *	Generated 05/26/2015 13:40:16
  *
  * Created on December 30, 2014
@@ -42,6 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
+#include    "name_internal.h"
 #include    "token_internal.h"
 #include    <stdio.h>
 #include    <stdlib.h>
@@ -79,24 +80,26 @@ extern "C" {
     //===============================================================
     
 
-    TOKEN_DATA *     token_NewFromJSONString(
+    NAME_DATA *     name_NewFromJSONString(
         ASTR_DATA       *pString
     )
     {
         HJSON_DATA      *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
-        NODE_DATA       *pNode;
+        //NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         const
         char            *pFileName = "";
+#ifdef XYZZY
         uint32_t        lineNo = 0;
         uint16_t        colNo = 0;
         int32_t         cls = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pType = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
-        TOKEN_DATA      *pToken = OBJ_NIL;
+#endif
+        NAME_DATA       *pNameOut = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
         
         pParser = hjson_NewAStr(pString, 4);
@@ -112,8 +115,9 @@ extern "C" {
             goto exit00;
         }
         //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-        
-        eRc = nodeHash_FindA(pHash, "FileName", &pNode);
+
+#ifdef XYZZY
+        eRc = nodeHash_FindA(pHash, "fileName", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -129,7 +133,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "LineNo", &pNode);
+        eRc = nodeHash_FindA(pHash, "lineNo", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -145,7 +149,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "ColNo", &pNode);
+        eRc = nodeHash_FindA(pHash, "colNo", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -161,7 +165,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "Class", &pNode);
+        eRc = nodeHash_FindA(pHash, "cls", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -170,14 +174,14 @@ extern "C" {
                 cls = (int32_t)AStr_ToInt64(pStr);
             }
             else {
-                fprintf(stderr, "ERROR - class should have a integer!\n");
+                fprintf(stderr, "ERROR - cls should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         
-        eRc = nodeHash_FindA(pHash, "Type", &pNode);
+        eRc = nodeHash_FindA(pHash, "type", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -198,7 +202,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pStr = OBJ_NIL;
-        eRc = nodeHash_FindA(pHash, "Data", &pNode);
+        eRc = nodeHash_FindA(pHash, "data", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -284,6 +288,7 @@ extern "C" {
             DEBUG_BREAK();
             goto exit00;
         }
+#endif
         
         // Return to caller.
     exit00:
@@ -303,28 +308,120 @@ extern "C" {
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        return pToken;
+        return pNameOut;
     }
     
     
 
-    TOKEN_DATA *     token_NewFromJSONStringA(
+    NAME_DATA *     name_NewFromJSONStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        TOKEN_DATA      *pToken = OBJ_NIL;
+        NAME_DATA       *pName = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pToken = token_NewFromJSONString(pStr);
+            pName = name_NewFromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
         // Return to caller.
-        return pToken;
+        return pName;
+    }
+    
+    
+    
+    ASTR_DATA *     name_ToJSON(
+        NAME_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !name_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr == OBJ_NIL) {
+            //obj_Release(pWrkStr);
+            return OBJ_NIL;
+        }
+        AStr_AppendA(pStr, "{\"objectType\":\"");
+        AStr_AppendA(pStr, pInfo->pClassName);
+        AStr_AppendA(pStr, "\", \"data\":\"");
+        //FIXME: AStr_Append(pStr, pWrkStr);
+        AStr_AppendA(pStr, "\"}\n");
+        //FIXME: obj_Release(pWrkStr);
+        
+#ifdef XYZZY
+        switch (this->type) {
+                
+            case NAME_TYPE_UNKNOWN:
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UNKNOWN\"");
+                break;
+                
+            case NAME_TYPE_INTEGER:
+                j = snprintf(
+                             str,
+                             sizeof(str),
+                             "\"type\":\"NAME_TYPE_INTEGER\",\"data\":%lld",
+                             this->integer
+                             );
+                AStr_AppendA(pStr, str);
+                break;
+                
+            case NAME_TYPE_WSTR:
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_WSTR\",\"data\":\"");
+                AStr_AppendA(pStr, str);
+                AStr_AppendA(pStr, "\" ");
+                break;
+                
+            case NAME_TYPE_UTF8:
+#ifdef XYZZY
+                AStr_AppendA(pStr, "\"type\":\"STRING\",\"data\":\"");
+                if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
+                    pWStr = WStr_getData(this->pObj);
+                }
+                if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
+                    pWStr = WStrC_getData(this->pObj);
+                }
+                len = utf8_StrLenW(pWStr);
+                for (j=0; j<len; ++j) {
+                    if (*pWStr == '"') {
+                        AStr_AppendA(pStr, "\\");
+                    }
+                    lenChars = utf8_WCToUtf8(*pWStr, str2);
+                    if (lenChars) {
+                        AStr_AppendA(pStr, str2);
+                    }
+                    ++pWStr;
+                }
+                AStr_AppendA(pStr, "\" ");
+#endif
+                break;
+                
+            case NAME_TYPE_UTF8_CON:
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UTF8\", \"data\":\"");
+                AStr_AppendA(pStr, str);
+                break;
+                
+        }
+#endif
+        AStr_AppendA(pStr, "\"}\n");
+        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
+        
+        return pStr;
     }
     
     

@@ -74,7 +74,7 @@ struct dbf_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    dbf_Vtbl;
+    DBF_VTBL        dbf_Vtbl;
 
 
 

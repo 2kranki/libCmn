@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'prt'
-//	Generated 09/30/2015 16:08:28
+//	Generated 10/02/2017 11:44:50
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "prt_internal.h"
+
+#define			PRT_OBJECT_C	    1
+#include        <prt_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct prt_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct prt_class_data_s PRT_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        prt_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&prt_Info,
     prt_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						prt Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        prt_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_PRT_CLASS,
-    0,
-    1
+PRT_CLASS_DATA  prt_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PRT_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,22 +163,42 @@ uint16_t		prt_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    prt_Vtbl = {
-    NULL,
-    prt_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    prt_Dealloc,
-    prt_Class,
-    prt_WhoAmI,
-    NULL,			// prt_Enable()
-    NULL,			// prt_Disable(
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))prt_ToDebugString,
-    NULL,			// prt_Assign()
-    NULL,			// prt_Compare()
-    NULL 			// prt_Copy()
+PRT_VTBL     prt_Vtbl = {
+    {
+        &prt_Info,
+        prt_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        prt_Dealloc,
+        prt_Class,
+        prt_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)prt_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)prt_ToDebugString,
+        NULL,			// prt_Enable,
+        NULL,			// prt_Disable,
+        NULL,			// (P_OBJ_ASSIGN)prt_Assign,
+        NULL,			// (P_OBJ_COMPARE)prt_Compare,
+        NULL, 			// (P_OBJ_PTR)prt_Copy,
+        NULL 			// (P_OBJ_HASH)prt_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //prt_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        prt_Info = {
+    "prt",
+    "prt",
+    (OBJ_DATA *)&prt_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&prt_Vtbl
+};
 
 
 

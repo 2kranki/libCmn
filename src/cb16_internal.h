@@ -88,22 +88,22 @@ struct cb16_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    cb16_Vtbl;
+    CB16_VTBL       cb16_Vtbl;
 
 
 
     // Internal Functions
 #ifdef RMW_DEBUG
     bool			cb16_Validate(
-        CB16_DATA       *cbp
+        CB16_DATA       *this
     );
 #endif
     bool            cb16_iGet(
-        CB16_DATA       *cbp,
+        CB16_DATA       *this,
         uint16_t        *pData
     );
     bool            cb16_iPut(
-        CB16_DATA       *cbp,
+        CB16_DATA       *this,
         uint16_t        value
     );
 

@@ -80,21 +80,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    JSONOUT_DATA *     jsonOut_Alloc(
-        uint16_t        stackSize
+    JSONOUT_DATA *  jsonOut_Alloc(
+        void
     )
     {
-        JSONOUT_DATA       *this;
+        JSONOUT_DATA    *this;
         uint32_t        cbSize = sizeof(JSONOUT_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
         this = obj_Alloc( cbSize );
-        obj_setMisc1(this, stackSize);
         
         // Return to caller.
         return this;
@@ -103,12 +98,12 @@ extern "C" {
 
 
     JSONOUT_DATA *     jsonOut_New(
-        uint16_t        stackSize
+        void
     )
     {
         JSONOUT_DATA       *this;
         
-        this = jsonOut_Alloc(stackSize);
+        this = jsonOut_Alloc( );
         if (this) {
             this = jsonOut_Init(this);
         } 
@@ -379,7 +374,7 @@ extern "C" {
         }
 #endif
         
-        pOther = jsonOut_New(obj_getSize(this));
+        pOther = jsonOut_New( );
         if (pOther) {
             eRc = jsonOut_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {

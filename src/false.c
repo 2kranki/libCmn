@@ -318,7 +318,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     false_ToDebugString(
-        FALSE_DATA      *cbp,
+        FALSE_DATA      *this,
         int             indent
     )
     {
@@ -329,7 +329,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -342,16 +342,16 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(False) side=%d ",
-                     cbp,
-                     false_getSize(cbp)
+                     this,
+                     false_getSize(this)
             );
         AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
         if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                    cbp->pData,
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -360,7 +360,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf( str, sizeof(str), " %p(False)}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;

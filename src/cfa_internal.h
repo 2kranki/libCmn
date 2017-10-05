@@ -81,20 +81,20 @@ extern	"C" {
 
     extern
     const
-    OBJ_IUNKNOWN    cfa_Vtbl;
+    CFA_VTBL        cfa_Vtbl;
 
     
     
     
     // Internal Functions
 #ifdef RMW_DEBUG
-    bool		cfa_Validate(
-        CFA_DATA       *cbp
+    bool		    cfa_Validate(
+        CFA_DATA        *this
     );
 #endif
 
-    void        cfa_Dealloc(
-        OBJ_ID      objId
+    void            cfa_Dealloc(
+        OBJ_ID          objId
     );
 
 

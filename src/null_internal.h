@@ -60,7 +60,7 @@ struct null_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    null_Vtbl;
+    NULL_VTBL       null_Vtbl;
 
 
 

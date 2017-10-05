@@ -82,7 +82,7 @@ struct sidx_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    sidx_Vtbl;
+    SIDX_VTBL       sidx_Vtbl;
 
 
 
@@ -91,6 +91,13 @@ struct sidx_data_s	{
         OBJ_ID          objId
     );
 
+    void *          sidx_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
 #ifdef NDEBUG
 #else
     bool			sidx_Validate(

@@ -100,7 +100,7 @@ int         test_u8Array_AddGet01(
     uint8_t         data;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = u8Array_Alloc(0);
+    pObj = u8Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -144,7 +144,7 @@ int         test_u8Array_InsertData01(
     char            *pTest3 = "abdefc";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = u8Array_Alloc(0);
+    pObj = u8Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -201,7 +201,7 @@ int         test_u8Array_InsertData02(
     char            *pTest3 = "abcdef";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = u8Array_Alloc(0);
+    pObj = u8Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -258,7 +258,7 @@ int         test_u8Array_InsertData03(
     char            *pTest3 = "defabc";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = u8Array_Alloc(0);
+    pObj = u8Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -379,7 +379,7 @@ int         test_u8Array_ToCostantString01(
                                 "`abcdefghijklmnopqrstuvwxyz{|}~\\x7F";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = u8Array_Alloc(0);
+    pObj = u8Array_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = u8Array_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );

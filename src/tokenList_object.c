@@ -162,22 +162,24 @@ uint16_t		tokenList_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    tokenList_Vtbl = {
-	&tokenList_Info,
-    tokenList_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    tokenList_Dealloc,
-    tokenList_Class,
-    tokenList_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)tokenList_ToDebugString,
-    NULL,			// tokenList_Enable,
-    NULL,			// tokenList_Disable,
-    NULL,			// (P_OBJ_ASSIGN)tokenList_Assign,
-    NULL,			// (P_OBJ_COMPARE)tokenList_Compare,
-    NULL, 			// (P_OBJ_PTR)tokenList_Copy,
-    NULL 			// (P_OBJ_HASH)tokenList_Hash
+TOKENLIST_VTBL  tokenList_Vtbl = {
+    {
+        &tokenList_Info,
+        tokenList_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        tokenList_Dealloc,
+        tokenList_Class,
+        tokenList_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)tokenList_ToDebugString,
+        NULL,            // tokenList_Enable,
+        NULL,            // tokenList_Disable,
+        NULL,            // (P_OBJ_ASSIGN)tokenList_Assign,
+        NULL,            // (P_OBJ_COMPARE)tokenList_Compare,
+        NULL,             // (P_OBJ_PTR)tokenList_Copy,
+        NULL             // (P_OBJ_HASH)tokenList_Hash
+    }
 };
 
 
@@ -190,8 +192,6 @@ OBJ_INFO        tokenList_Info = {
     (OBJ_DATA *)&tokenList_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

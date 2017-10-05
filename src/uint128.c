@@ -299,40 +299,40 @@ extern "C" {
     //---------------------------------------------------------------
 
     UINT128_DATA *   uint128_Init(
-        UINT128_DATA       *cbp
+        UINT128_DATA       *this
     )
     {
         uint32_t        cbSize;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbSize = obj_getSize(cbp);
-        cbp = (UINT128_DATA *)obj_Init( cbp, cbSize, OBJ_IDENT_UINT128 );
-        if (OBJ_NIL == cbp) {
+        cbSize = obj_getSize(this);
+        this = (UINT128_DATA *)obj_Init(this, cbSize, OBJ_IDENT_UINT128);
+        if (OBJ_NIL == this) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(cbp, cbSize);         // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_UINT128);
-        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&uint128_Vtbl);
+        //obj_setSize(this, cbSize);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_UINT128);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&uint128_Vtbl);
         
-        //cbp->stackSize = obj_getMisc1(cbp);
-        //cbp->pArray = objArray_New( );
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !uint128_Validate( cbp ) ) {
+        if( !uint128_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
@@ -342,24 +342,77 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            uint128_IsEnabled(
-        UINT128_DATA		*cbp
+        UINT128_DATA	*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !uint128_Validate( cbp ) ) {
+        if( !uint128_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (obj_IsEnabled(cbp))
+        if (obj_IsEnabled(this))
             return true;
         
         // Return to caller.
         return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          uint128_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    )
+    {
+        UINT128_DATA    *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !uint128_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return uint128_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pStr);
     }
     
     

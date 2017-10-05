@@ -53,21 +53,6 @@ extern "C" {
 #endif
     
 
-#ifdef NDEBUG
-#else
-    typedef struct lex_to_desc_s {
-        uint32_t            num;
-        const
-        char                *pDesc;
-    } LEX_TO_DESC;
-    static
-    const
-    LEX_TO_DESC     lexTbl[] = {
-        {LEXJ_KWD_FALSE, "KWD_FALSE"},
-        {LEXJ_KWD_NULL, "KWD_NULL"},
-        {LEXJ_KWD_TRUE, "KWD_TRUE"},
-    };
-#endif
 
 
  

@@ -81,6 +81,16 @@ extern "C" {
 
     typedef struct objCb_data_s	OBJCB_DATA;
 
+    typedef struct objCb_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } OBJCB_VTBL;
+    
+    
 
 
 

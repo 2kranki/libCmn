@@ -206,8 +206,6 @@ OBJ_INFO        node_Info = {
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&node_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

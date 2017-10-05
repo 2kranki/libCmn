@@ -686,7 +686,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(this, &tokenList_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&tokenList_Vtbl);
         
         cbSize = HASH_BLOCK_SIZE - sizeof(TOKENLIST_BLOCK);
         cbSize /= sizeof(TOKENLIST_TOKEN);

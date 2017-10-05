@@ -74,7 +74,7 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-    // WSTRARRAY_DATA and WSTRARRAY_VTBL are defined in "cmn.h"
+    // WSTRARRAY_DATA and WSTRARRAY_VTBL are defined in "cmn_defs.h"
 
 
     /****************************************************************

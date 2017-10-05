@@ -93,6 +93,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pStr2 = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
         CRC_DATA        *pCrc = OBJ_NIL;
         uint32_t        crc;
@@ -114,7 +115,10 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+        pStr2 = nodeHash_ToDebugString(pHash, 0);
+        fprintf(stderr, "%s\n", AStr_getData(pStr2));
+        obj_Release(pStr2);
+        pStr2 = OBJ_NIL;
 #endif
 
         eRc = nodeHash_FindA(pHash, "crc", &pNode);
@@ -127,19 +131,25 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - crc should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         else {
             fprintf(stderr, "ERROR - crc is missing!\n");
-            fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
             DEBUG_BREAK();
             goto exit00;
         }
         
-        eRc = nodeHash_FindA(pHash, "length", &pNode);
+        eRc = nodeHash_FindA(pHash, "len", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
@@ -148,21 +158,30 @@ extern "C" {
                 length = (uint32_t)dec_getInt64A(AStr_getData(pStr));
                 if (length == 0) {
                     fprintf(stderr, "ERROR - length must be greater than zero!\n");
-                    fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
                     DEBUG_BREAK();
                     goto exit00;
                 }
             }
             else {
                 fprintf(stderr, "ERROR - length should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         else {
             fprintf(stderr, "ERROR - length is missing!\n");
-            fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
             DEBUG_BREAK();
             goto exit00;
         }
@@ -183,11 +202,14 @@ extern "C" {
                     for (i=0; i<length; ++i) {
                         int         high;
                         int         low;
-                        high = hex_DigitToIntA(AStr_CharGetW(pStr, 2*i));
-                        low  = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+1));
+                        high = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+1));
+                        low  = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+2));
                         if ((high == -1) || (low == -1)) {
                             fprintf(stderr, "ERROR - data contains invalud data!\n");
-                            fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                            pStr2 = nodeHash_ToDebugString(pHash, 0);
+                            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                            obj_Release(pStr2);
+                            pStr2 = OBJ_NIL;
                             DEBUG_BREAK();
                             goto exit00;
                         }
@@ -201,34 +223,50 @@ extern "C" {
                         ;
                     else {
                         fprintf(stderr, "ERROR - crc does not match!\n");
-                        fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                        pStr2 = nodeHash_ToDebugString(pHash, 0);
+                        fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                        obj_Release(pStr2);
+                        pStr2 = OBJ_NIL;
                         DEBUG_BREAK();
                         goto exit00;
                     }
                 }
                 else {
                     fprintf(stderr, "ERROR - data size is wrong!\n");
-                    fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
                     DEBUG_BREAK();
                     goto exit00;
                 }
             }
             else {
                 fprintf(stderr, "ERROR - data should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         else {
             fprintf(stderr, "ERROR - data is missing!\n");
-            fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
             DEBUG_BREAK();
             goto exit00;
         }
         
         // Return to caller.
     exit00:
+        if (pStr) {
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
         if (pFileNode) {
             obj_Release(pFileNode);
             pFileNode = OBJ_NIL;
@@ -239,8 +277,13 @@ extern "C" {
         }
         if (pLength)
             *pLength = length;
-        if (ppData)
+        if (ppData) {
             *ppData = pData;
+        }
+        else {
+            mem_Free(pData);
+            pData = NULL;
+        }
         return eRc;
     }
     
@@ -265,6 +308,61 @@ extern "C" {
         
         // Return to caller.
         return eRc;
+    }
+    
+    
+    
+    ASTR_DATA *     hex_DataToJSON(
+        uint32_t        length,
+        void            *pData
+    )
+    {
+        char            str[256];
+        uint32_t        i;
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        //ASTR_DATA       *pWrk;
+        char            *pChr;
+        char            chrs[12];
+        CRC_DATA        *pCrc = OBJ_NIL;
+        uint32_t        crc;
+        
+        pInfo = hex_Vtbl.iVtbl.pInfo;
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendPrint(pStr, ", \"len\":%d", length);
+        
+        pCrc = crc_New(CRC_TYPE_IEEE_32);
+        crc = crc_AccumBlock(pCrc, length, pData);
+        obj_Release(pCrc);
+        pCrc = OBJ_NIL;
+        AStr_AppendPrint(pStr, ", \"crc\":%d", crc);
+        
+        AStr_AppendA(pStr, ", \"data\":\"");
+        pChr = pData;
+        for (i=0; i<length; ++i) {
+            chrs[0] = hex_DigitToChrA((*pChr >> 4) & 0x0F);
+            chrs[1] = hex_DigitToChrA(*pChr & 0x0F);
+            chrs[2] = '\0';
+            ++pChr;
+            AStr_AppendA(pStr, chrs);
+        }
+        AStr_AppendA(pStr, "\"");
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
     }
     
     

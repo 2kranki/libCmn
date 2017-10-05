@@ -395,7 +395,7 @@ extern "C" {
         }
         //obj_setSize(cbp, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_OBJMATRIX);
-        obj_setVtbl(cbp, &objMatrix_Vtbl);
+        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&objMatrix_Vtbl);
         
         cbp->xMax = x;
         cbp->yMax = y;

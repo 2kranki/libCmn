@@ -478,7 +478,7 @@ extern "C" {
         }
         //obj_setSize(cbp, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_OBJHASH);
-        obj_setVtbl(cbp, &objHash_Vtbl);
+        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&objHash_Vtbl);
         
         cbp->cHash = cHash;
         cbSize = 4096 - sizeof(OBJHASH_BLOCK);

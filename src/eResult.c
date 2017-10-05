@@ -488,7 +488,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(this, &eResult_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&eResult_Vtbl);
         
         this->numErrors = 0;
 

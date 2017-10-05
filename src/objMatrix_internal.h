@@ -66,7 +66,7 @@ struct objMatrix_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    objMatrix_Vtbl;
+    OBJMATRIX_VTBL  objMatrix_Vtbl;
 
 
 

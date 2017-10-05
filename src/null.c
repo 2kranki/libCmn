@@ -231,7 +231,7 @@ extern "C" {
         }
         //obj_setSize(cbp, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_NULL);
-        obj_setVtbl(cbp, &null_Vtbl);
+        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&null_Vtbl);
         
         //cbp->stackSize = obj_getMisc1(cbp);
         //cbp->pArray = objArray_New( );
@@ -353,7 +353,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf(str, sizeof(str), " %p}\n", this);
+        j = snprintf(str, sizeof(str), " %p(Null)}\n", this);
         AStr_AppendA(pStr, str);
         
         return pStr;

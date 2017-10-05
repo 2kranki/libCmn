@@ -74,6 +74,16 @@ extern	"C" {
     typedef struct cfa_data_s   CFA_DATA;
     typedef uint32_t            CFA_INDEX;
 
+    typedef struct cfa_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } CFA_VTBL;
+    
+    
 
 
     /****************************************************************

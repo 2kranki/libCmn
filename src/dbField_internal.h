@@ -77,7 +77,7 @@ struct dbField_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    dbField_Vtbl;
+    DBFIELD_VTBL    dbField_Vtbl;
 
 
 

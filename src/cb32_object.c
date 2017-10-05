@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'cb32'
-//	Generated 09/30/2015 15:50:48
+//	Generated 10/02/2017 12:40:26
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "cb32_internal.h"
+
+#define			CB32_OBJECT_C	    1
+#include        <cb32_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct cb32_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct cb32_class_data_s CB32_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        cb32_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&cb32_Info,
     cb32_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						cb32 Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        cb32_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_CB32_CLASS,
-    0,
-    1
+CB32_CLASS_DATA  cb32_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_CB32_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		cb32_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    cb32_Vtbl = {
-    NULL,
-    cb32_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    cb32_Dealloc,
-    cb32_Class,
-    cb32_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (OBJ_ID (*)(OBJ_ID,int))cb32_ToDebugString,
-    NULL,			// cb32_Enable()
-    NULL,			// cb32_Disable(
-    NULL,			// cb32_Assign()
-    NULL,			// cb32_Compare()
-    NULL 			// cb32_Copy()
+CB32_VTBL     cb32_Vtbl = {
+    {
+        &cb32_Info,
+        cb32_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        cb32_Dealloc,
+        cb32_Class,
+        cb32_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)cb32_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)cb32_ToDebugString,
+        NULL,			// cb32_Enable,
+        NULL,			// cb32_Disable,
+        NULL,			// (P_OBJ_ASSIGN)cb32_Assign,
+        NULL,			// (P_OBJ_COMPARE)cb32_Compare,
+        NULL, 			// (P_OBJ_PTR)cb32_Copy,
+        NULL 			// (P_OBJ_HASH)cb32_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //cb32_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        cb32_Info = {
+    "cb32",
+    "32 bit Circular Buffer",
+    (OBJ_DATA *)&cb32_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&cb32_Vtbl
+};
 
 
 

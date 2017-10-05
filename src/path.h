@@ -72,7 +72,7 @@ extern "C" {
     //****************************************************************
 
 
-    // PATH_DATA and PATH_VTBL are defined in "cmn.h"
+    // PATH_DATA and PATH_VTBL are defined in "cmn_defs.h"
 
 
 

@@ -74,6 +74,13 @@ struct uint128_data_s	{
         OBJ_ID          objId
     );
 
+    void *          uint128_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        const
+        char            *pStr
+    );
+    
 #ifdef NDEBUG
 #else
     bool			uint128_Validate(

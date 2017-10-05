@@ -187,12 +187,10 @@ static
 const
 OBJ_INFO        nodeArray_Info = {
     "nodeArray",
-    "nodeArray",				// <-- Fill in description
+    "Array of Nodes",				
     (OBJ_DATA *)&nodeArray_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

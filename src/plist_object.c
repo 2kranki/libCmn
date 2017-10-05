@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'plist'
-//	Generated 10/18/2015 10:02:08
+//	Generated 10/02/2017 11:48:01
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "plist_internal.h"
+
+#define			PLIST_OBJECT_C	    1
+#include        <plist_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct plist_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct plist_class_data_s PLIST_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        plist_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&plist_Info,
     plist_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						plist Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        plist_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_PLIST_CLASS,
-    0,
-    1
+PLIST_CLASS_DATA  plist_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PLIST_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,23 +163,42 @@ uint16_t		plist_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    plist_Vtbl = {
-    NULL,
-    plist_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    plist_Dealloc,
-    plist_Class,
-    plist_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (OBJ_ID (*)(OBJ_ID,int))plist_ToDebugString,
-    NULL,			// plist_Enable()
-    NULL,			// plist_Disable(
-    NULL,			// plist_Assign()
-    NULL,			// plist_Compare()
-    NULL 			// plist_Copy()
+PLIST_VTBL     plist_Vtbl = {
+    {
+        &plist_Info,
+        plist_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        plist_Dealloc,
+        plist_Class,
+        plist_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)plist_QueryInfo,
+        (P_OBJ_TOSTRING)plist_ToDebugString,
+        NULL,			// plist_Enable,
+        NULL,			// plist_Disable,
+        NULL,			// (P_OBJ_ASSIGN)plist_Assign,
+        NULL,			// (P_OBJ_COMPARE)plist_Compare,
+        NULL, 			// (P_OBJ_PTR)plist_Copy,
+        NULL 			// (P_OBJ_HASH)plist_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //plist_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        plist_Info = {
+    "plist",
+    "plist",
+    (OBJ_DATA *)&plist_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&plist_Vtbl
+};
 
 
 

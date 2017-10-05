@@ -162,22 +162,24 @@ uint16_t		ptrArray_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    ptrArray_Vtbl = {
-	&ptrArray_Info,
-    ptrArray_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    ptrArray_Dealloc,
-    ptrArray_Class,
-    ptrArray_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    NULL,           // (P_OBJ_TOSTRING)ptrArray_ToDebugString,
-    NULL,			// ptrArray_Enable,
-    NULL,			// ptrArray_Disable,
-    NULL,			// (P_OBJ_ASSIGN)ptrArray_Assign,
-    NULL,			// (P_OBJ_COMPARE)ptrArray_Compare,
-    NULL, 			// (P_OBJ_PTR)ptrArray_Copy,
-    NULL 			// (P_OBJ_HASH)ptrArray_Hash
+PTRARRAY_VTBL   ptrArray_Vtbl = {
+    {
+        &ptrArray_Info,
+        ptrArray_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        ptrArray_Dealloc,
+        ptrArray_Class,
+        ptrArray_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        NULL,           // (P_OBJ_TOSTRING)ptrArray_ToDebugString,
+        NULL,            // ptrArray_Enable,
+        NULL,            // ptrArray_Disable,
+        NULL,            // (P_OBJ_ASSIGN)ptrArray_Assign,
+        NULL,            // (P_OBJ_COMPARE)ptrArray_Compare,
+        NULL,             // (P_OBJ_PTR)ptrArray_Copy,
+        NULL             // (P_OBJ_HASH)ptrArray_Hash
+    }
 };
 
 
@@ -186,12 +188,10 @@ static
 const
 OBJ_INFO        ptrArray_Info = {
     "ptrArray",
-    "ptrArray",				// <-- Fill in description
+    "Array of Pointers",
     (OBJ_DATA *)&ptrArray_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

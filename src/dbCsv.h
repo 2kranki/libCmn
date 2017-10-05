@@ -110,6 +110,16 @@ extern "C" {
 
     typedef struct dbCsv_data_s	DBCSV_DATA;
 
+    typedef struct dbCsv_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in fatFCB_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CB_DATA *);
+    } DBCSV_VTBL;
+    
+    
 
 
 

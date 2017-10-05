@@ -192,8 +192,6 @@ OBJ_INFO        nodeHash_Info = {
     (OBJ_DATA *)&nodeHash_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

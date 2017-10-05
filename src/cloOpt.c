@@ -81,20 +81,15 @@ extern "C" {
     //===============================================================
 
     CLOOPT_DATA *     cloOpt_Alloc(
-        uint16_t        stackSize
+        void
     )
     {
-        CLOOPT_DATA       *this;
+        CLOOPT_DATA     *this;
         uint32_t        cbSize = sizeof(CLOOPT_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
         this = obj_Alloc( cbSize );
-        obj_setMisc1(this, stackSize);
         
         // Return to caller.
         return this;
@@ -103,12 +98,12 @@ extern "C" {
 
 
     CLOOPT_DATA *     cloOpt_New(
-        uint16_t        stackSize
+        void
     )
     {
         CLOOPT_DATA       *this;
         
-        this = cloOpt_Alloc(stackSize);
+        this = cloOpt_Alloc( );
         if (this) {
             this = cloOpt_Init(this);
         } 
@@ -379,7 +374,7 @@ extern "C" {
         }
 #endif
         
-        pOther = cloOpt_New(obj_getSize(this));
+        pOther = cloOpt_New( );
         if (pOther) {
             eRc = cloOpt_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {

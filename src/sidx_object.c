@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'sidx'
-//	Generated 09/30/2015 16:10:37
+//	Generated 10/02/2017 11:24:23
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -32,11 +33,36 @@
 
 
 
+#define			SIDX_OBJECT_C	    1
+#include        <sidx_internal.h>
 
-#include        "obj.h"
-#include        "sidx_internal.h"
 
 
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct sidx_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct sidx_class_data_s SIDX_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        sidx_Info;            // Forward Reference
 
 
 
@@ -73,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&sidx_Info,
     sidx_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -85,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						sidx Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        sidx_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_SIDX_CLASS,
-    0,
-    1
+SIDX_CLASS_DATA  sidx_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SIDX_CLASS, 0, 1},
+	//0
 };
 
 
@@ -140,23 +163,42 @@ uint16_t		sidx_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    sidx_Vtbl = {
-    NULL,
-    sidx_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    sidx_Dealloc,
-    sidx_Class,
-    sidx_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)sidx_ToDebugString,
-    NULL,			// sidx_Enable()
-    NULL,			// sidx_Disable(
-    NULL,			// sidx_Assign()
-    NULL,			// sidx_Compare()
-    NULL 			// sidx_Copy()
+SIDX_VTBL     sidx_Vtbl = {
+    {
+        &sidx_Info,
+        sidx_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        sidx_Dealloc,
+        sidx_Class,
+        sidx_WhoAmI,
+        (P_OBJ_QUERYINFO)sidx_QueryInfo,
+        (P_OBJ_TOSTRING)sidx_ToDebugString,
+        NULL,			// sidx_Enable,
+        NULL,			// sidx_Disable,
+        NULL,			// (P_OBJ_ASSIGN)sidx_Assign,
+        NULL,			// (P_OBJ_COMPARE)sidx_Compare,
+        NULL, 			// (P_OBJ_PTR)sidx_Copy,
+        NULL 			// (P_OBJ_HASH)sidx_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //sidx_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        sidx_Info = {
+    "sidx",
+    "Simple Index",
+    (OBJ_DATA *)&sidx_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&sidx_Vtbl
+};
 
 
 

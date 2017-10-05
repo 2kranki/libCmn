@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 8/28/2017 12:44:54.000)
+# (10/ 2/2017 18:45:24.000)
 
 
 LIBNAM=libCmn
@@ -143,21 +143,20 @@ OBJS = $(OBJS) $(OBJDIR)\utf8.obj $(OBJDIR)\utf8_object.obj
 OBJS = $(OBJS) $(OBJDIR)\value.obj $(OBJDIR)\value_object.obj
 OBJS = $(OBJS) $(OBJDIR)\wav.obj $(OBJDIR)\wav_object.obj
 OBJS = $(OBJS) $(OBJDIR)\xml.obj $(OBJDIR)\xml_object.obj
-OBJS = $(OBJS) $(OBJDIR)\hexDataFromJSON.obj
-OBJS = $(OBJS) $(OBJDIR)\hexDataToJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\hexData_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
-OBJS = $(OBJS) $(OBJDIR)\nameFromJSON.obj
-OBJS = $(OBJS) $(OBJDIR)\nodeFromJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\name_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\node_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\obj.obj
 OBJS = $(OBJS) $(OBJDIR)\scandec32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanhex32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanstring.obj
 OBJS = $(OBJS) $(OBJDIR)\scanwhite.obj
 OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
-OBJS = $(OBJS) $(OBJDIR)\srcLocFromJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\srcLoc_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
-OBJS = $(OBJS) $(OBJDIR)\tokenFromJSON.obj
-OBJS = $(OBJS) $(OBJDIR)\valueFromJSON.obj
+OBJS = $(OBJS) $(OBJDIR)\token_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\value_JSON.obj
 
 
 {src}.asm{$(OBJDIR)}.obj:

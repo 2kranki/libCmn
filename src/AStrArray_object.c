@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'AStrArray'
-//	Generated 09/30/2015 16:11:48
+//	Generated 10/02/2017 13:26:39
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,10 +32,37 @@
  */
 
 
-#include        "obj.h"
-#include        "AStrArray_internal.h"
+
+#define			ASTRARRAY_OBJECT_C	    1
+#include        <AStrArray_internal.h>
 
 
+
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct AStrArray_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct AStrArray_class_data_s ASTRARRAY_CLASS_DATA;
+
+
+
+
+//-----------------------------------------------------------
+//                  Class Methods
+//-----------------------------------------------------------
+
+
+
+static
+const
+OBJ_INFO        AStrArray_Info;            // Forward Reference
 
 
 
@@ -71,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-    NULL,
+	&AStrArray_Info,
     AStrArray_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
@@ -83,17 +111,14 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						AStrArray Class Object
+//						Class Object
 //-----------------------------------------------------------
 
 static
 const
-OBJ_DATA        AStrArray_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_ASTRARRAY_CLASS,
-    0,
-    1
+ASTRARRAY_CLASS_DATA  AStrArray_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_ASTRARRAY_CLASS, 0, 1},
+	//0
 };
 
 
@@ -138,24 +163,42 @@ uint16_t		AStrArray_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    AStrArray_Vtbl = {
-    NULL,
-    AStrArray_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    AStrArray_Dealloc,
-    AStrArray_Class,
-    AStrArray_WhoAmI,
-    NULL,
-    NULL, // (OBJ_ID (*)(OBJ_ID,int))AStrArray_ToDebugString,
-    NULL,			// AStrArray_Enable()
-    NULL,			// AStrArray_Disable(
-    NULL,			// AStrArray_Assign()
-    NULL,			// AStrArray_Compare()
-    NULL,			// AStrArray_Copy()
-    NULL 			// AStrArray_Hash()
+ASTRARRAY_VTBL     AStrArray_Vtbl = {
+    {
+        &AStrArray_Info,
+        AStrArray_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        AStrArray_Dealloc,
+        AStrArray_Class,
+        AStrArray_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)AStrArray_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)AStrArray_ToDebugString,
+        NULL,			// AStrArray_Enable,
+        NULL,			// AStrArray_Disable,
+        NULL,			// (P_OBJ_ASSIGN)AStrArray_Assign,
+        NULL,			// (P_OBJ_COMPARE)AStrArray_Compare,
+        NULL, 			// (P_OBJ_PTR)AStrArray_Copy,
+        NULL 			// (P_OBJ_HASH)AStrArray_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //AStrArray_IsEnabled,
+ 
 };
 
+
+
+static
+const
+OBJ_INFO        AStrArray_Info = {
+    "AStrArray",
+    "Array of Ascii Strings",
+    (OBJ_DATA *)&AStrArray_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&AStrArray_Vtbl
+};
 
 
 
