@@ -150,7 +150,7 @@ extern	"C" {
 
     /*! 
      Return the number of active table entries.
-     @return:   If successful, return the number of active entries.
+     @return    If successful, return the number of active entries.
                 Otherwise, return 0 and set the appropriate ERESULT_*
                 error.
      */
@@ -254,14 +254,14 @@ extern	"C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = table_ToDebugString(this,4);
-     @endcode:
-     @param:    this    TABLE_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @endcode
+     @param     this    TABLE_DATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                 description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     table_ToDebugString(
         TABLE_DATA      *this,

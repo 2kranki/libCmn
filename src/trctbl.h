@@ -51,7 +51,7 @@
 #define         TRCTBL_H
 
 
-#include        "cmn.h"
+#include        <cmn_defs.h>
 
 
 

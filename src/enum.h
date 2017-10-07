@@ -133,11 +133,11 @@ extern "C" {
      Return the next arraySize of elements if available in ppVoidArray and set 
      NumReturned to the number of elements returned. If the enumerator has gone 
      past the end, zero will be returned in NumReturned.
-     @param:    this    ENUM object pointer
-     @param:    arraySize size of ppVoidArray
-     @param:    ppVoidArray an array of void pointers which are filled in by this
+     @param     this    ENUM object pointer
+     @param     arraySize size of ppVoidArray
+     @param     ppVoidArray an array of void pointers which are filled in by this
                         this method if any elements are left to enumerate.
-     @return:   If successful ERESULT_SUCCESS and data returned in ppVoidArray
+     @return    If successful ERESULT_SUCCESS and data returned in ppVoidArray
                 with the number of returned elements in pNumReturned, otherwise
                 an ERESULT_* error and 0 in NumReturned.
      */
@@ -152,9 +152,9 @@ extern "C" {
     /*!
      Return the next numSkip of elements in the enumeration. Skipping might put
      the enumerator past the end of the enumeration.
-     @param:    this    ENUM object pointer
-     @param:    numSkip number of elements to skip
-     @return:   If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
+     @param     this    ENUM object pointer
+     @param     numSkip number of elements to skip
+     @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
     ERESULT         enum_Skip(
         ENUM_DATA       *this,
@@ -164,8 +164,8 @@ extern "C" {
     
     /*!
      Reset the enumerator to the beginning of the enumeration.
-     @param:    this    ENUM object pointer
-     @return:   If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
+     @param     this    ENUM object pointer
+     @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
     ERESULT         enum_Reset(
         ENUM_DATA       *this
@@ -175,14 +175,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = enum_ToDebugString(this,4);
-     @endcode:
-     @param:    this    ENUM object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    ENUM object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     enum_ToDebugString(
         ENUM_DATA       *this,

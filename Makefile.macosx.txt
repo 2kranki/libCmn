@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 2/2017 18:45:25.000)
+# (10/ 7/2017  3:54:52.000)
 
 
 LIBNAM=libCmn
@@ -1661,6 +1661,13 @@ TESTS += test_null
 
 test_null:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_null.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_path
+
+test_path:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_path.c 
 	$(OBJDIR)/$(@F)
 
 

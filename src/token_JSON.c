@@ -89,7 +89,7 @@ extern "C" {
         NODEHASH_DATA   *pHash;
         ERESULT         eRc;
         const
-        char            *pFileName = "";
+        char            *pFileName = NULL;
         uint32_t        lineNo = 0;
         uint16_t        colNo = 0;
         int32_t         cls = 0;
@@ -119,7 +119,7 @@ extern "C" {
             pName = node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
                 pStr = node_getData(pNode);
-                pFileName = AStr_CStringA(pStr,NULL);
+                pFileName = AStr_CStringA(pStr, NULL);
             }
             else {
                 fprintf(stderr, "ERROR - fileName should have a string!\n");
@@ -192,7 +192,9 @@ extern "C" {
             }
         }
         if (OBJ_NIL == pType) {
-            mem_Free((void *)pFileName);
+            if (pFileName) {
+                mem_Free((void *)pFileName);
+            }
             obj_Release(pFileNode);
             obj_Release(pParser);
             return OBJ_NIL;

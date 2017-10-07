@@ -222,8 +222,8 @@ extern "C" {
     /*!
      Create a new string from a portion of the current string starting
      at index with len number of characters.
-     @return:   If successful, an WStrC object which must be released,
-     otherwise OBJ_NIL.
+     @return    If successful, an WStrC object which must be released,
+                 otherwise OBJ_NIL.
      */
     WSTRC_DATA *    WStrC_Mid(
         WSTRC_DATA      *this,
@@ -235,7 +235,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     WStrC_ToDebugString(

@@ -103,8 +103,8 @@ extern "C" {
     /*!
      Search the given NULL-terminated Set of Nodes for a node that
      matches the given node using the comparison routine provided.
-     @return:   If successful, the node that matches from the list,
-     otherwise OBJ_NIL.
+     @return    If successful, the node that matches from the list,
+                 otherwise OBJ_NIL.
      */
     NODE_DATA *     nodeArray_MatchSet(
         int             (*pCompare)(NODE_DATA *,NODE_DATA *),
@@ -150,7 +150,7 @@ extern "C" {
     /*!
      Append the contents of the other array to this array. This is
      the same as AddToTop() of each element of the other array.
-     @return:   If successful, return ERESULT_SUCCESSFUL_COMPLETION
+     @return    If successful, return ERESULT_SUCCESSFUL_COMPLETION
                 otherwise an eResult error code.
      */
     ERESULT         nodeArray_Append(
@@ -170,7 +170,7 @@ extern "C" {
      Assign the contents of this array to the other array. The
      contents of the other array are released. Then we simply
      retain them so that they are in both arrays.
-     @return:   If successful, return ERESULT_SUCCESSFUL_COMPLETION
+     @return    If successful, return ERESULT_SUCCESSFUL_COMPLETION
                 otherwise an eResult error code.
      */
     ERESULT         nodeArray_Assign(
@@ -183,8 +183,8 @@ extern "C" {
      Copy this array. Any element of the array that has a copy method
      will have that used to create a new object. Otherwise, the object
      is just retained and added to the new array.
-     @return:   If successful, return a new array that must be released
-     otherwise return OBJ_NIL.
+     @return    If successful, return a new array that must be released
+                 otherwise return OBJ_NIL.
      */
     NODEARRAY_DATA * nodeArray_Copy(
         NODEARRAY_DATA	*this
@@ -193,8 +193,8 @@ extern "C" {
     
     /*!
      Remove the index'th element from the array and return it.
-     @return:   If successful, an object pointer, otherwise OBJ_NIL.
-     @warning: Remember to release the returned object.
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
     NODE_DATA *     nodeArray_Delete(
         NODEARRAY_DATA	*this,
@@ -220,7 +220,7 @@ extern "C" {
     
     /*!
      Find the first occurrence of a node in the array by name.
-     @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION is returned and
+     @return    If successful, ERESULT_SUCCESSFUL_COMPLETION is returned and
                 ppNode will contain the node ptr otherwise an error code
                 will be returned.
      */
@@ -259,7 +259,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     nodeArray_ToDebugString(

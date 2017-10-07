@@ -93,7 +93,7 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to DateTime object if successful, otherwise OBJ_NIL.
+     @return    pointer to DateTime object if successful, otherwise OBJ_NIL.
      */
     DATETIME_DATA *     dateTime_Alloc(
         void
@@ -110,7 +110,13 @@ extern "C" {
     );
     
     
+    DATETIME_DATA *     dateTime_NewFromTimeT(
+        const
+        time_t              time
+    );
 
+    
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
@@ -210,14 +216,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = &P__ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    DateTime object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    DateTime object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    dateTime_ToDebugString(
         DATETIME_DATA   *this,
@@ -227,13 +233,13 @@ extern "C" {
     /*!
      Create a string that has the date formatted as MM/DD/YYYY HH:MM:SS.III.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = dateTime_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    DateTime object pointer
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    DateTime object pointer
+     @return    If successful, an AStr object which must be released containing the
                 string, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    dateTime_ToString(
         DATETIME_DATA   *this

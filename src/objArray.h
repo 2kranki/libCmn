@@ -129,7 +129,7 @@ extern "C" {
 
     /*!
      Add the given element to the end of the array.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
     ERESULT         objArray_AppendObj(
@@ -141,7 +141,7 @@ extern "C" {
     
     /*!
      Add the elements from the other array to the end of the array.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
     ERESULT         objArray_Append(
@@ -154,7 +154,7 @@ extern "C" {
      Assign the contents of this array to the other array. The
      contents of the other array are released. Then we simply
      retain them so that they are in both arrays.
-     @return:   If successful, return ERESULT_SUCCESSFUL_COMPLETION
+     @return    If successful, return ERESULT_SUCCESSFUL_COMPLETION
                 otherwise an eResult error code.
      */
     ERESULT         objArray_Assign(
@@ -167,7 +167,7 @@ extern "C" {
      Copy this array. Any element of the array that has a copy method
      will have that used to create a new object. Otherwise, the object
      is just retained and added to the new array.
-     @return:   If successful, return a new array that must be released
+     @return    If successful, return a new array that must be released
                 otherwise return OBJ_NIL.
      */
     OBJARRAY_DATA * objArray_Copy(
@@ -177,8 +177,8 @@ extern "C" {
     
     /*!
      Remove the index'th element from the array and return it.
-     @return:   If successful, an object pointer, otherwise OBJ_NIL.
-     @warning: Remember to release the returned object.
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
     OBJ_ID          objArray_Delete(
         OBJARRAY_DATA	*this,
@@ -188,8 +188,8 @@ extern "C" {
     
     /*!
      Remove the first element from the array and return it.
-     @return:   If successful, an object pointer, otherwise OBJ_NIL.
-     @warning: Remember to release the returned object.
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
     OBJ_ID          objArray_DeleteFirst(
         OBJARRAY_DATA	*this
@@ -198,8 +198,8 @@ extern "C" {
     
     /*!
      Remove the last element from the array and return it.
-     @return:   If successful, an object pointer, otherwise OBJ_NIL.
-     @warning: Remember to release the returned object.
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
     OBJ_ID          objArray_DeleteLast(
         OBJARRAY_DATA	*this
@@ -208,7 +208,7 @@ extern "C" {
     
     /*!
      Find the nth entry in the array.
-     @return:   If successful, an object pointer, otherwise OBJ_NIL.
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
     OBJ_ID          objArray_Get(
         OBJARRAY_DATA	*this,
@@ -231,10 +231,10 @@ extern "C" {
     
     /*!
      Add the given element after the index'th element of the array.
-     @param:    this    object pointer
-     @param:    index   range is 0 to Size. If 0, then object is added before
+     @param     this    object pointer
+     @param     index   range is 0 to Size. If 0, then object is added before
                         the first object in the array.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
     ERESULT         objArray_InsertObj(
@@ -247,10 +247,10 @@ extern "C" {
     /*!
      Replace index'th element with the given element expanding the array if
      necessary. after the index'th element of the array.
-     @param:    this    object pointer
-     @param:    index   1 to Size. 
-     @param:    pObj    Object Pointer or OBJ_NIL.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+     @param     this    object pointer
+     @param     index   1 to Size.
+     @param     pObj    Object Pointer or OBJ_NIL.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
     ERESULT         objArray_Put(
@@ -265,8 +265,8 @@ extern "C" {
      the objects have a comparison routine that returns the
      ERESULT values of ERESULT_SUCCESS_EQUAL, ERESULT_SUCCESS_LESS_THAN
      or ERESULT_SUCCESS_GREATER_THAN.
-     @param:    this    object pointer
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
     ERESULT         objArray_SortAscending(
@@ -280,7 +280,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *    objArray_ToDebugString(

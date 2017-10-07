@@ -182,10 +182,10 @@ extern "C" {
      Put the given data into the file. If the data size is too big
      for one byte, break the data up into multiple bytes using the 
      endian type.
-     @param:    this    object pointer
-     @param:    data    data to be put into the array
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
-     ERESULT_* error code.
+     @param     this    object pointer
+     @param     value   data to be put into the array
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+                 ERESULT_* error code.
      */
     ERESULT         fbso_PutU8(
         FBSO_DATA		*this,

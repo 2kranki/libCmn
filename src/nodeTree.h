@@ -154,14 +154,14 @@ extern "C" {
     /*!
      Return the index'th child for the parent node.
      Example:
-     @code:
+     @code
      NODE_DATA      *pNode = nodeTree_Child(this,1,0);
-     @endcode:
+     @endcode
      Gets first child for root node.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 1)
-     @param:    index   child index (0 <= index < order)
-     @return:   If successful, an Node object, otherwise OBJ_NIL.
+     @param     this    NODETREE_DATA object pointer
+     @param     parent  parent node index (relative to 1)
+     @param     index   child index (0 <= index < order)
+     @return    If successful, an Node object, otherwise OBJ_NIL.
      */
     NODE_DATA *     nodeTree_Child(
         NODETREE_DATA  *this,
@@ -179,10 +179,10 @@ extern "C" {
      that it resides at in the tree. Child index allows a specific
      child to be set or first available (if 0). To add a root, parent
      and child indices must be 0.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 1)
-     @param:    pNode   Non-null Node pointer to be added as a child
-     @return:   If successful, an Node index, otherwise 0.
+     @param     this    NODETREE_DATA object pointer
+     @param     parent  parent node index (relative to 1)
+     @param     pNode   Non-null Node pointer to be added as a child
+     @return    If successful, an Node index, otherwise 0.
      */
     uint32_t    nodeTree_ChildAdd(
         NODETREE_DATA   *this,
@@ -195,9 +195,9 @@ extern "C" {
      Get the number of next level Children for a specified parent node. This
      only counts the number of children directly attached to the parent not
      any lower levels (ie parent->child->childs_child).
-     @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 0, 0 == root)
-     @return:   If successful, child count and LastError == ERESULT_SUCCESS, 
+     @param     this    NODETREE_DATA object pointer
+     @param     parent  parent node index (relative to 0, 0 == root)
+     @return    If successful, child count and LastError == ERESULT_SUCCESS,
                 otherwise 0 and LastError == ERESULT_* error code.
      */
     uint32_t    nodeTree_ChildCount(
@@ -212,17 +212,16 @@ extern "C" {
      as siblings to that child node. So, all the nodes added will be at the same
      level in the tree.
      Example:
-     @code:
+     @code
      ERESULT        eRc = nodeTree_ChildrenAdd(pObject,1,pNode2,pNode3,NULL);
      Node2 will be a child of the root node and Node3 will be a sibling of
      Node2.
-     @endcode:
-     @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 0, 0 == root)
+     @endcode
+     @param     this    NODETREE_DATA object pointer
+     @param     parent  parent node index (relative to 0, 0 == root)
                         relative to 1. 0 denotes first available child
                         and must be set if parent index is 0.
-     @param:    pNode   Non-null Node pointer to be added as a child
-     @return:   If successful, an Node index, otherwise 0.
+     @return    If successful, an Node index, otherwise 0.
      */
     ERESULT         nodeTree_ChildrenAdd(
         NODETREE_DATA   *this,
@@ -234,10 +233,10 @@ extern "C" {
     /*!
      Move the Parent's Children to the given index at once. This moves the children
      including their children ad infinitum to be the children of the given index.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 1)
-     @param:    index   destination node index (relative to 1)
-     @return:   If successful, an Node index, otherwise 0.
+     @param     this    NODETREE_DATA object pointer
+     @param     parent  parent node index (relative to 1)
+     @param     index   destination node index (relative to 1)
+     @return    If successful, an Node index, otherwise 0.
      */
     ERESULT         nodeTree_ChildrenMove(
         NODETREE_DATA   *this,
@@ -259,9 +258,9 @@ extern "C" {
     
     /*!
      Delete the given tree node and its children.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    index   node index (relative to 1)
-     @return:   If successful, an Node index, otherwise 0.
+     @param     this    NODETREE_DATA object pointer
+     @param     index   node index (relative to 1)
+     @return    If successful, an Node index, otherwise 0.
      */
     ERESULT     nodeTree_NodeDelete(
         NODETREE_DATA   *this,
@@ -273,11 +272,11 @@ extern "C" {
      Link the given tree node as a child of the specified parent.
      This method is the means to link nodes created with NodeNew()
      back into the main tree. 
-     @param:    this    NODETREE_DATA object pointer
-     @param:    parent  parent node index (relative to 1)
-     @param:    index   child index (2 <= index <= order) This index is
+     @param     this    NODETREE_DATA object pointer
+     @param     parent  parent node index (relative to 1)
+     @param     index   child index (2 <= index <= order) This index is
                         relative to 1.
-     @return:   If successful, an Node index, otherwise 0.
+     @return    If successful, an Node index, otherwise 0.
      */
     ERESULT     nodeTree_NodeLinkChild(
         NODETREE_DATA   *this,
@@ -290,10 +289,10 @@ extern "C" {
      Add the given node to the tree without linking it in the main tree.
      This allows us to create a sub-tree that we can then merge back
      into the main tree using NodeLinkChild().
-     @param:    this    NODETREE_DATA object pointer
-     @param:    pNode   Non-null Node pointer to be added as a child
-     @return:   If successful, a Node index, otherwise 0.
-     @warning:  If we fail to add this node into the main tree, then
+     @param     this    NODETREE_DATA object pointer
+     @param     pNode   Non-null Node pointer to be added as a child
+     @return    If successful, a Node index, otherwise 0.
+     @warning   If we fail to add this node into the main tree, then
                 we will lose it and its subtree for other processing.
      */
     uint32_t    nodeTree_NodeNew(
@@ -306,13 +305,13 @@ extern "C" {
      Create a new node and add it to the tree without linking it in 
      the main tree.  This allows us to create a sub-tree that we can
      then merge back into the main tree using NodeLinkChild().
-     @param:    this    NODETREE_DATA object pointer
-     @param:    pName   Non-null NAME_DATA pointer
-     @param:    cls     Node class
-     @param:    pData   Optional Object to be associated with the new
+     @param     this    NODETREE_DATA object pointer
+     @param     pName   Non-null NAME_DATA pointer
+     @param     cls     Node class
+     @param     pData   Optional Object to be associated with the new
                         Node
-     @return:   If successful, a Node index, otherwise 0.
-     @warning:  If we fail to add this node into the main tree, then
+     @return    If successful, a Node index, otherwise 0.
+     @warning   If we fail to add this node into the main tree, then
                 we will lose it and its subtree for other processing.
      */
     uint32_t    nodeTree_NodeNewUTF8(
@@ -367,13 +366,13 @@ extern "C" {
     /*!
      Given a node return its next sibling.
      Example:
-     @code:
+     @code
      NODE_DATA      *pNode = nodeTree_SiblingNext(this,3);
-     @endcode:
+     @endcode
      Gets the next sibling for node 3.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    sibling current sibling node index (relative to 1)
-     @return:   If successful, an Node object, otherwise OBJ_NIL.
+     @param     this    NODETREE_DATA object pointer
+     @param     sibling current sibling node index (relative to 1)
+     @return    If successful, an Node object, otherwise OBJ_NIL.
      */
     NODE_DATA *  nodeTree_SiblingNext(
         NODETREE_DATA   *this,
@@ -384,14 +383,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = nodeTree_ToDebugString(pObject,4);
-     @endcode:
-     @param:    this    NODETREE_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @endcode
+     @param     this    NODETREE_DATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                 description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     nodeTree_ToDebugString(
         NODETREE_DATA   *this,
@@ -431,11 +430,11 @@ extern "C" {
     /*!
      Visit the root (or current node) then visit each child recursively.
      This is also known as a depth-first traversal.
-     @param:    this     NODETREE_DATA object pointer
-     @param:    pVisitor Function pointer to the routine called as each
-     node is visited
-     @return:   If successful, ERESULT_SUCCESS otherwise an ERESULT_*
-     error.
+     @param     this     NODETREE_DATA object pointer
+     @param     pVisitor Function pointer to the routine called as each
+                 node is visited
+     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
+                 error.
      */
     ERESULT         nodeTree_VisitBreadthFirst(
         NODETREE_DATA	*this,
@@ -480,10 +479,10 @@ extern "C" {
     /*!
      Visit the root (or current node) then visit each child recursively.
      This is also known as a depth-first traversal.
-     @param:    this     NODETREE_DATA object pointer
-     @param:    pVisitor Function pointer to the routine called as each
+     @param     this     NODETREE_DATA object pointer
+     @param     pVisitor Function pointer to the routine called as each
                         node is visited
-     @return:   If successful, ERESULT_SUCCESS otherwise an ERESULT_*
+     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
                 error.
      */
     ERESULT         nodeTree_VisitPreorder(

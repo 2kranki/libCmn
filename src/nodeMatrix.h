@@ -100,7 +100,7 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to nodeMatrix object if successful, otherwise OBJ_NIL.
+     @return    pointer to nodeMatrix object if successful, otherwise OBJ_NIL.
      */
     NODEMATRIX_DATA * nodeMatrix_Alloc(
         void
@@ -139,13 +139,13 @@ extern "C" {
      this -> other).  Any objects in other will be released before
      a copy of the object is performed.
      Example:
-     @code:
+     @code
      ERESULT    eRc = nodeMatrix__Assign(this,pOther);
-     @endcode:
-     @param:    this    NODEMATRIX_DATA object pointer
-     @param:    pOther  a pointer to another NODEMATRIX_DATA object
-     @return:   If successful, ERESULT_SUCCESS otherwise an
-     ERESULT_* error
+     @endcode
+     @param     this    NODEMATRIX_DATA object pointer
+     @param     pOther  a pointer to another NODEMATRIX_DATA object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                 ERESULT_* error
      */
     ERESULT         nodeMatrix_Assign(
         NODEMATRIX_DATA	*this,
@@ -156,13 +156,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
      NODEMATRIX_DATA    *pCopy = nodeMatrix_Copy(this);
-     @endcode:
-     @param:    this    NODEMATRIX_DATA object pointer
-     @return:   If successful, an NODEMATRIX_DATA object which must be released,
-     otherwise OBJ_NIL.
-     @warning: Remember to release the returned the OBJMATRIX_DATA object.
+     @endcode
+     @param     this    NODEMATRIX_DATA object pointer
+     @return    If successful, an NODEMATRIX_DATA object which must be released,
+                 otherwise OBJ_NIL.
+     @warning   Remember to release the returned the OBJMATRIX_DATA object.
      */
     NODEMATRIX_DATA * nodeMatrix_Copy(
         NODEMATRIX_DATA	*this
@@ -194,14 +194,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = nodeMatrix_ToDebugString(pObject,4);
-     @endcode:
-     @param:    this    NODEMATRIX_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    NODEMATRIX_DATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    nodeMatrix_ToDebugString(
         NODEMATRIX_DATA *this,

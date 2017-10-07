@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 2/2017 18:45:24.000)
+# (10/ 7/2017  3:54:51.000)
 
 
 LIBNAM=libCmn
@@ -418,6 +418,14 @@ TESTS = $(TESTS) test_null
 
 test_null:
 	$(CC) $(CFLAGS) /Itests tests\test_null.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_path
+
+test_path:
+	$(CC) $(CFLAGS) /Itests tests\test_path.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

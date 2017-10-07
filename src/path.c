@@ -834,6 +834,60 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          D a t e s
+    //---------------------------------------------------------------
+    
+    ERESULT         path_DateLastUpdated(
+       PATH_DATA        *this,
+       DATETIME_DATA    **ppDate
+    )
+    {
+        char            *pStr = NULL;
+#ifdef __MACOSX_ENV__
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
+        DATETIME_DATA   *pTime = OBJ_NIL;
+        
+        // Do initialization.
+        if (ppDate) {
+            *ppDate = pTime;
+        }
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pStr = (char *)AStr_getData((ASTR_DATA *)this);
+#ifdef __MACOSX_ENV__
+        iRc = stat(pStr, &statBuffer);
+        if (0 == iRc) {
+            pTime = dateTime_NewFromTimeT(statBuffer.st_mtimespec.tv_sec);
+            if (pTime) {
+                eRc = ERESULT_SUCCESS;
+                if (ppDate) {
+                    *ppDate = pTime;
+                }
+            }
+            else {
+                eRc = ERESULT_GENERAL_FAILURE;
+            }
+        }
+        else
+            eRc = ERESULT_PATH_NOT_FOUND;
+#endif
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 

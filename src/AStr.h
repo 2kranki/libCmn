@@ -139,10 +139,10 @@ extern "C" {
      Create a new string from a string escaping double parens and backslash
      characters so that the new string may be used directly in a string
      constant within a program.
-     @param:    this    object pointer
-     @return:   If successful, an AStr object which must be released,
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released,
                  otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *    AStr_NewParenthesizedFromAStr(
         ASTR_DATA       *this
@@ -335,8 +335,8 @@ extern "C" {
     /*!
      Compare the given string against 'this' from the right hand side of the string
      (ie compare the trailing part of the string)
-     @param:    this    object pointer
-     @return:   If str == const, ERESULT_SUCCESS_EQUAL. Otherwise, ERESULT_SUCCESS_LESS_THAN,
+     @param     this    object pointer
+     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise, ERESULT_SUCCESS_LESS_THAN,
                 ERESULT_SUCCESS_GREATER_THAN or an ERESULT_* error code.
                 otherwise, an ERESULT_* Error Code.
      */
@@ -395,8 +395,8 @@ extern "C" {
     /*!
      Checks the string to see if it only contains ASCII characters 
      (ie no wide characters).
-     @param:    this    object pointer
-     @return:   If string contains only ASCII, ERESULT_SUCCESS,
+     @param     this    object pointer
+     @return    If string contains only ASCII, ERESULT_SUCCESS,
                 otherwise, an ERESULT_* Error Code.
      */
     ERESULT         AStr_IsOnlyASCII(
@@ -429,13 +429,13 @@ extern "C" {
     /*!
      Create a new string that consists of the right-most characters of the current
      string.
-     @param:    this    object pointer
-     @param:    len     number of characters on the right of the current string
-     @param:    ppOther returned string object pointer
-     @return:   If successful, an AStr object which must be released is placed in
+     @param     this    object pointer
+     @param     len     number of characters on the right of the current string
+     @param     ppOther returned string object pointer
+     @return    If successful, an AStr object which must be released is placed in
                 *ppOther and ERESULT_SUCCESS is returned, otherwise an ERESULT_*
                 error is returned.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ERESULT         AStr_Right(
         ASTR_DATA		*this,
@@ -455,10 +455,10 @@ extern "C" {
     /*!
      Convert this string to an ascii character constant format using escape
      sequences for non-printable character.
-     @param:    this    object pointer
-     @return:   If successful, an AStr object which must be released,
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     AStr_ToChrCon(
         ASTR_DATA       *this
@@ -474,14 +474,14 @@ extern "C" {
      Create a string that describes this object and the
      objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = AStr_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released,
+     @endcode
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     AStr_ToDebugString(
         ASTR_DATA      *this,
@@ -496,9 +496,9 @@ extern "C" {
     
     /*!
      Create a JSON string that describes this object.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     AStr_ToJSON(
         ASTR_DATA       *this
@@ -508,7 +508,7 @@ extern "C" {
     /*!
      Create a new string from the current one that is translated to
      upper case.
-     @return:   If successful, an new AStr object which must be released,
+     @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     AStr_ToUpper(

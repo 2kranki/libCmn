@@ -104,7 +104,7 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to nodeATree object if successful, otherwise OBJ_NIL.
+     @return    pointer to nodeATree object if successful, otherwise OBJ_NIL.
      */
     NODEATREE_DATA *     nodeATree_Alloc(
         void
@@ -114,15 +114,10 @@ extern "C" {
     /*!
      Create a new tree of given order. An order of 2 gives a binary tree,
      3 gives a ternary tree, etc.
-     Example:
-     @code:
-     ASTR_DATA      *pDesc = nodeATree_ToDebugString(this,4);
-     @endcode:
-     @param:    this    nodeATree object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @param     order  number of children per node
+     @return    If successful, an nodeATree object which must be released,
+                 otherwise OBJ_NIL.
+     @warning   Remember to release the returned nodeATree object.
      */
     NODEATREE_DATA * nodeATree_New(
         uint16_t    order
@@ -158,14 +153,14 @@ extern "C" {
     /*!
      Return the index'th child for the parent node.
      Example:
-     @code:
+     @code
      NODE_DATA      *pNode = nodeATree_Child(this,1,0);
-     @endcode:
+     @endcode
      Gets first child for root node.
-     @param:    this    nodeATree object pointer
-     @param:    parent  parent node index (relative to 1)
-     @param:    index   child index (0 <= index < order)
-     @return:   If successful, an Node object, otherwise OBJ_NIL.
+     @param     this    nodeATree object pointer
+     @param     parent  parent node index (relative to 1)
+     @param     index   child index (0 <= index < order)
+     @return    If successful, an Node object, otherwise OBJ_NIL.
      */
     NODE_DATA *  nodeATree_Child(
         NODEATREE_DATA *this,
@@ -183,13 +178,13 @@ extern "C" {
      that it resides at in the tree. Child index allows a specific
      child to be set or first available (if 0). To add a root, parent
      and child indices must be 0.
-     @param:    this    nodeATree object pointer
-     @param:    parent  parent node index (relative to 0, 0 == root)
-     @param:    index   child index (0 <= index <= order) This index is
+     @param     this    nodeATree object pointer
+     @param     parent  parent node index (relative to 0, 0 == root)
+     @param     index   child index (0 <= index <= order) This index is
                         relative to 1. 0 denotes first available child
                         and must be set if parent index is 0.
-     @param:    pNode   Non-null Node pointer to be added as a child
-     @return:   If successful, an Node index, otherwise 0.
+     @param     pNode   Non-null Node pointer to be added as a child
+     @return    If successful, an Node index, otherwise 0.
      */
     uint32_t    nodeATree_ChildAdd(
         NODEATREE_DATA *this,
@@ -220,14 +215,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = nodeATree_ToDebugString(this,4);
-     @endcode:
-     @param:    this    nodeATree object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    nodeATree object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    nodeATree_ToDebugString(
         NODEATREE_DATA  *this,

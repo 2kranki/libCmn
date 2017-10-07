@@ -152,7 +152,7 @@ extern "C" {
      Copy the hash. Any element of the Hash that has a copy method
      will have that used to create a new object. Otherwise, the object
      is just retained and added to the new hash.
-     @return:   If successful, return a new hash table that must be released
+     @return    If successful, return a new hash table that must be released
                 otherwise return OBJ_NIL.
      */
     NODEHASH_DATA * nodeHash_Copy(
@@ -207,7 +207,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     nodeHash_ToDebugString(

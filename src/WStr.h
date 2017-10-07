@@ -454,10 +454,10 @@ extern "C" {
     /*!
      Convert this string to an ascii character constant format using escape
      sequences for non-printable character.
-     @param:    this    object pointer
-     @return:   If successful, an AStr object which must be released,
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     WStr_ToChrCon(
         WSTR_DATA       *this
@@ -468,14 +468,14 @@ extern "C" {
      Create a string that describes this object and the
      objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = WStr_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @endcode
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released,
+                 otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     WStr_ToDebugString(
         WSTR_DATA       *this,
@@ -493,9 +493,9 @@ extern "C" {
     
     /*!
      Create a JSON string that describes this object.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     WStr_ToJSON(
         WSTR_DATA       *this

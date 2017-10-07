@@ -185,6 +185,7 @@
         "test_name.c":null,
         "test_node.c":null,
         "test_null.c":null,
+        "test_path.c":null,
         "test_psxCond.c":null,
         "test_psxLock.c":null,
         "test_psxMutex.c":null,

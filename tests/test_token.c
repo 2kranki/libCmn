@@ -64,7 +64,7 @@ int         tearDown(
 
 
 
-int         test_token_OpenClose00(
+int         test_token_OpenClose(
     const
     char        *pTestName
 )
@@ -90,7 +90,7 @@ int         test_token_OpenClose00(
 
 
 
-int         test_token_OpenClose01(
+int         test_token_JSON01(
     const
     char        *pTestName
 )
@@ -98,7 +98,7 @@ int         test_token_OpenClose01(
     TOKEN_DATA	*pObj = OBJ_NIL;
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con = "{\"objectType\":\"token\","
+    char        *pJSON_Con =    "{\"objectType\":\"token\","
                                 "\"FileName\":\"abc\","
                                 "\"LineNo\":52,"
                                 "\"ColNo\":22,"
@@ -139,7 +139,7 @@ int         test_token_OpenClose01(
 
         pStr = token_ToJSON(pToken);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        //fprintf(stderr, "%s\n", AStr_getData(pStr));
+        //fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
         eRc = AStr_CompareA(pStr, pJSON_Con);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
@@ -158,7 +158,7 @@ int         test_token_OpenClose01(
 
 
 
-int         test_token_OpenClose02(
+int         test_token_JSON02(
     const
     char        *pTestName
 )
@@ -166,7 +166,7 @@ int         test_token_OpenClose02(
     TOKEN_DATA	*pObj = OBJ_NIL;
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con = "{\"objectType\":\"token\","
+    char        *pJSON_Con =    "{\"objectType\":\"token\","
                                 "\"FileName\":\"abc\","
                                 "\"LineNo\":52,"
                                 "\"ColNo\":22,"
@@ -207,7 +207,7 @@ int         test_token_OpenClose02(
         
         pStr = token_ToJSON(pToken);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        //fprintf(stderr, "%s\n", AStr_getData(pStr));
+        //fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
         eRc = AStr_CompareA(pStr, pJSON_Con);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
@@ -226,7 +226,7 @@ int         test_token_OpenClose02(
 
 
 
-int         test_token_OpenClose03(
+int         test_token_JSON03(
     const
     char        *pTestName
 )
@@ -234,13 +234,13 @@ int         test_token_OpenClose03(
     TOKEN_DATA	*pObj = OBJ_NIL;
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con = "{\"objectType\":\"token\","
-    "\"FileName\":\"abc\","
-    "\"LineNo\":52,"
-    "\"ColNo\":22,"
-    "\"Class\":11,"
-    "\"Type\":\"STRING\","
-    "\"Data\":\"12345\"}\n";
+    char        *pJSON_Con =    "{\"objectType\":\"token\","
+                                "\"FileName\":\"abc\","
+                                "\"LineNo\":52,"
+                                "\"ColNo\":22,"
+                                "\"Class\":11,"
+                                "\"Type\":\"STRING\","
+                                "\"Data\":\"12345\"}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     WSTR_DATA   *pStrW;
@@ -281,7 +281,7 @@ int         test_token_OpenClose03(
         
         pStr = token_ToJSON(pToken);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        //fprintf(stderr, "%s\n", AStr_getData(pStr));
+        //fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
         eRc = AStr_CompareA(pStr, pJSON_Con);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
@@ -300,7 +300,7 @@ int         test_token_OpenClose03(
 
 
 
-int         test_token_OpenClose04(
+int         test_token_JSON04(
     const
     char        *pTestName
 )
@@ -308,13 +308,13 @@ int         test_token_OpenClose04(
     TOKEN_DATA	*pObj = OBJ_NIL;
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con = "{\"objectType\":\"token\","
-    "\"FileName\":\"abc\","
-    "\"LineNo\":52,"
-    "\"ColNo\":22,"
-    "\"Class\":11,"
-    "\"Type\":\"STRING\","
-    "\"Data\":\"12345\"}\n";
+    char        *pJSON_Con =    "{\"objectType\":\"token\","
+                                "\"FileName\":\"\","
+                                "\"LineNo\":52,"
+                                "\"ColNo\":22,"
+                                "\"Class\":11,"
+                                "\"Type\":\"STRING\","
+                                "\"Data\":\"12345\"}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     WSTR_DATA   *pStrW;
@@ -322,11 +322,12 @@ int         test_token_OpenClose04(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = token_InitStrA(pObj, "abc", 52, 22, 11, "12345");
+    pObj = token_InitStrA(pObj, "", 52, 22, 11, "12345");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pObj))) );
+        //fprintf(stderr, "\tFileName = %s\n", token_getFileName(pObj));
+        XCTAssertTrue( (0 == strcmp("", token_getFileName(pObj))) );
         XCTAssertTrue( (52 == token_getLineNo(pObj)) );
         XCTAssertTrue( (22 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
@@ -344,7 +345,7 @@ int         test_token_OpenClose04(
         
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pToken))) );
+        XCTAssertTrue( (0 == strcmp("", token_getFileName(pToken))) );
         XCTAssertTrue( (52 == token_getLineNo(pToken)) );
         XCTAssertTrue( (22 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
@@ -355,7 +356,7 @@ int         test_token_OpenClose04(
         
         pStr = token_ToJSON(pToken);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        //fprintf(stderr, "%s\n", AStr_getData(pStr));
+        //fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
         eRc = AStr_CompareA(pStr, pJSON_Con);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
@@ -376,11 +377,11 @@ int         test_token_OpenClose04(
 
 
 TINYTEST_START_SUITE(test_token);
-  TINYTEST_ADD_TEST(test_token_OpenClose04,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_OpenClose03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_OpenClose02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_OpenClose01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_OpenClose00,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_token_JSON04,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_token_JSON03,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_token_JSON02,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_token_JSON01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_token_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_token);

@@ -162,12 +162,12 @@ extern "C" {
      Push the given character onto the stack for retrieval on the next Getc or
      Getwc.
      Example:
-     @code:
+     @code
      ERESULT      eRc = fbsi_Push(pObj,'/');
-     @endcode:
-     @param:    this    fbsi object pointer
-     @param:    chr     character to be pushed
-     @return:   If successful, ERESULT_SUCCESS is returned, otherwise an
+     @endcode
+     @param     this    fbsi object pointer
+     @param     chr     character to be pushed
+     @return    If successful, ERESULT_SUCCESS is returned, otherwise an
                 ERESULT error code is returned.
      */
     ERESULT         fbsi_Push(
@@ -179,14 +179,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = fbsi_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    fat16 object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @endcode
+     @param     this    fat16 object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                 description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     fbsi_ToDebugString(
         FBSI_DATA       *this,

@@ -195,11 +195,11 @@ extern "C" {
     /*!
      Initialize the object with a supplied routine and its object pointer. 
      The function overrides the file/stream file output if it is present.
-     @param:    pLineOut is a pointer to a function that accepts the line of
+     @param     pLineOut is a pointer to a function that accepts the line of
                 data and does something with it.
-     @param:    pLineOutObj is the object pointer to be passed to the pLineOut
+     @param     pLineOutObj is the object pointer to be passed to the pLineOut
                 function when it is called.
-     @return:   If successful, a TRACE_DATA pointer otherwise OBJ_NIL
+     @return    If successful, a TRACE_DATA pointer otherwise OBJ_NIL
      */
     TRACE_DATA *    trace_InitLineOut(
         TRACE_DATA      *this,
@@ -216,9 +216,9 @@ extern "C" {
      Initialize the object with the given open file stream. The stream is
      used to output the trace data. It is not closed when this object is
      released.
-     @param:    pTraceFile stream file pointer. If NULL, then stderr will
+     @param     pTraceFile stream file pointer. If NULL, then stderr will
                 be used.
-     @return:   If successful, a TRACE_DATA pointer otherwise OBJ_NIL
+     @return    If successful, a TRACE_DATA pointer otherwise OBJ_NIL
      */
     TRACE_DATA *     trace_InitStream(
         TRACE_DATA      *this,

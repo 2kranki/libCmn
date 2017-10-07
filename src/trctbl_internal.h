@@ -32,8 +32,8 @@
 #define	TRCTBL_INTERNAL_H
 
 
-#include    "cmn.h"
-#include    "trctbl.h"
+#include    <cmn_defs.h>
+#include    <trctbl.h>
 
 
 #ifdef	__cplusplus

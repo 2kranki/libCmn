@@ -184,12 +184,12 @@ extern "C" {
      Create a new token object with the given parameter of a String Token Number.
      Normally, String Token Numbers are indexes into an szTbl object that will 
      return the string.
-     @param:    pFileName pointer to a nul-terminated path character string (optional)
-     @param:    lineNo  Line Number for the start of the token
-     @param:    colNo   Column Number for the start of the token
-     @param:    cls     Token class (see PPLEX.H for examples)
-     @param:    token   Token String Number (probably returned by szTbl)
-     @return:   If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
+     @param     pFileName pointer to a nul-terminated path character string (optional)
+     @param     lineNo  Line Number for the start of the token
+     @param     colNo   Column Number for the start of the token
+     @param     cls     Token class (see PPLEX.H for examples)
+     @param     token   Token String Number (probably returned by szTbl)
+     @return    If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
      */
     TOKEN_DATA *     token_NewStrToken(
         const
@@ -352,8 +352,7 @@ extern "C" {
 
     /*!
      Assign this to pOther (ie Other = this;)
-     @return:
-        ERESULT_SUCCESSFUL_COMPLETION
+     @return        ERESULT_SUCCESS
      */
     ERESULT         token_Assign(
         TOKEN_DATA       *this,
@@ -364,7 +363,7 @@ extern "C" {
     /*!
      Compare this token with the other specified. Only
      the type and the actual value are compared.
-     @return:   
+     @return
         ERESULT_SUCCESS_LESS_THAN    (this < pOther)
         ERESULT_SUCCESS_EQUAL        (this == pOther)
         ERESULT_SUCCESS_GREATER_THAN (this > pOther)
@@ -494,13 +493,13 @@ extern "C" {
      Initialize the object with the given parameter of a String Token Number.
      Normally, String Token Numbers are indexes into an szTbl object that
      will return the string.
-     @param:    this    TOKEN_DATA object pointer (released if an error occurs)
-     @param:    pFileName pointer to a nul-terminated path character string
-     @param:    lineNo  Line Number for the start of the token
-     @param:    colNo   Column Number for the start of the token
-     @param:    cls     Token class (see PPLEX.H for examples)
-     @param:    token   Token String Number (probably returned by szTbl)
-     @return:   If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
+     @param     this    TOKEN_DATA object pointer (released if an error occurs)
+     @param     pFileName pointer to a nul-terminated path character string
+     @param     lineNo  Line Number for the start of the token
+     @param     colNo   Column Number for the start of the token
+     @param     cls     Token class (see PPLEX.H for examples)
+     @param     token   Token String Number (probably returned by szTbl)
+     @return    If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
      */
     TOKEN_DATA *    token_InitStrToken(
         TOKEN_DATA      *this,
@@ -535,12 +534,12 @@ extern "C" {
      Set the general parameters of the token at once releasing any prior
      data retained.
      Example:
-     @code:
+     @code
      ERESULT      eRc = token_SetFnLCC(this,"zyzzy",256,16,CLASS_TERMINAL);
-     @endcode:
-     @param:    this    TOKEN_DATA object pointer
-     @param:    pFileName  pointer to a nul-terminated path character string
-     @return:   If successful, ERESULT_SUCCESS otherwise an ERESULT_* error code
+     @endcode
+     @param     this    TOKEN_DATA object pointer
+     @param     pFileName  pointer to a nul-terminated path character string
+     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_* error code
      */
     ERESULT         token_SetupFnLCC(
         TOKEN_DATA      *this,
@@ -567,9 +566,9 @@ extern "C" {
     /*!
      Create a string of the token data in string format. This returns
      just the data, not any other fields such a filename, line or col.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     token_ToDataString(
         TOKEN_DATA      *this
@@ -578,9 +577,9 @@ extern "C" {
     
     /*!
      Create a JSON string that describes this object.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     token_ToJSON(
         TOKEN_DATA      *this
@@ -590,14 +589,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = token_ToDebugString(this,4);
-     @endcode:
-     @param:    this    TOKEN_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @endcode
+     @param     this    TOKEN_DATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                 description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     token_ToDebugString(
         TOKEN_DATA      *this,

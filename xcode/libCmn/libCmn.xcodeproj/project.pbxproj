@@ -427,7 +427,6 @@
 		C467081A1C6BAE0D0091FC0E /* objHashTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C467079D1C6BAE0D0091FC0E /* objHashTest.m */; };
 		C467081B1C6BAE0D0091FC0E /* objMatrixTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C467079E1C6BAE0D0091FC0E /* objMatrixTest.m */; };
 		C467081C1C6BAE0D0091FC0E /* objTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C467079F1C6BAE0D0091FC0E /* objTest.m */; };
-		C46708201C6BAE0D0091FC0E /* pathTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707A31C6BAE0D0091FC0E /* pathTest.m */; };
 		C46708271C6BAE0D0091FC0E /* plistTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707AA1C6BAE0D0091FC0E /* plistTest.m */; };
 		C467082E1C6BAE0D0091FC0E /* ptrArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707B11C6BAE0D0091FC0E /* ptrArrayTest.m */; };
 		C46708301C6BAE0D0091FC0E /* pwr2ArrayTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C46707B31C6BAE0D0091FC0E /* pwr2ArrayTest.m */; };
@@ -1002,7 +1001,6 @@
 		C467079D1C6BAE0D0091FC0E /* objHashTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = objHashTest.m; sourceTree = "<group>"; };
 		C467079E1C6BAE0D0091FC0E /* objMatrixTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = objMatrixTest.m; sourceTree = "<group>"; };
 		C467079F1C6BAE0D0091FC0E /* objTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = objTest.m; sourceTree = "<group>"; };
-		C46707A31C6BAE0D0091FC0E /* pathTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pathTest.m; sourceTree = "<group>"; };
 		C46707AA1C6BAE0D0091FC0E /* plistTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = plistTest.m; sourceTree = "<group>"; };
 		C46707B11C6BAE0D0091FC0E /* ptrArrayTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ptrArrayTest.m; sourceTree = "<group>"; };
 		C46707B31C6BAE0D0091FC0E /* pwr2ArrayTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pwr2ArrayTest.m; sourceTree = "<group>"; };
@@ -1733,7 +1731,6 @@
 				C4694B1B1D89A9C10066F924 /* objListTest.m */,
 				C467079E1C6BAE0D0091FC0E /* objMatrixTest.m */,
 				C467079F1C6BAE0D0091FC0E /* objTest.m */,
-				C46707A31C6BAE0D0091FC0E /* pathTest.m */,
 				C46707AA1C6BAE0D0091FC0E /* plistTest.m */,
 				C43F4FF21EE087E900A8AA0B /* prtTest.m */,
 				C46707B11C6BAE0D0091FC0E /* ptrArrayTest.m */,
@@ -2425,7 +2422,6 @@
 				C467084F1C6BAE0D0091FC0E /* u32ArrayTest.m in Sources */,
 				C445DA0C1F2F8FBE0066ED6D /* crcTest.m in Sources */,
 				C4AF15C11C6CE5DE0098171F /* asciiTest.m in Sources */,
-				C46708201C6BAE0D0091FC0E /* pathTest.m in Sources */,
 				C467073C1C6BA6D90091FC0E /* AStrTest.m in Sources */,
 				C467080B1C6BAE0D0091FC0E /* memOSXTest.m in Sources */,
 				C46708441C6BAE0D0091FC0E /* tokenListTest.m in Sources */,

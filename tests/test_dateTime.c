@@ -95,9 +95,11 @@ int         test_dateTime_Current(
 )
 {
     DATETIME_DATA       *pObj = OBJ_NIL;
+    DATETIME_DATA       *pObj2 = OBJ_NIL;
     time_t              current;
     struct tm           *pTime;
     int16_t             work;
+    ASTR_DATA           *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     current = time(NULL);
@@ -108,6 +110,11 @@ int         test_dateTime_Current(
     pObj = dateTime_NewCurrent();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
+
+        pStr = dateTime_ToString(pObj);
+        fprintf(stderr, "\t%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
 
         work = dateTime_getMonth(pObj);
         XCTAssertTrue((work == pTime->tm_mon));
@@ -123,12 +130,43 @@ int         test_dateTime_Current(
         XCTAssertTrue((work == pTime->tm_sec));
         work = dateTime_getMilli(pObj);
         XCTAssertTrue((work == 0));
-        
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
+             
+        //obj_Release(pObj);
+        //pObj = OBJ_NIL;
     }
     
+    pObj2 = dateTime_NewFromTimeT(current);
+    XCTAssertFalse( (OBJ_NIL == pObj2) );
+    if (pObj2) {
+
+        pStr = dateTime_ToString(pObj2);
+        fprintf(stderr, "\t%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        work = dateTime_getMonth(pObj);
+        //fprintf(stderr, "\tMonth: %d %d\n", work, dateTime_getMonth(pObj2));
+        XCTAssertTrue((work == dateTime_getMonth(pObj2)));
+        work = dateTime_getDay(pObj);
+        XCTAssertTrue((work == dateTime_getDay(pObj2)));
+        work = dateTime_getYear(pObj);
+        XCTAssertTrue((work == dateTime_getYear(pObj2)));
+        work = dateTime_getHours(pObj);
+        XCTAssertTrue((work == dateTime_getHours(pObj2)));
+        work = dateTime_getMins(pObj);
+        XCTAssertTrue((work == dateTime_getMins(pObj2)));
+        work = dateTime_getSecs(pObj);
+        XCTAssertTrue((work == dateTime_getSecs(pObj2)));
+        work = dateTime_getMilli(pObj2);
+        XCTAssertTrue((work == 0));
+ 
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+    }
+    
+    obj_Release(pObj);
+    pObj = OBJ_NIL;
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }

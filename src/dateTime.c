@@ -454,7 +454,41 @@ extern "C" {
     
     
     
+    DATETIME_DATA *     dateTime_NewFromTimeT(
+        const
+        time_t              time
+    )
+    {
+        DATETIME_DATA       *this;
+        struct tm           *pTime;
+        ERESULT             eRc;
+        struct tm           tmWork;
+        
+        this = dateTime_Alloc( );
+        if (this) {
+            this = dateTime_Init(this);
+            if (this) {
+                pTime = gmtime_r(&time, &tmWork);
+                pTime->tm_year += 1900;
+                ++pTime->tm_mon;
+                eRc =   dateTime_ToUInt64(
+                                          pTime->tm_year,
+                                          pTime->tm_mon,
+                                          pTime->tm_mday,
+                                          pTime->tm_hour,
+                                          pTime->tm_min,
+                                          pTime->tm_sec,
+                                          0,
+                                          &this->time
+                                          );
+            }
+        }
+        return this;
+    }
     
+    
+    
+
 
     //===============================================================
     //                      P r o p e r t i e s

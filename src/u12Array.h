@@ -138,13 +138,13 @@ extern "C" {
      this -> other).  Any objects in other will be released before
      a copy of the object is performed.
      Example:
-     @code:
+     @code
      ERESULT eRc = u12Array__Assign(this,pOther);
-     @endcode:
-     @param:    this    U12ARRAY object pointer
-     @param:    pOther  a pointer to another U12ARRAY object
-     @return:   If successful, ERESULT_SUCCESS otherwise an
-     ERESULT_* error
+     @endcode
+     @param     this    U12ARRAY object pointer
+     @param     pOther  a pointer to another U12ARRAY object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                 ERESULT_* error
      */
     ERESULT         u12Array_Assign(
         U12ARRAY_DATA   *this,
@@ -155,13 +155,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
      u12Array      *pCopy = u12Array_Copy(this);
-     @endcode:
-     @param:    this    U12ARRAY object pointer
-     @return:   If successful, a U12ARRAY object which must be released,
-     otherwise OBJ_NIL.
-     @warning: Remember to release the returned the U12ARRAY object.
+     @endcode
+     @param     this    U12ARRAY object pointer
+     @return    If successful, a U12ARRAY object which must be released,
+                 otherwise OBJ_NIL.
+     @warning   Remember to release the returned the U12ARRAY object.
      */
     U12ARRAY_DATA * u12Array_Copy(
         U12ARRAY_DATA   *this
@@ -170,9 +170,9 @@ extern "C" {
     
     /*!
      Find the first value in the array.
-     @param:    this    object pointer
-     @param:    value   value to search for
-     @return:   If successful, the position, otherwise 0xFFFF
+     @param     this    object pointer
+     @param     value   value to search for
+     @return    If successful, the position, otherwise 0xFFFF
      */
     uint16_t        u12Array_Find(
         U12ARRAY_DATA   *this,
@@ -182,10 +182,10 @@ extern "C" {
     
     /*!
      Get the data from the array at the specified location.
-     @param:    this    object pointer
-     @param:    index   index into the array (relative to 1)
-     @param:    data    data to be put into the array
-     @return:   If successful, the data, otherwise 0xFFFF
+     @param     this    object pointer
+     @param     index   index into the array (relative to 1)
+     @param     data    data to be put into the array
+     @return    If successful, the data, otherwise 0xFFFF
      */
     uint16_t        u12Array_Get(
         U12ARRAY_DATA	*this,
@@ -201,10 +201,10 @@ extern "C" {
     /*!
      Put the given data into the array at the specified location.
      if the array needs to be expanded, '\0' are added as fill.
-     @param:    this    object pointer
-     @param:    index   index into the array (relative to 1)
-     @param:    data    data to be put into the array
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+     @param     this    object pointer
+     @param     index   index into the array (relative to 1)
+     @param     data    data to be put into the array
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
                 ERESULT_* error code.
      */
     ERESULT         u12Array_Put(
@@ -219,14 +219,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = u12Array_ToDebugString(this,4);
-     @endcode:
-     @param:    this    U12ARRAY object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    U12ARRAY object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     u12Array_ToDebugString(
         U12ARRAY_DATA   *this,

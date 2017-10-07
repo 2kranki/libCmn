@@ -56,6 +56,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <dateTime.h>
 
 
 #ifndef         PATH_H
@@ -193,7 +194,7 @@ extern "C" {
     /*!
      Clean up the path by removing "//", "/./" or "/../"
         - replacingstring that describes this object and the objects within it.
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
      */
     ERESULT         path_Clean(
         PATH_DATA		*this
@@ -227,7 +228,7 @@ extern "C" {
     
     /*!
      Create an empty file for the path. If the file exists, ignore.
-     @return:   ERESULT_SUCCESS if successful, otherwise an error result code.
+     @return    ERESULT_SUCCESS if successful, otherwise an error result code.
      */
     ERESULT         path_CreateEmpty(
         PATH_DATA		*this
@@ -242,6 +243,12 @@ extern "C" {
      */
     char *          path_CStringA(
         PATH_DATA		*this
+    );
+    
+    
+    ERESULT         path_DateLastUpdated(
+        PATH_DATA        *this,
+        DATETIME_DATA    **ppDate
     );
     
     
@@ -314,7 +321,7 @@ extern "C" {
     /*!
      Create a string that escapes any internal space characters as
      needed in Bash. ' ' becomes "\ " on output.
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
      */
     ERESULT         path_ToBash(
         PATH_DATA		*this,
@@ -325,13 +332,13 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = path_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    object pointer
-     @param:    indent  number of characters to indent every line of output, 
+     @endcode
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output,
                 can be 0
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     path_ToDebugString(

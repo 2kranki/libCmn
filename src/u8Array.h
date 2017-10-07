@@ -141,23 +141,22 @@ extern "C" {
 
     /*!
      Append Data to the top of the array.
-     @param:    this    object pointer
-     @param:    length  length of the uint8_t data
-     @param:    pData   address of the uint8_t data (must not be NULL)
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     @param     this    object pointer
+     @param     pOther  address of the u8Array data (must not be NULL)
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
      */
     ERESULT         u8Array_Append(
         U8ARRAY_DATA	*this,
-        U8ARRAY_DATA	*other
+        U8ARRAY_DATA	*pOther
     );
     
     
     /*!
      Append Buffer to the end of the array.
-     @param:    this    object pointer
-     @param:    length  length of the uint8_t data
-     @param:    pData   address of the uint8_t data (must not be NULL)
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     @param     this    object pointer
+     @param     length  length of the uint8_t data
+     @param     pData   address of the uint8_t data (must not be NULL)
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
      */
     ERESULT         u8Array_AppendBuffer(
         U8ARRAY_DATA	*this,
@@ -216,7 +215,7 @@ extern "C" {
      Get a uint8_t from the index given and return to *pValue. The
      number is extracted in Little or Big Endian format given the
      Endian Property setting.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
      */
     ERESULT         u8Array_GetU8(
         U8ARRAY_DATA	*this,
@@ -229,7 +228,7 @@ extern "C" {
      Get a uint16_t from the index given and return to *pValue. The
      number is extracted in Little or Big Endian format given the
      Endian Property setting.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
      */
     ERESULT         u8Array_GetU16(
         U8ARRAY_DATA	*this,
@@ -242,7 +241,7 @@ extern "C" {
      Get a uint24_t from the index given and return to *pValue. The
      number is extracted in Little or Big Endian format given the
      Endian Property setting.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
      */
     ERESULT         u8Array_GetU24(
         U8ARRAY_DATA	*this,
@@ -255,7 +254,7 @@ extern "C" {
      Get a uint32_t from the index given and return to *pValue. The
      number is extracted in Little or Big Endian format given the
      Endian Property setting.
-     @return:   If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
      */
     ERESULT         u8Array_GetU32(
         U8ARRAY_DATA	*this,
@@ -302,10 +301,10 @@ extern "C" {
      if the array needs to be expanded, '\0' are added as fill.
      Also, if the data size is too big for one byte, break the data
      up into multiple bytes using the endian type.
-     @param:    this    object pointer
-     @param:    index   index into the array (relative to 1)
-     @param:    data    data to be put into the array
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+     @param     this    object pointer
+     @param     index   index into the array (relative to 1)
+     @param     data    data to be put into the array
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
                 ERESULT_* error code.
      */
     ERESULT         u8Array_PutU8(
@@ -350,14 +349,14 @@ extern "C" {
      Create a string that describes this object and the
      objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = u8Array_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released,
+     @endcode
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     u8Array_ToDebugString(
         U8ARRAY_DATA    *this,

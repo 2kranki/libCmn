@@ -207,9 +207,9 @@ extern "C" {
      which creates an n x p matrix where this matrix is n x m and
      other matrix is m x p. The multiplication is not commutative.
      this X other may not equal other X this.
-     @param:    this    U16MATRIX_DATA object pointer
-     @param:    other   U16MATRIX_DATA object pointer
-     @return:   If successful, a new matrix, otherwise OBJ_NIL and
+     @param     this    U16MATRIX_DATA object pointer
+     @param     pOther  U16MATRIX_DATA object pointer
+     @return    If successful, a new matrix, otherwise OBJ_NIL and
                 getLastError() ERESULT_* error code
      */
     U16MATRIX_DATA *          u16Matrix_Multiply(
@@ -220,9 +220,9 @@ extern "C" {
     
     /*!
      Scalar Addition is adding a value to each element of the array.
-     @param:    this    U16MATRIX_DATA object pointer
-     @param:    value   value to be added to each element
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
+     @param     this    U16MATRIX_DATA object pointer
+     @param     value   value to be added to each element
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
                 code
      */
     ERESULT         u16Matrix_ScalarAdd(
@@ -233,9 +233,9 @@ extern "C" {
     
     /*!
      Scalar Multiply is multipling a value to each element of the array.
-     @param:    this    U16MATRIX_DATA object pointer
-     @param:    value   value to be multiplied to each element
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
+     @param     this    U16MATRIX_DATA object pointer
+     @param     value   value to be multiplied to each element
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
                 code
      */
     ERESULT         u16Matrix_ScalarMultiply(
@@ -255,15 +255,15 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = u16Matrix_ToDebugString(this, 4);
-     @endcode:
-     @param:    this    U16MATRIX_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, 
+     @endcode
+     @param     this    U16MATRIX_DATA object pointer
+     @param     indent  number of characters to indent every line of output,
                         can be 0
-     @return:   If successful, an AStr object which must be released containing 
+     @return    If successful, an AStr object which must be released containing
                 the description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     u16Matrix_ToDebugString(
         U16MATRIX_DATA	*this,

@@ -248,13 +248,13 @@ extern	"C" {
     /*!
      Initialize the main control block to an empty list.
      Example:
-     @code:
+     @code
         bool  fRc = listdl_Init(&freeList, offsetof(LRU_SECTOR,lruList));
-     @endcode:
-     @param:    this    list control block pointer
-     @param:    offset  number of bytes displacement into the list entry to
+     @endcode
+     @param     this    list control block pointer
+     @param     offset  number of bytes displacement into the list entry to
                         find the LISTDL_NODE.
-     @return:   If successful, true. Otherwise, false.
+     @return    If successful, true. Otherwise, false.
      */
     bool 			listdl_Init(
         LISTDL_DATA		*this,

@@ -156,7 +156,7 @@ extern "C" {
 
     /*!
      Get the name value if it is a ptr.
-     @return:   If successful, void ptr, otherwise NULL.
+     @return    If successful, void ptr, otherwise NULL.
      */
     const
     void *          name_getPtr(
@@ -166,8 +166,8 @@ extern "C" {
     
     /*!
      Get the name value as an AStr object.
-     @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+     @return    If successful, an AStr object which must be released,
+                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     name_getStrA(
         NAME_DATA       *this
@@ -176,8 +176,8 @@ extern "C" {
     
     /*!
      Get the name value as a WStr object.
-     @return:   If successful, an WStr object which must be released,
-     otherwise OBJ_NIL.
+     @return    If successful, an WStr object which must be released,
+                 otherwise OBJ_NIL.
      */
     WSTR_DATA *     name_getStrW(
         NAME_DATA       *this
@@ -186,7 +186,7 @@ extern "C" {
     
     /*!
      Get the name value as a UTF-8 string.
-     @return:   If successful, a UTF-8 string which must be freed
+     @return    If successful, a UTF-8 string which must be freed
                 using mem_Free(), otherwise NULL.
      */
     char *          name_getUTF8(
@@ -213,7 +213,7 @@ extern "C" {
     
     /*!
      Compare the name to the provided string.
-     @return:   ERESULT_SUCCESS_EQUAL if name == other
+     @return    ERESULT_SUCCESS_EQUAL if name == other
                 ERESULT_SUCCESS_LESS_THAN if name < other
                 ERESULT_SUCCESS_GREATER_THAN if name > other
      */
@@ -238,7 +238,7 @@ extern "C" {
     /*!
      Create a hash for the name value. The name value is always
      converted to a UTF-8 string and then that is hashed.
-     @return:   Hash Code
+     @return    Hash Code
      */
     uint32_t        name_Hash(
         NAME_DATA       *this
@@ -287,14 +287,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = name_ToDebugString(this,4);
-     @endcode:
-     @param:    this    NAME object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    NAME object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning:  Remember to release the returned AStr object when you are done
+     @warning   Remember to release the returned AStr object when you are done
                 with it.
      */
     ASTR_DATA *     name_ToDebugString(
@@ -306,7 +306,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it in JSON format.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     name_ToJSON(
@@ -317,8 +317,8 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+     @return    If successful, an AStr object which must be released,
+                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     name_ToString(
         NAME_DATA       *this
@@ -327,7 +327,7 @@ extern "C" {
     
     /*!
      Get the name value as a UTF-8 string.
-     @return:   If successful, a UTF-8 string which must be freed
+     @return    If successful, a UTF-8 string which must be freed
                 using mem_Free(), otherwise NULL.
      */
     char *          name_ToUTF8(

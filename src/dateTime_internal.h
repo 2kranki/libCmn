@@ -60,7 +60,7 @@ struct dateTime_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    uint64_t        time;           // UTC Date & Time
+    uint64_t        time;           // UTC Date & Time encoded to binary
     //                              // See DateTime_FromUInt64() & DateTime_ToUInt64()
     //                              // for details.
 

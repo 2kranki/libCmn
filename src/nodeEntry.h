@@ -107,7 +107,7 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to nodeEntry object if successful, otherwise OBJ_NIL.
+     @return    pointer to nodeEntry object if successful, otherwise OBJ_NIL.
      */
     NODEENTRY_DATA * nodeEntry_Alloc(
         void
@@ -278,14 +278,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = nodeEntry_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    nodeEntry object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    nodeEntry object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    nodeEntry_ToDebugString(
         NODEENTRY_DATA  *this,

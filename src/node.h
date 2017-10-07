@@ -260,7 +260,7 @@ extern "C" {
     
     
     /*!
-     @return:   If successful, an Name object which must be released,
+     @return    If successful, an Name object which must be released,
                 otherwise OBJ_NIL.
      */
     NAME_DATA *     node_getName(
@@ -268,7 +268,7 @@ extern "C" {
     );
     
     /*!
-     @return:   If successful, a void ptr, otherwise NULL.
+     @return    If successful, a void ptr, otherwise NULL.
      */
     const
     void *          node_getNamePtr(
@@ -276,7 +276,7 @@ extern "C" {
     );
     
     /*!
-     @return:   If successful, a UTF-8 string which must be freed 
+     @return    If successful, a UTF-8 string which must be freed
                 with mem_Free(), otherwise OBJ_NIL.
      */
     const
@@ -309,9 +309,9 @@ extern "C" {
     /*!
      Compare this node to the other node.
      @result
-     ERESULT_SUCCESS_EQUAL if this == other,
-     ERESULT_SUCCESS_LESS_THAN if this < other
-     or ERESULT_SUCCESS_GREATER_THAN if this > other.
+                 ERESULT_SUCCESS_EQUAL if this == other,
+                 ERESULT_SUCCESS_LESS_THAN if this < other
+                 or ERESULT_SUCCESS_GREATER_THAN if this > other.
      */
     ERESULT         node_Compare(
         NODE_DATA		*this,
@@ -383,14 +383,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = node_ToDebugString(this,4);
-     @endcode:
-     @param:    this    NODE object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    NODE object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning:  Remember to release the returned AStr object when you are done
+     @warning   Remember to release the returned AStr object when you are done
                 with it.
      */
     ASTR_DATA *     node_ToDebugString(
