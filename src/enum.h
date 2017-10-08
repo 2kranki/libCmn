@@ -130,6 +130,24 @@ extern "C" {
 
 
     /*!
+     Return the elements at the specified offset from the current item. An offset
+     of 0 returns the current item. Do not alter which item is the current one.
+     If the offset is beyond the range of items, then ERESULT_OUT_OF_RANGE is
+     returned.
+     @param     this    ENUM object pointer
+     @param     offset  offset of object to return (relative to zero)
+     @param     ppVoid  where the object address should be returned
+     @return    If successful ERESULT_SUCCESS and data returned in ppVoid,
+                 otherwise an ERESULT_* error.
+     */
+    ERESULT         enum_LookAhead(
+        ENUM_DATA       *this,
+        uint32_t        offset,
+        void            **ppVoid
+    );
+    
+    
+    /*!
      Return the next arraySize of elements if available in ppVoidArray and set 
      NumReturned to the number of elements returned. If the enumerator has gone 
      past the end, zero will be returned in NumReturned.
@@ -150,15 +168,12 @@ extern "C" {
     
     
     /*!
-     Return the next numSkip of elements in the enumeration. Skipping might put
-     the enumerator past the end of the enumeration.
+     Return the remaining number of items left to be enumerated.
      @param     this    ENUM object pointer
-     @param     numSkip number of elements to skip
-     @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
+     @return    The number of items left to be enumerated
      */
-    ERESULT         enum_Skip(
-        ENUM_DATA       *this,
-        uint32_t        numSkip
+    uint32_t        enum_Remaining(
+        ENUM_DATA       *this
     );
     
     
@@ -170,7 +185,20 @@ extern "C" {
     ERESULT         enum_Reset(
         ENUM_DATA       *this
     );
-
+    
+    
+    /*!
+     Return the next numSkip of elements in the enumeration. Skipping might put
+     the enumerator past the end of the enumeration.
+     @param     this    ENUM object pointer
+     @param     numSkip number of elements to skip
+     @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
+     */
+    ERESULT         enum_Skip(
+        ENUM_DATA       *this,
+        uint32_t        numSkip
+    );
+    
     
     /*!
      Create a string that describes this object and the objects within it.

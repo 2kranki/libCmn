@@ -140,9 +140,9 @@ char        whiteSpaceA[22] = {
     UTF8_DATA	*pObj = OBJ_NIL;
    
     pObj = utf8_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = utf8_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -162,7 +162,7 @@ char        whiteSpaceA[22] = {
     pStr = pString1;
     for (i=1; i<=4; ++i) {
         j = utf8_Utf8ToWC_Scan(&pStr);
-        XCTAssertTrue( (i == j), @"" );
+        XCTAssertTrue( (i == j) );
     }
     
 }
@@ -174,13 +174,13 @@ char        whiteSpaceA[22] = {
     int         len = 0;
     
     len = utf8_ChrLen(pString1[0]);
-    XCTAssertTrue( (1 == len), @"" );
+    XCTAssertTrue( (1 == len) );
     len = utf8_ChrLen(pString1[1]);
-    XCTAssertTrue( (2 == len), @"" );
+    XCTAssertTrue( (2 == len) );
     len = utf8_ChrLen(pString1[3]);
-    XCTAssertTrue( (3 == len), @"" );
+    XCTAssertTrue( (3 == len) );
     len = utf8_ChrLen(pString1[6]);
-    XCTAssertTrue( (4 == len), @"" );
+    XCTAssertTrue( (4 == len) );
     
 }
 
@@ -191,17 +191,17 @@ char        whiteSpaceA[22] = {
     int32_t     len = 0;
     
     len = utf8_StrOffset(pString1,1);
-    XCTAssertTrue( (1 == len), @"" );
+    XCTAssertTrue( (1 == len) );
     len = utf8_StrOffset(pString1,2);
-    XCTAssertTrue( (2 == len), @"" );
+    XCTAssertTrue( (2 == len) );
     len = utf8_StrOffset(pString1,3);
-    XCTAssertTrue( (4 == len), @"" );
+    XCTAssertTrue( (4 == len) );
     len = utf8_StrOffset(pString1,4);
-    XCTAssertTrue( (7 == len), @"" );
+    XCTAssertTrue( (7 == len) );
     len = utf8_StrOffset(pString1,5);
-    XCTAssertTrue( (11 == len), @"" );
+    XCTAssertTrue( (11 == len) );
     len = utf8_StrOffset(pString1,6);
-    XCTAssertTrue( (-1 == len), @"" );
+    XCTAssertTrue( (-1 == len) );
     
 }
 

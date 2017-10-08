@@ -314,7 +314,11 @@ extern "C" {
         ASTR_DATA       *pStr;
         char            buffer[2048];
         char            *pBuffer = buffer;
-        
+        uint32_t        i;
+        uint32_t        size;
+        const
+        char            *pBytes;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -354,7 +358,7 @@ extern "C" {
         if (fFnd) {
             fprintf(stderr, "\tIs an allocated area from memOSX %p\n", pActual->pMem);
             fprintf(stderr, "\tRequested Size=%ld  Actual Size=%ld\n",
-                            pActual->cbSize,pActual->cbActual);
+                            pActual->cbSize, pActual->cbActual);
             if (pActual->flags & MEM_FLAG_OBJECT) {
                 const
                 OBJ_INFO        *pInfo = obj_getInfo((OBJ_ID)pData);
@@ -423,14 +427,26 @@ extern "C" {
                     obj_Release(pStr);
                 }
             }
+            else {
+                fprintf( stderr, "\nData @ %p:\n", pData );
+                pBuffer = buffer;
+                size = (uint32_t)pActual->cbSize;
+                if (size > 128)
+                    size = 128;
+                size = size / 16;
+                pBytes = pData;
+                for (i=0; i<size; ++i) {
+                    hex_putBytes16_32(64, pBytes, 2048, &pBuffer);
+                    fprintf(stderr, "%s\n", buffer);
+                    pBytes += 16;
+                    pBuffer = buffer;
+                }
+                fprintf(stderr, "\n");
+            }
         }
         else {
             fprintf(stderr, "\tDoes not seem to be a memOSX allocated area.\n");
         }
-        fprintf( stderr, "\nData @ %p:\n", pData );
-        pBuffer = buffer;
-        hex_putBytes16_32(64, pData, 2048, &pBuffer);
-        fprintf(stderr, "%s\n\n", buffer);
         //DEBUG_BREAK();
     
         // Return to caller.

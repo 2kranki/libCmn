@@ -455,7 +455,7 @@ int         test_lex_Number03(
 
 
 
-int         test_lex_Strings(
+int         test_lex_Strings01(
     const
     char        *pTestName
 )
@@ -511,9 +511,67 @@ int         test_lex_Strings(
 
 
 
+int         test_lex_Strings02(
+    const
+    char        *pTestName
+)
+{
+    LEX_DATA        *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    TOKEN_DATA      *pToken;
+    WSTR_DATA       *pStrW;
+    int32_t         cls;
+    TOKEN_DATA      *pWork = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = lex_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = lex_Init( pObj, 3 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pWork = token_NewStrA("abc", 1, 1, 510, "\n  \n");
+
+        eRc = lex_ParseTokenSetup(pObj, pWork);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        obj_Release(pWork);
+        pWork = OBJ_NIL;
+        
+        eRc = lex_ParseTokenFinalize(pObj, 512, true);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pToken = lex_getToken(pObj);
+        pStrW = token_getStringW(pToken);
+        XCTAssertFalse( (OBJ_NIL == pObj) );
+        if (pStrW ) {
+            ASTR_DATA           *pStrA = WStr_ToDebugString(pStrW, 0);
+            fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStrA));
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+            pStrA = WStr_ToChrCon(pStrW);
+            fprintf(stderr, "\tchrcon = \"%s\"\n", AStr_getData(pStrA));
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+            eRc = WStr_CompareA(pStrW, "\n  \n");
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        }
+        cls = token_getClass(pToken);
+        fprintf(stderr, "\tclass = %d\n", cls);
+        XCTAssertTrue( (512 == cls) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_cloOpt);
-  TINYTEST_ADD_TEST(test_lex_Strings,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_lex_Strings02,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_lex_Strings01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_lex_Number03,setUp,tearDown);
   TINYTEST_ADD_TEST(test_lex_Number02,setUp,tearDown);
   TINYTEST_ADD_TEST(test_lex_Number01,setUp,tearDown);

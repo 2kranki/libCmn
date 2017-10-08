@@ -644,7 +644,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        TRC_OBJ(this, "\tstring: \"%s\"\n", AStr_getData(pStr));
+        TRC_OBJ(this, "\tstring: (%d) \"%s\"\n", AStr_getLength(pStr), AStr_getData(pStr));
 #endif
         if (pStr) {
             pNode = node_NewWithUTF8Con("string", pStr);
@@ -695,13 +695,17 @@ extern "C" {
                 break;
         }
 #endif
-        pNode = hjson_ParseHash(this);
-        if (pNode) {
-            return pNode;
+        if( tokenClass == LEXJ_SEP_LBRACE ) {
+            pNode = hjson_ParseHash(this);
+            if (pNode) {
+                return pNode;
+            }
         }
-        pNode = hjson_ParseArray(this);
-        if (pNode) {
-            return pNode;
+        if( tokenClass == LEXJ_SEP_LBRACKET ) {
+            pNode = hjson_ParseArray(this);
+            if (pNode) {
+                return pNode;
+            }
         }
         pNode = hjson_ParseNumber(this);
         if (pNode) {

@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <msgBus_internal.h>
+#include <execPtr.h>
 
 
 
@@ -70,6 +71,7 @@ extern "C" {
         uint32_t        i;
         uint32_t        iMax;
         NODE_DATA       *pNode = OBJ_NIL;
+        EXECPTR_DATA    *pFunc = OBJ_NIL;
         void            (*msgOutBody)(void *, uint8_t *);
         void            *msgOutData;
    
@@ -80,7 +82,8 @@ extern "C" {
             for (i=0; i<iMax; ++i) {
                 pNode = nodeArray_Get(this->pRegistry, i+1);
                 if (pNode && !(node_getNamePtr(pNode) == pEntry->pObj)) {
-                    msgOutBody = node_getExtra(pNode);
+                    pFunc = node_getExtra(pNode);
+                    msgOutBody = execPtr_getFunc(pFunc);
                     msgOutData = (void *)node_getNamePtr(pNode);
                     msgOutBody(msgOutData, pEntry->msg);
                 }

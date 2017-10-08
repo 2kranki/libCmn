@@ -392,7 +392,7 @@ extern "C" {
         }
 #endif
         
-        pNode = (SZTBL_NODE *)szHash_Find(this->pHashTable, pStr);
+        pNode = (SZTBL_NODE *)szHash_FindA(this->pHashTable, pStr);
         if (pNode) {
             if (ppStr) {
                 *ppStr = (const char *)pNode->data;
@@ -439,7 +439,7 @@ extern "C" {
         }
         
         pHb->used += nodeSize;
-        eRc = szHash_Add(this->pHashTable, (const char *)pNode->data, pNode);
+        eRc = szHash_AddA(this->pHashTable, (const char *)pNode->data, pNode);
 
         // Return to caller.
         return eRc;
@@ -478,7 +478,7 @@ extern "C" {
         }
 #endif
         
-        pNode = (SZTBL_NODE *)szHash_Find(this->pHashTable, pStr);
+        pNode = (SZTBL_NODE *)szHash_FindA(this->pHashTable, pStr);
         if (pNode) {
             if (pToken) {
                 *pToken = pNode->ident;
@@ -525,7 +525,7 @@ extern "C" {
         }
         
         pHb->used += nodeSize;
-        eRc = szHash_Add(this->pHashTable, (char *)pNode->data, pNode);
+        eRc = szHash_AddA(this->pHashTable, (char *)pNode->data, pNode);
         
         // Return to caller.
         return eRc;
@@ -609,7 +609,7 @@ extern "C" {
         }
         
         pHb->used += nodeSize;
-        eRc = szHash_Add(this->pHashTable, (char *)pNode->data, pNode);
+        eRc = szHash_AddA(this->pHashTable, (char *)pNode->data, pNode);
         
         // Return to caller.
         return eRc;

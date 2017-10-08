@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 7/2017  3:54:51.000)
+# (10/ 8/2017 17:53:34.000)
 
 
 LIBNAM=libCmn
@@ -74,6 +74,7 @@ OBJS = $(OBJS) $(OBJDIR)\ebcdic.obj $(OBJDIR)\ebcdic_object.obj
 OBJS = $(OBJS) $(OBJDIR)\endian.obj $(OBJDIR)\endian_object.obj
 OBJS = $(OBJS) $(OBJDIR)\enum.obj $(OBJDIR)\enum_object.obj
 OBJS = $(OBJS) $(OBJDIR)\execArray.obj $(OBJDIR)\execArray_object.obj
+OBJS = $(OBJS) $(OBJDIR)\execPtr.obj $(OBJDIR)\execPtr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\false.obj $(OBJDIR)\false_object.obj
 OBJS = $(OBJS) $(OBJDIR)\fbsi.obj $(OBJDIR)\fbsi_object.obj
 OBJS = $(OBJS) $(OBJDIR)\fbso.obj $(OBJDIR)\fbso_object.obj
@@ -334,6 +335,14 @@ test_enum:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_execPtr
+
+test_execPtr:
+	$(CC) $(CFLAGS) /Itests tests\test_execPtr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_false
 
 test_false:
@@ -554,6 +563,22 @@ TESTS = $(TESTS) test_value
 
 test_value:
 	$(CC) $(CFLAGS) /Itests tests\test_value.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_wstr
+
+test_wstr:
+	$(CC) $(CFLAGS) /Itests tests\test_wstr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_xml
+
+test_xml:
+	$(CC) $(CFLAGS) /Itests tests\test_xml.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

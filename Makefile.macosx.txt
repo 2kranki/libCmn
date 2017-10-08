@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 7/2017  3:54:52.000)
+# (10/ 8/2017 17:53:36.000)
 
 
 LIBNAM=libCmn
@@ -524,6 +524,18 @@ $(OBJDIR)/execArray.o: $(SRCDIR)/execArray.c
 
 
 $(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/execPtr.o $(OBJDIR)/execPtr_object.o
+
+
+$(OBJDIR)/execPtr.o: $(SRCDIR)/execPtr.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/execPtr_object.o: $(SRCDIR)/execPtr_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1587,6 +1599,13 @@ test_enum:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_execPtr
+
+test_execPtr:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_execPtr.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_false
 
 test_false:
@@ -1780,6 +1799,20 @@ TESTS += test_value
 
 test_value:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_value.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_wstr
+
+test_wstr:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wstr.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_xml
+
+test_xml:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_xml.c 
 	$(OBJDIR)/$(@F)
 
 

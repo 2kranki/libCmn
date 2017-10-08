@@ -94,39 +94,39 @@ extern "C" {
     //===============================================================
 
     PATH_DATA *     fbsi_getPath(
-        FBSI_DATA		*cbp
+        FBSI_DATA		*this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !fbsi_Validate( cbp ) ) {
+        if( !fbsi_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pPath;
+        return this->pPath;
     }
     
     
     bool            fbsi_setPath(
-        FBSI_DATA		*cbp,
+        FBSI_DATA		*this,
         PATH_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !fbsi_Validate( cbp ) ) {
+        if( !fbsi_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pPath) {
-            obj_Release(cbp->pPath);
+        if (this->pPath) {
+            obj_Release(this->pPath);
         }
-        cbp->pPath = pValue;
+        this->pPath = pValue;
         
         return true;
     }
@@ -297,7 +297,7 @@ extern "C" {
         }
 #endif
         
-        pStr2 = fgets( pStr, max, this->pFile );
+        pStr2 = fgets(pStr, max, this->pFile);
         if (NULL == pStr2) {
             if (fbsi_IsAtEOF(this)) {
                 return ERESULT_EOF_ERROR;

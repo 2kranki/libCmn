@@ -1,10 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   token_internal.h
- *	Generated 05/26/2015 13:40:16
+ * File:   execPtr_internal.h
+ *	Generated 10/07/2017 12:40:01
  *
- * Created on September 26, 2014, 3:39 PM
+ * Notes:
+ *  --	N/A
+ *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -36,13 +39,11 @@
 
 
 
-#ifndef TOKEN_INTERNAL_H
-#define	TOKEN_INTERNAL_H
+#include    <execPtr.h>
 
 
-
-#include    "token.h"
-#include    "srcLoc_internal.h"
+#ifndef EXECPTR_INTERNAL_H
+#define	EXECPTR_INTERNAL_H
 
 
 
@@ -51,61 +52,71 @@ extern "C" {
 #endif
 
 
-#pragma pack(push, 1)
-    typedef struct token_s    {
-        SRCLOC          src;
-        int32_t         cls;                // Character/Token Class (Optional)
-        uint16_t        misc;
-        uint16_t        len;                // Character/Token Length (Optional)
-        uint16_t        offset;             // offset into token string (Optional)
-        uint16_t        type;               // Type in union below
-        union {
-            char            achr[8];            // UTF-8 Character w/ Trailing NUL
-            int32_t         wchr[2];            // Wide Character w/ Trailing NUL
-            double          floatingPoint;
-            int64_t         integer;            // Integer
-            OBJ_ID          pObj;               // an object
-            uint32_t        strToken;           // String Index Token
-        };
-    } TOKEN;
-#pragma pack(pop)
-    
-#pragma pack(push, 1)
-struct token_data_s	{
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+ #pragma pack(push, 1)
+struct execPtr_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    TOKEN           data;
+    ERESULT         eRc;
+    void            (*pFunc)(void);
+    ASTR_DATA       *pDesc;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    TOKEN_VTBL      token_Vtbl;
+    struct execPtr_class_data_s  execPtr_ClassObj;
+
+    extern
+    const
+    EXECPTR_VTBL         execPtr_Vtbl;
 
 
 
-    // Internal Functions
-    void            token_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            execPtr_setLastError(
+        EXECPTR_DATA     *this,
+        ERESULT         value
+    );
+
+
+    void            execPtr_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          token_QueryInfo(
+    void *          execPtr_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
         char            *pStr
     );
-    
-    
+
+
+    ASTR_DATA *     execPtr_ToJSON(
+        EXECPTR_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			token_Validate(
-        TOKEN_DATA       *cbp
+    bool			execPtr_Validate(
+        EXECPTR_DATA       *this
     );
 #endif
 
@@ -115,5 +126,5 @@ struct token_data_s	{
 }
 #endif
 
-#endif	/* TOKEN_INTERNAL_H */
+#endif	/* EXECPTR_INTERNAL_H */
 

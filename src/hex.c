@@ -54,6 +54,9 @@ extern "C" {
     static
     const
     char            *pHexChr = "0123456789ABCDEF";
+    static
+    HEX_DATA        *pShared = OBJ_NIL;
+    
     
     
 
@@ -358,6 +361,37 @@ extern "C" {
         fRc = true;
         *pAmount = amt;
         return fRc;
+    }
+    
+    
+    
+    HEX_DATA *      hex_Shared(
+    )
+    {
+        
+        if (OBJ_NIL == pShared) {
+            pShared = hex_Alloc( );
+            pShared = hex_Init(pShared);
+        }
+        
+        return( pShared );
+    }
+    
+    
+    
+    bool            hex_SharedReset(
+    )
+    {
+        
+        while (pShared && (obj_getRetainCount(pShared) > 1)) {
+            obj_Release(pShared);
+        }
+        if (pShared) {
+            obj_Release(pShared);
+            pShared = OBJ_NIL;
+        }
+        
+        return true;
     }
     
     

@@ -1038,7 +1038,7 @@ extern "C" {
                     //TODO: "..." {<white-space> "..."}
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     lex_ParseTokenTruncate((LEX_DATA *)this);
-                    while(lex_ParseChrCon((LEX_DATA *)this, '"'))
+                    while(lex_ParseChrConWS((LEX_DATA *)this, '"'))
                         ;
                     pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
                     cls = token_getClass(pInput);

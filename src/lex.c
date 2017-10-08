@@ -949,7 +949,120 @@ extern "C" {
     }
     
     
+    bool            lex_ParseChrConWS(
+        LEX_DATA        *this,
+        int32_t         ending
+    )
+    {
+        int32_t         cls;
+        int32_t         chr;
+        TOKEN_DATA      *pInput;
+        int             i;
+        
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        cls = token_getClass(pInput);
+        chr = token_getChrW(pInput);
+        if ((chr == ending) || (cls == LEX_CLASS_EOF)) {
+            return false;
+        }
+        if ( cls == '\\') {
+            lex_ParseTokenAppendString(this, pInput);
+            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
+            cls = token_getClass(pInput);
+            switch (cls) {
+                    
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    if (lex_ParseDigitOct(this)) {
+                        if (lex_ParseDigitOct(this)) {
+                        }
+                    }
+                    return true;
+                    
+                case '?':
+                case 'b':
+                case 'f':
+                case 'n':
+                case 'r':
+                case 't':
+                case 'v':
+                case '\\':
+                case '\'':
+                case '\"':
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    return true;
+                    
+                case 'u':
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    for (i=0; i<4; ++i) {
+                        if (lex_ParseDigitHex(this)) {
+                        }
+                        else {
+                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            return false;
+                        }
+                    }
+                    break;
+                    
+                case 'U':
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    for (i=0; i<8; ++i) {
+                        if (lex_ParseDigitHex(this)) {
+                        }
+                        else {
+                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            return false;
+                        }
+                    }
+                    break;
+                    
+                case 'x':
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    for (i=0; i<2; ++i) {
+                        if (lex_ParseDigitHex(this)) {
+                        }
+                        else {
+                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            return false;
+                        }
+                    }
+                    break;
+                    
+                default:
+                    return false;
+                    break;
+            }
+        }
+        else {
+            lex_ParseTokenAppendString(this, pInput);
+            this->pSrcChrAdvance(this->pSrcObj, 1);
+        }
+        
+        return true;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                   P a r s e  D i g i t
     //---------------------------------------------------------------
@@ -1755,10 +1868,10 @@ extern "C" {
                 if (chr == '\n') {
                     WStr_AppendA(this->pStr, "\\n");
                 }
-                if (chr == '\r') {
+                else if (chr == '\r') {
                     WStr_AppendA(this->pStr, "\\r");
                 }
-                if (chr == '\t') {
+                else if (chr == '\t') {
                     WStr_AppendA(this->pStr, "\\t");
                 }
                 else {

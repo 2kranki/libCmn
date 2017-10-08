@@ -144,8 +144,119 @@ int         test_hex_DataToJSON01(
 
 
 
+int         test_hex_Shared01(
+    const
+    char            *pTestName
+)
+{
+    char            buffer[2048];
+    char            *pBuffer = buffer;
+    uint32_t        cBuffer = 2048;
+    uint32_t        used = 0;
+    static
+    const
+    char            *pOutput = "00000000  30313233 34353637 38394142 43444546"
+                                "  *0123456789ABCDEF*";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    used =  hex_put16Bytes_32(
+                hex_Shared(),
+                0,
+                16,
+                (void *)"0123456789ABCDEF",
+                &cBuffer,
+                &pBuffer
+            );
+    *pBuffer = '\0';
+    fprintf(stderr, "\t(%d) \"%s\"\n", used, buffer);
+    TINYTEST_TRUE( (65 == used) );
+    TINYTEST_TRUE( (0 == strcmp(buffer, pOutput)) );
+
+    hex_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hex_Shared02(
+    const
+    char            *pTestName
+)
+{
+    char            buffer[2048];
+    char            *pBuffer = buffer;
+    uint32_t        cBuffer = 2048;
+    uint32_t        used = 0;
+    static
+    const
+    char            *pOutput =  "00000000  30313233 34353637 3839               "
+                                "*0123456789      *";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    used =  hex_put16Bytes_32(
+                              hex_Shared(),
+                              0,
+                              10,
+                              (void *)"0123456789ABCDEF",
+                              &cBuffer,
+                              &pBuffer
+                              );
+    *pBuffer = '\0';
+    fprintf(stderr, "\t(%d) \"%s\"\n", used, buffer);
+    TINYTEST_TRUE( (65 == used) );
+    TINYTEST_TRUE( (0 == strcmp(buffer, pOutput)) );
+    
+    hex_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hex_Shared03(
+    const
+    char            *pTestName
+)
+{
+    char            buffer[2048];
+    char            *pBuffer = buffer;
+    uint32_t        cBuffer = 2048;
+    uint32_t        used = 0;
+    static
+    const
+    char            *pOutput =  "0000000000000000  30313233 34353637 3839               "
+    "*0123456789      *";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    used =  hex_put16Bytes_64(
+                              hex_Shared(),
+                              0,
+                              10,
+                              (void *)"0123456789ABCDEF",
+                              &cBuffer,
+                              &pBuffer
+                              );
+    *pBuffer = '\0';
+    fprintf(stderr, "\t(%d) \"%s\"\n", used, buffer);
+    TINYTEST_TRUE( (73 == used) );
+    TINYTEST_TRUE( (0 == strcmp(buffer, pOutput)) );
+    
+    hex_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_hex);
+  TINYTEST_ADD_TEST(test_hex_Shared03,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_hex_Shared02,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_hex_Shared01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_hex_DataToJSON01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_hex_DataFromJSON01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_hex_OpenClose,setUp,tearDown);

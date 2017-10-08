@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   enum.c
- *	Generated 06/30/2017 09:01:13
+ * File:   execPtr.c
+ *	Generated 10/07/2017 12:40:01
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <enum_internal.h>
+#include <execPtr_internal.h>
 
 
 
@@ -58,61 +58,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+#ifdef XYZZY
     static
-    ERESULT         enum_ExpandArray(
-        ENUM_DATA       *this,
-        uint32_t        num
+    void            execPtr_task_body(
+        void            *pData
     )
     {
-        void            *pWork;
-        uint32_t        oldMax;
-        uint32_t        cbSize;
-        uint16_t        elemSize = sizeof(uint8_t *);
+        //EXECPTR_DATA  *this = pData;
         
-        // Do initialization.
-        if( this == NULL ) {
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (num < this->max) {
-            enum_setLastError(this, ERESULT_SUCCESS);
-            return ERESULT_SUCCESS;
-        }
-        
-        // Expand the Array.
-        oldMax = this->max;
-        if (0 == oldMax) {
-            oldMax = 1;
-        }
-        this->max = oldMax << 1;             // max *= 2
-        while (num > this->max) {
-            this->max = this->max << 1;
-        }
-        cbSize = this->max * elemSize;
-        pWork = (void *)mem_Malloc( cbSize );
-        if( NULL == pWork ) {
-            this->max = oldMax;
-            enum_setLastError(this, ERESULT_INSUFFICIENT_MEMORY);
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Copy the old entries into the new array.
-        if( this->ppArray == NULL )
-            ;
-        else {
-            memmove( pWork, this->ppArray, (oldMax * elemSize) );
-            mem_Free(this->ppArray);
-            // this->ppArray = NULL;
-        }
-        this->ppArray = pWork;
-        memset(&this->ppArray[oldMax], 0, ((this->max - oldMax) * elemSize));
-        
-        // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
     }
-    
-    
-    
+#endif
 
 
 
@@ -125,11 +80,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ENUM_DATA *     enum_Alloc(
+    EXECPTR_DATA *  execPtr_Alloc(
     )
     {
-        ENUM_DATA       *this;
-        uint32_t        cbSize = sizeof(ENUM_DATA);
+        EXECPTR_DATA    *this;
+        uint32_t        cbSize = sizeof(EXECPTR_DATA);
         
         // Do initialization.
         
@@ -141,14 +96,15 @@ extern "C" {
 
 
 
-    ENUM_DATA *     enum_New(
+    EXECPTR_DATA *  execPtr_New(
+        void            *pFunc
     )
     {
-        ENUM_DATA       *this;
+        EXECPTR_DATA       *this;
         
-        this = enum_Alloc( );
+        this = execPtr_Alloc( );
         if (this) {
-            this = enum_Init(this);
+            this = execPtr_Init(this, pFunc);
         } 
         return this;
     }
@@ -161,19 +117,83 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    ASTR_DATA * execPtr_getDesc(
+        EXECPTR_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !execPtr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        execPtr_setLastError(this, ERESULT_SUCCESS);
+        return this->pDesc;
+    }
+    
+    
+    bool        execPtr_setDesc(
+        EXECPTR_DATA *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !execPtr_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pDesc) {
+            obj_Release(this->pDesc);
+        }
+        this->pDesc = pValue;
+        
+        execPtr_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    void *      execPtr_getFunc(
+        EXECPTR_DATA *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !execPtr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        execPtr_setLastError(this, ERESULT_SUCCESS);
+        return this->pFunc;
+    }
+
+    
+    
     //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         enum_getLastError(
-        ENUM_DATA     *this
+    ERESULT         execPtr_getLastError(
+        EXECPTR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -184,14 +204,14 @@ extern "C" {
     }
 
 
-    bool            enum_setLastError(
-        ENUM_DATA       *this,
+    bool            execPtr_setLastError(
+        EXECPTR_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -204,34 +224,34 @@ extern "C" {
     
     
 
-    uint16_t        enum_getPriority(
-        ENUM_DATA     *this
+    uint16_t        execPtr_getPriority(
+        EXECPTR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        enum_setLastError(this, ERESULT_SUCCESS);
+        execPtr_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            enum_setPriority(
-        ENUM_DATA     *this,
+    bool            execPtr_setPriority(
+        EXECPTR_DATA    *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -239,26 +259,8 @@ extern "C" {
 
         //this->priority = value;
 
-        enum_setLastError(this, ERESULT_SUCCESS);
+        execPtr_setLastError(this, ERESULT_SUCCESS);
         return true;
-    }
-
-
-
-    uint32_t        enum_getSize(
-        ENUM_DATA       *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return 0;
     }
 
 
@@ -271,51 +273,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          A p p e n d
-    //---------------------------------------------------------------
-    
-    ERESULT         enum_Append(
-        ENUM_DATA       *this,
-        void            *pObject,
-        uint32_t        *pIndex
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pObject) {
-            DEBUG_BREAK();
-            enum_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        ++this->size;
-        while (this->size > this->max) {
-            eRc = enum_ExpandArray(this, this->size);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                DEBUG_BREAK();
-                return eRc;
-            }
-        }
-        this->ppArray[this->size - 1] = (uint8_t *)pObject;
-        if (pIndex) {
-            *pIndex = this->size;
-        }
-        
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -325,67 +282,64 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code:
-        ERESULT eRc = enum__Assign(this,pOther);
+        ERESULT eRc = execPtr__Assign(this,pOther);
      @endcode:
-     @param:    this    ENUM object pointer
-     @param:    pOther  a pointer to another ENUM object
+     @param:    this    EXECPTR object pointer
+     @param:    pOther  a pointer to another EXECPTR object
      @return:   If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         enum_Assign(
-        ENUM_DATA       *this,
-        ENUM_DATA       *pOther
+    ERESULT         execPtr_Assign(
+        EXECPTR_DATA		*this,
+        EXECPTR_DATA      *pOther
     )
     {
-        ERESULT         eRc;
-        uint32_t        i;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !enum_Validate(pOther) ) {
+        if( !execPtr_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-        if (pOther->ppArray) {
-            mem_Free(pOther->ppArray);
-            pOther->ppArray = OBJ_NIL;
-            pOther->max = 0;
-            pOther->size = 0;
-            pOther->current = 0;
+#ifdef  XYZZY
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
         }
+#endif
 
-        while (this->max > pOther->max) {
-            eRc = enum_ExpandArray(pOther, this->max);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                DEBUG_BREAK();
-                return eRc;
-            }
-        }
-        if (this->size < this->max) {
-        }
-        else {
-            enum_setLastError(this, ERESULT_INVALID_POINTER);
-            return ERESULT_INVALID_POINTER;
-        }
-        
         // Create a copy of objects and areas in this object placing
         // them in other.
-        for (i=0; i<this->size; ++i) {
-            pOther->ppArray[i] = this->ppArray[i];
+#ifdef  XYZZY
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+            }
+            else {
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
+            }
         }
-        pOther->size = this->size;
+#endif
+
+        // Copy other data from this object to other.
+        
+        //goto eom;
 
         // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        execPtr_setLastError(this, ERESULT_SUCCESS);
+    eom:
+        //FIXME: Implement the assignment.        
+        execPtr_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return execPtr_getLastError(this);
     }
     
     
@@ -398,32 +352,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code:
-        enum      *pCopy = enum_Copy(this);
+        execPtr      *pCopy = execPtr_Copy(this);
      @endcode:
-     @param:    this    ENUM object pointer
-     @return:   If successful, a ENUM object which must be released,
+     @param:    this    EXECPTR object pointer
+     @return:   If successful, a EXECPTR object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the ENUM object.
+     @warning: Remember to release the returned the EXECPTR object.
      */
-    ENUM_DATA *     enum_Copy(
-        ENUM_DATA       *this
+    EXECPTR_DATA *     execPtr_Copy(
+        EXECPTR_DATA       *this
     )
     {
-        ENUM_DATA       *pOther = OBJ_NIL;
+        EXECPTR_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = enum_New( );
+        pOther = execPtr_New(this->pFunc);
         if (pOther) {
-            eRc = enum_Assign(this, pOther);
+            eRc = execPtr_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -432,7 +386,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        enum_setLastError(this, ERESULT_SUCCESS);
+        execPtr_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -442,11 +396,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            enum_Dealloc(
+    void            execPtr_Dealloc(
         OBJ_ID          objId
     )
     {
-        ENUM_DATA   *this = objId;
+        EXECPTR_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -454,19 +408,18 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if (this->ppArray) {
-            mem_Free(this->ppArray);
-            this->ppArray = NULL;
-            this->max = 0;
-            this->size = 0;
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((EXECPTR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
-        
+#endif
+
         obj_setVtbl(this, this->pSuperVtbl);
         //other_Dealloc(this);          // Needed for inheritance
         obj_Dealloc(this);
@@ -481,21 +434,21 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         enum_Disable(
-        ENUM_DATA		*this
+    ERESULT         execPtr_Disable(
+        EXECPTR_DATA		*this
     )
     {
 
         // Do initialization.
         if (NULL == this) {
-            enum_setLastError(this, ERESULT_INVALID_OBJECT);
+            execPtr_setLastError(this, ERESULT_INVALID_OBJECT);
             return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
-            return enum_getLastError(this);
+            return execPtr_getLastError(this);
         }
     #endif
 
@@ -504,7 +457,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
+        execPtr_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -514,15 +467,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         enum_Enable(
-        ENUM_DATA		*this
+    ERESULT         execPtr_Enable(
+        EXECPTR_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -533,7 +486,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
+        execPtr_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -543,11 +496,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ENUM_DATA *   enum_Init(
-        ENUM_DATA       *this
+    EXECPTR_DATA *  execPtr_Init(
+        EXECPTR_DATA    *this,
+        void            *pFunc
     )
     {
-        uint32_t        cbSize = sizeof(ENUM_DATA);
+        uint32_t        cbSize = sizeof(EXECPTR_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -564,30 +518,33 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ENUM);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_EXECPTR);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_ENUM);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_EXECPTR);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&enum_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&execPtr_Vtbl);
         
-        enum_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        execPtr_setLastError(this, ERESULT_GENERAL_FAILURE);
+        this->pFunc = pFunc;
 
     #ifdef NDEBUG
     #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+#ifdef __APPLE__
+        fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(EXECPTR_DATA,eRc));
+        fprintf(stderr, "sizeof(EXECPTR_DATA) = %lu\n", sizeof(EXECPTR_DATA));
+#endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(ENUM_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(EXECPTR_DATA));
     #endif
 
         return this;
@@ -599,135 +556,28 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         enum_IsEnabled(
-        ENUM_DATA		*this
+    ERESULT         execPtr_IsEnabled(
+        EXECPTR_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            enum_setLastError(this, ERESULT_SUCCESS_TRUE);
+            execPtr_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS_FALSE);
+        execPtr_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L o o k  A h e a d
-    //---------------------------------------------------------------
-    
-    ERESULT         enum_LookAhead(
-        ENUM_DATA       *this,
-        uint32_t        offset,
-        void            **ppObject
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            //enum_setLastError(this, ERESULT_INVALID_OBJECT);
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == ppObject) {
-            DEBUG_BREAK();
-            enum_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if ((this->current + offset) < this->size) {
-        }
-        else {
-            enum_setLastError(this, ERESULT_OUT_OF_RANGE);
-            return ERESULT_OUT_OF_RANGE;
-        }
-        
-        *ppObject = this->ppArray[this->current+offset];
-        
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          N e x t
-    //---------------------------------------------------------------
-    
-    ERESULT         enum_Next(
-        ENUM_DATA       *this,
-        uint32_t        cElems,
-        void            **ppArray,
-        uint32_t        *pReturnAmt
-    )
-    {
-        uint32_t        count = 0;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == ppArray) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (NULL == this->ppArray) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_POINTER;
-        }
-#endif
-        
-        if (this->current < this->size) {
-        }
-        else {
-            if (pReturnAmt) {
-                *pReturnAmt = 0;
-            }
-            return ERESULT_OUT_OF_RANGE;
-        }
-
-        for( ;; ) {
-            if( count < cElems )
-                ;
-            else
-                break;
-            if( this->current < this->size )
-                ;
-            else
-                break;
-            if( NULL == this->ppArray[this->current] )
-                ;
-            else {
-                ppArray[count] = this->ppArray[this->current];
-                ++count;
-            }
-            ++this->current;
-        }
-        
-        if (pReturnAmt) {
-            *pReturnAmt = count;
-        }
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
     }
     
     
@@ -736,21 +586,21 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          enum_QueryInfo(
+    void *          execPtr_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
         char            *pStr
     )
     {
-        ENUM_DATA   *this = objId;
+        EXECPTR_DATA   *this = objId;
         
         if (OBJ_NIL == this) {
             return NULL;
         }
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -767,16 +617,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return enum_Disable;
+                            return execPtr_Disable;
                         }
                         break;
 
                     case 'E':
-                        if (str_Compare("Ensable", (char *)pStr) == 0) {
-                            return enum_Enable;
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return execPtr_Enable;
                         }
                         break;
 
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return execPtr_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return execPtr_ToJSON;
+                        }
+                        break;
+                        
                     default:
                         break;
                 }
@@ -792,88 +651,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      R e m a i n i n g
-    //---------------------------------------------------------------
-    
-    uint32_t        enum_Remaining(
-        ENUM_DATA       *this
-    )
-    {
-        uint32_t        count = 0;
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        count = this->size - this->current;
-        
-        // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return count;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          R e s e t
-    //---------------------------------------------------------------
-    
-    ERESULT         enum_Reset(
-        ENUM_DATA		*this
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        this->current = 0;
-        
-        // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          S k i p
-    //---------------------------------------------------------------
-    
-    ERESULT         enum_Skip(
-        ENUM_DATA       *this,
-        uint32_t        cElems
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !enum_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        this->current += cElems;
-        
-        // Return to caller.
-        enum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -881,16 +658,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code:
-        ASTR_DATA      *pDesc = enum_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = execPtr_ToDebugString(this,4);
      @endcode:
-     @param:    this    ENUM object pointer
+     @param:    this    EXECPTR object pointer
      @param:    indent  number of characters to indent every line of output, can be 0
      @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *     enum_ToDebugString(
-        ENUM_DATA       *this,
+    ASTR_DATA *     execPtr_ToDebugString(
+        EXECPTR_DATA      *this,
         int             indent
     )
     {
@@ -904,7 +681,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !enum_Validate(this) ) {
+        if( !execPtr_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -918,9 +695,9 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(enum) size=%d\n",
+                     "{%p(execPtr) pFunc=%p\n",
                      this,
-                     enum_getSize(this)
+                     this->pFunc
             );
         AStr_AppendA(pStr, str);
 
@@ -937,13 +714,74 @@ extern "C" {
         }
 #endif
         
+        if (this->pDesc) {
+            if (indent) {
+                AStr_AppendCharRepeatW(pStr, indent, ' ');
+            }
+            str[0] = '\0';
+            j = snprintf(
+                         str,
+                         sizeof(str),
+                         "desc = \"%s\"\n",
+                         AStr_getData(this->pDesc)
+                         );
+            AStr_AppendA(pStr, str);
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatW(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(enum)}\n", this);
+        j = snprintf(str, sizeof(str), " %p(execPtr)}\n", this);
         AStr_AppendA(pStr, str);
         
-        enum_setLastError(this, ERESULT_SUCCESS);
+        execPtr_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     execPtr_ToJSON(
+        EXECPTR_DATA      *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !execPtr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{ \"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
+        
+        if (this->pDesc) {
+            str[0] = '\0';
+            j = snprintf(
+                         str,
+                         sizeof(str),
+                         " \"desc\":\"%s\" ",
+                         AStr_getData(this->pDesc)
+                         );
+            AStr_AppendA(pStr, str);
+        }
+        
+        AStr_AppendA(pStr, "}\n");
+        
         return pStr;
     }
     
@@ -955,15 +793,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            enum_Validate(
-        ENUM_DATA      *this
+    bool            execPtr_Validate(
+        EXECPTR_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_ENUM) )
+            if ( obj_IsKindOf(this,OBJ_IDENT_EXECPTR) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -979,7 +817,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(ENUM_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(EXECPTR_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

@@ -166,7 +166,17 @@ extern "C" {
     );
     
     
+    HEX_DATA *      hex_Shared(
+        void
+    );
     
+    
+    bool            hex_SharedReset(
+        void
+    );
+    
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***

@@ -156,36 +156,36 @@ int         test_szHash_AddFindDelete1(
         szHash_setCompare( pHash, utf8_StrCmp, utf8_StrCmpAW );
 
         for (i=0; i<10; ++i) {
-            eRc = szHash_Add(pHash, strings[i], strings[i]);
+            eRc = szHash_AddA(pHash, strings[i], strings[i]);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = szHash_getSize(pHash);
             XCTAssertTrue( (cnt == (i+1)) );
         }
         
         for (i=0; i<10; ++i) {
-            pVoid = szHash_Find(pHash, strings[i]);
+            pVoid = szHash_FindA(pHash, strings[i]);
             XCTAssertTrue( (pVoid == strings[i]) );
         }
         
-        pVoid = szHash_Find(pHash, strings[3]);
+        pVoid = szHash_FindA(pHash, strings[3]);
         XCTAssertTrue( (pVoid == strings[3]) );
-        pVoid = szHash_Find(pHash, strings[9]);
+        pVoid = szHash_FindA(pHash, strings[9]);
         XCTAssertTrue( (pVoid == strings[9]) );
-        pVoid = szHash_Find(pHash, strings[6]);
+        pVoid = szHash_FindA(pHash, strings[6]);
         XCTAssertTrue( (pVoid == strings[6]) );
         
-        eRc = szHash_Delete(pHash, strings[5]);
+        eRc = szHash_DeleteA(pHash, strings[5]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = szHash_getSize(pHash);
         XCTAssertTrue( (cnt == 9) );
-        pVoid = szHash_Find(pHash, strings[5]);
+        pVoid = szHash_FindA(pHash, strings[5]);
         XCTAssertTrue( (pVoid == NULL) );
         
-        eRc = szHash_Delete(pHash, strings[8]);
+        eRc = szHash_DeleteA(pHash, strings[8]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = szHash_getSize(pHash);
         XCTAssertTrue( (cnt == 8) );
-        pVoid = szHash_Find(pHash, strings[8]);
+        pVoid = szHash_FindA(pHash, strings[8]);
         XCTAssertTrue( (pVoid == NULL) );
         
         obj_Release(pHash);

@@ -230,6 +230,8 @@ extern "C" {
         OBJ_IDENT_ERESULT_CLASS,
         OBJ_IDENT_EXECARRAY,            // An Array of Function/Object(s) pairs
         OBJ_IDENT_EXECARRAY_CLASS,
+        OBJ_IDENT_EXECPTR,              // Executable Function Pointer
+        OBJ_IDENT_EXECPTR_CLASS,
         OBJ_IDENT_FALSE,
         OBJ_IDENT_FALSE_CLASS,
         OBJ_IDENT_FBSI,                 // Fixed Blocked Input Class
@@ -413,6 +415,8 @@ extern "C" {
         OBJ_IDENT_UINT128_CLASS,
         OBJ_IDENT_UTF8,
         OBJ_IDENT_UTF8_CLASS,
+        OBJ_IDENT_UTF8FILE,
+        OBJ_IDENT_UTF8FILE_CLASS,
         OBJ_IDENT_VALUE,                // Any type of value
         OBJ_IDENT_VALUE_CLASS,
         OBJ_IDENT_WAV,                  // WAV File

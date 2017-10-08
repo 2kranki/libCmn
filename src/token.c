@@ -157,6 +157,28 @@ extern "C" {
     }
     
     
+    TOKEN_DATA *     token_NewStrA(
+        const
+        char            *pFileName,
+        uint32_t        lineNo,
+        uint16_t        colNo,
+        int32_t         cls,
+        const
+        char            *pStr
+    )
+    {
+        TOKEN_DATA      *this;
+        
+        // Do initialization.
+        
+        this = token_Alloc( );
+        this = token_InitStrA(this, pFileName, lineNo, colNo, cls, pStr);
+        
+        // Return to caller.
+        return( this );
+    }
+    
+    
     TOKEN_DATA *     token_NewStrW(
         const
         char            *pFileName,
@@ -565,7 +587,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !token_Validate( this ) ) {
+        if( !token_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }

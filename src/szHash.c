@@ -64,18 +64,18 @@ extern "C" {
 
     static
     bool            szHash_AddBlock(
-        SZHASH_DATA     *cbp
+        SZHASH_DATA     *this
     );
     
     static
     uint16_t        szHash_IndexFromHash(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         uint32_t        hash
     );
     
     static
     LISTDL_DATA *   szHash_NodeListFromHash(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         uint32_t        hash
     );
     
@@ -85,30 +85,30 @@ extern "C" {
      */
     static
     bool            szHash_AddBlock(
-        SZHASH_DATA     *cbp
+        SZHASH_DATA     *this
     )
     {
         SZHASH_BLOCK    *pBlock;
         uint32_t        i;
         
         // Do initialization.
-        if ( 0 == listdl_Count(&cbp->freeList) )
+        if ( 0 == listdl_Count(&this->freeList) )
             ;
         else {
             return true;
         }
         
         // Get a new block.
-        i = sizeof(SZHASH_BLOCK) + (cbp->cBlock * sizeof(SZHASH_NODE));
+        i = sizeof(SZHASH_BLOCK) + (this->cBlock * sizeof(SZHASH_NODE));
         pBlock = (SZHASH_BLOCK *)mem_Malloc( i );
         if( NULL == pBlock ) {
             return false;
         }
-        listdl_Add2Tail(&cbp->blocks, pBlock);
+        listdl_Add2Tail(&this->blocks, pBlock);
         
         // Now chain the entries to the Free chain.
-        for (i=0; i<cbp->cBlock; ++i) {
-            listdl_Add2Tail(&cbp->freeList, &pBlock->node[i]);
+        for (i=0; i<this->cBlock; ++i) {
+            listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
         }
         
         // Return to caller.
@@ -188,13 +188,13 @@ extern "C" {
     
     static
     uint16_t        szHash_IndexFromHash(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         uint32_t        hash
     )
     {
         uint16_t        index;
         
-        index = hash % cbp->cHash;
+        index = hash % this->cHash;
         return index;
     }
     
@@ -202,13 +202,13 @@ extern "C" {
     
     static
     LISTDL_DATA *   szHash_NodeListFromHash(
-        SZHASH_DATA     *cbp,
+        SZHASH_DATA     *this,
         uint32_t        hash
     )
     {
         LISTDL_DATA     *pNodeList;
         
-        pNodeList = &cbp->pHash[szHash_IndexFromHash(cbp,hash)];
+        pNodeList = &this->pHash[szHash_IndexFromHash(this,hash)];
         return( pNodeList );
     }
     
@@ -224,11 +224,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SZHASH_DATA *     szHash_Alloc(
+    SZHASH_DATA *   szHash_Alloc(
     )
     {
-        SZHASH_DATA         *this;
-        uint32_t            cbSize = sizeof(SZHASH_DATA);
+        SZHASH_DATA     *this;
+        uint32_t        cbSize = sizeof(SZHASH_DATA);
         
         // Do initialization.
         
@@ -240,11 +240,11 @@ extern "C" {
 
 
 
-    SZHASH_DATA *       szHash_New(
-        uint16_t            cHash
+    SZHASH_DATA *   szHash_New(
+        uint16_t        cHash
     )
     {
-        SZHASH_DATA         *this;
+        SZHASH_DATA     *this;
         
         // Do initialization.
         
@@ -275,7 +275,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( this ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -302,7 +302,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( this ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -321,19 +321,19 @@ extern "C" {
     
     
     uint32_t        szHash_getSize(
-        SZHASH_DATA     *cbp
+        SZHASH_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        return cbp->num;
+        return this->num;
     }
 
 
@@ -348,8 +348,8 @@ extern "C" {
     //                          A d d
     //----------------------------------------------------------
     
-    ERESULT         szHash_Add(
-        SZHASH_DATA     *cbp,
+    ERESULT         szHash_AddA(
+        SZHASH_DATA     *this,
         const
         char            *pszKey,
         void			*pData
@@ -361,34 +361,34 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !szHash_Validate( cbp ) ) {
+        if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (NULL == cbp->pCompare) {
+        if (NULL == this->pCompare) {
             return ERESULT_INVALID_FUNCTION;
         }
-        if (NULL == cbp->pComputeHash) {
+        if (NULL == this->pComputeHash) {
             return ERESULT_INVALID_FUNCTION;
         }
 #endif
         
-        hash = (*cbp->pComputeHash)(pszKey,NULL);
-        pNode = szHash_FindNode(cbp, hash, pszKey);
+        hash = (*this->pComputeHash)(pszKey,NULL);
+        pNode = szHash_FindNode(this, hash, pszKey);
         if (pNode) {
             fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
             return ERESULT_DATA_ALREADY_EXISTS;
         }
         
         // Determine the entry number.
-        if (0 == listdl_Count(&cbp->freeList)) {
-            if ( szHash_AddBlock(cbp) )
+        if (0 == listdl_Count(&this->freeList)) {
+            if ( szHash_AddBlock(this) )
                 ;
             else {
                 return ERESULT_INSUFFICIENT_MEMORY;
             }
         }
-        pNode = listdl_DeleteHead(&cbp->freeList);
+        pNode = listdl_DeleteHead(&this->freeList);
         if (NULL == pNode) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
@@ -398,13 +398,13 @@ extern "C" {
         pNode->pData  = pData;
         pNode->hash   = hash;
         
-        pNodeList = szHash_NodeListFromHash( cbp, hash );
+        pNodeList = szHash_NodeListFromHash(this, hash);
         listdl_Add2Tail(pNodeList, pNode);
 
-        ++cbp->num;
+        ++this->num;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -455,7 +455,7 @@ extern "C" {
     //					  D e l e t e
     //----------------------------------------------------------
     
-    ERESULT         szHash_Delete(
+    ERESULT         szHash_DeleteA(
         SZHASH_DATA     *this,
         const
         char            *pszKey
@@ -553,7 +553,7 @@ extern "C" {
     //                        F i n d
     //----------------------------------------------------------
     
-    void *          szHash_Find(
+    void *          szHash_FindA(
         SZHASH_DATA     *this,
         const
         char            *pszKey

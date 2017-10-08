@@ -24,6 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <msgBus_internal.h>
+#include    <execPtr.h>
 
 
 #define NUM_OBJ      4
@@ -135,15 +136,16 @@ int         tearDown(
 
 
 
-int         test_msgBus_Broadcast01(
+int             test_msgBus_Broadcast01(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    MSGBUS_DATA	*pObj = OBJ_NIL;
-    ERESULT     eRc;
-    int         i;
-   
+    MSGBUS_DATA	    *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    int             i;
+    EXECPTR_DATA    *pFunc = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = msgBus_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -154,8 +156,11 @@ int         test_msgBus_Broadcast01(
 
         printf("Registering Receivers...\n");
         for (i=0; i<NUM_OBJ; ++i) {
-            eRc = msgBus_Register(pObj, (void *)printMsg, StrObj[i]);
+            pFunc = execPtr_New(&printMsg);
+            eRc = msgBus_Register(pObj, pFunc, StrObj[i]);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            obj_Release(pFunc);
+            pFunc = OBJ_NIL;
         }
         TINYTEST_TRUE( (msgBus_getRegistrySize(pObj) == NUM_OBJ) );
 

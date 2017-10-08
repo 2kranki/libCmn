@@ -180,7 +180,21 @@ struct lex_data_s	{
     );
     
     
+    /*** @protected ***/
+    /*!
+     Parse a character constant character not allowing \n or \r.
+     */
     bool            lex_ParseChrCon(
+        LEX_DATA        *this,
+        int32_t         ending
+    );
+    
+    
+    /*** @protected ***/
+    /*!
+     Parse a character constant character allowing \n or \r.
+     */
+    bool            lex_ParseChrConWS(
         LEX_DATA        *this,
         int32_t         ending
     );
@@ -253,10 +267,9 @@ struct lex_data_s	{
      to be returned.
      @param:    this    LEX object pointer
      @param     newClass If non-zero, use this class for the token
-     being built.
-     @param     fSaveStr
-     If true, the string being built by the parse is saved
-     into the token being built replacing the original string.
+                         being built.
+     @param     fSaveStr If true, the string being built by the parse is saved
+                         into the token being built replacing the original string.
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenFinalize(
@@ -272,10 +285,10 @@ struct lex_data_s	{
      token (ie First element of the next parse) and initialize the ac-
      cumulation string to the contents of the given token.
      @param:    this    LEX object pointer
-     @param     pInput pointer to a token that is used to define the
-     next parsed output token. The string/char within the
-     token is used as the first char/string of the new
-     parsed token.
+     @param     pInput  pointer to a token that is used to define the
+                         next parsed output token. The string/char within the
+                         token is used as the first char/string of the new
+                         parsed token.
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenSetup(

@@ -169,6 +169,17 @@ extern "C" {
     );
     
     
+    TOKEN_DATA *     token_NewStrA(
+        const
+        char            *pFileName,
+        uint32_t        lineNo,
+        uint16_t        colNo,
+        int32_t         cls,
+        const
+        char            *pStr
+    );
+    
+    
     TOKEN_DATA *     token_NewStrW(
         const
         char            *pFileName,

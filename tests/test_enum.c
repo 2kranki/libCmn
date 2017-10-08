@@ -117,6 +117,8 @@ int         test_enum_Test01(
     uint32_t    idx = 0;
     const
     char        *pStr = NULL;
+    const
+    char        *pStrLA = NULL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = enum_Alloc( );
@@ -146,6 +148,7 @@ int         test_enum_Test01(
             XCTAssertFalse( (NULL == pObj->ppArray) );
         }
         XCTAssertTrue( (cStringTable == pObj->size) );
+        XCTAssertTrue( (cStringTable == enum_Remaining(pObj)) );
         
         eRc = enum_Next(pObj, 1, (void **)&pStr, &idx);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
@@ -154,13 +157,17 @@ int         test_enum_Test01(
         XCTAssertTrue( (1 == pObj->current) );
         
         for (i=1; i<cStringTable; ++i) {
+            eRc = enum_LookAhead(pObj, 0, (void **)&pStrLA);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             eRc = enum_Next(pObj, 1, (void **)&pStr, &idx);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            XCTAssertTrue( (pStr == pStrLA) );
             XCTAssertTrue( (idx == 1) );
             XCTAssertTrue( (0 == strcmp(pStr, stringTable[i])) );
             XCTAssertTrue( (i+1 == pObj->current) );
             XCTAssertFalse( (NULL == pObj->ppArray) );
         }
+        XCTAssertTrue( (0 == enum_Remaining(pObj)) );
         
         eRc = enum_Next(pObj, 1, (void **)&pStr, &idx);
         XCTAssertTrue( (ERESULT_FAILED(eRc)) );

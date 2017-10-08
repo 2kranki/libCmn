@@ -180,7 +180,7 @@ extern "C" {
     /* Add() creates a new node and adds it to the hash table if the
      * supplied key does not exist in the table.
      */
-    ERESULT         szHash_Add(
+    ERESULT         szHash_AddA(
         SZHASH_DATA     *this,
         const
         char            *pszKey,
@@ -193,7 +193,7 @@ extern "C" {
      *		TRUE	= Entry successfully deleted.
      *		FALSE	= Entry could not be deleted.
      */
-    ERESULT         szHash_Delete(
+    ERESULT         szHash_DeleteA(
         SZHASH_DATA     *this,
         const
         char            *pszKey
@@ -221,7 +221,7 @@ extern "C" {
     /* Find() returns the data associated with the string if found,
      * otherwise NULL.
      */
-    void *          szHash_Find(
+    void *          szHash_FindA(
         SZHASH_DATA     *this,
         const
         char            *pszKey

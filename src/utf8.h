@@ -16,7 +16,7 @@
  *              So, encoding/decoding is supported using the stdlib
  *              routines making the need for this object much less.
  *              However, if stdlib is not available and these func-
- *              are needed, then this becomes more necessary.
+ *              tions are needed, then this becomes more necessary.
  *
  *      # bits  First  Last
  *      code    Code   Code

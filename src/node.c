@@ -798,6 +798,7 @@ extern "C" {
         
         node_setProperties(this, OBJ_NIL);
         node_setData(this, OBJ_NIL);
+        node_setExtra(this, OBJ_NIL);
         node_setName(this, OBJ_NIL);
         node_setOther(this, OBJ_NIL);
 
@@ -934,7 +935,6 @@ extern "C" {
         }
         
         if (pValue) {
-            DEBUG_BREAK();                  /* Temporary */
             this->pName = name_NewPtr(pValue);
             if (OBJ_NIL == this->pName) {
                 DEBUG_BREAK();

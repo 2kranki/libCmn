@@ -103,6 +103,7 @@ extern "C" {
         if (OBJ_NIL == pParser) {
             goto exit00;
         }
+        obj_TraceSet(pParser, true);
         pFileNode = hjson_ParseFile(pParser);
         if (OBJ_NIL == pFileNode) {
             goto exit00;
@@ -111,7 +112,11 @@ extern "C" {
         if (OBJ_NIL == pFileNode) {
             goto exit00;
         }
-        //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+        {
+            ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
         
         eRc = nodeHash_FindA(pHash, "FileName", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -123,7 +128,11 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - fileName should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -139,7 +148,11 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - lineNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -155,7 +168,11 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - colNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -171,7 +188,11 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - class should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -186,7 +207,11 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - type should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -218,7 +243,11 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - CHAR should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -237,7 +266,11 @@ extern "C" {
             //TODO: Add float support!
             else {
                 fprintf(stderr, "ERROR - NUMBER should have a integer or float!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -257,7 +290,11 @@ extern "C" {
            }
             else {
                 fprintf(stderr, "ERROR - STRING should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
@@ -275,14 +312,22 @@ extern "C" {
             }
             else {
                 fprintf(stderr, "ERROR - STRTOKEN should have a number!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
                 DEBUG_BREAK();
                 goto exit00;
             }
         }
         else {
             fprintf(stderr, "ERROR - Token Type is not implemented!\n");
-            fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+            {
+                ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
             DEBUG_BREAK();
             goto exit00;
         }

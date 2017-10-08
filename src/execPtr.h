@@ -1,24 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          OBJHASH Console Transmit Task (objHash) Header
+//          Executable Function Pointer (execPtr) Header
 //****************************************************************
 /*
  * Program
- *			Separate objHash (objHash)
+ *			Executable Function Pointer (execPtr)
  * Purpose
- *			This object provides a standardized way of handling
- *          a Hash table for objects. The objects must support
- *          the compare() and hash() functions in their object
- *          vtbl. Since this is how the objects are looked at,
- *          this table has no knowledge of a key and objects
- *          must always be suppied for searches, deletions, etc.
+ *			This object provides a way of wrapping a function pointer
+ *          into an object which can then be passed around in other
+ *          objects.  Since nothing is really known of the function
+ *          pointer, it can not be saved in a JSON string for instance.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	10/24/2015 Generated
+ *	10/07/2017 Generated
  */
 
 
@@ -57,8 +55,8 @@
 #include        <AStr.h>
 
 
-#ifndef         OBJHASH_H
-#define         OBJHASH_H
+#ifndef         EXECPTR_H
+#define         EXECPTR_H
 
 
 
@@ -72,34 +70,17 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct objHash_data_s	OBJHASH_DATA;
+    typedef struct execPtr_data_s	EXECPTR_DATA;    // Inherits from OBJ.
 
-    typedef struct objHash_vtbl_s    {
+    typedef struct execPtr_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in fatFCB_object.c.
+        // method names to the vtbl definition in execPtr_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CB_DATA *);
-    } OBJHASH_VTBL;
-    
-    
+        //bool        (*pIsEnabled)(EXECPTR_DATA *);
+    } EXECPTR_VTBL;
 
-    // Prime numbers for hash table sizes within 16 bits
-    // (Maximum size is 65535)
-    typedef enum objHash_table_size_e {
-        OBJHASH_TABLE_SIZE_XXXXXSMALL = 5,
-        OBJHASH_TABLE_SIZE_XXXXSMALL = 17,
-        OBJHASH_TABLE_SIZE_XXXSMALL = 31,
-        OBJHASH_TABLE_SIZE_XXSMALL = 61,
-        OBJHASH_TABLE_SIZE_XSMALL = 127,
-        OBJHASH_TABLE_SIZE_SMALL = 257,
-        OBJHASH_TABLE_SIZE_MEDIUM = 2053,
-        OBJHASH_TABLE_SIZE_LARGE  = 4099,
-        OBJHASH_TABLE_SIZE_XLARGE = 16411
-    } OBJHASH_TABLE_SIZE;
-    
-    
 
 
     /****************************************************************
@@ -111,13 +92,19 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    OBJHASH_DATA *  objHash_Alloc(
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to execPtr object if successful, otherwise OBJ_NIL.
+     */
+    EXECPTR_DATA *     execPtr_Alloc(
         void
     );
     
     
-    OBJHASH_DATA *  objHash_New(
-        uint16_t        cHash       // [in] Hash Table Size
+    EXECPTR_DATA *     execPtr_New(
+        void            *pFunc
     );
     
     
@@ -126,50 +113,71 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*!
+     Description Property - can be used for any documentation purposes
+     needed
+     */
+    ASTR_DATA * execPtr_getDesc(
+        EXECPTR_DATA *this
+    );
+    
+    bool        execPtr_setDesc(
+        EXECPTR_DATA *this,
+        ASTR_DATA   *pValue
+    );
+    
+
+    void *      execPtr_getFunc(
+        EXECPTR_DATA *this
+    );
+    
+    
+    ERESULT     execPtr_getLastError(
+        EXECPTR_DATA *this
+    );
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // Add() creates a new node and adds it to the hash table if the
-    // supplied key does not exist in the table.
-    ERESULT         objHash_Add(
-        OBJHASH_DATA    *this,
-        OBJ_ID			pObject
-    );
-    
-    
-    // Delete() deletes the first entry found matching the given object.
-    ERESULT         objHash_Delete(
-        OBJHASH_DATA    *this,
-        OBJ_ID          *pObject
-    );
-    
-    
-    /* Find() returns the data associated with the given object if 
-     * found, otherwise OBJ_NIL is returned.
-     */
-    OBJ_ID          objHash_Find(
-        OBJHASH_DATA    *this,
-        OBJ_ID          *pObject
-    );
-    
-    
-    OBJHASH_DATA *  objHash_Init(
-        OBJHASH_DATA    *this,
-        uint16_t        cHash       // [in] Hash Table Size
+    ERESULT     execPtr_Disable(
+        EXECPTR_DATA *this
     );
 
 
+    ERESULT     execPtr_Enable(
+        EXECPTR_DATA *this
+    );
+
+   
+    EXECPTR_DATA *  execPtr_Init(
+        EXECPTR_DATA    *this,
+        void            *pFunc
+    );
+
+
+    ERESULT         execPtr_IsEnabled(
+        EXECPTR_DATA    *this
+    );
+    
+ 
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return    If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = execPtr_ToDebugString(this,4);
+     @endcode 
+     @param     this    EXECPTR object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     objHash_ToDebugString(
-        OBJHASH_DATA    *this,
+    ASTR_DATA *     execPtr_ToDebugString(
+        EXECPTR_DATA    *this,
         int             indent
     );
     
@@ -180,5 +188,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* OBJHASH_H */
+#endif	/* EXECPTR_H */
 
