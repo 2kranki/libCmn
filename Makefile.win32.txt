@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 8/2017 17:53:34.000)
+# (10/ 9/2017  4:00:15.000)
 
 
 LIBNAM=libCmn
@@ -247,10 +247,58 @@ TESTS =
 
 
 
+TESTS = $(TESTS) test_AStrArray
+
+test_AStrArray:
+	$(CC) $(CFLAGS) /Itests tests\test_AStrArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_AStrC
+
+test_AStrC:
+	$(CC) $(CFLAGS) /Itests tests\test_AStrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_appl
 
 test_appl:
 	$(CC) $(CFLAGS) /Itests tests\test_appl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_arrayExpand
+
+test_arrayExpand:
+	$(CC) $(CFLAGS) /Itests tests\test_arrayExpand.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_ascii
+
+test_ascii:
+	$(CC) $(CFLAGS) /Itests tests\test_ascii.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_audioCW
+
+test_audioCW:
+	$(CC) $(CFLAGS) /Itests tests\test_audioCW.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_audioWAV
+
+test_audioWAV:
+	$(CC) $(CFLAGS) /Itests tests\test_audioWAV.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -275,6 +323,14 @@ TESTS = $(TESTS) test_cb
 
 test_cb:
 	$(CC) $(CFLAGS) /Itests tests\test_cb.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_cfa
+
+test_cfa:
+	$(CC) $(CFLAGS) /Itests tests\test_cfa.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -323,6 +379,38 @@ TESTS = $(TESTS) test_dbCsv
 
 test_dbCsv:
 	$(CC) $(CFLAGS) /Itests tests\test_dbCsv.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_dbField
+
+test_dbField:
+	$(CC) $(CFLAGS) /Itests tests\test_dbField.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_dbf
+
+test_dbf:
+	$(CC) $(CFLAGS) /Itests tests\test_dbf.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_eResult
+
+test_eResult:
+	$(CC) $(CFLAGS) /Itests tests\test_eResult.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_ebcdic
+
+test_ebcdic:
+	$(CC) $(CFLAGS) /Itests tests\test_ebcdic.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -423,10 +511,90 @@ test_node:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_nodeArc
+
+test_nodeArc:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeArc.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeEntry
+
+test_nodeEntry:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeEntry.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeGraph
+
+test_nodeGraph:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeGraph.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeHash
+
+test_nodeHash:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeHash.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeList
+
+test_nodeList:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeList.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeMatrix
+
+test_nodeMatrix:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeMatrix.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeScan
+
+test_nodeScan:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeScan.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_null
 
 test_null:
 	$(CC) $(CFLAGS) /Itests tests\test_null.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_number
+
+test_number:
+	$(CC) $(CFLAGS) /Itests tests\test_number.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objHash
+
+test_objHash:
+	$(CC) $(CFLAGS) /Itests tests\test_objHash.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objList
+
+test_objList:
+	$(CC) $(CFLAGS) /Itests tests\test_objList.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -487,6 +655,30 @@ test_rrds32:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_scanDate
+
+test_scanDate:
+	$(CC) $(CFLAGS) /Itests tests\test_scanDate.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_sidx
+
+test_sidx:
+	$(CC) $(CFLAGS) /Itests tests\test_sidx.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_srcFiles
+
+test_srcFiles:
+	$(CC) $(CFLAGS) /Itests tests\test_srcFiles.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_srcLoc
 
 test_srcLoc:
@@ -507,6 +699,14 @@ TESTS = $(TESTS) test_szTbl
 
 test_szTbl:
 	$(CC) $(CFLAGS) /Itests tests\test_szTbl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_table
+
+test_table:
+	$(CC) $(CFLAGS) /Itests tests\test_table.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -551,6 +751,22 @@ test_true:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_u16Array
+
+test_u16Array:
+	$(CC) $(CFLAGS) /Itests tests\test_u16Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_u32Array
+
+test_u32Array:
+	$(CC) $(CFLAGS) /Itests tests\test_u32Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_u8Array
 
 test_u8Array:
@@ -559,10 +775,26 @@ test_u8Array:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_utf8
+
+test_utf8:
+	$(CC) $(CFLAGS) /Itests tests\test_utf8.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_value
 
 test_value:
 	$(CC) $(CFLAGS) /Itests tests\test_value.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_wav
+
+test_wav:
+	$(CC) $(CFLAGS) /Itests tests\test_wav.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

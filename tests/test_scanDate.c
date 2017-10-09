@@ -24,7 +24,6 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <clo_internal.h>
 
 
 
@@ -63,26 +62,43 @@ int         tearDown(
 
 
 
-int         test_clo_OpenClose(
+int         test_Date01(
     const
     char        *pTestName
 )
 {
-    CLO_DATA	*pObj = OBJ_NIL;
+	char        *testString = " abc";
+    bool        fRc;
+    char        *pCurChr = testString;
+    uint32_t    cScanned = 0;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = clo_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = clo_Init( pObj, 0, NULL );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
+	fRc = scanWhite( &pCurChr, &cScanned );
+    XCTAssertTrue( ((testString + 1) == pCurChr) );
+    XCTAssertTrue( (1 == cScanned) );
 
-        // Test something.
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
 
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
+
+
+int         test_Date02(
+    const
+    char        *pTestName
+)
+{
+	char        *testString = "abc ";
+    bool        fRc;
+    char        *pCurChr = testString;
+    uint32_t    cScanned = 0;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+	fRc = scanWhite( &pCurChr, &cScanned );
+    XCTAssertTrue( (testString == pCurChr) );
+    XCTAssertTrue( (0 == cScanned) );
 
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
@@ -91,11 +107,12 @@ int         test_clo_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_clo);
-  TINYTEST_ADD_TEST(test_clo_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test);
+  TINYTEST_ADD_TEST(test_Date01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_Date02,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_clo);
+TINYTEST_MAIN_SINGLE_SUITE(test);
 
 
 

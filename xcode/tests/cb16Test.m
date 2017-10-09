@@ -94,9 +94,9 @@
 	CB16_DATA       *cbp;
 
 	cbp = cb16_Alloc(8);
-    XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
+    XCTAssertFalse( (NULL == cbp) );
 	cbp = cb16_Init( cbp );
-    XCTAssertFalse( (NULL == cbp), @"Could not init" );
+    XCTAssertFalse( (NULL == cbp) );
     if (cbp) {
         obj_Release(cbp);
         cbp = NULL;
@@ -114,14 +114,14 @@
     bool            fRc;
     
 	cbp = cb16_Alloc(8);
-    XCTAssertFalse( (NULL == cbp), @"Could not alloc" );
+    XCTAssertFalse( (NULL == cbp) );
 	cbp = cb16_Init( cbp );
-    XCTAssertFalse( (NULL == cbp), @"Could not init" );
+    XCTAssertFalse( (NULL == cbp) );
     if (cbp) {
         
         for (i=0; i<8; ++i) {
             fRc = cb16_Put(cbp, i, 0);
-            XCTAssertTrue( (fRc), @"" );
+            XCTAssertTrue( (fRc) );
         }
         // Can't test this properly because TNeo simulation does not work well enough.
         //fRc = cb16_Put(cbp, i, 0);          // One too many
@@ -129,8 +129,8 @@
         
         for (i=0; i<8; ++i) {
             fRc = cb16_Get(cbp, &data16, 0);
-            XCTAssertTrue( (fRc), @"" );
-            XCTAssertTrue( (i == data16), @"" );
+            XCTAssertTrue( (fRc) );
+            XCTAssertTrue( (i == data16) );
         }
         //fRc = cb16_Get(cbp, &data16, 0);    // One too many
         //STAssertFalse( (fRc), @"" );

@@ -782,7 +782,6 @@ extern "C" {
             if (this) {
                 this = hjson_InitAStr(this, pAStr, tabSize);
             }
-
             obj_Release(pAStr);
             pAStr = OBJ_NIL;
         }

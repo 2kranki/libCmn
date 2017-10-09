@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <clo_internal.h>
+#include    <u16Array_internal.h>
 
 
 
@@ -63,18 +63,18 @@ int         tearDown(
 
 
 
-int         test_clo_OpenClose(
+int         test_u16Array_OpenClose(
     const
     char        *pTestName
 )
 {
-    CLO_DATA	*pObj = OBJ_NIL;
+    U16ARRAY_DATA *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = clo_Alloc( );
+    pObj = u16Array_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = clo_Init( pObj, 0, NULL );
+    pObj = u16Array_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -90,12 +90,51 @@ int         test_clo_OpenClose(
 
 
 
+int         test_u16Array_AddGet01(
+    const
+    char        *pTestName
+)
+{
+    U16ARRAY_DATA	*pObj = OBJ_NIL;
+    uint32_t        i;
+    ERESULT         eRc;
+    uint16_t        data;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = u16Array_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = u16Array_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        for (i=1; i<=64; ++i) {
+            eRc = u16Array_AppendData(pObj, i);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        }
+        
+        for (i=1; i<=64; ++i) {
+            data = u16Array_Get(pObj, i);
+            XCTAssertTrue( (data == i) );
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
 
-TINYTEST_START_SUITE(test_clo);
-  TINYTEST_ADD_TEST(test_clo_OpenClose,setUp,tearDown);
+
+
+
+TINYTEST_START_SUITE(test_u16Array);
+  TINYTEST_ADD_TEST(test_u16Array_AddGet01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_u16Array_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_clo);
+TINYTEST_MAIN_SINGLE_SUITE(test_u16Array);
 
 
 

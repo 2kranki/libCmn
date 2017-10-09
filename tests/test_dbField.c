@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <clo_internal.h>
+#include    <dbField_internal.h>
 
 
 
@@ -63,18 +63,18 @@ int         tearDown(
 
 
 
-int         test_clo_OpenClose(
+int         test_dbField_OpenClose(
     const
     char        *pTestName
 )
 {
-    CLO_DATA	*pObj = OBJ_NIL;
+    DBFIELD_DATA *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = clo_Alloc( );
+    pObj = dbField_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = clo_Init( pObj, 0, NULL );
+    pObj = dbField_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -91,11 +91,11 @@ int         test_clo_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_clo);
-  TINYTEST_ADD_TEST(test_clo_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_dbField);
+  TINYTEST_ADD_TEST(test_dbField_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_clo);
+TINYTEST_MAIN_SINGLE_SUITE(test_dbField);
 
 
 
