@@ -142,89 +142,89 @@ char        whiteSpaceA[22] = {
     int32_t     chrW;
    
     pObj = AStr_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = AStr_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
         eRc = AStr_AppendA( pObj, "abc" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (3 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))) );
         
         eRc = AStr_AppendA( pObj, "def" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (6 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
         
         eRc = AStr_AppendCharRepeatA( pObj, 2, 'z' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (8 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdefzz", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (8 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdefzz", AStr_getData(pObj))) );
         
         eRc = AStr_AppendCharRepeatW( pObj, 2, 'y' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (10 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdefzzyy", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (10 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdefzzyy", AStr_getData(pObj))) );
         
         eRc = AStr_CharPutW( pObj, 2, 'x' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (10 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("axcdefzzyy", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (10 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("axcdefzzyy", AStr_getData(pObj))) );
         
         eRc = AStr_CharPutW( pObj, 2, 'b' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (10 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdefzzyy", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (10 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdefzzyy", AStr_getData(pObj))) );
         
         eRc = AStr_Truncate( pObj, 6 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (6 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
         
         eRc = AStr_CompareA(pObj, "abcdef");
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc), @"" );
+        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
         
         eRc = AStr_CompareA(pObj, "aaaaaa");
-        XCTAssertTrue( (ERESULT_SUCCESS_GREATER_THAN == eRc), @"" );
+        XCTAssertTrue( (ERESULT_SUCCESS_GREATER_THAN == eRc) );
         
         eRc = AStr_CompareA(pObj, "zzzzzz");
-        XCTAssertTrue( (ERESULT_SUCCESS_LESS_THAN == eRc), @"" );
+        XCTAssertTrue( (ERESULT_SUCCESS_LESS_THAN == eRc) );
         
         chrW = AStr_CharGetW( pObj, 0 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (-1 == chrW), @"" );
+        XCTAssertTrue( (-1 == chrW) );
         
         chrW = AStr_CharGetW( pObj, 1 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( ('a' == chrW), @"" );
+        XCTAssertTrue( ('a' == chrW) );
         
         chrW = AStr_CharGetW( pObj, 6 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( ('f' == chrW), @"" );
+        XCTAssertTrue( ('f' == chrW) );
         
         chrW = AStr_CharGetW( pObj, 7 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (-1 == chrW), @"" );
+        XCTAssertTrue( (-1 == chrW) );
         
         eRc = AStr_Remove( pObj, 4, 2 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (4 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcf", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (4 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcf", AStr_getData(pObj))) );
         
         eRc = AStr_Remove( pObj, 4, 1 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (3 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))) );
         
         eRc = AStr_Remove( pObj, 1, 1 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("bc", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (2 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("bc", AStr_getData(pObj))) );
         
         eRc = AStr_Remove( pObj, 1, 2 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (0 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (0 == AStr_getLength(pObj)) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -251,44 +251,44 @@ char        whiteSpaceA[22] = {
     char        *pChrs;
     
     pLowerA = AStr_NewA(pLower);
-    XCTAssertFalse( (OBJ_NIL == pLowerA), @"" );
-    XCTAssertTrue( (26 == AStr_getLength(pLowerA)), @"" );
-    XCTAssertTrue( (0 == strcmp(pLower, AStr_getData(pLowerA))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pLowerA) );
+    XCTAssertTrue( (26 == AStr_getLength(pLowerA)) );
+    XCTAssertTrue( (0 == strcmp(pLower, AStr_getData(pLowerA))) );
     
     pUpperA = AStr_NewA(pUpper);
-    XCTAssertFalse( (OBJ_NIL == pUpperA), @"" );
-    XCTAssertTrue( (26 == AStr_getLength(pUpperA)), @"" );
-    XCTAssertTrue( (0 == strcmp(pUpper, AStr_getData(pUpperA))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pUpperA) );
+    XCTAssertTrue( (26 == AStr_getLength(pUpperA)) );
+    XCTAssertTrue( (0 == strcmp(pUpper, AStr_getData(pUpperA))) );
     
     pNumbersA = AStr_NewA(pNumbers);
-    XCTAssertFalse( (OBJ_NIL == pNumbersA), @"" );
-    XCTAssertTrue( (10 == AStr_getLength(pNumbersA)), @"" );
-    XCTAssertTrue( (0 == strcmp(pNumbers, AStr_getData(pNumbersA))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pNumbersA) );
+    XCTAssertTrue( (10 == AStr_getLength(pNumbersA)) );
+    XCTAssertTrue( (0 == strcmp(pNumbers, AStr_getData(pNumbersA))) );
     
     pBaseA = AStr_New();
-    XCTAssertFalse( (OBJ_NIL == pBaseA), @"" );
-    XCTAssertTrue( (0 == AStr_getLength(pBaseA)), @"" );
+    XCTAssertFalse( (OBJ_NIL == pBaseA) );
+    XCTAssertTrue( (0 == AStr_getLength(pBaseA)) );
     eRc = AStr_Append( pBaseA, pNumbersA );
     XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-    XCTAssertTrue( (10 == AStr_getLength(pBaseA)), @"" );
+    XCTAssertTrue( (10 == AStr_getLength(pBaseA)) );
     pChrs = AStr_getData(pBaseA);
-    XCTAssertTrue( (0 == strncmp(AStr_getData(pNumbersA), pChrs, AStr_getLength(pNumbersA))), @"" );
+    XCTAssertTrue( (0 == strncmp(AStr_getData(pNumbersA), pChrs, AStr_getLength(pNumbersA))) );
     eRc = AStr_Append( pBaseA, pLowerA );
     XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-    XCTAssertTrue( (36 == AStr_getLength(pBaseA)), @"" );
+    XCTAssertTrue( (36 == AStr_getLength(pBaseA)) );
     pChrs = AStr_getData(pBaseA);
-    XCTAssertTrue( (0 == strncmp(AStr_getData(pNumbersA), pChrs, AStr_getLength(pNumbersA))), @"" );
+    XCTAssertTrue( (0 == strncmp(AStr_getData(pNumbersA), pChrs, AStr_getLength(pNumbersA))) );
     pChrs = AStr_getData(pBaseA) + AStr_getLength(pNumbersA);
-    XCTAssertTrue( (0 == strncmp(AStr_getData(pLowerA), pChrs, AStr_getLength(pLowerA))), @"" );
+    XCTAssertTrue( (0 == strncmp(AStr_getData(pLowerA), pChrs, AStr_getLength(pLowerA))) );
     eRc = AStr_Append( pBaseA, pUpperA );
     XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-    XCTAssertTrue( (62 == AStr_getLength(pBaseA)), @"" );
+    XCTAssertTrue( (62 == AStr_getLength(pBaseA)) );
     pChrs = AStr_getData(pBaseA);
-    XCTAssertTrue( (0 == strncmp(AStr_getData(pNumbersA), pChrs, AStr_getLength(pNumbersA))), @"" );
+    XCTAssertTrue( (0 == strncmp(AStr_getData(pNumbersA), pChrs, AStr_getLength(pNumbersA))) );
     pChrs = AStr_getData(pBaseA) + AStr_getLength(pNumbersA);
-    XCTAssertTrue( (0 == strncmp(AStr_getData(pLowerA), pChrs, AStr_getLength(pLowerA))), @"" );
+    XCTAssertTrue( (0 == strncmp(AStr_getData(pLowerA), pChrs, AStr_getLength(pLowerA))) );
     pChrs = AStr_getData(pBaseA) + AStr_getLength(pNumbersA) + AStr_getLength(pLowerA);
-    XCTAssertTrue( (0 == strncmp(AStr_getData(pUpperA), pChrs, AStr_getLength(pUpperA))), @"" );
+    XCTAssertTrue( (0 == strncmp(AStr_getData(pUpperA), pChrs, AStr_getLength(pUpperA))) );
 
     pObj = AStr_New();
     if (pObj) {
@@ -296,11 +296,11 @@ char        whiteSpaceA[22] = {
         for (i=0; i<iMax; ++i) {
             eRc = AStr_Append( pObj, pBaseA );
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            XCTAssertTrue( (((i+1) * AStr_getLength(pBaseA)) == AStr_getLength(pObj)), @"" );
+            XCTAssertTrue( (((i+1) * AStr_getLength(pBaseA)) == AStr_getLength(pObj)) );
         }
         for (i=0; i<iMax; ++i) {
             pChrs = AStr_getData(pObj) + (i * AStr_getLength(pBaseA));
-            XCTAssertTrue( (0 == strncmp(AStr_getData(pBaseA), pChrs, AStr_getLength(pBaseA))), @"" );
+            XCTAssertTrue( (0 == strncmp(AStr_getData(pBaseA), pChrs, AStr_getLength(pBaseA))) );
         }
         
         obj_Release(pObj);
@@ -325,15 +325,15 @@ char        whiteSpaceA[22] = {
     ASTR_DATA	*pObj = OBJ_NIL;
     
     pObj = AStr_New();
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
-    XCTAssertTrue( (0 == AStr_getLength(pObj)), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (0 == AStr_getLength(pObj)) );
     if (pObj) {
         
         eRc = AStr_AppendPrint(pObj, "%03d,%03d", 54, 113);
         fprintf(stderr, "pObj=%s\n",AStr_getData(pObj));
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (7 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("054,113", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (7 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("054,113", AStr_getData(pObj))) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -350,25 +350,25 @@ char        whiteSpaceA[22] = {
     ASTR_DATA	*pOtr = OBJ_NIL;
     
     pObj = AStr_NewA("abcdef");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
-    XCTAssertTrue( (6 == AStr_getLength(pObj)), @"" );
-    XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (6 == AStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
     if (pObj) {
         
         pOtr = AStr_Copy( pObj );
-        XCTAssertFalse( (OBJ_NIL == pOtr), @"" );
-        XCTAssertTrue( (6 == AStr_getLength(pOtr)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pOtr))), @"" );
+        XCTAssertFalse( (OBJ_NIL == pOtr) );
+        XCTAssertTrue( (6 == AStr_getLength(pOtr)) );
+        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pOtr))) );
         
         eRc = AStr_Truncate( pObj, 3 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (3 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))) );
         
         eRc = AStr_Assign(pOtr, pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (6 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
         
         obj_Release(pOtr);
         pOtr = OBJ_NIL;
@@ -388,9 +388,9 @@ char        whiteSpaceA[22] = {
     uint32_t    index;
     
     pObj = AStr_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = AStr_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = AStr_AppendA( pObj, "xABCxDEFxG" );
@@ -399,27 +399,27 @@ char        whiteSpaceA[22] = {
         index = 0;      // Start at the beginning.
         eRc = AStr_CharFindNextW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (1 == index), @"" );
+        XCTAssertTrue( (1 == index) );
         
         ++index;
         eRc = AStr_CharFindNextW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == index), @"" );
+        XCTAssertTrue( (5 == index) );
         
         ++index;
         eRc = AStr_CharFindNextW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (9 == index), @"" );
+        XCTAssertTrue( (9 == index) );
         
         ++index;
         eRc = AStr_CharFindNextW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_HAS_FAILED(eRc)) );
-        XCTAssertTrue( (0 == index), @"" );
+        XCTAssertTrue( (0 == index) );
         
         eRc = AStr_CharReplaceAllW(pObj, 'x', 'y');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (10 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("yABCyDEFyG", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (0 == strcmp("yABCyDEFyG", AStr_getData(pObj))) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -436,9 +436,9 @@ char        whiteSpaceA[22] = {
     uint32_t    index;
     
     pObj = AStr_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  BSTR_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = AStr_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  BSTR_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = AStr_AppendA( pObj, "xABCxDEFxG" );
@@ -447,17 +447,17 @@ char        whiteSpaceA[22] = {
         index = 0;      // Start at the beginning.
         eRc = AStr_CharFindPrevW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (9 == index), @"" );
+        XCTAssertTrue( (9 == index) );
         
         --index;
         eRc = AStr_CharFindPrevW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == index), @"" );
+        XCTAssertTrue( (5 == index) );
         
         --index;
         eRc = AStr_CharFindPrevW(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (1 == index), @"" );
+        XCTAssertTrue( (1 == index) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -591,20 +591,20 @@ char        whiteSpaceA[22] = {
     ASTR_DATA	*pObj = OBJ_NIL;
     
     pObj = AStr_NewA("def");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
-    XCTAssertTrue( (3 == AStr_getLength(pObj)), @"" );
-    XCTAssertTrue( (0 == strcmp("def", AStr_getData(pObj))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (3 == AStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp("def", AStr_getData(pObj))) );
     if (pObj) {
         
         eRc = AStr_InsertA( pObj, 1, "abc" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (6 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
         
         eRc = AStr_InsertA(pObj, 6, "ghi");
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (9 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("abcdeghif", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (9 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdeghif", AStr_getData(pObj))) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -621,32 +621,32 @@ char        whiteSpaceA[22] = {
     ASTR_DATA	*pOtr = OBJ_NIL;
     
     pObj = AStr_NewA("abcdef");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
-    XCTAssertTrue( (6 == AStr_getLength(pObj)), @"" );
-    XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (6 == AStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
     if (pObj) {
         
         eRc = AStr_Left( pObj, 3, &pOtr );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertFalse( (OBJ_NIL == pOtr), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pOtr)), @"" );
-        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pOtr))), @"" );
+        XCTAssertFalse( (OBJ_NIL == pOtr) );
+        XCTAssertTrue( (3 == AStr_getLength(pOtr)) );
+        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pOtr))) );
         obj_Release(pOtr);
         pOtr = OBJ_NIL;
         
         eRc = AStr_Mid( pObj, 4, 2, &pOtr );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertFalse( (OBJ_NIL == pOtr), @"" );
-        XCTAssertTrue( (2 == AStr_getLength(pOtr)), @"" );
-        XCTAssertTrue( (0 == strcmp("de", AStr_getData(pOtr))), @"" );
+        XCTAssertFalse( (OBJ_NIL == pOtr) );
+        XCTAssertTrue( (2 == AStr_getLength(pOtr)) );
+        XCTAssertTrue( (0 == strcmp("de", AStr_getData(pOtr))) );
         obj_Release(pOtr);
         pOtr = OBJ_NIL;
         
         eRc = AStr_Right(pObj, 3, &pOtr);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertFalse( (OBJ_NIL == pOtr), @"" );
-        XCTAssertTrue( (3 == AStr_getLength(pOtr)), @"" );
-        XCTAssertTrue( (0 == strcmp("def", AStr_getData(pOtr))), @"" );
+        XCTAssertFalse( (OBJ_NIL == pOtr) );
+        XCTAssertTrue( (3 == AStr_getLength(pOtr)) );
+        XCTAssertTrue( (0 == strcmp("def", AStr_getData(pOtr))) );
         obj_Release(pOtr);
         pOtr = OBJ_NIL;
         
@@ -698,20 +698,20 @@ char        whiteSpaceA[22] = {
     ASTR_DATA	*pObj = OBJ_NIL;
     
     pObj = AStr_NewA("def");
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
-    XCTAssertTrue( (3 == AStr_getLength(pObj)), @"" );
-    XCTAssertTrue( (0 == strcmp("def", AStr_getData(pObj))), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (3 == AStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp("def", AStr_getData(pObj))) );
     if (pObj) {
         
         eRc = AStr_Remove( pObj, 1, 1 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("ef", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (2 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("ef", AStr_getData(pObj))) );
         
         eRc = AStr_Remove( pObj, 2, 1 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (1 == AStr_getLength(pObj)), @"" );
-        XCTAssertTrue( (0 == strcmp("e", AStr_getData(pObj))), @"" );
+        XCTAssertTrue( (1 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("e", AStr_getData(pObj))) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -727,47 +727,47 @@ char        whiteSpaceA[22] = {
     ERESULT     eRc;
     
     pObj = AStr_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = AStr_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         // Leading Spaces
         eRc = AStr_AppendA( pObj, "   bb" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (5 == AStr_getLength(pObj)) );
         
         eRc = AStr_Trim( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc), @"" );
+        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
         
         // Trailing spaces
         eRc = AStr_AppendA( pObj, "   " );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (5 == AStr_getLength(pObj)) );
         
         eRc = AStr_Trim( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc), @"" );
+        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
         
         eRc = AStr_Truncate( pObj, 0 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (0 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (0 == AStr_getLength(pObj)) );
         
         // Leading and Trailing spaces
         eRc = AStr_AppendA( pObj, "   bb   " );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (8 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (8 == AStr_getLength(pObj)) );
         
         eRc = AStr_Trim( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == AStr_getLength(pObj)), @"" );
+        XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc), @"" );
+        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;

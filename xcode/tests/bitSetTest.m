@@ -96,9 +96,9 @@
     BITSET_DATA	*pObj = OBJ_NIL;
    
     pObj = bitSet_Alloc(0);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not alloc  BITSET_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = bitSet_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"Could not init  BITSET_DATA" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -117,9 +117,9 @@
     bool        fRc;
     
     pObj = bitSet_Alloc(16);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = bitSet_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         pStr = bitSet_ToDebugString(pObj, 0);
@@ -128,9 +128,9 @@
         pStr = OBJ_NIL;
         for (i=0; i<16; ++i) {
             eRc = bitSet_Set(pObj, i+1, true);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)), @"" );
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             fRc = bitSet_Get(pObj, i+1);
-            XCTAssertTrue( (fRc), @"" );
+            XCTAssertTrue( (fRc) );
         }
         pStr = bitSet_ToDebugString(pObj, 0);
         fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));

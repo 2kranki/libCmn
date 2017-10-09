@@ -113,9 +113,9 @@
     ASTR_DATA       *pStr;
     
     pObj = bitMatrix_Alloc(11,11);
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = bitMatrix_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj), @"" );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = bitMatrix_Set(pObj, 1, 2, true);

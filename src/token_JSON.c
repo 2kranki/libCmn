@@ -103,7 +103,7 @@ extern "C" {
         if (OBJ_NIL == pParser) {
             goto exit00;
         }
-        obj_TraceSet(pParser, true);
+        //obj_TraceSet(pParser, true);
         pFileNode = hjson_ParseFile(pParser);
         if (OBJ_NIL == pFileNode) {
             goto exit00;
@@ -377,8 +377,8 @@ extern "C" {
     
     
     ASTR_DATA *     token_ToJSON(
-                                 TOKEN_DATA      *this
-                                 )
+        TOKEN_DATA      *this
+    )
     {
         char            str[256];
         int             j;
