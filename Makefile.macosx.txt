@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 9/2017  4:00:17.000)
+# (10/ 9/2017  4:20:47.000)
 
 
 LIBNAM=libCmn
@@ -1946,6 +1946,13 @@ TESTS += test_token
 
 test_token:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_token.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_tokenList
+
+test_tokenList:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_tokenList.c 
 	$(OBJDIR)/$(@F)
 
 

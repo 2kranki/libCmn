@@ -225,6 +225,7 @@
         "test_ternary.c":null,
         "test_timer.c":null,
         "test_token.c":null,
+        "test_tokenList.c":null,
         "test_trace.c":null,
         "test_true.c":null,
         "test_u8Array.c":null,
