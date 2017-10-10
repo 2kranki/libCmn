@@ -221,8 +221,9 @@ int         test_utf8_ToJSON01(
     static
     const
     char        *pJson3 = "{\"objectType\":\"utf8\", "
-                            "\"crc\":0, \"len\":3, "
-                            "\"data\":null "
+                            "\"crc\":891568578, "
+                            "\"len\":3, "
+                            "\"data\":[ 97, 98, 99] "
                             "}\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
