@@ -136,6 +136,36 @@ extern "C" {
     
 
     /*!
+     Extract a UTF-8 string from a previously saved UTF-8 JSON String.
+     @param     pInputString required pointer to JSON input string
+     @param     ppDataOut   optional pointer to uint32_t which will contain
+                             the number of wide characters in the UTF-8 string
+                             if extraction is successful and this field is
+                             not NULL.
+     @param     ppDataOut   optional pointer to a pointer which will contain
+                             a NUL-terminated UTF-8 string pointer if
+                             extraction is successful and this field is not
+                             NULL.
+     @return    If successful, ERESULT_SUCCESS, a pointer to UTF-8
+                 string which must be freed and a returned length,
+                 otherwise OBJ_NIL.
+     @warning   Remember to free the returned UTF-8 string using mem_Free().
+     */
+    ERESULT         utf8_DataFromJSONString(
+        ASTR_DATA       *pInputString,
+        uint32_t        *pLengthOut,
+        void            **ppDataOut
+    );
+    
+    ERESULT         utf8_DataFromJSONStringA(
+        const
+        char            *pInputString,
+        uint32_t        *pLengthOut,
+        void            **ppDataOut
+    );
+    
+    
+    /*!
      Create a string that describes this object and the
      objects within it.
      @param     pData   pointer to a NUL-terminated UTF-8 string
