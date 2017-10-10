@@ -131,10 +131,24 @@ extern "C" {
      * via obj_misc1.
      */
     UTF8_DATA *     utf8_Alloc(
-        uint16_t        stackSize           // Stack Size in Words
+        void
     );
     
 
+    /*!
+     Create a string that describes this object and the
+     objects within it.
+     @param     pData   pointer to a NUL-terminated UTF-8 string
+     @return    If successful, an AStr object which must be released,
+     otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     utf8_DataToJSON(
+        const
+        char            *pData
+    );
+    
+    
     int             utf8_StrCmp(
         const
         char            *pSrc1,

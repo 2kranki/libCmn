@@ -124,26 +124,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     jsonOut_Disable(
-        JSONOUT_DATA		*this
-    );
-
-
-    ERESULT     jsonOut_Enable(
-        JSONOUT_DATA		*this
-    );
-
-   
     JSONOUT_DATA *   jsonOut_Init(
         JSONOUT_DATA     *this
     );
 
 
-    ERESULT     jsonOut_IsEnabled(
-        JSONOUT_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

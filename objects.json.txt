@@ -133,7 +133,7 @@
     },
     "routines":
     [
-        "hexData_JSON.c",
+        "hex_JSON.c",
         "listdl.c",
         "name_JSON.c",
         "node_JSON.c",
@@ -146,6 +146,7 @@
         "srcLoc_JSON.c"
         "str.c",
         "token_JSON.c",
+        "utf8_JSON.c",
         "value_JSON.c"
     ],
     "macosx": {
@@ -183,6 +184,7 @@
         "test_dbCsv.c":null,
         "test_dbField.c":null,
         "test_dbf.c":null,
+        "test_dec.c":null,
         "test_ebcdic.c":null,
         "test_enum.c":null,
         "test_eResult.c":null,

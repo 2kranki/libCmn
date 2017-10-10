@@ -366,12 +366,17 @@ extern "C" {
             DEBUG_BREAK();
             return crc_getLastError(this);
         }
-        if ((len == 0) || (pData == NULL)) {
+        if (pData == NULL) {
             DEBUG_BREAK();
             crc_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return ERESULT_INVALID_PARAMETER;
+            return 0;
         }
 #endif
+
+        if (len == 0) {
+            crc_setLastError(this, ERESULT_SUCCESS);
+            return 0;
+        }
         crc = this->pDef->init;
         
         // Accumulate the CRC.

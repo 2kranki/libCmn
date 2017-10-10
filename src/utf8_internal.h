@@ -80,6 +80,12 @@ struct utf8_data_s	{
         OBJ_ID          objId
     );
 
+    void            utf8_Int64ToChrClean(
+        int64_t         num,
+        char            *pBuffer
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			utf8_Validate(

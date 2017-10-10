@@ -1,8 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   utf8.c
- *	Generated 08/06/2015 20:23:35
  *
+ * Notes:
+ *  1.  We chose to use integers to represent the wide characters. Other formats
+ *      seemed to create longer strings.
+ *
+ * Generated 08/06/2015 20:23:35
  */
 
  
@@ -118,23 +122,17 @@ extern "C" {
     //===============================================================
 
     UTF8_DATA *     utf8_Alloc(
-        uint16_t        stackSize
     )
     {
-        UTF8_DATA       *cbp;
+        UTF8_DATA       *this;
         uint32_t        cbSize = sizeof(UTF8_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
-        cbp = obj_Alloc( cbSize );
-        obj_setMisc1(cbp, stackSize);
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 

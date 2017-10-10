@@ -415,12 +415,12 @@ void            dec_Uint64ToChr(
     
     // Initialize the output area.
     pChr = pBuffer;
-    for( i=0; i<10; ++i )
+    for( i=0; i<20; ++i )
         *pChr++ = '0';
     *pChr = '\0';
     
     // set the value;
-    pChr = pBuffer + 10 - 1;
+    pChr = pBuffer + 20 - 1;
     while( input ) {
         *pChr-- = (input % 10) + '0';
         input /= 10;
@@ -482,6 +482,10 @@ void            dec_putInt64A(
 )
 {
     bool            fRc;
+    uint32_t        len = 22;
+    char            buffer[22];
+    char            *pBuffer = buffer;
+    uint32_t        i;
     
     // Do initialization.
     if( (NULL == ppBuffer) || (NULL == pLen) || (0 == *pLen) ) {
@@ -498,7 +502,12 @@ void            dec_putInt64A(
     }
     
     // set the value;
-    dec_putUint64A(input, pLen, ppBuffer);
+    dec_putUint64A(input, &len, &pBuffer);
+    for (pBuffer=buffer+1; *pBuffer; ++pBuffer) {
+        fRc = dec_putChar(*pBuffer, pLen, ppBuffer);
+    }
+    fRc = dec_putChar('\0', pLen, ppBuffer);
+
     
     // Return to caller.
 }

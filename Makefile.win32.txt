@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 9/2017  4:20:46.000)
+# (10/ 9/2017 20:18:24.000)
 
 
 LIBNAM=libCmn
@@ -144,7 +144,7 @@ OBJS = $(OBJS) $(OBJDIR)\utf8.obj $(OBJDIR)\utf8_object.obj
 OBJS = $(OBJS) $(OBJDIR)\value.obj $(OBJDIR)\value_object.obj
 OBJS = $(OBJS) $(OBJDIR)\wav.obj $(OBJDIR)\wav_object.obj
 OBJS = $(OBJS) $(OBJDIR)\xml.obj $(OBJDIR)\xml_object.obj
-OBJS = $(OBJS) $(OBJDIR)\hexData_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\hex_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
 OBJS = $(OBJS) $(OBJDIR)\name_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\node_JSON.obj
@@ -157,6 +157,7 @@ OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLoc_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\token_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\utf8_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\value_JSON.obj
 
 
@@ -395,6 +396,14 @@ TESTS = $(TESTS) test_dbf
 
 test_dbf:
 	$(CC) $(CFLAGS) /Itests tests\test_dbf.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_dec
+
+test_dec:
+	$(CC) $(CFLAGS) /Itests tests\test_dec.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

@@ -151,7 +151,7 @@ extern "C" {
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitStrW( this, pValue );
+            this = name_InitStrW(this, pValue);
         }
         return( this );
     }
@@ -214,6 +214,49 @@ extern "C" {
         
         return NULL;
     }
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         name_getLastError(
+        NAME_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !name_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            name_setLastError(
+        NAME_DATA       *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !name_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
     
     
     const

@@ -1,114 +1,106 @@
-
-
 /*
- This is free and unencumbered software released into the public domain.
- 
- Anyone is free to copy, modify, publish, use, compile, sell, or
- distribute this software, either in source code form or as a compiled
- binary, for any purpose, commercial or non-commercial, and by any
- means.
- 
- In jurisdictions that recognize copyright laws, the author or authors
- of this software dedicate any and all copyright interest in the
- software to the public domain. We make this dedication for the benefit
- of the public at large and to the detriment of our heirs and
- successors. We intend this dedication to be an overt act of
- relinquishment in perpetuity of all present and future rights to this
- software under copyright law.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- OTHER DEALINGS IN THE SOFTWARE.
- 
- For more information, please refer to <http://unlicense.org/>
+ *	Generated 10/09/2017 16:11:52
  */
 
-#import <XCTest/XCTest.h>
+
+
 
 
 // All code under test must be linked into the Unit Test bundle
 // Test Macros:
-//      STAssert(expression, failure_description, ...)
-//      STFail(failure_description, ...)
-//      STAssertEqualObjects(object_1, object_2, failure_description, ...) uses isEqualTo:
-//      STAssertEquals(value_1, value_2, failure_description, ...)
-//      STAssertEqualsWithAccuracy(value_1, value_2, accuracy, failure_description, ...)
-//      STAssertNil(expression, failure_description, ...)
-//      STAssertNotNil(expression, failure_description, ...)
-//      STAssertTrue(expression, failure_description, ...)
-//      STAssertFalse(expression, failure_description, ...)
-//      STAssertThrows(expression, failure_description, ...)
-//      STAssertThrowsSpecific(expression, exception_class, failure_description, ...)
-//      STAssertThrowsSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
-//      STAssertNoThrow(expression, failure_description, ...)
-//      STAssertNoThrowSpecific(expression, exception_class, failure_description, ...)
-//      STAssertNoThrowSpecificNamed(expression, exception_class, exception_name, failure_description, ...)
+//      TINYTEST_ASSERT(condition)
+//      TINYTEST_ASSERT_MSG(condition,msg)
+//      TINYTEST_EQUAL(expected, actual)
+//      TINYTEST_EQUAL_MSG(expected, actual, msg)
+//      TINYTEST_FALSE_MSG(condition,msg)
+//      TINYTEST_FALSE(condition)
+//      TINYTEST_TRUE_MSG(pointer,msg)
+//      TINYTEST_TRUE(condition)
 
 
+
+
+
+#include    <tinytest.h>
+#include    <cmn_defs.h>
+#include    <trace.h>
 #include    <dec_internal.h>
 
 
 
-
-
-@interface decTests : XCTestCase
-
-@end
-
-@implementation decTests
-
-
-- (void)setUp
+int         setUp(
+    const
+    char        *pTestName
+)
 {
-    [super setUp];
+    mem_Init( );
+    trace_Shared( ); 
     // Put setup code here. This method is called before the invocation of each
     // test method in the class.
     
-    mem_Init( );
-    
+    return 1; 
 }
 
 
-- (void)tearDown
+int         tearDown(
+    const
+    char        *pTestName
+)
 {
+    // Put teardown code here. This method is called after the invocation of each
+    // test method in the class.
+
+    
+    trace_SharedReset( ); 
     mem_Dump( );
     mem_Release( );
     
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-    [super tearDown];
+    return 1; 
 }
 
 
 
 
-- (void)testOpenClose
+
+
+int         test_dec_OpenClose(
+    const
+    char        *pTestName
+)
 {
     DEC_DATA	*pObj = OBJ_NIL;
-    
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
     pObj = dec_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = dec_Init( pObj );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
+
+        // Test something.
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
 }
 
 
 
-- (void)testUnsigned32
+int         test_dec_Unsigned32(
+    const
+    char        *pTestName
+)
 {
 	char            num[11];
     char            *pStr;
     uint32_t        i;
     int32_t         j;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
 
     i = 11;
     pStr = num;
@@ -134,16 +126,23 @@
     j = dec_getInt32A(num);
     XCTAssertTrue( (-1 == j) );
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
 }
 
 
-- (void)testSigned32
+int         test_dec_Signed32(
+    const
+    char        *pTestName
+)
 {
 	char            num[12];
     char            *pStr;
     uint32_t        i;
     int32_t         j;
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
     i = 12;
     pStr = num;
     dec_putInt32A( 0, &i, &pStr );
@@ -174,11 +173,113 @@
     j = strcmp(num, "-2147483648" );
     XCTAssertTrue( (0 == j) );
     
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
 }
 
 
 
-- (void)testInt64Dec
+int         test_dec_Unsigned64(
+    const
+    char        *pTestName
+)
+{
+	char            num[32];
+    char            *pStr;
+    uint32_t        len = 32;
+    int64_t         j;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    len = 32;
+    pStr = num;
+    dec_putUint64A( -1, &len, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, "18446744073709551615" );
+    XCTAssertTrue( (0 == j) );
+    j = dec_getInt64A(num);
+    XCTAssertTrue( (-1 == j) );
+
+    len = 32;
+    pStr = num;
+    dec_putUint64A( 1, &len, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, "00000000000000000001" );
+    XCTAssertTrue( (0 == j) );
+    j = dec_getInt64A(num);
+    XCTAssertTrue( (1 == j) );
+    
+    len = 32;
+    pStr = num;
+    dec_putUint64A( 0, &len, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, "00000000000000000000" );
+    XCTAssertTrue( (0 == j) );
+    j = dec_getInt64A(num);
+    XCTAssertTrue( (0 == j) );
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+int         test_dec_Signed64(
+    const
+    char        *pTestName
+)
+{
+	char            num[32];
+    char            *pStr;
+    uint32_t        i;
+    int32_t         j;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    i = 32;
+    pStr = num;
+    dec_putInt64A( 0x7FFFFFFFFFFFFFFF, &i, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, " 9223372036854775807" );
+    XCTAssertTrue( (0 == j) );
+    
+    i = 32;
+    pStr = num;
+    dec_putInt64A( 0, &i, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, " 0000000000000000000" );
+    XCTAssertTrue( (0 == j) );
+    
+    i = 32;
+    pStr = num;
+    dec_putInt64A( 1, &i, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, " 0000000000000000001" );
+    XCTAssertTrue( (0 == j) );
+    
+    i = 32;
+    pStr = num;
+    dec_putInt64A( -1, &i, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, "-0000000000000000001" );
+    XCTAssertTrue( (0 == j) );
+    
+    i = 32;
+    pStr = num;
+    dec_putInt64A( 0x8000000000000000, &i, &pStr );
+    fprintf(stderr, "num = \"%s\"\n", num);
+    j = strcmp(num, "-9223372036854775808" );
+    XCTAssertTrue( (0 == j) );
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_dec_Int64Dec(
+    const
+    char        *pTestName
+)
 {
     char            num[32] = {0};
     uint32_t        cNum = 32;
@@ -187,6 +288,8 @@
     bool            fRc;
     
     
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
     fRc =   dec_putInt64DecA(
                     -123,                       // Input Number
                     0,                          // Sign: -1 == leading, 0 == none, 1 == trailing
@@ -364,13 +467,26 @@
     j = strcmp(num, "  1300.000");
     XCTAssertTrue( (0 == j) );
     
-    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
 }
 
 
 
 
-@end
+
+TINYTEST_START_SUITE(test_dec);
+    TINYTEST_ADD_TEST(test_dec_Int64Dec,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dec_Signed64,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dec_Unsigned64,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dec_Signed32,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dec_Unsigned32,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dec_OpenClose,setUp,tearDown);
+TINYTEST_END_SUITE();
+
+TINYTEST_MAIN_SINGLE_SUITE(test_dec);
+
+
 
 
 

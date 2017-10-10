@@ -551,7 +551,7 @@ extern "C" {
     
     
     ERESULT         WStr_AppendA(
-        WSTR_DATA		*cbp,
+        WSTR_DATA		*this,
         const
         char            *pStr
     )
@@ -567,7 +567,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStr_Validate( cbp ) ) {
+        if( !WStr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
@@ -578,16 +578,16 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
        
-        index = pwr2Array_getSize((PWR2ARRAY_DATA *)cbp);
+        index = pwr2Array_getSize((PWR2ARRAY_DATA *)this);
         eRc =   pwr2Array_InsertSpacing(
-                    (PWR2ARRAY_DATA *)cbp,
+                    (PWR2ARRAY_DATA *)this,
                     index,
                     len
                 );
         
         // Copy the data.
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pInsert = pwr2Array_Ptr((PWR2ARRAY_DATA *)cbp, index);
+            pInsert = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, index);
             for (i=0; i<len; ++i) {
                 chr = utf8_Utf8ToWC_Scan(&pStr);
                 *pInsert++ = chr;

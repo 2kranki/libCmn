@@ -154,6 +154,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         name_getLastError(
+        NAME_DATA     *this
+    );
+    
+    
     /*!
      Get the name value if it is a ptr.
      @return    If successful, void ptr, otherwise NULL.

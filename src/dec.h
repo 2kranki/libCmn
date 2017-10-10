@@ -13,10 +13,9 @@
  *          called a dec on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal dec. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      uint64_t values are 0 to 18,446,744,073,709,551,615.
+ *          int64_t values are -9,223,372,036,854,775,808 to
+ *                              9,223,372,036,854,775,807.
  *
  * History
  *	02/12/2017 Generated
@@ -108,7 +107,7 @@ extern "C" {
     
     
     /*!
-     Try to convert the string to a signed 32-bit number with format [+ | -][0..9]*
+     Try to convert the string to a signed 32-bit number with format [+ | -]?[0..9]+
      @return:
              if successful, the scanned number. Otherwise, 0 is returned if the number
              is malformed.

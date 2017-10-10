@@ -115,7 +115,7 @@ int         test_utf8_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = utf8_Alloc(0);
+    pObj = utf8_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = utf8_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -209,8 +209,54 @@ int         test_utf8_StrOffset01(
 
 
 
+int         test_utf8_ToJSON01(
+    const
+    char        *pTestName
+)
+{
+    ASTR_DATA	*pAStr = OBJ_NIL;
+    static
+    const
+    char        *pJson2 = "{\"objectType\":\"utf8\", \"crc\":0, \"len\":0, \"data\":null }\n";
+    static
+    const
+    char        *pJson3 = "{\"objectType\":\"utf8\", "
+                            "\"crc\":0, \"len\":3, "
+                            "\"data\":null "
+                            "}\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pAStr = utf8_DataToJSON(NULL);
+    TINYTEST_TRUE( (OBJ_NIL == pAStr) );
+
+    pAStr = utf8_DataToJSON("");
+    TINYTEST_FALSE( (OBJ_NIL == pAStr) );
+    if (pAStr) {
+        fprintf(stderr, "\tdata2 = \"%s\"\n", AStr_getData(pAStr));
+        TINYTEST_TRUE( (0 == strcmp(pJson2, AStr_getData(pAStr))) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+    }
+
+    pAStr = utf8_DataToJSON("abc");
+    TINYTEST_FALSE( (OBJ_NIL == pAStr) );
+    if (pAStr) {
+        fprintf(stderr, "\tdata3 = \"%s\"\n", AStr_getData(pAStr));
+        // Test something.
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_utf8);
+  TINYTEST_ADD_TEST(test_utf8_ToJSON01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_StrOffset01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_ChrLen01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_Scan01,setUp,tearDown);

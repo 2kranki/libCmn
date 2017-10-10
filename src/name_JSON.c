@@ -338,7 +338,12 @@ extern "C" {
         NAME_DATA       *this
     )
     {
+        char            str[1024];
+        int             j;
+        int             len;
+        int             lenChars;
         ASTR_DATA       *pStr;
+        WSTR_DATA       *pWStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
@@ -361,41 +366,44 @@ extern "C" {
         AStr_AppendA(pStr, pInfo->pClassName);
         AStr_AppendA(pStr, "\", \"data\":\"");
         //FIXME: AStr_Append(pStr, pWrkStr);
-        AStr_AppendA(pStr, "\"}\n");
-        //FIXME: obj_Release(pWrkStr);
         
-#ifdef XYZZY
         switch (this->type) {
                 
             case NAME_TYPE_UNKNOWN:
-                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UNKNOWN\"");
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UNKNOWN\" ");
                 break;
                 
             case NAME_TYPE_INTEGER:
                 j = snprintf(
                              str,
                              sizeof(str),
-                             "\"type\":\"NAME_TYPE_INTEGER\",\"data\":%lld",
+                             "\"type\":\"NAME_TYPE_INTEGER\", \"data\":%lld",
                              this->integer
                              );
                 AStr_AppendA(pStr, str);
                 break;
                 
             case NAME_TYPE_WSTR:
-                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_WSTR\",\"data\":\"");
+                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_WSTR\", \"data\":\"");
                 AStr_AppendA(pStr, str);
                 AStr_AppendA(pStr, "\" ");
                 break;
                 
             case NAME_TYPE_UTF8:
-#ifdef XYZZY
-                AStr_AppendA(pStr, "\"type\":\"STRING\",\"data\":\"");
+                AStr_AppendA(pStr, "\"type\":\"STRING\", \"data\":\"");
                 if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
-                    pWStr = WStr_getData(this->pObj);
+                    //pWStr = WStr_getData((WSTR_DATA *)this->pObj);
                 }
-                if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
-                    pWStr = WStrC_getData(this->pObj);
+                else if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
+                    //pWStr = WStrC_getData((WSTRC_DATA *)this->pObj);
                 }
+                else {
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                    name_setLastError(this, ERESULT_GENERAL_FAILURE);
+                    return pStr;
+                }
+#ifdef XYZZY
                 len = utf8_StrLenW(pWStr);
                 for (j=0; j<len; ++j) {
                     if (*pWStr == '"') {
@@ -407,8 +415,8 @@ extern "C" {
                     }
                     ++pWStr;
                 }
-                AStr_AppendA(pStr, "\" ");
 #endif
+                AStr_AppendA(pStr, "\" ");
                 break;
                 
             case NAME_TYPE_UTF8_CON:
@@ -417,8 +425,7 @@ extern "C" {
                 break;
                 
         }
-#endif
-        AStr_AppendA(pStr, "\"}\n");
+        AStr_AppendA(pStr, "}\n");
         //BREAK_TRUE(AStr_getLength(pStr) > 2048);
         
         return pStr;

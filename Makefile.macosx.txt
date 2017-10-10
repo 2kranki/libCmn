@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 9/2017  4:20:47.000)
+# (10/ 9/2017 20:18:25.000)
 
 
 LIBNAM=libCmn
@@ -1368,12 +1368,12 @@ $(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c
 
 
 
-$(OBJDIR)/hexData_JSON.o: $(SRCDIR)/hexData_JSON.c
+$(OBJDIR)/hex_JSON.o: $(SRCDIR)/hex_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/hexData_JSON.o
+OBJS += $(OBJDIR)/hex_JSON.o
 $(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1446,6 +1446,12 @@ $(OBJDIR)/token_JSON.o: $(SRCDIR)/token_JSON.c
 
 
 OBJS += $(OBJDIR)/token_JSON.o
+$(OBJDIR)/utf8_JSON.o: $(SRCDIR)/utf8_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/utf8_JSON.o
 $(OBJDIR)/value_JSON.o: $(SRCDIR)/value_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1652,6 +1658,13 @@ TESTS += test_dbf
 
 test_dbf:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dbf.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_dec
+
+test_dec:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dec.c 
 	$(OBJDIR)/$(@F)
 
 
