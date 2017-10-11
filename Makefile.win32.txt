@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 14:33:42.000)
+# (10/11/2017 15:02:23.000)
 
 
 LIBNAM=libCmn
@@ -818,10 +818,42 @@ test_scanDate:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_scanDec32
+
+test_scanDec32:
+	$(CC) $(CFLAGS) /Itests tests\test_scanDec32.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_scanString
+
+test_scanString:
+	$(CC) $(CFLAGS) /Itests tests\test_scanString.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_scanWhite
+
+test_scanWhite:
+	$(CC) $(CFLAGS) /Itests tests\test_scanWhite.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_sidx
 
 test_sidx:
 	$(CC) $(CFLAGS) /Itests tests\test_sidx.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_srcFile
+
+test_srcFile:
+	$(CC) $(CFLAGS) /Itests tests\test_srcFile.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

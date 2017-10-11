@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 14:33:44.000)
+# (10/11/2017 15:02:25.000)
 
 
 LIBNAM=libCmn
@@ -2037,10 +2037,38 @@ test_scanDate:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_scanDec32
+
+test_scanDec32:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanDec32.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_scanString
+
+test_scanString:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanString.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_scanWhite
+
+test_scanWhite:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanWhite.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_sidx
 
 test_sidx:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_sidx.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_srcFile
+
+test_srcFile:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcFile.c 
 	$(OBJDIR)/$(@F)
 
 
