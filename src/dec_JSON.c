@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   hex_JSON.c
+ * File:   dec_JSON.c
  *
  * Created on August 27, 2017
  */
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <hex_internal.h>
+#include    <dec_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -80,10 +80,9 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         hex_DataFromJSONString(
+    ERESULT         dec_UInt64FromJSONString(
         ASTR_DATA       *pString,
-        uint32_t        *pLength,
-        void            **ppData
+        uint64_t        *pData
     )
     {
         HJSON_DATA      *pParser;
@@ -99,7 +98,7 @@ extern "C" {
         uint32_t        crc;
         uint32_t        chkCrc;
         uint32_t        length = 0;
-        uint8_t         *pData = NULL;
+        uint64_t        data = 0;
         
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
@@ -202,8 +201,8 @@ extern "C" {
                     for (i=0; i<length; ++i) {
                         int         high;
                         int         low;
-                        high = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+1));
-                        low  = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+2));
+                        //high = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+1));
+                        //low  = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+2));
                         if ((high == -1) || (low == -1)) {
                             fprintf(stderr, "ERROR - data contains invalud data!\n");
                             pStr2 = nodeHash_ToDebugString(pHash, 0);
@@ -216,7 +215,7 @@ extern "C" {
                         pData[i] = (high << 4) | low;
                     }
                     pCrc = crc_New(CRC_TYPE_IEEE_32);
-                    chkCrc = crc_AccumBlock(pCrc, length, pData);
+                    chkCrc = crc_AccumBlock(pCrc, 8, (void *)&data);
                     obj_Release(pCrc);
                     pCrc = OBJ_NIL;
                     if (chkCrc == crc)
@@ -275,10 +274,8 @@ extern "C" {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
-        if (pLength)
-            *pLength = length;
-        if (ppData) {
-            *ppData = pData;
+        if (pData) {
+            *pData = data;
         }
         else {
             mem_Free(pData);
@@ -289,11 +286,10 @@ extern "C" {
     
     
 
-    ERESULT         hex_DataFromJSONStringA(
+    ERESULT         dec_UInt64FromJSONStringA(
         const
         char            *pString,
-        uint32_t        *pLength,
-        void            **ppData
+        uint64_t        *pData
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -301,7 +297,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = hex_DataFromJSONString(pStr, pLength, ppData);
+            eRc = dec_UInt64FromJSONString(pStr, pData);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -312,9 +308,8 @@ extern "C" {
     
     
     
-    ASTR_DATA *     hex_DataToJSON(
-        uint32_t        length,
-        void            *pData
+    ASTR_DATA *     dec_UInt64ToJSON(
+        uint64_t        data
     )
     {
         char            str[256];
@@ -329,36 +324,38 @@ extern "C" {
         CRC_DATA        *pCrc = OBJ_NIL;
         uint32_t        crc;
         
-        pInfo = hex_Vtbl.iVtbl.pInfo;
+        pInfo = dec_Vtbl.iVtbl.pInfo;
         
         pStr = AStr_New();
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"%s\"",
+                     "{\"objectType\":\"%s\" ",
                      pInfo->pClassName
                      );
         AStr_AppendA(pStr, str);
         
-        AStr_AppendPrint(pStr, ", \"len\":%d", length);
+        AStr_AppendPrint(pStr, ", \"len\":%d ", 8);
         
         pCrc = crc_New(CRC_TYPE_IEEE_32);
-        crc = crc_AccumBlock(pCrc, length, pData);
+        crc = crc_AccumBlock(pCrc, 8, (void *)&data);
         obj_Release(pCrc);
         pCrc = OBJ_NIL;
-        AStr_AppendPrint(pStr, ", \"crc\":%d", crc);
+        AStr_AppendPrint(pStr, ", \"crc\":%d ", crc);
         
-        AStr_AppendA(pStr, ", \"data\":\"");
+        AStr_AppendA(pStr, ", \"data\":");
+#ifdef XYZZY
         pChr = pData;
         for (i=0; i<length; ++i) {
-            chrs[0] = hex_DigitToChrA((*pChr >> 4) & 0x0F);
-            chrs[1] = hex_DigitToChrA(*pChr & 0x0F);
+            //chrs[0] = hex_DigitToChrA((*pChr >> 4) & 0x0F);
+            //chrs[1] = hex_DigitToChrA(*pChr & 0x0F);
             chrs[2] = '\0';
             ++pChr;
             AStr_AppendA(pStr, chrs);
         }
-        AStr_AppendA(pStr, "\"");
+#endif
+        AStr_AppendA(pStr, " ");
         
         AStr_AppendA(pStr, "}\n");
         

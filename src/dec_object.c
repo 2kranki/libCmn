@@ -485,7 +485,6 @@ void            dec_putInt64A(
     uint32_t        len = 22;
     char            buffer[22];
     char            *pBuffer = buffer;
-    uint32_t        i;
     
     // Do initialization.
     if( (NULL == ppBuffer) || (NULL == pLen) || (0 == *pLen) ) {

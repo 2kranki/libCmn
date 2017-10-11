@@ -166,35 +166,29 @@ uint16_t		AStr_WhoAmI(
 
 
 const
-ASTR_VTBL_INTERNAL AStr_Vtbl = {
+ASTR_VTBL       AStr_Vtbl = {
     {
-        {
-            &AStr_Info,
-            AStr_IsKindOf,
-            obj_RetainStandard,
-            obj_ReleaseStandard,
-            AStr_Dealloc,
-            AStr_Class,
-            AStr_WhoAmI,
-            NULL,
-            (P_OBJ_TOSTRING)AStr_ToDebugString,
-            NULL,			// AStr_Enable,
-            NULL,			// AStr_Disable,
-            (P_OBJ_ASSIGN)AStr_Assign,
-            (P_OBJ_COMPARE)AStr_Compare,
-            (P_OBJ_PTR)AStr_Copy,
-            (P_OBJ_HASH)AStr_Hash
-        },
-        // Put other object method names below this.
-        // Properties:
-        // Methods:
-        AStr_getData,
-        AStr_getLength
+        &AStr_Info,
+        AStr_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        AStr_Dealloc,
+        AStr_Class,
+        AStr_WhoAmI,
+        NULL,
+        (P_OBJ_TOSTRING)AStr_ToDebugString,
+        NULL,            // AStr_Enable,
+        NULL,            // AStr_Disable,
+        (P_OBJ_ASSIGN)AStr_Assign,
+        (P_OBJ_COMPARE)AStr_Compare,
+        (P_OBJ_PTR)AStr_Copy,
+        (P_OBJ_HASH)AStr_Hash
     },
-#ifdef NDEBUG
-#else
-    AStr_Validate
-#endif
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    AStr_getData,
+    AStr_getLength
 };
 
 

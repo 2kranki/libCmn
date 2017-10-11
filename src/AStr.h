@@ -68,7 +68,7 @@ extern "C" {
     //****************************************************************
 
 
-    // ASTR_DATA and ASTR_VTBL are defined in "cmn.h"
+    // ASTR_DATA and ASTR_VTBL are defined in "cmn_defs.h"
 
 
 
@@ -115,6 +115,18 @@ extern "C" {
     );
     
     
+    ERESULT         AStr_NewFromJSONString(
+        ASTR_DATA       *pString,
+        ASTR_DATA       **ppData
+    );
+    
+    ERESULT         AStr_NewFromJSONStringA(
+        const
+        char            *pString,
+        ASTR_DATA       **ppData
+    );
+    
+
     ASTR_DATA *    AStr_NewFromStrW(
         WSTR_DATA       *pStr
     );
@@ -161,6 +173,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        AStr_getCrcIEEE(
+        ASTR_DATA       *this
+    );
+    
+    
     const
     char *          AStr_getData(
         ASTR_DATA      *this

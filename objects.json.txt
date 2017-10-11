@@ -133,6 +133,8 @@
     },
     "routines":
     [
+        "AStr_JSON.c",
+        "dec_JSON.c",
         "hex_JSON.c",
         "listdl.c",
         "name_JSON.c",
@@ -168,11 +170,16 @@
         "test_appl.c":null,
         "test_arrayExpand.c":null,
         "test_ascii.c":null,
+        "test_AStr.c":null,
         "test_AStrArray.c":null,
         "test_AStrC.c":null,
         "test_audioCW.c":null,
         "test_audioWAV.c":null,
+        "test_bitMatrix.c":null,
+        "test_bitSet.c":null,
         "test_blkdrcds16.c":null,
+        "test_block16.c":null,
+        "test_block32.c":null,
         "test_blocks.c":null,
         "test_cb.c":null,
         "test_cfa.c":null,
@@ -237,6 +244,7 @@
         "test_value.c":null,
         "test_wav.c":null,
         "test_wstr.c":null,
+        "test_WStrC.c":null,
         "test_xml.c":null
     }
 }

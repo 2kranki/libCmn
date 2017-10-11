@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 9/2017 20:18:24.000)
+# (10/11/2017  4:16:05.000)
 
 
 LIBNAM=libCmn
@@ -144,6 +144,8 @@ OBJS = $(OBJS) $(OBJDIR)\utf8.obj $(OBJDIR)\utf8_object.obj
 OBJS = $(OBJS) $(OBJDIR)\value.obj $(OBJDIR)\value_object.obj
 OBJS = $(OBJS) $(OBJDIR)\wav.obj $(OBJDIR)\wav_object.obj
 OBJS = $(OBJS) $(OBJDIR)\xml.obj $(OBJDIR)\xml_object.obj
+OBJS = $(OBJS) $(OBJDIR)\AStr_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\dec_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\hex_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
 OBJS = $(OBJS) $(OBJDIR)\name_JSON.obj
@@ -248,6 +250,14 @@ TESTS =
 
 
 
+TESTS = $(TESTS) test_AStr
+
+test_AStr:
+	$(CC) $(CFLAGS) /Itests tests\test_AStr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_AStrArray
 
 test_AStrArray:
@@ -260,6 +270,14 @@ TESTS = $(TESTS) test_AStrC
 
 test_AStrC:
 	$(CC) $(CFLAGS) /Itests tests\test_AStrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_WStrC
+
+test_WStrC:
+	$(CC) $(CFLAGS) /Itests tests\test_WStrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -304,10 +322,42 @@ test_audioWAV:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_bitMatrix
+
+test_bitMatrix:
+	$(CC) $(CFLAGS) /Itests tests\test_bitMatrix.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_bitSet
+
+test_bitSet:
+	$(CC) $(CFLAGS) /Itests tests\test_bitSet.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_blkdrcds16
 
 test_blkdrcds16:
 	$(CC) $(CFLAGS) /Itests tests\test_blkdrcds16.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_block16
+
+test_block16:
+	$(CC) $(CFLAGS) /Itests tests\test_block16.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_block32
+
+test_block32:
+	$(CC) $(CFLAGS) /Itests tests\test_block32.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

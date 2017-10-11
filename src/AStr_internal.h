@@ -54,20 +54,6 @@ extern "C" {
 #endif
 
 
-    typedef struct AStr_vtbl_internal_s	{
-        ASTR_VTBL          iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in AStrC_object.c.
-        // Properties:
-        // Methods:
-#ifdef NDEBUG
-#else
-        bool			(*pValidate)(ASTR_DATA *);
-#endif
-    } ASTR_VTBL_INTERNAL;
-    
-    
-    
 #pragma pack(push, 1)
 struct AStr_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
@@ -81,7 +67,7 @@ struct AStr_data_s	{
 
     extern
     const
-    ASTR_VTBL_INTERNAL AStr_Vtbl;
+    ASTR_VTBL       AStr_Vtbl;
     extern
     const
     struct AStr_class_data_s   AStr_ClassObj;

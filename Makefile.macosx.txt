@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/ 9/2017 20:18:25.000)
+# (10/11/2017  4:16:06.000)
 
 
 LIBNAM=libCmn
@@ -1368,6 +1368,18 @@ $(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c
 
 
 
+$(OBJDIR)/AStr_JSON.o: $(SRCDIR)/AStr_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/AStr_JSON.o
+$(OBJDIR)/dec_JSON.o: $(SRCDIR)/dec_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/dec_JSON.o
 $(OBJDIR)/hex_JSON.o: $(SRCDIR)/hex_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1528,6 +1540,13 @@ TESTS =
 
 
 
+TESTS += test_AStr
+
+test_AStr:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_AStr.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_AStrArray
 
 test_AStrArray:
@@ -1539,6 +1558,13 @@ TESTS += test_AStrC
 
 test_AStrC:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_AStrC.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_WStrC
+
+test_WStrC:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStrC.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1577,10 +1603,38 @@ test_audioWAV:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_bitMatrix
+
+test_bitMatrix:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bitMatrix.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_bitSet
+
+test_bitSet:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bitSet.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_blkdrcds16
 
 test_blkdrcds16:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_blkdrcds16.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_block16
+
+test_block16:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_block16.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_block32
+
+test_block32:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_block32.c 
 	$(OBJDIR)/$(@F)
 
 

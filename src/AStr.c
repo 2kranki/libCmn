@@ -41,13 +41,14 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "AStr_internal.h"
-#include "ascii.h"
-#include "dec.h"
-#include "hex.h"
-#include "str.h"
-#include "utf8.h"
-#include "WStr.h"
+#include <AStr_internal.h>
+#include <ascii.h>
+#include <crc.h>
+#include <dec.h>
+#include <hex.h>
+#include <str.h>
+#include <utf8.h>
+#include <WStr.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -176,14 +177,18 @@ extern "C" {
     {
         ASTR_DATA      *this;
         ERESULT         eRc;
+        uint32_t        len;
         
         this = AStr_New( );
         if (this) {
-            eRc = AStr_AppendA(this, pszIn);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                DEBUG_BREAK();
-                obj_Release(this);
-                return OBJ_NIL;
+            len = (uint32_t)utf8_StrLenChars(pszIn);
+            if (len) {
+                eRc = AStr_AppendA(this, pszIn);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
             }
         }
         return this;
@@ -435,6 +440,35 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    uint32_t        AStr_getCrcIEEE(
+        ASTR_DATA       *this
+    )
+    {
+        CRC_DATA        *pCrc = OBJ_NIL;
+        uint32_t        crc = 0;
+        uint32_t        len;
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        pCrc = crc_New(CRC_TYPE_IEEE_32);
+        len = pwr2Array_getSize(this->pData);
+        crc = crc_AccumBlock(
+                            pCrc,
+                            len,
+                            (void *)pwr2Array_Ptr(this->pData, 1)
+              );
+        obj_Release(pCrc);
+        pCrc = OBJ_NIL;
+        
+        return  crc;
+    }
+    
+    
+    
     const
     char *          AStr_getData(
         ASTR_DATA      *this
@@ -2302,45 +2336,6 @@ extern "C" {
         
         return pStr;
     }
-    
-    
-    ASTR_DATA *     AStr_ToJSON(
-        ASTR_DATA       *this
-    )
-    {
-        ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !AStr_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        pWrkStr = AStr_ToChrCon(this);
-        if (pWrkStr == OBJ_NIL) {
-            return OBJ_NIL;
-        }
-        
-        pStr = AStr_New();
-        if (pWrkStr == OBJ_NIL) {
-            obj_Release(pWrkStr);
-            return OBJ_NIL;
-        }
-        AStr_AppendA(pStr, "{\"objectType\":\"");
-        AStr_AppendA(pStr, pInfo->pClassName);
-        AStr_AppendA(pStr, "\",\"data\":\"");
-        AStr_Append(pStr, pWrkStr);
-        AStr_AppendA(pStr, "\"}\n");
-        obj_Release(pWrkStr);
-        
-        return pStr;
-    }
-    
     
     
     WSTR_DATA *     AStr_ToWStr(

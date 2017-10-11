@@ -287,7 +287,7 @@ extern "C" {
     )
     {
         ASTR_DATA       *pValue = OBJ_NIL;
-        char            numValue[22];
+        char            numValue[32];
         char            *pStr;
         uint32_t        len;
         
