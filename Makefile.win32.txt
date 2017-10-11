@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017  4:16:05.000)
+# (10/11/2017  4:47:29.000)
 
 
 LIBNAM=libCmn
@@ -270,6 +270,14 @@ TESTS = $(TESTS) test_AStrC
 
 test_AStrC:
 	$(CC) $(CFLAGS) /Itests tests\test_AStrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_WStrArray
+
+test_WStrArray:
+	$(CC) $(CFLAGS) /Itests tests\test_WStrArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -818,10 +826,26 @@ test_true:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_u12Array
+
+test_u12Array:
+	$(CC) $(CFLAGS) /Itests tests\test_u12Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_u16Array
 
 test_u16Array:
 	$(CC) $(CFLAGS) /Itests tests\test_u16Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_u16Matrix
+
+test_u16Matrix:
+	$(CC) $(CFLAGS) /Itests tests\test_u16Matrix.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -838,6 +862,14 @@ TESTS = $(TESTS) test_u8Array
 
 test_u8Array:
 	$(CC) $(CFLAGS) /Itests tests\test_u8Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_uint128
+
+test_uint128:
+	$(CC) $(CFLAGS) /Itests tests\test_uint128.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

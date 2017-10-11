@@ -238,12 +238,16 @@
         "test_trace.c":null,
         "test_true.c":null,
         "test_u8Array.c":null,
+        "test_u12Array.c":null,
         "test_u16Array.c":null,
+        "test_u16Matrix.c":null,
         "test_u32Array.c":null,
+        "test_uint128.c":null,
         "test_utf8.c":null,
         "test_value.c":null,
         "test_wav.c":null,
         "test_wstr.c":null,
+        "test_WStrArray.c":null,
         "test_WStrC.c":null,
         "test_xml.c":null
     }

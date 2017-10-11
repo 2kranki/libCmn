@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017  4:16:06.000)
+# (10/11/2017  4:47:31.000)
 
 
 LIBNAM=libCmn
@@ -1561,6 +1561,13 @@ test_AStrC:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_WStrArray
+
+test_WStrArray:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStrArray.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_WStrC
 
 test_WStrC:
@@ -2037,10 +2044,24 @@ test_true:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_u12Array
+
+test_u12Array:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u12Array.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_u16Array
 
 test_u16Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u16Array.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_u16Matrix
+
+test_u16Matrix:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u16Matrix.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -2055,6 +2076,13 @@ TESTS += test_u8Array
 
 test_u8Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u8Array.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_uint128
+
+test_uint128:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_uint128.c 
 	$(OBJDIR)/$(@F)
 
 
