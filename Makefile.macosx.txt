@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017  4:47:31.000)
+# (10/11/2017 14:33:44.000)
 
 
 LIBNAM=libCmn
@@ -1652,10 +1652,38 @@ test_blocks:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_bptree
+
+test_bptree:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bptree.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_btp
+
+test_btp:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_btp.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_cb
 
 test_cb:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_cb16
+
+test_cb16:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb16.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_cb32
+
+test_cb32:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb32.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1680,6 +1708,13 @@ test_cloOpt:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_cmdutl
+
+test_cmdutl:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cmdutl.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_consumer
 
 test_consumer:
@@ -1691,6 +1726,13 @@ TESTS += test_crc
 
 test_crc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_crc.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_csv
+
+test_csv:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_csv.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1729,6 +1771,20 @@ test_dec:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_dir
+
+test_dir:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dir.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_dirEntry
+
+test_dirEntry:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dirEntry.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_eResult
 
 test_eResult:
@@ -1743,10 +1799,24 @@ test_ebcdic:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_endian
+
+test_endian:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_endian.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_enum
 
 test_enum:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_enum.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_execArray
+
+test_execArray:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_execArray.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1761,6 +1831,13 @@ TESTS += test_false
 
 test_false:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_false.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_fbs
+
+test_fbs:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_fbs.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1978,6 +2055,13 @@ TESTS += test_srcLoc
 
 test_srcLoc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcLoc.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_str
+
+test_str:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_str.c 
 	$(OBJDIR)/$(@F)
 
 

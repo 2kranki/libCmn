@@ -1,0 +1,148 @@
+/*
+ *	Generated 06/05/2017 21:57:10
+ */
+
+
+
+
+
+// All code under test must be linked into the Unit Test bundle
+// Test Macros:
+//      TINYTEST_ASSERT(condition)
+//      TINYTEST_ASSERT_MSG(condition,msg)
+//      TINYTEST_EQUAL(expected, actual)
+//      TINYTEST_EQUAL_MSG(expected, actual, msg)
+//      TINYTEST_FALSE_MSG(condition,msg)
+//      TINYTEST_FALSE(condition)
+//      TINYTEST_TRUE_MSG(pointer,msg)
+//      TINYTEST_TRUE(condition)
+
+
+
+
+
+#include    <tinytest.h>
+#include    <cmn_defs.h>
+#include    <trace.h>
+#include    <cb32_internal.h>
+
+
+
+int         setUp(
+    const
+    char        *pTestName
+)
+{
+    mem_Init( );
+    trace_Shared( ); 
+    // Put setup code here. This method is called before the invocation of each
+    // test method in the class.
+    
+    return 1; 
+}
+
+
+int         tearDown(
+    const
+    char        *pTestName
+)
+{
+    // Put teardown code here. This method is called after the invocation of each
+    // test method in the class.
+
+    
+    trace_SharedReset( ); 
+    mem_Dump( );
+    mem_Release( );
+    
+    return 1; 
+}
+
+
+
+
+
+
+int         test_cb32_OpenClose(
+    const
+    char        *pTestName
+)
+{
+    CB32_DATA	*pObj = OBJ_NIL;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = cb32_Alloc(8);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = cb32_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        // Test something.
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_cb32_PutGet01(
+    const
+    char        *pTestName
+)
+{
+	CB32_DATA       *cbp;
+    uint32_t        i;
+    uint32_t        data;
+    bool            fRc;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    cbp = cb32_Alloc(8);
+    XCTAssertFalse( (NULL == cbp) );
+	cbp = cb32_Init( cbp );
+    XCTAssertFalse( (NULL == cbp) );
+    if (cbp) {
+        
+        for (i=0; i<8; ++i) {
+            fRc = cb32_Put(cbp, i, 0);
+            XCTAssertTrue( (fRc) );
+        }
+        // Can't test this properly because TNeo simulation does not work well enough.
+        //fRc = cb32_Put(cbp, i, 0);          // One too many
+        //STAssertFalse( (fRc) );
+        
+        for (i=0; i<8; ++i) {
+            fRc = cb32_Get(cbp, &data, 0);
+            XCTAssertTrue( (fRc) );
+            XCTAssertTrue( (i == data) );
+        }
+        //fRc = cb32_Get(cbp, &data16, 0);    // One too many
+        //STAssertFalse( (fRc) );
+        
+        obj_Release(cbp);
+        cbp = NULL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+
+TINYTEST_START_SUITE(test_cb32);
+  TINYTEST_ADD_TEST(test_cb32_PutGet01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_cb32_OpenClose,setUp,tearDown);
+TINYTEST_END_SUITE();
+
+TINYTEST_MAIN_SINGLE_SUITE(test_cb32);
+
+
+
+
+
