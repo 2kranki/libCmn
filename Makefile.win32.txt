@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 18:33:11.000)
+# (10/11/2017 19:27:15.000)
 
 
 LIBNAM=libCmn
@@ -594,6 +594,22 @@ test_fbs:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_fileio
+
+test_fileio:
+	$(CC) $(CFLAGS) /Itests tests\test_fileio.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_greg
+
+test_greg:
+	$(CC) $(CFLAGS) /Itests tests\test_greg.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_hash32
 
 test_hash32:
@@ -618,6 +634,14 @@ test_hjson:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_json
+
+test_json:
+	$(CC) $(CFLAGS) /Itests tests\test_json.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_jsonOut
 
 test_jsonOut:
@@ -638,6 +662,30 @@ TESTS = $(TESTS) test_lexj
 
 test_lexj:
 	$(CC) $(CFLAGS) /Itests tests\test_lexj.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_listdl
+
+test_listdl:
+	$(CC) $(CFLAGS) /Itests tests\test_listdl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_lru
+
+test_lru:
+	$(CC) $(CFLAGS) /Itests tests\test_lru.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_memOSX
+
+test_memOSX:
+	$(CC) $(CFLAGS) /Itests tests\test_memOSX.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
