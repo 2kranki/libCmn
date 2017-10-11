@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 15:02:25.000)
+# (10/11/2017 18:33:13.000)
 
 
 LIBNAM=libCmn
@@ -1883,6 +1883,13 @@ test_lexj:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_misc
+
+test_misc:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_misc.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_msgBus
 
 test_msgBus:
@@ -1904,10 +1911,24 @@ test_node:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_nodeATree
+
+test_nodeATree:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeATree.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_nodeArc
 
 test_nodeArc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeArc.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_nodeArray
+
+test_nodeArray:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeArray.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1953,6 +1974,13 @@ test_nodeScan:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_nodeTree
+
+test_nodeTree:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeTree.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_null
 
 test_null:
@@ -1964,6 +1992,27 @@ TESTS += test_number
 
 test_number:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_number.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_obj
+
+test_obj:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_obj.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_objArray
+
+test_objArray:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objArray.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_objCb
+
+test_objCb:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objCb.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1981,10 +2030,24 @@ test_objList:
 	$(OBJDIR)/$(@F)
 
 
+TESTS += test_objMatrix
+
+test_objMatrix:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objMatrix.c 
+	$(OBJDIR)/$(@F)
+
+
 TESTS += test_path
 
 test_path:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_path.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_plist
+
+test_plist:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_plist.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -2020,6 +2083,20 @@ TESTS += test_psxThread
 
 test_psxThread:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_ptrArray
+
+test_ptrArray:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ptrArray.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_pwr2Array
+
+test_pwr2Array:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_pwr2Array.c 
 	$(OBJDIR)/$(@F)
 
 

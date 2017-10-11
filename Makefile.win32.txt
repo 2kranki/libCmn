@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 15:02:23.000)
+# (10/11/2017 18:33:11.000)
 
 
 LIBNAM=libCmn
@@ -642,6 +642,14 @@ test_lexj:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_misc
+
+test_misc:
+	$(CC) $(CFLAGS) /Itests tests\test_misc.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_msgBus
 
 test_msgBus:
@@ -666,10 +674,26 @@ test_node:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_nodeATree
+
+test_nodeATree:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeATree.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_nodeArc
 
 test_nodeArc:
 	$(CC) $(CFLAGS) /Itests tests\test_nodeArc.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_nodeArray
+
+test_nodeArray:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -722,6 +746,14 @@ test_nodeScan:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_nodeTree
+
+test_nodeTree:
+	$(CC) $(CFLAGS) /Itests tests\test_nodeTree.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_null
 
 test_null:
@@ -734,6 +766,30 @@ TESTS = $(TESTS) test_number
 
 test_number:
 	$(CC) $(CFLAGS) /Itests tests\test_number.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_obj
+
+test_obj:
+	$(CC) $(CFLAGS) /Itests tests\test_obj.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objArray
+
+test_objArray:
+	$(CC) $(CFLAGS) /Itests tests\test_objArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objCb
+
+test_objCb:
+	$(CC) $(CFLAGS) /Itests tests\test_objCb.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -754,10 +810,26 @@ test_objList:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_objMatrix
+
+test_objMatrix:
+	$(CC) $(CFLAGS) /Itests tests\test_objMatrix.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_path
 
 test_path:
 	$(CC) $(CFLAGS) /Itests tests\test_path.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_plist
+
+test_plist:
+	$(CC) $(CFLAGS) /Itests tests\test_plist.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -798,6 +870,22 @@ TESTS = $(TESTS) test_psxThread
 
 test_psxThread:
 	$(CC) $(CFLAGS) /Itests tests\test_psxThread.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_ptrArray
+
+test_ptrArray:
+	$(CC) $(CFLAGS) /Itests tests\test_ptrArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_pwr2Array
+
+test_pwr2Array:
+	$(CC) $(CFLAGS) /Itests tests\test_pwr2Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
