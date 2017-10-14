@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   utf8DataFromJSON.c
+ * File:   WStr_JSON.c
  *
- * Created on 10/9/2017 from hexData_JSON
+ * Created on 10/13/2017 from AStr_JSON
  */
 
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <utf8_internal.h>
+#include    <WStr_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -70,7 +70,7 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            utf8_Int64ToChrClean(
+    void            WStr_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
     )
@@ -108,10 +108,9 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         utf8_DataFromJSONString(
+    ERESULT         WStr_NewFromJSONString(
         ASTR_DATA       *pString,
-        uint32_t        *pLength,
-        void            **ppData
+        WSTR_DATA       **ppData
     )
     {
         HJSON_DATA      *pParser;
@@ -121,7 +120,7 @@ extern "C" {
         NODEARRAY_DATA  *pArray;
         ERESULT         eRc = ERESULT_SUCCESS;
         const
-        OBJ_INFO        *pInfo = utf8_Vtbl.iVtbl.pInfo;
+        OBJ_INFO        *pInfo = WStr_Vtbl.iVtbl.pInfo;
         uint32_t        i = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
 #ifdef TRACE_FUNCTIONS
@@ -132,10 +131,10 @@ extern "C" {
         uint32_t        crc;
         uint32_t        chkCrc;
         uint32_t        length = 0;
-        uint32_t        dataSize = 0;
         char            *pData = NULL;
         char            *pChrOut;
         int32_t         chrW;
+        WSTR_DATA       *pStrOut = OBJ_NIL;
         
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
@@ -224,7 +223,7 @@ extern "C" {
             pName = node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
-                crc = dec_getUint32A(AStr_getData(pStr));
+                crc = (uint32_t)dec_getInt64A(AStr_getData(pStr));
             }
             else {
                 fprintf(stderr, "ERROR - crc should have a integer!\n");
@@ -290,7 +289,46 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array"))) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array")) {
+                pArray = node_getData(pNode);
+                if (!(nodeArray_getSize(pArray) == length)) {
+                    fprintf(stderr, "ERROR - length does not match array size!\n");
+#ifdef TRACE_FUNCTIONS
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
+                    DEBUG_BREAK();
+#endif
+                    eRc = ERESULT_BAD_LENGTH;
+                    goto exit00;
+                }
+                // Parse the data array creating the UTF-8 string.
+                pStrOut = WStr_New();
+                for (i=0; i<length; ++i) {
+                    pNode = nodeArray_Get(pArray, i+1);
+                    pName = node_getName(pNode);
+                    pStr = node_getData(pNode);
+                    if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
+                        fprintf(stderr, "ERROR - data contains invalud data!\n");
+#ifdef TRACE_FUNCTIONS
+                        pStr2 = nodeHash_ToDebugString(pHash, 0);
+                        fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                        obj_Release(pStr2);
+                        pStr2 = OBJ_NIL;
+                        DEBUG_BREAK();
+#endif
+                        eRc = ERESULT_GENERAL_FAILURE;
+                        goto exit00;
+                    }
+                    chrW = (int32_t)dec_getInt64A(AStr_getData(pStr));
+                    WStr_AppendCharW(pStrOut, 1, chrW);
+                }
+            }
+            else if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null")) {
+                pStrOut = WStr_New();
+            }
+            else {
                 fprintf(stderr, "ERROR - data should be an array!\n");
 #ifdef TRACE_FUNCTIONS
                 pStr2 = nodeHash_ToDebugString(pHash, 0);
@@ -302,58 +340,9 @@ extern "C" {
                 eRc = ERESULT_GENERAL_FAILURE;
                 goto exit00;
             }
-            pArray = node_getData(pNode);
-            if (!(nodeArray_getSize(pArray) == length)) {
-                fprintf(stderr, "ERROR - length does not match array size!\n");
-#ifdef TRACE_FUNCTIONS
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-#endif
-                eRc = ERESULT_BAD_LENGTH;
-                goto exit00;
-            }
-            // Get an area large enough to hold the max size UTF-8 chars
-            // given the length plus a byte for the trailing NUL.
-            dataSize = (length * 6) + 1;
-            pData = mem_Malloc(dataSize);
-            if (pData == NULL) {
-                fprintf(stderr, "ERROR - Out of Memory!\n");
-                DEBUG_BREAK();
-                eRc = ERESULT_OUT_OF_MEMORY;
-                goto exit00;
-            }
-            // Parse the data array creating the UTF-8 string.
-            pChrOut = pData;
-            dataSize = 0;
-            for (i=0; i<length; ++i) {
-                int             len;
-                pNode = nodeArray_Get(pArray, i+1);
-                pName = node_getName(pNode);
-                pStr = node_getData(pNode);
-                if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
-                    fprintf(stderr, "ERROR - data contains invalud data!\n");
-#ifdef TRACE_FUNCTIONS
-                    pStr2 = nodeHash_ToDebugString(pHash, 0);
-                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                    DEBUG_BREAK();
-#endif
-                    eRc = ERESULT_GENERAL_FAILURE;
-                    goto exit00;
-                }
-                chrW = (int32_t)dec_getInt64A(AStr_getData(pStr));
-                len = utf8_WCToUtf8(chrW, pChrOut);
-                pChrOut += len;
-                dataSize += len;
-            }
-            *pChrOut = '\0';
             // Now verify the crc.
             pCrc = crc_New(CRC_TYPE_IEEE_32);
-            chkCrc = crc_AccumBlock(pCrc, dataSize, (void *)pData);
+            chkCrc = WStr_getCrcIEEE(pStrOut);
             obj_Release(pCrc);
             pCrc = OBJ_NIL;
             if (chkCrc == crc)
@@ -398,25 +387,22 @@ extern "C" {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
-        if (pLength)
-            *pLength = length;
         if (ppData) {
-            *ppData = pData;
+            *ppData = pStrOut;
         }
         else {
-            mem_Free(pData);
-            pData = NULL;
+            obj_Release(pStrOut);
+            pStrOut = NULL;
         }
         return eRc;
     }
     
     
 
-    ERESULT         utf8_DataFromJSONStringA(
+    ERESULT         WStr_NewFromJSONStringA(
         const
         char            *pString,
-        uint32_t        *pLength,
-        void            **ppData
+        WSTR_DATA       **ppData
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -424,7 +410,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = utf8_DataFromJSONString(pStr, pLength, ppData);
+            eRc = WStr_NewFromJSONString(pStr, ppData);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -435,9 +421,8 @@ extern "C" {
     
     
     
-    ASTR_DATA *     utf8_DataToJSON(
-        const
-        char            *pData
+    ASTR_DATA *     WStr_ToJSON(
+        WSTR_DATA       *this
     )
     {
         char            str[256];
@@ -450,16 +435,24 @@ extern "C" {
         const
         char            *pChr;
         char            chrs[32];
-        CRC_DATA        *pCrc = OBJ_NIL;
         uint32_t        crc = 0;
         int32_t         chrW;
+        int32_t         *pChrW;
         uint32_t        len;
-        
-        if (NULL == pData) {
+        const
+        char            *pData;
+
+#ifdef NDEBUG
+#else
+        if( !WStr_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
-        pInfo = utf8_Vtbl.iVtbl.pInfo;
-        
+#endif
+        pInfo = WStr_Vtbl.iVtbl.pInfo;
+        pData  = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, 1);
+
         pStr = AStr_New();
         str[0] = '\0';
         j = snprintf(
@@ -470,26 +463,24 @@ extern "C" {
                      );
         AStr_AppendA(pStr, str);
         
-        len = utf8_StrLenChars(pData);
-        pCrc = crc_New(CRC_TYPE_IEEE_32);
-        crc = crc_AccumBlock(pCrc, len, (void *)pData);
-        obj_Release(pCrc);
-        pCrc = OBJ_NIL;
+        crc = WStr_getCrcIEEE(this);
         AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
-        len = (uint32_t)utf8_StrLenA(pData);
+        len = pwr2Array_getSize((PWR2ARRAY_DATA *)this) - 1;
         AStr_AppendPrint(pStr, ", \"len\":%u", len);
         if (len) {
             AStr_AppendA(pStr, ", \"data\":[");
             pChr = pData;
             for (i=0; i<(len-1); ++i) {
-                chrW = utf8_Utf8ToWC_Scan(&pChr);
-                utf8_Int64ToChrClean(chrW, chrs);
+                pChrW = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, i+1);
+                chrW = *pChrW;
+                WStr_Int64ToChrClean(chrW, chrs);
                 AStr_AppendA(pStr, chrs);
                 AStr_AppendA(pStr, ",");
             }
-            chrW = utf8_Utf8ToWC_Scan(&pChr);
-            utf8_Int64ToChrClean(chrW, chrs);
+            pChrW = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, i+1);
+            chrW = *pChrW;
+            WStr_Int64ToChrClean(chrW, chrs);
             AStr_AppendA(pStr, chrs);
             AStr_AppendA(pStr, "] ");
         }

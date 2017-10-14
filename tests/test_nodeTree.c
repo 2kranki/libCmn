@@ -292,7 +292,7 @@ int         test_nodeTree_UpDownDelete01(
     uint32_t        iMax;
     const
     char            *pStrA;
-    ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);

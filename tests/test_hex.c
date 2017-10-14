@@ -95,7 +95,7 @@ int         test_hex_DataFromJSON01(
     char        *pData = "\x00\x01\x02\x03\x04\x05\x06\x07";
     char        *pOutput =  "{\"objectType\":\"hex\", "
                             "\"len\":8, "
-                            "\"crc\":-2002098017, "
+                            "\"crc\":2292869279, "
                             "\"data\":\"0001020304050607\""
                             "}\n";
     ERESULT     eRc;
@@ -127,14 +127,14 @@ int         test_hex_DataToJSON01(
     char        *pData = "\x00\x01\x02\x03\x04\x05\x06\x07";
     char        *pOutput =  "{\"objectType\":\"hex\", "
                             "\"len\":8, "
-                            "\"crc\":-2002098017, "
+                            "\"crc\":2292869279, "
                             "\"data\":\"0001020304050607\""
                             "}\n";
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = hex_DataToJSON(8, pData);
-    TINYTEST_TRUE( (0 == strcmp(pOutput, AStr_getData(pStr))) );
     fprintf(stderr, "JSON='%s'\n", AStr_getData(pStr));
+    TINYTEST_TRUE( (0 == strcmp(pOutput, AStr_getData(pStr))) );
     obj_Release(pStr);
     pStr = OBJ_NIL;
 
@@ -254,12 +254,12 @@ int         test_hex_Shared03(
 
 
 TINYTEST_START_SUITE(test_hex);
-  TINYTEST_ADD_TEST(test_hex_Shared03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hex_Shared02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hex_Shared01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hex_DataToJSON01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hex_DataFromJSON01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_hex_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_Shared03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_Shared02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_Shared01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_DataToJSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_DataFromJSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_hex);

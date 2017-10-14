@@ -149,7 +149,8 @@
         "str.c",
         "token_JSON.c",
         "utf8_JSON.c",
-        "value_JSON.c"
+        "value_JSON.c",
+        "WStr_JSON.c"
     ],
     "macosx": {
         "cmn_osx.c":null,

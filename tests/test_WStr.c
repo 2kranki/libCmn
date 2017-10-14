@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <utf8.h>
 #include    <WStr_internal.h>
@@ -100,8 +101,8 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     mem_Dump( );
     mem_Release( );
     
@@ -1032,23 +1033,136 @@ int         test_wstr_EscapeFor(
 
 
 
+int         test_WStr_CRC01(
+    const
+    char        *pTestName
+)
+{
+    WSTR_DATA   *pObj = OBJ_NIL;
+    uint32_t    crc;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = WStr_NewA("abc");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp(L"abc", (void *)WStr_getData(pObj))) );
+    if (pObj) {
+        
+        crc = WStr_getCrcIEEE(pObj);
+        fprintf(stderr, "\tcrc(\"abc\") = %u\n", crc);
+        XCTAssertTrue( (3785294476 == crc) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    pObj = WStr_NewA("");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (0 == WStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp("", (void *)WStr_getData(pObj))) );
+    if (pObj) {
+        
+        crc = WStr_getCrcIEEE(pObj);
+        fprintf(stderr, "\tcrc(\"\") = %u\n", crc);
+        //XCTAssertTrue( (2807916624 == crc) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_WStr_JSON01(
+    const
+    char        *pTestName
+)
+{
+    ERESULT     eRc;
+    WSTR_DATA   *pObj = OBJ_NIL;
+    uint32_t    crc;
+    ASTR_DATA   *pJson = OBJ_NIL;
+    WSTR_DATA   *pJsonOut = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = WStr_NewA("abc");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp(L"abc", WStr_getData(pObj))) );
+    if (pObj) {
+        
+        pJson = WStr_ToJSON(pObj);
+        fprintf(stderr, "\tJSON(\"abc\") = %s\n", AStr_getData(pJson));
+        eRc = WStr_NewFromJSONString(pJson, &pJsonOut);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        if (pJsonOut) {
+            XCTAssertFalse( (OBJ_NIL == pJsonOut) );
+            XCTAssertTrue( (3 == WStr_getLength(pJsonOut)) );
+            XCTAssertTrue( (0 == strcmp(L"abc", WStr_getData(pJsonOut))) );
+            obj_Release(pJsonOut);
+            pJsonOut = OBJ_NIL;
+        }
+        obj_Release(pJson);
+        pJson = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    pObj = WStr_NewA("");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (0 == WStr_getLength(pObj)) );
+    XCTAssertTrue( (0 == strcmp(L"", WStr_getData(pObj))) );
+    if (pObj) {
+        
+        pJson = WStr_ToJSON(pObj);
+        fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJson));
+        eRc = WStr_NewFromJSONString(pJson, &pJsonOut);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertFalse( (OBJ_NIL == pJsonOut) );
+        if (pJsonOut) {
+            XCTAssertTrue( (0 == WStr_getLength(pJsonOut)) );
+            XCTAssertTrue( (0 == strcmp(L"", WStr_getData(pJsonOut))) );
+            obj_Release(pJsonOut);
+            pJsonOut = OBJ_NIL;
+        }
+        obj_Release(pJson);
+        pJson = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_wstr);
-  TINYTEST_ADD_TEST(test_wstr_EscapeFor,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_Trim,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_File,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_NewFromEnv,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_LeftRightMid,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_CharFindPrev,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_CharFindNext,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_Append,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_AppendChr,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_CompareW,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_CompareA,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_Compare,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_AssignCopy,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_Span,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_wstr_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_WStr_JSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_WStr_CRC01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_EscapeFor,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_Trim,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_File,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_NewFromEnv,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_LeftRightMid,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_CharFindPrev,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_CharFindNext,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_Append,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_AppendChr,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_CompareW,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_CompareA,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_Compare,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_AssignCopy,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_Span,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_wstr_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_wstr);

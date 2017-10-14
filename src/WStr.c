@@ -50,12 +50,13 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        "WStr_internal.h"
-#include        "ascii.h"
-#include        "str.h"
-#include        "dec.h"
-#include        "hex.h"
-#include        "utf8.h"
+#include        <WStr_internal.h>
+#include        <ascii.h>
+#include        <str.h>
+#include        <crc.h>
+#include        <dec.h>
+#include        <hex.h>
+#include        <utf8.h>
 #include        <stdio.h>
 #include        <time.h>
 
@@ -322,26 +323,30 @@ extern "C" {
         char            *pStr
     )
     {
-        WSTR_DATA       *cbp;
+        WSTR_DATA       *this;
         ERESULT         eRc;
+        int32_t         len;
         
         // Do initialization.
         if (NULL == pStr) {
             return OBJ_NIL;
         }
         
-        cbp = WStr_Alloc( );
-        cbp = WStr_Init(cbp);
-        if (cbp) {
-            eRc = WStr_AppendA(cbp, pStr);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(cbp);
-                cbp = OBJ_NIL;
+        this = WStr_Alloc( );
+        this = WStr_Init(this);
+        if (this) {
+            len = utf8_StrLenA(pStr);
+            if (len) {
+                eRc = WStr_AppendA(this, pStr);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
             }
         }
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -469,6 +474,35 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    uint32_t        WStr_getCrcIEEE(
+        WSTR_DATA       *this
+    )
+    {
+        CRC_DATA        *pCrc = OBJ_NIL;
+        uint32_t        crc = 0;
+        uint32_t        len;
+#ifdef NDEBUG
+#else
+        if( !WStr_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        pCrc = crc_New(CRC_TYPE_IEEE_32);
+        len = pwr2Array_getSize((PWR2ARRAY_DATA *)this);
+        crc =   crc_AccumBlock(
+                    pCrc,
+                    (len * sizeof(int32_t)),
+                    (void *)pwr2Array_Ptr((PWR2ARRAY_DATA *)this, 1)
+                 );
+        obj_Release(pCrc);
+        pCrc = OBJ_NIL;
+        
+        return  crc;
+    }
+    
+    
+    
     const
     int32_t *       WStr_getData(
         WSTR_DATA       *cbp
@@ -2181,45 +2215,6 @@ extern "C" {
 
         // Return to caller.
         return i;
-    }
-    
-    
-    
-    ASTR_DATA *     WStr_ToJSON(
-        WSTR_DATA       *this
-    )
-    {
-        ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !WStr_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        pWrkStr = WStr_ToChrCon(this);
-        if (pWrkStr == OBJ_NIL) {
-            return OBJ_NIL;
-        }
-        
-        pStr = AStr_New();
-        if (pStr == OBJ_NIL) {
-            obj_Release(pWrkStr);
-            return OBJ_NIL;
-        }
-        AStr_AppendA(pStr, "{\"objectType\":\"");
-        AStr_AppendA(pStr, pInfo->pClassName);
-        AStr_AppendA(pStr, "\",\"data\":\"");
-        AStr_Append(pStr, pWrkStr);
-        AStr_AppendA(pStr, "\"}\n");
-        obj_Release(pWrkStr);
-        
-        return pStr;
     }
     
     

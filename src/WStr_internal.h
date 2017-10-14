@@ -78,7 +78,7 @@ struct WStr_data_s	{
 
     extern
     const
-    WSTR_VTBL_INTERNAL WStr_Vtbl;
+    WSTR_VTBL       WStr_Vtbl;
 
 
 

@@ -302,7 +302,7 @@ extern "C" {
     //			mem_DebugDump - Check for Any Memory Blocks
     //---------------------------------------------------------------
 
-    int 			memOSX_DebugDumpBlock(
+    void 			memOSX_DebugDumpBlock(
         MEMOSX_DATA		*this,
         const
         char			*pData
@@ -318,7 +318,6 @@ extern "C" {
         uint32_t        size;
         const
         char            *pBytes;
-        int             count = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -352,7 +351,6 @@ extern "C" {
         if( 0 == memcmp( pActual->check, CheckValue, sizeof(CheckValue) ) )
             fFnd = true;
         else {
-            ++count;
             fFnd = false;
         }
         
@@ -448,12 +446,10 @@ extern "C" {
         }
         else {
             fprintf(stderr, "\tDoes not seem to be a memOSX allocated area.\n");
-            ++count;
         }
         //DEBUG_BREAK();
     
         // Return to caller.
-        return count;
     }
     
     

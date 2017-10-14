@@ -53,6 +53,7 @@
 #include    <utf8.h>
 
 
+//#define TRACE_FUNCTIONS     1
 
 
 #ifdef	__cplusplus
@@ -90,7 +91,6 @@ extern "C" {
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
         ERESULT         eRc = ERESULT_SUCCESS;
-        uint32_t        i = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pStr2 = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
@@ -99,7 +99,10 @@ extern "C" {
         uint32_t        chkCrc;
         uint32_t        length = 0;
         uint64_t        data = 0;
-        
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = dec_Vtbl.iVtbl.pInfo;
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
             goto exit00;
@@ -114,19 +117,77 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        pStr2 = nodeHash_ToDebugString(pHash, 0);
-        fprintf(stderr, "%s\n", AStr_getData(pStr2));
-        obj_Release(pStr2);
-        pStr2 = OBJ_NIL;
+#ifdef TRACE_FUNCTIONS
+        {
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+        }
+#endif
 #endif
 
+        eRc = nodeHash_FindA(pHash, "objectType", &pNode);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pNode = node_getData(pNode);
+            pName = node_getName(pNode);
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+                pStr = node_getData(pNode);
+                if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
+                }
+                else {
+                    fprintf(stderr,
+                            "ERROR - objectType is \"%s\", but need \"%s\"!\n",
+                            AStr_getData(pStr),
+                            pInfo->pClassName
+                            );
+#ifdef TRACE_FUNCTIONS
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
+                    DEBUG_BREAK();
+#endif
+                    eRc = ERESULT_GENERAL_FAILURE;
+                    goto exit00;
+                }
+                
+            }
+            else {
+                fprintf(stderr,
+                        "ERROR - objectType needs to be a \"string\"!\n"
+                        );
+#ifdef TRACE_FUNCTIONS
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
+                DEBUG_BREAK();
+#endif
+                eRc = ERESULT_GENERAL_FAILURE;
+                goto exit00;
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - objectType is missing!\n");
+#ifdef TRACE_FUNCTIONS
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+            DEBUG_BREAK();
+#endif
+            eRc = ERESULT_GENERAL_FAILURE;
+            goto exit00;
+        }
+        
         eRc = nodeHash_FindA(pHash, "crc", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
-                crc = (uint32_t)dec_getInt64A(AStr_getData(pStr));
+                crc = dec_getUint32A(AStr_getData(pStr));
             }
             else {
                 fprintf(stderr, "ERROR - crc should have a integer!\n");
@@ -155,8 +216,8 @@ extern "C" {
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 length = (uint32_t)dec_getInt64A(AStr_getData(pStr));
-                if (length == 0) {
-                    fprintf(stderr, "ERROR - length must be greater than zero!\n");
+                if (!(length == 8)) {
+                    fprintf(stderr, "ERROR - length must be 8!\n");
                     pStr2 = nodeHash_ToDebugString(pHash, 0);
                     fprintf(stderr, "%s\n", AStr_getData(pStr2));
                     obj_Release(pStr2);
@@ -189,31 +250,10 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
-                if (AStr_getLength(pStr) == 2 * length) {
-                    pData = mem_Malloc(length);
-                    if (pData == NULL) {
-                        fprintf(stderr, "ERROR - Out of Memory!\n");
-                        DEBUG_BREAK();
-                        goto exit00;
-                    }
-                    for (i=0; i<length; ++i) {
-                        int         high;
-                        int         low;
-                        //high = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+1));
-                        //low  = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+2));
-                        if ((high == -1) || (low == -1)) {
-                            fprintf(stderr, "ERROR - data contains invalud data!\n");
-                            pStr2 = nodeHash_ToDebugString(pHash, 0);
-                            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                            obj_Release(pStr2);
-                            pStr2 = OBJ_NIL;
-                            DEBUG_BREAK();
-                            goto exit00;
-                        }
-                        pData[i] = (high << 4) | low;
-                    }
+                if (AStr_getLength(pStr) < 23) {
+                    data = dec_getUint64A(AStr_getData(pStr));
                     pCrc = crc_New(CRC_TYPE_IEEE_32);
                     chkCrc = crc_AccumBlock(pCrc, 8, (void *)&data);
                     obj_Release(pCrc);
@@ -241,7 +281,7 @@ extern "C" {
                 }
             }
             else {
-                fprintf(stderr, "ERROR - data should have a string!\n");
+                fprintf(stderr, "ERROR - data should be an integer!\n");
                 pStr2 = nodeHash_ToDebugString(pHash, 0);
                 fprintf(stderr, "%s\n", AStr_getData(pStr2));
                 obj_Release(pStr2);
@@ -320,44 +360,41 @@ extern "C" {
         OBJ_INFO        *pInfo;
         //ASTR_DATA       *pWrk;
         char            *pChr;
-        char            chrs[12];
+        char            chrs[32];
         CRC_DATA        *pCrc = OBJ_NIL;
+        uint32_t        len = 32;
         uint32_t        crc;
         
         pInfo = dec_Vtbl.iVtbl.pInfo;
-        
         pStr = AStr_New();
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"%s\" ",
+                     "{ \"objectType\":\"%s\", ",
                      pInfo->pClassName
                      );
         AStr_AppendA(pStr, str);
         
-        AStr_AppendPrint(pStr, ", \"len\":%d ", 8);
+        AStr_AppendPrint(pStr, "\"len\":%u, ", 8);
         
         pCrc = crc_New(CRC_TYPE_IEEE_32);
         crc = crc_AccumBlock(pCrc, 8, (void *)&data);
         obj_Release(pCrc);
         pCrc = OBJ_NIL;
-        AStr_AppendPrint(pStr, ", \"crc\":%d ", crc);
+        AStr_AppendPrint(pStr, "\"crc\":%u, ", crc);
         
-        AStr_AppendA(pStr, ", \"data\":");
-#ifdef XYZZY
-        pChr = pData;
-        for (i=0; i<length; ++i) {
-            //chrs[0] = hex_DigitToChrA((*pChr >> 4) & 0x0F);
-            //chrs[1] = hex_DigitToChrA(*pChr & 0x0F);
-            chrs[2] = '\0';
+        AStr_AppendA(pStr, "\"data\":");
+        pChr = chrs;
+        dec_putUint64A(data, &len, &pChr);
+        pChr = chrs;
+        len = 19;
+        while ((*pChr == '0') && len--) {
             ++pChr;
-            AStr_AppendA(pStr, chrs);
         }
-#endif
-        AStr_AppendA(pStr, " ");
+        AStr_AppendA(pStr, pChr);
         
-        AStr_AppendA(pStr, "}\n");
+        AStr_AppendA(pStr, " }\n");
         
         return pStr;
     }

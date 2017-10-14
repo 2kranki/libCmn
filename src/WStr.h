@@ -175,6 +175,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        WStr_getCrcIEEE(
+        WSTR_DATA       *this
+    );
+    
+    
     const
     int32_t *       WStr_getData(
         WSTR_DATA     *this

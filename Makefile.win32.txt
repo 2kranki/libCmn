@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 19:27:15.000)
+# (10/13/2017 22:07:23.000)
 
 
 LIBNAM=libCmn
@@ -161,6 +161,7 @@ OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\token_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\utf8_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\value_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\WStr_JSON.obj
 
 
 {src}.asm{$(OBJDIR)}.obj:

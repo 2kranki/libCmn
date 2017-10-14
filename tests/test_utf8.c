@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <utf8_internal.h>
 
@@ -94,6 +95,7 @@ int         tearDown(
     // test method in the class.
 
     
+    szTbl_SharedReset( ); 
     trace_SharedReset( ); 
     mem_Dump( );
     mem_Release( );
@@ -273,7 +275,7 @@ int         test_utf8_FromJSON01(
                             "}\n";
     ERESULT     eRc;
     uint32_t    len = 0;
-    char        *pBuffer;
+    char        *pBuffer = NULL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -282,6 +284,8 @@ int         test_utf8_FromJSON01(
     if (!ERESULT_FAILED(eRc)) {
         TINYTEST_TRUE( (3 == len) );
         TINYTEST_TRUE( (0 == strcmp("abc", pBuffer)) );
+        mem_Free(pBuffer);
+        pBuffer = NULL;
     }
     
     fprintf(stderr, "...%s completed.\n", pTestName);

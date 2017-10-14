@@ -195,6 +195,33 @@ int32_t          dec_getInt32A(
 }
 
 
+uint32_t         dec_getUint32A(
+    const
+    char            *pStr
+)
+{
+    uint32_t        i = 0;
+    
+    // Do initialization.
+    if( NULL == pStr ) {
+        return i;
+    }
+    
+    while (*pStr) {
+        if ((*pStr >= '0') && (*pStr <= '9')) {
+            i = (i * 10) + *pStr - '0';
+            ++pStr;
+        }
+        else
+            break;
+    }
+    
+    // Return to caller.
+    return i;
+}
+
+
+
 
 int32_t          dec_getInt32W(
     const
@@ -266,6 +293,32 @@ int64_t          dec_getInt64A(
     
     // Return to caller.
     i *= sign;
+    return i;
+}
+
+
+uint64_t         dec_getUint64A(
+    const
+    char            *pStr
+)
+{
+    uint64_t        i = 0;
+    
+    // Do initialization.
+    if( NULL == pStr ) {
+        return i;
+    }
+    
+    while (*pStr) {
+        if ((*pStr >= '0') && (*pStr <= '9')) {
+            i = (i * 10) + *pStr - '0';
+            ++pStr;
+        }
+        else
+            break;
+    }
+    
+    // Return to caller.
     return i;
 }
 
@@ -625,6 +678,106 @@ bool            dec_putInt64DecA(
         else {
             fRc = dec_putChar(' ', pLen, ppBuffer);
         }
+        --width;
+    }
+    
+    // Trailing Blanks
+    for (i=0; i<width; ++i) {
+        fRc = dec_putChar(' ', pLen, ppBuffer);
+    }
+    
+    fRc = dec_putChar('\0', pLen, ppBuffer);
+    
+    // Return to caller.
+    return true;
+}
+
+
+bool            dec_putUint64DecA(
+    uint64_t        input,
+    bool            fAlignRight,        // false == left, true == right
+    bool            fZeroFill,          // false == space fill, true == zero fill
+    uint8_t         width,              // total field width
+    uint8_t         dec,                // decimal point position
+    uint32_t        *pLen,              // Remaining length of buffer
+    //                                  // (Decremented if char added)
+    char            **ppBuffer          // buffer ptr which will be advanced
+)
+{
+    bool            fRc;
+    char            buffer[22];
+    char            *pBuffer = buffer;
+    uint32_t        cLen = 22;
+    uint32_t        cLeadingZeroes = 0;
+    int             i;
+    int             iMax;
+    char            fill = ' ';
+    int             dataSize = 0;
+    
+    // Do initialization.
+    if ((width == 0) || ((width + 1) > *pLen) || (dec >= width)) {
+        return false;
+    }
+    if ((NULL == ppBuffer) || (NULL == *ppBuffer)) {
+        return false;
+    }
+    if (fZeroFill) {
+        fill = '0';
+    }
+    
+    dec_putInt64A(input, &cLen, &pBuffer);
+    // First char of returned buffer is sign. Last char is trailing NUL.
+    
+    // Set up for scanning.
+    cLen = 22 - cLen - 1;
+    pBuffer = buffer;
+    if (dec >= cLen) {
+        return false;
+    }
+    
+    // Set up buffer for scanning.
+    buffer[0] = '0';
+    
+    //Insert decimal point if needed.
+    if (dec) {
+        i = cLen - dec - 1;
+        memmove(&buffer[0], &buffer[1], i);
+        buffer[i] = '.';
+    }
+    
+    iMax = cLen - dec - 1 - (dec ? 1 : 0);                  // Leave one leading character.
+    for (i=0; i < iMax; ++i) {
+        if (buffer[i] == '0') {
+            ++cLeadingZeroes;
+            buffer[i] = fill;
+        }
+        else {
+            break;
+        }
+    }
+    
+    dataSize = cLen - cLeadingZeroes;
+    
+    if (dataSize <= width) {
+    }
+    else {
+        return false;
+    }
+    
+    // Initialize the output area.
+    if (fAlignRight) {
+        iMax = width - dataSize;
+        for (i=0; i<iMax; ++i) {
+            fRc = dec_putChar(' ', pLen, ppBuffer);
+            --width;
+        }
+    }
+    
+    // transfer the value
+    i = cLen - dataSize;
+    iMax = cLen;
+    for (; i<iMax; ++i) {
+        fRc = dec_putChar(buffer[i], pLen, ppBuffer);
         --width;
     }
     

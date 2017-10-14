@@ -106,6 +106,18 @@ extern "C" {
     );
     
     
+    ERESULT         dec_UInt64FromJSONString(
+        ASTR_DATA       *pString,
+        uint64_t        *pData
+    );
+    
+    ERESULT         dec_UInt64FromJSONStringA(
+        const
+        char            *pString,
+        uint64_t        *pData
+    );
+    
+
     /*!
      Try to convert the string to a signed 32-bit number with format [+ | -]?[0..9]+
      @return:
@@ -115,6 +127,11 @@ extern "C" {
             Overflow is not checked.
      */
     int32_t         dec_getInt32A(
+        const
+        char            *pStr
+    );
+    
+    uint32_t        dec_getUint32A(
         const
         char            *pStr
     );
@@ -129,7 +146,12 @@ extern "C" {
         char             *pStr
     );
     
+    uint64_t        dec_getUint64A(
+        const
+        char             *pStr
+    );
     
+
     void            dec_Int32ToChr(
         int32_t			input,
         char            *pBuffer			// On return, will have
@@ -214,7 +236,18 @@ extern "C" {
         bool            (*pPutChar)(void *, uint8_t)
     );
     
+    bool            dec_putUint64DecA(
+        uint64_t        input,
+        bool            fAlignRight,        // false == left, true == right
+        bool            fZeroFill,          // false == space fill, true == zero fill
+        uint8_t         width,              // total field width
+        uint8_t         dec,                // decimal point position
+        uint32_t        *pLen,              // Remaining length of buffer
+        //                                  // (Decremented if char added)
+        char            **ppBuffer          // buffer ptr which will be advanced
+    );
     
+
     /*!
      @param:    pLen    buffer len ptr (len must be greater than 0)
      @param:    ppBuffer buffer ptr (11 bytes required minimum)
@@ -277,7 +310,12 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     dec_UInt64ToJSON(
+        uint64_t        data
+    );
     
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***

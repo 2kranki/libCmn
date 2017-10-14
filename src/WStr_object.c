@@ -169,35 +169,29 @@ uint16_t		WStr_WhoAmI(
 
 
 const
-WSTR_VTBL_INTERNAL WStr_Vtbl = {
+WSTR_VTBL   WStr_Vtbl = {
     {
-        {
-            &WStr_Info,
-            WStr_IsKindOf,
-            obj_RetainStandard,
-            obj_ReleaseStandard,
-            WStr_Dealloc,
-            WStr_Class,
-            WStr_WhoAmI,
-            NULL,           // (P_OBJ_QUERYINFO)
-            (P_OBJ_TOSTRING)WStr_ToDebugString,
-            NULL,			// WStr_Enable,
-            NULL,			// WStr_Disable,
-            (P_OBJ_ASSIGN)WStr_Assign,
-            (P_OBJ_COMPARE)WStr_Compare,
-            (P_OBJ_PTR)WStr_Copy,
-            (P_OBJ_HASH)WStr_Hash
-        },
+        &WStr_Info,
+        WStr_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        WStr_Dealloc,
+        WStr_Class,
+        WStr_WhoAmI,
+        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_TOSTRING)WStr_ToDebugString,
+        NULL,            // WStr_Enable,
+        NULL,            // WStr_Disable,
+        (P_OBJ_ASSIGN)WStr_Assign,
+        (P_OBJ_COMPARE)WStr_Compare,
+        (P_OBJ_PTR)WStr_Copy,
+        (P_OBJ_HASH)WStr_Hash
+    },
     // Put other object method names below this.
     // Properties:
     // Methods:
     WStr_getData,
     WStr_getLength
-    },
-#ifdef NDEBUG
-#else
-    WStr_Validate
-#endif
 };
 
 

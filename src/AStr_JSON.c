@@ -466,7 +466,7 @@ extern "C" {
         AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
         len = (uint32_t)utf8_StrLenA(pData);
-        AStr_AppendPrint(pStr, ", \"len\":%d", len);
+        AStr_AppendPrint(pStr, ", \"len\":%u", len);
         if (len) {
             AStr_AppendA(pStr, ", \"data\":[");
             pChr = pData;

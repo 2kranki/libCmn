@@ -341,13 +341,13 @@ extern "C" {
                      );
         AStr_AppendA(pStr, str);
         
-        AStr_AppendPrint(pStr, ", \"len\":%d", length);
+        AStr_AppendPrint(pStr, ", \"len\":%u", length);
         
         pCrc = crc_New(CRC_TYPE_IEEE_32);
         crc = crc_AccumBlock(pCrc, length, pData);
         obj_Release(pCrc);
         pCrc = OBJ_NIL;
-        AStr_AppendPrint(pStr, ", \"crc\":%d", crc);
+        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
         AStr_AppendA(pStr, ", \"data\":\"");
         pChr = pData;

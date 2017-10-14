@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <dec_internal.h>
 
@@ -51,7 +52,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     mem_Dump( );
     mem_Release( );
     
@@ -473,9 +475,76 @@ int         test_dec_Int64Dec(
 
 
 
+int         test_dec_Uint64ToJSON(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    ASTR_DATA       *pStrA = OBJ_NIL;
+    static
+    const
+    char            *pCon01 = "{ \"objectType\":\"dec\", "
+                                "\"len\":8, "
+                                "\"crc\":3439090748, "
+                                "\"data\":9223372036854775807 }\n";
+    static
+    const
+    char            *pCon02 = "{ \"objectType\":\"dec\", "
+                                "\"len\":8, "
+                                "\"crc\":1696784233, "
+                                "\"data\":0 }\n";
+    static
+    const
+    char            *pCon03 = "{ \"objectType\":\"dec\", "
+                                "\"len\":8, "
+                                "\"crc\":558161692, "
+                                "\"data\":18446744073709551615 }\n";
+    uint64_t        data = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+   
+    
+    pStrA = dec_UInt64ToJSON( 0x7FFFFFFFFFFFFFFF );
+    fprintf(stderr, "JSON = \"%s\"\n", AStr_getData(pStrA));
+    eRc = AStr_CompareA(pStrA, pCon01);
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+    data = 0;
+    eRc = dec_UInt64FromJSONString(pStrA, &data);
+    XCTAssertTrue( (9223372036854775807ull == data) );
+    obj_Release(pStrA);
+    pStrA = OBJ_NIL;
+        
+    pStrA = dec_UInt64ToJSON( 0 );
+    fprintf(stderr, "JSON = \"%s\"\n", AStr_getData(pStrA));
+    eRc = AStr_CompareA(pStrA, pCon02);
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+    data = 0;
+    eRc = dec_UInt64FromJSONString(pStrA, &data);
+    XCTAssertTrue( (0ull == data) );
+    obj_Release(pStrA);
+    pStrA = OBJ_NIL;
+
+    pStrA = dec_UInt64ToJSON( -1 );
+    fprintf(stderr, "JSON = \"%s\"\n", AStr_getData(pStrA));
+    eRc = AStr_CompareA(pStrA, pCon03);
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+    data = 0;
+    eRc = dec_UInt64FromJSONString(pStrA, &data);
+    XCTAssertTrue( (18446744073709551615ull == data) );
+    obj_Release(pStrA);
+    pStrA = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 
 TINYTEST_START_SUITE(test_dec);
+    TINYTEST_ADD_TEST(test_dec_Uint64ToJSON,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dec_Int64Dec,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dec_Signed64,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dec_Unsigned64,setUp,tearDown);

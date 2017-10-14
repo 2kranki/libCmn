@@ -179,7 +179,7 @@ int         test_timer_OpenClose(
             fprintf(stderr, "After Sleep(10 sec):  %s\n", AStr_getData(pStr));
             obj_Release(pStr);
             fprintf(stderr, "Count = %d\n", save);
-            XCTAssertTrue( ((save > 18) && (save < 22)) );
+            XCTAssertTrue( ((save > 18) && (save < 24)) );
         }
 #if defined(__MACOSX_ENV__)
         if (0 == gettimeofday(&startTime, NULL)) {

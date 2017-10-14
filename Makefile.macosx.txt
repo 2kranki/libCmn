@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/11/2017 19:27:17.000)
+# (10/13/2017 22:07:24.000)
 
 
 LIBNAM=libCmn
@@ -1470,6 +1470,12 @@ $(OBJDIR)/value_JSON.o: $(SRCDIR)/value_JSON.c
 
 
 OBJS += $(OBJDIR)/value_JSON.o
+$(OBJDIR)/WStr_JSON.o: $(SRCDIR)/WStr_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/WStr_JSON.o
 
 
 

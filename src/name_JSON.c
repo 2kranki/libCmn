@@ -344,6 +344,7 @@ extern "C" {
         int             lenChars;
         ASTR_DATA       *pStr;
         WSTR_DATA       *pWStr;
+        ASTR_DATA       *pStr2;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
@@ -370,23 +371,30 @@ extern "C" {
         switch (this->type) {
                 
             case NAME_TYPE_UNKNOWN:
-                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UNKNOWN\" ");
+                AStr_AppendPrint(
+                             pStr,
+                             "\"type\":%u /*NAME_TYPE_UNKNOWN*/ ",
+                             NAME_TYPE_UNKNOWN
+                 );
                 break;
                 
             case NAME_TYPE_INTEGER:
-                j = snprintf(
-                             str,
-                             sizeof(str),
-                             "\"type\":\"NAME_TYPE_INTEGER\", \"data\":%lld",
+                AStr_AppendPrint(
+                             pStr,
+                             "\"type\":%u /*NAME_TYPE_INTEGER*/, \"data\":%llu ",
+                             NAME_TYPE_INTEGER,
                              this->integer
-                             );
-                AStr_AppendA(pStr, str);
+                 );
                 break;
                 
             case NAME_TYPE_WSTR:
-                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_WSTR\", \"data\":\"");
+                AStr_AppendPrint(
+                             pStr,
+                             "\"type\":%u \"NAME_TYPE_WSTR\", \"data\":",
+                             NAME_TYPE_WSTR
+                 );
                 AStr_AppendA(pStr, str);
-                AStr_AppendA(pStr, "\" ");
+                AStr_AppendA(pStr, " ");
                 break;
                 
             case NAME_TYPE_UTF8:
