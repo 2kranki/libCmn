@@ -41,8 +41,10 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <appl_internal.h>
-#include <trace.h>
+#include    <appl_internal.h>
+#include    <dir.h>
+#include    <misc.h>
+#include    <trace.h>
 
 
 
@@ -59,16 +61,14 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            appl_task_body(
+    void            appl_scan_body(
         void            *pData
     )
     {
-        //APPL_DATA  *this = pData;
+        APPL_DATA  *this = pData;
         
     }
-#endif
 
 
 

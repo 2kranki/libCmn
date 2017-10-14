@@ -355,7 +355,6 @@ extern "C" {
      @param     this    object pointer
      @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise, ERESULT_SUCCESS_LESS_THAN,
                 ERESULT_SUCCESS_GREATER_THAN or an ERESULT_* error code.
-                otherwise, an ERESULT_* Error Code.
      */
     ERESULT         AStr_CompareRightA(
         ASTR_DATA		*this,
@@ -425,6 +424,21 @@ extern "C" {
         ASTR_DATA		*this,
         uint32_t        len,
         ASTR_DATA       **ppOther           // [out]
+    );
+    
+    
+    /*!
+     Match this string against a pattern using misc_PatternMatchA.
+     @param     this    object pointer
+     @param     pPattern pointer to a pattern string as containing optional
+                         match characters, '?' and '*'.
+     @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
+                 error is returned.
+     */
+    ERESULT         AStr_MatchA(
+        ASTR_DATA       *this,
+        const
+        char            *pPattern
     );
     
     

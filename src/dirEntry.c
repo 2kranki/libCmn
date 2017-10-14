@@ -46,7 +46,8 @@
 
 
 /* Header File Inclusion */
-#include "dirEntry_internal.h"
+#include    <dirEntry_internal.h>
+#include    <misc.h>
 
 
 
@@ -335,6 +336,42 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //                          M a t c h
+    //---------------------------------------------------------------
+    
+    ERESULT         dirEntry_MatchA(
+        DIRENTRY_DATA   *this,
+        const
+        char            *pPattern
+    )
+    {
+        bool            fRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        fRc =   misc_PatternMatchA(
+                     pPattern,
+                     AStr_getData(this->pName),
+                     NULL,
+                     NULL
+                 );
+        if (!fRc) {
+            eRc = ERESULT_PATH_NOT_FOUND;
+        }
+        
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

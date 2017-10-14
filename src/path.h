@@ -214,6 +214,13 @@ extern "C" {
     );
     
     
+    /*!
+     Compare the given string against 'this' from the right hand side of the string
+     (ie compare the trailing part of the string)
+     @param     this    object pointer
+     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise, ERESULT_SUCCESS_LESS_THAN,
+                 ERESULT_SUCCESS_GREATER_THAN or an ERESULT_* error code.
+     */
     ERESULT         path_CompareRightA(
         PATH_DATA		*this,
         const
@@ -303,6 +310,21 @@ extern "C" {
     );
     
     
+    /*!
+     Match this string against a pattern using misc_PatternMatchA.
+     @param     this    object pointer
+     @param     pPattern pointer to a pattern string as containing optional
+     match characters, '?' and '*'.
+     @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
+                 error is returned.
+     */
+    ERESULT         path_MatchA(
+        PATH_DATA       *this,
+        const
+        char            *pPattern
+    );
+    
+    
     ERESULT         path_SplitFile(
         PATH_DATA		*this,
         ASTR_DATA       **ppFileName,
@@ -310,6 +332,11 @@ extern "C" {
     );
     
     
+    /*!
+     Split the path into its 3 basic components of the drive, directory and
+     FileName.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     */
     ERESULT         path_SplitPath(
         PATH_DATA		*this,
         ASTR_DATA       **ppDrive,

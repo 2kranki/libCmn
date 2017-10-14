@@ -90,7 +90,7 @@ int         test_misc_OpenClose(
 
 
 
-int         test_misc_Abbrev(
+int         test_misc_Abbrev01(
     const
     char        *pTestName
 )
@@ -118,7 +118,7 @@ int         test_misc_Abbrev(
 
 
 
-int         test_misc_BitReversal(
+int         test_misc_BitReversal01(
     const
     char        *pTestName
 )
@@ -148,7 +148,7 @@ int         test_misc_BitReversal(
 
 
 
-int         test_misc_Parity(
+int         test_misc_Parity01(
     const
     char        *pTestName
 )
@@ -193,7 +193,7 @@ int         test_misc_Parity(
 
 
 
-int         test_misc_Match(
+int         test_misc_Match01(
     const
     char        *pTestName
 )
@@ -223,10 +223,10 @@ int         test_misc_Match(
 
 
 TINYTEST_START_SUITE(test_misc);
-  TINYTEST_ADD_TEST(test_misc_Match,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_Parity,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_BitReversal,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_Abbrev,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_misc_Match01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_misc_Parity01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_misc_BitReversal01,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_misc_Abbrev01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_misc_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

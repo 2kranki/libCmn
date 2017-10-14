@@ -157,7 +157,7 @@ int             test_msgBus_Broadcast01(
         printf("Registering Receivers...\n");
         for (i=0; i<NUM_OBJ; ++i) {
             pFunc = execPtr_New(&printMsg);
-            eRc = msgBus_Register(pObj, pFunc, StrObj[i]);
+            eRc = msgBus_Register(pObj, (void *)pFunc, StrObj[i]);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             obj_Release(pFunc);
             pFunc = OBJ_NIL;

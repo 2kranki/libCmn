@@ -148,15 +148,15 @@ extern "C" {
     DIR_DATA *     dir_Alloc(
     )
     {
-        DIR_DATA       *cbp;
+        DIR_DATA        *this;
         uint32_t        cbSize = sizeof(DIR_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc(cbSize);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -343,7 +343,7 @@ extern "C" {
     }
 
     bool            dir_setPriority(
-        DIR_DATA     *cbp,
+        DIR_DATA        *cbp,
         uint16_t        value
     )
     {
@@ -360,12 +360,12 @@ extern "C" {
 
 
     uint32_t        dir_getSize(
-        DIR_DATA       *cbp
+        DIR_DATA        *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !dir_Validate( cbp ) ) {
+        if( !dir_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -390,7 +390,7 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        DIR_DATA   *this = objId;
+        DIR_DATA        *this = objId;
         //bool            fRc;
 
         // Do initialization.
@@ -460,7 +460,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         dir_IsDir(
-        DIR_DATA		*cbp,
+        DIR_DATA		*this,
         PATH_DATA       *pPath
     )
     {
@@ -474,7 +474,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !dir_Validate( cbp ) ) {
+        if( !dir_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -517,7 +517,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         dir_MakeDir(
-        DIR_DATA		*cbp,
+        DIR_DATA		*this,
         PATH_DATA       *pPath,
         uint16_t        mode
     )
@@ -531,7 +531,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !dir_Validate( cbp ) ) {
+        if( !dir_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -575,12 +575,13 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         dir_ScanDir(
-        DIR_DATA		*cbp,
+        DIR_DATA		*this,
         PATH_DATA       *pPath,
-        bool            (*pScanner)(void *,DIRENTRY_DATA *),
+        bool            (*pScanner)(void *, DIRENTRY_DATA *),
         void            *pData
     )
     {
+        ERESULT         eRc;
         char            *pDir;
 #if     defined(__MACOSX_ENV__)
         struct dirent   *pDirent;
@@ -593,7 +594,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !dir_Validate( cbp ) ) {
+        if( !dir_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -601,16 +602,18 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if (ERESULT_HAS_FAILED(path_IsDir(pPath))) {
-            DEBUG_BREAK();
-            return ERESULT_PATH_NOT_FOUND;
-        }
         if( NULL == pScanner ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
+        eRc = path_IsDir(pPath);
+        if (ERESULT_HAS_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return ERESULT_PATH_NOT_FOUND;
+        }
+        
 #if     defined(__MACOSX_ENV__)
         pDir = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pDir) {
@@ -647,7 +650,7 @@ extern "C" {
             (void)dirEntry_setDir(pEntry, pPath);
             (void)dirEntry_setName(pEntry, pStr);
             (void)dirEntry_setType(pEntry, pDirent->d_type);
-            fRc = (*pScanner)(pData,pEntry);
+            fRc = (*pScanner)(pData, pEntry);
             obj_Release(pStr);
             pStr = OBJ_NIL;
             if (!fRc) {

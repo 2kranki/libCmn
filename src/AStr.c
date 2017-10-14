@@ -41,16 +41,17 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <AStr_internal.h>
-#include <ascii.h>
-#include <crc.h>
-#include <dec.h>
-#include <hex.h>
-#include <str.h>
-#include <utf8.h>
-#include <WStr.h>
-#include <stdio.h>
-#include <time.h>
+#include    <AStr_internal.h>
+#include    <ascii.h>
+#include    <crc.h>
+#include    <dec.h>
+#include    <hex.h>
+#include    <misc.h>
+#include    <str.h>
+#include    <utf8.h>
+#include    <WStr.h>
+#include    <stdio.h>
+#include    <time.h>
 
 
 
@@ -1925,6 +1926,42 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          M a t c h
+    //---------------------------------------------------------------
+    
+    ERESULT         AStr_MatchA(
+        ASTR_DATA       *this,
+        const
+        char            *pPattern
+    )
+    {
+        bool            fRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        fRc =   misc_PatternMatchA(
+                    pPattern,
+                    AStr_getData(this),
+                    NULL,
+                    NULL
+                );
+        if (!fRc) {
+            eRc = ERESULT_DATA_NOT_FOUND;
+        }
+        
+        return eRc;
     }
     
     

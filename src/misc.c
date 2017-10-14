@@ -44,9 +44,10 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "misc_internal.h"
-#include <stdio.h>
-#include "ascii.h"
+#include    <misc_internal.h>
+#include    <stdio.h>
+#include    <ascii.h>
+#include    <utf8.h>
 
 
 
@@ -63,21 +64,33 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    /* Copy text until EOL or an '*' is found.
+     */
     static
-    bool            misc_passtxt(
+    bool            misc_CopyText(
+        const
         char            **insp,
         char            **otsp
     )
     {
+        int             len;
+        int             i;
+        int32_t         wc;
         
-        char        c;
-        
-        while ((c = **insp) && (c != '*')) {
-            *(*otsp)++ = c;
-            ++*insp;
+        for (;;) {
+            len = utf8_Utf8ToWC(*insp, &wc);
+            if (len == -1) {    // *** Malformed UTF-8 Char ***
+                return 0;
+            }
+            if ((wc == 0) || (wc == '*')) {
+                break;
+            }
+            for (i=0; i<len; ++i) {
+                *(*otsp)++ = *(*insp)++;
+            }
         }
         
-        return (c != 0);
+        return (wc != 0);
     }
     
     
@@ -303,53 +316,101 @@ extern "C" {
         char            *pPattern,
         const
         char            *pName,
+        const
         char            *pEquiv,
         char            *pNewname
-        )
+    )
     {
-        char            c;
-        char            mc;
-        bool            flag;
+        int             len;
+        int             lenName;
+        int             i;
+        int32_t         cw;
+        int32_t         mcw;
+        int32_t         mcwn;
+        int32_t         ncw;
+        int             flag;
+        bool            fRc;
         
-        mc = *pPattern++;               /* Get char from pat */
-        while ( (c = *pName++) ) {		/* Corresponding char */
-            switch (mc) {
+        len = utf8_Utf8ToWC(pPattern, &mcw);
+        if (len == -1) {    // *** Malformed Unicode Char ***
+            return false;
+        }
+        pPattern += len;
+        for (;;) {		/* Corresponding char */
+            len = utf8_Utf8ToWC(pName, &cw);
+            if (len == -1) {    // *** Malformed Unicode Char ***
+                return false;
+            }
+            pName += len;
+            lenName = len;
+            if (cw == '\0') {
+                break;
+            }
+            switch (mcw) {
                     
                 case '?':				// '?' matches any single char
                     if (pEquiv) {
-                        if (misc_passtxt(&pEquiv, &pNewname)) {
-                            *pNewname++ = c;
-                            if (*pPattern != '?')
-                                ++pEquiv;
+                        if (misc_CopyText(&pEquiv, &pNewname)) {
+                            len = utf8_WCToUtf8(cw, pNewname);
+                            pNewname += len;
+                            len = utf8_Utf8ToWC(pPattern, &mcwn);
+                            if (mcwn != '?') {
+                                len = utf8_Utf8ToWC(pEquiv, NULL);
+                                pEquiv += len;
+                            }
                         }
                     }
-                    mc = *pPattern++;
+                    len = utf8_Utf8ToWC(pPattern, &mcw);
+                    if (len == -1) {    // *** Malformed Unicode Char ***
+                        return false;
+                    }
+                    pPattern += len;
                     break;
                     
                 case '*':				// '*' matches any string
-                    if (pEquiv)
-                        flag = misc_passtxt(&pEquiv, &pNewname);
-                    else
-                        flag = false;
-                    if ( misc_PatternMatchA(pName-1, pPattern, pEquiv+flag, pNewname) )
+                    flag = 0;
+                    if (pEquiv) {
+                        if (misc_CopyText(&pEquiv, &pNewname))
+                            flag = 1;
+                    }
+                    len = 0;
+                    if (flag && pEquiv) {
+                        len = utf8_Utf8ToWC(pEquiv, NULL);
+                    }
+                    fRc = misc_PatternMatchA(
+                                     (pName - lenName), // Backup one char
+                                     pPattern,
+                                     (pEquiv + len),    // Optionally Advance one char
+                                     pNewname
+                             );
+                    if ( fRc )
                         return true;
-                    if (flag)
-                        *pNewname++ = c;
+                    if (flag) {
+                        len = utf8_WCToUtf8(cw, pNewname);
+                        pNewname += len;
+                    }
                     break;
                     
                 default:				/* Anything else matches only itself */
-                    if (ascii_toUpperA(mc) != ascii_toUpperA(c))
+                    if (ascii_toUpperW(mcw) != ascii_toUpperW(cw))
                         return false;
-                    mc = *pPattern++;
+                    len = utf8_Utf8ToWC(pPattern, &mcw);
+                    if (len == -1) {    // *** Malformed Unicode Char ***
+                        return false;
+                    }
+                    pPattern += len;
                     break;
             }
         }
         
-        if ((mc != '*' || *pPattern) && mc)
+        if ((mcw != '*' || *pPattern) && mcw) {
             return false;
+        }
         if (pEquiv) {
-            while (misc_passtxt(&pEquiv, &pNewname))
-                ++pEquiv;
+            while (misc_CopyText(&pEquiv, &pNewname)) {
+                len = utf8_Utf8ToWC(pEquiv, NULL);
+                pEquiv += len;
+            }
             *pNewname = '\0';
         }
         return true;

@@ -60,6 +60,13 @@ typedef enum make_type_e {
 } MAKETYPE;
 
 
+typedef enum out_type_e {
+    OUTTYPE_UNKNOW=0,
+    OUTTYPE_CLP,                // Command Line Program
+    OUTTYPE_LIB                 // Library
+} OUTTYPE;
+
+
 
 typedef     struct args_s {
     const
@@ -67,6 +74,7 @@ typedef     struct args_s {
     int             fDebug;             // -d or --debug or --no-debug
     int             fForce;             // --force or --no-force
     MAKETYPE        makeType;           // --MSC
+    OUTTYPE         outType;            // --LIB
     int             fNL;
     int             fWS;
     int             lexSelect;
@@ -93,22 +101,23 @@ typedef     struct args_s {
 
 
 ARGS args = {
-    NULL,           // Program Path
-    0,              // fDebug
-    0,              // fForce
-    MAKETYPE_MACOSX, // makeType
-    0,              // fNL
-    0,              // fWS
-    0,              // Lex Select
-    NULL,           // pInputFilePath
-    NULL,           // Input File
-    0,              // mFlag
-    0,              // nFlag
-    NULL,           // pOutFile
-    NULL,           // Output File
-    NULL,           // pR
-    0,              // cOptions
-    NULL,           // ppOptions
+    NULL,               // Program Path
+    0,                  // fDebug
+    0,                  // fForce
+    MAKETYPE_MACOSX,    // makeType
+    OUTTYPE_LIB,        // makeType
+    0,                  // fNL
+    0,                  // fWS
+    0,                  // Lex Select
+    NULL,               // pInputFilePath
+    NULL,               // Input File
+    0,                  // mFlag
+    0,                  // nFlag
+    NULL,               // pOutFile
+    NULL,               // Output File
+    NULL,               // pR
+    0,                  // cOptions
+    NULL,               // ppOptions
     
     OBJ_NIL,
     OBJ_NIL
@@ -154,7 +163,7 @@ void            genMakeFile_initial(
             fprintf(pResults->pOutput, "CFLAGS_LIBS = \n");
             fprintf(pResults->pOutput, "CFLAGS += -g -Isrc -Isrc/$(SYS)\n");
             if (pLibDeps) {
-                char            *pLibIncludePrefix = szHash_Find(pHash, "libIncludePrefix");
+                char            *pLibIncludePrefix = szHash_FindA(pHash, "libIncludePrefix");
                 iMax = nodeArray_getSize(pLibDeps);
                 for (i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pLibDeps, i+1);
@@ -221,7 +230,7 @@ void            genMakeFile_initial(
             fprintf(pResults->pOutput, "LIBS = \n");
             fprintf(pResults->pOutput, "CFLAGS = $(CFLAGS) /Isrc /Isrc\\$(SYS)\n");
             if (pLibDeps) {
-                char            *pLibIncludePrefix = szHash_Find(pHash, "libIncludePrefix");
+                char            *pLibIncludePrefix = szHash_FindA(pHash, "libIncludePrefix");
                 iMax = nodeArray_getSize(pLibDeps);
                 for (i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pLibDeps, i+1);
@@ -1447,15 +1456,8 @@ int         parseArgs(
         exit(EXIT_FAILURE);
     }
 
-    // Set up type default;
-    eRc = szHash_Add(pHash, "type", "lib");
-    if (ERESULT_FAILED(eRc) ) {
-        fprintf(stderr, "FATAL - Failed to add 'type' to Hash\n");
-        exit(EXIT_FAILURE);
-    }
-
     // Set up libPrefix default;
-    eRc = szHash_Add(pHash, "libIncludePrefix", "../lib");
+    eRc = szHash_AddA(pHash, "libIncludePrefix", "../lib");
     if (ERESULT_FAILED(eRc) ) {
         fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Hash\n");
         exit(EXIT_FAILURE);
@@ -1463,7 +1465,10 @@ int         parseArgs(
 
    // Process the switches.
     for (wrkArgC--,ppWrkArgV++; wrkArgC>0; wrkArgC--,ppWrkArgV++) {
-        if (0 == strcmp(*ppWrkArgV, "--debug")) {
+        if (0 == strcmp(*ppWrkArgV, "--clp")) {
+            pResults->outType = OUTTYPE_CLP;
+        }
+        else if (0 == strcmp(*ppWrkArgV, "--debug")) {
             ++pResults->fDebug;
         }
         else if (0 == strcmp(*ppWrkArgV, "--no-debug")) {
@@ -1729,6 +1734,8 @@ void			show_usage(
     fprintf(stderr, "genMake: Generate a make or nmake file given an input json file\n");
     fprintf(stderr, "usage: %s [options] input_path\n", args.pProgramPath);
     fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  --clp                Set type to Command Line Program\n");
+    fprintf(stderr, "                       (Default is Library)\n");
     fprintf(stderr, "  --debug              Set Debug Mode\n");
     fprintf(stderr, "  --macosx             Generate MacOSX nmake file (default)\n");
     fprintf(stderr, "  --msc32              Generate MSC Win32 nmake file\n");

@@ -746,7 +746,7 @@ extern "C" {
         }
 #endif
         
-        eRc = AStr_CompareRightA( (ASTR_DATA *)this, pOther );
+        eRc = AStr_CompareRightA((ASTR_DATA *)this, pOther);
         
         // Return to caller.
         return eRc;
@@ -1297,6 +1297,33 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          M a t c h
+    //---------------------------------------------------------------
+    
+    ERESULT         path_MatchA(
+        PATH_DATA       *this,
+        const
+        char            *pPattern
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc =   AStr_MatchA((ASTR_DATA *)this, pPattern);
+        
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     S p l i t  F i l e
     //---------------------------------------------------------------
     
@@ -1387,8 +1414,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         path_SplitPath(
-        PATH_DATA		*cbp,
-        ASTR_DATA      **ppDrive,
+        PATH_DATA		*this,
+        ASTR_DATA       **ppDrive,
         PATH_DATA       **ppDir,
         PATH_DATA       **ppFileName
     )
@@ -1402,28 +1429,33 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if( !path_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         index = 0;
-        eRc = AStr_CharFindNextW((ASTR_DATA *)cbp, &index, ':');
+        eRc = AStr_CharFindNextW((ASTR_DATA *)this, &index, ':');
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             begin = 1;
             end = index - 1;
             if (ppDrive) {
                 if (begin <= end) {
-                    eRc =   AStr_Mid(
-                                    (ASTR_DATA *)cbp,
+                    if (ppDrive) {
+                        eRc =   AStr_Mid(
+                                    (ASTR_DATA *)this,
                                     begin,
                                     (end - begin + 1),
                                     ppDrive
-                            );
+                                );
+                        BREAK_FAILED(eRc);
+                    }
                 }
                 else {
-                    *ppDrive = OBJ_NIL;
+                    if (ppDrive) {
+                        *ppDrive = OBJ_NIL;
+                    }
                 }
             }
             begDir = index + 1;
@@ -1435,26 +1467,31 @@ extern "C" {
         }
         
         index = 0;
-        eRc = AStr_CharFindPrevW((ASTR_DATA *)cbp, &index, '/');
+        eRc = AStr_CharFindPrevW((ASTR_DATA *)this, &index, '/');
         if (ERESULT_IS_SUCCESSFUL(eRc)) {     // *** Directory is present ***
             if (ppDir) {
                 *ppDir = OBJ_NIL;
                 begin = begDir;
                 end = index - 1;
                 if (begin <= end) {
-                    ASTR_DATA      *pStr;
-                    eRc =   AStr_Mid(
-                                    (ASTR_DATA *)cbp,
-                                    begin,
-                                    (end -  begin + 1),
-                                    &pStr
-                            );
-                    *ppDir = path_NewFromAStr(pStr);
-                    path_Clean(*ppDir);
-                    obj_Release(pStr);
+                    ASTR_DATA      *pStr = OBJ_NIL;
+                    if (ppDir) {
+                        eRc =   AStr_Mid(
+                                        (ASTR_DATA *)this,
+                                        begin,
+                                        (end -  begin + 1),
+                                        &pStr
+                                );
+                        BREAK_FAILED(eRc);
+                        *ppDir = path_NewFromAStr(pStr);
+                        path_Clean(*ppDir);
+                        obj_Release(pStr);
+                    }
                 }
                 else if (begin == index) {
-                    *ppDir = path_NewA("/");
+                    if (ppDir) {
+                        *ppDir = path_NewA("/");
+                    }
                 }
             }
             begDir = index + 1;
@@ -1468,14 +1505,16 @@ extern "C" {
         if (ppFileName) {
             *ppFileName = OBJ_NIL;
             begin = begDir;
-            end = AStr_getLength((ASTR_DATA *)cbp);
+            end = AStr_getLength((ASTR_DATA *)this);
             if (begin <= end) {
                 ASTR_DATA      *pStr;
-                eRc = AStr_Right((ASTR_DATA *)cbp, (end - begin + 1), &pStr);
-                if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                    *ppFileName = path_NewFromAStr(pStr);
-                    path_Clean(*ppFileName);
-                    obj_Release(pStr);
+                if (ppFileName) {
+                    eRc = AStr_Right((ASTR_DATA *)this, (end - begin + 1), &pStr);
+                    if (ERESULT_IS_SUCCESSFUL(eRc)) {
+                        *ppFileName = path_NewFromAStr(pStr);
+                        path_Clean(*ppFileName);
+                        obj_Release(pStr);
+                    }
                 }
             }
         }

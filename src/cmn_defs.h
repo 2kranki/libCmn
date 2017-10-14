@@ -137,8 +137,8 @@ extern "C" {
 #define         OBJ_IDENTS_ENUM	1
     typedef enum obj_idents_e {
         OBJ_IDENT_UNKNOWN=0,
-        OBJ_IDENT_BASE,
-        OBJ_IDENT_APP32_CLASS,
+        OBJ_IDENT_MAIN,                 // Main Program Object
+        OBJ_IDENT_MAIN_CLASS,
         OBJ_IDENT_APPL,                 // Application Base Object
         OBJ_IDENT_APPL_CLASS,
         OBJ_IDENT_ARRAYEXPAND,          // Expandable Array

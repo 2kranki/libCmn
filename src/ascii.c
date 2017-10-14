@@ -724,7 +724,21 @@ extern "C" {
     }
     
     
+    int32_t             ascii_toUpperW(
+        int32_t             asciiChar
+    )
+    {
+        int32_t             chr = asciiChar;
+        
+        if ((asciiChar >= 'a') && (asciiChar <= 'z')) {
+            chr = (asciiChar - 'a') + 'A';
+        }
+        
+        return chr;
+    }
     
+    
+
     
 
     //===============================================================

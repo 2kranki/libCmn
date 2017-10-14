@@ -231,8 +231,8 @@ extern "C" {
     );
     
     
-    // Convert an offset into a string of Unicode and ascii
-    // characters to a byte offset.
+    // Get the byte offset of a Unicode character in a UTF-8 string
+    // given its Unicode offset.
     int32_t         utf8_StrOffset(
         const
         char            *pSrc,

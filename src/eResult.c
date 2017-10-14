@@ -141,7 +141,7 @@ extern "C" {
     
     
     
-    ERESULT     eResult_getSharedLastResult(
+    ERESULT         eResult_getSharedLastResult(
     )
     {
         ERESULT_DATA     *this = eResult_Shared();

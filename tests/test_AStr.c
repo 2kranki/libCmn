@@ -1009,8 +1009,66 @@ int         test_AStr_JSON01(
 
 
 
+int             test_AStr_Match01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pStr = AStr_NewA("xyzzy.dmg");
+    XCTAssertFalse( (OBJ_NIL == pStr) );
+    if (pStr) {
+        eRc = AStr_MatchA(pStr, "*.dmg");
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    pStr = AStr_NewA("xyzzy.txt");
+    XCTAssertFalse( (OBJ_NIL == pStr) );
+    if (pStr) {
+        eRc = AStr_MatchA(pStr, "*.dmg");
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    pStr = AStr_NewA("xyzzy.dmg");
+    XCTAssertFalse( (OBJ_NIL == pStr) );
+    if (pStr) {
+        eRc = AStr_MatchA(pStr, "x?zz?.dmg");
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    pStr = AStr_NewA("xyzzy.dmg");
+    XCTAssertFalse( (OBJ_NIL == pStr) );
+    if (pStr) {
+        eRc = AStr_MatchA(pStr, "x?zy?.dmg");
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    pStr = AStr_NewA("xyzzy.dmg");
+    XCTAssertFalse( (OBJ_NIL == pStr) );
+    if (pStr) {
+        eRc = AStr_MatchA(pStr, "x?zy?.*");
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_Match01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_CRC01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_ToChrCon01,setUp,tearDown);

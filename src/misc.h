@@ -200,11 +200,12 @@ extern "C" {
      */
     bool            misc_PatternMatchA(
         const
-        char            *pPattern,
+        char            *pPattern,          // UTF-8 Pattern String
         const
-        char            *pName,
-        char            *pEquiv,
-        char            *pNewname
+        char            *pName,             // UTF-8 Name String
+        const
+        char            *pEquiv,            // UTF-8 Equivalent String
+        char            *pNewname           // UTF-8 Output String
     );
     
     

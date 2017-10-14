@@ -457,6 +457,8 @@ extern "C" {
         uint32_t        ch = -1;
         int             i = -1;
         
+        if (pSrc == NULL)
+            return 0;
         if ((pSrc[0] & 0x80) == 0) {
             ch = pSrc[0];
             i = 1;

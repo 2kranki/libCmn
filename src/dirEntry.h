@@ -192,11 +192,14 @@ extern "C" {
     );
 
 
-    void *          dirEntry_QueryInfo(
-        OBJ_ID          objId,
-        uint32_t        type,
+    /*! Match this entry's file name against a pattern.
+     * which may include '?' and '*'.
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
+     */
+    ERESULT         dirEntry_MatchA(
+        DIRENTRY_DATA   *this,
         const
-        char            *pStr
+        char            *pPattern
     );
     
     

@@ -32,14 +32,23 @@
 
 static
 char            *pDir = NULL;
+static
+char            *pPattern = NULL;
 
 static
 bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
 {
+    ERESULT         eRc;
     PATH_DATA       *pPath;
     char            *pStr;
     struct stat     statbuf;
     
+    if (pPattern) {
+        eRc = dirEntry_MatchA(pEntry, pPattern);
+        if (ERESULT_FAILED(eRc)) {
+            return true;
+        }
+    }
     pPath = path_Copy(dirEntry_getDir(pEntry));
     path_AppendFileName(pPath, dirEntry_getName(pEntry));
     pStr = AStr_CStringA((ASTR_DATA *)pPath,NULL);
@@ -89,7 +98,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
+    pPattern = NULL;
     trace_SharedReset( ); 
     mem_Dump( );
     mem_Release( );
@@ -129,7 +138,7 @@ int         test_dir_OpenClose(
 
 
 
-int         test_dir_Scan(
+int         test_dir_Scan01(
     const
     char        *pTestName
 )
@@ -140,7 +149,41 @@ int         test_dir_Scan(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
+    pPattern = "*.wav";
     pDir = getenv("HOME");
+    pObj = dir_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = dir_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pPath = path_NewA(pDir);
+        eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_dir_Scan02(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA    *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    PATH_DATA   *pPath;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pDir = ".";
     pObj = dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = dir_Init( pObj );
@@ -164,8 +207,9 @@ int         test_dir_Scan(
 
 
 TINYTEST_START_SUITE(test_dir);
-  TINYTEST_ADD_TEST(test_dir_Scan,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_dir_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dir_Scan02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dir_Scan01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dir_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_dir);
