@@ -1951,14 +1951,16 @@ extern "C" {
         }
 #endif
         
-        fRc =   misc_PatternMatchA(
-                    pPattern,
-                    AStr_getData(this),
-                    NULL,
-                    NULL
-                );
-        if (!fRc) {
-            eRc = ERESULT_DATA_NOT_FOUND;
+        if (pPattern) {
+            fRc =   misc_PatternMatchA(
+                        pPattern,
+                        AStr_getData(this),
+                        NULL,
+                        NULL
+                    );
+            if (!fRc) {
+                eRc = ERESULT_DATA_NOT_FOUND;
+            }
         }
         
         return eRc;

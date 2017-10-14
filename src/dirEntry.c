@@ -346,7 +346,6 @@ extern "C" {
         char            *pPattern
     )
     {
-        bool            fRc;
         ERESULT         eRc = ERESULT_SUCCESS;
         
 #ifdef NDEBUG
@@ -357,15 +356,7 @@ extern "C" {
         }
 #endif
         
-        fRc =   misc_PatternMatchA(
-                     pPattern,
-                     AStr_getData(this->pName),
-                     NULL,
-                     NULL
-                 );
-        if (!fRc) {
-            eRc = ERESULT_PATH_NOT_FOUND;
-        }
+        eRc =   AStr_MatchA(this->pName, pPattern);
         
         return eRc;
     }

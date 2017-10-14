@@ -1046,7 +1046,7 @@ int         test_WStr_CRC01(
     pObj = WStr_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (0 == strcmp(L"abc", (void *)WStr_getData(pObj))) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abc")) );
     if (pObj) {
         
         crc = WStr_getCrcIEEE(pObj);
@@ -1060,7 +1060,7 @@ int         test_WStr_CRC01(
     pObj = WStr_NewA("");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     XCTAssertTrue( (0 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (0 == strcmp("", (void *)WStr_getData(pObj))) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "")) );
     if (pObj) {
         
         crc = WStr_getCrcIEEE(pObj);
@@ -1093,7 +1093,7 @@ int         test_WStr_JSON01(
     pObj = WStr_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (0 == strcmp(L"abc", WStr_getData(pObj))) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abc")) );
     if (pObj) {
         
         pJson = WStr_ToJSON(pObj);
@@ -1103,7 +1103,7 @@ int         test_WStr_JSON01(
         if (pJsonOut) {
             XCTAssertFalse( (OBJ_NIL == pJsonOut) );
             XCTAssertTrue( (3 == WStr_getLength(pJsonOut)) );
-            XCTAssertTrue( (0 == strcmp(L"abc", WStr_getData(pJsonOut))) );
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pJsonOut, "abc")) );
             obj_Release(pJsonOut);
             pJsonOut = OBJ_NIL;
         }
@@ -1117,7 +1117,7 @@ int         test_WStr_JSON01(
     pObj = WStr_NewA("");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     XCTAssertTrue( (0 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (0 == strcmp(L"", WStr_getData(pObj))) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "")) );
     if (pObj) {
         
         pJson = WStr_ToJSON(pObj);
@@ -1127,7 +1127,7 @@ int         test_WStr_JSON01(
         XCTAssertFalse( (OBJ_NIL == pJsonOut) );
         if (pJsonOut) {
             XCTAssertTrue( (0 == WStr_getLength(pJsonOut)) );
-            XCTAssertTrue( (0 == strcmp(L"", WStr_getData(pJsonOut))) );
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pJsonOut, "")) );
             obj_Release(pJsonOut);
             pJsonOut = OBJ_NIL;
         }

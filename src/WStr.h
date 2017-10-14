@@ -151,6 +151,18 @@ extern "C" {
     );
     
     
+    ERESULT         WStr_NewFromJSONString(
+        ASTR_DATA       *pString,
+        WSTR_DATA       **ppData
+    );
+    
+    ERESULT         WStr_NewFromJSONStringA(
+        const
+        char            *pString,
+        WSTR_DATA       **ppData
+    );
+    
+
     WSTR_DATA *     WStr_NewFromTimeNow(
         void
     );

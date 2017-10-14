@@ -24,6 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <ascii.h>
+#include    <szTbl.h>
 #include    <token.h>
 #include    <trace.h>
 #include    <tokenList_internal.h>

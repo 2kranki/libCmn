@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/13/2017 22:07:24.000)
+# (10/14/2017 16:55:51.000)
 
 
 LIBNAM=libCmn
@@ -8,7 +8,7 @@ TEMP=/tmp
 BASEDIR = $(TEMP)/$(LIBNAM)
 
 CFLAGS_LIBS = 
-CFLAGS += -g -Isrc -Isrc/$(SYS)
+CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
 CFLAGS += -D__MACOSX_ENV__
 
 INSTALL_BASE = $(HOME)/Support/lib/$(SYS)

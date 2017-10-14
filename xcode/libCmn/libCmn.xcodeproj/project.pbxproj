@@ -447,6 +447,8 @@
 		C4B57A281E515C340042C2A5 /* objects.json.txt in Resources */ = {isa = PBXBuildFile; fileRef = C4B57A271E515C340042C2A5 /* objects.json.txt */; };
 		C4B57A2F1E516EC10042C2A5 /* dec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B57A2A1E5167B10042C2A5 /* dec_object.c */; };
 		C4B57A301E516EC80042C2A5 /* dec_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4B57A291E5167B10042C2A5 /* dec_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		C4B827421F9275D40028E416 /* dec_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B827401F9275D00028E416 /* dec_JSON.c */; };
+		C4B827431F9275D40028E416 /* WStr_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B827411F9275D30028E416 /* WStr_JSON.c */; };
 		C4C188CD1D2BF6AB0085AC16 /* psxCond_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4C188C71D2BF63D0085AC16 /* psxCond_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C4C188CE1D2BF6B50085AC16 /* psxCond_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C188C81D2BF63D0085AC16 /* psxCond_object.c */; };
 		C4C188CF1D2BF6BC0085AC16 /* psxCond.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C188C91D2BF63D0085AC16 /* psxCond.c */; };
@@ -946,6 +948,8 @@
 		C4B57A321E5170670042C2A5 /* ebcdic_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ebcdic_object.c; sourceTree = "<group>"; };
 		C4B57A331E5170670042C2A5 /* ebcdic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ebcdic.c; sourceTree = "<group>"; };
 		C4B57A341E5170670042C2A5 /* ebcdic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ebcdic.h; sourceTree = "<group>"; };
+		C4B827401F9275D00028E416 /* dec_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dec_JSON.c; sourceTree = "<group>"; };
+		C4B827411F9275D30028E416 /* WStr_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStr_JSON.c; sourceTree = "<group>"; };
 		C4C188C71D2BF63D0085AC16 /* psxCond_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxCond_internal.h; sourceTree = "<group>"; };
 		C4C188C81D2BF63D0085AC16 /* psxCond_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxCond_object.c; sourceTree = "<group>"; };
 		C4C188C91D2BF63D0085AC16 /* psxCond.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxCond.c; sourceTree = "<group>"; };
@@ -1170,6 +1174,7 @@
 				C46704301C6B9CFA0091FC0E /* dbField_object.c */,
 				C46704311C6B9CFA0091FC0E /* dbField.c */,
 				C46704321C6B9CFA0091FC0E /* dbField.h */,
+				C4B827401F9275D00028E416 /* dec_JSON.c */,
 				C4B57A291E5167B10042C2A5 /* dec_internal.h */,
 				C4B57A2A1E5167B10042C2A5 /* dec_object.c */,
 				C46704341C6B9CFA0091FC0E /* dec.c */,
@@ -1498,6 +1503,7 @@
 				C46706841C6B9DD40091FC0E /* wav_object.c */,
 				C46706851C6B9DD40091FC0E /* wav.c */,
 				C46706861C6B9DD40091FC0E /* wav.h */,
+				C4B827411F9275D30028E416 /* WStr_JSON.c */,
 				C46706871C6B9DD40091FC0E /* WStr_internal.h */,
 				C46706881C6B9DD40091FC0E /* WStr_object.c */,
 				C46706891C6B9DD40091FC0E /* WStr.c */,
@@ -1917,6 +1923,7 @@
 				C4CBB3C61F42901900726413 /* node_JSON.c in Sources */,
 				C4D5E4221F893B94006BBD33 /* execPtr_object.c in Sources */,
 				C4C6D85B1F1183C7006D6C5E /* hjson.c in Sources */,
+				C4B827421F9275D40028E416 /* dec_JSON.c in Sources */,
 				C46705AA1C6B9CFB0091FC0E /* name.c in Sources */,
 				C46F87101F53144B007D2AD7 /* jsonOut_object.c in Sources */,
 				C4529AA81ECFD0D500D898DE /* psxLock_object.c in Sources */,
@@ -1956,6 +1963,7 @@
 				C4AF8D631E5BDCD2003AE67C /* tokenList.c in Sources */,
 				C46707151C6B9DD40091FC0E /* u32Array_object.c in Sources */,
 				C46706D51C6B9DD40091FC0E /* str.c in Sources */,
+				C4B827431F9275D40028E416 /* WStr_JSON.c in Sources */,
 				C4DFAC591F8BC70E0039C667 /* utf8_JSON.c in Sources */,
 				C46705D91C6B9CFB0091FC0E /* objHash.c in Sources */,
 				C46705471C6B9CFB0091FC0E /* dirEntry.c in Sources */,

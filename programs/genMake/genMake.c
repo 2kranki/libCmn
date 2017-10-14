@@ -161,7 +161,7 @@ void            genMakeFile_initial(
             fprintf(pResults->pOutput, "BASEDIR = $(TEMP)/$(LIBNAM)\n");
             fprintf(pResults->pOutput, "\n");
             fprintf(pResults->pOutput, "CFLAGS_LIBS = \n");
-            fprintf(pResults->pOutput, "CFLAGS += -g -Isrc -Isrc/$(SYS)\n");
+            fprintf(pResults->pOutput, "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
             if (pLibDeps) {
                 char            *pLibIncludePrefix = szHash_FindA(pHash, "libIncludePrefix");
                 iMax = nodeArray_getSize(pLibDeps);
@@ -228,7 +228,7 @@ void            genMakeFile_initial(
             );
             fprintf(pResults->pOutput, "\n");
             fprintf(pResults->pOutput, "LIBS = \n");
-            fprintf(pResults->pOutput, "CFLAGS = $(CFLAGS) /Isrc /Isrc\\$(SYS)\n");
+            fprintf(pResults->pOutput, "CFLAGS = $(CFLAGS) /WX /Isrc /Isrc\\$(SYS)\n");
             if (pLibDeps) {
                 char            *pLibIncludePrefix = szHash_FindA(pHash, "libIncludePrefix");
                 iMax = nodeArray_getSize(pLibDeps);
