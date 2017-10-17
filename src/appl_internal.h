@@ -82,7 +82,9 @@ struct appl_data_s	{
     void            (*pParseArgsDefaults)(OBJ_ID);
     int             (*pParseArgsLong)(OBJ_ID, const char *);
     int             (*pParseArgsShort)(OBJ_ID, const char *);
-    
+
+    int             (*pProcessArg)(OBJ_ID, const char *);
+
     void            (*pUsageProgLine)(OBJ_ID, FILE *pOutput);
     void            (*pUsageDesc)(OBJ_ID, FILE *pOutput);
     void            (*pUsageSwitches)(OBJ_ID, FILE *pOutput);

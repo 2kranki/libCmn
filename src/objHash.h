@@ -55,6 +55,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <objEnum.h>
 
 
 #ifndef         OBJHASH_H
@@ -147,7 +148,19 @@ extern "C" {
     );
     
     
-    /* Find() returns the data associated with the given object if 
+    /*! Create an enumerator for the Hash in ascending order
+         if the object contains a compare() method.
+     @param     this    DIR_DATA object pointer
+     @return    If successful, an Enumerator object which must be
+                 released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    OBJENUM_DATA *  objHash_Enum(
+        OBJHASH_DATA    *this
+    );
+    
+    
+    /* Find() returns the data associated with the given object if
      * found, otherwise OBJ_NIL is returned.
      */
     OBJ_ID          objHash_Find(

@@ -185,7 +185,9 @@ ENUM_VTBL     enum_Vtbl = {
     // Methods:
     enum_Next,
     enum_Skip,
-    enum_Reset
+    enum_Reset,
+    enum_LookAhead,
+    enum_Remaining
 };
 
 

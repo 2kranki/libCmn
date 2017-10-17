@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "objArray_internal.h"
+#include    <objArray_internal.h>
+#include    <objEnum_internal.h>
 
 
 
@@ -579,6 +580,45 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      E n u m
+    //---------------------------------------------------------------
+    
+    OBJENUM_DATA *  objArray_Enum(
+        OBJARRAY_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        uint32_t        i;
+        OBJ_ID          pObj;
+
+        // Do initialization.
+        if (NULL == this) {
+            return pEnum;
+        }
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return pEnum;
+        }
+#endif
+        
+        for (i=1; i<this->size; ++i) {
+            pObj = this->ppArray[i];
+            if (pObj) {
+                eRc = objEnum_Append(pEnum, pObj);
+            }
+        }
+        eRc = objArray_SortAscending(pEnum->pArray, NULL);
+        
+        // Return to caller.
+        return pEnum;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                            G e t
     //---------------------------------------------------------------
     
@@ -838,6 +878,7 @@ extern "C" {
         uint32_t        i;
         uint32_t        j;
         OBJ_ID          pSave;
+        OBJ_IUNKNOWN    *pUnk;
         
         /*      Insertion Sort from Wikipedia
          *
@@ -858,6 +899,14 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        if (NULL == pCompare) {
+            pUnk = obj_getVtbl(this->ppArray[0]);
+            if (pUnk)
+                pCompare = pUnk->pCompare;
+            if (pCompare == NULL) {
+                return ERESULT_INVALID_FUNCTION;
+            }
+        }
         
         if (this->size < 2) {
             this->eRc = ERESULT_SUCCESS;
@@ -963,6 +1012,9 @@ extern "C" {
         OBJARRAY_DATA      *this
     )
     {
+        if (OBJ_NIL == this) {
+            return false;
+        }
         this->eRc = ERESULT_INVALID_OBJECT;
         if( this ) {
             if ( obj_IsKindOf(this,OBJ_IDENT_OBJARRAY) )

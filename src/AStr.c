@@ -1096,7 +1096,7 @@ extern "C" {
             pChr = pwr2Array_Ptr(this->pData, off);
             if (0 == strncmp(pChr, chrsSrch, cChrsSrch)) {
                 *pIndex = i;
-                return ERESULT_SUCCESSFUL_COMPLETION;
+                return ERESULT_SUCCESS;
             }
         }
         
@@ -1364,7 +1364,7 @@ extern "C" {
     
     ERESULT         AStr_Compare(
         ASTR_DATA		*this,
-        ASTR_DATA      *pOther
+        ASTR_DATA       *pOther
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;

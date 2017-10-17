@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'path'
-//	Generated 02/05/2016 14:29:04
+//	Class Object Metods and Tables for 'objEnum'
+//	Generated 10/15/2017 09:38:35
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,9 @@
  */
 
 
-#include        "obj.h"
-#include        "path_internal.h"
+
+#define			OBJENUM_OBJECT_C	    1
+#include        <objEnum_internal.h>
 
 
 
@@ -40,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct path_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct objEnum_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct path_class_data_s PATH_CLASS_DATA;
+typedef struct objEnum_class_data_s OBJENUM_CLASS_DATA;
 
 
 
@@ -61,29 +62,23 @@ typedef struct path_class_data_s PATH_CLASS_DATA;
 
 static
 const
-OBJ_INFO        path_Info;            // Forward Reference
+OBJ_INFO        objEnum_Info;            // Forward Reference
 
 
 
-OBJ_ID          path_Class(
+OBJ_ID          objEnum_Class(
     void
 );
 
 
 
 static
-bool            path_ClassIsKindOf(
+bool            objEnum_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PATH_CLASS == classID) {
+    if (OBJ_IDENT_OBJENUM_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_ASTR_CLASS == classID) {
-        return true;
-    }
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -97,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_PATH_CLASS;
+    return OBJ_IDENT_OBJENUM_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&path_Info,
-    path_ClassIsKindOf,
+	&objEnum_Info,
+    objEnum_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -119,28 +114,21 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
 const
-PATH_CLASS_DATA  path_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PATH_CLASS, 0, 1},
+OBJENUM_CLASS_DATA  objEnum_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJENUM_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            path_IsKindOf(
+bool            objEnum_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PATH == classID) {
+    if (OBJ_IDENT_OBJENUM == classID) {
        return true;
-    }
-    if (OBJ_IDENT_ASTR == classID) {
-        return true;
-    }
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -151,57 +139,68 @@ bool            path_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            path_Dealloc(
+void            objEnum_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          path_Class(
+OBJ_ID          objEnum_Class(
     void
 )
 {
-    return (OBJ_ID)&path_ClassObj;
+    return (OBJ_ID)&objEnum_ClassObj;
 }
 
 
 static
-uint16_t		path_WhoAmI(
+uint16_t		objEnum_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_PATH;
+    return OBJ_IDENT_OBJENUM;
 }
 
 
 const
-PATH_VTBL       path_Vtbl = {
+OBJENUM_VTBL     objEnum_Vtbl = {
     {
-        &path_Info,
-        path_IsKindOf,
+        &objEnum_Info,
+        objEnum_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        path_Dealloc,
-        path_Class,
-        path_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
-        (P_OBJ_TOSTRING)path_ToDebugString,
-        NULL,            // path_Enable,
-        NULL,            // path_Disable,
-        (P_OBJ_ASSIGN)AStr_Assign,
-        (P_OBJ_COMPARE)AStr_Compare,
-        (P_OBJ_PTR)path_Copy,
-        (P_OBJ_HASH)AStr_Hash
-    }
+        objEnum_Dealloc,
+        objEnum_Class,
+        objEnum_WhoAmI,
+        (P_OBJ_QUERYINFO)objEnum_QueryInfo,
+        (P_OBJ_TOSTRING)objEnum_ToDebugString,
+        NULL,			// objEnum_Enable,
+        NULL,			// objEnum_Disable,
+        (P_OBJ_ASSIGN)objEnum_Assign,
+        NULL,			// (P_OBJ_COMPARE)objEnum_Compare,
+        (P_OBJ_PTR)objEnum_Copy,
+        NULL 			// (P_OBJ_HASH)objEnum_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    objEnum_Next,
+    objEnum_Skip,
+    objEnum_Reset,
+    objEnum_LookAhead,
+    objEnum_Remaining
+
 };
 
 
+
 static
 const
-OBJ_INFO        path_Info = {
-    "path",
-    "Path",
-    (OBJ_DATA *)&path_ClassObj,
-    (OBJ_DATA *)&AStr_ClassObj
+OBJ_INFO        objEnum_Info = {
+    "objEnum",
+    "Object Enumerator",
+    (OBJ_DATA *)&objEnum_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&objEnum_Vtbl
 };
 
 

@@ -12,10 +12,7 @@
  *          nodeTree_ToLinearizationPost or nodeTree_ToLinearizationPre.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal nodeScan. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	10/16/2015 Generated

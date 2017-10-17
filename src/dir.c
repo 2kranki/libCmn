@@ -46,7 +46,8 @@
 
 
 /* Header File Inclusion */
-#include    "dir_internal.h"
+#include    <dir_internal.h>
+#include    <objEnum_internal.h>
 
 
 
@@ -134,7 +135,34 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    static
+    bool            enumScanner(
+        void            *pObj,
+        DIRENTRY_DATA   *pDir
+    )
+    {
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = (OBJENUM_DATA *)pObj;
+        DIRENTRY_DATA   *pEntry;
+        
+        pEntry = dirEntry_Copy(pDir);
+        if (pEntry) {
+            eRc = objEnum_Append(pEnum, pEntry);
+            if (ERESULT_FAILED(eRc)) {
+                return false;
+            }
+            obj_Release(pEntry);
+        }
+        else {
+            return false;
+        }
+        
+        return true;
+    }
 
+    
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -181,7 +209,7 @@ extern "C" {
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
-                    eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                    eRc = ERESULT_SUCCESS;
                 }
                 else
                     eRc = ERESULT_FAILURE_FALSE;
@@ -220,7 +248,7 @@ extern "C" {
 #if     defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
-                eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                eRc = ERESULT_SUCCESS;
             }
             else {
                 eRc = ERESULT_PATH_NOT_FOUND;
@@ -257,7 +285,7 @@ extern "C" {
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                    eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                    eRc = ERESULT_SUCCESS;
                 }
                 else {
                     eRc = ERESULT_FAILURE_FALSE;
@@ -298,7 +326,7 @@ extern "C" {
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
-                    eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                    eRc = ERESULT_SUCCESS;
                 }
                 else {
                     eRc = ERESULT_FAILURE_FALSE;
@@ -325,6 +353,45 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    ERESULT         dir_getLastError(
+        DIR_DATA        *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dir_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            dir_setLastError(
+        DIR_DATA        *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dir_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
     uint16_t        dir_getPriority(
         DIR_DATA     *cbp
     )
@@ -417,6 +484,49 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       E n u m  D i r
+    //---------------------------------------------------------------
+    
+    OBJENUM_DATA *  dir_EnumDir(
+        DIR_DATA        *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dir_Validate(this) ) {
+            DEBUG_BREAK();
+            dir_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEnum = objEnum_New();
+        if( OBJ_NIL == pEnum ) {
+            dir_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        
+        eRc = dir_ScanDir(this, pPath, &enumScanner, pEnum);
+        if (ERESULT_FAILED(eRc)) {
+            dir_setLastError(this, eRc);
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
+            return OBJ_NIL;
+        }
+        
+        // Return to caller.
+        dir_setLastError(this, ERESULT_SUCCESS);
+        return pEnum;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -490,7 +600,7 @@ extern "C" {
             iRc = stat(pStr, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
-                    eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                    eRc = ERESULT_SUCCESS;
                 }
                 else
                     eRc = ERESULT_FAILURE_FALSE;
@@ -551,7 +661,7 @@ extern "C" {
 #if     defined(__MACOSX_ENV__)
             iRc = mkdir(pStr, mode);
             if (0 == iRc) {
-                eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                eRc = ERESULT_SUCCESS;
             }
             else {
                 eRc = ERESULT_CANNOT_MAKE_DIRECTORY;
@@ -582,7 +692,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        char            *pDir;
+        char            *pDirA;
 #if     defined(__MACOSX_ENV__)
         struct dirent   *pDirent;
         DIR             *pDirectory;
@@ -590,7 +700,8 @@ extern "C" {
 #endif
         DIRENTRY_DATA   *pEntry;
         ASTR_DATA       *pStr;
-        
+        PATH_DATA       *pPath2;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -598,7 +709,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( OBJ_NIL == pPath ) {
+        if( (OBJ_NIL == pPath) || !(OBJ_IDENT_PATH == obj_getType(pPath)) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -615,11 +726,11 @@ extern "C" {
         }
         
 #if     defined(__MACOSX_ENV__)
-        pDir = AStr_CStringA((ASTR_DATA *)pPath, NULL);
-        if (pDir) {
-            pDirectory = opendir(pDir);
-            mem_Free(pDir);
-            pDir = NULL;
+        pDirA = AStr_CStringA((ASTR_DATA *)pPath, NULL);
+        if (pDirA) {
+            pDirectory = opendir(pDirA);
+            mem_Free(pDirA);
+            pDirA = NULL;
             if (NULL == pDirectory) {
                 return ERESULT_PATH_NOT_FOUND;
             }
@@ -646,13 +757,16 @@ extern "C" {
             if ((pDirent->d_namlen == 2) && (0 == strcmp("..", pDirent->d_name))) {
                 continue;
             }
+            pPath2 = path_Copy(pPath);
+            (void)dirEntry_setDir(pEntry, pPath2);
+            obj_Release(pPath2);
+            pPath2 = OBJ_NIL;
             pStr = AStr_NewA(pDirent->d_name);
-            (void)dirEntry_setDir(pEntry, pPath);
             (void)dirEntry_setName(pEntry, pStr);
-            (void)dirEntry_setType(pEntry, pDirent->d_type);
-            fRc = (*pScanner)(pData, pEntry);
             obj_Release(pStr);
             pStr = OBJ_NIL;
+            (void)dirEntry_setType(pEntry, pDirent->d_type);
+            fRc = (*pScanner)(pData, pEntry);
             if (!fRc) {
                 break;
             }
@@ -733,18 +847,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            dir_Validate(
-        DIR_DATA      *cbp
+        DIR_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_DIR) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_DIR) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(DIR_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(DIR_DATA)) )
             return false;
 
         // Return to caller.

@@ -100,7 +100,7 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to appl object if successful, otherwise OBJ_NIL.
+     @return    pointer to appl object if successful, otherwise OBJ_NIL.
      */
     APPL_DATA *     appl_Alloc(
         void
@@ -134,6 +134,12 @@ extern "C" {
     );
 
 
+    bool            appl_setProcessArgs(
+        APPL_DATA       *this,
+        int             (*pProcessArg)(OBJ_ID, const char *)
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -172,6 +178,18 @@ extern "C" {
     uint16_t        appl_NumberOfProperties(
         APPL_DATA       *this
     );
+
+    
+    int             appl_ParseArgs(
+        APPL_DATA       *this
+    );
+    
+    
+    /*! Process remaining arguments after parsing off the flags.
+     */
+    int             appl_ProcessArgs(
+         APPL_DATA       *this
+    );
     
     
     NODE_DATA *     appl_Property(
@@ -184,14 +202,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = appl_ToDebugString(this,4);
-     @endcode:
-     @param:    this    APPL object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    APPL object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     appl_ToDebugString(
         APPL_DATA       *this,

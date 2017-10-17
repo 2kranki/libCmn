@@ -65,6 +65,8 @@ extern "C" {
     ****************************************************************/
 
 
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -131,6 +133,49 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                  C r e a t i o n  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * dirEntry_getCreationTime(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pCreationTime;
+    }
+    
+    bool            dirEntry_setCreationTime(
+        DIRENTRY_DATA   *this,
+        DATETIME_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pCreationTime) {
+            obj_Release(this->pCreationTime);
+        }
+        this->pCreationTime = pValue;
+        
+        return true;
+    }
+    
+    
+    
     PATH_DATA *     dirEntry_getDir(
         DIRENTRY_DATA   *this
     )
@@ -164,6 +209,86 @@ extern "C" {
             obj_Release(this->pDir);
         }
         this->pDir = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //               G e n e r a t i o n  N u m b e r
+    //---------------------------------------------------------------
+    
+    uint32_t        dirEntry_getGenerationNumber(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->genNum;
+    }
+    
+    bool            dirEntry_setGenerationNumber(
+        DIRENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->genNum = value;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //      L a s t  D a t a  M o d i f i c a t i o n  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * dirEntry_getModifiedTime(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pModifiedTime;
+    }
+    
+    bool            dirEntry_setModifiedTime(
+        DIRENTRY_DATA   *this,
+        DATETIME_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pModifiedTime) {
+            obj_Release(this->pModifiedTime);
+        }
+        this->pModifiedTime = pValue;
         
         return true;
     }
@@ -209,6 +334,53 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //      L a s t  D a t a  M o d i f i c a t i o n  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * dirEntry_getStatusChangeTime(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pStatusChangeTime;
+    }
+    
+    bool            dirEntry_setStatusChangeTime(
+        DIRENTRY_DATA   *this,
+        DATETIME_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pStatusChangeTime) {
+            obj_Release(this->pStatusChangeTime);
+        }
+        this->pStatusChangeTime = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                             T y p e
+    //---------------------------------------------------------------
+    
     uint8_t         dirEntry_getType(
         DIRENTRY_DATA   *this
     )
@@ -242,21 +414,6 @@ extern "C" {
 
 
 
-    uint32_t        dirEntry_getSize(
-        DIRENTRY_DATA       *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !dirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        return( 0 );
-    }
-
-
-
 
     
 
@@ -265,6 +422,182 @@ extern "C" {
     //===============================================================
 
 
+    //---------------------------------------------------------------
+    //                       A s s i g n
+    //---------------------------------------------------------------
+    
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+     ERESULT eRc = dirEntry_Assign(this,pOther);
+     @endcode
+     @param     this    DIRENTRY object pointer
+     @param     pOther  a pointer to another DIRENTRY object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         dirEntry_Assign(
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !dirEntry_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Release objects and areas in other object.
+        if (pOther->pDir) {
+            obj_Release(pOther->pDir);
+            pOther->pDir = OBJ_NIL;
+        }
+        if (pOther->pName) {
+            obj_Release(pOther->pName);
+            pOther->pName = OBJ_NIL;
+        }
+
+        // Create a copy of objects and areas in this object placing
+        // them in other.
+        if (this->pDir) {
+            if (obj_getVtbl(this->pDir)->pCopy) {
+                pOther->pDir = obj_getVtbl(this->pDir)->pCopy(this->pDir);
+            }
+            else {
+                obj_Retain(this->pDir);
+                pOther->pDir = this->pDir;
+            }
+        }
+        if (this->pName) {
+            if (obj_getVtbl(this->pName)->pCopy) {
+                pOther->pName = obj_getVtbl(this->pName)->pCopy(this->pName);
+            }
+            else {
+                obj_Retain(this->pName);
+                pOther->pName = this->pName;
+            }
+        }
+
+        // Copy other data from this object to other.
+        pOther->type = this->type;
+#if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pOther->fileSize = this->fileSize;
+#endif
+        pOther->attr = this->attr;
+
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    eom:
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       C o m p a r e
+    //---------------------------------------------------------------
+    
+    ERESULT         dirEntry_Compare(
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int32_t         i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !dirEntry_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if( (this->pName) && (OBJ_NIL == pOther->pName) ) {
+            DEBUG_BREAK();
+            return ERESULT_SUCCESS_GREATER_THAN;
+        }
+        if( (OBJ_NIL == this->pName) && (OBJ_NIL == pOther->pName) ) {
+            DEBUG_BREAK();
+            return ERESULT_SUCCESS;
+        }
+        if( (OBJ_NIL == this->pName) && (pOther->pName) ) {
+            DEBUG_BREAK();
+            return ERESULT_SUCCESS_LESS_THAN;
+        }
+
+        eRc = AStr_Compare(this->pName, pOther->pName);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    //---------------------------------------------------------------
+    //                          C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     DIRENTRY_DATA      *pCopy = dirEntry_Copy(this);
+     @endcode
+     @param     this    DIRENTRY object pointer
+     @return    If successful, a DIRENTRY object which must be released,
+                 otherwise OBJ_NIL.
+     @warning   Remember to release the returned the DIRENTRY object.
+     */
+    DIRENTRY_DATA * dirEntry_Copy(
+        DIRENTRY_DATA   *this
+    )
+    {
+        DIRENTRY_DATA   *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = dirEntry_Alloc( );
+        pOther = dirEntry_Init(pOther);
+        if (pOther) {
+            eRc = dirEntry_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        //obj_Release(pOther);
+        return pOther;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
@@ -289,6 +622,9 @@ extern "C" {
 
         (void)dirEntry_setDir(this, OBJ_NIL);
         (void)dirEntry_setName(this, OBJ_NIL);
+        (void)dirEntry_setCreationTime(this, OBJ_NIL);
+        (void)dirEntry_setModifiedTime(this, OBJ_NIL);
+        (void)dirEntry_setStatusChangeTime(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         //other_Dealloc(this);          // Needed for inheritance
@@ -336,6 +672,77 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //              G e t  A l l  D a t a
+    //---------------------------------------------------------------
+    
+    ERESULT         dirEntry_GetAllData(
+        DIRENTRY_DATA   *this
+    )
+    {
+        const
+        char            *pStr = NULL;
+#if     defined(__MACOSX_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+        ERESULT         eRc = ERESULT_SUCCESS;
+        DATETIME_DATA   *pTime = OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( OBJ_NIL == this->pDir ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if( OBJ_NIL == this->pName ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        pPath = path_Copy(this->pDir);
+        path_AppendFileName(pPath, this->pName);
+        pStr = path_getData(pPath);
+        if (pStr) {
+#if     defined(__MACOSX_ENV__)
+            iRc = stat(pStr, &statBuffer);
+            if (0 == iRc) {
+                pTime = dateTime_NewFromTimeT(statBuffer.st_birthtimespec.tv_sec);
+                dirEntry_setCreationTime(this, pTime);
+                obj_Release(pTime);
+                pTime = OBJ_NIL;
+                pTime = dateTime_NewFromTimeT(statBuffer.st_mtimespec.tv_sec);
+                dirEntry_setModifiedTime(this, pTime);
+                obj_Release(pTime);
+                pTime = OBJ_NIL;
+                this->userID = statBuffer.st_uid;
+                this->groupID = statBuffer.st_gid;
+                this->genNum = statBuffer.st_gen;
+                this->fileSize = statBuffer.st_size;
+            }
+            else {
+                eRc = ERESULT_PATH_NOT_FOUND;
+            }
+#endif
+            pStr = NULL;
+        }
+        else {
+            eRc = ERESULT_DATA_ERROR;
+        }
+        obj_Release(pPath);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          M a t c h
     //---------------------------------------------------------------

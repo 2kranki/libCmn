@@ -237,6 +237,26 @@ extern "C" {
     
     
     
+    bool            appl_setProcessArgs(
+        APPL_DATA       *this,
+        int             (*pProcessArg)(OBJ_ID, const char *)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pProcessArg = pProcessArg;
+        
+        return true;
+    }
+    
+    
+    
     bool            appl_setParseArgsDefaults(
         APPL_DATA       *this,
         void            (*pValue)(OBJ_ID)
@@ -434,12 +454,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = appl__Assign(this,pOther);
-     @endcode:
-     @param:    this    APPL object pointer
-     @param:    pOther  a pointer to another APPL object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    APPL object pointer
+     @param     pOther  a pointer to another APPL object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         appl_Assign(
@@ -504,13 +524,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         appl      *pCopy = appl_Copy(this);
-     @endcode:
-     @param:    this    APPL object pointer
-     @return:   If successful, a APPL object which must be released,
+     @endcode
+     @param     this    APPL object pointer
+     @return    If successful, a APPL object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the APPL object.
+     @warning   Remember to release the returned the APPL object.
      */
     APPL_DATA *     appl_Copy(
         APPL_DATA       *this
@@ -1009,6 +1029,41 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //              P r o c e s s  A r g s
+    //---------------------------------------------------------------
+    
+    int             appl_ProcessArgs(
+        APPL_DATA       *this
+    )
+    {
+        int             iRc = 0;
+        int             i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->pProcessArg) {
+            for (i=0; i<this->cOptions; ++i) {
+                iRc = this->pProcessArg(this, this->ppOptions[i]);
+                if (iRc) {
+                    break;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return iRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      P r o p e r t y
     //---------------------------------------------------------------
     
@@ -1189,10 +1244,11 @@ extern "C" {
     {
         FILE            *pOutput = stderr;
         char            szMsg[1024];
-        static
         const
-        char            *pProgramName = "ll1";
+        char            *pProgramName = NULL;
         
+        fprintf(pOutput, "\n\n");
+        pProgramName = this->ppArgs[0];
         if (pMsg) {
             va_list     values;
             va_start(values, pMsg);
@@ -1220,6 +1276,7 @@ extern "C" {
         if (this->pUsageSwitches) {
             this->pUsageSwitches(this, pOutput);
         }
+        fprintf(pOutput, "\n\n\n");
     }
     
     

@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <dir_internal.h>
+#include    <enum_internal.h>
 #include    <sys/stat.h>
 #include    <sys/types.h>
 
@@ -34,6 +35,8 @@ static
 char            *pDir = NULL;
 static
 char            *pPattern = NULL;
+static
+int             count = 1;
 
 static
 bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
@@ -54,7 +57,8 @@ bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
     pStr = AStr_CStringA((ASTR_DATA *)pPath,NULL);
     
     fprintf(    stderr,
-                "name: %s  type: %d\n",
+                "\t%2d name: %s  type: %d\n",
+                count++,
                 pStr,
                 dirEntry_getType(pEntry)
     );
@@ -149,7 +153,7 @@ int         test_dir_Scan01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPattern = "*.wav";
+    //pPattern = "*.wav";
     pDir = getenv("HOME");
     pObj = dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -157,6 +161,7 @@ int         test_dir_Scan01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
+        count = 1;
         pPath = path_NewA(pDir);
         eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
         obj_Release(pPath);
@@ -183,13 +188,15 @@ int         test_dir_Scan02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pDir = ".";
+    pPattern = "*.wav";
+    pDir = getenv("HOME");
     pObj = dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = dir_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
+        count = 1;
         pPath = path_NewA(pDir);
         eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
         obj_Release(pPath);
@@ -205,8 +212,110 @@ int         test_dir_Scan02(
 
 
 
+int         test_dir_Scan03(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA    *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    PATH_DATA   *pPath;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPattern = NULL;
+    pDir = ".";
+    pObj = dir_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = dir_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        count = 1;
+        pPath = path_NewA(pDir);
+        eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_dir_Enum01(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA        *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    PATH_DATA       *pPath;
+    OBJENUM_DATA    *pEnum = OBJ_NIL;
+    DIRENTRY_DATA   *pEntry;
+    uint32_t        count;
+    uint32_t        i;
+    PATH_DATA       *pWrkPath = OBJ_NIL;
+    char            *pStrA = NULL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pDir = getenv("HOME");
+    fprintf(stderr, "\tDir: %s\n", pDir);
+    pObj = dir_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = dir_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pPath = path_NewA(pDir);
+        if (pPath) {
+            pEnum = dir_EnumDir(pObj, pPath);
+            if (pEnum) {
+                i = 1;
+                for (;;) {
+                    eRc = objEnum_Next(pEnum, 1, (void **)&pEntry, &count);
+                    if (ERESULT_FAILED(eRc)) {
+                        break;
+                    }
+                    dirEntry_GetAllData(pEntry);
+                    fprintf(
+                            stderr,
+                            "%2d name: %-25s  type: %2d  gen: %d\n",
+                            i,
+                            AStr_getData(dirEntry_getName(pEntry)),
+                            dirEntry_getType(pEntry),
+                            dirEntry_getGenerationNumber(pEntry)
+                    );
+                    mem_Free(pStrA);
+                    obj_Release(pWrkPath);
+                    ++i;
+                }
+                obj_Release(pEnum);
+                pEnum = OBJ_NIL;
+            }
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_dir);
+    TINYTEST_ADD_TEST(test_dir_Enum01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dir_Scan03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dir_Scan02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dir_Scan01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dir_OpenClose,setUp,tearDown);

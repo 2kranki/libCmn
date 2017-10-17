@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/14/2017 16:55:49.000)
+# (10/17/2017 13:40:56.000)
 
 
 LIBNAM=libCmn
@@ -7,7 +7,7 @@ SYS=win32
 INSTALL_BASE = $(HOMEDRIVE)$(HOMEPATH)\Support\lib\$(SYS)
 
 LIBS = 
-CFLAGS = $(CFLAGS) /Isrc /Isrc\$(SYS)
+CFLAGS = $(CFLAGS) /WX /Isrc /Isrc\$(SYS)
 CFLAGS = $(CFLAGS) /D__MSVC32__ /D__WIN32_ENV__
 
 INSTALLDIR = $(INSTALL_BASE)\$(LIBNAM)
@@ -107,6 +107,7 @@ OBJS = $(OBJS) $(OBJDIR)\null.obj $(OBJDIR)\null_object.obj
 OBJS = $(OBJS) $(OBJDIR)\number.obj $(OBJDIR)\number_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objArray.obj $(OBJDIR)\objArray_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objCb.obj $(OBJDIR)\objCb_object.obj
+OBJS = $(OBJS) $(OBJDIR)\objEnum.obj $(OBJDIR)\objEnum_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objHash.obj $(OBJDIR)\objHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objList.obj $(OBJDIR)\objList_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objMatrix.obj $(OBJDIR)\objMatrix_object.obj
@@ -839,6 +840,14 @@ TESTS = $(TESTS) test_objCb
 
 test_objCb:
 	$(CC) $(CFLAGS) /Itests tests\test_objCb.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objEnum
+
+test_objEnum:
+	$(CC) $(CFLAGS) /Itests tests\test_objEnum.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

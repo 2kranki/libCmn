@@ -1,21 +1,23 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Enumerator Base Class (enum) Header
+//          OBJENUM Console Transmit Task (objEnum) Header
 //****************************************************************
 /*
  * Program
- *			Enumerator Base Class (enum)
+ *			Separate objEnum (objEnum)
  * Purpose
- *			This object provides a standardized enumerator based
- *          how enumeration is handled in COM/OLE2.
+ *			This object provides a standardized way of handling
+ *          a separate objEnum to run things without complications
+ *          of interfering with the main objEnum. A objEnum may be 
+ *          called a objEnum on other O/S's.
  *
  * Remarks
- *	1.      Objects, Enum and objEnum, must be kept synchronized
+ *    1.    Objects, Enum and objEnum, must be kept synchronized
  *          in their interfaces.
  *
  * History
- *	06/30/2017 Generated
+ *	10/15/2017 Generated
  */
 
 
@@ -54,8 +56,8 @@
 #include        <AStr.h>
 
 
-#ifndef         ENUM_H
-#define         ENUM_H
+#ifndef         OBJENUM_H
+#define         OBJENUM_H
 
 
 
@@ -69,20 +71,20 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct enum_data_s	ENUM_DATA;    // Inherits from OBJ.
+    typedef struct objEnum_data_s	OBJENUM_DATA;    // Inherits from OBJ.
 
-    typedef struct enum_vtbl_s	{
+    typedef struct objEnum_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in enum_object.c.
+        // method names to the vtbl definition in objEnum_object.c.
         // Properties:
         // Methods:
-        ERESULT         (*pNext)(ENUM_DATA *, uint32_t, void **, uint32_t *);
-        ERESULT         (*pSkip)(ENUM_DATA *, uint32_t);
-        ERESULT         (*pReset)(ENUM_DATA *);
-        ERESULT         (*pLookAhead)(ENUM_DATA *, uint32_t, OBJ_ID *);
-        uint32_t        (*pRemaining)(ENUM_DATA *);
-    } ENUM_VTBL;
+        ERESULT         (*pNext)(OBJENUM_DATA *, uint32_t, void **, uint32_t *);
+        ERESULT         (*pSkip)(OBJENUM_DATA *, uint32_t);
+        ERESULT         (*pReset)(OBJENUM_DATA *);
+        ERESULT         (*pLookAhead)(OBJENUM_DATA *, uint32_t, OBJ_ID *);
+        uint32_t        (*pRemaining)(OBJENUM_DATA *);
+    } OBJENUM_VTBL;
 
 
 
@@ -99,14 +101,14 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to enum object if successful, otherwise OBJ_NIL.
+     @return    pointer to objEnum object if successful, otherwise OBJ_NIL.
      */
-    ENUM_DATA *     enum_Alloc(
+    OBJENUM_DATA *     objEnum_Alloc(
         void
     );
     
     
-    ENUM_DATA *     enum_New(
+    OBJENUM_DATA *     objEnum_New(
         void
     );
     
@@ -116,8 +118,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     enum_getLastError(
-        ENUM_DATA		*this
+    ERESULT     objEnum_getLastError(
+        OBJENUM_DATA		*this
     );
 
 
@@ -127,8 +129,43 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ENUM_DATA *   enum_Init(
-        ENUM_DATA     *this
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+     ERESULT eRc = objEnum__Assign(this,pOther);
+     @endcode
+     @param     this    OBJENUM object pointer
+     @param     pOther  a pointer to another OBJENUM object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+     ERESULT_* error
+     */
+    ERESULT         objEnum_Assign(
+        OBJENUM_DATA    *this,
+        OBJENUM_DATA    *pOther
+    );
+    
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     objEnum      *pCopy = objEnum_Copy(this);
+     @endcode
+     @param     this    OBJENUM object pointer
+     @return    If successful, a OBJENUM object which must be released,
+     otherwise OBJ_NIL.
+     @warning  Remember to release the returned the OBJENUM object.
+     */
+    OBJENUM_DATA *  objEnum_Copy(
+        OBJENUM_DATA    *this
+    );
+    
+    
+    OBJENUM_DATA *  objEnum_Init(
+        OBJENUM_DATA    *this
     );
 
 
@@ -137,68 +174,68 @@ extern "C" {
      of 0 returns the current item. Do not alter which item is the current one.
      If the offset is beyond the range of items, then ERESULT_OUT_OF_RANGE is
      returned.
-     @param     this    ENUM object pointer
+     @param     this    OBJENUM object pointer
      @param     offset  offset of object to return (relative to zero)
      @param     ppVoid  where the object address should be returned
      @return    If successful ERESULT_SUCCESS and data returned in ppVoid,
                  otherwise an ERESULT_* error.
      */
-    ERESULT         enum_LookAhead(
-        ENUM_DATA       *this,
+    ERESULT         objEnum_LookAhead(
+        OBJENUM_DATA    *this,
         uint32_t        offset,
-        void            **ppVoid
+        OBJ_ID          *ppObj
     );
     
     
     /*!
-     Return the next arraySize of elements if available in ppVoidArray and set 
-     NumReturned to the number of elements returned. If the enumerator has gone 
+     Return the next arraySize of elements if available in ppVoidArray and set
+     NumReturned to the number of elements returned. If the enumerator has gone
      past the end, zero will be returned in NumReturned.
-     @param     this    ENUM object pointer
+     @param     this    OBJENUM object pointer
      @param     arraySize size of ppVoidArray
      @param     ppVoidArray an array of void pointers which are filled in by this
-                        this method if any elements are left to enumerate.
+                 this method if any elements are left to enumerate.
      @return    If successful ERESULT_SUCCESS and data returned in ppVoidArray
-                with the number of returned elements in pNumReturned, otherwise
-                an ERESULT_* error and 0 in NumReturned.
+                 with the number of returned elements in pNumReturned, otherwise
+                 an ERESULT_* error and 0 in NumReturned.
      */
-    ERESULT         enum_Next(
-        ENUM_DATA       *this,
+    ERESULT         objEnum_Next(
+        OBJENUM_DATA    *this,
         uint32_t        arraySize,
-        void            **ppVoidArray,
+        OBJ_ID          *ppObjArray,
         uint32_t        *pNumReturned
     );
     
     
     /*!
      Return the remaining number of items left to be enumerated.
-     @param     this    ENUM object pointer
+     @param     this    OBJENUM object pointer
      @return    The number of items left to be enumerated
      */
-    uint32_t        enum_Remaining(
-        ENUM_DATA       *this
+    uint32_t        objEnum_Remaining(
+        OBJENUM_DATA       *this
     );
     
     
     /*!
      Reset the enumerator to the beginning of the enumeration.
-     @param     this    ENUM object pointer
+     @param     this    OBJENUM object pointer
      @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT         enum_Reset(
-        ENUM_DATA       *this
+    ERESULT         objEnum_Reset(
+        OBJENUM_DATA       *this
     );
     
     
     /*!
      Return the next numSkip of elements in the enumeration. Skipping might put
      the enumerator past the end of the enumeration.
-     @param     this    ENUM object pointer
+     @param     this    OBJENUM object pointer
      @param     numSkip number of elements to skip
      @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT         enum_Skip(
-        ENUM_DATA       *this,
+    ERESULT         objEnum_Skip(
+        OBJENUM_DATA    *this,
         uint32_t        numSkip
     );
     
@@ -206,17 +243,17 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = enum_ToDebugString(this,4);
-     @endcode
-     @param     this    ENUM object pointer
+     @code 
+        ASTR_DATA      *pDesc = objEnum_ToDebugString(this,4);
+     @endcode 
+     @param     this    OBJENUM object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     enum_ToDebugString(
-        ENUM_DATA       *this,
+    ASTR_DATA *    objEnum_ToDebugString(
+        OBJENUM_DATA     *this,
         int             indent
     );
     
@@ -227,5 +264,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* ENUM_H */
+#endif	/* OBJENUM_H */
 

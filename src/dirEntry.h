@@ -50,6 +50,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <dateTime.h>
 #include        <path.h>
 #include        <AStr.h>
 
@@ -128,6 +129,20 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    //---------------------------------------------------------------
+    //                  C r e a t i o n  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * dirEntry_getCreationTime(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setCreationTime(
+        DIRENTRY_DATA   *this,
+        DATETIME_DATA   *pValue
+    );
+    
+
     PATH_DATA *     dirEntry_getDir(
         DIRENTRY_DATA   *this
     );
@@ -135,6 +150,34 @@ extern "C" {
     bool            dirEntry_setDir(
         DIRENTRY_DATA   *this,
         PATH_DATA       *pValue
+    );
+    
+    
+    //---------------------------------------------------------------
+    //               G e n e r a t i o n  N u m b e r
+    //---------------------------------------------------------------
+    
+    uint32_t        dirEntry_getGenerationNumber(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setGenerationNumber(
+        DIRENTRY_DATA   *this,
+        uint32_t        value
+    );
+    
+    
+    //---------------------------------------------------------------
+    //      L a s t  D a t a  M o d i f i c a t i o n  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * dirEntry_getModifiedTime(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setModifiedTime(
+        DIRENTRY_DATA   *this,
+        DATETIME_DATA   *pValue
     );
     
     
@@ -147,6 +190,24 @@ extern "C" {
         ASTR_DATA       *pValue
     );
     
+    
+    //---------------------------------------------------------------
+    //        L a s t  S t a t u s  C h a n g e  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * dirEntry_getStatusChangeTime(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setStatusChangeTime(
+        DIRENTRY_DATA   *this,
+        DATETIME_DATA   *pValue
+    );
+    
+    
+    //---------------------------------------------------------------
+    //                             T y p e
+    //---------------------------------------------------------------
     
     uint8_t         dirEntry_getType(
         DIRENTRY_DATA   *this
@@ -164,29 +225,58 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Disable() terminates the direntry direntry.
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+     ERESULT eRc = dirEntry_Assign(this,pOther);
+     @endcode
+     @param     this    DIRENTRY object pointer
+     @param     pOther  a pointer to another DIRENTRY object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+     ERESULT_* error
      */
-    bool            dirEntry_Disable(
-        DIRENTRY_DATA		*this
-    );
-
-
-    /* Enable() starts the direntry.
-     */
-    bool            dirEntry_Enable(
-        DIRENTRY_DATA		*this
-    );
-
-
-    bool            dirEntry_IsEnabled(
-        DIRENTRY_DATA		*this
+    ERESULT         dirEntry_Assign(
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
     );
     
     
-    /* Init() sets up the default TaskBody() outlined above
-     * and initializes other fields needed. Init() assumes 
-     * that the size of the stack is passed to in obj_misc1.
+    ERESULT         dirEntry_Compare(
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
+    );
+    
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     DIRENTRY_DATA      *pCopy = dirEntry_Copy(this);
+     @endcode
+     @param     this    DIRENTRY object pointer
+     @return    If successful, a DIRENTRY object which must be released,
+     otherwise OBJ_NIL.
+     @warning   Remember to release the returned the DIRENTRY object.
      */
+    DIRENTRY_DATA * dirEntry_Copy(
+        DIRENTRY_DATA   *this
+    );
+    
+    
+    /*! Set up the remaining data that a directory scan does
+         not provide.
+     @param     this    DIRENTRY object pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                 error code.
+     */
+    ERESULT         dirEntry_GetAllData(
+        DIRENTRY_DATA   *this
+    );
+    
+    
     DIRENTRY_DATA * dirEntry_Init(
         DIRENTRY_DATA       *this
     );

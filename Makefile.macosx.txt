@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/14/2017 16:55:51.000)
+# (10/17/2017 13:40:58.000)
 
 
 LIBNAM=libCmn
@@ -920,6 +920,18 @@ $(OBJDIR)/objCb.o: $(SRCDIR)/objCb.c
 
 
 $(OBJDIR)/objCb_object.o: $(SRCDIR)/objCb_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objEnum.o $(OBJDIR)/objEnum_object.o
+
+
+$(OBJDIR)/objEnum.o: $(SRCDIR)/objEnum.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objEnum_object.o: $(SRCDIR)/objEnum_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -2061,6 +2073,13 @@ TESTS += test_objCb
 
 test_objCb:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objCb.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_objEnum
+
+test_objEnum:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objEnum.c 
 	$(OBJDIR)/$(@F)
 
 

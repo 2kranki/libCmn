@@ -102,7 +102,7 @@ struct objHash_data_s	{
 #ifdef NDEBUG
 #else
     bool			objHash_Validate(
-        OBJHASH_DATA       *cbp
+        OBJHASH_DATA    *this
     );
 #endif
 

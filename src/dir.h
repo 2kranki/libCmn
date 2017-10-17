@@ -56,6 +56,7 @@
 
 #include        <cmn_defs.h>
 #include        <dirEntry.h>
+#include        <objEnum.h>
 #include        <path.h>
 #include        <AStr.h>
 
@@ -135,12 +136,25 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         dir_getLastError(
+        DIR_DATA        *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*! Collect the matching files in the given directory.
+     */
+    OBJENUM_DATA *  dir_EnumDir(
+        DIR_DATA        *this,
+        PATH_DATA       *pPath
+    );
+
+    
     /* Init() sets up the default TaskBody() outlined above
      * and initializes other fields needed. Init() assumes 
      * that the size of the stack is passed to in obj_misc1.
@@ -151,7 +165,7 @@ extern "C" {
 
 
     // Create a new directory if needed.
-    ERESULT         path_MakeDir(
+    ERESULT         dir_MakeDir(
         DIR_DATA		*this,
         PATH_DATA       *pPath,
         uint16_t        mode
@@ -169,14 +183,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = dir_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    DIR_DATA object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @endcode
+     @param     this    DIR_DATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                 description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    dir_ToDebugString(
         DIR_DATA        *this,

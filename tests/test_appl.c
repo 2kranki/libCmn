@@ -27,6 +27,32 @@
 #include    <appl_internal.h>
 
 
+static
+const
+char        *ppArgs[] = {
+    "program_name",
+    "--debug",
+    "1",
+    "2",
+    "3",
+    NULL
+};
+static
+int         cArgs = 5;
+
+
+
+int         processArg(
+    OBJ_ID      pObj,
+    const
+    char        *pArg
+)
+{
+    fprintf(stderr, "processArg arg:\"%s\"\n", pArg);
+    return 0;
+}
+
+
 
 int         setUp(
     const
@@ -69,15 +95,20 @@ int         test_appl_OpenClose(
 )
 {
     APPL_DATA	*pObj = OBJ_NIL;
+    int         iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = appl_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = appl_Init(pObj, 0, NULL);
+    pObj = appl_Init(pObj, cArgs, ppArgs);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        // Test something.
+        appl_Usage(pObj, "xyzzy");
+        iRc = appl_ParseArgs(pObj);
+        appl_setProcessArgs(pObj, &processArg);
+        iRc = appl_ProcessArgs(pObj);
+        TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

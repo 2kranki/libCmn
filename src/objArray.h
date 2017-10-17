@@ -56,6 +56,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <objEnum.h>
 
 
 #ifndef         OBJARRAY_H
@@ -207,6 +208,19 @@ extern "C" {
     
     
     /*!
+     Create an enumerator for the Hash in ascending order
+     if the object contains a compare() method.
+     @param     this    DIR_DATA object pointer
+     @return    If successful, an Enumerator object which must be
+     released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    OBJENUM_DATA *  objArray_Enum(
+        OBJARRAY_DATA   *this
+    );
+    
+    
+    /*!
      Find the nth entry in the array.
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
@@ -266,6 +280,9 @@ extern "C" {
      ERESULT values of ERESULT_SUCCESS_EQUAL, ERESULT_SUCCESS_LESS_THAN
      or ERESULT_SUCCESS_GREATER_THAN.
      @param     this    object pointer
+     @param     pCompare Optional Comparison routine mentioned above. If
+                         not present, then the comparison routine in the
+                         first array element is used if present.
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */

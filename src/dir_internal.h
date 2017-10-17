@@ -57,6 +57,7 @@ struct dir_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;        // Needed for Inheritance
 
     // Common Data
+    ERESULT         eRc;
     uint16_t        size;		/* maximum number of elements           */
     uint16_t        reserved;
 

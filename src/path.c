@@ -100,7 +100,7 @@ extern "C" {
         char            *pStr
     )
     {
-        PATH_DATA       *cbp;
+        PATH_DATA       *this;
         ERESULT         eRc;
         
         // Do initialization.
@@ -108,18 +108,20 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        cbp = path_Alloc( );
-        cbp = path_Init(cbp);
-        if (cbp) {
-            eRc = AStr_AppendA((ASTR_DATA *)cbp, pStr);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(cbp);
-                cbp = OBJ_NIL;
+        this = path_Alloc( );
+        this = path_Init(this);
+        if (this) {
+            if (pStr && utf8_StrLenA(pStr)) {
+                eRc = AStr_AppendA((ASTR_DATA *)this, pStr);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
             }
         }
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -128,7 +130,7 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        PATH_DATA       *cbp;
+        PATH_DATA       *this;
         ERESULT         eRc;
         
         // Do initialization.
@@ -136,18 +138,18 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        cbp = path_Alloc( );
-        cbp = path_Init(cbp);
-        if (cbp) {
-            eRc = AStr_Append((ASTR_DATA *)cbp, pStr);
+        this = path_Alloc( );
+        this = path_Init(this);
+        if (this) {
+            eRc = AStr_Append((ASTR_DATA *)this, pStr);
             if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(cbp);
-                cbp = OBJ_NIL;
+                obj_Release(this);
+                this = OBJ_NIL;
             }
         }
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -772,7 +774,7 @@ extern "C" {
         }
 #endif
         
-        pOther = path_NewFromAStr((ASTR_DATA *)this);
+        pOther = path_NewA(path_getData(this));
         
         return pOther;
     }
@@ -1229,7 +1231,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         path_MakePath(
-        PATH_DATA		*cbp,
+        PATH_DATA		*this,
         ASTR_DATA       *pDrive,
         PATH_DATA       *pDir,
         PATH_DATA       *pFileName
@@ -1240,52 +1242,52 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if( !path_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        eRc = AStr_Truncate((ASTR_DATA *)cbp, 0);
+        eRc = AStr_Truncate((ASTR_DATA *)this, 0);
         if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
         }
         
         if (pDrive) {
-            eRc = AStr_Append((ASTR_DATA *)cbp, pDrive);
+            eRc = AStr_Append((ASTR_DATA *)this, pDrive);
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
-            eRc = AStr_AppendA((ASTR_DATA *)cbp, ":");
+            eRc = AStr_AppendA((ASTR_DATA *)this, ":");
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
         }
         
         if (pDir) {
-            eRc = AStr_Append((ASTR_DATA *)cbp, (ASTR_DATA *)pDir);
+            eRc = AStr_Append((ASTR_DATA *)this, (ASTR_DATA *)pDir);
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
-            eRc = AStr_AppendA((ASTR_DATA *)cbp, "/");
+            eRc = AStr_AppendA((ASTR_DATA *)this, "/");
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
         }
         
         if (pFileName) {
-            eRc = AStr_Append((ASTR_DATA *)cbp, (ASTR_DATA *)pFileName);
+            eRc = AStr_Append((ASTR_DATA *)this, (ASTR_DATA *)pFileName);
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
         }
         
-        eRc = path_Clean(cbp);
+        eRc = path_Clean(this);
         if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
         }

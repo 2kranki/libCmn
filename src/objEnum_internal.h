@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   dirEntry_internal.h
- *	Generated 06/23/2015 20:03:11
+ * File:   objEnum_internal.h
+ *	Generated 10/15/2017 09:38:35
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,73 +39,103 @@
 
 
 
-#ifndef DIRENTRY_INTERNAL_H
-#define	DIRENTRY_INTERNAL_H
+#include    <objEnum.h>
+#include    <objArray.h>
 
 
-#include        <dirEntry.h>
-#include        <path.h>
+#ifndef OBJENUM_INTERNAL_H
+#define	OBJENUM_INTERNAL_H
+
+
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
-#pragma pack(push, 1)
-struct dirEntry_data_s	{
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+ #pragma pack(push, 1)
+struct objEnum_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;     // Needed for Inheritance
+    #define OBJENUM_SORTED  8        // File Path is open
 
     // Common Data
-    PATH_DATA       *pDir;
-    ASTR_DATA       *pName;
-    DATETIME_DATA   *pCreationTime;
-    DATETIME_DATA   *pModifiedTime;
-    DATETIME_DATA   *pStatusChangeTime;
-    uint8_t         type;           // See DIRENTRY_TYPES
-    uint8_t         reserved8;
-    uint16_t        reserved16;
-    uint32_t        attr;           // File Attributes (ie Read-Only, Hidden, ...)
-#if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    uint64_t        fileSize;
-#endif
-    uint32_t        userID;
-    uint32_t        groupID;
-    uint32_t        genNum;
+    ERESULT         eRc;
+    OBJARRAY_DATA   *pArray;
+    uint32_t        current;
+    uint32_t        rsvd32;         // (sizeof(OBJENUM) % 8) == 0
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct dirEntry_class_data_s  dirEntry_ClassObj;
-    
+    struct objEnum_class_data_s  objEnum_ClassObj;
+
     extern
     const
-    DIRENTRY_VTBL   dirEntry_Vtbl;
+    OBJENUM_VTBL         objEnum_Vtbl;
 
 
 
-    // Internal Functions
-    void            dirEntry_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJARRAY_DATA * objEnum_getArray(
+        OBJENUM_DATA    *this
+    );
+    
+    bool            objEnum_setArray(
+        OBJENUM_DATA    *this,
+        OBJARRAY_DATA   *pValue
+    );
+    
+
+   bool            objEnum_setLastError(
+        OBJENUM_DATA     *this,
+        ERESULT         value
+    );
+
+
+    ERESULT         objEnum_Append(
+        OBJENUM_DATA    *this,
+        OBJ_ID          pObject
+    );
+    
+    
+    void            objEnum_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          dirEntry_QueryInfo(
+    void *          objEnum_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         const
         char            *pStr
     );
-    
-    
+
+
+    ASTR_DATA *     objEnum_ToJSON(
+        OBJENUM_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			dirEntry_Validate(
-        DIRENTRY_DATA       *cbp
+    bool			objEnum_Validate(
+        OBJENUM_DATA       *this
     );
 #endif
 
@@ -114,5 +145,5 @@ struct dirEntry_data_s	{
 }
 #endif
 
-#endif	/* DIRENTRY_INTERNAL_H */
+#endif	/* OBJENUM_INTERNAL_H */
 
