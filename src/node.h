@@ -98,14 +98,12 @@ extern "C" {
     // Some predefined Node Classes
     typedef enum node_classes_e {
         NODE_CLASS_UNKNOWN=0,
-        NODE_CLASS_OPEN=1,              // Open/Down Node for Tree Linerization
-        NODE_CLASS_CLOSE=2,             // Close/Up Node for Tree Linerization
-        NODE_CLASS_ROOT=3,
-        NODE_CLASS_SPARE1=4,
-        NODE_CLASS_SPARE2=5,
-        NODE_CLASS_SPARE3=6,
-        NODE_CLASS_SPARE4=7,
-        NODE_CLASS_USER                 // First User defined class
+        NODE_CLASS_ROOT,
+        NODE_CLASS_INTEGER,
+        NODE_CLASS_STRING,
+        NODE_CLASS_OPEN,                // Open/Down Node for Tree Linerization
+        NODE_CLASS_CLOSE,               // Close/Up Node for Tree Linerization
+        NODE_CLASS_USER=1024            // First User defined class
     } NODE_CLASSES;
 
     typedef struct node_vtbl_s	{
@@ -144,6 +142,12 @@ extern "C" {
 
     NODE_DATA *     node_Alloc(
         void
+    );
+    
+    
+    const
+    char *          node_FindClassDescription(
+        int             class
     );
     
     

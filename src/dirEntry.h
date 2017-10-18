@@ -11,7 +11,8 @@
  *              different operating system for a common interface.
  *
  * Remarks
- *	1.      None
+ *	1.      Some properties are OS dependent and will not be present
+ *          in all OSes.
  *
  * History
  *	06/23/2015 Generated
@@ -143,11 +144,43 @@ extern "C" {
     );
     
 
+    //---------------------------------------------------------------
+    //                    D i r e c t o r y
+    //---------------------------------------------------------------
+    
     PATH_DATA *     dirEntry_getDir(
         DIRENTRY_DATA   *this
     );
     
     bool            dirEntry_setDir(
+        DIRENTRY_DATA   *this,
+        PATH_DATA       *pValue
+    );
+    
+    
+    //---------------------------------------------------------------
+    //          E x t e n d e d  A t t r i b u t e s  S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        dirEntry_getEASize(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setEASize(
+        DIRENTRY_DATA   *this,
+        uint32_t        value
+    );
+    
+    
+    //---------------------------------------------------------------
+    //                      F u l l  P a t h
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     dirEntry_getFullPath(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setFullPath(
         DIRENTRY_DATA   *this,
         PATH_DATA       *pValue
     );
@@ -181,11 +214,29 @@ extern "C" {
     );
     
     
+    //---------------------------------------------------------------
+    //                       F i l e  N a m e
+    //---------------------------------------------------------------
+    
     ASTR_DATA *     dirEntry_getName(
         DIRENTRY_DATA   *this
     );
     
     bool            dirEntry_setName(
+        DIRENTRY_DATA   *this,
+        ASTR_DATA       *pValue
+    );
+    
+    
+    //---------------------------------------------------------------
+    //                 S h o r t  F i l e  N a m e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     dirEntry_getShortName(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setShortName(
         DIRENTRY_DATA   *this,
         ASTR_DATA       *pValue
     );

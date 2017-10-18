@@ -51,8 +51,27 @@
 extern "C" {
 #endif
     
+    typedef struct node_class_data_s {
+        int             integer;
+        const
+        char            *pDescription;
+    } NODE_CLASS_DATA;
+    
+    static
+    NODE_CLASS_DATA     classTable[] = {
+        {NODE_CLASS_UNKNOWN,    "NODE_CLASS_UNKNOWN"},
+        {NODE_CLASS_ROOT,       "NODE_CLASS_ROOT"},
+        {NODE_CLASS_INTEGER,    "NODE_CLASS_INTEGER"},
+        {NODE_CLASS_STRING,     "NODE_CLASS_STRING"},
+        {NODE_CLASS_OPEN,       "NODE_CLASS_OPEN"},
+        {NODE_CLASS_CLOSE,      "NODE_CLASS_CLOSE"},
+        {NODE_CLASS_USER,       "NODE_CLASS_USER"},
+    };
+    static
+    int                 cClassTable = (sizeof(classTable) / sizeof(NODE_CLASS_DATA));
 
-
+    
+    
  
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
@@ -86,6 +105,44 @@ extern "C" {
 
 
 
+    const
+    char *          node_FindClassDescription(
+        int             class
+    )
+    {
+        int             i;
+        
+        for(i=0; i<cClassTable; ++i) {
+            if (class == classTable[i].integer) {
+                return classTable[i].pDescription;
+            }
+        }
+        
+        // Return to caller.
+        return NULL;
+    }
+    
+    
+    
+    int             node_FindClassInteger(
+        const
+        char            *pDesc
+    )
+    {
+        int             i;
+        
+        for(i=0; i<cClassTable; ++i) {
+            if (0 == strcmp(pDesc, classTable[i].pDescription)) {
+                return classTable[i].integer;
+            }
+        }
+        
+        // Return to caller.
+        return -1;
+    }
+    
+    
+    
     NODE_DATA *     node_NewWithInt(
         int64_t         ident,
         OBJ_ID          pData

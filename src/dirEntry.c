@@ -176,6 +176,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                    D i r e c t o r y
+    //---------------------------------------------------------------
+    
     PATH_DATA *     dirEntry_getDir(
         DIRENTRY_DATA   *this
     )
@@ -216,6 +220,87 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //          E x t e n d e d  A t t r i b u t e s  S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        dirEntry_getEASize(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->eaSize;
+    }
+
+    
+    bool            dirEntry_setEASize(
+        DIRENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->eaSize = value;
+        return true;
+    }
+    
+
+    
+    //---------------------------------------------------------------
+    //                      F u l l  P a t h
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     dirEntry_getFullPath(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pFullPath;
+    }
+    
+    bool            dirEntry_setFullPath(
+        DIRENTRY_DATA   *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pFullPath) {
+            obj_Release(this->pFullPath);
+        }
+        this->pFullPath = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //               G e n e r a t i o n  N u m b e r
     //---------------------------------------------------------------
     
@@ -247,6 +332,43 @@ extern "C" {
         }
 #endif
         this->genNum = value;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //               G r o u p  I d e n t i f i e r
+    //---------------------------------------------------------------
+    
+    uint32_t        dirEntry_getGroupID(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->groupID;
+    }
+    
+    bool            dirEntry_setGroupID(
+        DIRENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->groupID = value;
         return true;
     }
     
@@ -295,6 +417,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       F i l e  N a m e
+    //---------------------------------------------------------------
+    
     ASTR_DATA *     dirEntry_getName(
         DIRENTRY_DATA   *this
     )
@@ -335,7 +461,50 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //      L a s t  D a t a  M o d i f i c a t i o n  T i m e
+    //                  S h o r t  F i l e  N a m e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     dirEntry_getShortName(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pShortName;
+    }
+    
+    bool            dirEntry_setShortName(
+        DIRENTRY_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pShortName) {
+            obj_Release(this->pShortName);
+        }
+        this->pShortName = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //      L a s t  S t a t u s  C h a n g e  T i m e
     //---------------------------------------------------------------
     
     DATETIME_DATA * dirEntry_getStatusChangeTime(
@@ -414,6 +583,43 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //               U s e r  I d e n t i f i e r
+    //---------------------------------------------------------------
+    
+    uint32_t        dirEntry_getUserID(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->userID;
+    }
+    
+    bool            dirEntry_setUserID(
+        DIRENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->userID = value;
+        return true;
+    }
+    
+    
+    
 
     
 
@@ -686,6 +892,8 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
+#if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#endif
         ERESULT         eRc = ERESULT_SUCCESS;
         DATETIME_DATA   *pTime = OBJ_NIL;
         PATH_DATA       *pPath = OBJ_NIL;
@@ -708,6 +916,7 @@ extern "C" {
 #endif
         pPath = path_Copy(this->pDir);
         path_AppendFileName(pPath, this->pName);
+        dirEntry_setFullPath(this, pPath);
         pStr = path_getData(pPath);
         if (pStr) {
 #if     defined(__MACOSX_ENV__)
@@ -729,6 +938,8 @@ extern "C" {
             else {
                 eRc = ERESULT_PATH_NOT_FOUND;
             }
+#endif
+#if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
             pStr = NULL;
         }

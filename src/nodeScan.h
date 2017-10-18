@@ -12,7 +12,8 @@
  *          nodeTree_ToLinearizationPost or nodeTree_ToLinearizationPre.
  *
  * Remarks
- *	1.      None
+ *	1.      Many ideas for this object were taken from PCCTS, a public domain
+ *          parser generator.
  *
  * History
  *	10/16/2015 Generated
