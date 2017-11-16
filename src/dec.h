@@ -136,9 +136,9 @@ extern "C" {
         char            *pStr
     );
     
-    int32_t         dec_getInt32W(
+    int32_t         dec_getInt32W32(
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     int64_t         dec_getInt64A(

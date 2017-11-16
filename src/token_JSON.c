@@ -388,7 +388,7 @@ extern "C" {
         uint32_t        len;
         uint32_t        lenChars;
         const
-        int32_t         *pWStr = NULL;
+        W32CHR_T        *pWStr = NULL;
         const
         OBJ_INFO        *pInfo;
         
@@ -436,15 +436,15 @@ extern "C" {
                 if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
                     pWStr = WStr_getData(this->data.pObj);
                 }
-                if (OBJ_IDENT_WSTRC == obj_getType(this->data.pObj)) {
-                    pWStr = WStrC_getData(this->data.pObj);
+                if (OBJ_IDENT_W32STRC == obj_getType(this->data.pObj)) {
+                    pWStr = W32StrC_getData(this->data.pObj);
                 }
-                len = utf8_StrLenW(pWStr);
+                len = utf8_StrLenW32(pWStr);
                 for (j=0; j<len; ++j) {
                     if (*pWStr == '"') {
                         AStr_AppendA(pStr, "\\");
                     }
-                    lenChars = utf8_WCToUtf8(*pWStr, str2);
+                    lenChars = utf8_W32ToUtf8(*pWStr, str2);
                     if (lenChars) {
                         AStr_AppendA(pStr, str2);
                     }

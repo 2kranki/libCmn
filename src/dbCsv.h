@@ -172,13 +172,13 @@ extern "C" {
     );
     
     
-    int32_t         dbCsv_getFieldSeparator(
+    W32CHR_T        dbCsv_getFieldSeparator(
         DBCSV_DATA      *this
     );
     
     bool            dbCsv_setFieldSeparator(
         DBCSV_DATA      *this,
-        int32_t         value
+        W32CHR_T        value
     );
     
     

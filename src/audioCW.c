@@ -90,35 +90,35 @@ extern "C" {
 
     
     const
-    int32_t         *cwCharElements[128] = {
-        /* 00-07 */	L"", L"", L"", L"", L"", L"", L"", L"",
-        /* 08-0F */ L"", L"", L"", L"", L"", L"", L"", L"",
-        /* 10-17 */ L"", L"", L"", L"", L"", L"", L"", L"",
-        /* 18-1F */ L"", L"", L"", L"", L"", L"", L"", L"",
+    char            *cwCharElements[128] = {
+        /* 00-07 */	"", "", "", "", "", "", "", "",
+        /* 08-0F */ "", "", "", "", "", "", "", "",
+        /* 10-17 */ "", "", "", "", "", "", "", "",
+        /* 18-1F */ "", "", "", "", "", "", "", "",
         //          ' '  '!'  '"'        '#'  '$'         '%'  '&'  ''''
-        /* 20-27 */ L"", L"", L".-..-.", L"", L"...-..-", L"", L"", L".-----.",
+        /* 20-27 */ "", "", ".-..-.", "", "...-..-", "", "", ".-----.",
         //          '('       ')'        '*'  '+'       ','        '='        '.'        '/'
-        /* 28-2F */ L"-.--.", L"-.--.-", L"", L".-.-.", L"--..--", L"-....-", L".-.-.-", L"-..-.",
+        /* 28-2F */ "-.--.", "-.--.-", "", ".-.-.", "--..--", "-....-", ".-.-.-", "-..-.",
         //          '0'       '1'       '2'       '3'       '4'       '5'       '6'       '7'
-        /* 30-37 */ L"-----", L".----", L"..---", L"...--", L"....-", L".....", L"-....", L"--...",
+        /* 30-37 */ "-----", ".----", "..---", "...--", "....-", ".....", "-....", "--...",
         //          '8'       '9'       ':'        ';'        '<'  '='       '>'  '?'
-        /* 38-3F */ L"---..", L"----.", L"---...", L"-.-.-.", L"", L"-...-", L"", L"..--..",
-        //          '@'  'A'    'B'      'C'      'D'     'E'   'F'      'G'
-        /* 40-47 */ L"", L".-", L"-...", L"-.-.", L"-..", L".", L"..-.", L"--.",
+        /* 38-3F */ "---..", "----.", "---...", "-.-.-.", "", "-...-", "", "..--..",
+        //          '@'  'A'    'B'     'C'     'D'  'E'   'F'    'G'
+        /* 40-47 */ "", ".-", "-...", "-.-.", "-..", ".", "..-.", "--.",
         //          'H'      'I'    'J'      'K'     'L'      'M'    'N'    'O'
-        /* 48-4F */ L"....", L"..", L".---", L"-.-", L".-..", L"--", L"-.", L"---",
+        /* 48-4F */ "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
         //          'P'      'Q'      'R'     'S'     'T'   'U'     'V'      'W'
-        /* 50-57 */ L".--.", L"--.-", L".-.", L"...", L"-", L"..-", L"...-", L".--",
+        /* 50-57 */ ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--",
         //          'X'      'Y'      'Z'      '['  '\'  ']'  '^'  '_'
-        /* 58-5F */ L"-..-", L"-.--", L"--..", L"", L"", L"", L"", L"..--.-",
+        /* 58-5F */ "-..-", "-.--", "--..", "", "", "", "", "..--.-",
         //          '`'  'a'    'b'      'c'      'd'     'e'   'f'      'g'
-        /* 60-67 */ L"", L".-", L"-...", L"-.-.", L"-..", L".", L"..-.", L"--.",
+        /* 60-67 */ "", ".-", "-...", "-.-.", "-..", ".", "..-.", "--.",
         //          'h'      'i'    'j'      'k'     'l'      'm'    'n'    'o'
-        /* 68-6F */ L"....", L"..", L".---", L"-.-", L".-..", L"--", L"-.", L"---",
+        /* 68-6F */ "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
         //          'p'      'q'      'r'     's'     't'   'u'     'v'      'w'
-        /* 70-77 */ L".--.", L"--.-", L".-.", L"...", L"-", L"..-", L"...-", L".--",
-        //          'x'      'y'      'z'      '{'  '|'  '}'  '~'        DEL
-        /* 78-7F */ L"-..-", L"-.--", L"--..", L"", L"", L"", L"...-.-", L""
+        /* 70-77 */ ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--",
+        //          'x'      'y'      'z'   '{' '|' '}'  '~'     DEL
+        /* 78-7F */ "-..-", "-.--", "--..", "", "", "", "...-.-", ""
     };
     
     
@@ -167,20 +167,20 @@ extern "C" {
 
 
 
-    ERESULT         audioCW_IsValidW(
-        int32_t         chr
+    ERESULT         audioCW_IsValidW32(
+        uint32_t        chr
     )
     {
         const
-        int32_t         *pStr;
+        char            *pStr;
         
-        if ((chr >= 0) && (chr <= 0x7F)) {
+        if (chr <= 0x7F) {
         }
         else {
             return ERESULT_INVALID_PARAMETER;
         }
         pStr = cwCharElements[chr & 0x7F];
-        if (WStr_StrLen(pStr)) {
+        if (strlen(pStr)) {
         }
         else {
             return ERESULT_INVALID_PARAMETER;
@@ -470,11 +470,11 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning: Remember to release the returned the AUDIOCW object.
      */
-    AUDIOCW_DATA *     audioCW_Copy(
-        AUDIOCW_DATA       *this
+    AUDIOCW_DATA *  audioCW_Copy(
+        AUDIOCW_DATA    *this
     )
     {
-        AUDIOCW_DATA       *pOther = OBJ_NIL;
+        AUDIOCW_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -615,10 +615,10 @@ extern "C" {
     //                      P u t  T e x t
     //---------------------------------------------------------------
     
-    ERESULT         audioCW_PutTextW(
+    ERESULT         audioCW_PutTextW32(
         AUDIOCW_DATA	*this,
         uint32_t        cData,
-        int32_t         *pData
+        W32CHR_T        *pData
     )
     {
         uint32_t        i;
@@ -652,7 +652,7 @@ extern "C" {
                         cRepeat = 0;
                     }
                     else {
-                        audioCW_PutW(this, pData[i]);
+                        audioCW_PutW32(this, pData[i]);
                     }
                     break;
                     
@@ -664,7 +664,7 @@ extern "C" {
                     }
                     else {
                         while (cRepeat--) {
-                            audioCW_PutW(this, pData[i]);
+                            audioCW_PutW32(this, pData[i]);
                         }
                         state = 1;
                     }
@@ -684,9 +684,9 @@ extern "C" {
     //                      P u t W
     //---------------------------------------------------------------
     
-    ERESULT         audioCW_PutW(
+    ERESULT         audioCW_PutW32(
         AUDIOCW_DATA	*this,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         uint32_t        work;
@@ -721,16 +721,16 @@ extern "C" {
             default:
             {
                 const
-                int32_t			*nextElement = cwCharElements[chr & 0x7F];
+                char		    *nextElement = cwCharElements[chr & 0x7F];
                 for( ; *nextElement; ++nextElement ) {
-                    if (L'.' == *nextElement) {
+                    if ('.' == *nextElement) {
                         this->eRc = audioWAV_AppendSineWave(
                                             this->pWave,
                                             this->freq,
                                             this->timeDit
                                     );
                     }
-                    else if (L'-' == *nextElement) {
+                    else if ('-' == *nextElement) {
                         this->eRc = audioWAV_AppendSineWave(
                                             this->pWave,
                                             this->freq,
@@ -779,7 +779,7 @@ extern "C" {
      @warning: Remember to release the returned AStr object.
      */
     ASTR_DATA *     audioCW_ToDebugString(
-        AUDIOCW_DATA      *this,
+        AUDIOCW_DATA    *this,
         int             indent
     )
     {
@@ -796,7 +796,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -821,7 +821,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(audioCW)}\n", this);
         AStr_AppendA(pStr, str);

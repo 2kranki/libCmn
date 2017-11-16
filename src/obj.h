@@ -104,7 +104,7 @@ extern	"C" {
     typedef uint32_t    (*P_OBJ_HASH)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_PTR)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_TOSTRING)(OBJ_ID, int);
-    typedef void *      (*P_OBJ_QUERYINFO)(OBJ_ID, uint32_t, const char *);
+    typedef void *      (*P_OBJ_QUERYINFO)(OBJ_ID, uint32_t, void *);
 
 
     
@@ -179,7 +179,7 @@ extern	"C" {
         // ------- Beginning of Methods likely to be in all objects -------
         // Query an object for specific data including object size,
         // method name(s) in character format, etc.
-        void *      (*pQueryInfo)(OBJ_ID, uint32_t, const char *);
+        void *      (*pQueryInfo)(OBJ_ID, uint32_t, void *);
         OBJ_ID      (*pToDebugString)(OBJ_ID, int);
         // ------- End of Methods likely to be in all objects -------
         bool        (*pEnable)(OBJ_ID);
@@ -204,21 +204,24 @@ extern	"C" {
     
     typedef enum obj_QueryInfoType_e {
         OBJ_QUERYINFO_TYPE_UNKNOWN=0,
-        OBJ_QUERYINFO_TYPE_INFO,       // String is not used
-        OBJ_QUERYINFO_TYPE_METHOD,     // String is method name without object prefix
+        OBJ_QUERYINFO_TYPE_INFO,       // Return class info structure
+        OBJ_QUERYINFO_TYPE_METHOD,     // Search for a Method by using the string
+        //                             // which is the method name without object prefix
+        OBJ_QUERYINFO_TYPE_PTR,        // Search for a Method by using its address and
+        //                             // returning a string which represents the method
     } OBJ_QUERYINFO_TYPE;
 
 
 
 
-#define OBJ_INIT_SHARED(cbp,cbSize)\
-    if (!(obj_getFlags(cbp) & OBJ_FLAG_INIT)) {\
-        memset(cbp, 0, cbSize);\
-        obj_setVtbl(cbp,obj_StaticVtblShared());\
-        obj_setSize(cbp, cbSize);\
-        obj_setIdent(cbp, OBJ_IDENT_OBJ);\
-        obj_setRetainCount(cbp, -1);\
-        obj_setFlags(cbp, OBJ_FLAG_INIT);\
+#define OBJ_INIT_SHARED(this, cbSize)\
+    if (!(obj_getFlags(this) & OBJ_FLAG_INIT)) {        \
+        memset(this, 0, cbSize);                        \
+        obj_setVtbl(this, obj_StaticVtblShared());      \
+        obj_setSize(this, cbSize);                      \
+        obj_setIdent(this, OBJ_IDENT_OBJ);              \
+        obj_setRetainCount(this, -1);                   \
+        obj_setFlags(this, OBJ_FLAG_INIT);              \
     }
 
 
@@ -506,8 +509,7 @@ extern	"C" {
     void *          obj_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

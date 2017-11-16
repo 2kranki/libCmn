@@ -14,7 +14,7 @@
  *                  ;
  *          arg     : ws* (name ('=' value)? | string ('=' value) | number)
  *                  ;
- *          object  : '{' ws* object_value (',' ws* object_value)* ws* '}'
+ *          object  : '{' ws* value (',' ws* value)* ws* '}'
  *                  ;
  *          value   : name | string | number
  *                  ;

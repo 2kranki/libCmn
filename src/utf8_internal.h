@@ -38,12 +38,14 @@
 
 
 
+#include    <utf8.h>
+#include    <AStr.h>
+
+
+
 #ifndef UTF8_INTERNAL_H
 #define	UTF8_INTERNAL_H
 
-
-#include    <utf8.h>
-#include    <AStr.h>
 
 #ifdef	__cplusplus
 extern "C" {

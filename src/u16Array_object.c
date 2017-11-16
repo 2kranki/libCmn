@@ -80,7 +80,7 @@ bool            u16Array_ClassIsKindOf(
     if (OBJ_IDENT_U16ARRAY_CLASS == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_ARRAY_CLASS == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -134,7 +134,7 @@ bool            u16Array_IsKindOf(
     if (OBJ_IDENT_U16ARRAY == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
+    if (OBJ_IDENT_ARRAY == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -202,7 +202,7 @@ OBJ_INFO        u16Array_Info = {
     "u16Array",
     "uint16 Array",
     (OBJ_DATA *)&u16Array_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
     (OBJ_IUNKNOWN *)&u16Array_Vtbl
 };
 

@@ -50,6 +50,27 @@
 extern "C" {
 #endif
 
+    typedef enum tok_typ_e {
+        TOK_TYP_EOF=-1,
+        TOK_TYP_INVALID=0,
+        TOK_TYP_LPAREN=1,
+        TOK_TYP_RPAREN=2,
+        TOK_TYP_PERCENT=3,
+        TOK_TYP_INT=4,
+        TOK_TYP_COLON=5,
+        TOK_TYP_POUND=6,
+        TOK_TYP_PERIOD=7
+    } TOK_TYP;
+#define TOK_TYP_VALID(x) ((x >= TOK_TYP_LPAREN) && (x <= TOK_TYP_PERIOD))
+    
+    typedef struct scanner_entry_s {
+        int         nodeClass;               // Node Class for comparison
+        int         scanLabel;              // Optional index to Returned Node Pointer
+    } SCANNER_ENTRY;
+    
+    // MAX values should be evenly divisible by 8
+#define MAX_SCANNER_ENTRIES     32
+#define MAX_SCANNER_LABELS      16
 
 #pragma pack(push, 1)
 struct nodeScan_data_s	{
@@ -60,7 +81,23 @@ struct nodeScan_data_s	{
 
     // Common Data
     uint32_t        index;
-    NODEARRAY_DATA  *pArray;    // Tree converted to array with up/down members.
+    uint32_t        rsvd32_1;
+    NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
+    //                          // up/down members.
+
+    // ScanF Input
+    ASTR_DATA       *pScanInput;
+    uint32_t        curChar;
+    int32_t         tokInt;
+    
+    // ScanF Scan Data
+    uint32_t        offset;         // Offset within pArray of current scan comparison.
+    uint32_t        scanLength;
+    int32_t         nodeTypes[MAX_SCANNER_ENTRIES];
+    uint32_t        rsvd32_2;
+    uint32_t        cLabels;        // Node Labels which are returned Node Pointers if
+    //                              // matched
+    NODE_DATA       **ppLabels[MAX_SCANNER_LABELS];
 
 };
 #pragma pack(pop)
@@ -80,6 +117,11 @@ struct nodeScan_data_s	{
     );
 
 
+    int             nodeScan_Lex(
+        NODESCAN_DATA  *this
+    );
+    
+    
     void *          nodeScan_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

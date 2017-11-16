@@ -205,7 +205,7 @@ extern "C" {
         char            *pName,             // UTF-8 Name String
         const
         char            *pEquiv,            // UTF-8 Equivalent String
-        char            *pNewname           // UTF-8 Output String
+        char            *pNewname           // Optional UTF-8 Output String
     );
     
     

@@ -131,8 +131,8 @@ extern "C" {
         uint32_t        crc;
         uint32_t        chkCrc;
         uint32_t        length = 0;
-        char            *pData = NULL;
-        char            *pChrOut;
+        //char            *pData = NULL;
+        //char            *pChrOut;
         int32_t         chrW;
         WSTR_DATA       *pStrOut = OBJ_NIL;
         
@@ -322,7 +322,7 @@ extern "C" {
                         goto exit00;
                     }
                     chrW = (int32_t)dec_getInt64A(AStr_getData(pStr));
-                    WStr_AppendCharW(pStrOut, 1, chrW);
+                    WStr_AppendCharW32(pStrOut, 1, chrW);
                 }
             }
             else if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null")) {
@@ -451,7 +451,7 @@ extern "C" {
         }
 #endif
         pInfo = WStr_Vtbl.iVtbl.pInfo;
-        pData  = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, 1);
+        pData  = array_Ptr((ARRAY_DATA *)this, 1);
 
         pStr = AStr_New();
         str[0] = '\0';
@@ -466,19 +466,19 @@ extern "C" {
         crc = WStr_getCrcIEEE(this);
         AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
-        len = pwr2Array_getSize((PWR2ARRAY_DATA *)this) - 1;
+        len = array_getSize((ARRAY_DATA *)this) - 1;
         AStr_AppendPrint(pStr, ", \"len\":%u", len);
         if (len) {
             AStr_AppendA(pStr, ", \"data\":[");
             pChr = pData;
             for (i=0; i<(len-1); ++i) {
-                pChrW = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, i+1);
+                pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
                 chrW = *pChrW;
                 WStr_Int64ToChrClean(chrW, chrs);
                 AStr_AppendA(pStr, chrs);
                 AStr_AppendA(pStr, ",");
             }
-            pChrW = pwr2Array_Ptr((PWR2ARRAY_DATA *)this, i+1);
+            pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
             chrW = *pChrW;
             WStr_Int64ToChrClean(chrW, chrs);
             AStr_AppendA(pStr, chrs);

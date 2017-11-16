@@ -54,6 +54,7 @@ struct null_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;
 
 };
 #pragma pack(pop)
@@ -73,8 +74,7 @@ struct null_data_s	{
     void *          null_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

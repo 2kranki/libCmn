@@ -38,6 +38,7 @@
 
 
 #include    <psxCond.h>
+#include    <psxMutex_internal.h>
 
 
 
@@ -60,17 +61,17 @@ struct psxCond_data_s	{
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 #define PSXCOND_FLAG_COND_INIT      6
-#define PSXCOND_FLAG_MUTEX_INIT     7
 
     // Common Data
-    bool            (*condRoutine)(void *);
-    void            *condData;
+    PSXMUTEX_DATA   *pMutex;
 #if defined(__MACOSX_ENV__)
-    pthread_mutex_t mutex;
     pthread_cond_t  cond;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
     struct TN_Mutex mutex;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    //HANDLE          m_hSem;
 #endif
 
 };

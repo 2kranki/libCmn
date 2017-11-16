@@ -73,10 +73,6 @@
 		C4555F2C1CA2312C00D57BBB /* objArray.c in Sources */ = {isa = PBXBuildFile; fileRef = C4555F291CA1EA6900D57BBB /* objArray.c */; };
 		C4555F2D1CA231D100D57BBB /* objArray_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4555F281CA1EA6900D57BBB /* objArray_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C4555F2E1CA231DA00D57BBB /* objArray.h in Headers */ = {isa = PBXBuildFile; fileRef = C4555F2A1CA1EA6900D57BBB /* objArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C4555F2F1CA2330C00D57BBB /* WStrArray.h in Headers */ = {isa = PBXBuildFile; fileRef = C4555F251CA1E6E200D57BBB /* WStrArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C4555F301CA2331600D57BBB /* WStrArray.c in Sources */ = {isa = PBXBuildFile; fileRef = C4555F241CA1E6E200D57BBB /* WStrArray.c */; };
-		C4555F311CA2331C00D57BBB /* WStrArray_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4555F231CA1E6E200D57BBB /* WStrArray_object.c */; };
-		C4555F321CA2332300D57BBB /* WStrArray_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4555F221CA1E6E200D57BBB /* WStrArray_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C456C4151C91E81E003AC73E /* cmn_osx.c in Sources */ = {isa = PBXBuildFile; fileRef = C456C40F1C91E81E003AC73E /* cmn_osx.c */; };
 		C456C4161C91E81E003AC73E /* cmn_osx.h in Headers */ = {isa = PBXBuildFile; fileRef = C456C4101C91E81E003AC73E /* cmn_osx.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C456C4171C91E81E003AC73E /* memOSX_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C456C4111C91E81E003AC73E /* memOSX_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -208,10 +204,6 @@
 		C46705801C6B9CFB0091FC0E /* hash32.h in Headers */ = {isa = PBXBuildFile; fileRef = C46704791C6B9CFA0091FC0E /* hash32.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C46705821C6B9CFB0091FC0E /* hex.c in Sources */ = {isa = PBXBuildFile; fileRef = C467047B1C6B9CFA0091FC0E /* hex.c */; };
 		C46705831C6B9CFB0091FC0E /* hex.h in Headers */ = {isa = PBXBuildFile; fileRef = C467047C1C6B9CFA0091FC0E /* hex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C467058F1C6B9CFB0091FC0E /* json_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C46704881C6B9CFA0091FC0E /* json_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		C46705901C6B9CFB0091FC0E /* json_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46704891C6B9CFA0091FC0E /* json_object.c */; };
-		C46705921C6B9CFB0091FC0E /* json.c in Sources */ = {isa = PBXBuildFile; fileRef = C467048B1C6B9CFA0091FC0E /* json.c */; };
-		C46705931C6B9CFB0091FC0E /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = C467048C1C6B9CFA0091FC0E /* json.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C46705991C6B9CFB0091FC0E /* listdl.c in Sources */ = {isa = PBXBuildFile; fileRef = C46704921C6B9CFA0091FC0E /* listdl.c */; };
 		C467059A1C6B9CFB0091FC0E /* listdl.h in Headers */ = {isa = PBXBuildFile; fileRef = C46704931C6B9CFA0091FC0E /* listdl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C46705A11C6B9CFB0091FC0E /* misc_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C467049A1C6B9CFA0091FC0E /* misc_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -403,6 +395,18 @@
 		C46F87121F53144B007D2AD7 /* jsonOut.h in Headers */ = {isa = PBXBuildFile; fileRef = C46F870E1F53144B007D2AD7 /* jsonOut.h */; };
 		C46F87141F5353A9007D2AD7 /* value_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C46F87131F5353A9007D2AD7 /* value_JSON.c */; };
 		C46F87171F53B153007D2AD7 /* hex_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C46F87151F53B153007D2AD7 /* hex_JSON.c */; };
+		C475825C1F9E1FBC006AA023 /* objEnum_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C47582581F9E1FB1006AA023 /* objEnum_internal.h */; };
+		C475825D1F9E1FBC006AA023 /* objEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = C47582591F9E1FB9006AA023 /* objEnum.h */; };
+		C475825E1F9E1FBC006AA023 /* objEnum.c in Sources */ = {isa = PBXBuildFile; fileRef = C475825A1F9E1FBA006AA023 /* objEnum.c */; };
+		C475825F1F9E1FBC006AA023 /* objEnum_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C475825B1F9E1FBB006AA023 /* objEnum_object.c */; };
+		C475828A1FA11B0A006AA023 /* ptrCb.h in Headers */ = {isa = PBXBuildFile; fileRef = C47582861FA11B04006AA023 /* ptrCb.h */; };
+		C475828B1FA11B0A006AA023 /* ptrCb_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47582871FA11B07006AA023 /* ptrCb_object.c */; };
+		C475828C1FA11B0A006AA023 /* ptrCb.c in Sources */ = {isa = PBXBuildFile; fileRef = C47582881FA11B08006AA023 /* ptrCb.c */; };
+		C475828D1FA11B0A006AA023 /* ptrCb_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C47582891FA11B09006AA023 /* ptrCb_internal.h */; };
+		C47582941FA4B57F006AA023 /* objMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = C47582901FA4B576006AA023 /* objMethod.h */; };
+		C47582951FA4B57F006AA023 /* objMethod.c in Sources */ = {isa = PBXBuildFile; fileRef = C47582911FA4B57B006AA023 /* objMethod.c */; };
+		C47582961FA4B57F006AA023 /* objMethod_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47582921FA4B57D006AA023 /* objMethod_object.c */; };
+		C47582971FA4B57F006AA023 /* objMethod_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C47582931FA4B57E006AA023 /* objMethod_internal.h */; };
 		C47E78E31D7C8E4000A76B8E /* blocks_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C47E78DF1D7C8E4000A76B8E /* blocks_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C47E78E41D7C8E4000A76B8E /* blocks_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47E78E01D7C8E4000A76B8E /* blocks_object.c */; };
 		C47E78E51D7C8E4000A76B8E /* blocks.c in Sources */ = {isa = PBXBuildFile; fileRef = C47E78E11D7C8E4000A76B8E /* blocks.c */; };
@@ -484,10 +488,10 @@
 		C4F51B791D392CF0001AFAD7 /* nodeArc_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F51B711D38796E001AFAD7 /* nodeArc_object.c */; };
 		C4F51B7A1D392CF5001AFAD7 /* nodeArc.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F51B721D38796E001AFAD7 /* nodeArc.c */; };
 		C4F51B7B1D392CFA001AFAD7 /* nodeArc.h in Headers */ = {isa = PBXBuildFile; fileRef = C4F51B731D38796E001AFAD7 /* nodeArc.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C4FE0D441C77698400357347 /* WStrC_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4FE0D401C77698400357347 /* WStrC_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		C4FE0D451C77698400357347 /* WStrC_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4FE0D411C77698400357347 /* WStrC_object.c */; };
-		C4FE0D461C77698400357347 /* WStrC.c in Sources */ = {isa = PBXBuildFile; fileRef = C4FE0D421C77698400357347 /* WStrC.c */; };
-		C4FE0D471C77698400357347 /* WStrC.h in Headers */ = {isa = PBXBuildFile; fileRef = C4FE0D431C77698400357347 /* WStrC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C4FE0D441C77698400357347 /* W32StrC_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C4FE0D401C77698400357347 /* W32StrC_internal.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		C4FE0D451C77698400357347 /* W32StrC_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4FE0D411C77698400357347 /* W32StrC_object.c */; };
+		C4FE0D461C77698400357347 /* W32StrC.c in Sources */ = {isa = PBXBuildFile; fileRef = C4FE0D421C77698400357347 /* W32StrC.c */; };
+		C4FE0D471C77698400357347 /* W32StrC.h in Headers */ = {isa = PBXBuildFile; fileRef = C4FE0D431C77698400357347 /* W32StrC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C4FE0D4B1C77A73500357347 /* NOTES.txt in Resources */ = {isa = PBXBuildFile; fileRef = C4FE0D4A1C77A73500357347 /* NOTES.txt */; };
 /* End PBXBuildFile section */
 
@@ -565,10 +569,6 @@
 		C4529AA41ECFD0D500D898DE /* psxLock_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxLock_object.c; sourceTree = "<group>"; };
 		C4529AA51ECFD0D500D898DE /* psxLock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxLock.c; sourceTree = "<group>"; };
 		C4529AA61ECFD0D500D898DE /* psxLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxLock.h; sourceTree = "<group>"; };
-		C4555F221CA1E6E200D57BBB /* WStrArray_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WStrArray_internal.h; sourceTree = "<group>"; };
-		C4555F231CA1E6E200D57BBB /* WStrArray_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStrArray_object.c; sourceTree = "<group>"; };
-		C4555F241CA1E6E200D57BBB /* WStrArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStrArray.c; sourceTree = "<group>"; };
-		C4555F251CA1E6E200D57BBB /* WStrArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WStrArray.h; sourceTree = "<group>"; };
 		C4555F281CA1EA6900D57BBB /* objArray_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objArray_internal.h; sourceTree = "<group>"; };
 		C4555F291CA1EA6900D57BBB /* objArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objArray.c; sourceTree = "<group>"; };
 		C4555F2A1CA1EA6900D57BBB /* objArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objArray.h; sourceTree = "<group>"; };
@@ -705,10 +705,6 @@
 		C46704791C6B9CFA0091FC0E /* hash32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash32.h; sourceTree = "<group>"; };
 		C467047B1C6B9CFA0091FC0E /* hex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hex.c; sourceTree = "<group>"; };
 		C467047C1C6B9CFA0091FC0E /* hex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hex.h; sourceTree = "<group>"; };
-		C46704881C6B9CFA0091FC0E /* json_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_internal.h; sourceTree = "<group>"; };
-		C46704891C6B9CFA0091FC0E /* json_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = json_object.c; sourceTree = "<group>"; };
-		C467048B1C6B9CFA0091FC0E /* json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = json.c; sourceTree = "<group>"; };
-		C467048C1C6B9CFA0091FC0E /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
 		C46704921C6B9CFA0091FC0E /* listdl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = listdl.c; sourceTree = "<group>"; };
 		C46704931C6B9CFA0091FC0E /* listdl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = listdl.h; sourceTree = "<group>"; };
 		C467049A1C6B9CFA0091FC0E /* misc_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = misc_internal.h; sourceTree = "<group>"; };
@@ -902,6 +898,18 @@
 		C46F870E1F53144B007D2AD7 /* jsonOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsonOut.h; sourceTree = "<group>"; };
 		C46F87131F5353A9007D2AD7 /* value_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = value_JSON.c; sourceTree = "<group>"; };
 		C46F87151F53B153007D2AD7 /* hex_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hex_JSON.c; sourceTree = "<group>"; };
+		C47582581F9E1FB1006AA023 /* objEnum_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objEnum_internal.h; sourceTree = "<group>"; };
+		C47582591F9E1FB9006AA023 /* objEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objEnum.h; sourceTree = "<group>"; };
+		C475825A1F9E1FBA006AA023 /* objEnum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objEnum.c; sourceTree = "<group>"; };
+		C475825B1F9E1FBB006AA023 /* objEnum_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objEnum_object.c; sourceTree = "<group>"; };
+		C47582861FA11B04006AA023 /* ptrCb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrCb.h; sourceTree = "<group>"; };
+		C47582871FA11B07006AA023 /* ptrCb_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptrCb_object.c; sourceTree = "<group>"; };
+		C47582881FA11B08006AA023 /* ptrCb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptrCb.c; sourceTree = "<group>"; };
+		C47582891FA11B09006AA023 /* ptrCb_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrCb_internal.h; sourceTree = "<group>"; };
+		C47582901FA4B576006AA023 /* objMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objMethod.h; sourceTree = "<group>"; };
+		C47582911FA4B57B006AA023 /* objMethod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objMethod.c; sourceTree = "<group>"; };
+		C47582921FA4B57D006AA023 /* objMethod_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objMethod_object.c; sourceTree = "<group>"; };
+		C47582931FA4B57E006AA023 /* objMethod_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objMethod_internal.h; sourceTree = "<group>"; };
 		C47E78DF1D7C8E4000A76B8E /* blocks_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blocks_internal.h; sourceTree = "<group>"; };
 		C47E78E01D7C8E4000A76B8E /* blocks_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blocks_object.c; sourceTree = "<group>"; };
 		C47E78E11D7C8E4000A76B8E /* blocks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blocks.c; sourceTree = "<group>"; };
@@ -985,10 +993,10 @@
 		C4F51B711D38796E001AFAD7 /* nodeArc_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeArc_object.c; sourceTree = "<group>"; };
 		C4F51B721D38796E001AFAD7 /* nodeArc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeArc.c; sourceTree = "<group>"; };
 		C4F51B731D38796E001AFAD7 /* nodeArc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeArc.h; sourceTree = "<group>"; };
-		C4FE0D401C77698400357347 /* WStrC_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WStrC_internal.h; sourceTree = "<group>"; };
-		C4FE0D411C77698400357347 /* WStrC_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStrC_object.c; sourceTree = "<group>"; };
-		C4FE0D421C77698400357347 /* WStrC.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = WStrC.c; sourceTree = "<group>"; };
-		C4FE0D431C77698400357347 /* WStrC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WStrC.h; sourceTree = "<group>"; };
+		C4FE0D401C77698400357347 /* W32StrC_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = W32StrC_internal.h; sourceTree = "<group>"; };
+		C4FE0D411C77698400357347 /* W32StrC_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = W32StrC_object.c; sourceTree = "<group>"; };
+		C4FE0D421C77698400357347 /* W32StrC.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = W32StrC.c; sourceTree = "<group>"; };
+		C4FE0D431C77698400357347 /* W32StrC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = W32StrC.h; sourceTree = "<group>"; };
 		C4FE0D4A1C77A73500357347 /* NOTES.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NOTES.txt; path = ../../NOTES.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1248,10 +1256,6 @@
 				C4C6D8561F1183C7006D6C5E /* hjson_object.c */,
 				C4C6D8571F1183C7006D6C5E /* hjson.c */,
 				C4C6D8581F1183C7006D6C5E /* hjson.h */,
-				C46704881C6B9CFA0091FC0E /* json_internal.h */,
-				C46704891C6B9CFA0091FC0E /* json_object.c */,
-				C467048B1C6B9CFA0091FC0E /* json.c */,
-				C467048C1C6B9CFA0091FC0E /* json.h */,
 				C46F870B1F53144B007D2AD7 /* jsonOut_internal.h */,
 				C46F870C1F53144B007D2AD7 /* jsonOut_object.c */,
 				C46F870D1F53144B007D2AD7 /* jsonOut.c */,
@@ -1346,6 +1350,10 @@
 				C46704CD1C6B9CFB0091FC0E /* objCb_object.c */,
 				C46704CE1C6B9CFB0091FC0E /* objCb.c */,
 				C46704CF1C6B9CFB0091FC0E /* objCb.h */,
+				C47582581F9E1FB1006AA023 /* objEnum_internal.h */,
+				C475825B1F9E1FBB006AA023 /* objEnum_object.c */,
+				C475825A1F9E1FBA006AA023 /* objEnum.c */,
+				C47582591F9E1FB9006AA023 /* objEnum.h */,
 				C46704D01C6B9CFB0091FC0E /* objHash_internal.h */,
 				C46704D11C6B9CFB0091FC0E /* objHash_object.c */,
 				C46704D21C6B9CFB0091FC0E /* objHash.c */,
@@ -1358,6 +1366,10 @@
 				C46704D51C6B9CFB0091FC0E /* objMatrix_object.c */,
 				C46704D61C6B9CFB0091FC0E /* objMatrix.c */,
 				C46704D71C6B9CFB0091FC0E /* objMatrix.h */,
+				C47582931FA4B57E006AA023 /* objMethod_internal.h */,
+				C47582921FA4B57D006AA023 /* objMethod_object.c */,
+				C47582911FA4B57B006AA023 /* objMethod.c */,
+				C47582901FA4B576006AA023 /* objMethod.h */,
 				C46705E31C6B9D120091FC0E /* path_internal.h */,
 				C46705E41C6B9D120091FC0E /* path_object.c */,
 				C46705E61C6B9D120091FC0E /* path.c */,
@@ -1394,6 +1406,10 @@
 				C467060B1C6B9DD40091FC0E /* ptrArray_object.c */,
 				C467060C1C6B9DD40091FC0E /* ptrArray.c */,
 				C467060D1C6B9DD40091FC0E /* ptrArray.h */,
+				C47582891FA11B09006AA023 /* ptrCb_internal.h */,
+				C47582871FA11B07006AA023 /* ptrCb_object.c */,
+				C47582881FA11B08006AA023 /* ptrCb.c */,
+				C47582861FA11B04006AA023 /* ptrCb.h */,
 				C467060E1C6B9DD40091FC0E /* pwr2Array_internal.h */,
 				C467060F1C6B9DD40091FC0E /* pwr2Array_object.c */,
 				C46706101C6B9DD40091FC0E /* pwr2Array.c */,
@@ -1508,14 +1524,10 @@
 				C46706881C6B9DD40091FC0E /* WStr_object.c */,
 				C46706891C6B9DD40091FC0E /* WStr.c */,
 				C467068A1C6B9DD40091FC0E /* WStr.h */,
-				C4555F221CA1E6E200D57BBB /* WStrArray_internal.h */,
-				C4555F231CA1E6E200D57BBB /* WStrArray_object.c */,
-				C4555F241CA1E6E200D57BBB /* WStrArray.c */,
-				C4555F251CA1E6E200D57BBB /* WStrArray.h */,
-				C4FE0D401C77698400357347 /* WStrC_internal.h */,
-				C4FE0D411C77698400357347 /* WStrC_object.c */,
-				C4FE0D421C77698400357347 /* WStrC.c */,
-				C4FE0D431C77698400357347 /* WStrC.h */,
+				C4FE0D401C77698400357347 /* W32StrC_internal.h */,
+				C4FE0D411C77698400357347 /* W32StrC_object.c */,
+				C4FE0D421C77698400357347 /* W32StrC.c */,
+				C4FE0D431C77698400357347 /* W32StrC.h */,
 				C467068B1C6B9DD40091FC0E /* xml_internal.h */,
 				C467068C1C6B9DD40091FC0E /* xml_object.c */,
 				C467068D1C6B9DD40091FC0E /* xml.c */,
@@ -1566,7 +1578,7 @@
 			files = (
 				C456C41A1C91E81E003AC73E /* memOSX.h in Headers */,
 				C456C4161C91E81E003AC73E /* cmn_osx.h in Headers */,
-				C4FE0D471C77698400357347 /* WStrC.h in Headers */,
+				C4FE0D471C77698400357347 /* W32StrC.h in Headers */,
 				C4AF15BF1C6CE57B0098171F /* psxThread.h in Headers */,
 				C4AF15151C6C3F630098171F /* libCmn.h in Headers */,
 				C4AF15B71C6CE57B0098171F /* psxMutex.h in Headers */,
@@ -1598,6 +1610,7 @@
 				C467057C1C6B9CFB0091FC0E /* greg.h in Headers */,
 				C46705031C6B9CFB0091FC0E /* cb16.h in Headers */,
 				C46706AF1C6B9DD40091FC0E /* pwr2Array.h in Headers */,
+				C47582971FA4B57F006AA023 /* objMethod_internal.h in Headers */,
 				C46704F11C6B9CFB0091FC0E /* block32.h in Headers */,
 				C41F015A1EC50C2B0039F0EB /* lex_internal.h in Headers */,
 				C467055E1C6B9CFB0091FC0E /* eResult.h in Headers */,
@@ -1636,6 +1649,7 @@
 				C46706DA1C6B9DD40091FC0E /* szHash.h in Headers */,
 				C46705C41C6B9CFB0091FC0E /* nodeTree.h in Headers */,
 				C46707071C6B9DD40091FC0E /* true.h in Headers */,
+				C475825C1F9E1FBC006AA023 /* objEnum_internal.h in Headers */,
 				C4C188D01D2BF6C10085AC16 /* psxCond.h in Headers */,
 				C4AF8D611E5BDCD2003AE67C /* tokenList_internal.h in Headers */,
 				C46706921C6B9DD40091FC0E /* plist.h in Headers */,
@@ -1656,21 +1670,19 @@
 				C46705A41C6B9CFB0091FC0E /* misc.h in Headers */,
 				C46707241C6B9DD40091FC0E /* wav.h in Headers */,
 				C46706CF1C6B9DD40091FC0E /* srcFiles.h in Headers */,
+				C475828A1FA11B0A006AA023 /* ptrCb.h in Headers */,
 				C46704E11C6B9CFB0091FC0E /* AStrArray.h in Headers */,
 				C46706AB1C6B9DD40091FC0E /* ptrArray.h in Headers */,
-				C4555F321CA2332300D57BBB /* WStrArray_internal.h in Headers */,
 				C46705151C6B9CFB0091FC0E /* cmn_defs.h in Headers */,
 				C4F51B7B1D392CFA001AFAD7 /* nodeArc.h in Headers */,
 				C46705701C6B9CFB0091FC0E /* fbso.h in Headers */,
 				C4C6D85F1F1262EC006D6C5E /* lexj_internal.h in Headers */,
 				C46706B31C6B9DD40091FC0E /* rrds32.h in Headers */,
-				C46705931C6B9CFB0091FC0E /* json.h in Headers */,
 				C46705071C6B9CFB0091FC0E /* cb32.h in Headers */,
 				C467070F1C6B9DD40091FC0E /* u16Array.h in Headers */,
 				C46707171C6B9DD40091FC0E /* u32Array.h in Headers */,
 				C4694B321D90B6C10066F924 /* audioWAV.h in Headers */,
 				C46F87121F53144B007D2AD7 /* jsonOut.h in Headers */,
-				C4555F2F1CA2330C00D57BBB /* WStrArray.h in Headers */,
 				C46705681C6B9CFB0091FC0E /* false.h in Headers */,
 				C46706E61C6B9DD40091FC0E /* ternary.h in Headers */,
 				C46F870A1F51B446007D2AD7 /* value.h in Headers */,
@@ -1714,12 +1726,13 @@
 				C46706D01C6B9DD40091FC0E /* srcLoc_internal.h in Headers */,
 				C46705001C6B9CFB0091FC0E /* cb16_internal.h in Headers */,
 				C46706C21C6B9DD40091FC0E /* sidx_internal.h in Headers */,
+				C475825D1F9E1FBC006AA023 /* objEnum.h in Headers */,
 				C46705A11C6B9CFB0091FC0E /* misc_internal.h in Headers */,
 				C46705321C6B9CFB0091FC0E /* dbf_internal.h in Headers */,
 				C46706B01C6B9DD40091FC0E /* rrds32_internal.h in Headers */,
 				C42AF19F1EDF90A400C3924E /* msgBus_internal.h in Headers */,
 				C467055F1C6B9CFB0091FC0E /* execArray_internal.h in Headers */,
-				C4FE0D441C77698400357347 /* WStrC_internal.h in Headers */,
+				C4FE0D441C77698400357347 /* W32StrC_internal.h in Headers */,
 				C467057D1C6B9CFB0091FC0E /* hash32_internal.h in Headers */,
 				C43F50371EE7A8AD00A8AA0B /* timer.h in Headers */,
 				C46707141C6B9DD40091FC0E /* u32Array_internal.h in Headers */,
@@ -1761,7 +1774,6 @@
 				C46705751C6B9CFB0091FC0E /* fileio_internal.h in Headers */,
 				C46706E31C6B9DD40091FC0E /* ternary_internal.h in Headers */,
 				C467072F1C6BA13E0091FC0E /* ascii_internal.h in Headers */,
-				C467058F1C6B9CFB0091FC0E /* json_internal.h in Headers */,
 				C42AF1A21EDF90A400C3924E /* msgBus.h in Headers */,
 				C46705B91C6B9CFB0091FC0E /* nodeList_internal.h in Headers */,
 				C4AF15BC1C6CE57B0098171F /* psxThread_internal.h in Headers */,
@@ -1772,10 +1784,12 @@
 				C4F51B6F1D386FB6001AFAD7 /* nodeGraph.h in Headers */,
 				C4D5E4211F893B94006BBD33 /* execPtr.h in Headers */,
 				C46004CA1DA7EAA600FE04F6 /* arrayExpand_internal.h in Headers */,
+				C47582941FA4B57F006AA023 /* objMethod.h in Headers */,
 				C46707291C6B9DD40091FC0E /* xml_internal.h in Headers */,
 				C46707081C6B9DD40091FC0E /* u8Array_internal.h in Headers */,
 				C467056D1C6B9CFB0091FC0E /* fbso_internal.h in Headers */,
 				C4C6D8621F126302006D6C5E /* lexj.h in Headers */,
+				C475828D1FA11B0A006AA023 /* ptrCb_internal.h in Headers */,
 				C46707211C6B9DD40091FC0E /* wav_internal.h in Headers */,
 				C46704E21C6B9CFB0091FC0E /* AStrC_internal.h in Headers */,
 				C46705791C6B9CFB0091FC0E /* greg_internal.h in Headers */,
@@ -1923,6 +1937,8 @@
 				C4CBB3C61F42901900726413 /* node_JSON.c in Sources */,
 				C4D5E4221F893B94006BBD33 /* execPtr_object.c in Sources */,
 				C4C6D85B1F1183C7006D6C5E /* hjson.c in Sources */,
+				C47582951FA4B57F006AA023 /* objMethod.c in Sources */,
+				C475828C1FA11B0A006AA023 /* ptrCb.c in Sources */,
 				C4B827421F9275D40028E416 /* dec_JSON.c in Sources */,
 				C46705AA1C6B9CFB0091FC0E /* name.c in Sources */,
 				C46F87101F53144B007D2AD7 /* jsonOut_object.c in Sources */,
@@ -1983,7 +1999,6 @@
 				C467071A1C6B9DD40091FC0E /* uint128.c in Sources */,
 				C4D5E4231F893B94006BBD33 /* execPtr.c in Sources */,
 				C46705461C6B9CFB0091FC0E /* dirEntry_object.c in Sources */,
-				C4555F311CA2331C00D57BBB /* WStrArray_object.c in Sources */,
 				C46706BF1C6B9DD40091FC0E /* scanstring.c in Sources */,
 				C46706E11C6B9DD40091FC0E /* table.c in Sources */,
 				C46707091C6B9DD40091FC0E /* u8Array_object.c in Sources */,
@@ -2029,9 +2044,9 @@
 				C46A5BE41D24138000C279F4 /* consumer.c in Sources */,
 				C4AF8D5E1E5BDCD2003AE67C /* token.c in Sources */,
 				C46705061C6B9CFB0091FC0E /* cb32.c in Sources */,
+				C475828B1FA11B0A006AA023 /* ptrCb_object.c in Sources */,
 				C464B50C1F45D4F200CC91AA /* srcLoc_JSON.c in Sources */,
 				C46706AA1C6B9DD40091FC0E /* ptrArray.c in Sources */,
-				C46705901C6B9CFB0091FC0E /* json_object.c in Sources */,
 				C46706F61C6B9DD40091FC0E /* trace.c in Sources */,
 				C43F50141EE5A49000A8AA0B /* appl.c in Sources */,
 				C49E7C861E737FCA002A08A5 /* blkdrcds16.c in Sources */,
@@ -2042,7 +2057,7 @@
 				C43F50291EE65BE800A8AA0B /* clo_object.c in Sources */,
 				C46705B71C6B9CFB0091FC0E /* nodeHash.c in Sources */,
 				C46706A91C6B9DD40091FC0E /* ptrArray_object.c in Sources */,
-				C4FE0D451C77698400357347 /* WStrC_object.c in Sources */,
+				C4FE0D451C77698400357347 /* W32StrC_object.c in Sources */,
 				C4F51B791D392CF0001AFAD7 /* nodeArc_object.c in Sources */,
 				C46706E01C6B9DD40091FC0E /* table_object.c in Sources */,
 				C46F87091F51B446007D2AD7 /* value.c in Sources */,
@@ -2065,6 +2080,7 @@
 				C4F51B6D1D386FAB001AFAD7 /* nodeGraph_object.c in Sources */,
 				C47E78E51D7C8E4000A76B8E /* blocks.c in Sources */,
 				C4AF15BE1C6CE57B0098171F /* psxThread.c in Sources */,
+				C475825E1F9E1FBC006AA023 /* objEnum.c in Sources */,
 				C46F87081F51B446007D2AD7 /* value_object.c in Sources */,
 				C46704DF1C6B9CFB0091FC0E /* AStrArray_object.c in Sources */,
 				C43918D21D7726F300083689 /* nodeMatrix.c in Sources */,
@@ -2086,6 +2102,8 @@
 				C4AF15BD1C6CE57B0098171F /* psxThread_object.c in Sources */,
 				C46706C11C6B9DD40091FC0E /* shellSortPtrs.c in Sources */,
 				C4C6D83E1F068344006D6C5E /* enum_object.c in Sources */,
+				C475825F1F9E1FBC006AA023 /* objEnum_object.c in Sources */,
+				C47582961FA4B57F006AA023 /* objMethod_object.c in Sources */,
 				C467072B1C6B9DD40091FC0E /* xml.c in Sources */,
 				C46705661C6B9CFB0091FC0E /* false_object.c in Sources */,
 				C46707191C6B9DD40091FC0E /* uint128_object.c in Sources */,
@@ -2102,13 +2120,11 @@
 				C46705371C6B9CFB0091FC0E /* dbField_object.c in Sources */,
 				C43918CA1D748C4B00083689 /* nodeEntry.c in Sources */,
 				C46706AD1C6B9DD40091FC0E /* pwr2Array_object.c in Sources */,
-				C4555F301CA2331600D57BBB /* WStrArray.c in Sources */,
 				C46705761C6B9CFB0091FC0E /* fileio_object.c in Sources */,
 				C46704E01C6B9CFB0091FC0E /* AStrArray.c in Sources */,
-				C4FE0D461C77698400357347 /* WStrC.c in Sources */,
+				C4FE0D461C77698400357347 /* W32StrC.c in Sources */,
 				C46705121C6B9CFB0091FC0E /* cmdutl_object.c in Sources */,
 				C46705D41C6B9CFB0091FC0E /* objCb_object.c in Sources */,
-				C46705921C6B9CFB0091FC0E /* json.c in Sources */,
 				C46706B21C6B9DD40091FC0E /* rrds32.c in Sources */,
 				C46705671C6B9CFB0091FC0E /* false.c in Sources */,
 				C41F015C1EC50C2B0039F0EB /* lex.c in Sources */,

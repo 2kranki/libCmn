@@ -104,7 +104,6 @@ int         tearDown(
 
     pPattern = NULL;
     trace_SharedReset( ); 
-    mem_Dump( );
     mem_Release( );
     
     return 1; 
@@ -260,12 +259,16 @@ int         test_dir_Enum01(
     uint32_t        count;
     uint32_t        i;
     PATH_DATA       *pWrkPath = OBJ_NIL;
-    char            *pStrA = NULL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
+    pDir = NULL;
     pDir = getenv("HOME");
+    if (pDir) {
+        pDir = strdup(pDir);
+    }
     fprintf(stderr, "\tDir: %s\n", pDir);
+    XCTAssertFalse( (NULL == pDir) );
     pObj = dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = dir_Init( pObj );
@@ -282,6 +285,7 @@ int         test_dir_Enum01(
                     if (ERESULT_FAILED(eRc)) {
                         break;
                     }
+                    BREAK_NULL(pEntry);
                     dirEntry_GetAllData(pEntry);
                     fprintf(
                             stderr,
@@ -291,7 +295,6 @@ int         test_dir_Enum01(
                             dirEntry_getType(pEntry),
                             dirEntry_getGenerationNumber(pEntry)
                     );
-                    mem_Free(pStrA);
                     obj_Release(pWrkPath);
                     ++i;
                 }
@@ -305,6 +308,8 @@ int         test_dir_Enum01(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+    free(pDir);
+    pDir = NULL;
     
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;

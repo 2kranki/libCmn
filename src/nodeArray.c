@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <nodeArray_internal.h>
+#include <enum_internal.h>
 #include <utf8.h>
 
 
@@ -155,9 +156,9 @@ extern "C" {
             return 1;
         if (regexp[1] == '*')
             return matchstar(regexp[0], regexp+2, text);
-        if (regexp[0] == '$' && regexp[1] == '\0')
+        if ((regexp[0] == '$') && (regexp[1] == '\0'))
             return *text == '\0';
-        if (*text!='\0' && (regexp[0]=='.' || regexp[0]==*text))
+        if ((*text != '\0') && ((regexp[0] == '.') || (regexp[0] == *text)))
             return matchhere(regexp+1, text+1);
         return 0;
     }
@@ -636,6 +637,43 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        E n u m
+    //---------------------------------------------------------------
+    
+    ENUM_DATA *     nodeArray_Enum(
+        NODEARRAY_DATA  *this
+    )
+    {
+        ERESULT         eRc;
+        ENUM_DATA       *pEnum = OBJ_NIL;
+        uint32_t        size;
+        uint32_t        index;
+        NODE_DATA       *pNode;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->pArray) {
+            pEnum = enum_New();
+            size = objArray_getSize(this->pArray);
+            for (index = 0; index < size; ++index) {
+                pNode = objArray_Get(this->pArray, index+1);
+                eRc = enum_Append(pEnum, pNode, NULL);
+            }
+        }
+        
+        // Return to caller.
+        return pEnum;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
     
@@ -850,12 +888,13 @@ extern "C" {
     void *          nodeArray_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         NODEARRAY_DATA  *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -891,7 +930,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     

@@ -70,7 +70,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        int32_t         chr;
+        W32CHR_T        chr;
         bool            fRc;
         
         // Validate the input parameters.
@@ -104,7 +104,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -147,7 +147,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -405,7 +405,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -433,7 +433,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        int32_t         chr;
+        W32CHR_T        chr;
         ASTR_DATA       *pStr = OBJ_NIL;
         
         // Validate the input parameters.
@@ -464,7 +464,7 @@ extern "C" {
                 pToken = srcFile_InputLookAhead(this->pSrc, 2);
                 chr = token_getChrW(pToken);
                 if (chr == '"') {
-                    dbCsv_AppendCharToString(this, '"');
+                    dbCsv_AppendCharW32ToString(this, '"');
                     srcFile_InputAdvance(this->pSrc, 2);
                 }
                 else {
@@ -472,21 +472,21 @@ extern "C" {
                 }
             }
             else if (dbCsv_ParseSEP(this)) {
-                dbCsv_AppendCharToString(this, this->fieldSeparator);
+                dbCsv_AppendCharW32ToString(this, this->fieldSeparator);
             }
             else if ((chr == '\f') || (chr == '\n') || (chr == '\r') || (chr == '\t')) {
-                dbCsv_AppendCharToString(this, chr);
+                dbCsv_AppendCharW32ToString(this, chr);
                 srcFile_InputAdvance(this->pSrc, 1);
             }
             else if (chr == '\\') {
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
                 chr = token_getChrW(pToken);
                 if (chr == '"') {
-                    dbCsv_AppendCharToString(this, '"');
+                    dbCsv_AppendCharW32ToString(this, '"');
                     srcFile_InputAdvance(this->pSrc, 1);
                 }
                 else {
-                    dbCsv_AppendCharToString(this, '\\');
+                    dbCsv_AppendCharW32ToString(this, '\\');
                     srcFile_InputAdvance(this->pSrc, 1);
                 }
             }
@@ -502,7 +502,7 @@ extern "C" {
         chr = token_getChrW(pToken);
         if (chr == '"') {
             srcFile_InputAdvance(this->pSrc, 1);
-            pStr = AStr_NewW(this->pFld);
+            pStr = AStr_NewW32(this->pFld);
             this->lenFld = 0;
         }
         
@@ -531,7 +531,7 @@ extern "C" {
             ++i;
         }
         
-        pStr = AStr_NewW(this->pFld);
+        pStr = AStr_NewW32(this->pFld);
         this->lenFld = 0;
         return pStr;
     }
@@ -543,7 +543,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -569,7 +569,7 @@ extern "C" {
             return false;
         }
         
-        dbCsv_AppendCharToString(this, chr);
+        dbCsv_AppendCharW32ToString(this, chr);
         srcFile_InputAdvance(this->pSrc, 1);
         
         return true;
@@ -694,7 +694,7 @@ extern "C" {
 
 
 
-    int32_t         dbCsv_getFieldSeparator(
+    W32CHR_T        dbCsv_getFieldSeparator(
         DBCSV_DATA      *cbp
     )
     {
@@ -712,7 +712,7 @@ extern "C" {
     
     bool            dbCsv_setFieldSeparator(
         DBCSV_DATA      *cbp,
-        int32_t         value
+        W32CHR_T        value
     )
     {
 #ifdef NDEBUG
@@ -762,9 +762,9 @@ extern "C" {
     //           A p p e n d  T o k e n  T o  S t r i n g
     //--------------------------------------------------------------
     
-    ERESULT         dbCsv_AppendCharToString(
+    ERESULT         dbCsv_AppendCharW32ToString(
         DBCSV_DATA      *cbp,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         
@@ -1065,7 +1065,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

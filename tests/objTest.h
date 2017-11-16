@@ -1,25 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          WSTRARRAY Console Transmit Task (WStrArray) Header
+//          OBJTEST Console Transmit Task (objTest) Header
 //****************************************************************
 /*
  * Program
- *			Separate WStrArray (WStrArray)
+ *			Separate objTest (objTest)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate WStrArray to run things without complications
- *          of interfering with the main WStrArray. A WStrArray may be 
- *          called a WStrArray on other O/S's.
+ *			This object is used for testing only.  The methods
+ *          and functionality were needed by the regression
+ *          testing system.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal WStrArray. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	03/22/2016 Generated
+ *	11/01/2017 Generated
  */
 
 
@@ -54,14 +50,12 @@
 
 
 
-#include        <cmn_defs.h>
-#include        <objArray.h>
-#include        <str.h>
+#include        <test_defs.h>
 #include        <AStr.h>
 
 
-#ifndef         WSTRARRAY_H
-#define         WSTRARRAY_H
+#ifndef         OBJTEST_H
+#define         OBJTEST_H
 
 
 
@@ -74,7 +68,18 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-    // WSTRARRAY_DATA and WSTRARRAY_VTBL are defined in "cmn_defs.h"
+
+    typedef struct objTest_data_s	OBJTEST_DATA;    // Inherits from OBJ.
+
+    typedef struct objTest_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in objTest_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(OBJTEST_DATA *);
+    } OBJTEST_VTBL;
+
 
 
     /****************************************************************
@@ -86,12 +91,18 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    WSTRARRAY_DATA *     WStrArray_Alloc(
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to objTest object if successful, otherwise OBJ_NIL.
+     */
+    OBJTEST_DATA * objTest_Alloc(
         void
     );
     
     
-    WSTRARRAY_DATA *     WStrArray_New(
+    OBJTEST_DATA * objTest_New(
         void
     );
     
@@ -101,40 +112,42 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         objTest_getLastError(
+        OBJTEST_DATA	*this
+    );
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool        WStrArray_Disable(
-        WSTRARRAY_DATA		*this
+    OBJTEST_DATA *   objTest_Init(
+        OBJTEST_DATA     *this
     );
 
 
-    bool        WStrArray_Enable(
-        WSTRARRAY_DATA		*this
-    );
-
-   
-    WSTRARRAY_DATA *   WStrArray_Init(
-        WSTRARRAY_DATA     *this
-    );
-
-
-    bool        WStrArray_IsEnabled(
-        WSTRARRAY_DATA		*this
+    ERESULT         objTest_TestMethod01(
+        OBJTEST_DATA    *this,
+        OBJ_ID          pData
     );
     
- 
+    
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return    If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = objTest_ToDebugString(this,4);
+     @endcode 
+     @param     this    OBJTEST object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    WStrArray_ToDebugString(
-        WSTRARRAY_DATA     *this,
+    ASTR_DATA *     objTest_ToDebugString(
+        OBJTEST_DATA    *this,
         int             indent
     );
     
@@ -145,5 +158,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* WSTRARRAY_H */
+#endif	/* OBJTEST_H */
 

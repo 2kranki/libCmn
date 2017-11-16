@@ -868,7 +868,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -883,7 +883,7 @@ extern "C" {
         AStr_AppendA(pStr, str);
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent+5, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent+5, ' ');
         }
         AStr_AppendA(pStr, " ");
         for (x=0; x<(this->xMax/10); ++x) {
@@ -892,7 +892,7 @@ extern "C" {
         AStr_AppendA(pStr, "\n");
         for (x=1; x<=this->xMax; ++x) {
             if (indent) {
-                AStr_AppendCharRepeatW(pStr, indent+3, ' ');
+                AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
             }
             j = snprintf( str, sizeof(str), "%3d |", x );
             AStr_AppendA(pStr, str);
@@ -907,7 +907,7 @@ extern "C" {
             AStr_AppendA(pStr, "|\n");
         }
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf( str, sizeof(str), " %p}\n", this );
         AStr_AppendA(pStr, str);

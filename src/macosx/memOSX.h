@@ -226,6 +226,25 @@ memOSX_SharedReset()
     );
     
     
+    bool            memOSX_setLeakExit(
+        MEMOSX_DATA     *this,
+        P_VOIDEXIT1     rtn,
+        void            *pObject
+    );
+    
+    
+    const
+    char *          memOSX_getTitle(
+        MEMOSX_DATA     *this
+    );
+    
+    bool            memOSX_setTitle(
+        MEMOSX_DATA     *this,
+        const
+        char            *pValue
+    );
+    
+    
 
     
     //---------------------------------------------------------------

@@ -155,6 +155,16 @@ extern "C" {
     );
 
 
+    /*!
+     Pause the buffer flow releasing any tasks waiting to get/put data.
+     This is necessary especially just prior to termination since all
+     conditions and mutexes must be in an unlocked state.
+     */
+    bool            objCb_Pause(
+        OBJCB_DATA      *this
+    );
+    
+    
     // The object is retained when it is added to the circular
     // buffer.
     bool            objCb_Put(
@@ -163,6 +173,11 @@ extern "C" {
     );
 
 
+    bool            objCb_Resume(
+        OBJCB_DATA      *this
+    );
+    
+    
 
 #ifdef	__cplusplus
 }

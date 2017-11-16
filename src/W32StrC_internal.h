@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   WStrArray_internal.h
- *	Generated 03/22/2016 16:45:37
+ * File:   W32StrC_internal.h
+ *	Generated 02/19/2016 09:34:06
  *
  * Notes:
  *  --	N/A
@@ -37,13 +37,14 @@
 
 
 
-#include    <WStrArray.h>
-#include    <objArray_internal.h>
+
+#ifndef WSTRC_INTERNAL_H
+#define	WSTRC_INTERNAL_H
 
 
-#ifndef WSTRARRAY_INTERNAL_H
-#define	WSTRARRAY_INTERNAL_H
-
+#include    "W32StrC.h"
+#include    "AStr.h"
+#include    "utf8.h"
 
 
 #ifdef	__cplusplus
@@ -51,48 +52,79 @@ extern "C" {
 #endif
 
 
+  typedef struct W32StrC_vtbl_internal_s	{
+        W32STRC_VTBL       iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in WStrC_object.c.
+        // Properties:
+        // Methods:
+#ifdef NDEBUG
+#else
+        bool			(*pValidate)(W32STRC_DATA *);
+#endif
+    } W32STRC_VTBL_INTERNAL;
+
 
 
 #pragma pack(push, 1)
-struct WStrArray_data_s	{
+struct W32StrC_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJARRAY_DATA   super;
-    OBJ_DATA        *pObj;      // Needed for Inheritance
+    OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+#define W32STRC_FLAG_MALLOC 5
 
     // Common Data
-    uint16_t        size;		/* maximum number of elements           */
-    uint16_t        reserved;
-    OBJARRAY_DATA   *pArray;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    uint32_t        len;		// Number of chars excluding trailing NUL
+    const
+    W32CHR_T        *pArray;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct WStrArray_class_data_s	WStrArray_ClassObj;
+    struct W32StrC_class_data_s	W32StrC_ClassObj;
 
     extern
     const
-    WSTRARRAY_VTBL         WStrArray_Vtbl;
+    W32STRC_VTBL_INTERNAL W32StrC_Vtbl;
+
 
 
     // Internal Functions
-    void            WStrArray_Dealloc(
+    void            W32StrC_Dealloc(
         OBJ_ID          objId
     );
 
 
-
+    W32STRC_DATA *  W32StrC_Init(
+        W32STRC_DATA    *this
+    );
+    
+    W32STRC_DATA *  W32StrC_InitA(
+        W32STRC_DATA    *this,
+        const
+        char            *pStr
+    );
+    
+    W32STRC_DATA *  W32StrC_InitConW(
+        W32STRC_DATA    *this,
+        const
+        W32CHR_T        *pStr
+    );
+    
+    W32STRC_DATA *  W32StrC_InitW(
+        W32STRC_DATA    *this,
+        const
+        W32CHR_T        *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
-    bool			WStrArray_Validate(
-        WSTRARRAY_DATA       *cbp
+    bool			W32StrC_Validate(
+        W32STRC_DATA    *this
     );
 #endif
 
@@ -102,5 +134,5 @@ struct WStrArray_data_s	{
 }
 #endif
 
-#endif	/* WSTRARRAY_INTERNAL_H */
+#endif	/* WSTRC_INTERNAL_H */
 

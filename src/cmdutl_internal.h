@@ -80,6 +80,7 @@ struct cmdutl_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
+#define OBJ_FLAG_EOF        4           /* At EOF */
 
     // Common Data
     SRCFILE_DATA    *pSrc;
@@ -101,12 +102,12 @@ struct cmdutl_data_s	{
     // Field being built
     uint16_t        sizeFld;            // Size of pFld including NUL
     uint16_t        lenFld;             // Used Length in pFld excluding NUL
-    int32_t         *pFld;              // Work String
+    W32CHR_T        *pFld;              // Work String
     
     // Look-ahead Wide Char Input
     uint16_t        sizeInputs;
     uint16_t        curInputs;
-    int32_t         *pInputs;
+    W32CHR_T        *pInputs;
 
     // ArgC/ArgV Stuff
     int             cArg;               // Copy of Original Arguments
@@ -122,24 +123,24 @@ struct cmdutl_data_s	{
 
     // Internal Functions
     ERESULT         cmdutl_AppendCharToField(
-        CMDUTL_DATA      *cbp,
-        int32_t        chr
+        CMDUTL_DATA     *cbp,
+        W32CHR_T        chr
     );
     
     void            cmdutl_Dealloc(
         OBJ_ID          objId
     );
 
-    CMDUTL_DATA *     cmdutl_Init(
-        CMDUTL_DATA       *cbp
+    CMDUTL_DATA *   cmdutl_Init(
+        CMDUTL_DATA     *cbp
     );
     
-    int32_t         cmdutl_InputAdvance(
+    W32CHR_T        cmdutl_InputAdvance(
         CMDUTL_DATA       *cbp,
         uint16_t        numChrs
     );
     
-    int32_t         cmdutl_InputLookAhead(
+    W32CHR_T        cmdutl_InputLookAhead(
         CMDUTL_DATA       *cbp,
         uint16_t        num
     );
@@ -152,19 +153,19 @@ struct cmdutl_data_s	{
         CMDUTL_DATA       *cbp
     );
     
-    int32_t         cmdutl_ParseDigit0To9(
+    W32CHR_T        cmdutl_ParseDigit0To9(
         CMDUTL_DATA       *cbp
     );
     
-    int32_t         cmdutl_ParseDigit1To9(
+    W32CHR_T        cmdutl_ParseDigit1To9(
         CMDUTL_DATA       *cbp
     );
     
-    int32_t         cmdutl_ParseDigitHex(
+    W32CHR_T        cmdutl_ParseDigitHex(
         CMDUTL_DATA       *cbp
     );
     
-    int32_t         cmdutl_ParseDigitOctal(
+    W32CHR_T        cmdutl_ParseDigitOctal(
         CMDUTL_DATA       *cbp
     );
     
@@ -192,7 +193,7 @@ struct cmdutl_data_s	{
         CMDUTL_DATA       *cbp
     );
     
-    int32_t         cmdutl_UnicodeGetc(
+    W32CHR_T        cmdutl_UnicodeGetc(
         CMDUTL_DATA       *cbp
     );
     

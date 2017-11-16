@@ -54,6 +54,7 @@ struct true_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     uint16_t        size;		/* maximum number of elements           */
@@ -82,8 +83,7 @@ struct true_data_s	{
     void *          true_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
 #ifdef NDEBUG

@@ -73,8 +73,7 @@ struct false_data_s	{
     void *          false_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
 #ifdef NDEBUG

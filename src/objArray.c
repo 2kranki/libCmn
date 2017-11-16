@@ -59,57 +59,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    ERESULT         objArray_ExpandArray(
-        OBJARRAY_DATA   *this,
-        uint32_t        num
-    )
-    {
-        void            *pWork;
-        uint32_t        oldMax;
-        uint32_t        cbSize;
-        uint16_t        elemSize = sizeof(OBJ_DATA *);
-        
-        // Do initialization.
-        if( this == NULL )
-            return ERESULT_INVALID_OBJECT;
-        if (num < this->max) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
-        }
-        
-        // Expand the Array.
-        oldMax = this->max;
-        if (0 == oldMax) {
-            oldMax = 1;
-        }
-        this->max = oldMax << 1;
-        while (num > this->max) {
-            this->max = this->max << 1;
-        }
-        cbSize = this->max * elemSize;
-        pWork = (void *)mem_Malloc( cbSize );
-        if( NULL == pWork ) {
-            this->max = oldMax;
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Copy the old entries into the new array.
-        if( this->ppArray == NULL )
-            ;
-        else {
-            memmove( pWork, this->ppArray, (oldMax * elemSize) );
-            mem_Free( this->ppArray );
-            // cbp->pArray = NULL;
-        }
-        this->ppArray = pWork;
-        memset( &this->ppArray[oldMax], 0, ((this->max - oldMax) * elemSize) );
-        
-        // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
-    }
-    
-    
-    
 
 
 
@@ -188,7 +137,7 @@ extern "C" {
 #endif
         
         this->eRc = ERESULT_SUCCESS;
-        return this->size;
+        return array_getSize(this->pArray);
     }
 
 
@@ -273,15 +222,15 @@ extern "C" {
 #endif
         
         obj_Retain(pObject);
-        ++this->size;
-        eRc = objArray_ExpandArray(this, this->size);
-        if (ERESULT_HAS_FAILED(eRc)) {
+        eRc = array_AppendData(this->pArray, 1, &pObject);
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            return eRc;
+            obj_Release(pObject);
+            this->eRc = array_getLastError(this->pArray);
+            return this->eRc;
         }
-        this->ppArray[this->size-1] = (OBJ_DATA *)pObject;
         if (pIndex) {
-            *pIndex = this->size;
+            *pIndex = array_getSize(this->pArray);
         }
         
         // Return to caller.
@@ -301,7 +250,7 @@ extern "C" {
         OBJARRAY_DATA	*pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         OBJ_DATA        *pItem;
         OBJ_IUNKNOWN    *pVtbl;
@@ -318,7 +267,9 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
+        //FIXME: Restore this.
+#ifdef XYZZY
         // Release any objects that the Other Array has.
         for (i=0; i<pOther->size; ++i) {
             pItem = pOther->ppArray[i];
@@ -351,6 +302,7 @@ extern "C" {
             pOther->ppArray[i] = pItem;
         }
         pOther->size = this->size;
+#endif
         
         // Return to caller.
         this->eRc = eRc;
@@ -388,6 +340,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
+        //FIXME: Restore this.
+#ifdef XYZZY
         eRc = objArray_ExpandArray(pOther, this->max);
         if (ERESULT_HAS_FAILED(eRc)) {
             obj_Release(pOther);
@@ -406,10 +360,11 @@ extern "C" {
             }
             pOther->ppArray[i] = pItem;
         }
+#endif
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
-        return( pOther );
+        return pOther;
     }
     
     
@@ -424,6 +379,8 @@ extern "C" {
     {
         OBJARRAY_DATA   *this = objId;
         uint32_t        i;
+        uint32_t        iMax;
+        OBJ_ID          *ppObj;
 
         // Do initialization.
         if (NULL == this) {
@@ -437,21 +394,26 @@ extern "C" {
         }
 #endif
 
-        for (i=0; i<this->max; ++i) {
-            if (this->ppArray[i] && obj_getRetainCount(this->ppArray[i])) {
-                obj_Release(this->ppArray[i]);
-                this->ppArray[i] = OBJ_NIL;
+        iMax = array_getMax(this->pArray);
+        for (i=0; i<iMax; ++i) {
+            ppObj = array_Ptr(this->pArray, (i + 1));
+            if (NULL == *ppObj)
+                ;
+            else {
+                if (obj_getRetainCount(*ppObj)) {
+                    obj_Release(*ppObj);
+                    memset(ppObj, 0, sizeof(OBJ_ID));
+                }
             }
         }
         
-        mem_Free(this->ppArray);
-        this->ppArray = NULL;
-        this->max = 0;
-        this->size = 0;
+        obj_Release(this->pArray);
+        this->pArray = OBJ_NIL;
         
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc( this );
-        //this->pOBJ->iVtbl.pDealloc( this );  // Needed for Inheritance
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -469,7 +431,7 @@ extern "C" {
     )
     {
         OBJ_ID          pObj = OBJ_NIL;
-        uint32_t        i;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -478,14 +440,14 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        if (this->size)
+        if (array_getSize(this->pArray))
             ;
         else {
             DEBUG_BREAK();
             this->eRc = ERESULT_INVALID_PARAMETER;
             return OBJ_NIL;
         }
-        if (index && (index <= this->size))
+        if (index && (index <= array_getSize(this->pArray)))
             ;
         else {
             this->eRc = ERESULT_INVALID_PARAMETER;
@@ -493,14 +455,17 @@ extern "C" {
         }
 #endif
         
-        if (this->ppArray) {
-            pObj = this->ppArray[index-1];
-            if (index < this->size) {
-                for (i=(index-1); i<this->size; ++i) {
-                    this->ppArray[i] = this->ppArray[i+1];
-                }
+        if (this->pArray) {
+            eRc = array_Get(this->pArray, index, 1, &pObj);
+            if (ERESULT_FAILED(eRc)) {
+                this->eRc = ERESULT_DATA_NOT_FOUND;
+                return OBJ_NIL;
             }
-            --this->size;
+            eRc = array_Delete(this->pArray, index, 1);
+            if (ERESULT_FAILED(eRc)) {
+                this->eRc = ERESULT_GENERAL_FAILURE;
+                return OBJ_NIL;
+            }
         }
         
         this->eRc = ERESULT_SUCCESS;
@@ -513,7 +478,6 @@ extern "C" {
     )
     {
         OBJ_ID          pObj = OBJ_NIL;
-        uint32_t        i;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -522,7 +486,7 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        if (this->size)
+        if (array_getSize(this->pArray))
             ;
         else {
             DEBUG_BREAK();
@@ -530,16 +494,9 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+
+        pObj = objArray_Delete(this, 1);
         
-        if (this->ppArray) {
-            pObj = this->ppArray[0];
-            for (i=0; i<this->size; ++i) {
-                this->ppArray[i] = this->ppArray[i+1];
-            }
-            --this->size;
-        }
-        
-        this->eRc = ERESULT_SUCCESS;
         return pObj;
     }
     
@@ -558,7 +515,7 @@ extern "C" {
             this->eRc = ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
-        if (this->size)
+        if (array_getSize(this->pArray))
             ;
         else {
             DEBUG_BREAK();
@@ -567,13 +524,8 @@ extern "C" {
         }
 #endif
         
-        if (this->ppArray) {
-            --this->size;
-            pObj = this->ppArray[this->size];
-            this->ppArray[this->size] = OBJ_NIL;
-        }
+        pObj = objArray_Delete(this, array_getSize(this->pArray));
         
-        this->eRc = ERESULT_SUCCESS;
         return pObj;
     }
     
@@ -590,7 +542,7 @@ extern "C" {
         ERESULT         eRc;
         OBJENUM_DATA    *pEnum = OBJ_NIL;
         uint32_t        i;
-        OBJ_ID          pObj;
+        OBJ_ID          *ppObj;
 
         // Do initialization.
         if (NULL == this) {
@@ -604,10 +556,10 @@ extern "C" {
         }
 #endif
         
-        for (i=1; i<this->size; ++i) {
-            pObj = this->ppArray[i];
-            if (pObj) {
-                eRc = objEnum_Append(pEnum, pObj);
+        for (i=0; i<array_getSize(this->pArray); ++i) {
+            ppObj = array_Ptr(this->pArray, (i + 1));
+            if (*ppObj) {
+                eRc = objEnum_Append(pEnum, *ppObj);
             }
         }
         eRc = objArray_SortAscending(pEnum->pArray, NULL);
@@ -627,8 +579,9 @@ extern "C" {
         uint32_t        index       // Relative to 1
     )
     {
+        OBJ_ID          *ppObj = OBJ_NIL;
         OBJ_ID          pObj = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -637,7 +590,7 @@ extern "C" {
             this->eRc = ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
-        if (index && (index <= this->size))
+        if (index && (index <= array_getSize(this->pArray)))
             ;
         else {
             this->eRc = ERESULT_INVALID_PARAMETER;
@@ -645,10 +598,11 @@ extern "C" {
         }
 #endif
         
-        if (this->ppArray) {
-            pObj = this->ppArray[index-1];
+        ppObj = array_Ptr(this->pArray, index);
+        if (ppObj && *ppObj) {
+            pObj = *ppObj;
         }
-        
+
         this->eRc = ERESULT_SUCCESS;
         return pObj;
     }
@@ -669,11 +623,14 @@ extern "C" {
         }
 #endif
         
+        //FIXME: Now
+#ifdef XYZZY
         if (this->ppArray) {
             if (this->size) {
                 pObj = this->ppArray[0];
             }
         }
+#endif
         
         this->eRc = ERESULT_SUCCESS;
         return pObj;
@@ -695,11 +652,14 @@ extern "C" {
         }
 #endif
         
+        //FIXME: Now
+#ifdef XYZZY
         if (this->ppArray) {
             if (this->size) {
                 pObj = this->ppArray[this->size-1];
             }
         }
+#endif
         
         this->eRc = ERESULT_SUCCESS;
         return pObj;
@@ -711,8 +671,8 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA *   objArray_Init(
-        OBJARRAY_DATA       *this
+    OBJARRAY_DATA * objArray_Init(
+        OBJARRAY_DATA   *this
     )
     {
         uint32_t        cbSize = sizeof(OBJARRAY_DATA);
@@ -742,8 +702,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objArray_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->elemSize = sizeof(OBJ_ID);
+        this->pArray = array_New(this->elemSize);
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -784,7 +749,7 @@ extern "C" {
             this->eRc = ERESULT_INVALID_PARAMETER;
             return ERESULT_INVALID_PARAMETER;
         }
-        if (index <= this->size) {
+        if (index <= array_getSize(this->pArray)) {
         }
         else {
             return ERESULT_OUT_OF_RANGE;
@@ -792,20 +757,13 @@ extern "C" {
 #endif
         
         obj_Retain(pObject);
-        ++this->size;
-        eRc = objArray_ExpandArray(this, this->size);
-        if (ERESULT_HAS_FAILED(eRc)) {
-            DEBUG_BREAK();
-            return eRc;
+
+        eRc = array_InsertData(this->pArray, index, 1, &pObject);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pObject);
+            this->eRc = ERESULT_GENERAL_FAILURE;
+            return ERESULT_GENERAL_FAILURE;
         }
-        if (index < this->size) {
-            memmove(
-                    &this->ppArray[index+1],
-                    &this->ppArray[index],
-                    ((this->size - index) * sizeof(OBJ_ID))
-            );
-        }
-        this->ppArray[index] = (OBJ_DATA *)pObject;
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -825,7 +783,8 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+        OBJ_ID          pOld;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -844,21 +803,18 @@ extern "C" {
 #endif
         
         obj_Retain(pObj);
-        if (index > this->max) {
-            eRc = objArray_ExpandArray(this, index);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                DEBUG_BREAK();
-                this->eRc = eRc;
-                return eRc;
-            }
-        }
-        this->size = (index > this->size) ? index : this->size;
 
-        if (this->ppArray[index - 1]) {
-            obj_Release(this->ppArray[index - 1]);
-            //this->ppArray[index - 1] = OBJ_NIL;
+        pOld = objArray_Get(this, index);
+        if (pOld) {
+            obj_Release(pOld);
         }
-        this->ppArray[index - 1] = (OBJ_DATA *)pObj;
+
+        eRc = array_Put(this->pArray, index, 1, &pObj);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            this->eRc = eRc;
+            return eRc;
+        }
         
         this->eRc = ERESULT_SUCCESS;
         return this->eRc;
@@ -875,6 +831,9 @@ extern "C" {
     )
     {
         ERESULT         eRc;
+        OBJ_ID          *ppObj;
+        OBJ_ID          pObj1 = OBJ_NIL;
+        OBJ_ID          pObj2;
         uint32_t        i;
         uint32_t        j;
         OBJ_ID          pSave;
@@ -899,8 +858,21 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        
+        if (array_getSize(this->pArray) < 2) {
+            this->eRc = ERESULT_SUCCESS;
+            return ERESULT_SUCCESS;
+        }
+        
         if (NULL == pCompare) {
-            pUnk = obj_getVtbl(this->ppArray[0]);
+            ppObj = array_Ptr(this->pArray, 1);
+            if (ppObj) {
+                pObj1 = *ppObj;
+            }
+            if (OBJ_NIL == pObj1) {
+                return ERESULT_INVALID_OBJECT;
+            }
+            pUnk = obj_getVtbl(pObj1);
             if (pUnk)
                 pCompare = pUnk->pCompare;
             if (pCompare == NULL) {
@@ -908,19 +880,18 @@ extern "C" {
             }
         }
         
-        if (this->size < 2) {
-            this->eRc = ERESULT_SUCCESS;
-            return ERESULT_SUCCESS;
-        }
-        
-        for (i=1; i<this->size; ++i) {
+        for (i=1; i<array_getSize(this->pArray); ++i) {
             j = i;
             while (j > 0) {
-                eRc = (*pCompare)(this->ppArray[j-1], this->ppArray[j]);
+                ppObj = array_Ptr(this->pArray, j);
+                pObj1 = *ppObj;
+                ++ppObj;
+                pObj2 = *ppObj;
+                eRc = (*pCompare)(pObj1, pObj2);
                 if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                    pSave = this->ppArray[j-1];
-                    this->ppArray[j-1] = this->ppArray[j];
-                    this->ppArray[j] = pSave;
+                    *ppObj = pObj1;
+                    --ppObj;
+                    *ppObj = pObj2;
                     --j;
                 }
                 else
@@ -950,14 +921,15 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
         uint32_t        i;
         OBJ_IUNKNOWN    *pEntry;
-        
+        OBJ_ID          *ppObj;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -969,14 +941,15 @@ extern "C" {
             );
         AStr_AppendA(pStr, str);
 
-        if (this->ppArray) {
-            for (i=0; i<this->max; ++i) {
-                AStr_AppendCharRepeatW(pStr, indent+3, ' ');
+        if (this->pArray) {
+            for (i=0; i<array_getSize(this->pArray); ++i) {
+                AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
                 str[0] = '\0';
                 j = snprintf(str, sizeof(str), "%d\n", i+1);
                 AStr_AppendA(pStr, str);
-                if (this->ppArray[i]) {
-                    pEntry = (OBJ_IUNKNOWN *)this->ppArray[i];
+                ppObj = array_Ptr(this->pArray, (i + 1));
+                if (*ppObj) {
+                    pEntry = (OBJ_IUNKNOWN *)*ppObj;
                     if (((OBJ_DATA *)(pEntry))->pVtbl->pToDebugString) {
                         pWrkStr =   ((OBJ_DATA *)(pEntry))->pVtbl->pToDebugString(
                                                         pEntry,
@@ -987,7 +960,7 @@ extern "C" {
                     }
                 }
                 else {
-                    AStr_AppendCharRepeatW(pStr, indent+6, ' ');
+                    AStr_AppendCharRepeatW32(pStr, indent+6, ' ');
                     AStr_AppendA(pStr, "NULL\n");
                 }
             }
@@ -1017,7 +990,7 @@ extern "C" {
         }
         this->eRc = ERESULT_INVALID_OBJECT;
         if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_OBJARRAY) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_OBJARRAY) )
                 ;
             else {
                 return false;

@@ -188,8 +188,10 @@ extern "C" {
        
         ERESULT_BUSY                        = -256,
         ERESULT_NOT_BUSY                    = -257,
-        ERESULT_TIMEOUT                     = -258,
-        ERESULT_SHARING_VIOLATION           = -259,
+        ERESULT_SHARING_VIOLATION           = -258,
+        ERESULT_STOPPING                    = -259,
+        ERESULT_STOPPED                     = -260,
+        ERESULT_TIMEOUT                     = -261,
         
         ERESULT_USER_START                  = -1024    /* First code for user usage */
         

@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   WStrC_internal.h
- *	Generated 02/19/2016 09:34:06
+ * File:   msgData_internal.h
+ *	Generated 11/04/2017 09:37:49
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,13 +39,12 @@
 
 
 
-#ifndef WSTRC_INTERNAL_H
-#define	WSTRC_INTERNAL_H
+#include    <msgData.h>
 
 
-#include    "WStrC.h"
-#include    "AStr.h"
-#include    "utf8.h"
+#ifndef MSGDATA_INTERNAL_H
+#define	MSGDATA_INTERNAL_H
+
 
 
 #ifdef	__cplusplus
@@ -52,79 +52,74 @@ extern "C" {
 #endif
 
 
-  typedef struct WStrC_vtbl_internal_s	{
-        WSTRC_VTBL         iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in WStrC_object.c.
-        // Properties:
-        // Methods:
-#ifdef NDEBUG
-#else
-        bool			(*pValidate)(WSTRC_DATA *);
-#endif
-    } WSTRC_VTBL_INTERNAL;
 
 
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
 
-#pragma pack(push, 1)
-struct WStrC_data_s	{
+ #pragma pack(push, 1)
+struct msgData_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define WSTRC_FLAG_MALLOC 5
 
     // Common Data
-    uint32_t        len;		// Number of chars excluding trailing NUL
-    const
-    int32_t         *pArray;
+    ERESULT         eRc;
+    uint32_t        origin;         // Origin Number
+    uint32_t        dest;           // Destination Number (0 == general broadcast)
+    uint32_t        num32;          // 
+    uint16_t        size;		    // Message Size
+    uint16_t        reserved;
+    uint8_t         data[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct WStrC_class_data_s	WStrC_ClassObj;
+    struct msgData_class_data_s  msgData_ClassObj;
 
     extern
     const
-    WSTRC_VTBL_INTERNAL WStrC_Vtbl;
+    MSGDATA_VTBL         msgData_Vtbl;
 
 
 
-    // Internal Functions
-    void            WStrC_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            msgData_setLastError(
+        MSGDATA_DATA     *this,
+        ERESULT         value
+    );
+
+
+    void            msgData_Dealloc(
         OBJ_ID          objId
     );
 
 
-    WSTRC_DATA *    WStrC_Init(
-        WSTRC_DATA      *this
+    void *          msgData_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
     );
-    
-    WSTRC_DATA *    WStrC_InitA(
-        WSTRC_DATA      *this,
-        const
-        char            *pStr
+
+
+    ASTR_DATA *     msgData_ToJSON(
+        MSGDATA_DATA      *this
     );
-    
-    WSTRC_DATA *    WStrC_InitConW(
-        WSTRC_DATA      *this,
-        const
-        int32_t         *pStr
-    );
-    
-    WSTRC_DATA *    WStrC_InitW(
-        WSTRC_DATA      *this,
-        const
-        int32_t         *pStr
-    );
-    
-    
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			WStrC_Validate(
-        WSTRC_DATA       *cbp
+    bool			msgData_Validate(
+        MSGDATA_DATA       *this
     );
 #endif
 
@@ -134,5 +129,5 @@ struct WStrC_data_s	{
 }
 #endif
 
-#endif	/* WSTRC_INTERNAL_H */
+#endif	/* MSGDATA_INTERNAL_H */
 

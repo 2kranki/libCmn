@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'json'
-//	Generated 01/28/2016 13:49:21
+//	Class Object Metods and Tables for 'msgData'
+//	Generated 11/04/2017 09:37:49
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,9 @@
  */
 
 
-#include        "obj.h"
-#include        "json_internal.h"
+
+#define			MSGDATA_OBJECT_C	    1
+#include        <msgData_internal.h>
 
 
 
@@ -40,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct json_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct msgData_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct json_class_data_s JSON_CLASS_DATA;
+typedef struct msgData_class_data_s MSGDATA_CLASS_DATA;
 
 
 
@@ -61,22 +62,22 @@ typedef struct json_class_data_s JSON_CLASS_DATA;
 
 static
 const
-OBJ_INFO        json_Info;            // Forward Reference
+OBJ_INFO        msgData_Info;            // Forward Reference
 
 
 
-OBJ_ID          json_Class(
+OBJ_ID          msgData_Class(
     void
 );
 
 
 
 static
-bool            json_ClassIsKindOf(
+bool            msgData_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_JSON_CLASS == classID) {
+    if (OBJ_IDENT_MSGDATA_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -91,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_JSON_CLASS;
+    return OBJ_IDENT_MSGDATA_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&json_Info,
-    json_ClassIsKindOf,
+	&msgData_Info,
+    msgData_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -113,21 +114,20 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
 const
-JSON_CLASS_DATA  json_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_JSON_CLASS, 0, 1},
+MSGDATA_CLASS_DATA  msgData_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_MSGDATA_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            json_IsKindOf(
+bool            msgData_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_JSON == classID) {
+    if (OBJ_IDENT_MSGDATA == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,56 +139,64 @@ bool            json_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            json_Dealloc(
+void            msgData_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          json_Class(
+OBJ_ID          msgData_Class(
     void
 )
 {
-    return (OBJ_ID)&json_ClassObj;
+    return (OBJ_ID)&msgData_ClassObj;
 }
 
 
 static
-uint16_t		json_WhoAmI(
+uint16_t		msgData_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_JSON;
+    return OBJ_IDENT_MSGDATA;
 }
 
 
 const
-OBJ_IUNKNOWN    json_Vtbl = {
-	&json_Info,
-    json_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    json_Dealloc,
-    json_Class,
-    json_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
-    (P_OBJ_TOSTRING)json_ToDebugString,
-    NULL,			// json_Enable,
-    NULL,			// json_Disable,
-    NULL,			// (P_OBJ_ASSIGN)json_Assign,
-    NULL,			// (P_OBJ_COMPARE)json_Compare,
-    NULL, 			// (P_OBJ_PTR)json_Copy,
-    NULL 			// (P_OBJ_HASH)json_Hash
+MSGDATA_VTBL     msgData_Vtbl = {
+    {
+        &msgData_Info,
+        msgData_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        msgData_Dealloc,
+        msgData_Class,
+        msgData_WhoAmI,
+        (P_OBJ_QUERYINFO)msgData_QueryInfo,
+        (P_OBJ_TOSTRING)msgData_ToDebugString,
+        NULL,			// msgData_Enable,
+        NULL,			// msgData_Disable,
+        NULL,			// (P_OBJ_ASSIGN)msgData_Assign,
+        NULL,			// (P_OBJ_COMPARE)msgData_Compare,
+        NULL, 			// (P_OBJ_PTR)msgData_Copy,
+        NULL 			// (P_OBJ_HASH)msgData_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //msgData_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        json_Info = {
-    "json",
-    "json file input",		
-    (OBJ_DATA *)&json_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+OBJ_INFO        msgData_Info = {
+    "msgData",
+    "Message Data",
+    (OBJ_DATA *)&msgData_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&msgData_Vtbl
 };
 
 

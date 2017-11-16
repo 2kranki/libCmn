@@ -56,6 +56,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <enum.h>
 #include        <node.h>
 
 
@@ -218,6 +219,16 @@ extern "C" {
     );
     
     
+    /*! Create an enumerator for the array.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+                 OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    ENUM_DATA *     nodeArray_Enum(
+        NODEARRAY_DATA  *this
+    );
+    
+    
     /*!
      Find the first occurrence of a node in the array by name.
      @return    If successful, ERESULT_SUCCESSFUL_COMPLETION is returned and
@@ -261,6 +272,7 @@ extern "C" {
      objects within it.
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     nodeArray_ToDebugString(
         NODEARRAY_DATA	*this,

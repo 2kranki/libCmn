@@ -78,6 +78,12 @@ struct AStr_data_s	{
         OBJ_ID          objId
     );
 
+    void *          AStr_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
 #ifdef NDEBUG
 #else
     bool			AStr_Validate(

@@ -131,8 +131,8 @@ extern "C" {
         uint32_t        crc;
         uint32_t        chkCrc;
         uint32_t        length = 0;
-        char            *pData = NULL;
-        char            *pChrOut;
+        //char            *pData = NULL;
+        //char            *pChrOut;
         int32_t         chrW;
         ASTR_DATA       *pStrOut = OBJ_NIL;
         
@@ -322,7 +322,7 @@ extern "C" {
                         goto exit00;
                     }
                     chrW = (int32_t)dec_getInt64A(AStr_getData(pStr));
-                    AStr_AppendCharW(pStrOut, chrW);
+                    AStr_AppendCharW32(pStrOut, chrW);
                 }
             }
             else if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null")) {
@@ -471,12 +471,12 @@ extern "C" {
             AStr_AppendA(pStr, ", \"data\":[");
             pChr = pData;
             for (i=0; i<(len-1); ++i) {
-                chrW = utf8_Utf8ToWC_Scan(&pChr);
+                chrW = utf8_Utf8ToW32_Scan(&pChr);
                 AStr_Int64ToChrClean(chrW, chrs);
                 AStr_AppendA(pStr, chrs);
                 AStr_AppendA(pStr, ",");
             }
-            chrW = utf8_Utf8ToWC_Scan(&pChr);
+            chrW = utf8_Utf8ToW32_Scan(&pChr);
             AStr_Int64ToChrClean(chrW, chrs);
             AStr_AppendA(pStr, chrs);
             AStr_AppendA(pStr, "] ");

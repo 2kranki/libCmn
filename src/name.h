@@ -71,10 +71,10 @@ extern "C" {
     typedef enum name_type_e {
         NAME_TYPE_UNKNOWN=0,
         NAME_TYPE_INTEGER,          // int64_t
-        NAME_TYPE_PTR,              // void *
+        NAME_TYPE_OBJ,              // OBJ_ID
         NAME_TYPE_UTF8,             // UTF-8 NUL-terminated String
         NAME_TYPE_UTF8_CON,         // UTF-8 NUL-terminated String Constant
-        NAME_TYPE_WSTR,             // WStr Object
+        NAME_TYPE_ASTR,             // AStr Object
     } NAME_TYPE;
     
     
@@ -125,17 +125,12 @@ extern "C" {
         int64_t         value
     );
     
-    NAME_DATA *     name_NewPtr(
-        const
-        void            *pValue
+    NAME_DATA *     name_NewObj(
+        OBJ_ID          pValue
     );
     
     NAME_DATA *     name_NewStrA(
         ASTR_DATA       *pValue
-    );
-    
-    NAME_DATA *     name_NewStrW(
-        WSTR_DATA       *pValue
     );
     
     NAME_DATA *     name_NewUTF8(
@@ -154,18 +149,18 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         name_getLastError(
-        NAME_DATA     *this
+    /*!
+     Get the name value as an integer if it was defined as an int.
+     @return    If successful, the integer value an AStr object which must be released,
+     otherwise OBJ_NIL.
+     */
+    int64_t         name_getInt(
+        NAME_DATA       *this
     );
     
     
-    /*!
-     Get the name value if it is a ptr.
-     @return    If successful, void ptr, otherwise NULL.
-     */
-    const
-    void *          name_getPtr(
-        NAME_DATA       *this
+    ERESULT         name_getLastError(
+        NAME_DATA     *this
     );
     
     
@@ -175,16 +170,6 @@ extern "C" {
                  otherwise OBJ_NIL.
      */
     ASTR_DATA *     name_getStrA(
-        NAME_DATA       *this
-    );
-    
-    
-    /*!
-     Get the name value as a WStr object.
-     @return    If successful, an WStr object which must be released,
-                 otherwise OBJ_NIL.
-     */
-    WSTR_DATA *     name_getStrW(
         NAME_DATA       *this
     );
     
@@ -256,10 +241,9 @@ extern "C" {
     );
 
 
-    NAME_DATA *   name_InitPtr(
+    NAME_DATA *   name_InitObj(
         NAME_DATA       *this,
-        const
-        void            *pValue
+        OBJ_ID          pValue
     );
     
     
@@ -320,10 +304,11 @@ extern "C" {
     
     
     /*!
-     Create a string that describes this object and the
-     objects within it.
+     Get the name value as a string object.
      @return    If successful, an AStr object which must be released,
                  otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object when you are done
+                 with it.
      */
     ASTR_DATA *     name_ToString(
         NAME_DATA       *this
@@ -334,6 +319,8 @@ extern "C" {
      Get the name value as a UTF-8 string.
      @return    If successful, a UTF-8 string which must be freed
                 using mem_Free(), otherwise NULL.
+     @warning   Remember to free the returned string when you are done
+                 with it.
      */
     char *          name_ToUTF8(
         NAME_DATA       *this

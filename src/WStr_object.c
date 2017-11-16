@@ -31,9 +31,9 @@
  */
 
 
-#include        "obj.h"
-#include        "WStr_internal.h"
-#include        "pwr2Array_internal.h"
+#include        <obj.h>
+#include        <WStr_internal.h>
+#include        <array_internal.h>
 
 
 
@@ -80,7 +80,7 @@ bool            WStr_ClassIsKindOf(
     if (OBJ_IDENT_WSTR_CLASS == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_ARRAY_CLASS == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -134,7 +134,7 @@ bool            WStr_IsKindOf(
     if (OBJ_IDENT_WSTR == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
+    if (OBJ_IDENT_ARRAY == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -203,7 +203,7 @@ OBJ_INFO        WStr_Info = {
     "WStr",
     "Wide String (int32)",		
     (OBJ_DATA *)&WStr_ClassObj,
-    (OBJ_DATA *)&pwr2Array_ClassObj
+    (OBJ_DATA *)&array_ClassObj
 };
 
 

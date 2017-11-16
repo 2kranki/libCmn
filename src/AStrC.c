@@ -41,8 +41,10 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "AStrC_internal.h"
-#include "utf8.h"
+#include <AStrC_internal.h>
+#include <AStr_internal.h>
+#include <crc.h>
+#include <utf8.h>
 #include <stdio.h>
 
 
@@ -116,19 +118,49 @@ extern "C" {
     }
 
     
-    ASTRC_DATA *   AStrC_NewW(
+    ASTRC_DATA *   AStrC_NewW32(
         const
-        int32_t        *pStr
+        W32CHR_T       *pStr
     )
     {
-        ASTRC_DATA      *this;
+        ASTRC_DATA     *this;
         
         this = AStrC_Alloc( );
         if (this) {
-            this = AStrC_InitW( this, pStr );
+            this = AStrC_InitW32( this, pStr );
         }
         return( this );
     }
+
+    
+    // FIXME: AStrC_NewFromUtf8File
+#ifdef XYZZY
+    ASTRC_DATA *    AStrC_NewFromUtf8File(
+        PATH_DATA       *pPath
+    )
+    {
+        ASTRC_DATA      *this =  OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+        if (OBJ_NIL == pPath) {
+            return this;
+        }
+        
+        this = AStrC_New( );
+        if (this) {
+            eRc = AStrC_AppendUtf8File(this, pPath);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return this;
+    }
+#endif
+    
     
     
 
@@ -136,6 +168,32 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    uint32_t        AStrC_getCrcIEEE(
+        ASTRC_DATA       *this
+    )
+    {
+        CRC_DATA        *pCrc = OBJ_NIL;
+        uint32_t        crc = 0;
+        uint32_t        len;
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        pCrc = crc_New(CRC_TYPE_IEEE_32);
+        len = (uint32_t)utf8_StrLenChars(this->pData);
+        crc = crc_AccumBlock(pCrc, len, (void *)this->pData);
+        obj_Release(pCrc);
+        pCrc = OBJ_NIL;
+        
+        return  crc;
+    }
+    
+    
+    
     const
     char *          AStrC_getData(
         ASTRC_DATA     *this
@@ -151,12 +209,12 @@ extern "C" {
         }
 #endif
         
-        return this->pArray;
+        return this->pData;
     }
     
     
 
-    uint32_t        AStrC_getLength(
+    uint32_t        AStrC_getDataLength(
         ASTRC_DATA       *this
     )
     {
@@ -166,7 +224,67 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        return this->len;
+        return  (uint32_t)utf8_StrLenChars(this->pData);
+        
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         AStrC_getLastError(
+        ASTRC_DATA      *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            AStrC_setLastError(
+        ASTRC_DATA      *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
+    uint32_t        AStrC_getLength(
+        ASTRC_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        return  (uint32_t)utf8_StrLenA(this->pData);
+
     }
 
 
@@ -179,6 +297,185 @@ extern "C" {
     //===============================================================
 
 
+    //---------------------------------------------------------------
+    //                       A p p e n d
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStrC_Append(
+        ASTRC_DATA      *this,
+        ASTRC_DATA      *pOther
+    )
+    {
+        ASTRC_DATA      *pNew = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            //AStrC_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pOther) || !(obj_IsKindOf(pOther, OBJ_IDENT_ASTRC))) {
+            DEBUG_BREAK();
+            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNew = AStrC_AppendA(this, pOther->pData);
+        
+        // Return to caller.
+        //AStrC_setLastError(this, eRc);
+        return pNew;
+    }
+    
+    
+    ASTRC_DATA *    AStrC_AppendA(
+        ASTRC_DATA      *this,
+        const
+        char            *pStr
+    )
+    {
+        uint32_t        len;
+        uint32_t        lenData;
+        uint32_t        lenStr;
+        char            *pData;
+        ASTRC_DATA      *pOther;
+
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            //AStrC_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if (NULL == pStr) {
+            DEBUG_BREAK();
+            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = AStrC_New( );
+        if (OBJ_NIL == pOther) {
+            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        // This depends on the fact that a new AStrC object
+        // doesn't have any data internally.
+        
+        // Get the data area needed.
+        lenStr = (uint32_t)utf8_StrLenChars(pStr);
+        if (0 == lenStr) {
+            AStrC_setLastError(this, ERESULT_DATA_NOT_FOUND);
+            obj_Release(pOther);
+            return OBJ_NIL;
+        }
+        lenData = this->len;
+        len = lenStr + lenData + 1;
+        pData = mem_Malloc(len);
+        if (NULL == pData) {
+            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            obj_Release(pOther);
+            return OBJ_NIL;
+        }
+
+        // Copy the data to the new area.
+        memmove(pData, this->pData, lenData);
+        memmove(pData+lenData, pStr, lenStr);
+        pData[lenData+lenStr] = '\0';
+        
+        // Now place the data in the new AStrC.
+        pOther->pData = pData;
+        pOther->len = lenStr + lenData;
+        obj_FlagOn(pOther, ASTRC_FLAG_MALLOC);
+
+        // Return to caller.
+        AStrC_setLastError(this, ERESULT_SUCCESS);
+        return pOther;
+    }
+    
+    
+    ASTRC_DATA *    AStrC_AppendStrA(
+        ASTRC_DATA      *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ASTRC_DATA      *pNew = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( OBJ_NIL == pStr ) {
+            DEBUG_BREAK();
+            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNew = AStrC_AppendA(this, AStr_getData(pStr));
+        
+        // Return to caller.
+        return pNew;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    A p p e n d  F i l e
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStrC_AppendUtf8File(
+        ASTRC_DATA      *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        wint_t          chr;
+        FILE            *pFile;
+        ASTRC_DATA      *pNew = OBJ_NIL;
+
+        /* Do Initialization.
+         */
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( (OBJ_NIL == pPath) || !(obj_IsKindOf(pPath, OBJ_IDENT_PATH)) ) {
+            DEBUG_BREAK();
+            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pFile = fopen(path_getData(pPath), "r");
+        if (NULL == pFile) {
+            //FIXME: return ERESULT_FILE_NOT_FOUND;
+        }
+        while ( (chr = fgetwc(pFile)) != EOF ) {
+            //FIXME: eRc = AStr_AppendCharRepeatW(this, 1, chr);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                //FIXME: return eRc;
+            }
+        }
+        fclose(pFile);
+        pFile = NULL;
+        
+        return pNew;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       C o m p a r e
     //---------------------------------------------------------------
@@ -209,8 +506,8 @@ extern "C" {
         }
         
         i = utf8_StrCmp(
-                        this->pArray,
-                        pOther->pArray
+                        this->pData,
+                        pOther->pData
             );
         if( i < 0 )
             eRc = ERESULT_SUCCESS_LESS_THAN;
@@ -245,7 +542,7 @@ extern "C" {
 #endif
         
         i = utf8_StrCmp(
-                this->pArray,
+                this->pData,
                 pData
             );
         if( i < 0 )
@@ -258,10 +555,10 @@ extern "C" {
     }
     
     
-    ERESULT         AStrC_CompareW(
+    ERESULT         AStrC_CompareW32(
         ASTRC_DATA		*this,
         const
-        int32_t         *pData
+        W32CHR_T        *pData
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
@@ -280,8 +577,8 @@ extern "C" {
         }
 #endif
         
-        i = utf8_StrCmpAW(
-                this->pArray,
+        i = utf8_StrCmpAW32(
+                this->pData,
                 pData
             );
         if( i < 0 )
@@ -345,13 +642,13 @@ extern "C" {
 #endif
 
         if (obj_IsFlag(this, ASTRC_FLAG_MALLOC)) {
-            if (this->pArray) {
-                mem_Free((void *)this->pArray);
-                this->pArray = NULL;
+            if (this->pData) {
+                mem_Free((void *)this->pData);
+                this->pData = NULL;
             }
         }
         else {
-            this->pArray = NULL;
+            this->pData = NULL;
         }
 
         obj_Dealloc( this );
@@ -379,8 +676,8 @@ extern "C" {
         }
 #endif
         
-        if (this->pArray) {
-            hash = str_HashAcmA( this->pArray, NULL );
+        if (this->pData) {
+            hash = str_HashAcmA( this->pData, NULL );
         }
         
         return hash;
@@ -457,23 +754,23 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pArray = utf8_StrDup(pStr);
-        if (NULL == this->pArray) {
+        this->pData = utf8_StrDup(pStr);
+        if (NULL == this->pData) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->len = utf8_StrLenA(this->pArray);
+        this->len = utf8_StrLenA(this->pData);
         obj_FlagOn(this, ASTRC_FLAG_MALLOC);
         
         return this;
     }
     
     
-    ASTRC_DATA *    AStrC_InitW(
+    ASTRC_DATA *    AStrC_InitW32(
         ASTRC_DATA      *this,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         uint32_t        len;
@@ -484,7 +781,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        len = utf8_StrLenW(pStr);
+        len = utf8_StrLenW32(pStr);
         
         this = (ASTRC_DATA *)AStrC_Init( this );
         if (OBJ_NIL == this) {
@@ -493,7 +790,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        lenChars = utf8_WCToUtf8Str( len, pStr, 0, NULL );
+        lenChars = utf8_W32ToUtf8Str( len, pStr, 0, NULL );
         if (lenChars) {
             pStr8 = mem_Malloc(lenChars);
             if (OBJ_NIL == pStr8) {
@@ -501,8 +798,8 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            utf8_WCToUtf8Str( len, pStr, lenChars, pStr8 );
-            this->pArray = pStr8;
+            utf8_W32ToUtf8Str( len, pStr, lenChars, pStr8 );
+            this->pData = pStr8;
             this->len = len;
             obj_FlagOn(this, ASTRC_FLAG_MALLOC);
         }
@@ -540,6 +837,74 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          M i d
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStrC_Mid(
+        ASTRC_DATA      *this,
+        uint32_t        offset,
+        uint32_t        len
+    )
+    {
+        uint32_t        lenStr;
+        uint32_t        offBgn;
+        uint32_t        offEnd;
+        char            *pData;
+        ASTRC_DATA      *pOther = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            //AStrC_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if ((offset > 0) && (offset < this->len))
+            ;
+        else {
+            DEBUG_BREAK();
+            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return pOther;
+        }
+        if ((0 == this->len) || ((offset + len - 1) > this->len)) {
+            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return pOther;
+        }
+#endif
+        offBgn = utf8_StrOffset(this->pData, offset);
+        offEnd = utf8_StrOffset(this->pData, (offset + len)) - 1;
+        lenStr = offEnd - offBgn + 1;
+
+        pData = mem_Malloc(lenStr + 1);
+        if (pData) {
+            memmove(pData, (this->pData + offBgn - 1), lenStr);
+            pData[lenStr] = '\0';
+        }
+        else {
+            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return pOther;
+        }
+        
+        pOther = AStrC_New();
+        if (pOther) {
+            pOther->pData = pData;
+            obj_FlagOn(pOther, ASTRC_FLAG_MALLOC);
+        }
+        else {
+            mem_Free(pData);
+            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return pOther;
+        }
+        
+        // Return to caller.
+        AStrC_setLastError(this, ERESULT_SUCCESS);
+        return pOther;
+    }
+
+
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -561,7 +926,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -570,7 +935,7 @@ extern "C" {
                      "{%p(AStrC) len=%d  data=%s ",
                      this,
                      AStrC_getLength(this),
-                     this->pArray
+                     this->pData
             );
         AStr_AppendA(pStr, str);
 
@@ -630,7 +995,7 @@ extern "C" {
     )
     {
         if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_ASTRC) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_ASTRC) )
                 ;
             else
                 return false;

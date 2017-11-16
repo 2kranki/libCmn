@@ -75,10 +75,10 @@ extern "C" {
     {
         int             len;
         int             i;
-        int32_t         wc;
+        W32CHR_T        wc;
         
         for (;;) {
-            len = utf8_Utf8ToWC(*insp, &wc);
+            len = utf8_Utf8ToW32(*insp, &wc);
             if (len == -1) {    // *** Malformed UTF-8 Char ***
                 return 0;
             }
@@ -324,20 +324,20 @@ extern "C" {
         int             len;
         int             lenName;
         int             i;
-        int32_t         cw;
-        int32_t         mcw;
-        int32_t         mcwn;
-        int32_t         ncw;
+        W32CHR_T        cw;
+        W32CHR_T        mcw;
+        W32CHR_T        mcwn;
+        W32CHR_T        ncw;
         int             flag;
         bool            fRc;
         
-        len = utf8_Utf8ToWC(pPattern, &mcw);
+        len = utf8_Utf8ToW32(pPattern, &mcw);
         if (len == -1) {    // *** Malformed Unicode Char ***
             return false;
         }
         pPattern += len;
         for (;;) {		/* Corresponding char */
-            len = utf8_Utf8ToWC(pName, &cw);
+            len = utf8_Utf8ToW32(pName, &cw);
             if (len == -1) {    // *** Malformed Unicode Char ***
                 return false;
             }
@@ -351,16 +351,16 @@ extern "C" {
                 case '?':				// '?' matches any single char
                     if (pEquiv) {
                         if (misc_CopyText(&pEquiv, &pNewname)) {
-                            len = utf8_WCToUtf8(cw, pNewname);
+                            len = utf8_W32ToUtf8(cw, pNewname);
                             pNewname += len;
-                            len = utf8_Utf8ToWC(pPattern, &mcwn);
+                            len = utf8_Utf8ToW32(pPattern, &mcwn);
                             if (mcwn != '?') {
-                                len = utf8_Utf8ToWC(pEquiv, NULL);
+                                len = utf8_Utf8ToW32(pEquiv, NULL);
                                 pEquiv += len;
                             }
                         }
                     }
-                    len = utf8_Utf8ToWC(pPattern, &mcw);
+                    len = utf8_Utf8ToW32(pPattern, &mcw);
                     if (len == -1) {    // *** Malformed Unicode Char ***
                         return false;
                     }
@@ -375,7 +375,7 @@ extern "C" {
                     }
                     len = 0;
                     if (flag && pEquiv) {
-                        len = utf8_Utf8ToWC(pEquiv, NULL);
+                        len = utf8_Utf8ToW32(pEquiv, NULL);
                     }
                     fRc = misc_PatternMatchA(
                                      (pName - lenName), // Backup one char
@@ -386,15 +386,15 @@ extern "C" {
                     if ( fRc )
                         return true;
                     if (flag) {
-                        len = utf8_WCToUtf8(cw, pNewname);
+                        len = utf8_W32ToUtf8(cw, pNewname);
                         pNewname += len;
                     }
                     break;
                     
                 default:				/* Anything else matches only itself */
-                    if (ascii_toUpperW(mcw) != ascii_toUpperW(cw))
+                    if (ascii_toUpperW32(mcw) != ascii_toUpperW32(cw))
                         return false;
-                    len = utf8_Utf8ToWC(pPattern, &mcw);
+                    len = utf8_Utf8ToW32(pPattern, &mcw);
                     if (len == -1) {    // *** Malformed Unicode Char ***
                         return false;
                     }
@@ -408,7 +408,7 @@ extern "C" {
         }
         if (pEquiv) {
             while (misc_CopyText(&pEquiv, &pNewname)) {
-                len = utf8_Utf8ToWC(pEquiv, NULL);
+                len = utf8_Utf8ToW32(pEquiv, NULL);
                 pEquiv += len;
             }
             *pNewname = '\0';
@@ -648,6 +648,60 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          misc_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        MISC_DATA       *this = objId;
+        const
+        char            *pStr = pData;
+
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !misc_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return misc_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -669,7 +723,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

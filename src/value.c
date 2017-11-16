@@ -931,8 +931,9 @@ extern "C" {
         value_FreeData(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -1310,12 +1311,13 @@ extern "C" {
     void *          value_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
-        VALUE_DATA   *this = objId;
-        
+        VALUE_DATA      *this = objId;
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1366,7 +1368,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -1410,7 +1412,7 @@ extern "C" {
               
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1436,7 +1438,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(value)}\n", this);
         AStr_AppendA(pStr, str);

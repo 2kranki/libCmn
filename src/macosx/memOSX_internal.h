@@ -105,6 +105,11 @@ struct memOSX_data_s	{
     // Common Data
     LISTDL_DATA		blockList;
     bool			fDebugMemory;
+    void            *pLeakExitObject;
+    P_VOIDEXIT1     pLeakExit;          // Only called in memOSX_Dealloc if leaks are
+    //                                  // present.
+    const
+    char            *pTitle;
 
 };
 #pragma pack(pop)

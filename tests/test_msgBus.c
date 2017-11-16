@@ -22,9 +22,10 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <msgBus_internal.h>
-#include    <execPtr.h>
+#include    <msgData_internal.h>
+#include    <objTest_internal.h>
 
 
 #define NUM_OBJ      4
@@ -58,50 +59,6 @@ char        *StrArray[NUM_STR] = {
 
 
 
-typedef struct buffer_entry_s {
-    const
-    char            *pObj;
-    const
-    char            *pMsg;
-} BUFFER_ENTRY;
-
-
-
-
-// Output Queue is written by the separate task.
-static
-BUFFER_ENTRY    outputQueue[NUM_STR * (NUM_OBJ * 2)] = {0};
-static
-int             outputQueueEnd = -1;
-
-
-
-static
-void            addOutput(const char *pObj, const char *pMsg)
-{
-    
-    ++outputQueueEnd;
-    outputQueue[outputQueueEnd].pObj = pObj;
-    outputQueue[outputQueueEnd].pMsg = pMsg;
-    
-}
-
-
-
-void        printMsg(
-    void        *pObj,
-    void        **ppMsg
-)
-{
-    fprintf(stderr, "    Rcvd for: %s   msg: %s\n", pObj, *ppMsg);
-    addOutput(pObj, *ppMsg);
-}
-
-
-
-
-
-
 int         setUp(
     const
     char        *pTestName
@@ -114,6 +71,7 @@ int         setUp(
     
     return 1; 
 }
+
 
 
 int         tearDown(
@@ -144,57 +102,71 @@ int             test_msgBus_Broadcast01(
     MSGBUS_DATA	    *pObj = OBJ_NIL;
     ERESULT         eRc;
     int             i;
-    EXECPTR_DATA    *pFunc = OBJ_NIL;
+    int             iMax;
+    OBJMETHOD_DATA  *pMethod = OBJ_NIL;
+    OBJTEST_DATA    *pTest = OBJ_NIL;
+    int32_t         token = 0;
+    MSGDATA_DATA    *pData = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    pTest = objTest_New();
+    TINYTEST_FALSE( (OBJ_NIL == pTest) );
     pObj = msgBus_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = msgBus_Init( pObj, sizeof(const char *), 4 );
+    pObj = msgBus_Init(pObj, 20);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     obj_TraceSet(pObj, true);
     if (pObj) {
 
-        printf("Registering Receivers...\n");
+        printf("Registering %d Receivers...\n", NUM_OBJ);
+        // The test receivers just accumulate the messages in the order
+        // that they are received into one large array.
         for (i=0; i<NUM_OBJ; ++i) {
-            pFunc = execPtr_New(&printMsg);
-            eRc = msgBus_Register(pObj, (void *)pFunc, StrObj[i]);
+            pMethod = objMethod_NewObjectA(pTest, "TestMethod01");
+            TINYTEST_FALSE( (OBJ_NIL == pMethod) );
+            eRc = msgBus_RegisterObjectMethod(pObj, pMethod, &token);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            obj_Release(pFunc);
-            pFunc = OBJ_NIL;
+            printf("  Registered %2d...\n", token);
+            obj_Release(pMethod);
+            pMethod = OBJ_NIL;
         }
         TINYTEST_TRUE( (msgBus_getRegistrySize(pObj) == NUM_OBJ) );
 
-        printf("Broadcasting to all Receivers...\n");
+        printf("Broadcasting %d messages to all Receivers...\n", NUM_STR);
         for (i=0; i<NUM_STR; ++i) {
-            printf("  Broadcasting %s...\n", StrArray[i]);
-            eRc = msgBus_Broadcast(pObj, (void *)0, (void *)&StrArray[i]);
+            printf("  Broadcasting %2d - %s...\n", i+1, StrArray[i]);
+            eRc = msgBus_Broadcast(pObj, 1, 0, (strlen(StrArray[i]) + 1), (void *)StrArray[i]);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
 
-        psxThread_Wait(10000);
+        printf("\n\nWaiting a little to give broadcast a little time.\n");
+        psxThread_Wait(2000);
         printf("\n\n\n");
-        printf("Output Queue(%d):\n", outputQueueEnd+1);
-        for (i=0; i<outputQueueEnd+1; ++i) {
-            BUFFER_ENTRY    *pEntry = &outputQueue[i];
-            if (pEntry->pObj) {
-                printf("  %2d %s - %s\n", i, pEntry->pObj, pEntry->pMsg);
+
+        // Display the array as mentioned above.
+        iMax = objArray_getSize(pTest->pArray);
+        printf("Output Queue(%d):\n", iMax);
+        printf("   i num origin dest len text\n");
+        for (i=0; i<iMax; ++i) {
+            pData = objArray_Get(pTest->pArray, i+1);
+            if (pData) {
+                printf("  %2d %2d    %2d    %2d   %2d %s\n",
+                       i,
+                       msgData_getNum32(pData),
+                       msgData_getOrigin(pData),
+                       msgData_getDestination(pData),
+                       msgData_getSize(pData),
+                       msgData_getData(pData)
+                );
             }
         }
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
 
-        psxThread_Wait(10000);
-        printf("\n\n\n");
-        printf("Output Queue(%d):\n", outputQueueEnd+1);
-        for (i=0; i<outputQueueEnd+1; ++i) {
-            BUFFER_ENTRY    *pEntry = &outputQueue[i];
-            if (pEntry->pObj) {
-                printf("  %2d %s - %s\n", i, pEntry->pObj, pEntry->pMsg);
-            }
-        }
-        
     }
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;

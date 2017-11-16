@@ -152,6 +152,7 @@ extern "C" {
                 return false;
             }
             obj_Release(pEntry);
+            //pEntry = OBJ_NIL;
         }
         else {
             return false;
@@ -738,10 +739,7 @@ extern "C" {
         else {
             return ERESULT_GENERAL_FAILURE;
         }
-#endif
         
-        
-#if     defined(__MACOSX_ENV__)
         pEntry = dirEntry_Alloc();
         pEntry = dirEntry_Init(pEntry);
         if( OBJ_NIL == pEntry ) {
@@ -808,7 +806,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

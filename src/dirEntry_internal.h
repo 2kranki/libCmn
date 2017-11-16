@@ -99,8 +99,7 @@ struct dirEntry_data_s	{
     void *          dirEntry_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

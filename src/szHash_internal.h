@@ -85,9 +85,9 @@ struct szHash_data_s	{
     // Compare two keys returning -1 if key1 < key2, 0 if key1 == key2,
     // 1 if key1 > key2
     int             (*pCompare)(const char *pKey1,const char *pKey2);
-    int             (*pCompareAW)(const char *pKey1,const int32_t *pKey2);
+    int             (*pCompareAW32)(const char *pKey1,const W32CHR_T *pKey2);
     uint32_t        (*pComputeHash)(const char *pszKey1, size_t *pLen);
-    uint32_t        (*pComputeHashW)(const int32_t *pszKey1, size_t *pLen);
+    uint32_t        (*pComputeHashW32)(const W32CHR_T *pszKey1, size_t *pLen);
     
     // Hash Table Variables
     uint32_t        unique;

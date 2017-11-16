@@ -24,6 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <psxCond_internal.h>
+#include    <psxMutex_internal.h>
 
 
 
@@ -67,11 +68,15 @@ int         test_psxLock_OpenClose(
 {
     PSXCOND_DATA	*pObj = OBJ_NIL;
     bool            fRc;
-   
+    PSXMUTEX_DATA   *pMutex = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
+    pMutex = psxMutex_New();
+    XCTAssertFalse( (OBJ_NIL == pMutex) );
+
     pObj = psxCond_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = psxCond_Init( pObj, NULL, NULL );
+    pObj = psxCond_Init(pObj, pMutex);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -92,6 +97,8 @@ int         test_psxLock_OpenClose(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+    obj_Release(pMutex);
+    pMutex = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;

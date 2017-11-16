@@ -131,11 +131,11 @@ int             str_Compare(
 }
 
 
-int             str_CompareW(
+int             str_CompareW32(
     const
-    int32_t			*pszStr1,
+    W32CHR_T		*pszStr1,
     const
-    int32_t			*pszStr2
+    W32CHR_T		*pszStr2
 )
 {
     int32_t         i;
@@ -176,11 +176,11 @@ int             str_CompareW(
 }
 
 
-int             str_CompareNW(
+int             str_CompareNW32(
     const
-    int32_t			*pszStr1,
+    W32CHR_T		*pszStr1,
     const
-    int32_t			*pszStr2,
+    W32CHR_T		*pszStr2,
     uint32_t        len
 )
 {
@@ -361,25 +361,25 @@ char *          str_DupA(
 
 
 //----------------------------------------------------------
-//        str_DupW - Create a new copy of a string
+//        str_DupW32 - Create a new copy of a string
 //----------------------------------------------------------
 
-int32_t *       str_DupW(
+W32CHR_T *      str_DupW32(
     const
-    int32_t         *pszIn          /* Input String Pointer */
+    W32CHR_T        *pszIn          /* Input String Pointer */
 )
 {
     int             i;
-    int32_t			*pszOut;		/* Output Buffer Pointer */
-    int32_t			*pszCur;		/* Output Buffer Pointer */
+    W32CHR_T		*pszOut;		/* Output Buffer Pointer */
+    W32CHR_T		*pszCur;		/* Output Buffer Pointer */
     size_t          outLen;			/* Output Buffer Length */
     
     // Do initialization.
     if( NULL == pszIn )
         return NULL;
     
-    outLen = str_LengthW( pszIn );
-    pszOut = (int32_t *)mem_Malloc( (outLen + 1) * sizeof(int32_t) );
+    outLen = str_LengthW32( pszIn );
+    pszOut = (W32CHR_T *)mem_Malloc( (outLen + 1) * sizeof(W32CHR_T) );
     if( NULL == pszOut )
         return NULL;
     pszCur = pszOut;
@@ -631,9 +631,9 @@ uint32_t        str_HashA(
 }
 
 
-uint32_t        str_HashW(
+uint32_t        str_HashW32(
     const
-    int32_t         *pszIn,             /* Input String Ptr */
+    W32CHR_T        *pszIn,             /* Input String Ptr */
     size_t          *pLength            /* Returned Length if not NULL */
 )
 {
@@ -703,9 +703,9 @@ uint32_t        str_HashAcmA(
 }
 
 
-uint32_t        str_HashAcmW(
+uint32_t        str_HashAcmW32(
     const
-    int32_t         *pszIn,             /* Input String Ptr */
+    W32CHR_T        *pszIn,             /* Input String Ptr */
     size_t          *pLength            /* Returned Length if not NULL */
 )
 {
@@ -870,9 +870,9 @@ size_t          str_LengthA(
 }
 
 
-size_t          str_LengthW(
+size_t          str_LengthW32(
     const
-    int32_t			*pszIn			/* Input String Pointer */
+    W32CHR_T		*pszIn			/* Input String Pointer */
 )
 {
     int             i = 0;
@@ -1190,11 +1190,11 @@ char *          str_ToLowerA(
 }
 
 
-int32_t *       str_ToLowerW(
-    int32_t			*pszIn			/* Input String Pointer */
+W32CHR_T *      str_ToLowerW32(
+    W32CHR_T		*pszIn			/* Input String Pointer */
 )
 {
-    int32_t         *pFirst = pszIn;
+    W32CHR_T        *pFirst = pszIn;
     
     // Validate the input parameters.
     if( NULL == pszIn )
@@ -1238,11 +1238,11 @@ char *          str_ToUpperA(
 }
 
 
-int32_t *       str_ToUpperW(
-    int32_t			*pszIn			/* Input String Pointer */
+W32CHR_T *      str_ToUpperW32(
+    W32CHR_T		*pszIn			/* Input String Pointer */
 )
 {
-    int32_t         *pFirst = pszIn;
+    W32CHR_T        *pFirst = pszIn;
     
     // Validate the input parameters.
     if( NULL == pszIn )

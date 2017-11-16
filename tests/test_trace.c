@@ -49,8 +49,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
-    mem_Dump( );
+    trace_SharedReset( );
     mem_Release( );
     
     return 1; 
@@ -74,7 +73,7 @@ int         test_trace_OpenClose(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     TINYTEST_TRUE( (obj_getRetainCount(pObj) == 1) );
     fprintf(stderr, "pObj = %p\n", pObj);
-    fprintf(stderr, "pLock = %p\n", pObj->pLock);
+    fprintf(stderr, "pLock = %p\n", &pObj->lock);
     if (pObj) {
 
         // Should not be displayed

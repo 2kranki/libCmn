@@ -1037,12 +1037,13 @@ extern "C" {
     void *          u16Matrix_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         U16MATRIX_DATA  *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1078,7 +1079,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -1212,7 +1213,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1227,7 +1228,7 @@ extern "C" {
         AStr_AppendA(pStr, str);
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent+5, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent+5, ' ');
         }
         AStr_AppendA(pStr, " ");
         for (i=0; i<(this->m/10); ++i) {
@@ -1236,7 +1237,7 @@ extern "C" {
         AStr_AppendA(pStr, "\n");
         for (i=1; i<=this->m; ++i) {
             if (indent) {
-                AStr_AppendCharRepeatW(pStr, indent+3, ' ');
+                AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
             }
             j = snprintf( str, sizeof(str), "%2d |", i );
             AStr_AppendA(pStr, str);
@@ -1249,7 +1250,7 @@ extern "C" {
             AStr_AppendA(pStr, " |\n");
         }
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf( str, sizeof(str), " %p}\n", this );
         AStr_AppendA(pStr, str);

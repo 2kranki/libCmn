@@ -1025,7 +1025,7 @@ extern "C" {
               
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1056,7 +1056,7 @@ extern "C" {
             size = this->pBlock->cbSize + sizeof(DATA_BLOCK);
             while (size) {
                 if (indent) {
-                    AStr_AppendCharRepeatW(pStr, indent+3, ' ');
+                    AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
                 }
                 j = hex_put16BytesObj_64(
                                          pHex,
@@ -1078,7 +1078,7 @@ extern "C" {
         
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(blkdrcds16)}\n", this);
         AStr_AppendA(pStr, str);

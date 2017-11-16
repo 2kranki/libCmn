@@ -124,10 +124,10 @@ extern "C" {
     );
     
     
-    PATH_DATA *     path_NewW(
+    PATH_DATA *     path_NewW32(
         uint32_t        len,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     

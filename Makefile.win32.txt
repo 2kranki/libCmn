@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/17/2017 13:40:56.000)
+# (11/14/2017 18:01:14.000)
 
 
 LIBNAM=libCmn
@@ -36,11 +36,10 @@ OBJS =
 OBJS = $(OBJS) $(OBJDIR)\AStr.obj $(OBJDIR)\AStr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\AStrArray.obj $(OBJDIR)\AStrArray_object.obj
 OBJS = $(OBJS) $(OBJDIR)\AStrC.obj $(OBJDIR)\AStrC_object.obj
+OBJS = $(OBJS) $(OBJDIR)\W32StrC.obj $(OBJDIR)\W32StrC_object.obj
 OBJS = $(OBJS) $(OBJDIR)\WStr.obj $(OBJDIR)\WStr_object.obj
-OBJS = $(OBJS) $(OBJDIR)\WStrArray.obj $(OBJDIR)\WStrArray_object.obj
-OBJS = $(OBJS) $(OBJDIR)\WStrC.obj $(OBJDIR)\WStrC_object.obj
 OBJS = $(OBJS) $(OBJDIR)\appl.obj $(OBJDIR)\appl_object.obj
-OBJS = $(OBJS) $(OBJDIR)\arrayExpand.obj $(OBJDIR)\arrayExpand_object.obj
+OBJS = $(OBJS) $(OBJDIR)\array.obj $(OBJDIR)\array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ascii.obj $(OBJDIR)\ascii_object.obj
 OBJS = $(OBJS) $(OBJDIR)\audioCW.obj $(OBJDIR)\audioCW_object.obj
 OBJS = $(OBJS) $(OBJDIR)\audioWAV.obj $(OBJDIR)\audioWAV_object.obj
@@ -74,7 +73,6 @@ OBJS = $(OBJS) $(OBJDIR)\ebcdic.obj $(OBJDIR)\ebcdic_object.obj
 OBJS = $(OBJS) $(OBJDIR)\endian.obj $(OBJDIR)\endian_object.obj
 OBJS = $(OBJS) $(OBJDIR)\enum.obj $(OBJDIR)\enum_object.obj
 OBJS = $(OBJS) $(OBJDIR)\execArray.obj $(OBJDIR)\execArray_object.obj
-OBJS = $(OBJS) $(OBJDIR)\execPtr.obj $(OBJDIR)\execPtr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\false.obj $(OBJDIR)\false_object.obj
 OBJS = $(OBJS) $(OBJDIR)\fbsi.obj $(OBJDIR)\fbsi_object.obj
 OBJS = $(OBJS) $(OBJDIR)\fbso.obj $(OBJDIR)\fbso_object.obj
@@ -84,13 +82,13 @@ OBJS = $(OBJS) $(OBJDIR)\greg.obj $(OBJDIR)\greg_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hash32.obj $(OBJDIR)\hash32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hex.obj $(OBJDIR)\hex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hjson.obj $(OBJDIR)\hjson_object.obj
-OBJS = $(OBJS) $(OBJDIR)\json.obj $(OBJDIR)\json_object.obj
 OBJS = $(OBJS) $(OBJDIR)\jsonOut.obj $(OBJDIR)\jsonOut_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lexj.obj $(OBJDIR)\lexj_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lru.obj $(OBJDIR)\lru_object.obj
 OBJS = $(OBJS) $(OBJDIR)\misc.obj $(OBJDIR)\misc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\msgBus.obj $(OBJDIR)\msgBus_object.obj
+OBJS = $(OBJS) $(OBJDIR)\msgData.obj $(OBJDIR)\msgData_object.obj
 OBJS = $(OBJS) $(OBJDIR)\name.obj $(OBJDIR)\name_object.obj
 OBJS = $(OBJS) $(OBJDIR)\node.obj $(OBJDIR)\node_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeATree.obj $(OBJDIR)\nodeATree_object.obj
@@ -111,6 +109,7 @@ OBJS = $(OBJS) $(OBJDIR)\objEnum.obj $(OBJDIR)\objEnum_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objHash.obj $(OBJDIR)\objHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objList.obj $(OBJDIR)\objList_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objMatrix.obj $(OBJDIR)\objMatrix_object.obj
+OBJS = $(OBJS) $(OBJDIR)\objMethod.obj $(OBJDIR)\objMethod_object.obj
 OBJS = $(OBJS) $(OBJDIR)\path.obj $(OBJDIR)\path_object.obj
 OBJS = $(OBJS) $(OBJDIR)\plist.obj $(OBJDIR)\plist_object.obj
 OBJS = $(OBJS) $(OBJDIR)\prt.obj $(OBJDIR)\prt_object.obj
@@ -276,18 +275,18 @@ test_AStrC:
 	$(OBJDIR)\$(@F).exe
 
 
-TESTS = $(TESTS) test_WStrArray
+TESTS = $(TESTS) test_W32StrC
 
-test_WStrArray:
-	$(CC) $(CFLAGS) /Itests tests\test_WStrArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+test_W32StrC:
+	$(CC) $(CFLAGS) /Itests tests\test_W32StrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
 
-TESTS = $(TESTS) test_WStrC
+TESTS = $(TESTS) test_WStr
 
-test_WStrC:
-	$(CC) $(CFLAGS) /Itests tests\test_WStrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+test_WStr:
+	$(CC) $(CFLAGS) /Itests tests\test_WStr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -300,10 +299,10 @@ test_appl:
 	$(OBJDIR)\$(@F).exe
 
 
-TESTS = $(TESTS) test_arrayExpand
+TESTS = $(TESTS) test_array
 
-test_arrayExpand:
-	$(CC) $(CFLAGS) /Itests tests\test_arrayExpand.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+test_array:
+	$(CC) $(CFLAGS) /Itests tests\test_array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -399,7 +398,7 @@ test_btp:
 TESTS = $(TESTS) test_cb
 
 test_cb:
-	$(CC) $(CFLAGS) /Itests tests\test_cb.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	$(CC) $(CFLAGS) /Itests tests\test_cb.c tests\objTest.c tests\objTest_object.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -440,14 +439,6 @@ TESTS = $(TESTS) test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) /Itests tests\test_cloOpt.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
-	del *.obj
-	$(OBJDIR)\$(@F).exe
-
-
-TESTS = $(TESTS) test_cmdutl
-
-test_cmdutl:
-	$(CC) $(CFLAGS) /Itests tests\test_cmdutl.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -572,14 +563,6 @@ test_execArray:
 	$(OBJDIR)\$(@F).exe
 
 
-TESTS = $(TESTS) test_execPtr
-
-test_execPtr:
-	$(CC) $(CFLAGS) /Itests tests\test_execPtr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
-	del *.obj
-	$(OBJDIR)\$(@F).exe
-
-
 TESTS = $(TESTS) test_false
 
 test_false:
@@ -632,14 +615,6 @@ TESTS = $(TESTS) test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) /Itests tests\test_hjson.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
-	del *.obj
-	$(OBJDIR)\$(@F).exe
-
-
-TESTS = $(TESTS) test_json
-
-test_json:
-	$(CC) $(CFLAGS) /Itests tests\test_json.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -703,7 +678,15 @@ test_misc:
 TESTS = $(TESTS) test_msgBus
 
 test_msgBus:
-	$(CC) $(CFLAGS) /Itests tests\test_msgBus.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	$(CC) $(CFLAGS) /Itests tests\test_msgBus.c tests\objTest.c tests\objTest_object.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_msgData
+
+test_msgData:
+	$(CC) $(CFLAGS) /Itests tests\test_msgData.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -839,7 +822,7 @@ test_objArray:
 TESTS = $(TESTS) test_objCb
 
 test_objCb:
-	$(CC) $(CFLAGS) /Itests tests\test_objCb.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	$(CC) $(CFLAGS) /Itests tests\test_objCb.c tests\objTest.c tests\objTest_object.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -872,6 +855,22 @@ TESTS = $(TESTS) test_objMatrix
 
 test_objMatrix:
 	$(CC) $(CFLAGS) /Itests tests\test_objMatrix.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objMethod
+
+test_objMethod:
+	$(CC) $(CFLAGS) /Itests tests\test_objMethod.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_objTest
+
+test_objTest:
+	$(CC) $(CFLAGS) /Itests tests\test_objTest.c tests\objTest.c tests\objTest_object.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -1168,14 +1167,6 @@ TESTS = $(TESTS) test_wav
 
 test_wav:
 	$(CC) $(CFLAGS) /Itests tests\test_wav.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
-	del *.obj
-	$(OBJDIR)\$(@F).exe
-
-
-TESTS = $(TESTS) test_wstr
-
-test_wstr:
-	$(CC) $(CFLAGS) /Itests tests\test_wstr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

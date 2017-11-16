@@ -79,6 +79,9 @@ bool            false_ClassIsKindOf(
     if (OBJ_IDENT_FALSE_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_SHARED_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -130,7 +133,10 @@ bool            false_IsKindOf(
     if (OBJ_IDENT_FALSE == classID) {
        return true;
     }
-    if (OBJ_IDENT_OBJ == classID) {
+    if (OBJ_IDENT_SHARED == classID) {
+        return true;
+    }
+   if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
     return false;
@@ -168,7 +174,7 @@ FALSE_VTBL      false_Vtbl = {
         false_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        NULL,
+        NULL,           // Dealloc
         false_Class,
         false_WhoAmI,
         false_QueryInfo,      

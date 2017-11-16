@@ -142,17 +142,17 @@ int         test_AStr_OpenClose(
         XCTAssertTrue( (8 == AStr_getLength(pObj)) );
         XCTAssertTrue( (0 == strcmp("abcdefzz", AStr_getData(pObj))) );
         
-        eRc = AStr_AppendCharRepeatW( pObj, 2, 'y' );
+        eRc = AStr_AppendCharRepeatW32( pObj, 2, 'y' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (10 == AStr_getLength(pObj)) );
         XCTAssertTrue( (0 == strcmp("abcdefzzyy", AStr_getData(pObj))) );
         
-        eRc = AStr_CharPutW( pObj, 2, 'x' );
+        eRc = AStr_CharPutW32( pObj, 2, 'x' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (10 == AStr_getLength(pObj)) );
         XCTAssertTrue( (0 == strcmp("axcdefzzyy", AStr_getData(pObj))) );
         
-        eRc = AStr_CharPutW( pObj, 2, 'b' );
+        eRc = AStr_CharPutW32( pObj, 2, 'b' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (10 == AStr_getLength(pObj)) );
         XCTAssertTrue( (0 == strcmp("abcdefzzyy", AStr_getData(pObj))) );
@@ -171,19 +171,19 @@ int         test_AStr_OpenClose(
         eRc = AStr_CompareA(pObj, "zzzzzz");
         XCTAssertTrue( (ERESULT_SUCCESS_LESS_THAN == eRc) );
         
-        chrW = AStr_CharGetW( pObj, 0 );
+        chrW = AStr_CharGetW32( pObj, 0 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (-1 == chrW) );
         
-        chrW = AStr_CharGetW( pObj, 1 );
+        chrW = AStr_CharGetW32( pObj, 1 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( ('a' == chrW) );
         
-        chrW = AStr_CharGetW( pObj, 6 );
+        chrW = AStr_CharGetW32( pObj, 6 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( ('f' == chrW) );
         
-        chrW = AStr_CharGetW( pObj, 7 );
+        chrW = AStr_CharGetW32( pObj, 7 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (-1 == chrW) );
         
@@ -325,7 +325,7 @@ int         test_AStr_AppendPrint01(
     if (pObj) {
         
         eRc = AStr_AppendPrint(pObj, "%03d,%03d", 54, 113);
-        fprintf(stderr, "pObj=%s\n",AStr_getData(pObj));
+        fprintf(stderr, "pObj=%s\n", AStr_getData(pObj));
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (7 == AStr_getLength(pObj)) );
         XCTAssertTrue( (0 == strcmp("054,113", AStr_getData(pObj))) );
@@ -406,26 +406,26 @@ int         test_AStr_CharFindNext(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         index = 0;      // Start at the beginning.
-        eRc = AStr_CharFindNextW(pObj, &index, 'x');
+        eRc = AStr_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (1 == index) );
         
         ++index;
-        eRc = AStr_CharFindNextW(pObj, &index, 'x');
+        eRc = AStr_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (5 == index) );
         
         ++index;
-        eRc = AStr_CharFindNextW(pObj, &index, 'x');
+        eRc = AStr_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == index) );
         
         ++index;
-        eRc = AStr_CharFindNextW(pObj, &index, 'x');
+        eRc = AStr_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_HAS_FAILED(eRc)) );
         XCTAssertTrue( (0 == index) );
         
-        eRc = AStr_CharReplaceAllW(pObj, 'x', 'y');
+        eRc = AStr_CharReplaceAllW32(pObj, 'x', 'y');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (10 == AStr_getLength(pObj)) );
         XCTAssertTrue( (0 == strcmp("yABCyDEFyG", AStr_getData(pObj))) );
@@ -461,17 +461,17 @@ int         test_AStr_CharFindPrev(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         index = 0;      // Start at the beginning.
-        eRc = AStr_CharFindPrevW(pObj, &index, 'x');
+        eRc = AStr_CharFindPrevW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == index) );
         
         --index;
-        eRc = AStr_CharFindPrevW(pObj, &index, 'x');
+        eRc = AStr_CharFindPrevW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (5 == index) );
         
         --index;
-        eRc = AStr_CharFindPrevW(pObj, &index, 'x');
+        eRc = AStr_CharFindPrevW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (1 == index) );
         
@@ -875,7 +875,7 @@ int         test_AStr_ToChrCon01(
     
     pObj = AStr_NewA("def");
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    eRc = AStr_AppendCharW(pObj, 0x0414);   // Cyrillic Capital D
+    eRc = AStr_AppendCharW32(pObj, 0x0414);   // Cyrillic Capital D
     XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
     eRc = AStr_AppendCharA(pObj, '\n');
     fprintf(stderr, "inputLen=%d\n", AStr_getLength(pObj));

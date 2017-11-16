@@ -146,37 +146,37 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t    psxThread_getErrno(
+    uint32_t        psxThread_getErrno(
         PSXTHREAD_DATA	*this
     );
     
-    bool        psxThread_setErrno(
+    bool            psxThread_setErrno(
         PSXTHREAD_DATA	*this,
         uint32_t        value
     );
     
     
-    bool        psxThread_getPause(
+    bool            psxThread_getPause(
         PSXTHREAD_DATA	*this
     );
     
-    bool        psxThread_setRoutine(
+    bool            psxThread_setRoutine(
         PSXTHREAD_DATA	*this,
         void *          (*pStartRoutine)(void *),
         void            *routineData
     );
     
     
-    uint32_t    psxThread_getState(
+    uint32_t        psxThread_getState(
         PSXTHREAD_DATA	*this
     );
 
     
-    bool        psxThread_getTerminate(
+    bool            psxThread_getTerminate(
         PSXTHREAD_DATA	*this
     );
     
-    bool        psxThread_setTerminate(
+    bool            psxThread_setTerminate(
         PSXTHREAD_DATA	*this,
         bool            value
     );
@@ -201,7 +201,7 @@ extern "C" {
     /*!
      Cancel the Thread waiting for it to end.
      */
-    bool        psxThread_Cancel(
+    bool            psxThread_Cancel(
         PSXTHREAD_DATA	*this
     );
     
@@ -228,7 +228,7 @@ extern "C" {
     );
     
     
-    bool        psxThread_IsPaused(
+    bool            psxThread_IsPaused(
         PSXTHREAD_DATA	*this
     );
     

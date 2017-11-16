@@ -323,12 +323,13 @@ extern "C" {
     void *          greg_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         GREG_DATA       *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -364,7 +365,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     

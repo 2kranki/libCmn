@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   execPtr_internal.h
- *	Generated 10/07/2017 12:40:01
+ * File:   objMethod_internal.h
+ *	Generated 10/28/2017 08:51:04
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,11 @@
 
 
 
-#include    <execPtr.h>
+#include    <objMethod.h>
 
 
-#ifndef EXECPTR_INTERNAL_H
-#define	EXECPTR_INTERNAL_H
+#ifndef OBJMETHOD_INTERNAL_H
+#define	OBJMETHOD_INTERNAL_H
 
 
 
@@ -59,7 +59,7 @@ extern "C" {
     //---------------------------------------------------------------
 
  #pragma pack(push, 1)
-struct execPtr_data_s	{
+struct objMethod_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -67,19 +67,24 @@ struct execPtr_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    void            (*pFunc)(void);
-    ASTR_DATA       *pDesc;
+    OBJ_ID          *pObject;       // Object Pointer
+    void            *pMethod;       // Method Pointer
+    ASTR_DATA       *pObjectName;   // Object Name as provided in objInfo
+    ASTR_DATA       *pMethodName;   // Method Name which must be available
+    //                              // the object's QueryInfo method
+    ASTR_DATA       *pDesc;         // Optional Description
+    uint32_t        user32;         // Optional 32-bit User Data
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct execPtr_class_data_s  execPtr_ClassObj;
+    struct objMethod_class_data_s  objMethod_ClassObj;
 
     extern
     const
-    EXECPTR_VTBL         execPtr_Vtbl;
+    OBJMETHOD_VTBL         objMethod_Vtbl;
 
 
 
@@ -87,27 +92,50 @@ struct execPtr_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            execPtr_setLastError(
-        EXECPTR_DATA     *this,
+    bool        objMethod_setDesc(
+        OBJMETHOD_DATA  *this,
+        ASTR_DATA       *pValue
+    );
+    
+    
+   bool            objMethod_setLastError(
+        OBJMETHOD_DATA     *this,
         ERESULT         value
     );
 
 
-    void            execPtr_Dealloc(
+    bool        objMethod_setMethodName(
+        OBJMETHOD_DATA  *this,
+        ASTR_DATA       *pValue
+    );
+    
+    
+    bool            objMethod_setObject(
+        OBJMETHOD_DATA  *this,
+        OBJ_ID          pValue
+    );
+    
+    
+    bool        objMethod_setObjectName(
+        OBJMETHOD_DATA  *this,
+        ASTR_DATA       *pValue
+    );
+    
+    
+    void            objMethod_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          execPtr_QueryInfo(
+    void *          objMethod_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
 
 
-    ASTR_DATA *     execPtr_ToJSON(
-        EXECPTR_DATA      *this
+    ASTR_DATA *     objMethod_ToJSON(
+        OBJMETHOD_DATA      *this
     );
 
 
@@ -115,8 +143,8 @@ struct execPtr_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			execPtr_Validate(
-        EXECPTR_DATA       *this
+    bool			objMethod_Validate(
+        OBJMETHOD_DATA       *this
     );
 #endif
 
@@ -126,5 +154,5 @@ struct execPtr_data_s	{
 }
 #endif
 
-#endif	/* EXECPTR_INTERNAL_H */
+#endif	/* OBJMETHOD_INTERNAL_H */
 

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'WStrArray'
-//	Generated 03/22/2016 16:45:37
+//	Class Object Metods and Tables for 'array'
+//	Generated 11/08/2017 09:27:01
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,9 @@
  */
 
 
-#define			WSTRARRAY_OBJECT_C	    1
-#include        "WStrArray_internal.h"
+
+#define			ARRAY_OBJECT_C	    1
+#include        <array_internal.h>
 
 
 
@@ -40,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct WStrArray_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct array_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct WStrArray_class_data_s WSTRARRAY_CLASS_DATA;
+typedef struct array_class_data_s ARRAY_CLASS_DATA;
 
 
 
@@ -61,26 +62,23 @@ typedef struct WStrArray_class_data_s WSTRARRAY_CLASS_DATA;
 
 static
 const
-OBJ_INFO        WStrArray_Info;            // Forward Reference
+OBJ_INFO        array_Info;            // Forward Reference
 
 
 
-OBJ_ID          WStrArray_Class(
+OBJ_ID          array_Class(
     void
 );
 
 
 
 static
-bool            WStrArray_ClassIsKindOf(
+bool            array_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_WSTRARRAY_CLASS == classID) {
+    if (OBJ_IDENT_ARRAY_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_OBJARRAY_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -94,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_WSTRARRAY_CLASS;
+    return OBJ_IDENT_ARRAY_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&WStrArray_Info,
-    WStrArray_ClassIsKindOf,
+	&array_Info,
+    array_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -117,23 +115,20 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-WSTRARRAY_CLASS_DATA  WStrArray_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_WSTRARRAY_CLASS, 0, 1},
+ARRAY_CLASS_DATA  array_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_ARRAY_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            WStrArray_IsKindOf(
+bool            array_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_WSTRARRAY == classID) {
+    if (OBJ_IDENT_ARRAY == classID) {
        return true;
-    }
-    if (OBJ_IDENT_OBJARRAY == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -144,51 +139,51 @@ bool            WStrArray_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            WStrArray_Dealloc(
+void            array_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          WStrArray_Class(
+OBJ_ID          array_Class(
     void
 )
 {
-    return (OBJ_ID)&WStrArray_ClassObj;
+    return (OBJ_ID)&array_ClassObj;
 }
 
 
 static
-uint16_t		WStrArray_WhoAmI(
+uint16_t		array_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_WSTRARRAY;
+    return OBJ_IDENT_ARRAY;
 }
 
 
 const
-WSTRARRAY_VTBL     WStrArray_Vtbl = {
+ARRAY_VTBL     array_Vtbl = {
     {
-        &WStrArray_Info,
-        WStrArray_IsKindOf,
+        &array_Info,
+        array_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        WStrArray_Dealloc,
-        WStrArray_Class,
-        WStrArray_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
-        (P_OBJ_TOSTRING)WStrArray_ToDebugString,
-        NULL,			// WStrArray_Enable,
-        NULL,			// WStrArray_Disable,
-        NULL,			// (P_OBJ_ASSIGN)WStrArray_Assign,
-        NULL,			// (P_OBJ_COMPARE)WStrArray_Compare,
-        NULL, 			// (P_OBJ_PTR)WStrArray_Copy,
-        NULL 			// (P_OBJ_HASH)WStrArray_Hash,
+        array_Dealloc,
+        array_Class,
+        array_WhoAmI,
+        (P_OBJ_QUERYINFO)array_QueryInfo,
+        (P_OBJ_TOSTRING)array_ToDebugString,
+        NULL,			// array_Enable,
+        NULL,			// array_Disable,
+        NULL,			// (P_OBJ_ASSIGN)array_Assign,
+        NULL,			// (P_OBJ_COMPARE)array_Compare,
+        NULL, 			// (P_OBJ_PTR)array_Copy,
+        NULL 			// (P_OBJ_HASH)array_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    WStrArray_IsEnabled,
+    //array_IsEnabled,
  
 };
 
@@ -196,14 +191,13 @@ WSTRARRAY_VTBL     WStrArray_Vtbl = {
 
 static
 const
-OBJ_INFO        WStrArray_Info = {
-    "WStrArray",
-    "WStrArray",				// <-- Fill in description
-    (OBJ_DATA *)&WStrArray_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+OBJ_INFO        array_Info = {
+    "array",
+    "Array",
+    (OBJ_DATA *)&array_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&array_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

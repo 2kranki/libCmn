@@ -5,8 +5,36 @@
  *
  */
 
+/*                  * * * Scan EBNF  * * *
+
+ This is our EBNF for the scanf-like alternative scan system.
  
-/*
+ 
+ scanner :   nodeList
+         ;
+ 
+ nodeList:   '#' '(' (typeList+ | nodeList) ')'     // Rooted Node with Children or
+         ;                                          // child Rooted Node
+ 
+ typeList:   typePair*
+         ;
+ 
+ typePair:   label ':' type
+         |   type
+         ;
+ 
+ nodeType:   number
+         ;
+ 
+ label   :   '%' number
+         ;
+ 
+ number  :   [0..9]*
+         ;
+
+ 
+ */
+ /*
  This is free and unencumbered software released into the public domain.
  
  Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -41,9 +69,10 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "nodeScan_internal.h"
-#include "nodeTree.h"
-#include <stdio.h>
+#include    <nodeScan_internal.h>
+#include    <nodeTree.h>
+#include    <ascii.h>
+#include    <stdio.h>
 
 
 
@@ -60,9 +89,154 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    int             nodeScan_ScanfLex(
+        NODESCAN_DATA  *this
+    );
+    
+    int             nodeScan_ScanfLexLA(
+        NODESCAN_DATA  *this
+    );
+    
+    int             nodeScan_ScanfLabel(
+        NODESCAN_DATA  *this
+    );
+
+    
+    int             nodeScan_ScanfType(
+       NODESCAN_DATA  *this
+    );
+    
+    
+    int             nodeScan_ScanfLabel(
+        NODESCAN_DATA  *this
+    )
+    {
+        int             tok = TOK_TYP_INVALID;
+        //W32CHR_T         chr;
+        //int             i = 0;
+        
+        tok = nodeScan_ScanfLex(this);
+        if (tok == TOK_TYP_PERCENT) {
+            tok = nodeScan_ScanfLexLA(this);
+            if (tok == TOK_TYP_INT) {
+                
+            }
+            else {
+                return TOK_TYP_INVALID;
+            }
+        }
+        
+        return TOK_TYP_INVALID;
+    }
+    
+    
+    int             nodeScan_ScanfLex(
+         NODESCAN_DATA  *this
+    )
+    {
+        int             tok = TOK_TYP_INVALID;
+        W32CHR_T        chr;
+        int             i = 0;
+    
+        chr = AStr_CharGetW32(this->pScanInput, this->curChar);
+        while (ascii_isWhiteSpaceW32(chr)) {
+            ++(this->curChar);
+            chr = AStr_CharGetW32(this->pScanInput, this->curChar);
+        }
+        if (ascii_isNumericA(chr)) {
+            while (ascii_isNumericA(chr)) {
+                i = (i * 10) + (chr - '0');
+                ++(this->curChar);
+                chr = AStr_CharGetW32(this->pScanInput, this->curChar);
+            }
+            this->tokInt = i;
+            return TOK_TYP_INT;
+        }
+        tok = TOK_TYP_INVALID;
+        switch (chr) {
+            case '#':
+                ++(this->curChar);
+                tok = TOK_TYP_POUND;
+                break;
+            case '(':
+                ++(this->curChar);
+                tok = TOK_TYP_LPAREN;
+                break;
+            case ')':
+                ++(this->curChar);
+                tok = TOK_TYP_RPAREN;
+                break;
+            case '%':
+                ++(this->curChar);
+                tok = TOK_TYP_PERCENT;
+                break;
+            case '.':
+                ++(this->curChar);
+                tok = TOK_TYP_PERIOD;
+                break;
+            case ':':
+                ++(this->curChar);
+                tok = TOK_TYP_COLON;
+                break;
+            case '\0':
+                ++(this->curChar);
+                tok = TOK_TYP_EOF;
+                break;
+        }
+        
+        return tok;
+    }
 
 
 
+    int             nodeScan_ScanfLexLA(
+        NODESCAN_DATA  *this
+    )
+    {
+        int             tok = TOK_TYP_INVALID;
+        W32CHR_T        chr;
+        
+        chr = AStr_CharGetW32(this->pScanInput, this->curChar);
+        while (ascii_isWhiteSpaceW32(chr)) {
+            ++(this->curChar);
+            chr = AStr_CharGetW32(this->pScanInput, this->curChar);
+        }
+        if (ascii_isNumericA(chr)) {
+            return TOK_TYP_INT;
+        }
+        tok = TOK_TYP_INVALID;
+        switch (chr) {
+            case '#':
+                tok = TOK_TYP_POUND;
+                break;
+            case '(':
+                tok = TOK_TYP_LPAREN;
+                break;
+            case ')':
+                tok = TOK_TYP_RPAREN;
+                break;
+            case '%':
+                tok = TOK_TYP_PERCENT;
+                break;
+            case '.':
+                tok = TOK_TYP_PERIOD;
+                break;
+            case ':':
+                tok = TOK_TYP_COLON;
+                break;
+            case '\0':
+                tok = TOK_TYP_EOF;
+                break;
+        }
+        
+        return tok;
+    }
+    
+    
+    
+
+    
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -72,27 +246,27 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODESCAN_DATA *     nodeScan_Alloc(
+    NODESCAN_DATA * nodeScan_Alloc(
     )
     {
-        NODESCAN_DATA       *cbp;
+        NODESCAN_DATA   *this;
         uint32_t        cbSize = sizeof(NODESCAN_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
 
-    NODESCAN_DATA *     nodeScan_NewFromArray(
+    NODESCAN_DATA * nodeScan_NewFromArray(
         NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
     )
     {
-        NODESCAN_DATA       *this;
+        NODESCAN_DATA   *this;
         
         this = nodeScan_Alloc( );
         if (this) {
@@ -103,12 +277,12 @@ extern "C" {
 
 
 
-    NODESCAN_DATA *     nodeScan_NewFromTree(
-        NODETREE_DATA       *pTree
+    NODESCAN_DATA * nodeScan_NewFromTree(
+        NODETREE_DATA   *pTree
     )
     {
-        NODESCAN_DATA       *this;
-        NODEARRAY_DATA      *pArray;
+        NODESCAN_DATA   *this;
+        NODEARRAY_DATA  *pArray;
         
         pArray = nodeTree_ToLinearizationPre(pTree);
         if (pArray) {
@@ -134,20 +308,20 @@ extern "C" {
     //===============================================================
 
     NODEARRAY_DATA * nodeScan_getArray(
-        NODESCAN_DATA    *cbp
+        NODESCAN_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return cbp->pArray;
+        return this->pArray;
     }
     
     
@@ -176,33 +350,33 @@ extern "C" {
     
     
     uint32_t        nodeScan_getIndex(
-        NODESCAN_DATA     *cbp
+        NODESCAN_DATA   *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        return cbp->index;
+        return this->index;
     }
 
     bool            nodeScan_setIndex(
-        NODESCAN_DATA   *cbp,
+        NODESCAN_DATA   *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->index = value;
+        this->index = value;
         
         return true;
     }
@@ -225,24 +399,28 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        NODESCAN_DATA   *cbp = objId;
+        NODESCAN_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        nodeScan_setArray(cbp, OBJ_NIL);
+        nodeScan_setArray(this, OBJ_NIL);
+        if (this->pScanInput) {
+            obj_Release(this->pScanInput);
+            this->pScanInput = OBJ_NIL;
+        }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -292,7 +470,7 @@ extern "C" {
     }
 
      
-    NODESCAN_DATA *   nodeScan_InitArray(
+    NODESCAN_DATA * nodeScan_InitArray(
         NODESCAN_DATA   *this,
         NODEARRAY_DATA  *pValue
     )
@@ -318,7 +496,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     NODE_DATA *     nodeScan_InputAdvance(
-        NODESCAN_DATA	*cbp,
+        NODESCAN_DATA	*this,
         uint16_t        numChrs
     )
     {
@@ -327,18 +505,18 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
         // Shift inputs.
-        ++cbp->index;
-        if (cbp->index >= nodeArray_getSize(cbp->pArray)) {
-            cbp->index = 0;
+        ++this->index;
+        if (this->index >= nodeArray_getSize(this->pArray)) {
+            this->index = 0;
         }
-        pNode = nodeArray_Get(cbp->pArray, cbp->index+1);
+        pNode = nodeArray_Get(this->pArray, this->index+1);
         
         // Return to caller.
         return pNode;
@@ -351,7 +529,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     NODE_DATA *     nodeScan_InputLookAhead(
-        NODESCAN_DATA   *cbp,
+        NODESCAN_DATA   *this,
         uint16_t        num
     )
     {
@@ -361,14 +539,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        idx = (cbp->index + num - 1) % nodeArray_getSize(cbp->pArray);
-        pNode = nodeArray_Get(cbp->pArray, idx+1);
+        idx = (this->index + num - 1) % nodeArray_getSize(this->pArray);
+        pNode = nodeArray_Get(this->pArray, idx+1);
         
         // Return to caller.
         return pNode;
@@ -382,7 +560,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     NODE_DATA *     nodeScan_MatchName(
-        NODESCAN_DATA	*cbp,
+        NODESCAN_DATA	*this,
         char            *pStr
     )
     {
@@ -394,19 +572,19 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        pNode = nodeArray_Get(cbp->pArray, cbp->index+1);
+        pNode = nodeArray_Get(this->pArray, this->index+1);
         if (pNode) {
             pName = node_getNameUTF8(pNode);
             cmp = strcmp(pName, pStr);
             mem_Free((void *)pName);
             if( 0 == cmp ) {
-                (void)nodeScan_InputAdvance(cbp,1);
+                (void)nodeScan_InputAdvance(this, 1);
                 return pNode;
             }
         }
@@ -422,7 +600,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     NODE_DATA *     nodeScan_MatchClass(
-        NODESCAN_DATA	*cbp,
+        NODESCAN_DATA	*this,
         int32_t         cls
     )
     {
@@ -431,15 +609,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
-        pNode = nodeArray_Get(cbp->pArray, cbp->index+1);
+        pNode = nodeArray_Get(this->pArray, this->index+1);
         if( pNode && (cls == node_getClass(pNode)) ) {
-            (void)nodeScan_InputAdvance(cbp,1);
+            (void)nodeScan_InputAdvance(this, 1);
             return pNode;
         }
         
@@ -454,7 +632,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     NODE_DATA *     nodeScan_MatchClasses(
-        NODESCAN_DATA   *cbp,
+        NODESCAN_DATA   *this,
         int32_t         *pSet
     )
     {
@@ -463,7 +641,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeScan_Validate( cbp ) ) {
+        if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -474,7 +652,7 @@ extern "C" {
 #endif
         
         while (*pSet) {
-            pNode = nodeScan_MatchClass(cbp,*pSet);
+            pNode = nodeScan_MatchClass(this, *pSet);
             if(pNode) {
                 return pNode;
             }
@@ -492,7 +670,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     nodeScan_ToDebugString(
-        NODESCAN_DATA   *cbp,
+        NODESCAN_DATA   *this,
         int             indent
     )
     {
@@ -501,28 +679,28 @@ extern "C" {
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
                      "{%p(nodeScan) index=%d ",
-                     cbp,
-                     nodeScan_getIndex(cbp)
+                     this,
+                     nodeScan_getIndex(this)
             );
         AStr_AppendA(pStr, str);
 
-        if (cbp->pArray) {
-            if (((OBJ_DATA *)(cbp->pArray))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pArray))->pVtbl->pToDebugString(
-                                                    cbp->pArray,
+        if (this->pArray) {
+            if (((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString(
+                                                    this->pArray,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -530,7 +708,7 @@ extern "C" {
             }
         }
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf( str, sizeof(str), " %p}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -545,18 +723,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            nodeScan_Validate(
-        NODESCAN_DATA      *cbp
+        NODESCAN_DATA   *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_NODESCAN) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODESCAN) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(NODESCAN_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODESCAN_DATA)) )
             return false;
 
         // Return to caller.

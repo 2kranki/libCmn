@@ -100,8 +100,7 @@ struct pwr2Array_data_s	{
     void *          pwr2Array_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

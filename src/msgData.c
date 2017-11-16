@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   execPtr.c
- *	Generated 10/07/2017 12:40:01
+ * File:   msgData.c
+ *	Generated 11/04/2017 09:37:49
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <execPtr_internal.h>
+#include <msgData_internal.h>
 
 
 
@@ -60,11 +60,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            execPtr_task_body(
+    void            msgData_task_body(
         void            *pData
     )
     {
-        //EXECPTR_DATA  *this = pData;
+        //MSGDATA_DATA  *this = pData;
         
     }
 #endif
@@ -80,15 +80,24 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    EXECPTR_DATA *  execPtr_Alloc(
+    MSGDATA_DATA *  msgData_Alloc(
+        uint16_t        size
     )
     {
-        EXECPTR_DATA    *this;
-        uint32_t        cbSize = sizeof(EXECPTR_DATA);
+        MSGDATA_DATA    *this;
+        uint32_t        cbSize = sizeof(MSGDATA_DATA);
         
         // Do initialization.
         
+        if (0 == size) {
+            size = 256;
+        }
+        if (size > (65536 - sizeof(MSGDATA_DATA)) ) {
+            return OBJ_NIL;
+        }
+        cbSize += size;
         this = obj_Alloc( cbSize );
+        obj_setMisc1(this, size);
         
         // Return to caller.
         return this;
@@ -96,15 +105,18 @@ extern "C" {
 
 
 
-    EXECPTR_DATA *  execPtr_New(
-        void            *pFunc
+    MSGDATA_DATA *  msgData_New(
+        uint32_t        origin,
+        uint32_t        dest,
+        uint16_t        size,
+        void            *pData
     )
     {
-        EXECPTR_DATA       *this;
+        MSGDATA_DATA       *this;
         
-        this = execPtr_Alloc( );
+        this = msgData_Alloc(size);
         if (this) {
-            this = execPtr_Init(this, pFunc);
+            this = msgData_Init(this, origin, dest, size, pData);
         } 
         return this;
     }
@@ -117,83 +129,85 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ASTR_DATA * execPtr_getDesc(
-        EXECPTR_DATA     *this
+    //---------------------------------------------------------------
+    //                         D a t a
+    //---------------------------------------------------------------
+    
+    void *          msgData_getData(
+        MSGDATA_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgData_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return this->data;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   D e s t i n a t i o n
+    //---------------------------------------------------------------
+    
+    uint32_t        msgData_getDestination(
+        MSGDATA_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
         
-        execPtr_setLastError(this, ERESULT_SUCCESS);
-        return this->pDesc;
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return this->dest;
     }
     
     
-    bool        execPtr_setDesc(
-        EXECPTR_DATA *this,
-        ASTR_DATA   *pValue
+    bool            msgData_setDestination(
+        MSGDATA_DATA    *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        obj_Retain(pValue);
-        if (this->pDesc) {
-            obj_Release(this->pDesc);
-        }
-        this->pDesc = pValue;
+        this->dest = value;
         
-        execPtr_setLastError(this, ERESULT_SUCCESS);
+        msgData_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
-    
-    
-    void *      execPtr_getFunc(
-        EXECPTR_DATA *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !execPtr_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        execPtr_setLastError(this, ERESULT_SUCCESS);
-        return this->pFunc;
-    }
-
     
     
     //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         execPtr_getLastError(
-        EXECPTR_DATA     *this
+    ERESULT         msgData_getLastError(
+        MSGDATA_DATA    *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -204,14 +218,14 @@ extern "C" {
     }
 
 
-    bool            execPtr_setLastError(
-        EXECPTR_DATA     *this,
+    bool            msgData_setLastError(
+        MSGDATA_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -224,43 +238,112 @@ extern "C" {
     
     
 
-    uint16_t        execPtr_getPriority(
-        EXECPTR_DATA     *this
+    //---------------------------------------------------------------
+    //                        N u m 3 2
+    //---------------------------------------------------------------
+    
+    uint32_t        msgData_getNum32(
+        MSGDATA_DATA    *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return this->num32;
+    }
+    
+    
+    bool            msgData_setNum32(
+        MSGDATA_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgData_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->num32 = value;
+        
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        O r i g i n
+    //---------------------------------------------------------------
+    
+    uint32_t        msgData_getOrigin(
+        MSGDATA_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !msgData_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return this->origin;
+    }
+    
+    
+    bool            msgData_setOrigin(
+        MSGDATA_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgData_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->origin = value;
+        
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
+    uint16_t        msgData_getSize(
+        MSGDATA_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        execPtr_setLastError(this, ERESULT_SUCCESS);
-        //return this->priority;
-        return 0;
-    }
-
-
-    bool            execPtr_setPriority(
-        EXECPTR_DATA    *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !execPtr_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        //this->priority = value;
-
-        execPtr_setLastError(this, ERESULT_SUCCESS);
-        return true;
+        msgData_setLastError(this, ERESULT_SUCCESS);
+        return this->size;
     }
 
 
@@ -281,28 +364,28 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
-        ERESULT eRc = execPtr__Assign(this,pOther);
-     @endcode:
-     @param:    this    EXECPTR object pointer
-     @param:    pOther  a pointer to another EXECPTR object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @code 
+        ERESULT eRc = msgData__Assign(this,pOther);
+     @endcode 
+     @param     this    MSGDATA object pointer
+     @param     pOther  a pointer to another MSGDATA object
+     @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         execPtr_Assign(
-        EXECPTR_DATA		*this,
-        EXECPTR_DATA      *pOther
+    ERESULT         msgData_Assign(
+        MSGDATA_DATA		*this,
+        MSGDATA_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !execPtr_Validate(pOther) ) {
+        if( !msgData_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -335,11 +418,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        execPtr_setLastError(this, ERESULT_SUCCESS);
+        msgData_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        execPtr_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return execPtr_getLastError(this);
+        msgData_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return msgData_getLastError(this);
     }
     
     
@@ -351,42 +434,39 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
-        execPtr      *pCopy = execPtr_Copy(this);
-     @endcode:
-     @param:    this    EXECPTR object pointer
-     @return:   If successful, a EXECPTR object which must be released,
+     @code 
+        msgData      *pCopy = msgData_Copy(this);
+     @endcode 
+     @param     this    MSGDATA object pointer
+     @return    If successful, a MSGDATA object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the EXECPTR object.
+     @warning  Remember to release the returned the MSGDATA object.
      */
-    EXECPTR_DATA *     execPtr_Copy(
-        EXECPTR_DATA       *this
+    MSGDATA_DATA *  msgData_Copy(
+        MSGDATA_DATA    *this
     )
     {
-        EXECPTR_DATA       *pOther = OBJ_NIL;
+        MSGDATA_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = execPtr_New(this->pFunc);
-        if (pOther) {
-            eRc = execPtr_Assign(this, pOther);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(pOther);
-                pOther = OBJ_NIL;
-            }
+        pOther = msgData_New(this->origin, this->dest, this->size, this->data);
+        if (OBJ_NIL == pOther) {
+            msgData_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
         }
+        pOther->num32 = this->num32;
         
         // Return to caller.
-        //obj_Release(pOther);
-        execPtr_setLastError(this, ERESULT_SUCCESS);
+        msgData_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -396,11 +476,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            execPtr_Dealloc(
+    void            msgData_Dealloc(
         OBJ_ID          objId
     )
     {
-        EXECPTR_DATA   *this = objId;
+        MSGDATA_DATA    *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -408,7 +488,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -416,13 +496,16 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((EXECPTR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((MSGDATA_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
+        //msgData_setStr(this, OBJ_NIL);
+
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -434,21 +517,17 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         execPtr_Disable(
-        EXECPTR_DATA		*this
+    ERESULT         msgData_Disable(
+        MSGDATA_DATA		*this
     )
     {
 
         // Do initialization.
-        if (NULL == this) {
-            execPtr_setLastError(this, ERESULT_INVALID_OBJECT);
-            return ERESULT_INVALID_OBJECT;
-        }
     #ifdef NDEBUG
     #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
-            return execPtr_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -457,7 +536,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        execPtr_setLastError(this, ERESULT_SUCCESS);
+        msgData_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -467,15 +546,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         execPtr_Enable(
-        EXECPTR_DATA		*this
+    ERESULT         msgData_Enable(
+        MSGDATA_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -486,7 +565,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        execPtr_setLastError(this, ERESULT_SUCCESS);
+        msgData_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -496,13 +575,17 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    EXECPTR_DATA *  execPtr_Init(
-        EXECPTR_DATA    *this,
-        void            *pFunc
+    MSGDATA_DATA *  msgData_Init(
+        MSGDATA_DATA    *this,
+        uint32_t        origin,
+        uint32_t        dest,
+        uint16_t        size,
+        void            *pData
     )
     {
-        uint32_t        cbSize = sizeof(EXECPTR_DATA);
-        
+        uint32_t        cbSize = sizeof(MSGDATA_DATA);
+        uint32_t        dataSize = 0;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -510,41 +593,51 @@ extern "C" {
         /* cbSize can be zero if Alloc() was not called and we are
          * are passed the address of a zero'd area.
          */
-        //cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
+        cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
         if (cbSize == 0) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 
+        dataSize = obj_getMisc1(this);
+        if ((dataSize == 0) || !(dataSize == size)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_EXECPTR);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGDATA);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_EXECPTR);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_MSGDATA);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&execPtr_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&msgData_Vtbl);
         
-        execPtr_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->pFunc = pFunc;
+        msgData_setLastError(this, ERESULT_GENERAL_FAILURE);
+        this->origin = origin;
+        this->dest = dest;
+        this->size = size;
+        memmove(this->data, pData, this->size);
 
     #ifdef NDEBUG
     #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(EXECPTR_DATA,eRc));
-        fprintf(stderr, "sizeof(EXECPTR_DATA) = %lu\n", sizeof(EXECPTR_DATA));
+        //fprintf(stderr, "msgData::offsetof(eRc) = %lu\n", offsetof(MSGDATA_DATA,eRc));
+        //fprintf(stderr, "msgData::sizeof(MSGDATA_DATA) = %lu\n", sizeof(MSGDATA_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(EXECPTR_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(MSGDATA_DATA));
     #endif
 
         return this;
@@ -556,27 +649,27 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         execPtr_IsEnabled(
-        EXECPTR_DATA		*this
+    ERESULT         msgData_IsEnabled(
+        MSGDATA_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            execPtr_setLastError(this, ERESULT_SUCCESS_TRUE);
+            msgData_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        execPtr_setLastError(this, ERESULT_SUCCESS_FALSE);
+        msgData_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -586,21 +679,44 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          execPtr_QueryInfo(
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = msgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     this    OBJTEST object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "msgData", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          msgData_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
-        EXECPTR_DATA   *this = objId;
+        MSGDATA_DATA   *this = objId;
+        const
+        char            *pStr = pData;
         
         if (OBJ_NIL == this) {
             return NULL;
         }
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -617,22 +733,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return execPtr_Disable;
+                            return msgData_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return execPtr_Enable;
+                            return msgData_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return execPtr_ToDebugString;
+                            return msgData_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return execPtr_ToJSON;
+                            return msgData_ToJSON;
                         }
                         break;
                         
@@ -641,11 +757,18 @@ extern "C" {
                 }
                 break;
                 
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == msgData_ToDebugString)
+                    return "ToDebugString";
+                if (pData == msgData_ToJSON)
+                    return "ToJSON";
+                break;
+                
             default:
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -657,49 +780,50 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
-        ASTR_DATA      *pDesc = execPtr_ToDebugString(this,4);
-     @endcode:
-     @param:    this    EXECPTR object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @code 
+        ASTR_DATA      *pDesc = msgData_ToDebugString(this,4);
+     @endcode 
+     @param     this    MSGDATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     execPtr_ToDebugString(
-        EXECPTR_DATA      *this,
+    ASTR_DATA *     msgData_ToDebugString(
+        MSGDATA_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
 #endif
+        const
+        OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
+        pInfo = msgData_Vtbl.iVtbl.pInfo;
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(execPtr) pFunc=%p\n",
-                     this,
-                     this->pFunc
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    msgData_getSize(this)
             );
-        AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -714,45 +838,35 @@ extern "C" {
         }
 #endif
         
-        if (this->pDesc) {
-            if (indent) {
-                AStr_AppendCharRepeatW(pStr, indent, ' ');
-            }
-            str[0] = '\0';
-            j = snprintf(
-                         str,
-                         sizeof(str),
-                         "desc = \"%s\"\n",
-                         AStr_getData(this->pDesc)
-                         );
-            AStr_AppendA(pStr, str);
-        }
-        
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(execPtr)}\n", this);
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
-        execPtr_setLastError(this, ERESULT_SUCCESS);
+        msgData_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
     
     
-    ASTR_DATA *     execPtr_ToJSON(
-        EXECPTR_DATA      *this
+    ASTR_DATA *     msgData_ToJSON(
+        MSGDATA_DATA      *this
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
-        if( !execPtr_Validate(this) ) {
+        if( !msgData_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -760,28 +874,15 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{ \"objectType\":\"%s\"",
-                     pInfo->pClassName
-                     );
-        AStr_AppendA(pStr, str);
-        
-        if (this->pDesc) {
-            str[0] = '\0';
-            j = snprintf(
-                         str,
-                         sizeof(str),
-                         " \"desc\":\"%s\" ",
-                         AStr_getData(this->pDesc)
-                         );
-            AStr_AppendA(pStr, str);
-        }
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    "{\"objectType\":\"%s\"",
+                    pInfo->pClassName
+                );
         
         AStr_AppendA(pStr, "}\n");
         
+        msgData_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -793,15 +894,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            execPtr_Validate(
-        EXECPTR_DATA      *this
+    bool            msgData_Validate(
+        MSGDATA_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_EXECPTR) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_MSGDATA) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -817,7 +918,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(EXECPTR_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(MSGDATA_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

@@ -51,6 +51,9 @@
 
 
 
+#ifndef             W32CHR_T
+#define             W32CHR_T    int32_t
+#endif
 #include            <stdbool.h>
 #include            <stdint.h>
 #include            <stdio.h>
@@ -85,18 +88,18 @@ int             str_Compare(
 	char			*pszStr2
 );
 
-int             str_CompareW(
+int             str_CompareW32(
     const
-    int32_t			*pszStr1,
+    W32CHR_T		*pszStr1,
     const
-    int32_t			*pszStr2
+    W32CHR_T		*pszStr2
 );
 
-int             str_CompareNW(
+int             str_CompareNW32(
     const
-    int32_t			*pszStr1,
+    W32CHR_T		*pszStr1,
     const
-    int32_t			*pszStr2,
+    W32CHR_T		*pszStr2,
     uint32_t        len
 );
 
@@ -144,9 +147,9 @@ char *          str_DupA(
 	char            *pszIn          /* Input String Pointer */
 );
 
-int32_t *       str_DupW(
+W32CHR_T *      str_DupW32(
     const
-    int32_t         *pszIn          /* Input String Pointer */
+    W32CHR_T        *pszIn          /* Input String Pointer */
 );
 
 
@@ -224,9 +227,9 @@ uint32_t        str_HashA(
 	size_t          *pLength            // Returned Length if not NULL
 );
 
-uint32_t        str_HashW(
+uint32_t        str_HashW32(
     const
-    int32_t         *pszIn,             // Input String Ptr
+    W32CHR_T        *pszIn,             // Input String Ptr
     size_t          *pLength            // Returned Length if not NULL
 );
 
@@ -244,9 +247,9 @@ uint32_t        str_HashAcmA(
     size_t          *pLength            /* Returned Length if not NULL */
 );
 
-uint32_t        str_HashAcmW(
+uint32_t        str_HashAcmW32(
     const
-    int32_t         *pszIn,             /* Input String Ptr */
+    W32CHR_T        *pszIn,             /* Input String Ptr */
     size_t          *pLength            /* Returned Length if not NULL */
 );
 
@@ -303,9 +306,9 @@ size_t          str_LengthA(
 	char			*pszIn			/* Input String Pointer */
 );
 
-size_t          str_LengthW(
+size_t          str_LengthW32(
     const
-    int32_t			*pszIn			/* Input String Pointer */
+    W32CHR_T		*pszIn			/* Input String Pointer */
 );
 
 
@@ -388,8 +391,8 @@ char *          str_ToLowerA(
 	char			*pszIn			/* Input String Pointer */
 );
 
-int32_t *       str_ToLowerW(
-    int32_t			*pszIn			/* Input String Pointer */
+W32CHR_T *      str_ToLowerW32(
+    W32CHR_T		*pszIn			/* Input String Pointer */
 );
 
 
@@ -402,8 +405,8 @@ char *          str_ToUpperA(
 	char			*pszIn			/* Input String Pointer */
 );
 
-int32_t *       str_ToUpperW(
-    int32_t			*pszIn			/* Input String Pointer */
+W32CHR_T *      str_ToUpperW32(
+    W32CHR_T		*pszIn			/* Input String Pointer */
 );
 
 

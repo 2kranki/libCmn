@@ -117,6 +117,11 @@ struct lru_data_s	{
         OBJ_ID          objId
     );
 
+    void *          lru_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
 
 
 #ifdef NDEBUG

@@ -28,15 +28,16 @@
 
 
 
+//fixme: need to adjust for:
 static
 const
 char        *pTestInput01 =
-"{ \n"
-    "\"one\": 123,\n"
-    "\"two\":\"xyz\",\n"
-    "\"three\":[\"a\",\"b\",\"c\"],\n"
-    "\"four\":null\n"
-"}\n";
+" \n"
+    "one=123, "
+    "--two=\"xyz\", "
+    "three=[\"a\",\"b\",\"c\"], "
+    "4"
+"\n";
 
 
 #ifdef XYZZY

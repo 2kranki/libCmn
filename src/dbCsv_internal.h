@@ -65,13 +65,13 @@ struct dbCsv_data_s	{
 
     // Common Data
     SRCFILE_DATA    *pSrc;
-    int32_t         fieldSeparator;
+    W32CHR_T        fieldSeparator;
     bool            fHasHeader;
 
     // Field being built
     uint16_t        sizeFld;            // Size of pFld including NUL
     uint16_t        lenFld;             // Used Length in pFld excluding NUL
-    int32_t         *pFld;              // Work String
+    W32CHR_T        *pFld;              // Work String
     
     bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord);
     //                                  // Returns: true == Add Record to Records
@@ -88,9 +88,9 @@ struct dbCsv_data_s	{
 
 
     // Internal Functions
-    ERESULT         dbCsv_AppendCharToString(
+    ERESULT         dbCsv_AppendCharW32ToString(
         DBCSV_DATA      *cbp,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     void            dbCsv_Dealloc(

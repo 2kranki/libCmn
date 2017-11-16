@@ -102,11 +102,11 @@ extern "C" {
     static
     ERESULT         srcFile_u8ArrayGetc(
         SRCFILE_DATA    *this,
-        int32_t         *pChar
+        W32CHR_T        *pChar
     )
     {
         char            chrs[8];
-        int32_t         chr = -1;
+        W32CHR_T        chr = -1;
         uint32_t        len;
         
         // Validate the input parameters.
@@ -137,7 +137,7 @@ extern "C" {
                     return ERESULT_EOF_ERROR;
                 }
             }
-            len = utf8_Utf8ToWC(chrs, &chr);
+            len = utf8_Utf8ToW32(chrs, &chr);
         }
         if( chr == ASCII_CPM_EOF ) {
             this->fileOffset = u8Array_getSize(this->pU8Array);
@@ -151,12 +151,12 @@ extern "C" {
     
     
     static
-    int32_t         srcFile_UnicodeGetc(
+    W32CHR_T        srcFile_UnicodeGetc(
         SRCFILE_DATA    *this
     )
     {
         ERESULT         eRc;
-        int32_t         chr = EOF;
+        W32CHR_T        chr = EOF;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -190,7 +190,7 @@ extern "C" {
                 break;
                 
             case OBJ_IDENT_ASTR:
-                chr = AStr_CharGetW(this->pAStr, (uint32_t)this->fileOffset++ );
+                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->fileOffset++ );
                 if( chr == ASCII_CPM_EOF ) {
                     this->fileOffset = AStr_getLength(this->pAStr);
                     chr = EOF;
@@ -205,7 +205,7 @@ extern "C" {
                 break;
                 
             case OBJ_IDENT_WSTR:
-                chr = WStr_CharGetW(this->pWStr, (uint32_t)this->fileOffset++ );
+                chr = WStr_CharGetW32(this->pWStr, (uint32_t)this->fileOffset++ );
                 if( chr == ASCII_CPM_EOF ) {
                     this->fileOffset = WStr_getLength(this->pWStr);
                     chr = EOF;
@@ -973,7 +973,7 @@ extern "C" {
             }
         }
         if (chr >= 0) {
-            cls = ascii_toLexicalClassW(chr);
+            cls = ascii_toLexicalClassW32(chr);
         }
         else {
             cls = EOF;
@@ -1018,7 +1018,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1089,7 +1089,7 @@ extern "C" {
         }
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf( str, sizeof(str), " %p(srcFile)}\n", this );
         AStr_AppendA(pStr, str);

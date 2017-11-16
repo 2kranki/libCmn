@@ -143,10 +143,10 @@ extern "C" {
         char            **ppStr         // [out] Returned String Pointer (stored in table)
     );
     
-    ERESULT          szTbl_StringWToString(
+    ERESULT          szTbl_StringW32ToString(
         SZTBL_DATA      *this,
         const
-        int32_t         *pStr,          // [in]
+        W32CHR_T        *pStr,          // [in]
         const
         char            **ppStr         // [out] Returned String Pointer (stored in table)
     );
@@ -160,10 +160,10 @@ extern "C" {
     );
     
     
-    ERESULT          szTbl_StringWToToken(
+    ERESULT          szTbl_StringW32ToToken(
         SZTBL_DATA      *this,
         const
-        int32_t         *pStr,          // [in]
+        W32CHR_T        *pStr,          // [in]
         uint32_t        *pToken         // [out] Returned Token
     );
     
@@ -172,7 +172,7 @@ extern "C" {
         SZTBL_DATA      *this,
         uint32_t        token,          // [in]
         const
-        char            **ppStr         // [out] Returned String Pointer (stored in table)
+        char            **ppStr         // [out] Returned String
     );
     
     

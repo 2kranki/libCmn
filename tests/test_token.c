@@ -262,7 +262,7 @@ int         test_token_JSON03(
         pStrW = token_getStringW(pObj);
         XCTAssertFalse( (OBJ_NIL == pStrW) );
         XCTAssertTrue( (OBJ_IDENT_WSTR == obj_getType(pStrW)) );
-        eRc = WStr_CompareW(pStrW,L"12345");
+        eRc = WStr_CompareW32(pStrW,L"12345");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         pStr = token_ToJSON(pObj);
@@ -336,7 +336,7 @@ int         test_token_JSON04(
         pStrW = token_getStringW(pObj);
         XCTAssertFalse( (OBJ_NIL == pStrW) );
         XCTAssertTrue( (OBJ_IDENT_WSTR == obj_getType(pStrW)) );
-        eRc = WStr_CompareW(pStrW,L"12345");
+        eRc = WStr_CompareW32(pStrW,L"12345");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         pStr = token_ToJSON(pObj);

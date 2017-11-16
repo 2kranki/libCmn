@@ -100,8 +100,7 @@ struct crc_data_s	{
     void *          crc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
 
 

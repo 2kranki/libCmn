@@ -62,7 +62,7 @@ extern "C" {
 #ifdef XYZZY
     static
     const
-    u_int32_t       offsetsFromUTF8[6] = {
+    W32CHR_T        offsetsFromUTF8[6] = {
         0x00000000UL,
         0x00003080UL,
         0x000E2080UL,
@@ -144,8 +144,8 @@ extern "C" {
         char            *pSrc2
     )
     {
-        int32_t         ch1 = 1;
-        int32_t         ch2 = 1;
+        W32CHR_T        ch1 = 1;
+        W32CHR_T        ch2 = 1;
         int             i = 0;
         
         if ((NULL == pSrc1) && (NULL == pSrc2)) {
@@ -159,8 +159,8 @@ extern "C" {
         }
         
         while ((i == 0) && ch1 && ch2) {
-            ch1 = utf8_Utf8ToWC_Scan( &pSrc1 );
-            ch2 = utf8_Utf8ToWC_Scan( &pSrc2 );
+            ch1 = utf8_Utf8ToW32_Scan( &pSrc1 );
+            ch2 = utf8_Utf8ToW32_Scan( &pSrc2 );
             i = ch1 - ch2;
         }
         if (i == 0) {
@@ -177,15 +177,15 @@ extern "C" {
     
     
     
-    int             utf8_StrCmpAW(
+    int             utf8_StrCmpAW32(
         const
         char            *pSrc1,
         const
-        int32_t         *pSrc2
+        W32CHR_T        *pSrc2
     )
     {
-        int32_t         ch1 = 1;
-        int32_t         ch2 = 1;
+        W32CHR_T        ch1 = 1;
+        W32CHR_T        ch2 = 1;
         int             i = 0;
         
         if ((NULL == pSrc1) && (NULL == pSrc2)) {
@@ -199,7 +199,7 @@ extern "C" {
         }
         
         while ((i == 0) && ch1 && ch2) {
-            ch1 = utf8_Utf8ToWC_Scan( &pSrc1 );
+            ch1 = utf8_Utf8ToW32_Scan( &pSrc1 );
             ch2 = *pSrc2++;
             i = ch1 - ch2;
         }
@@ -265,6 +265,9 @@ extern "C" {
     {
         int             len = 0;
 
+        if (pSrc == NULL) {
+            return 0;
+        }
         while (*pSrc) {
             if ((pSrc[0] & 0x80) == 0) {
                 len += 1;
@@ -298,9 +301,9 @@ extern "C" {
     
     
     
-    int             utf8_StrLenW(
+    int             utf8_StrLenW32(
         const
-        int32_t         *pSrc
+        W32CHR_T        *pSrc
     )
     {
         int             len = 0;
@@ -333,7 +336,7 @@ extern "C" {
     int32_t         utf8_StrOffset(
         const
         char            *pSrc,
-        int32_t         offset          // Relative to 1
+        uint32_t        offset          // Relative to 1
     )
     {
         const
@@ -384,13 +387,13 @@ extern "C" {
     
     
     
-    int             utf8_Utf16beToWC(
+    int             utf8_Utf16beToW32(
         const
         char            *pSrc,
-        int32_t         *pChr
+        W32CHR_T        *pChr
     )
     {
-        uint32_t        ch;
+        W32CHR_T        ch;
         uint16_t        first = 0;
         uint16_t        second = 0;
         int             i = 2;
@@ -416,13 +419,13 @@ extern "C" {
     
     
     
-    int             utf8_Utf16leToWC(
+    int             utf8_Utf16leToW32(
         const
         char            *pSrc,
-        int32_t         *pChr
+        W32CHR_T        *pChr
     )
     {
-        uint32_t        ch;
+        W32CHR_T        ch;
         uint16_t        first = 0;
         uint16_t        second = 0;
         int             i = 2;
@@ -448,13 +451,13 @@ extern "C" {
     
     
     
-    int             utf8_Utf8ToWC(
+    int             utf8_Utf8ToW32(
         const
         char            *pSrc,
-        int32_t         *pChr
+        W32CHR_T        *pChr
     )
     {
-        uint32_t        ch = -1;
+        W32CHR_T        ch = -1;
         int             i = -1;
         
         if (pSrc == NULL)
@@ -496,12 +499,12 @@ extern "C" {
     
     
     
-    int32_t         utf8_Utf8ToWC_Scan(
+    W32CHR_T        utf8_Utf8ToW32_Scan(
         const
         char            **ppSrc
     )
     {
-        uint32_t        ch = -1;
+        W32CHR_T        ch = -1;
         
         if ((**ppSrc & 0x80) == 0) {
             ch = *ppSrc[0];
@@ -537,8 +540,8 @@ extern "C" {
     
     
     
-    bool            utf8_isValidWC(
-        int32_t         ch
+    bool            utf8_isValidW32(
+        W32CHR_T        ch
     )
     {
         if ((ch <= 0x0000) && (ch <= 0x07BF)) {
@@ -615,8 +618,8 @@ extern "C" {
     
     
     
-    int             utf8_WCToChrCon(
-        int32_t         ch,
+    int             utf8_W32ToChrCon(
+        W32CHR_T        ch,
         char            *pDest          // max 10-byte buffer.
     )
     {
@@ -659,8 +662,17 @@ extern "C" {
                     return 2;
                     break;
                     
+                case '"':
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = '"';
+                        *pDest = '\0';
+                    }
+                    return 2;
+                    break;
+                    
                 default:
-                    if (ascii_isAsciiW(ch) && ascii_isPrintableA(ch)) {
+                    if (ascii_isAsciiW32(ch) && ascii_isPrintableA(ch)) {
                         if (pDest) {
                             *pDest++ = ch;
                             *pDest = '\0';
@@ -711,11 +723,11 @@ extern "C" {
     
     
     
-    uint32_t         utf8_WCToChrConStr(
+    uint32_t         utf8_W32ToChrConStr(
         uint32_t        lenStr,         // Input String Length (if zero,
         //                              // we use NUL-terminator to stop)
         const
-        int32_t         *pStr,          // Input String pointer
+        W32CHR_T        *pStr,          // Input String pointer
         uint32_t        lenDest,        // in bytes including NUL
         char            *pDest
     )
@@ -728,10 +740,10 @@ extern "C" {
         }
         
         while (lenStr && *pStr) {
-            lenChr = utf8_WCToChrCon(*pStr, NULL);
+            lenChr = utf8_W32ToChrCon(*pStr, NULL);
             if (pDest) {
                 if (lenChr <= lenDest) {
-                    lenUsed += utf8_WCToChrCon(*pStr, pDest);
+                    lenUsed += utf8_W32ToChrCon(*pStr, pDest);
                     pDest += lenChr;
                     lenDest -= lenChr;
                 }
@@ -756,8 +768,8 @@ extern "C" {
     
     
     
-    int             utf8_WCToUtf16be(
-        int32_t         wc,
+    int             utf8_W32ToUtf16be(
+        W32CHR_T        wc,
         char            *pSrc
     )
     {
@@ -786,8 +798,8 @@ extern "C" {
     
     
     
-    int             utf8_WCToUtf16le(
-        int32_t         wc,
+    int             utf8_W32ToUtf16le(
+        W32CHR_T        wc,
         char            *pSrc
     )
     {
@@ -816,8 +828,8 @@ extern "C" {
     
     
     
-    int             utf8_WCToUtf8(
-        int32_t         ch,
+    int             utf8_W32ToUtf8(
+        W32CHR_T        ch,
         char            *pDest          // max 5-byte buffer.
     )
     {
@@ -861,11 +873,11 @@ extern "C" {
     
 
 
-    uint32_t         utf8_WCToUtf8Str(
+    uint32_t         utf8_W32ToUtf8Str(
         uint32_t        lenStr,         // Input String Length (if zero,
                                         // we use NUL-terminator to stop)
         const
-        int32_t         *pStr,          // Input String pointer
+        W32CHR_T        *pStr,          // Input String pointer
         uint32_t        lenDest,        // in bytes including NUL
         char            *pDest
     )
@@ -878,10 +890,10 @@ extern "C" {
         }
         
         while (lenStr && *pStr) {
-            lenChr = utf8_WCToUtf8(*pStr, NULL);
+            lenChr = utf8_W32ToUtf8(*pStr, NULL);
             if (pDest) {
                 if (lenChr <= lenDest) {
-                    lenUsed += utf8_WCToUtf8(*pStr, pDest);
+                    lenUsed += utf8_W32ToUtf8(*pStr, pDest);
                     pDest += lenChr;
                     lenDest -= lenChr;
                 }
@@ -1049,7 +1061,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !utf8_Validate( cbp ) ) {
+        if( !utf8_Validate(cbp) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -1086,7 +1098,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

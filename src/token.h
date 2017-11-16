@@ -59,7 +59,7 @@
 #include        <AStr.h>
 #include        <AStrC.h>
 #include        <WStr.h>
-#include        <WStrC.h>
+#include        <W32StrC.h>
 
 
 #ifndef         TOKEN_H
@@ -93,7 +93,7 @@ extern "C" {
         TOKEN_TYPE_UNKNOWN=0,
         TOKEN_TYPE_OBJECT,
         TOKEN_TYPE_FLOAT,           // double
-        TOKEN_TYPE_INTEGER,
+        TOKEN_TYPE_INTEGER,         // int64_t
         TOKEN_TYPE_STRTOKEN,        // String Token
         TOKEN_TYPE_WCHAR,           // A single unicode character
         TOKEN_TYPE_WSTRING          // A string of unicode chars, NUL terminated
@@ -135,7 +135,7 @@ extern "C" {
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -187,7 +187,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
@@ -221,13 +221,13 @@ extern "C" {
 
     /* A Character Token is only one character.
      */
-    int32_t         token_getChrW(
+    W32CHR_T        token_getChrW(
         TOKEN_DATA      *this
     );
     
     bool            token_setChrW(
         TOKEN_DATA      *this,
-        int32_t         value
+        W32CHR_T        value
     );
     
     
@@ -337,7 +337,7 @@ extern "C" {
     
     
     const
-    int32_t *       token_getTextW(
+    W32CHR_T *      token_getTextW(
         TOKEN_DATA      *this
     );
 
@@ -425,7 +425,7 @@ extern "C" {
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     TOKEN_DATA *     token_InitCharW(
@@ -435,7 +435,7 @@ extern "C" {
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     TOKEN_DATA *    token_InitInteger(
@@ -497,7 +497,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     /*!
@@ -537,7 +537,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -570,7 +570,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     

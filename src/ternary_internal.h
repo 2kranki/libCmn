@@ -58,7 +58,7 @@ extern "C" {
             void            *pData;
         };
         TERNARY_NODE    *pHigh;
-        int32_t         chr;
+        uint32_t        chr;
     };
     
     

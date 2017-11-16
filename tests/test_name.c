@@ -95,7 +95,7 @@ int         test_name_UTF8(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     const
     char        *pChrs = NULL;
@@ -110,11 +110,6 @@ int         test_name_UTF8(
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
-        pWStr1 = name_getStrW(pName1);
-        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "abc")) );
-        obj_Release(pWStr1);
-        pWStr1 = OBJ_NIL;
-        
         pChrs = name_getUTF8(pName1);
         XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
         mem_Free((void *)pChrs);
@@ -136,7 +131,7 @@ int         test_name_UTF8Con(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     const
     char        *pChrs = NULL;
@@ -150,11 +145,6 @@ int         test_name_UTF8Con(
         XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
-        
-        pWStr1 = name_getStrW(pName1);
-        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "abc")) );
-        obj_Release(pWStr1);
-        pWStr1 = OBJ_NIL;
         
         pChrs = name_getUTF8(pName1);
         XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
@@ -177,7 +167,7 @@ int         test_name_Int(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
@@ -192,12 +182,6 @@ int         test_name_Int(
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
         
-        pWStr1 = name_getStrW(pName1);
-        fprintf(stderr, "strW = %ls\n", WStr_getData(pWStr1));
-        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "0000000000000123456")) );
-        obj_Release(pWStr1);
-        pWStr1 = OBJ_NIL;
-        
         obj_Release(pName1);
         pName1 = OBJ_NIL;
     }
@@ -208,7 +192,7 @@ int         test_name_Int(
 
 
 
-int         test_name_Ptr(
+int         test_name_Obj(
     const
     char        *pTestName
 )
@@ -216,12 +200,12 @@ int         test_name_Ptr(
     NAME_DATA	*pName1 = OBJ_NIL;
     const
     char        *pStr = NULL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
-    ASTR_DATA   *pAStr1 = OBJ_NIL;
+    //WSTR_DATA   *pWStr1 = OBJ_NIL;
+    //ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pName1 = name_NewPtr( test_name_Ptr );
+    //TODO: pName1 = name_NewObj( test_name_Ptr );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
         
@@ -246,7 +230,7 @@ int         test_name_ToJSON_UTF8(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     const
     char        *pChrs = NULL;
@@ -261,11 +245,6 @@ int         test_name_ToJSON_UTF8(
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
-        pWStr1 = name_getStrW(pName1);
-        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "abc")) );
-        obj_Release(pWStr1);
-        pWStr1 = OBJ_NIL;
-        
         pChrs = name_getUTF8(pName1);
         XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
         mem_Free((void *)pChrs);
@@ -301,11 +280,6 @@ int         test_name_ToJSON_UTF8Con(
         XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
-        
-        pWStr1 = name_getStrW(pName1);
-        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "abc")) );
-        obj_Release(pWStr1);
-        pWStr1 = OBJ_NIL;
         
         pChrs = name_getUTF8(pName1);
         XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
@@ -343,12 +317,6 @@ int         test_name_ToJSON_Int(
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
         
-        pWStr1 = name_getStrW(pName1);
-        fprintf(stderr, "strW = %ls\n", WStr_getData(pWStr1));
-        XCTAssertTrue( (0 == WStr_CompareA(pWStr1, "00000000000000123456")) );
-        obj_Release(pWStr1);
-        pWStr1 = OBJ_NIL;
-        
         obj_Release(pName1);
         pName1 = OBJ_NIL;
     }
@@ -359,7 +327,7 @@ int         test_name_ToJSON_Int(
 
 
 
-int         test_name_ToJSON_Ptr(
+int         test_name_ToJSON_Obj(
     const
     char        *pTestName
 )
@@ -372,7 +340,7 @@ int         test_name_ToJSON_Ptr(
     
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pName1 = name_NewPtr( test_name_Ptr );
+    //TODO: pName1 = name_NewObj( test_name_Ptr );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
         
@@ -380,6 +348,7 @@ int         test_name_ToJSON_Ptr(
         XCTAssertTrue( (pStr) );
         fprintf(stderr, "ptr = %s\n", pStr);
         mem_Free((void *)pStr);
+        pStr = NULL;
         
         obj_Release(pName1);
         pName1 = OBJ_NIL;
@@ -393,11 +362,11 @@ int         test_name_ToJSON_Ptr(
 
 
 TINYTEST_START_SUITE(test_name);
-  //TINYTEST_ADD_TEST(test_name_ToJSON_Ptr,setUp,tearDown);
+  //TINYTEST_ADD_TEST(test_name_ToJSON_Obj,setUp,tearDown);
   //TINYTEST_ADD_TEST(test_name_ToJSON_Int,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_ToJSON_UTF8Con,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_ToJSON_UTF8,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_name_Ptr,setUp,tearDown);
+  //TINYTEST_ADD_TEST(test_name_Obj,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_Int,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_UTF8Con,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_UTF8,setUp,tearDown);

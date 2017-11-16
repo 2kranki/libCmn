@@ -666,17 +666,25 @@ extern "C" {
 #endif
         
         // Release objects and areas in other object.
-        if (pOther->pDir) {
-            obj_Release(pOther->pDir);
-            pOther->pDir = OBJ_NIL;
-        }
-        if (pOther->pName) {
-            obj_Release(pOther->pName);
-            pOther->pName = OBJ_NIL;
-        }
+        (void)dirEntry_setFullPath(pOther, OBJ_NIL);
+        (void)dirEntry_setDir(pOther, OBJ_NIL);
+        (void)dirEntry_setName(pOther, OBJ_NIL);
+        (void)dirEntry_setShortName(pOther, OBJ_NIL);
+        (void)dirEntry_setCreationTime(pOther, OBJ_NIL);
+        (void)dirEntry_setModifiedTime(pOther, OBJ_NIL);
+        (void)dirEntry_setStatusChangeTime(pOther, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
+        if (this->pFullPath) {
+            if (obj_getVtbl(this->pFullPath)->pCopy) {
+                pOther->pFullPath = obj_getVtbl(this->pFullPath)->pCopy(this->pFullPath);
+            }
+            else {
+                obj_Retain(this->pFullPath);
+                pOther->pFullPath = this->pFullPath;
+            }
+        }
         if (this->pDir) {
             if (obj_getVtbl(this->pDir)->pCopy) {
                 pOther->pDir = obj_getVtbl(this->pDir)->pCopy(this->pDir);
@@ -695,13 +703,56 @@ extern "C" {
                 pOther->pName = this->pName;
             }
         }
+        if (this->pShortName) {
+            if (obj_getVtbl(this->pShortName)->pCopy) {
+                pOther->pShortName = obj_getVtbl(this->pShortName)->pCopy(this->pShortName);
+            }
+            else {
+                obj_Retain(this->pShortName);
+                pOther->pShortName = this->pShortName;
+            }
+        }
+        if (this->pCreationTime) {
+            if (obj_getVtbl(this->pCreationTime)->pCopy) {
+                pOther->pCreationTime =
+                        obj_getVtbl(this->pCreationTime)->pCopy(this->pCreationTime);
+            }
+            else {
+                obj_Retain(this->pCreationTime);
+                pOther->pCreationTime = this->pCreationTime;
+            }
+        }
+        if (this->pModifiedTime) {
+            if (obj_getVtbl(this->pModifiedTime)->pCopy) {
+                pOther->pModifiedTime =
+                        obj_getVtbl(this->pModifiedTime)->pCopy(this->pModifiedTime);
+            }
+            else {
+                obj_Retain(this->pModifiedTime);
+                pOther->pModifiedTime = this->pModifiedTime;
+            }
+        }
+        if (this->pStatusChangeTime) {
+            if (obj_getVtbl(this->pStatusChangeTime)->pCopy) {
+                pOther->pStatusChangeTime =
+                    obj_getVtbl(this->pStatusChangeTime)->pCopy(this->pStatusChangeTime);
+            }
+            else {
+                obj_Retain(this->pStatusChangeTime);
+                pOther->pStatusChangeTime = this->pStatusChangeTime;
+            }
+        }
 
         // Copy other data from this object to other.
-        pOther->type = this->type;
+        pOther->type     = this->type;
 #if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         pOther->fileSize = this->fileSize;
 #endif
-        pOther->attr = this->attr;
+        pOther->attr     = this->attr;
+        pOther->userID   = this->userID;
+        pOther->groupID  = this->groupID;
+        pOther->genNum   = this->genNum;
+        pOther->eaSize   = this->eaSize;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -721,7 +772,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        int32_t         i;
+        //int32_t         i;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -826,16 +877,19 @@ extern "C" {
         }
 #endif
 
+        (void)dirEntry_setFullPath(this, OBJ_NIL);
         (void)dirEntry_setDir(this, OBJ_NIL);
         (void)dirEntry_setName(this, OBJ_NIL);
+        (void)dirEntry_setShortName(this, OBJ_NIL);
         (void)dirEntry_setCreationTime(this, OBJ_NIL);
         (void)dirEntry_setModifiedTime(this, OBJ_NIL);
         (void)dirEntry_setStatusChangeTime(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -988,12 +1042,13 @@ extern "C" {
     void *          dirEntry_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         DIRENTRY_DATA   *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1029,7 +1084,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -1073,7 +1128,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1098,7 +1153,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(dirEntry)}\n", this);
         AStr_AppendA(pStr, str);

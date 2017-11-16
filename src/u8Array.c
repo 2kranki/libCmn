@@ -1174,7 +1174,7 @@ extern "C" {
         if (iMax) {
             for (i=0; i<iMax; ++i) {
                 wchr = *pData++;
-                if (ascii_isAsciiW(wchr) && ascii_isPrintableA(wchr)) {
+                if (ascii_isAsciiW32(wchr) && ascii_isPrintableA(wchr)) {
                     AStr_AppendCharA(pWrkStr, wchr);
                 }
                 else {
@@ -1228,7 +1228,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

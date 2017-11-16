@@ -102,7 +102,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     trace_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
-    NULL,
+    NULL,               // trace_ClassDealloc
     obj_Class,
     obj_ClassWhoAmI
 };
@@ -165,12 +165,12 @@ const
 OBJ_IUNKNOWN    trace_Vtbl = {
 	&trace_Info,
     trace_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    trace_Dealloc,
+    obj_RetainNull,
+    obj_ReleaseNull,
+    NULL,           // trace_Dealloc,
     trace_Class,
     trace_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)
+    (P_OBJ_QUERYINFO)trace_QueryInfo,
     NULL,           // (P_OBJ_TOSTRING)trace_ToDebugString,
     NULL,			// trace_Enable,
     NULL,			// trace_Disable,
@@ -186,9 +186,10 @@ static
 const
 OBJ_INFO        trace_Info = {
     "trace",
-    "trace",				// <-- Fill in description
+    "Trace",
     (OBJ_DATA *)&trace_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&trace_Vtbl
 };
 
 

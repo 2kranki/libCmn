@@ -225,7 +225,7 @@ extern "C" {
         cbp = path_Alloc( );
         cbp = path_Init(cbp);
         if (cbp) {
-            eRc = AStr_AppendStrW((ASTR_DATA *)cbp, pStr);
+            eRc = AStr_AppendStrW32((ASTR_DATA *)cbp, pStr);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(cbp);
                 cbp = OBJ_NIL;
@@ -238,10 +238,10 @@ extern "C" {
     
     
     
-    PATH_DATA *     path_NewW(
+    PATH_DATA *     path_NewW32(
         uint32_t        len,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         PATH_DATA       *cbp;
@@ -255,7 +255,7 @@ extern "C" {
         cbp = path_Alloc( );
         cbp = path_Init(cbp);
         if (cbp) {
-            eRc = AStr_AppendW((ASTR_DATA *)cbp, len, pStr);
+            eRc = AStr_AppendW32((ASTR_DATA *)cbp, len, pStr);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(cbp);
                 cbp = OBJ_NIL;
@@ -555,7 +555,7 @@ extern "C" {
         }
         
         if ((AStr_getLength((ASTR_DATA *)this)) >= 1) {
-            chr1 = AStr_CharGetW((ASTR_DATA *)this, 1);
+            chr1 = AStr_CharGetW32((ASTR_DATA *)this, 1);
             if( chr1 == '~' ) {
                 pszHome = getenv("HOME");
                 if (pszHome && (str_LengthA(pszHome) > 1)) {
@@ -578,8 +578,8 @@ extern "C" {
         
         for (i=0; i<AStr_getLength((ASTR_DATA *)this); ++i) {
             if ((AStr_getLength((ASTR_DATA *)this) - i) >= 2) {
-                chr1 = AStr_CharGetW((ASTR_DATA *)this, i+1);
-                chr2 = AStr_CharGetW((ASTR_DATA *)this, i+2);
+                chr1 = AStr_CharGetW32((ASTR_DATA *)this, i+1);
+                chr2 = AStr_CharGetW32((ASTR_DATA *)this, i+2);
                 if( (chr1 == '/') && (chr2 == '/') ) {
                     eRc = AStr_Remove((ASTR_DATA *)this, (i + 1), 1 );
                     if (ERESULT_HAS_FAILED(eRc)) {
@@ -589,9 +589,9 @@ extern "C" {
                 }
             }
             if ((AStr_getLength((ASTR_DATA *)this) - i) >= 3) {
-                chr1 = AStr_CharGetW((ASTR_DATA *)this, i+1);
-                chr2 = AStr_CharGetW((ASTR_DATA *)this, i+2);
-                chr3 = AStr_CharGetW((ASTR_DATA *)this, i+3);
+                chr1 = AStr_CharGetW32((ASTR_DATA *)this, i+1);
+                chr2 = AStr_CharGetW32((ASTR_DATA *)this, i+2);
+                chr3 = AStr_CharGetW32((ASTR_DATA *)this, i+3);
                 if( (chr1 == '/') && (chr2 == '.') && (chr3 == '/') ) {
                     eRc = AStr_Remove((ASTR_DATA *)this, (i + 1), 2 );
                     if (ERESULT_HAS_FAILED(eRc)) {
@@ -604,9 +604,9 @@ extern "C" {
         
         i = AStr_getLength((ASTR_DATA *)this);
         if (i >= 3) {
-            chr1 = AStr_CharGetW((ASTR_DATA *)this, i-2);
-            chr2 = AStr_CharGetW((ASTR_DATA *)this, i-1);
-            chr3 = AStr_CharGetW((ASTR_DATA *)this, i);
+            chr1 = AStr_CharGetW32((ASTR_DATA *)this, i-2);
+            chr2 = AStr_CharGetW32((ASTR_DATA *)this, i-1);
+            chr3 = AStr_CharGetW32((ASTR_DATA *)this, i);
             if( (chr1 == '/') && (chr2 == '.') && (chr3 == '/') ) {
                 eRc = AStr_Remove((ASTR_DATA *)this, (i - 2), 2 );
                 if (ERESULT_HAS_FAILED(eRc)) {
@@ -617,7 +617,7 @@ extern "C" {
 
         for (;;) {
             i = AStr_getLength((ASTR_DATA *)this);
-            chr1 = AStr_CharGetW((ASTR_DATA *)this, i);
+            chr1 = AStr_CharGetW32((ASTR_DATA *)this, i);
             if ((chr1 == '/') && (i > 1)) {
                 eRc = AStr_Remove((ASTR_DATA *)this, i, 1 );
                 if (ERESULT_HAS_FAILED(eRc)) {
@@ -634,15 +634,15 @@ extern "C" {
             fMore = false;
             for (i=0; i<AStr_getLength((ASTR_DATA *)this); ++i) {
                 if ((AStr_getLength((ASTR_DATA *)this) - i) >= 3) {
-                    chr1 = AStr_CharGetW((ASTR_DATA *)this, i+1);
-                    chr2 = AStr_CharGetW((ASTR_DATA *)this, i+2);
+                    chr1 = AStr_CharGetW32((ASTR_DATA *)this, i+1);
+                    chr2 = AStr_CharGetW32((ASTR_DATA *)this, i+2);
                     if( (chr1 == '$') && (chr2 == '{') ) {
                         ASTR_DATA       *pName = AStr_New();
                         if (OBJ_NIL == pName) {
                             return ERESULT_INVALID_DATA;
                         }
                         for (j=i+2; j<AStr_getLength((ASTR_DATA *)this); ++j) {
-                            chr1 = AStr_CharGetW((ASTR_DATA *)this, j+1);
+                            chr1 = AStr_CharGetW32((ASTR_DATA *)this, j+1);
                             if( chr1 == '}' ) {
                                 fMore = true;
                                 break;
@@ -675,7 +675,7 @@ extern "C" {
 #endif
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1203,7 +1203,7 @@ extern "C" {
         }
         
         if (pFileExt) {
-            chr = AStr_CharGetW(pFileExt, 1);
+            chr = AStr_CharGetW32(pFileExt, 1);
             if (chr == '.')
                 ;
             else {
@@ -1351,7 +1351,7 @@ extern "C" {
 #endif
         
         index2 = 0;
-        eRc = AStr_CharFindPrevW((ASTR_DATA *)cbp, &index2, '.');
+        eRc = AStr_CharFindPrevW32((ASTR_DATA *)cbp, &index2, '.');
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             begin = begDir;
             end = index2 - 1;
@@ -1438,7 +1438,7 @@ extern "C" {
 #endif
 
         index = 0;
-        eRc = AStr_CharFindNextW((ASTR_DATA *)this, &index, ':');
+        eRc = AStr_CharFindNextW32((ASTR_DATA *)this, &index, ':');
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             begin = 1;
             end = index - 1;
@@ -1469,7 +1469,7 @@ extern "C" {
         }
         
         index = 0;
-        eRc = AStr_CharFindPrevW((ASTR_DATA *)this, &index, '/');
+        eRc = AStr_CharFindPrevW32((ASTR_DATA *)this, &index, '/');
         if (ERESULT_IS_SUCCESSFUL(eRc)) {     // *** Directory is present ***
             if (ppDir) {
                 *ppDir = OBJ_NIL;
@@ -1565,7 +1565,7 @@ extern "C" {
             return ERESULT_BAD_LENGTH;
         }
         for (i=0; i<lenStr; ++i) {
-            chr = AStr_CharGetW((ASTR_DATA *)this, i+1);
+            chr = AStr_CharGetW32((ASTR_DATA *)this, i+1);
             if (chr == ' ') {
                 AStr_AppendCharA(pStr, '\\');
                 AStr_AppendCharA(pStr, chr);
@@ -1606,7 +1606,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1667,7 +1667,7 @@ extern "C" {
             return ERESULT_BAD_LENGTH;
         }
         for (i=0; i<lenStr; ++i) {
-            chr = AStr_CharGetW((ASTR_DATA *)this, i+1);
+            chr = AStr_CharGetW32((ASTR_DATA *)this, i+1);
             if (chr == '/') {
                 AStr_AppendCharA(pStr, '\\');
             }
@@ -1694,18 +1694,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            path_Validate(
-        PATH_DATA      *cbp
+        PATH_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp, OBJ_IDENT_PATH) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_PATH) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(PATH_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(PATH_DATA)) )
             return false;
 
         // Return to caller.

@@ -1,5 +1,5 @@
 /*
- *	Generated 10/07/2017 12:40:01
+ *	Generated 11/01/2017 08:45:27
  */
 
 
@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <execPtr_internal.h>
+#include    <objTest_internal.h>
 
 
 
@@ -63,51 +63,22 @@ int         tearDown(
 
 
 
-int         test_execPtr_OpenClose(
+int         test_objTest_OpenClose(
     const
     char        *pTestName
 )
 {
-    EXECPTR_DATA	*pObj = OBJ_NIL;
-    void            *fFunc;
+    OBJTEST_DATA	*pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = execPtr_Alloc( );
+
+    pObj = objTest_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = execPtr_Init(pObj, NULL);
+    pObj = objTest_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        fFunc = execPtr_getFunc(pObj);
-        TINYTEST_TRUE( (NULL == fFunc) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-int         test_execPtr_OpenClose2(
-    const
-    char        *pTestName
-)
-{
-    EXECPTR_DATA	*pObj = OBJ_NIL;
-    void            *fFunc;
-   
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = execPtr_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = execPtr_Init(pObj, (void *)&tearDown);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        fFunc = execPtr_getFunc(pObj);
-        TINYTEST_TRUE( (&tearDown == fFunc) );
+        // Test something.
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -120,12 +91,11 @@ int         test_execPtr_OpenClose2(
 
 
 
-TINYTEST_START_SUITE(test_execPtr);
-    TINYTEST_ADD_TEST(test_execPtr_OpenClose2,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_execPtr_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_objTest);
+    TINYTEST_ADD_TEST(test_objTest_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_execPtr);
+TINYTEST_MAIN_SINGLE_SUITE(test_objTest);
 
 
 

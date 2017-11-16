@@ -127,9 +127,9 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool            ternary_Add(
+    bool            ternary_AddW32(
         TERNARY_DATA	*this,
-        int32_t			*pName,
+        W32CHR_T		*pName,
         void            *pData
     );
     
@@ -138,9 +138,9 @@ extern "C" {
      Search for the key.
      @return    If key is found, return the data ptr, otherwise NULL.
      */
-    void *          ternary_Find(
+    void *          ternary_FindW32(
         TERNARY_DATA	*this,
-        int32_t			*pszKey
+        W32CHR_T		*pszKey
     );
     
     

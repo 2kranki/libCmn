@@ -96,9 +96,9 @@ extern "C" {
     // Return offset of chr in string (relative to 1)
     // Returns 0 if not found.
     uint32_t        WStr_ChrInStr(
-        int32_t         chr,
+        W32CHR_T        chr,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
@@ -110,20 +110,20 @@ extern "C" {
      */
     ERESULT         WStr_Cmp(
         const
-        int32_t         *pStr1,
+        W32CHR_T        *pStr1,
         const
-        int32_t         *pStr2
+        W32CHR_T        *pStr2
     );
     
     
-    bool            WStr_IsWhiteSpaceW(
-        int32_t         chr
+    bool            WStr_IsWhiteSpaceW32(
+        W32CHR_T        chr
     );
     
     
     uint32_t        WStr_StrLen(
         const
-        int32_t         *pData
+        W32CHR_T        *pData
     );
     
     
@@ -138,10 +138,10 @@ extern "C" {
     );
     
     
-    WSTR_DATA *     WStr_NewW(
+    WSTR_DATA *     WStr_NewW32(
         uint32_t        len,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
@@ -176,7 +176,7 @@ extern "C" {
     // Returns a ptr to an array of white space
     // characters terminated with a NUL.
     const
-    int32_t *       WStr_WhiteSpaceW(
+    W32CHR_T *      WStr_WhiteSpaceW32(
         void
     );
     
@@ -193,7 +193,7 @@ extern "C" {
     
     
     const
-    int32_t *       WStr_getData(
+    W32CHR_T *      WStr_getData(
         WSTR_DATA     *this
     );
     
@@ -242,20 +242,20 @@ extern "C" {
     );
     
     
-    ERESULT         WStr_AppendW(
+    ERESULT         WStr_AppendW32(
         WSTR_DATA		*this,
         uint32_t        len,                // Data Length or 0 to use NUL-terminator
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
     // Append len number of chr's to string.
-    ERESULT         WStr_AppendCharW(
+    ERESULT         WStr_AppendCharW32(
         WSTR_DATA		*this,
         uint32_t        len,
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -268,21 +268,21 @@ extern "C" {
     // Search the string for the provided char. If *pIndex
     // is set to 0, then the search begins at the begin-
     // ning of the string.
-    ERESULT         WStr_CharFindNextW(
+    ERESULT         WStr_CharFindNextW32(
         WSTR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
 
     // Search the string backwards for the provided char. If
     // *pIndex is set to 0, then the search begins at the
     // end of the string.
-    ERESULT         WStr_CharFindPrevW(
+    ERESULT         WStr_CharFindPrevW32(
         WSTR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -293,7 +293,7 @@ extern "C" {
         valid character if returned character is greater than or 
         equal to zero, otherwise -1
      */
-    int32_t         WStr_CharGetW(
+    W32CHR_T        WStr_CharGetW32(
         WSTR_DATA		*this,
         uint32_t        offset              // Relative to 1
     );
@@ -301,20 +301,20 @@ extern "C" {
 
     /*! Simple scan and replace of single characters
      */
-    ERESULT         WStr_CharReplaceAllW(
+    ERESULT         WStr_CharReplaceAllW32(
         WSTR_DATA		*this,
         const
-        int32_t         chrSrch,
+        W32CHR_T        chrSrch,
         const
-        int32_t         chrRepl
+        W32CHR_T        chrRepl
     );
     
     
-    ERESULT         WStr_CharPutW(
+    ERESULT         WStr_CharPutW32(
         WSTR_DATA		*this,
         uint32_t        offset,             // Relative to 1
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -353,10 +353,10 @@ extern "C" {
         ERESULT_SUCCESS_LESS_THAN if this < string
         or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
-    ERESULT         WStr_CompareW(
+    ERESULT         WStr_CompareW32(
         WSTR_DATA		*this,
         const
-        int32_t         *pString
+        W32CHR_T        *pString
     );
     
     
@@ -396,7 +396,7 @@ extern "C" {
     ERESULT         WStr_IndexUntil(
         WSTR_DATA		*this,
         const
-        int32_t         *pSetStr,
+        W32CHR_T        *pSetStr,
         uint32_t        *pIndex             // [in-out]
     );
     
@@ -460,11 +460,11 @@ extern "C" {
     // Calculates the index into the string for all the
     // characters found in the Set String. Returns 0
     // if the end of string is found.
-    ERESULT         WStr_SpanW(
+    ERESULT         WStr_SpanW32(
         WSTR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         const
-        int32_t         *pSetStr
+        W32CHR_T        *pSetStr
     );
     
     

@@ -163,8 +163,8 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an
      ERESULT_* Error Code.
      */
-    ERESULT         audioCW_IsValidW(
-        int32_t         chr
+    ERESULT         audioCW_IsValidW32(
+        uint32_t        chr
     );
     
     
@@ -218,16 +218,16 @@ extern "C" {
     );
 
 
-    ERESULT         audioCW_PutTextW(
+    ERESULT         audioCW_PutTextW32(
         AUDIOCW_DATA	*this,
         uint32_t        cData,              // Length of data
-        int32_t         *pData
+        W32CHR_T        *pData
     );
     
     
-    ERESULT         audioCW_PutW(
+    ERESULT         audioCW_PutW32(
         AUDIOCW_DATA	*this,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
  

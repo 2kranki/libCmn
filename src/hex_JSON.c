@@ -100,7 +100,10 @@ extern "C" {
         uint32_t        chkCrc;
         uint32_t        length = 0;
         uint8_t         *pData = NULL;
-        
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = hex_Vtbl.iVtbl.pInfo;
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
             goto exit00;
@@ -115,12 +118,70 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        pStr2 = nodeHash_ToDebugString(pHash, 0);
-        fprintf(stderr, "%s\n", AStr_getData(pStr2));
-        obj_Release(pStr2);
-        pStr2 = OBJ_NIL;
+#ifdef TRACE_FUNCTIONS
+        {
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+        }
+#endif
 #endif
 
+        eRc = nodeHash_FindA(pHash, "objectType", &pNode);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pNode = node_getData(pNode);
+            pName = node_getName(pNode);
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+                pStr = node_getData(pNode);
+                if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
+                }
+                else {
+                    fprintf(stderr,
+                            "ERROR - objectType is \"%s\", but need \"%s\"!\n",
+                            AStr_getData(pStr),
+                            pInfo->pClassName
+                            );
+#ifdef TRACE_FUNCTIONS
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
+                    DEBUG_BREAK();
+#endif
+                    eRc = ERESULT_GENERAL_FAILURE;
+                    goto exit00;
+                }
+                
+            }
+            else {
+                fprintf(stderr,
+                        "ERROR - objectType needs to be a \"string\"!\n"
+                        );
+#ifdef TRACE_FUNCTIONS
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
+                DEBUG_BREAK();
+#endif
+                eRc = ERESULT_GENERAL_FAILURE;
+                goto exit00;
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - objectType is missing!\n");
+#ifdef TRACE_FUNCTIONS
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+            DEBUG_BREAK();
+#endif
+            eRc = ERESULT_GENERAL_FAILURE;
+            goto exit00;
+        }
+        
         eRc = nodeHash_FindA(pHash, "crc", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
@@ -202,8 +263,8 @@ extern "C" {
                     for (i=0; i<length; ++i) {
                         int         high;
                         int         low;
-                        high = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+1));
-                        low  = hex_DigitToIntA(AStr_CharGetW(pStr, (2*i)+2));
+                        high = hex_DigitToIntA(AStr_CharGetW32(pStr, (2*i)+1));
+                        low  = hex_DigitToIntA(AStr_CharGetW32(pStr, (2*i)+2));
                         if ((high == -1) || (low == -1)) {
                             fprintf(stderr, "ERROR - data contains invalud data!\n");
                             pStr2 = nodeHash_ToDebugString(pHash, 0);

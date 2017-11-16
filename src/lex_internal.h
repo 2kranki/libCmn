@@ -132,7 +132,7 @@ struct lex_data_s	{
      */
     TOKEN_DATA *    lex_MatchInputChr(
         LEX_DATA		*this,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -161,8 +161,8 @@ struct lex_data_s	{
      */
     TOKEN_DATA *    lex_MatchInputRange(
         LEX_DATA		*this,
-        int32_t         chrBeg,
-        int32_t         chrEnd
+        W32CHR_T        chrBeg,
+        W32CHR_T        chrEnd
     );
     
     
@@ -176,7 +176,7 @@ struct lex_data_s	{
      */
     TOKEN_DATA *    lex_MatchInputSet(
         LEX_DATA		*this,
-        int32_t         *pSet
+        W32CHR_T        *pSet
     );
     
     
@@ -186,7 +186,7 @@ struct lex_data_s	{
      */
     bool            lex_ParseChrCon(
         LEX_DATA        *this,
-        int32_t         ending
+        W32CHR_T        ending
     );
     
     
@@ -196,7 +196,7 @@ struct lex_data_s	{
      */
     bool            lex_ParseChrConWS(
         LEX_DATA        *this,
-        int32_t         ending
+        W32CHR_T        ending
     );
     
     

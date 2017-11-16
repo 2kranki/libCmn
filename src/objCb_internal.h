@@ -5,11 +5,7 @@
  * Author: bob
  *
  * Notes:
- *   1	Before including define the following to customize the config bits for
- *		the development environment needed:
- *		_EXPLORER_16		Microchip Explorer 16 board
- *		_MAX32              Diligent MAX 32 board
- *		_NETWORK_SHIELD     Diligent Network Shield
+ *   1	None
  *
  * Created on September 26, 2014, 3:39 PM
  */
@@ -51,6 +47,8 @@
 
 
 #include    <objCb.h>
+#include    <cb_internal.h>
+#include    <psxCond.h>
 #include    <psxLock.h>
 #include    <psxSem.h>
 
@@ -65,11 +63,12 @@ extern "C" {
         /* Warning - OBJ_DATA must be first in this object!
          */
         OBJ_DATA        super;
-
-        PSXSEM_DATA     *pSemEmpty;
-        PSXSEM_DATA     *pSemFull;
-        PSXLOCK_DATA    *pLock;
+        OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+#define OBJCB_FLAG_STOP    5
         
+        PSXCOND_DATA    *pEmpty;
+        PSXCOND_DATA    *pFull;
+        PSXMUTEX_DATA   *pMutex;
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements

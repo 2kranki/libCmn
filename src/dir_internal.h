@@ -58,13 +58,6 @@ struct dir_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;		/* maximum number of elements           */
-    uint16_t        reserved;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
 
 };
 #pragma pack(pop)

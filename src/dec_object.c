@@ -223,9 +223,9 @@ uint32_t         dec_getUint32A(
 
 
 
-int32_t          dec_getInt32W(
+int32_t          dec_getInt32W32(
     const
-    int32_t         *pStr
+    W32CHR_T        *pStr
 )
 {
     int32_t         i = 0;

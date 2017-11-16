@@ -57,7 +57,6 @@ struct psxMutex_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define PSXMUTEX_FLAG_LOCKED    6
 
     // Common Data
 #if defined(__MACOSX_ENV__)

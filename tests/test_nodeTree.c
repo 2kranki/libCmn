@@ -242,7 +242,6 @@ int         tearDown(
 
     szTbl_SharedReset();
     trace_SharedReset( ); 
-    mem_Dump( );
     mem_Release( );
     
     return 1; 
@@ -610,7 +609,7 @@ int         test_nodeTree_Move01(
     NODETREE_DATA	*pObj = OBJ_NIL;
     NODEENTRY_DATA  *pEntry = OBJ_NIL;
     uint32_t        i;
-    ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     

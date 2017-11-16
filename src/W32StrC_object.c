@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'arrayExpand'
-//	Generated 10/07/2016 10:36:42
+//	Class Object Metods and Tables for 'W32StrC'
+//	Generated 02/19/2016 09:34:06
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +31,9 @@
  */
 
 
-#define			ARRAYEXPAND_OBJECT_C	    1
-#include        "arrayExpand_internal.h"
+#define			W32STRC_OBJECT_C	    1
+#include        "obj.h"
+#include        "W32StrC_internal.h"
 
 
 
@@ -40,14 +41,15 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct arrayExpand_class_data_s	{
-    // Warning - OBJ_DATA must be first in this object!
+struct W32StrC_class_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
+     */
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct arrayExpand_class_data_s ARRAYEXPAND_CLASS_DATA;
+typedef struct W32StrC_class_data_s W32STRC_CLASS_DATA;
 
 
 
@@ -60,22 +62,22 @@ typedef struct arrayExpand_class_data_s ARRAYEXPAND_CLASS_DATA;
 
 static
 const
-OBJ_INFO        arrayExpand_Info;            // Forward Reference
+OBJ_INFO        W32StrC_Info;          // Forward Reference
 
 
 
-OBJ_ID          arrayExpand_Class(
+OBJ_ID          W32StrC_Class(
     void
 );
 
 
 
 static
-bool            arrayExpand_ClassIsKindOf(
+bool            W32StrC_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_ARRAYEXPAND_CLASS == classID) {
+    if (OBJ_IDENT_W32STRC_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -90,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_ARRAYEXPAND_CLASS;
+    return OBJ_IDENT_W32STRC_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&arrayExpand_Info,
-    arrayExpand_ClassIsKindOf,
+	&W32StrC_Info,
+    W32StrC_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -113,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-ARRAYEXPAND_CLASS_DATA  arrayExpand_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_ARRAYEXPAND_CLASS, 0, 1},
+W32STRC_CLASS_DATA  W32StrC_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_W32STRC_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            arrayExpand_IsKindOf(
+bool            W32StrC_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_ARRAYEXPAND == classID) {
+    if (OBJ_IDENT_W32STRC == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -137,51 +139,58 @@ bool            arrayExpand_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            arrayExpand_Dealloc(
+void            W32StrC_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          arrayExpand_Class(
+OBJ_ID          W32StrC_Class(
     void
 )
 {
-    return (OBJ_ID)&arrayExpand_ClassObj;
+    return (OBJ_ID)&W32StrC_ClassObj;
 }
 
 
 static
-uint16_t		arrayExpand_WhoAmI(
+uint16_t		W32StrC_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_ARRAYEXPAND;
+    return OBJ_IDENT_W32STRC;
 }
 
 
 const
-ARRAYEXPAND_VTBL     arrayExpand_Vtbl = {
+W32STRC_VTBL_INTERNAL W32StrC_Vtbl = {
     {
-        &arrayExpand_Info,
-        arrayExpand_IsKindOf,
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-        arrayExpand_Dealloc,
-        arrayExpand_Class,
-        arrayExpand_WhoAmI,
-        NULL,
-        (P_OBJ_TOSTRING)arrayExpand_ToDebugString,
-        NULL,			// arrayExpand_Enable,
-        NULL,			// arrayExpand_Disable,
-        NULL,			// (P_OBJ_ASSIGN)arrayExpand_Assign,
-        NULL,			// (P_OBJ_COMPARE)arrayExpand_Compare,
-        NULL, 			// (P_OBJ_PTR)arrayExpand_Copy,
-        NULL 			// (P_OBJ_HASH)arrayExpand_Hash
+        {
+            &W32StrC_Info,
+            W32StrC_IsKindOf,
+            obj_RetainStandard,
+            obj_ReleaseStandard,
+            W32StrC_Dealloc,
+            W32StrC_Class,
+            W32StrC_WhoAmI,
+            NULL,           // (P_OBJ_QUERYINFO)
+            (P_OBJ_TOSTRING)W32StrC_ToDebugString,
+            NULL,			// WStrC_Enable,
+            NULL,			// WStrC_Disable,
+            NULL,			// (P_OBJ_ASSIGN)WStrC_Assign,
+            (P_OBJ_COMPARE)W32StrC_Compare,
+            (P_OBJ_PTR)W32StrC_Copy,
+            (P_OBJ_HASH)W32StrC_Hash
+        },
+        // Put other object method names below this.
+        // Properties:
+        // Methods:
+        W32StrC_getData,
+        W32StrC_getLength
     },
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    //arrayExpand_IsEnabled,
+#ifdef NDEBUG
+#else
+    W32StrC_Validate
+#endif
  
 };
 
@@ -189,12 +198,11 @@ ARRAYEXPAND_VTBL     arrayExpand_Vtbl = {
 
 static
 const
-OBJ_INFO        arrayExpand_Info = {
-    "arrayExpand",
-    "Expandable Array",
-    (OBJ_DATA *)&arrayExpand_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&arrayExpand_Vtbl
+OBJ_INFO        W32StrC_Info = {
+    "W32StrC",
+    "Constant Wide String",
+    (OBJ_DATA *)&W32StrC_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj
 };
 
 

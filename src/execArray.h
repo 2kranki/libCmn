@@ -8,7 +8,7 @@
  *			Array of Methods and Objects (execArray)
  * Purpose
  *			This object provides an array of methods and objects that
- *          can be all be executed at once. The method/object combination
+ *          can all be executed at once. The method/object combination
  *          can be added multiple times. So, this could be used for
  *          instance to release objects in an Obj-C autorelease type
  *          system.

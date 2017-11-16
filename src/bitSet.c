@@ -820,7 +820,7 @@ extern "C" {
         AStr_AppendCharRepeatA(pStr, indent+3, ' ');
         AStr_AppendA(pStr, " ");
         for (x=1; x<=cbp->xMax; ++x) {
-            AStr_AppendCharRepeatW(pStr, 1, '0'+(x % 10));
+            AStr_AppendCharRepeatW32(pStr, 1, '0'+(x % 10));
         }
         AStr_AppendA(pStr, "\n");
         AStr_AppendCharRepeatA(pStr, indent+3, ' ');

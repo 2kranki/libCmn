@@ -152,11 +152,11 @@ extern "C" {
     
     
     static
-    SZHASH_NODE *   szHash_FindNodeW(
+    SZHASH_NODE *   szHash_FindNodeW32(
         SZHASH_DATA     *this,
         uint32_t        hash,
         const
-        int32_t         *pszKey
+        W32CHR_T        *pszKey
     )
     {
         LISTDL_DATA     *pNodeList;
@@ -169,7 +169,7 @@ extern "C" {
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
             if (pNode->hash == hash) {
-                iRc = (*this->pCompareAW)(pNode->pszKey, pszKey);
+                iRc = (*this->pCompareAW32)(pNode->pszKey, pszKey);
                 if (0 == iRc) {
                     return pNode;
                 }
@@ -269,7 +269,7 @@ extern "C" {
     bool			szHash_setCompare(
         SZHASH_DATA     *this,
         int             (*pCompare)(const char *pKey1, const char *pKey2),
-        int             (*pCompareAW)(const char *pKey1, const int32_t *pKey2)
+        int             (*pCompareAW32)(const char *pKey1, const W32CHR_T *pKey2)
     )
     {
         
@@ -286,7 +286,7 @@ extern "C" {
 #endif
         
         this->pCompare = pCompare;
-        this->pCompareAW = pCompareAW;
+        this->pCompareAW32 = pCompareAW32;
         
         return true;
     }
@@ -296,7 +296,7 @@ extern "C" {
     bool			szHash_setComputeHash(
         SZHASH_DATA     *this,
         uint32_t        (*pComputeHash)(const char *pszKey1, size_t *pLen),
-        uint32_t        (*pComputeHashW)(const int32_t *pszKey1, size_t *pLen)
+        uint32_t        (*pComputeHashW32)(const W32CHR_T *pszKey1, size_t *pLen)
     )
     {
         
@@ -313,7 +313,7 @@ extern "C" {
 #endif
         
         this->pComputeHash = pComputeHash;
-        this->pComputeHashW = pComputeHashW;
+        this->pComputeHashW32 = pComputeHashW32;
         
         return true;
     }
@@ -583,10 +583,10 @@ extern "C" {
     }
     
     
-    void *          szHash_FindW(
+    void *          szHash_FindW32(
         SZHASH_DATA     *this,
         const
-        int32_t         *pszKey
+        W32CHR_T        *pszKey
     )
     {
         SZHASH_NODE     *pNode;
@@ -601,9 +601,9 @@ extern "C" {
         }
 #endif
         
-        hash = (*this->pComputeHashW)(pszKey,NULL);
+        hash = (*this->pComputeHashW32)(pszKey, NULL);
         
-        pNode = szHash_FindNodeW(this, hash, pszKey);
+        pNode = szHash_FindNodeW32(this, hash, pszKey);
         if (pNode) {
             return pNode->pData;
         }
@@ -658,8 +658,8 @@ extern "C" {
         listdl_Init(&this->freeList, offsetof(SZHASH_NODE, list));
         
         // Set Default Comparison Routines.
-        szHash_setComputeHash(this, str_HashA, str_HashW);
-        szHash_setCompare(this, utf8_StrCmp, utf8_StrCmpAW);
+        szHash_setComputeHash(this, str_HashA, str_HashW32);
+        szHash_setCompare(this, utf8_StrCmp, utf8_StrCmpAW32);
         
     #ifdef NDEBUG
     #else
@@ -697,7 +697,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

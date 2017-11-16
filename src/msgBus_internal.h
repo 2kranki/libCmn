@@ -4,7 +4,8 @@
  *	Generated 05/31/2017 20:00:00
  *
  * Notes:
- *  --	N/A
+ *  --	We use the node data property to hold the receiver object and
+ *      the misc field to hold the offset of the method in the vtbl.
  *
  */
 
@@ -40,7 +41,8 @@
 
 
 #include    <msgBus.h>
-#include    <cb.h>
+#include    <msgData.h>
+#include    <objCb.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <psxLock.h>
@@ -60,12 +62,6 @@ extern "C" {
 #endif
 
 
-    typedef struct msg_entry {
-        OBJ_ID      pObj;
-        uint8_t     msg[0];
-    } MSG_ENTRY;
-
-
 #pragma pack(push, 1)
 struct msgBus_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
@@ -78,11 +74,13 @@ struct msgBus_data_s	{
     PSXLOCK_DATA    *pLock;
     NODEARRAY_DATA  *pRegistry;
     PSXTHREAD_DATA  *pThread;
-    CB_DATA         *pBuffer;
+    OBJCB_DATA      *pBuffer;
     volatile
     uint32_t        msWait;
-    uint16_t        messageSize;
     uint16_t        actualSize;
+    uint16_t        rsvd16;
+    int32_t         unique;
+    uint32_t        rsvd32;
 
 };
 #pragma pack(pop)
@@ -101,7 +99,12 @@ struct msgBus_data_s	{
         OBJ_ID          objId
     );
 
-    
+    void *          msgBus_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
     bool            msgBus_setLastError(
         MSGBUS_DATA     *this,
         ERESULT         value

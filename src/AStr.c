@@ -285,7 +285,7 @@ extern "C" {
         
         this = AStr_New();
         if (this) {
-            eRc = AStr_AppendStrW(this, pStr);
+            eRc = AStr_AppendStrW32(this, pStr);
         }
         
         // Return to caller.
@@ -380,7 +380,7 @@ extern "C" {
         if (pNew) {
             AStr_AppendCharA(pNew, '"');
             for (i=0; i<len; ++i) {
-                chr = AStr_CharGetW(this, i+1);
+                chr = AStr_CharGetW32(this, i+1);
                 if (chr == '\\') {
                     AStr_AppendCharA(pNew, '\\');
                 }
@@ -410,9 +410,9 @@ extern "C" {
     
     
     
-    ASTR_DATA *     AStr_NewW(
+    ASTR_DATA *     AStr_NewW32(
         const
-        int32_t         *pszIn			/* Input String Pointer */
+        W32CHR_T        *pszIn			/* Input String Pointer */
     )
     {
         ASTR_DATA       *this;
@@ -420,7 +420,7 @@ extern "C" {
         
         this = AStr_New( );
         if (this) {
-            eRc = AStr_AppendW(this, 0, pszIn);
+            eRc = AStr_AppendW32(this, 0, pszIn);
             if (ERESULT_HAS_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -598,7 +598,7 @@ extern "C" {
     }
     
     
-    ERESULT         AStr_AppendStrW(
+    ERESULT         AStr_AppendStrW32(
         ASTR_DATA		*this,
         WSTR_DATA       *pStr
     )
@@ -621,7 +621,7 @@ extern "C" {
         
         len = WStr_getLength(pStr);
         if (len) {
-            eRc = AStr_AppendW(this, len, WStr_getData(pStr));
+            eRc = AStr_AppendW32(this, len, WStr_getData(pStr));
         }
         
         // Return to caller.
@@ -629,11 +629,11 @@ extern "C" {
     }
     
     
-    ERESULT         AStr_AppendW(
+    ERESULT         AStr_AppendW32(
         ASTR_DATA		*this,
         uint32_t        len,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         ERESULT         eRc = ERESULT_DATA_MISSING;
@@ -649,11 +649,11 @@ extern "C" {
         }
 #endif
       
-        lenChars = utf8_WCToUtf8Str(len, pStr, 0, NULL);
+        lenChars = utf8_W32ToUtf8Str(len, pStr, 0, NULL);
         if (lenChars) {
             pStr8 = mem_Malloc(lenChars);
             if (pStr8) {
-                lenChars = utf8_WCToUtf8Str(len, pStr, lenChars, pStr8);
+                lenChars = utf8_W32ToUtf8Str(len, pStr, lenChars, pStr8);
                 if (lenChars) {
                     eRc =   pwr2Array_InsertData(
                                     this->pData,
@@ -711,10 +711,10 @@ extern "C" {
     }
     
     
-    ERESULT         AStr_AppendCharW(
+    ERESULT         AStr_AppendCharW32(
         ASTR_DATA		*this,
         const
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         char            *pData;
@@ -732,7 +732,7 @@ extern "C" {
         }
 #endif
         
-        len = utf8_WCToUtf8(chr, data);
+        len = utf8_W32ToUtf8(chr, data);
         if (len) {
             offset = pwr2Array_getSize(this->pData);
             eRc =   pwr2Array_InsertSpacing(
@@ -794,11 +794,11 @@ extern "C" {
     }
     
     
-    ERESULT         AStr_AppendCharRepeatW(
+    ERESULT         AStr_AppendCharRepeatW32(
         ASTR_DATA		*this,
         uint32_t        len,
         const
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         char            *pData;
@@ -820,7 +820,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        chrsLen = utf8_WCToUtf8(chr, chrs);
+        chrsLen = utf8_W32ToUtf8(chr, chrs);
         
         offset = pwr2Array_getSize(this->pData);
         eRc =   pwr2Array_InsertSpacing(
@@ -954,7 +954,7 @@ extern "C" {
             return ERESULT_FILE_NOT_FOUND;
         }
         while ( (chr = fgetwc(pFile)) != EOF ) {
-            eRc = AStr_AppendCharRepeatW(this,1,chr);
+            eRc = AStr_AppendCharRepeatW32(this, 1, chr);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 return eRc;
@@ -980,6 +980,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
+        char            str[256];
         int             size;
         va_list         arg_ptr;
         char            *pStr = NULL;
@@ -995,19 +996,25 @@ extern "C" {
 #endif
         
         va_start( arg_ptr, pFormat );
-        size = vsnprintf( NULL, 0, pFormat, arg_ptr );
+        str[0] = '\0';
+        size = vsnprintf( str, sizeof(str), pFormat, arg_ptr );
         va_end( arg_ptr );
-        ++size;
-        pStr = (char *)mem_Malloc( size );
-        if( pStr == NULL ) {
-            return ERESULT_INSUFFICIENT_MEMORY;
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            va_start( arg_ptr, pFormat );
+            size = vsnprintf( pStr, size, pFormat, arg_ptr );
+            va_end( arg_ptr );
+            eRc = AStr_AppendA(this, pStr);
+            mem_Free( pStr );
+            pStr = NULL;
         }
-        va_start( arg_ptr, pFormat );
-        size = vsnprintf( pStr, size, pFormat, arg_ptr );
-        va_end( arg_ptr );
-        eRc = AStr_AppendA(this, pStr);
-        mem_Free( pStr );
-        pStr = NULL;
+        else {
+            eRc = AStr_AppendA(this, str);
+        }
         
         return eRc;
     }
@@ -1019,8 +1026,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         AStr_Assign(
-        ASTR_DATA		*this,
-        ASTR_DATA      *pOther
+        ASTR_DATA	    *this,
+        ASTR_DATA       *pOther
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
@@ -1053,11 +1060,11 @@ extern "C" {
     //               C h a r  F i n d  N e x t
     //---------------------------------------------------------------
     
-    ERESULT         AStr_CharFindNextW(
+    ERESULT         AStr_CharFindNextW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,
         const
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         uint32_t        i;
@@ -1065,7 +1072,7 @@ extern "C" {
         uint32_t        index;
         uint32_t        off;
         char            *pChr;
-        uint32_t        cChrsSrch;
+        W32CHR_T        cChrsSrch;
         char            chrsSrch[8];
         
         // Do initialization.
@@ -1080,7 +1087,7 @@ extern "C" {
         }
 #endif
         lenStr = AStr_getLength(this);
-        cChrsSrch = utf8_WCToUtf8(chr, chrsSrch);
+        cChrsSrch = utf8_W32ToUtf8(chr, chrsSrch);
         
         index = *pIndex;
         if (0 == index) {
@@ -1111,11 +1118,11 @@ extern "C" {
     //               C h a r  F i n d  P r e v
     //---------------------------------------------------------------
     
-    ERESULT         AStr_CharFindPrevW(
+    ERESULT         AStr_CharFindPrevW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,
         const
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         uint32_t        i;
@@ -1123,7 +1130,7 @@ extern "C" {
         uint32_t        off;
         char            *pChr;
         uint32_t        lenStr;
-        uint32_t        cChrsSrch;
+        W32CHR_T        cChrsSrch;
         char            chrsSrch[8];
         
         // Do initialization.
@@ -1135,7 +1142,7 @@ extern "C" {
         }
 #endif
         lenStr = AStr_getLength(this);
-        cChrsSrch = utf8_WCToUtf8(chr, chrsSrch);
+        cChrsSrch = utf8_W32ToUtf8(chr, chrsSrch);
         
         if (NULL == pIndex) {
             return ERESULT_INVALID_PARAMETER;
@@ -1168,14 +1175,14 @@ extern "C" {
     //                       C h a r  G e t
     //---------------------------------------------------------------
     
-    int32_t         AStr_CharGetW(
+    W32CHR_T        AStr_CharGetW32(
         ASTR_DATA		*this,
         uint32_t        offset
     )
     {
         uint32_t        lenStr;
         uint32_t        off;
-        int32_t         chr = -1;
+        W32CHR_T        chr = -1;
         char            *pChr;
         
         // Do initialization.
@@ -1195,7 +1202,7 @@ extern "C" {
         
         pChr = pwr2Array_Ptr(this->pData, off);
         if (pChr) {
-            lenStr = utf8_Utf8ToWC(pChr, &chr);
+            lenStr = utf8_Utf8ToW32(pChr, &chr);
         }
         
         // Return to caller.
@@ -1208,10 +1215,10 @@ extern "C" {
     //                       C h a r  I n s e r t
     //---------------------------------------------------------------
     
-    ERESULT         AStr_CharInsertW(
-        ASTR_DATA        *this,
+    ERESULT         AStr_CharInsertW32(
+        ASTR_DATA       *this,
         uint32_t        offset,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
@@ -1230,7 +1237,7 @@ extern "C" {
         }
 #endif
         lenStr = AStr_getLength(this);
-        chrsLen = utf8_WCToUtf8(chr, chrs);
+        chrsLen = utf8_W32ToUtf8(chr, chrs);
         
         if( (0 == offset) || (offset > lenStr) ) {
             return -1;
@@ -1238,7 +1245,7 @@ extern "C" {
         off = utf8_StrOffset(AStr_getData(this), offset);
         
         pChr = pwr2Array_Ptr(this->pData, off);
-        lenStr = utf8_Utf8ToWC(pChr, NULL);
+        lenStr = utf8_Utf8ToW32(pChr, NULL);
         if (pChr && lenStr) {
             eRc = pwr2Array_InsertData(this->pData, off, chrsLen, chrs);
         }
@@ -1253,10 +1260,10 @@ extern "C" {
     //                       C h a r  P u t
     //---------------------------------------------------------------
     
-    ERESULT         AStr_CharPutW(
+    ERESULT         AStr_CharPutW32(
         ASTR_DATA		*this,
         uint32_t        offset,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
@@ -1275,7 +1282,7 @@ extern "C" {
         }
 #endif
         lenStr = AStr_getLength(this);
-        chrsLen = utf8_WCToUtf8(chr, chrs);
+        chrsLen = utf8_W32ToUtf8(chr, chrs);
         
         if( (0 == offset) || (offset > lenStr) ) {
             return -1;
@@ -1283,7 +1290,7 @@ extern "C" {
         off = utf8_StrOffset(AStr_getData(this), offset);
         
         pChr = pwr2Array_Ptr(this->pData, off);
-        lenStr = utf8_Utf8ToWC(pChr, NULL);
+        lenStr = utf8_Utf8ToW32(pChr, NULL);
         if (pChr && lenStr) {
             eRc = pwr2Array_Delete(this->pData, off, lenStr);
             if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -1301,21 +1308,21 @@ extern "C" {
     //               C h a r  R e p l a c e  A l l
     //---------------------------------------------------------------
     
-    ERESULT         AStr_CharReplaceAllW(
+    ERESULT         AStr_CharReplaceAllW32(
         ASTR_DATA		*this,
         const
-        int32_t         chrSrch,
+        W32CHR_T        chrSrch,
         const
-        int32_t         chrRepl
+        W32CHR_T        chrRepl
     )
     {
         uint32_t        i;
         uint32_t        off;
         char            *pChr;
         uint32_t        lenStr;
-        uint32_t        cChrsSrch;
+        W32CHR_T        cChrsSrch;
         char            chrsSrch[8];
-        uint32_t        cChrsRepl;
+        W32CHR_T        cChrsRepl;
         char            chrsRepl[8];
         ERESULT         eRc;
         
@@ -1329,8 +1336,8 @@ extern "C" {
 #endif
 
         lenStr = AStr_getLength(this);
-        cChrsSrch = utf8_WCToUtf8(chrSrch, chrsSrch);
-        cChrsRepl = utf8_WCToUtf8(chrRepl, chrsRepl);
+        cChrsSrch = utf8_W32ToUtf8(chrSrch, chrsSrch);
+        cChrsRepl = utf8_W32ToUtf8(chrRepl, chrsRepl);
         
         pChr = pwr2Array_Ptr(this->pData, 1);
         for ( i=0; i<lenStr; ++i ) {
@@ -1353,7 +1360,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1479,10 +1486,10 @@ extern "C" {
     }
     
     
-    ERESULT         AStr_CompareW(
+    ERESULT         AStr_CompareW32(
         ASTR_DATA		*this,
         const
-        int32_t         *pData
+        W32CHR_T        *pData
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
@@ -1501,7 +1508,7 @@ extern "C" {
         }
 #endif
         
-        i = utf8_StrCmpAW(
+        i = utf8_StrCmpAW32(
                         pwr2Array_Ptr(this->pData,1),
                         pData
                         );
@@ -1761,11 +1768,11 @@ extern "C" {
     
     
     
-    ERESULT         AStr_InsertW(
+    ERESULT         AStr_InsertW32(
         ASTR_DATA		*this,
         uint32_t        offset,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         uint32_t        len;
@@ -1789,10 +1796,10 @@ extern "C" {
 #endif
         off = utf8_StrOffset(AStr_getData(this), offset);
         
-        len = utf8_WCToUtf8Str(0,pStr,0,NULL);
+        len = utf8_W32ToUtf8Str(0,pStr,0,NULL);
         pChrs = mem_Malloc(len);
         if (pChrs) {
-            len = utf8_WCToUtf8Str(0,pStr,len,pChrs);
+            len = utf8_W32ToUtf8Str(0,pStr,len,pChrs);
             eRc = pwr2Array_InsertData(
                                 this->pData,
                                 off,
@@ -1822,7 +1829,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        int32_t         *pData;
+        W32CHR_T        *pData;
         uint32_t        lenStr;
         
         // Do initialization.
@@ -2043,6 +2050,63 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          AStr_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        ASTR_DATA       *this = objId;
+        const
+        char            *pStr = pData;
+
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return AStr_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return AStr_ToJSON;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          R e m o v e
     //---------------------------------------------------------------
     
@@ -2133,11 +2197,11 @@ extern "C" {
     //                           S p a n
     //---------------------------------------------------------------
     
-    ERESULT         AStr_SpanW(
+    ERESULT         AStr_SpanW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,
         const
-        int32_t         *pSetStr
+        W32CHR_T        *pSetStr
     )
     {
         uint32_t        i;
@@ -2145,7 +2209,7 @@ extern "C" {
         uint32_t        lenStr;
         uint32_t        off;
         char            *pData;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2176,7 +2240,7 @@ extern "C" {
         for ( i=index; i<lenStr; ++i ) {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = pwr2Array_Ptr(this->pData, off);
-            utf8_Utf8ToWC(pData, &chr);
+            utf8_Utf8ToW32(pData, &chr);
             if (WStr_ChrInStr(chr,pSetStr))
                 ;
             else {
@@ -2202,7 +2266,7 @@ extern "C" {
     {
         uint32_t        i;
         uint32_t        iMax;
-        int32_t         wchr;
+        W32CHR_T        wchr;
         ASTR_DATA       *pWrkStr;
         char            work[16];
         
@@ -2217,13 +2281,13 @@ extern "C" {
         iMax = AStr_getLength(this);
         
         for (i=0; i<iMax; ++i) {
-            wchr = AStr_CharGetW(this, i+1);
+            wchr = AStr_CharGetW32(this, i+1);
             if (wchr) {
             }
             else {
                 break;
             }
-            utf8_WCToChrCon(wchr, work);
+            utf8_W32ToChrCon(wchr, work);
             AStr_AppendA(pWrkStr, work);
         }
         
@@ -2339,28 +2403,29 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
+        ERESULT         eRc;
         uint32_t        j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
-        
+        const
+        OBJ_INFO        *pInfo;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(AStr) \n",
-                     this
-                     );
-        AStr_AppendA(pStr, str);
-        
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) \n",
+                    this,
+                    pInfo->pClassName
+                );
+
         pWrkStr = pwr2Array_ToDebugString(this->pData, indent+3 );
         if (pWrkStr) {
                 AStr_Append(pStr, pWrkStr);
@@ -2368,10 +2433,9 @@ extern "C" {
         }
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        j = snprintf( str, sizeof(str), "\n   %p(AStr)}\n", this );
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(pStr, "\n   %p(AStr)}\n", this);
         
         return pStr;
     }
@@ -2502,7 +2566,7 @@ extern "C" {
         uint32_t        lenStr;
         uint32_t        off;
         char            *pData;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2522,8 +2586,8 @@ extern "C" {
         for (i=1; i<=lenStr; ++i) {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = pwr2Array_Ptr(this->pData, off);
-            utf8_Utf8ToWC(pData, &chr);
-            j = WStr_ChrInStr(chr, WStr_WhiteSpaceW());
+            utf8_Utf8ToW32(pData, &chr);
+            j = WStr_ChrInStr(chr, WStr_WhiteSpaceW32());
             if (0 == j) {
                 break;
             }
@@ -2543,8 +2607,8 @@ extern "C" {
         for (i=lenStr; i; --i) {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = pwr2Array_Ptr(this->pData, off);
-            utf8_Utf8ToWC(pData, &chr);
-            j = WStr_ChrInStr(chr, WStr_WhiteSpaceW());
+            utf8_Utf8ToW32(pData, &chr);
+            j = WStr_ChrInStr(chr, WStr_WhiteSpaceW32());
             if (0 == j) {
                 break;
             }

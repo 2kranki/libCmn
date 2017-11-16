@@ -175,10 +175,10 @@ extern "C" {
     );
     
     
-    ERESULT         nodeHash_FindW(
+    ERESULT         nodeHash_FindW32(
         NODEHASH_DATA	*this,
         const
-        int32_t         *pName,
+        W32CHR_T        *pName,
         NODE_DATA       **ppNode
     );
     

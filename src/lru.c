@@ -578,6 +578,60 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          lru_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        LRU_DATA        *this = objId;
+        const
+        char            *pStr = pData;
+
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !lru_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return lru_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          R e a d
     //---------------------------------------------------------------
     
@@ -657,7 +711,7 @@ extern "C" {
      @warning: Remember to release the returned AStr object.
      */
     ASTR_DATA *     lru_ToDebugString(
-        LRU_DATA      *this,
+        LRU_DATA        *this,
         int             indent
     )
     {
@@ -674,7 +728,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -700,7 +754,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(lru)}\n", this);
         AStr_AppendA(pStr, str);

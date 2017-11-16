@@ -88,7 +88,7 @@ extern "C" {
         i = 0;
         iMax = AStr_getLength(pStr);
         for (i=0; i < iMax; ++i) {
-            chr = AStr_CharGetW(pStr, i+1);
+            chr = AStr_CharGetW32(pStr, i+1);
             switch (state) {
                 case STATE_LOOKING:
                     if ((chr == ' ') || (chr == '\t')) {
@@ -112,7 +112,7 @@ extern "C" {
                         state = STATE_IN_SNGL;
                         continue;
                     }
-                    AStr_AppendCharW(pWrk, chr);
+                    AStr_AppendCharW32(pWrk, chr);
                     state = STATE_PARM;
                     break;
                     
@@ -730,12 +730,13 @@ extern "C" {
     void *          clo_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
-        CLO_DATA   *this = objId;
-        
+        CLO_DATA        *this = objId;
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -777,7 +778,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -913,7 +914,7 @@ extern "C" {
               
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -939,7 +940,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(clo)}\n", this);
         AStr_AppendA(pStr, str);

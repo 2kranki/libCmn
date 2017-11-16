@@ -614,17 +614,13 @@ extern "C" {
         if( NULL == pWork ) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
-        this->max = (uint32_t)newMax;
         
         // Copy the old entries into the new array.
         if( this->pArray == NULL )
             ;
         else {
             memmove( pWork, this->pArray, (oldMax << this->powerOf2) );
-            mem_Free( this->pArray );
-            // this->pArray = NULL;
         }
-        this->pArray = pWork;
         
         // Zero the new entries.
         if (0 == (this->dontZero)) {
@@ -635,8 +631,11 @@ extern "C" {
             );
         }
         
-        // Return to caller.
+        this->max = (uint32_t)newMax;
+        mem_Free(this->pArray);
         this->pArray = pWork;
+
+        // Return to caller.
         return ERESULT_SUCCESS;
     }
 
@@ -922,12 +921,13 @@ extern "C" {
     void *          pwr2Array_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         PWR2ARRAY_DATA  *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -966,7 +966,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -995,7 +995,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(
                      strBuf,
@@ -1012,7 +1012,7 @@ extern "C" {
             size = ((1 << this->powerOf2) * pwr2Array_getSize(this));
             while (size) {
                 if (indent) {
-                    AStr_AppendCharRepeatW(pStr, indent+3, ' ');
+                    AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
                 }
                 j = hex_put16BytesObj_64(
                         pHex,
@@ -1033,7 +1033,7 @@ extern "C" {
         }
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf( strBuf, sizeof(strBuf), "  %p(pwr2Array)}\n", this );
         AStr_AppendA(pStr, strBuf);

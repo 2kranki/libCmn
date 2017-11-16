@@ -22,10 +22,11 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <name.h>
 #include    <trace.h>
 #include    <objCb_internal.h>
+#include    <psxThread.h>
 
 
 
@@ -46,6 +47,61 @@ char        *StrArray[NUM_STR] = {
 	"String  9",
 	"String 10"
 };
+
+
+
+typedef struct buffer_entry_s {
+    OBJ_ID          *pObj;
+} BUFFER_ENTRY;
+
+
+// Output Queue is written by the separate task.
+static
+BUFFER_ENTRY    outputQueue[NUM_STR * 2] = {0};
+static
+int             outputQueueEnd = -1;
+
+
+
+static
+void            addOutput (OBJ_ID  *pObj)
+{
+    
+    ++outputQueueEnd;
+    outputQueue[outputQueueEnd].pObj = pObj;
+    printf("addOutput()  %3d - %s\n",
+           outputQueueEnd,
+           AStr_getData((ASTR_DATA *)outputQueue[outputQueueEnd].pObj)
+    );
+    
+}
+
+
+
+static
+OBJCB_DATA      *pCB = OBJ_NIL;
+
+
+
+
+
+
+
+static
+void *          getRoutine(
+    void            *pVoid
+)
+{
+    OBJ_ID          pObj;
+    
+    objCb_Get(pCB, &pObj);
+    if (pObj) {
+        addOutput(pObj);
+    }
+    
+    return NULL;
+}
+
 
 
 
@@ -197,10 +253,87 @@ int         test_objCb_CounterOverflow(
 
 
 
+int         test_objCb_Operation(
+    const
+    char        *pTestName
+)
+{
+    int             i;
+    PSXTHREAD_DATA  *pThread = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStrA = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    printf("Creating Buffer...\n");
+    pCB = objCb_Alloc(4);
+    XCTAssertFalse( (OBJ_NIL == pCB) );
+    pCB = objCb_Init( pCB );
+    XCTAssertFalse( (OBJ_NIL == pCB) );
+    if (pCB) {
+        obj_TraceSet(pCB, true);
+        
+        printf("Starting Reader Thread...\n");
+        pThread = psxThread_Alloc( );
+        XCTAssertFalse( (OBJ_NIL == pThread) );
+        pThread = psxThread_Init(pThread, getRoutine, NULL, 0);
+        if (OBJ_NIL == pThread) {
+            printf("ERROR:  pthread_create errno=%d\n", errno);
+            exit(1);
+        }
+        fRc = psxThread_Pause(pThread);
+        XCTAssertTrue( (fRc) );
+        while (!psxThread_IsPaused(pThread)) {
+            psxThread_Wait(1000);
+        }
+        psxThread_setWait(pThread, 500);
+        fRc = psxThread_Resume(pThread);
+        while (!psxThread_IsRunning(pThread)) {
+            psxThread_Wait(1000);
+        }
+        
+        printf("Loading Buffer...\n");
+        for (i=0; i<NUM_STR; ++i) {
+            printf("  Put(%d) - %s\n", i, StrArray[i]);
+            pStrA = AStr_NewA(StrArray[i]);
+            objCb_Put(pCB, pStrA);
+            obj_Release(pStrA);
+        }
+        psxThread_Wait(2000);
+        
+        printf("\n\n");
+        printf("Output Queue(%d):\n", outputQueueEnd+1);
+        for (i=0; i<outputQueueEnd+1; ++i) {
+            if (outputQueue[i].pObj) {
+                printf("  %3d - %s\n", i,
+                       AStr_getData((ASTR_DATA *)outputQueue[i].pObj)
+                );
+                obj_Release(outputQueue[i].pObj);
+                outputQueue[i].pObj = OBJ_NIL;
+            }
+        }
+        
+        objCb_Pause(pCB);
+        psxThread_Terminate(pThread);
+        while (!psxThread_IsEnded(pThread)) {
+            psxThread_Wait(100);
+        }
+        obj_Release(pThread);
+        pThread = NULL;
+        obj_Release(pCB);
+        pCB = NULL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_objCb);
-  TINYTEST_ADD_TEST(test_objCb_CounterOverflow,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_objCb_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_objCb_Operation,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_objCb_CounterOverflow,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_objCb_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_objCb);

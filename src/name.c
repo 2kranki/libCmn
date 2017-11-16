@@ -62,16 +62,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            name_task_body(
-        void            *pData
-    )
-    {
-        //NAME_DATA  *this = pData;
-        
-    }
-#endif
 
 
 
@@ -108,24 +98,23 @@ extern "C" {
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitInt( this, value );
+            this = name_InitInt(this, value);
         }
         return( this );
     }
     
     
-    NAME_DATA *     name_NewPtr(
-        const
-        void            *pValue
+    NAME_DATA *     name_NewObj(
+        OBJ_ID          pValue
     )
     {
         NAME_DATA       *this;
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitPtr( this, pValue );
+            this = name_InitObj(this, pValue);
         }
-        return( this );
+        return this;
     }
     
     
@@ -137,21 +126,7 @@ extern "C" {
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitStrA( this, pValue );
-        }
-        return( this );
-    }
-    
-    
-    NAME_DATA *     name_NewStrW(
-        WSTR_DATA       *pValue
-    )
-    {
-        NAME_DATA       *this;
-        
-        this = name_Alloc( );
-        if (this) {
-            this = name_InitStrW(this, pValue);
+            this = name_InitStrA(this, pValue);
         }
         return( this );
     }
@@ -166,7 +141,7 @@ extern "C" {
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitUTF8( this, pValue );
+            this = name_InitUTF8(this, pValue);
         }
         return( this );
     }
@@ -181,7 +156,7 @@ extern "C" {
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitUTF8Con( this, pValue );
+            this = name_InitUTF8Con(this, pValue);
         }
         return( this );
     }
@@ -219,6 +194,41 @@ extern "C" {
     //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
+    
+    int64_t         name_getInt(
+        NAME_DATA       *this
+    )
+    {
+        int64_t         value = 0;
+        ERESULT         eRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !name_Validate( this ) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        switch (this->type) {
+                
+            case NAME_TYPE_INTEGER:
+                value = this->integer;
+                eRc = ERESULT_SUCCESS;
+                break;
+                
+            default:
+                DEBUG_BREAK();
+                eRc = ERESULT_INVALID_DATA;
+                break;
+        }
+        
+        name_setLastError(this, eRc);
+        return value;
+    }
+    
+    
     
     ERESULT         name_getLastError(
         NAME_DATA     *this
@@ -259,35 +269,12 @@ extern "C" {
     
     
     
-    const
-    void *          name_getPtr(
-        NAME_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !name_Validate( this ) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        if (this->type == NAME_TYPE_PTR) {
-            return this->pPtr;
-        }
-        
-        return NULL;
-    }
-    
-    
     ASTR_DATA *     name_getStrA(
         NAME_DATA       *this
     )
     {
         ASTR_DATA       *pValue = OBJ_NIL;
-        char            numValue[32];
+        char            numValue[22];
         char            *pStr;
         uint32_t        len;
         
@@ -313,8 +300,8 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_WSTR:
-                pValue = AStr_NewW(WStr_getData(this->pObj));
+            case NAME_TYPE_ASTR:
+                pValue = AStr_Copy(this->pObj);
                 break;
                 
             case NAME_TYPE_UTF8:
@@ -345,78 +332,7 @@ extern "C" {
 #endif
         obj_Retain(pValue);
         name_ReleaseDataIfObj(this);
-        this->type = NAME_TYPE_WSTR;
-        this->pObj = AStr_ToWStr(pValue);
-        
-        return true;
-    }
-    
-    
-    
-    WSTR_DATA *     name_getStrW(
-        NAME_DATA       *this
-    )
-    {
-        WSTR_DATA       *pValue = OBJ_NIL;
-        char            numValue[22];
-        char            *pStr;
-        uint32_t        len;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !name_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        switch (this->type) {
-                
-            case NAME_TYPE_INTEGER:
-                len = 22;
-                pStr = numValue;
-                dec_putInt64A(this->integer, &len, &pStr);
-                if (numValue[0] == ' ') {
-                    pValue = WStr_NewA(&numValue[1]);
-                }
-                else {
-                    pValue = WStr_NewA(numValue);
-                }
-                break;
-                
-            case NAME_TYPE_WSTR:
-                pValue = WStr_Copy(this->pObj);
-                break;
-                
-            case NAME_TYPE_UTF8:
-            case NAME_TYPE_UTF8_CON:
-                pValue = WStr_NewA(this->pChrs);
-                break;
-                
-            default:
-                DEBUG_BREAK();
-                break;
-        }
-        
-        return pValue;
-    }
-
-    
-    bool            name_setStrW(
-        NAME_DATA       *this,
-        WSTR_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !name_Validate( this ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        obj_Retain(pValue);
-        name_ReleaseDataIfObj(this);
-        this->type = NAME_TYPE_WSTR;
+        this->type = NAME_TYPE_ASTR;
         this->pObj = pValue;
         
         return true;
@@ -431,7 +347,7 @@ extern "C" {
         char            numValue[22];
         char            *pStr;
         uint32_t        len;
-        HEX_DATA        *pHex = OBJ_NIL;
+        //HEX_DATA        *pHex = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -455,25 +371,8 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_PTR:
-                pHex = hex_New();
-                len = 22;
-                pStr = numValue;
-                *pStr++ = '0'; --len;
-                *pStr++ = 'x'; --len;
-                if (sizeof(void *) == 4) {
-                    hex_putU32A(pHex, (uint64_t)this->pPtr, &len, &pStr);
-                }
-                else {
-                    hex_putU64A(pHex, (uint64_t)this->pPtr, &len, &pStr);
-                }
-                *pStr = '\0';
-                pValue = str_DupA(numValue);
-                obj_Release(pHex);
-                break;
-                
-            case NAME_TYPE_WSTR:
-                pValue = WStr_CStringA(this->pObj, NULL);
+            case NAME_TYPE_ASTR:
+                pValue = AStr_CStringA(this->pObj, NULL);
                 break;
                 
             case NAME_TYPE_UTF8:
@@ -532,7 +431,7 @@ extern "C" {
                 pOther->integer = this->integer;
                 break;
                 
-            case NAME_TYPE_WSTR:
+            case NAME_TYPE_ASTR:
             {
                 OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
                 if (pVtbl->pCopy) {
@@ -559,7 +458,7 @@ extern "C" {
                 
         }
         
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -582,11 +481,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !name_Validate( this ) ) {
+        if( !name_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !name_Validate( pOther ) ) {
+        if( !name_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -607,9 +506,9 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_WSTR:
-                if (pOther->type == NAME_TYPE_WSTR) {
-                    eRc = AStr_CompareW(this->pObj, WStr_getData(pOther->pObj));
+            case NAME_TYPE_ASTR:
+                if (pOther->type == NAME_TYPE_ASTR) {
+                    eRc = AStr_Compare(this->pObj, pOther->pObj);
                     return eRc;
                 }
                 pStr1 = name_getUTF8(this);
@@ -627,8 +526,8 @@ extern "C" {
                 else if (pOther->type == NAME_TYPE_UTF8_CON) {
                     i = strcmp(this->pChrs, pOther->pChrs);
                 }
-                if (pOther->type == NAME_TYPE_WSTR) {
-                    eRc = WStr_Compare(this->pObj, pOther->pObj);
+                if (pOther->type == NAME_TYPE_ASTR) {
+                    eRc = AStr_Compare(this->pObj, pOther->pObj);
                     return eRc;
                 }
                 pStr2 = name_getUTF8(pOther);
@@ -684,72 +583,14 @@ extern "C" {
                 mem_Free((void *)pStr1);
                 break;
                 
-            case NAME_TYPE_WSTR:
-                eRc = WStr_CompareA(this->pObj, pOther);
+            case NAME_TYPE_ASTR:
+                eRc = AStr_CompareA(this->pObj, pOther);
                 return eRc;
                 break;
                 
             case NAME_TYPE_UTF8:
             case NAME_TYPE_UTF8_CON:
                 i = strcmp(this->pChrs, pOther);
-                break;
-                
-            default:
-                DEBUG_BREAK();
-                return ERESULT_GENERAL_FAILURE;
-                
-        }
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
-    }
-    
-    
-    ERESULT         name_CompareW(
-        NAME_DATA       *this,
-        const
-        int32_t         *pOther
-    )
-    {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        const
-        char            *pStr1;
-        
-#ifdef NDEBUG
-#else
-        if( !name_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( NULL == pOther ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        switch (this->type) {
-                
-            case NAME_TYPE_INTEGER:
-                pStr1 = name_getUTF8(this);
-                i = utf8_StrCmpAW(pStr1, pOther);
-                mem_Free((void *)pStr1);
-                break;
-                
-            case NAME_TYPE_WSTR:
-                eRc = WStr_CompareW(this->pObj, pOther);
-                return eRc;
-                break;
-                
-            case NAME_TYPE_UTF8:
-            case NAME_TYPE_UTF8_CON:
-                i = utf8_StrCmpAW(this->pChrs, pOther);
                 break;
                 
             default:
@@ -936,13 +777,13 @@ extern "C" {
     }
     
     
-    NAME_DATA *   name_InitPtr(
+    NAME_DATA *   name_InitObj(
         NAME_DATA       *this,
-        const
-        void            *pValue
+        OBJ_ID          pValue
     )
     {
-        
+        OBJ_IUNKNOWN    *pVtbl;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -962,8 +803,15 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = NAME_TYPE_PTR;
-        this->pPtr = pValue;
+        this->type = NAME_TYPE_OBJ;
+        pVtbl = obj_getVtbl(pValue);
+        if (pVtbl->pCopy) {
+            pValue = pVtbl->pCopy(pValue);
+        }
+        else {
+            obj_Retain(pValue);
+            this->pObj = pValue;
+        }
         
         return this;
     }
@@ -994,40 +842,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = NAME_TYPE_WSTR;
-        this->pObj = AStr_ToWStr(pValue);
-        
-        return this;
-    }
-    
-    
-    NAME_DATA *   name_InitStrW(
-        NAME_DATA       *this,
-        WSTR_DATA       *pValue
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-#ifdef NDEBUG
-#else
-        if( pValue == OBJ_NIL ) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
-        
-        this = name_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this->type = NAME_TYPE_WSTR;
-        this->pObj = obj_Retain(pValue);
+        this->type = NAME_TYPE_ASTR;
+        this->pObj = AStr_Copy(pValue);
         
         return this;
     }
@@ -1104,15 +920,38 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = name_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     this    OBJTEST object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                         character string which represents the method name without
+                         the object name, "name", prefix,
+                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                         address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                 OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
     void *          name_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         NAME_DATA       *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1148,7 +987,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -1180,12 +1019,8 @@ extern "C" {
                     // nothing to release.
                     break;
                     
-                case NAME_TYPE_PTR:
-                    // This fits within this object. So,
-                    // nothing to release.
-                    break;
-                    
-                case NAME_TYPE_WSTR:
+                case NAME_TYPE_OBJ:
+                case NAME_TYPE_ASTR:
                     obj_Release(this->pObj);
                     this->pObj = OBJ_NIL;
                     break;
@@ -1230,7 +1065,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         pName = name_getUTF8(this);
@@ -1283,7 +1118,7 @@ extern "C" {
         char            numValue[22];
         char            *pStr;
         uint32_t        len;
-        HEX_DATA        *pHex = OBJ_NIL;
+        //HEX_DATA        *pHex = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -1307,25 +1142,8 @@ extern "C" {
                 }
                 break;
                 
-            case NAME_TYPE_PTR:
-                pHex = hex_New();
-                len = 22;
-                pStr = numValue;
-                *pStr++ = '0'; --len;
-                *pStr++ = 'x'; --len;
-                if (sizeof(void *) == 4) {
-                    hex_putU32A(pHex, (uint64_t)this->pPtr, &len, &pStr);
-                }
-                else {
-                    hex_putU64A(pHex, (uint64_t)this->pPtr, &len, &pStr);
-                }
-                *pStr = '\0';
-                pValue = str_DupA(numValue);
-                obj_Release(pHex);
-                break;
-                
-            case NAME_TYPE_WSTR:
-                pValue = WStr_CStringA(this->pObj, NULL);
+            case NAME_TYPE_ASTR:
+                pValue = AStr_CStringA(this->pObj, NULL);
                 break;
                 
             case NAME_TYPE_UTF8:

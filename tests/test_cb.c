@@ -22,7 +22,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <trace.h>
 #include    <cb_internal.h>
 #include    <psxThread.h>

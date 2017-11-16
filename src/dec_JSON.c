@@ -353,7 +353,7 @@ extern "C" {
     )
     {
         char            str[256];
-        uint32_t        i;
+        //uint32_t        i;
         int             j;
         ASTR_DATA       *pStr;
         const

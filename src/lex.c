@@ -133,10 +133,10 @@ extern "C" {
 
 
     const
-    int32_t *       lex_WhiteSpaceW(
+    W32CHR_T *      lex_WhiteSpaceW(
     )
     {
-        return WStr_WhiteSpaceW();
+        return WStr_WhiteSpaceW32();
     }
     
     
@@ -683,7 +683,7 @@ extern "C" {
     
     TOKEN_DATA *    lex_MatchInputChr(
         LEX_DATA		*this,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         TOKEN_DATA      *scp = OBJ_NIL;
@@ -751,12 +751,12 @@ extern "C" {
     
     TOKEN_DATA *    lex_MatchInputRange(
         LEX_DATA		*this,
-        int32_t         chrBeg,
-        int32_t         chrEnd
+        W32CHR_T        chrBeg,
+        W32CHR_T        chrEnd
     )
     {
         TOKEN_DATA      *scp = OBJ_NIL;
-        int32_t         chr;
+        W32CHR_T        chr;
         TOKEN_DATA      *pToken;
         
         // Do initialization.
@@ -788,11 +788,11 @@ extern "C" {
     
     TOKEN_DATA *    lex_MatchInputSet(
         LEX_DATA		*this,
-        int32_t         *pSet
+        W32CHR_T        *pSet
     )
     {
         TOKEN_DATA      *scp = OBJ_NIL;
-        int32_t         chr;
+        W32CHR_T        chr;
         TOKEN_DATA      *pToken;
         
         // Do initialization.
@@ -835,11 +835,11 @@ extern "C" {
     
     bool            lex_ParseChrCon(
         LEX_DATA        *this,
-        int32_t         ending
+        W32CHR_T        ending
     )
     {
         int32_t         cls;
-        int32_t         chr;
+        W32CHR_T        chr;
         TOKEN_DATA      *pInput;
         int             i;
         
@@ -951,11 +951,11 @@ extern "C" {
     
     bool            lex_ParseChrConWS(
         LEX_DATA        *this,
-        int32_t         ending
+        W32CHR_T        ending
     )
     {
         int32_t         cls;
-        int32_t         chr;
+        W32CHR_T        chr;
         TOKEN_DATA      *pInput;
         int             i;
         
@@ -1073,7 +1073,7 @@ extern "C" {
     {
         bool            fRc = false;
         int32_t         cls;
-        int32_t         chr;
+        W32CHR_T        chr;
         TOKEN_DATA      *pInput;
         
 #ifdef NDEBUG
@@ -1252,7 +1252,7 @@ extern "C" {
         LEX_DATA        *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         int32_t         cls;
         int32_t         clsNew = 0;
         TOKEN_DATA      *pInput;
@@ -1354,7 +1354,7 @@ extern "C" {
         LEX_DATA        *this
     )
     {
-        int16_t         chr;
+        W32CHR_T        chr;
         int16_t         clsNew = 0;
         TOKEN_DATA      *pInput;
         
@@ -1586,7 +1586,7 @@ extern "C" {
     {
         int32_t         cls;
         TOKEN_DATA      *pInput;
-        int32_t         chr;
+        W32CHR_T        chr;
         
 #ifdef NDEBUG
 #else
@@ -1810,7 +1810,7 @@ extern "C" {
         token_setClass(&this->token, newClass);
         if (fSaveStr && this->pStr) {
             if (this->fUseStringTable) {
-                eRc =   szTbl_StringWToToken(
+                eRc =   szTbl_StringW32ToToken(
                                              szTbl_Shared(),
                                              WStr_getData(this->pStr),
                                              &strToken
@@ -1843,7 +1843,7 @@ extern "C" {
     )
     {
         uint16_t        type;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1875,7 +1875,7 @@ extern "C" {
                     WStr_AppendA(this->pStr, "\\t");
                 }
                 else {
-                    WStr_AppendW(this->pStr, 1, &chr);
+                    WStr_AppendW32(this->pStr, 1, &chr);
                 }
                 break;
                 
@@ -2119,7 +2119,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (10/17/2017 13:40:58.000)
+# (11/14/2017 18:01:16.000)
 
 
 LIBNAM=libCmn
@@ -72,6 +72,18 @@ $(OBJDIR)/AStrC_object.o: $(SRCDIR)/AStrC_object.c
 
 
 
+OBJS += $(OBJDIR)/W32StrC.o $(OBJDIR)/W32StrC_object.o
+
+
+$(OBJDIR)/W32StrC.o: $(SRCDIR)/W32StrC.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/W32StrC_object.o: $(SRCDIR)/W32StrC_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/WStr.o $(OBJDIR)/WStr_object.o
 
 
@@ -80,30 +92,6 @@ $(OBJDIR)/WStr.o: $(SRCDIR)/WStr.c
 
 
 $(OBJDIR)/WStr_object.o: $(SRCDIR)/WStr_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/WStrArray.o $(OBJDIR)/WStrArray_object.o
-
-
-$(OBJDIR)/WStrArray.o: $(SRCDIR)/WStrArray.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/WStrArray_object.o: $(SRCDIR)/WStrArray_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/WStrC.o $(OBJDIR)/WStrC_object.o
-
-
-$(OBJDIR)/WStrC.o: $(SRCDIR)/WStrC.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/WStrC_object.o: $(SRCDIR)/WStrC_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -120,14 +108,14 @@ $(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c
 
 
 
-OBJS += $(OBJDIR)/arrayExpand.o $(OBJDIR)/arrayExpand_object.o
+OBJS += $(OBJDIR)/array.o $(OBJDIR)/array_object.o
 
 
-$(OBJDIR)/arrayExpand.o: $(SRCDIR)/arrayExpand.c
+$(OBJDIR)/array.o: $(SRCDIR)/array.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
-$(OBJDIR)/arrayExpand_object.o: $(SRCDIR)/arrayExpand_object.c
+$(OBJDIR)/array_object.o: $(SRCDIR)/array_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -528,18 +516,6 @@ $(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c
 
 
 
-OBJS += $(OBJDIR)/execPtr.o $(OBJDIR)/execPtr_object.o
-
-
-$(OBJDIR)/execPtr.o: $(SRCDIR)/execPtr.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/execPtr_object.o: $(SRCDIR)/execPtr_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
 OBJS += $(OBJDIR)/false.o $(OBJDIR)/false_object.o
 
 
@@ -648,18 +624,6 @@ $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c
 
 
 
-OBJS += $(OBJDIR)/json.o $(OBJDIR)/json_object.o
-
-
-$(OBJDIR)/json.o: $(SRCDIR)/json.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/json_object.o: $(SRCDIR)/json_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
 OBJS += $(OBJDIR)/jsonOut.o $(OBJDIR)/jsonOut_object.o
 
 
@@ -728,6 +692,18 @@ $(OBJDIR)/msgBus.o: $(SRCDIR)/msgBus.c
 
 
 $(OBJDIR)/msgBus_object.o: $(SRCDIR)/msgBus_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/msgData.o $(OBJDIR)/msgData_object.o
+
+
+$(OBJDIR)/msgData.o: $(SRCDIR)/msgData.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/msgData_object.o: $(SRCDIR)/msgData_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -968,6 +944,18 @@ $(OBJDIR)/objMatrix.o: $(SRCDIR)/objMatrix.c
 
 
 $(OBJDIR)/objMatrix_object.o: $(SRCDIR)/objMatrix_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objMethod.o $(OBJDIR)/objMethod_object.o
+
+
+$(OBJDIR)/objMethod.o: $(SRCDIR)/objMethod.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/objMethod_object.o: $(SRCDIR)/objMethod_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1579,17 +1567,17 @@ test_AStrC:
 	$(OBJDIR)/$(@F)
 
 
-TESTS += test_WStrArray
+TESTS += test_W32StrC
 
-test_WStrArray:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStrArray.c 
+test_W32StrC:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_W32StrC.c 
 	$(OBJDIR)/$(@F)
 
 
-TESTS += test_WStrC
+TESTS += test_WStr
 
-test_WStrC:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStrC.c 
+test_WStr:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStr.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1600,10 +1588,10 @@ test_appl:
 	$(OBJDIR)/$(@F)
 
 
-TESTS += test_arrayExpand
+TESTS += test_array
 
-test_arrayExpand:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_arrayExpand.c 
+test_array:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_array.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1687,7 +1675,7 @@ test_btp:
 TESTS += test_cb
 
 test_cb:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb.c tests/objTest.c tests/objTest_object.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1723,13 +1711,6 @@ TESTS += test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
-	$(OBJDIR)/$(@F)
-
-
-TESTS += test_cmdutl
-
-test_cmdutl:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cmdutl.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1838,13 +1819,6 @@ test_execArray:
 	$(OBJDIR)/$(@F)
 
 
-TESTS += test_execPtr
-
-test_execPtr:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_execPtr.c 
-	$(OBJDIR)/$(@F)
-
-
 TESTS += test_false
 
 test_false:
@@ -1891,13 +1865,6 @@ TESTS += test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hjson.c 
-	$(OBJDIR)/$(@F)
-
-
-TESTS += test_json
-
-test_json:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_json.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -1953,7 +1920,14 @@ test_misc:
 TESTS += test_msgBus
 
 test_msgBus:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_msgBus.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_msgBus.c tests/objTest.c tests/objTest_object.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_msgData
+
+test_msgData:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_msgData.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -2072,7 +2046,7 @@ test_objArray:
 TESTS += test_objCb
 
 test_objCb:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objCb.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objCb.c tests/objTest.c tests/objTest_object.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -2101,6 +2075,20 @@ TESTS += test_objMatrix
 
 test_objMatrix:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objMatrix.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_objMethod
+
+test_objMethod:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objMethod.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_objTest
+
+test_objTest:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objTest.c tests/objTest.c tests/objTest_object.c 
 	$(OBJDIR)/$(@F)
 
 
@@ -2360,13 +2348,6 @@ TESTS += test_wav
 
 test_wav:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wav.c 
-	$(OBJDIR)/$(@F)
-
-
-TESTS += test_wstr
-
-test_wstr:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wstr.c 
 	$(OBJDIR)/$(@F)
 
 

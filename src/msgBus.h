@@ -10,15 +10,20 @@
  *			This object simulates a message bus. Other objects
  *          register with it and then send broadcast messages
  *          which are rebroadcast to all the other objects that
- *          have previously register with this object. The object
- *          id of the registered objects is used as an indentifier
- *          within the system.
+ *          have previously registered with this object.
+ *
+ *          A receiver object should have a message of the form:
+ *              void receiver(OBJ_ID, uint16 len, uint8_t *pMsg);
+ *          in its vtbl. A receiver is registered using the OBJ_ID
+ *          and the offset of receiver method in the objects vtbl.
  *
  * Remarks
  *	1.      None
  *
  * History
  *	05/31/2017 Generated
+ *  10/25/2017 Changed registration to use a unique number instead
+ *          an object pointer.
  */
 
 
@@ -55,6 +60,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <msgData.h>
+#include        <objMethod.h>
 
 
 #ifndef         MSGBUS_H
@@ -71,17 +78,9 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    typedef
+    ERESULT         (*MSGBUS_RECEIVE)(OBJ_ID, MSGDATA_DATA *);
 
-    typedef struct msgObj_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in msgBus_object.c.
-        // Properties:
-        // Methods:
-        ERESULT         (*pReceive)(OBJ_ID, void *);
-        ERESULT         (*pTransmit)(OBJ_ID, void *);
-    } MSGOBJ_VTBL;
-    
     
     typedef struct msgBus_data_s	MSGBUS_DATA;    // Inherits from OBJ.
 
@@ -117,7 +116,6 @@ extern "C" {
     
     
     MSGBUS_DATA *     msgBus_New(
-        uint16_t        messageSize,
         uint16_t        messageCount        // Max Message Queue size
     );
     
@@ -154,59 +152,57 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Broadcast a message to all objects registered on the message bus
-     except the originator if the originator is identified.
+     Broadcast a message to one or all of the objects registered on
+     the message bus except the originator if the originator is identified.
      @param:    this    MSGBUS object pointer
-     @param:    pRcvData Ptr to receive routine data area which is used
-                        as the routine/data for identification or NULL.
-                        If an object id is supplied, that object will
-                        not receive the message otherwise all registered
-                        objects will receive the message.
-     @param:    pRcv    method within pObj that receives the messages
+     @param:    origin  Token for originater or 0
+     @param:    msgDest If 0, all receivers will get the message.
+                         Otherwise, it is a token previously returned
+                         by the registration process and only that
+                         receiver will get the message.
+     @param:    msgLen  length of the message
+     @param:    pMsg    Pointer to the message
      @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_Broadcast(
         MSGBUS_DATA		*this,
-        void            *pRcvData,
+        int32_t         origin,
+        int32_t         msgDest,
+        uint16_t        msglen,
         uint8_t         *pMsg
     );
     
     
-    ERESULT     msgBus_Disable(
-        MSGBUS_DATA		*this
-    );
-
-
-    ERESULT     msgBus_Enable(
-        MSGBUS_DATA		*this
-    );
-
-   
     MSGBUS_DATA *   msgBus_Init(
         MSGBUS_DATA     *this,
-        uint16_t        messageSize,
         uint16_t        messageCount        // Max Message Queue size
     );
 
 
-    ERESULT     msgBus_IsEnabled(
-        MSGBUS_DATA		*this
+    ERESULT         msgBus_RegisterObjectMethod(
+        MSGBUS_DATA     *this,
+        OBJMETHOD_DATA  *pRcvObj,
+        int32_t         *pToken
     );
     
- 
     /*!
      Add an object to the message bus giving its method for message reception.
      @param:    this    MSGBUS object pointer
-     @param:    pRcvData Ptr to receive routine data area and the key used to
-                        identify the routine/data for message transmission
-     @param:    pRcv    a routine that will receive the msg as its second parameter
-                        and its data ptr as its first parameter
+     @param:    pRcvData Pointer to the receive object which must have a method,
+                               void receiver(OBJ_ID, uint16 len, uint8_t *pMsg);
+                           in its vtbl. A receiver is registered using the OBJ_ID
+                           and the offset of receiver method in the objects vtbl.
+     @param:    pMethodA UTF-8 method name which must be included in the objects's
+                         QueryInfo method.
+     @param:    pToken  an optional token number used to unregister this receiver
+                         if needed
      @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
-    ERESULT     msgBus_Register(
+    ERESULT     msgBus_RegisterObjectA(
         MSGBUS_DATA		*this,
-        void            (*pRcv)(void *, void *),
-        void            *pRcvData
+        OBJ_ID          *pRcvObj,
+        char            *pMethodA,
+        int32_t         *pToken
     );
     
     
@@ -231,13 +227,13 @@ extern "C" {
     /*!
      Remove an object from the message bus.
      @param:    this    MSGBUS object pointer
-     @param:    pRcvData Ptr to receive routine data area and the key used to
-                        identify the routine/data for message transmission
+     @param:    token   When the object was registered, this token was returned.
+                         it is used to identify which object is to be unregistered.
      @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_UnregisterObject(
         MSGBUS_DATA		*this,
-        void            *pRcvData
+        int32_t         token
     );
     
     

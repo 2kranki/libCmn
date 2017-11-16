@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   WStrC.c
+ * File:   W32StrC.c
  *	Generated 02/19/2016 09:34:06
  *
  */
@@ -41,9 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "WStrC_internal.h"
-#include "utf8.h"
-#include "WStr.h"
+#include <W32StrC_internal.h>
+#include <utf8.h>
+#include <WStr.h>
 #include <stdio.h>
 
 
@@ -65,18 +65,18 @@ extern "C" {
     //                        C o p y  D a t a
     //---------------------------------------------------------------
     
-    bool            WStrC_CopyData(
-        WSTRC_DATA      *this,
-        int32_t         *pData,
+    bool            W32StrC_CopyData(
+        W32STRC_DATA    *this,
+        W32CHR_T        *pData,
         uint32_t        len
     )
     {
-        int32_t         *pArray;
+        W32CHR_T        *pArray;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -87,12 +87,12 @@ extern "C" {
 #endif
         
         // Create the new string from this one.
-        pArray = mem_Malloc((len + 1) * sizeof(int32_t));
+        pArray = mem_Malloc((len + 1) * sizeof(uint32_t));
         if (NULL == pArray) {
             DEBUG_BREAK();
             return false;
         }
-        memmove(pArray, pData, (len * sizeof(int32_t)));
+        memmove(pArray, pData, (len * sizeof(uint32_t)));
         pArray[len] = 0;
         this->pArray = pArray;
         this->len = len;
@@ -117,11 +117,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    WSTRC_DATA *    WStrC_Alloc(
+    W32STRC_DATA *  W32StrC_Alloc(
     )
     {
-        WSTRC_DATA      *this;
-        uint32_t        cbSize = sizeof(WSTRC_DATA);
+        W32STRC_DATA    *this;
+        uint32_t        cbSize = sizeof(W32STRC_DATA);
         
         // Do initialization.
         
@@ -133,73 +133,73 @@ extern "C" {
 
 
 
-    WSTRC_DATA *     WStrC_New(
+    W32STRC_DATA *  W32StrC_New(
     )
     {
-        WSTRC_DATA       *this;
+        W32STRC_DATA    *this;
         
-        this = WStrC_Alloc( );
+        this = W32StrC_Alloc( );
         if (this) {
-            this = WStrC_Init( this );
+            this = W32StrC_Init( this );
         } 
         return( this );
     }
 
 
-    WSTRC_DATA *     WStrC_NewA(
+    W32STRC_DATA *  W32StrC_NewA(
         const
         char            *pStr
     )
     {
-        WSTRC_DATA      *this;
+        W32STRC_DATA    *this;
         
-        this = WStrC_Alloc( );
+        this = W32StrC_Alloc( );
         if (this) {
-            this = WStrC_InitA( this, pStr );
+            this = W32StrC_InitA( this, pStr );
         }
-        return( this );
+        return this;
     }
     
     
-    WSTRC_DATA *     WStrC_NewConW(
+    W32STRC_DATA *   W32StrC_NewConW32(
         const
-        int32_t          *pStr
+        W32CHR_T         *pStr
     )
     {
-        WSTRC_DATA       *this;
+        W32STRC_DATA     *this;
         
-        this = WStrC_Alloc( );
+        this = W32StrC_Alloc( );
         if (this) {
-            this = WStrC_InitConW( this, pStr );
+            this = W32StrC_InitConW32(this, pStr);
         }
         return( this );
     }
     
     
-    WSTRC_DATA *    WStrC_NewFromStrW(
+    W32STRC_DATA *  W32StrC_NewFromStrW32(
         WSTR_DATA       *pStr
     )
     {
-        WSTRC_DATA      *this;
+        W32STRC_DATA    *this;
         
-        this = WStrC_Alloc( );
+        this = W32StrC_Alloc( );
         if (this) {
-            this = WStrC_InitW(this, WStr_getData(pStr));
+            this = W32StrC_InitW32(this, WStr_getData(pStr));
         }
         return( this );
     }
     
     
-    WSTRC_DATA *     WStrC_NewW(
+    W32STRC_DATA *  W32StrC_NewW32(
         const
-        int32_t          *pStr
+        W32CHR_T         *pStr
     )
     {
-        WSTRC_DATA       *this;
+        W32STRC_DATA     *this;
         
-        this = WStrC_Alloc( );
+        this = W32StrC_Alloc( );
         if (this) {
-            this = WStrC_InitW( this, pStr );
+            this = W32StrC_InitW32(this, pStr);
         }
         return( this );
     }
@@ -213,15 +213,15 @@ extern "C" {
     //===============================================================
 
     const
-    int32_t *       WStrC_getData(
-        WSTRC_DATA      *this
+    W32CHR_T *      W32StrC_getData(
+        W32STRC_DATA    *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -231,13 +231,13 @@ extern "C" {
     }
     
     
-    uint32_t        WStrC_getLength(
-        WSTRC_DATA       *this
+    uint32_t        W32StrC_getLength(
+        W32STRC_DATA     *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -258,9 +258,9 @@ extern "C" {
     //                       C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         WStrC_Compare(
-        WSTRC_DATA		*this,
-        WSTRC_DATA      *pOther
+    ERESULT         W32StrC_Compare(
+        W32STRC_DATA	*this,
+        W32STRC_DATA    *pOther
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
@@ -268,43 +268,43 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !WStrC_Validate( pOther ) ) {
+        if( !W32StrC_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if( OBJ_NIL == pOther ) {
+        if(OBJ_NIL == pOther) {
             DEBUG_BREAK();
             return ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        eRc = WStr_Cmp(this->pArray,pOther->pArray);
+        eRc = WStr_Cmp(this->pArray, pOther->pArray);
         
         // Return to caller.
         return eRc;
     }
     
     
-    ERESULT         WStrC_CompareA(
-        WSTRC_DATA		*this,
+    ERESULT         W32StrC_CompareA(
+        W32STRC_DATA	*this,
         const
         char            *pString
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
         const
-        int32_t         *pStr1;
-        uint32_t        chr2;
+        W32CHR_T        *pStr1;
+        W32CHR_T        chr2;
         int             i;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -316,7 +316,7 @@ extern "C" {
         
         pStr1 = this->pArray;
         for( ;; ) {
-            chr2 = utf8_Utf8ToWC_Scan(&pString);
+            chr2 = utf8_Utf8ToW32_Scan(&pString);
             if( *pStr1 )
                 ;
             else {
@@ -348,10 +348,10 @@ extern "C" {
     }
     
     
-    ERESULT         WStrC_CompareW(
-        WSTRC_DATA		*this,
+    ERESULT         W32StrC_CompareW32(
+        W32STRC_DATA	*this,
         const
-        int32_t         *pString
+        W32CHR_T        *pString
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
@@ -359,13 +359,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = WStr_Cmp(this->pArray,pString);
+        eRc = WStr_Cmp(this->pArray, pString);
         
         // Return to caller.
         return eRc;
@@ -377,15 +377,15 @@ extern "C" {
     //                          C o p y
     //---------------------------------------------------------------
     
-    WSTRC_DATA *    WStrC_Copy(
-        WSTRC_DATA     *this
+    W32STRC_DATA *  W32StrC_Copy(
+        W32STRC_DATA   *this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -403,8 +403,8 @@ extern "C" {
     //                       C S t r i n g A
     //---------------------------------------------------------------
     
-    char *          WStrC_CStringA(
-        WSTRC_DATA		*this
+    char *          W32StrC_CStringA(
+        W32STRC_DATA	*this
     )
     {
         char            *pszStr;
@@ -415,14 +415,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
-        lenStr = WStrC_getLength(this);
+        lenStr = W32StrC_getLength(this);
         
-        lenA =  utf8_WCToUtf8Str(
+        lenA =  utf8_W32ToUtf8Str(
                     lenStr,
                     this->pArray,
                     0,
@@ -430,13 +430,13 @@ extern "C" {
                 );
         pszStr = (char *)mem_Malloc(lenA);
         if (pszStr) {
-            i =     utf8_WCToUtf8Str(
+            i =     utf8_W32ToUtf8Str(
                                      lenStr,
                                      this->pArray,
                                      lenA,
                                      pszStr
                                      );
-            if (i<lenA) {
+            if (i < lenA) {
             }
             else {
                 mem_Free(pszStr);
@@ -454,11 +454,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            WStrC_Dealloc(
+    void            W32StrC_Dealloc(
         OBJ_ID          objId
     )
     {
-        WSTRC_DATA   *this = objId;
+        W32STRC_DATA    *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -466,13 +466,13 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if (obj_IsFlag(this, WSTRC_FLAG_MALLOC)) {
+        if (obj_IsFlag(this, W32STRC_FLAG_MALLOC)) {
             if (this->pArray) {
                 mem_Free((void *)this->pArray);
                 this->pArray = NULL;
@@ -495,24 +495,24 @@ extern "C" {
     //                          H a s h
     //---------------------------------------------------------------
     
-    uint32_t        WStrC_Hash(
-        WSTRC_DATA      *this
+    uint32_t        W32StrC_Hash(
+        W32STRC_DATA    *this
     )
     {
         uint32_t        hash = 0;
         const
-        int32_t         *pStr = NULL;
+        W32CHR_T        *pStr = NULL;
         
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
         
         pStr = this->pArray;
         if (pStr) {
-            hash = str_HashW( pStr, NULL );
+            hash = str_HashW32( pStr, NULL );
         }
         
         return hash;
@@ -523,11 +523,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    WSTRC_DATA *    WStrC_Init(
-        WSTRC_DATA      *this
+    W32STRC_DATA *  W32StrC_Init(
+        W32STRC_DATA    *this
     )
     {
-        uint32_t        cbSize = sizeof(WSTRC_DATA);
+        uint32_t        cbSize = sizeof(W32STRC_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -543,7 +543,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (WSTRC_DATA *)obj_Init( this, cbSize, OBJ_IDENT_WSTRC );
+        this = (W32STRC_DATA *)obj_Init( this, cbSize, OBJ_IDENT_W32STRC );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -552,14 +552,14 @@ extern "C" {
         //obj_setSize(this, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_WSTRC);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&WStrC_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&W32StrC_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -571,16 +571,16 @@ extern "C" {
     }
 
      
-    WSTRC_DATA *    WStrC_InitA(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_InitA(
+        W32STRC_DATA    *this,
         const
         char            *pStr
     )
     {
         uint32_t        len;
         uint32_t        i;
-        int32_t         *pInsert;
-        int32_t         chr;
+        W32CHR_T        *pInsert;
+        uint32_t        chr;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -599,12 +599,12 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = (WSTRC_DATA *)WStrC_Init( this );
+        this = (W32STRC_DATA *)W32StrC_Init( this );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        pInsert = mem_Malloc((len + 1) * sizeof(int32_t));
+        pInsert = mem_Malloc((len + 1) * sizeof(W32CHR_T));
         if (NULL == pInsert) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -612,10 +612,10 @@ extern "C" {
         }
         this->pArray = pInsert;
         this->len = len;
-        obj_FlagOn(this, WSTRC_FLAG_MALLOC);
+        obj_FlagOn(this, W32STRC_FLAG_MALLOC);
         
         for (i=0; i<len; ++i) {
-            chr = utf8_Utf8ToWC_Scan(&pStr);
+            chr = utf8_Utf8ToW32_Scan(&pStr);
             *pInsert++ = chr;
         }
         *pInsert = '\0';
@@ -624,10 +624,10 @@ extern "C" {
     }
     
     
-    WSTRC_DATA *    WStrC_InitConW(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_InitConW32(
+        W32STRC_DATA    *this,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         uint32_t        len;
@@ -642,14 +642,14 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        len = utf8_StrLenW(pStr);
+        len = utf8_StrLenW32(pStr);
         if (0 == len) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        this = (WSTRC_DATA *)WStrC_Init( this );
+        this = (W32STRC_DATA *)W32StrC_Init( this );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -662,14 +662,14 @@ extern "C" {
     
     
     
-    WSTRC_DATA *    WStrC_InitW(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_InitW32(
+        W32STRC_DATA    *this,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         uint32_t        len;
-        int32_t         *pInsert;
+        W32CHR_T        *pInsert;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -681,19 +681,19 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        len = utf8_StrLenW(pStr);
+        len = utf8_StrLenW32(pStr);
         if (0 == len) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        this = (WSTRC_DATA *)WStrC_Init( this );
+        this = (W32STRC_DATA *)W32StrC_Init( this );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        pInsert = mem_Malloc((len + 1) * sizeof(int32_t));
+        pInsert = mem_Malloc((len + 1) * sizeof(W32CHR_T));
         if (NULL == pInsert) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -701,9 +701,9 @@ extern "C" {
         }
         this->pArray = pInsert;
         this->len = len;
-        obj_FlagOn(this, WSTRC_FLAG_MALLOC);
+        obj_FlagOn(this, W32STRC_FLAG_MALLOC);
         
-        memmove(pInsert, pStr, (len * sizeof(int32_t)));
+        memmove(pInsert, pStr, (len * sizeof(W32CHR_T)));
         pInsert[len] = '\0';
         
         return this;
@@ -715,20 +715,20 @@ extern "C" {
     //                       M i d
     //---------------------------------------------------------------
     
-    WSTRC_DATA *    WStrC_Mid(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_Mid(
+        W32STRC_DATA    *this,
         uint32_t        offset,            /* Relative to 1 */
         uint32_t        len
     )
     {
-        WSTRC_DATA      *pNewStr = OBJ_NIL;
-        uint32_t        lenStr = WStrC_getLength(this);
-        int32_t         *pArray;
+        W32STRC_DATA    *pNewStr = OBJ_NIL;
+        uint32_t        lenStr = W32StrC_getLength(this);
+        W32CHR_T        *pArray;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !WStrC_Validate( this ) ) {
+        if( !W32StrC_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -747,18 +747,18 @@ extern "C" {
 #endif
         
         // Create the new string from this one.
-        pNewStr = WStrC_New();
-        pArray = mem_Malloc((len + 1) * sizeof(int32_t));
+        pNewStr = W32StrC_New();
+        pArray = mem_Malloc((len + 1) * sizeof(W32CHR_T));
         if (NULL == pArray) {
             DEBUG_BREAK();
             obj_Release(pNewStr);
             return OBJ_NIL;
         }
-        memmove(pArray, &this->pArray[offset-1], (len * sizeof(int32_t)));
+        memmove(pArray, &this->pArray[offset-1], (len * sizeof(W32CHR_T)));
         pArray[len] = 0;
         pNewStr->pArray = pArray;
         pNewStr->len = len;
-        obj_FlagOn(pNewStr, WSTRC_FLAG_MALLOC);
+        obj_FlagOn(pNewStr, W32STRC_FLAG_MALLOC);
 
         
         
@@ -772,8 +772,8 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     WStrC_ToDebugString(
-        WSTRC_DATA      *this,
+    ASTR_DATA *     W32StrC_ToDebugString(
+        W32STRC_DATA    *this,
         int             indent
     )
     {
@@ -790,16 +790,16 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(WStrC) len=%d data=%ls",
+                     "{%p(W32StrC) len=%d data=%ls",
                      this,
-                     WStrC_getLength(this),
-                     this->pArray
+                     W32StrC_getLength(this),
+                     (wchar_t *)this->pArray
             );
         AStr_AppendA(pStr, str);
 
@@ -816,7 +816,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p(WStrC)}\n", this );
+        j = snprintf( str, sizeof(str), " %p(W32StrC)}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;
@@ -830,19 +830,19 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            WStrC_Validate(
-        WSTRC_DATA      *this
+    bool            W32StrC_Validate(
+        W32STRC_DATA      *this
     )
     {
         if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_WSTRC) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_W32STRC) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(this) >= sizeof(WSTRC_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(W32STRC_DATA)) )
             return false;
 
         // Return to caller.

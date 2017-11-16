@@ -38,6 +38,7 @@
 
 
 #include    <objArray.h>
+#include    <array_internal.h>
 
 
 #ifndef OBJARRAY_INTERNAL_H
@@ -60,10 +61,9 @@ struct objArray_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    uint32_t        size;		// Number of elements
-    uint32_t        max;        // Number of Array Elements
-    OBJ_DATA        **ppArray;
     ERESULT         eRc;
+    ARRAY_DATA      *pArray;
+    uint32_t        elemSize;
 
 };
 #pragma pack(pop)

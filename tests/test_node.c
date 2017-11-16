@@ -116,36 +116,10 @@ int         test_node_Utf8Con(
 
 
 
-int         test_node_Ptr(
-    const
-    char        *pTestName
-)
-{
-    NODE_DATA	*pObj = OBJ_NIL;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = node_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = node_InitWithPtr( pObj, test_node_Ptr, OBJ_NIL );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    szTbl_SharedReset();    
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
 
 TINYTEST_START_SUITE(test_node);
-  TINYTEST_ADD_TEST(test_node_Ptr,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_node_Utf8Con,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_node_Utf8,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_node_Utf8Con,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_node_Utf8,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_node);

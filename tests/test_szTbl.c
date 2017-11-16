@@ -169,11 +169,11 @@ int         test_szTbl_Add(
         
         eRc = szTbl_StringToToken(pObj, "item", &token);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        eRc = szTbl_StringWToToken(pObj, L"item", &tokenW);
+        eRc = szTbl_StringW32ToToken(pObj, L"item", &tokenW);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (token == tokenW) );
         
-        eRc = szTbl_StringWToToken(pObj, L"item size", &tokenW);
+        eRc = szTbl_StringW32ToToken(pObj, L"item size", &tokenW);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         eRc = szTbl_StringToToken(pObj, "item size", &token);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );

@@ -38,7 +38,7 @@
 
 
 #include    "u12Array.h"
-#include    "arrayExpand.h"
+#include    "array_internal.h"
 
 
 #ifndef U12ARRAY_INTERNAL_H
@@ -62,7 +62,7 @@ struct u12Array_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    ARRAYEXPAND_DATA *pArray;
+    ARRAY_DATA      *pArray;
 
 };
 #pragma pack(pop)

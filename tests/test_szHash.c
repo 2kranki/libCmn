@@ -152,8 +152,8 @@ int         test_szHash_AddFindDelete1(
     XCTAssertFalse( (OBJ_NIL == pHash) );
     if (pHash) {
         
-        szHash_setComputeHash( pHash, str_HashA, str_HashW );
-        szHash_setCompare( pHash, utf8_StrCmp, utf8_StrCmpAW );
+        szHash_setComputeHash( pHash, str_HashA, str_HashW32 );
+        szHash_setCompare( pHash, utf8_StrCmp, utf8_StrCmpAW32 );
 
         for (i=0; i<10; ++i) {
             eRc = szHash_AddA(pHash, strings[i], strings[i]);

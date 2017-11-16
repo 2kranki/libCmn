@@ -43,7 +43,7 @@
 
 
 #include        "u16Array.h"
-#include        "pwr2Array_internal.h"
+#include        "array_internal.h"
 
 
 
@@ -56,7 +56,7 @@ extern "C" {
 struct u16Array_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    PWR2ARRAY_DATA  super;
+    ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 #define U16ARRAY_FLAG_BIGENDIAN 4
 
@@ -77,14 +77,13 @@ struct u16Array_data_s	{
     void *          u16Array_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
 #ifdef NDEBUG
 #else
     bool			u16Array_Validate(
-        U16ARRAY_DATA   *cbp
+        U16ARRAY_DATA   *this
     );
 #endif
 

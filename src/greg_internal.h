@@ -83,8 +83,7 @@ struct greg_data_s	{
     void *          greg_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

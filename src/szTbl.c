@@ -145,7 +145,7 @@ extern "C" {
     SZTBL_DATA *     szTbl_Alloc(
     )
     {
-        SZTBL_DATA       *this;
+        SZTBL_DATA      *this;
         uint32_t        cbSize = sizeof(SZTBL_DATA);
         
         // Do initialization.
@@ -332,8 +332,8 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        szHash_setComputeHash( pht, str_HashA, str_HashW );
-        szHash_setCompare( pht, utf8_StrCmp, utf8_StrCmpAW );
+        szHash_setComputeHash( pht, str_HashA, str_HashW32 );
+        szHash_setCompare( pht, utf8_StrCmp, utf8_StrCmpAW32 );
         this->pHashTable = pht;
         
         this->pPtrArray = ptrArray_New();
@@ -532,10 +532,10 @@ extern "C" {
     }
     
     
-    ERESULT          szTbl_StringWToToken(
+    ERESULT          szTbl_StringW32ToToken(
         SZTBL_DATA      *this,
         const
-        int32_t         *pStr,          // [in]
+        W32CHR_T        *pStr,          // [in]
         uint32_t        *pToken         // [out] Returned Token
     )
     {
@@ -561,7 +561,7 @@ extern "C" {
         }
 #endif
 
-        pNode = (SZTBL_NODE *)szHash_FindW(this->pHashTable, pStr);
+        pNode = (SZTBL_NODE *)szHash_FindW32(this->pHashTable, pStr);
         if (pNode) {
             if (pToken) {
                 *pToken = pNode->ident;
@@ -569,8 +569,8 @@ extern "C" {
             return ERESULT_SUCCESS_DATA_EXISTS;
         }
         
-        hash = str_HashW(pStr, &strLen);
-        utf8StrLen = utf8_WCToUtf8Str( (uint32_t)strLen, pStr, 0, NULL);
+        hash = str_HashW32(pStr, &strLen);
+        utf8StrLen = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, 0, NULL);
         nodeSize = node_SizeNeeded(utf8StrLen-1);
         
         // Add a Heap block if necessary.
@@ -598,7 +598,7 @@ extern "C" {
         pNode->hash = hash;
         pNode->max = nodeSize - sizeof(SZTBL_NODE);
         pNode->len = utf8StrLen;
-        i = utf8_WCToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
+        i = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
         eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
             return ERESULT_GENERAL_FAILURE;
@@ -678,7 +678,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

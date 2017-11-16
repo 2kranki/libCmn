@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   cb.c
+ * File:   objCb.c
  * Author: bob
  *
  * Created on October 25, 2014
@@ -36,7 +36,10 @@
 
 
 
-#include        "objCb_internal.h"
+#include    "objCb_internal.h"
+#include    <psxThread.h>
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -53,7 +56,7 @@ extern "C" {
 #else
     static
     bool			objCb_Validate(
-        OBJCB_DATA         *cbp
+        OBJCB_DATA         *this
     );
 #endif
 
@@ -61,7 +64,7 @@ extern "C" {
 #ifdef XYZZY
     static
     OBJ_ID          objCb_GetPtr(
-        OBJCB_DATA      *cbp,
+        OBJCB_DATA      *this,
         uint16_t        index
     )
     {
@@ -70,11 +73,11 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objCb_Validate( cbp ) ) {
+        if( !objCb_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
-        if( (index > 0) && (index <= cbp->cEntries) )
+        if( (index > 0) && (index <= this->cEntries) )
             ;
         else {
             DEBUG_BREAK();
@@ -82,7 +85,7 @@ extern "C" {
         }
 #endif
 
-        ptr = &cbp->entries[index];
+        ptr = &this->entries[index];
 
         // Return to caller.
         return( ptr );
@@ -111,7 +114,7 @@ extern "C" {
         uint16_t        size            // Number of Elements in Buffer
     )
     {
-        OBJCB_DATA      *cbp;
+        OBJCB_DATA      *this;
         uint32_t        cbSize;
         
         // Do initialization.
@@ -133,15 +136,17 @@ extern "C" {
         
         cbSize = size * sizeof(OBJ_ID);
         cbSize += sizeof(OBJCB_DATA);
-        if ((64 * 1024) <= cbSize) {
+        if (cbSize < (64 * 1024))
+            ;
+        else {
             return NULL;
         }
         
-        cbp = obj_Alloc( cbSize );
-        obj_setMisc1( cbp, size );
+        this = obj_Alloc( cbSize );
+        obj_setMisc1(this, size);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -150,12 +155,12 @@ extern "C" {
         uint16_t        size            // Number of Elements in Buffer
     )
     {
-        OBJCB_DATA      *cbp;
+        OBJCB_DATA      *this;
         
-        cbp = objCb_Alloc( size );
-        cbp = objCb_Init( cbp );
+        this = objCb_Alloc(size);
+        this = objCb_Init(this);
         
-        return( cbp );
+        return this;
     }
     
     
@@ -167,21 +172,21 @@ extern "C" {
     //===============================================================
 
     uint16_t        objCb_getSize(
-        OBJCB_DATA       *cbp
+        OBJCB_DATA       *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objCb_Validate( cbp ) ) {
+        if( !objCb_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         // Return to caller.
-        return( cbp->cEntries );
+        return this->cEntries;
     }
 
 
@@ -201,33 +206,23 @@ extern "C" {
     )
     {
         uint16_t        count;
-#ifdef __PIC32MX_ENV__
-        INTERRUPT_STATUS;
-#endif
+        bool            fRc;
         
         // Validate the input parameters.
     #ifdef NDEBUG
     #else
-        if( !objCb_Validate( this ) ) {
+        if( !objCb_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
     #endif
         
-        // We need to disable interrupts so that we have
-        // uninterrupted access to both variables.
-#ifdef __PIC32MX_ENV__
-        DISABLE_INTERRUPTS();
-#endif
-        
+        fRc = psxMutex_Lock(this->pMutex);
         count = (uint16_t)(this->numWritten - this->numRead);
-        
-#ifdef __PIC32MX_ENV__
-        RESTORE_INTERRUPTS;
-#endif
-        
+        fRc = psxMutex_Unlock(this->pMutex);
+
         // Return to caller.
-        return( count );
+        return  count;
     }
 
 
@@ -236,13 +231,14 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
     
-    void        objCb_Dealloc(
-        OBJ_ID      objId
+    void            objCb_Dealloc(
+        OBJ_ID          objId
     )
     {
-        OBJCB_DATA		*this = objId;
+        OBJCB_DATA	    *this = objId;
         uint32_t        i;
         OBJ_ID          pObj;
+        bool            fRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -253,6 +249,15 @@ extern "C" {
         }
 #endif
         
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            obj_FlagSet(this, CB_FLAG_STOP, true);
+            fRc = psxCond_Broadcast(this->pEmpty);
+            fRc = psxCond_Broadcast(this->pFull);
+            fRc = psxMutex_Unlock(this->pMutex);
+        }
+        psxThread_Wait(1000);
+
         for (i=0; i<this->cEntries; ++i) {
             pObj = this->entries[i];
             if (pObj) {
@@ -261,22 +266,25 @@ extern "C" {
             }
         }
         
-        if (this->pSemEmpty) {
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
+        if (this->pEmpty) {
+            obj_Release(this->pEmpty);
+            this->pEmpty = OBJ_NIL;
         }
-        if (this->pSemFull) {
-            obj_Release(this->pSemFull);
-            this->pSemFull = OBJ_NIL;
+        if (this->pFull) {
+            obj_Release(this->pFull);
+            this->pFull = OBJ_NIL;
         }
-        if (this->pLock) {
-            obj_Release(this->pLock);
-            this->pLock = OBJ_NIL;
+        if (this->pMutex) {
+            obj_Release(this->pMutex);
+            this->pMutex = OBJ_NIL;
         }
         
-        obj_Dealloc(this);
-        this = NULL;
-        
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
         // Return to caller.
     }
     
@@ -302,16 +310,24 @@ extern "C" {
         }
     #endif
         
-        psxSem_Wait(this->pSemFull);
+        if (obj_Flag(this, OBJCB_FLAG_STOP)) {
+            return false;
+        }
         
-        psxLock_Lock(this->pLock);
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            while (((this->numWritten - this->numRead) == 0) && !obj_Flag(this, CB_FLAG_STOP)) {
+                fRc = psxCond_Wait(this->pFull);
+            }
+        }
         
-        if ( (ppData == NULL) || (((uint16_t)(this->numWritten - this->numRead)) == 0) ) {
+        if ( (ppData == NULL) || (((this->numWritten - this->numRead)) == 0) ) {
+            fRc = false;
         }
         else {
             *ppData = this->entries[this->start];
             this->entries[this->start] = OBJ_NIL;
-            // below needed if multi-processor
+            // below needed if multi-processor (??)
             //__sync_fetch_and_add( &this->numRead, 1 );
             ++this->numRead;
             ++this->start;
@@ -321,10 +337,11 @@ extern "C" {
             fRc = true;
         }
         
-        psxLock_Unlock(this->pLock);
-        
-        psxSem_Post(this->pSemEmpty);
-        
+        if (fRc) {
+            fRc = psxCond_Signal(this->pEmpty);
+        }
+        fRc = psxMutex_Unlock(this->pMutex);
+
         return fRc;
     }
 
@@ -393,6 +410,7 @@ extern "C" {
         OBJCB_DATA         *this
     )
     {
+        uint32_t        cbSize;
         uint16_t        size =  obj_getMisc1(this);
 
 
@@ -401,44 +419,81 @@ extern "C" {
             return NULL;
         }
         
-        this = obj_Init( this, obj_getSize(this), OBJ_IDENT_OBJCB );
+        cbSize = obj_getSize(this);
+        this = obj_Init( this, cbSize, OBJ_IDENT_OBJCB );
         if (NULL == this) {
             return NULL;
         }
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objCb_Vtbl);
         
         this->cEntries = size;
         
-        this->pSemEmpty = psxSem_New(size,size);
-        if (OBJ_NIL == this->pSemEmpty) {
+        this->pMutex = psxMutex_New();
+        if (OBJ_NIL == this->pMutex) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pSemFull = psxSem_New(0,size);
-        if (OBJ_NIL == this->pSemFull) {
+        this->pEmpty = psxCond_New(this->pMutex);
+        if (OBJ_NIL == this->pEmpty) {
             DEBUG_BREAK();
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pLock = psxLock_New();
-        if (OBJ_NIL == this->pLock) {
+        this->pFull = psxCond_New(this->pMutex);
+        if (OBJ_NIL == this->pFull) {
             DEBUG_BREAK();
-            obj_Release(this->pSemFull);
-            this->pSemFull = OBJ_NIL;
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
             obj_Release(this);
             return OBJ_NIL;
         }
+        
+#ifdef NDEBUG
+#else
+        if ( !objCb_Validate(this) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
         
         return this;
     }
 
      
 
+    //---------------------------------------------------------------
+    //                       P a u s e
+    //---------------------------------------------------------------
+    
+    bool            objCb_Pause(
+        OBJCB_DATA      *this
+    )
+    {
+        bool            fRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !objCb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            obj_FlagSet(this, OBJCB_FLAG_STOP, true);
+            fRc = psxCond_Broadcast(this->pEmpty);
+            fRc = psxCond_Broadcast(this->pFull);
+            fRc = psxMutex_Unlock(this->pMutex);
+        }
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                            P u t
     //---------------------------------------------------------------
@@ -459,11 +514,16 @@ extern "C" {
         }
     #endif
 
-        psxSem_Wait(this->pSemEmpty);
-        
-        psxLock_Lock(this->pLock);
+        if (obj_Flag(this, OBJCB_FLAG_STOP)) {
+            return false;
+        }
+        fRc = psxMutex_Lock(this->pMutex);
+        while (((this->numWritten - this->numRead) == this->cEntries) && !obj_Flag(this, OBJCB_FLAG_STOP)) {
+            fRc = psxCond_Wait(this->pEmpty);
+        }
         
         if ( ((uint16_t)(this->numWritten - this->numRead)) == this->cEntries ) {
+            fRc = false;
         }
         else {
             obj_Retain(pValue);
@@ -476,15 +536,44 @@ extern "C" {
             fRc = true;
         }
 
-        psxLock_Unlock(this->pLock);
-        
-        psxSem_Post(this->pSemFull);
-        
+        if (fRc) {
+            psxCond_Signal(this->pFull);
+        }
+        psxMutex_Unlock(this->pMutex);
+
         return fRc;
     }
 
 
 
+    //---------------------------------------------------------------
+    //                       R e s u m e
+    //---------------------------------------------------------------
+    
+    bool            objCb_Resume(
+        OBJCB_DATA      *this
+    )
+    {
+        bool            fRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !objCb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = psxMutex_Lock(this->pMutex);
+        obj_FlagSet(this, OBJCB_FLAG_STOP, false);
+        fRc = psxMutex_Unlock(this->pMutex);
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        V a l i d a t e
     //---------------------------------------------------------------

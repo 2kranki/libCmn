@@ -496,7 +496,7 @@ int         test_lex_Strings01(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         pToken = lex_getToken(pObj);
         pStrW = token_getStringW(pToken);
-        eRc = WStr_CompareW(pStrW, L"def");
+        eRc = WStr_CompareW32(pStrW, L"def");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         cls = token_getClass(pToken);
         XCTAssertTrue( ('a' == cls) );
@@ -544,11 +544,11 @@ int         test_lex_Strings02(
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pStrW ) {
             ASTR_DATA           *pStrA = WStr_ToDebugString(pStrW, 0);
-            fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStrA));
+            //fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStrA));
             obj_Release(pStrA);
             pStrA = OBJ_NIL;
             pStrA = WStr_ToChrCon(pStrW);
-            fprintf(stderr, "\tchrcon = \"%s\"\n", AStr_getData(pStrA));
+            //fprintf(stderr, "\tchrcon = \"%s\"\n", AStr_getData(pStrA));
             obj_Release(pStrA);
             pStrA = OBJ_NIL;
             eRc = WStr_CompareA(pStrW, "\n  \n");

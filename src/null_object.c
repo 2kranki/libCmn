@@ -79,6 +79,9 @@ bool            null_ClassIsKindOf(
     if (OBJ_IDENT_NULL_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_SHARED_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -129,6 +132,9 @@ bool            null_IsKindOf(
 {
     if (OBJ_IDENT_NULL == classID) {
        return true;
+    }
+    if (OBJ_IDENT_SHARED == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

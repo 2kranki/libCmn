@@ -137,12 +137,16 @@ extern "C" {
 #define         OBJ_IDENTS_ENUM	1
     typedef enum obj_idents_e {
         OBJ_IDENT_UNKNOWN=0,
+        OBJ_IDENT_SHARED,               // Special Inherited Class for Shared Objects
+        OBJ_IDENT_SHARED_CLASS,
         OBJ_IDENT_MAIN,                 // Main Program Object
         OBJ_IDENT_MAIN_CLASS,
         OBJ_IDENT_APPL,                 // Application Base Object
         OBJ_IDENT_APPL_CLASS,
-        OBJ_IDENT_ARRAYEXPAND,          // Expandable Array
-        OBJ_IDENT_ARRAYEXPAND_CLASS,
+        OBJ_IDENT_ARRAY,                // Expandable Array
+        OBJ_IDENT_ARRAY_CLASS,
+        //OBJ_IDENT_ARRAYEXPAND,          // Expandable Array
+        //OBJ_IDENT_ARRAYEXPAND_CLASS,
         OBJ_IDENT_ASCII,                // ASCII Character Set
         OBJ_IDENT_ASCII_CLASS,
         OBJ_IDENT_ASTR,                 // ASCII String
@@ -230,8 +234,6 @@ extern "C" {
         OBJ_IDENT_ERESULT_CLASS,
         OBJ_IDENT_EXECARRAY,            // An Array of Function/Object(s) pairs
         OBJ_IDENT_EXECARRAY_CLASS,
-        OBJ_IDENT_EXECPTR,              // Executable Function Pointer
-        OBJ_IDENT_EXECPTR_CLASS,
         OBJ_IDENT_FALSE,
         OBJ_IDENT_FALSE_CLASS,
         OBJ_IDENT_FBSI,                 // Fixed Blocked Input Class
@@ -250,10 +252,8 @@ extern "C" {
         OBJ_IDENT_HASH32_CLASS,
         OBJ_IDENT_HEX,                  // Hex Input/Output
         OBJ_IDENT_HEX_CLASS,
-        OBJ_IDENT_HJSON,                // HJSON Parser
+        OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser
         OBJ_IDENT_HJSON_CLASS,
-        OBJ_IDENT_JSON,                 // JSON Parser
-        OBJ_IDENT_JSON_CLASS,
         OBJ_IDENT_JSONOUT,              // Standardized JSON Output
         OBJ_IDENT_JSONOUT_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner
@@ -274,6 +274,8 @@ extern "C" {
         OBJ_IDENT_MISC_CLASS,
         OBJ_IDENT_MSGBUS,               // Message Broadcast
         OBJ_IDENT_MSGBUS_CLASS,
+        OBJ_IDENT_MSGDATA,              // Message Data
+        OBJ_IDENT_MSGDATA_CLASS,
         OBJ_IDENT_NAME,
         OBJ_IDENT_NAME_CLASS,
         OBJ_IDENT_NODE,
@@ -316,6 +318,10 @@ extern "C" {
         OBJ_IDENT_OBJLIST_CLASS,
         OBJ_IDENT_OBJMATRIX,            // 2 dimensional array of Objects
         OBJ_IDENT_OBJMATRIX_CLASS,
+        OBJ_IDENT_OBJMETHOD,            // Object Method Pointer
+        OBJ_IDENT_OBJMETHOD_CLASS,
+        OBJ_IDENT_OBJREGISTRY,          // Object Registry
+        OBJ_IDENT_OBJREGISTRY_CLASS,
         OBJ_IDENT_OSC,
         OBJ_IDENT_OSC_CLASS,
         OBJ_IDENT_PACKET,
@@ -346,6 +352,8 @@ extern "C" {
         OBJ_IDENT_PSXTHREAD_CLASS,
         OBJ_IDENT_PTRARRAY,             // Generic Array of Pointers
         OBJ_IDENT_PTRARRAY_CLASS,
+        OBJ_IDENT_PTRCB,                // Generic Circular Buffer of Pointers
+        OBJ_IDENT_PTRCB_CLASS,
         OBJ_IDENT_PTRTBL,
         OBJ_IDENT_PTRTBL_CLASS,
         OBJ_IDENT_PWR2ARRAY,            // An Array of elements that have a size
@@ -427,8 +435,8 @@ extern "C" {
         OBJ_IDENT_WSTR_CLASS,
         OBJ_IDENT_WSTRARRAY,            // an Array of Wide Strings
         OBJ_IDENT_WSTRARRAY_CLASS,
-        OBJ_IDENT_WSTRC,
-        OBJ_IDENT_WSTRC_CLASS,
+        OBJ_IDENT_W32STRC,
+        OBJ_IDENT_W32STRC_CLASS,
         OBJ_IDENT_XML,
         OBJ_IDENT_XML_CLASS,
         OBJ_IDENT_OTHER_LIBS=8192,
@@ -463,6 +471,8 @@ extern "C" {
 #define ANSI_COLOR_FORE_BRIGHT_CYAN     "\x1b[1m\x1b[36m"
 #define ANSI_COLOR_FORE_BRIGHT_WHITE    "\x1b[1m\x1b[37m"
 #define ANSI_COLOR_RESET                "\x1b[0m"
+    
+#define W32CHR_T    int32_t
 
 
 
@@ -505,6 +515,7 @@ extern "C" {
     typedef uint32_t    (*P_VOIDEXIT1_U32)(void *);
     typedef void *      (*P_VOIDEXIT1_PTR)(void *);
     typedef uint32_t    (*P_VOIDEXIT2_U32_U32)(void *,uint32_t);
+    typedef void        (*P_MSGRCV)(void *, uint16_t, uint8_t *);
 
 
 
@@ -673,33 +684,22 @@ typedef struct WStr_vtbl_s	{
     // Properties:
     // Methods:
     const
-    int32_t *   (*pGetData)(WSTR_DATA *);
+    W32CHR_T *  (*pGetData)(WSTR_DATA *);
     uint32_t    (*pGetLength)(WSTR_DATA *);
 } WSTR_VTBL;
 
 
-typedef struct WStrArray_data_s     WSTRARRAY_DATA;
-typedef struct WStrArray_vtbl_s	{
-    OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-    // Put other methods below this as pointers and add their
-    // method names to the vtbl definition in WStrArray_object.c.
-    // Properties:
-    // Methods:
-    bool        (*pIsEnabled)(WSTRARRAY_DATA *);
-} WSTRARRAY_VTBL;
-
-
-typedef struct WStrC_data_s         WSTRC_DATA;
-typedef struct WStrC_vtbl_s	{
+typedef struct W32StrC_data_s       W32STRC_DATA;
+typedef struct W32StrC_vtbl_s	{
     OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
     // Put other methods below this as pointers and add their
     // method names to the vtbl definition in WStrC_object.c.
     // Properties:
     // Methods:
     const
-    int32_t *   (*pGetData)(WSTRC_DATA *);
-    uint32_t    (*pGetLength)(WSTRC_DATA *);
-} WSTRC_VTBL;
+    W32CHR_T *  (*pGetData)(W32STRC_DATA *);
+    uint32_t    (*pGetLength)(W32STRC_DATA *);
+} W32STRC_VTBL;
 
 
 

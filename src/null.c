@@ -186,22 +186,25 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        NULL_DATA   *cbp = objId;
+        NULL_DATA       *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !null_Validate( cbp ) ) {
+        if( !null_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        //obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -212,41 +215,42 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    NULL_DATA *   null_Init(
-        NULL_DATA       *cbp
+    NULL_DATA *     null_Init(
+        NULL_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(NULL_DATA);
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        //cbSize = obj_getSize(cbp);
-        cbp = (NULL_DATA *)obj_Init( cbp, cbSize, OBJ_IDENT_NULL );
-        if (OBJ_NIL == cbp) {
+        //cbSize = obj_getSize(this);
+        this = (NULL_DATA *)obj_Init(this, cbSize, OBJ_IDENT_NULL);
+        if (OBJ_NIL == this) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(cbp, cbSize);         // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_NULL);
-        obj_setVtbl(cbp, (OBJ_IUNKNOWN *)&null_Vtbl);
+        //obj_setSize(this, cbSize);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_NULL);
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&null_Vtbl);
         
-        //cbp->stackSize = obj_getMisc1(cbp);
-        //cbp->pArray = objArray_New( );
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !null_Validate( cbp ) ) {
+        if( !null_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
-        return cbp;
+        return this;
     }
 
      
@@ -258,12 +262,13 @@ extern "C" {
     void *          null_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         NULL_DATA       *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -302,7 +307,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -329,7 +334,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

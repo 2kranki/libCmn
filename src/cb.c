@@ -37,6 +37,7 @@
 
 
 #include    <cb_internal.h>
+#include    <psxThread.h>
 #include    <trace.h>
 
 
@@ -283,7 +284,8 @@ extern "C" {
         CB_DATA       *this
     )
     {
-        uint16_t        count;
+        uint16_t        count = 0;
+        bool            fRc;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -294,30 +296,15 @@ extern "C" {
         }
 #endif
         
-#ifdef XYZZY
-        psxLock_Lock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_lock(&this->mutex);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        EnterCriticalSection(&this->csMutex);
-#endif
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            count = (uint16_t)(this->numWritten - this->numRead);
+        }
         
-        count = (uint16_t)(this->numWritten - this->numRead);
-        
-#ifdef XYZZY
-        psxLock_Unlock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_unlock(&this->mutex);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        LeaveCriticalSection(&this->csMutex);
-#endif
+        fRc = psxMutex_Unlock(this->pMutex);
         
         // Return to caller.
-        return( count );
+        return count;
     }
 
 
@@ -331,9 +318,7 @@ extern "C" {
     )
     {
         CB_DATA		*this = objId;
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
+        bool        fRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -344,51 +329,34 @@ extern "C" {
         }
 #endif
         
-#ifdef XYZZY
-        if (this->pSemEmpty) {
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            obj_FlagSet(this, CB_FLAG_STOP, true);
+            fRc = psxCond_Broadcast(this->pEmpty);
+            fRc = psxCond_Broadcast(this->pFull);
+            fRc = psxMutex_Unlock(this->pMutex);
         }
-        if (this->pSemFull) {
-            obj_Release(this->pSemFull);
-            this->pSemFull = OBJ_NIL;
-        }
-        if (this->pLock) {
-            obj_Release(this->pLock);
-            this->pLock = OBJ_NIL;
-        }
-#endif
+        psxThread_Wait(1000);
 
-        // We must release any Get()s/Put()s.
-        obj_FlagSet(this, CB_FLAG_PAUSE, true);
-#if defined(__MACOSX_ENV__)
-        pthread_cond_broadcast(&this->condEmpty);
-        pthread_cond_broadcast(&this->condFull);
-        usleep(500000);
-        
-        iRc = pthread_cond_destroy(&this->condEmpty);
-        if (iRc) {
-            DEBUG_BREAK();
+        if (this->pEmpty) {
+            obj_Release(this->pEmpty);
+            this->pEmpty = OBJ_NIL;
         }
-        iRc = pthread_cond_destroy(&this->condFull);
-        if (iRc) {
-            DEBUG_BREAK();
+        if (this->pFull) {
+            obj_Release(this->pFull);
+            this->pFull = OBJ_NIL;
         }
-        iRc = pthread_mutex_destroy(&this->mutex);
-        if (iRc) {
-            DEBUG_BREAK();
+        if (this->pMutex) {
+            obj_Release(this->pMutex);
+            this->pMutex = OBJ_NIL;
         }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        WakeAllConditionVariable(&this->cvCondEmpty);
-        WakeAllConditionVariable(&this->cvCondFull);
-        Sleep(500);
-#endif
-        
+
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc(this);
-        this = NULL;
-        
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
         // Return to caller.
     }
     
@@ -416,34 +384,18 @@ extern "C" {
         }
     #endif
         
-        if (obj_Flag(this, CB_FLAG_PAUSE)) {
+        if (obj_Flag(this, CB_FLAG_STOP)) {
             return false;
         }
-#ifdef XYZZY
-        psxSem_Wait(this->pSemFull);
-        psxLock_Lock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_lock(&this->mutex);
-        while (cb_NumEntries(this) == 0) { // queue is empty
-            if (obj_Flag(this, CB_FLAG_PAUSE)) {
-                pthread_mutex_unlock(&this->mutex);
-                return false;
-            }
-            pthread_cond_wait(&this->condFull, &this->mutex);
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        EnterCriticalSection(&this->csMutex);
-        while(cb_NumEntries(this) == 0) {
-            if (obj_Flag(this, CB_FLAG_PAUSE)) {
-                LeaveCriticalSection(&this->csMutex);
-                return false;
-            }
-            SleepConditionVariableCS(&this->cvCondFull, &this->csMutex, INFINITE);
-        }
-#endif
         
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            while ((cb_NumEntries(this) == 0) && !obj_Flag(this, CB_FLAG_STOP)) {
+                fRc = psxCond_Wait(this->pFull);
+            }
+        }
+
+        fRc = false;
         if (cb_NumEntries(this)) {
             if (cb_NumEntries(this) < this->cEntries) {
                 fNotFull = true;
@@ -471,19 +423,10 @@ extern "C" {
             }
         }
         
-#ifdef XYZZY
-        pthread_mutex_unlock(&this-mutex);
-        psxLock_Unlock(this->pLock);
-        psxSem_Post(this->pSemEmpty);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_unlock(&this->mutex);
-        pthread_cond_signal(&this->condEmpty);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        LeaveCriticalSection(&this->csMutex);
-        WakeConditionVariable(&this->cvCondEmpty);
-#endif
+        if (fRc) {
+            psxCond_Signal(this->pEmpty);
+        }
+        psxMutex_Unlock(this->pMutex);
         
         return fRc;
     }
@@ -499,6 +442,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
+        bool            fEmpty = false;
         
         // Do initialization.
     #ifdef NDEBUG
@@ -509,31 +453,13 @@ extern "C" {
         }
     #endif
 
-#ifdef XYZZY
-        psxLock_Lock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_lock(&this->mutex);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        EnterCriticalSection(&this->csMutex);
-#endif
-        
+        fRc = psxMutex_Lock(this->pMutex);
         if (cb_NumEntries(this) == 0) {
-            fRc = true;
+            fEmpty = true;
         }
+        fRc = psxMutex_Unlock(this->pMutex);
         
-#ifdef XYZZY
-        psxLock_Unlock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_unlock(&this->mutex);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        LeaveCriticalSection(&this->csMutex);
-#endif
-        
-        return fRc;
+        return fEmpty;
     }
 
 
@@ -547,6 +473,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
+        bool            fFull = false;
         
         // Do initialization.
     #ifdef NDEBUG
@@ -557,31 +484,13 @@ extern "C" {
         }
     #endif
 
-#ifdef XYZZY
-        psxLock_Lock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_lock(&this->mutex);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        EnterCriticalSection(&this->csMutex);
-#endif
-        
+        fRc = psxMutex_Lock(this->pMutex);
         if (cb_NumEntries(this) == this->cEntries) {
-            fRc = true;
+            fFull = true;
         }
-        
-#ifdef XYZZY
-        psxLock_Unlock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_unlock(&this->mutex);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        LeaveCriticalSection(&this->csMutex);
-#endif
-        
-        return fRc;
+        fRc = psxMutex_Unlock(this->pMutex);
+
+        return fFull;
     }
 
 
@@ -598,9 +507,6 @@ extern "C" {
         uint32_t        dataSize;
         uint16_t        size =  obj_getMisc1(this);
         uint16_t        elemSize =  obj_getMisc2(this);
-#if defined(__MACOSX_ENV__)
-        int             iRc;
-#endif
 
         // Do initialization.
         if (NULL == this) {
@@ -641,60 +547,24 @@ extern "C" {
         this->cEntries = size;
         this->elemSize = elemSize;
         
-#ifdef XYZZY
-        this->pSemEmpty = psxSem_New(size,size);
-        if (OBJ_NIL == this->pSemEmpty) {
+        this->pMutex = psxMutex_New();
+        if (OBJ_NIL == this->pMutex) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pSemFull = psxSem_New(0,size);
-        if (OBJ_NIL == this->pSemFull) {
-            DEBUG_BREAK();
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        this->pLock = psxLock_New();
-        if (OBJ_NIL == this->pLock) {
-            DEBUG_BREAK();
-            obj_Release(this->pSemFull);
-            this->pSemFull = OBJ_NIL;
-            obj_Release(this->pSemEmpty);
-            this->pSemEmpty = OBJ_NIL;
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
-#if defined(__MACOSX_ENV__)
-        //this->mutex = PTHREAD_MUTEX_INITIALIZER;
-        iRc = pthread_mutex_init(&this->mutex, NULL);
-        if (iRc) {
+        this->pEmpty = psxCond_New(this->pMutex);
+        if (OBJ_NIL == this->pEmpty) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        // this->condEmpty = PTHREAD_COND_INITIALIZER;
-        iRc = pthread_cond_init(&this->condEmpty, NULL);
-        if (iRc) {
+        this->pFull = psxCond_New(this->pMutex);
+        if (OBJ_NIL == this->pFull) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        // this->condFull = PTHREAD_COND_INITIALIZER;
-        iRc = pthread_cond_init(&this->condFull, NULL);
-        if (iRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        InitializeCriticalSection(&this->csMutex);
-        InitializeConditionVariable(&this->cvCondEmpty);
-        InitializeConditionVariable(&this->cvCondFull);
-#endif
         
         return this;
     }
@@ -709,6 +579,7 @@ extern "C" {
         CB_DATA         *this
     )
     {
+        bool            fRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -719,17 +590,13 @@ extern "C" {
         }
 #endif
         
-        obj_FlagSet(this, CB_FLAG_PAUSE, true);
-#if defined(__MACOSX_ENV__)
-        pthread_cond_broadcast(&this->condEmpty);
-        pthread_cond_broadcast(&this->condFull);
-        usleep(100000);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        WakeAllConditionVariable(&this->cvCondEmpty);
-        WakeAllConditionVariable(&this->cvCondFull);
-        Sleep(500);
-#endif
+        fRc = psxMutex_Lock(this->pMutex);
+        if (fRc) {
+            obj_FlagSet(this, CB_FLAG_STOP, true);
+            fRc = psxCond_Broadcast(this->pEmpty);
+            fRc = psxCond_Broadcast(this->pFull);
+            fRc = psxMutex_Unlock(this->pMutex);
+        }
         
         return true;
     }
@@ -757,33 +624,13 @@ extern "C" {
         }
     #endif
 
-        if (obj_Flag(this, CB_FLAG_PAUSE)) {
+        if (obj_Flag(this, CB_FLAG_STOP)) {
             return false;
         }
-#ifdef XYZZY
-        psxSem_Wait(this->pSemEmpty);
-        psxLock_Lock(this->pLock);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_lock(&this->mutex);
-        while (cb_NumEntries(this) == this->cEntries) {
-            if (obj_Flag(this, CB_FLAG_PAUSE)) {
-                pthread_mutex_unlock(&this->mutex);
-                return false;
-            }
-            pthread_cond_wait (&this->condEmpty, &this->mutex);
+        fRc = psxMutex_Lock(this->pMutex);
+        while ((cb_NumEntries(this) == this->cEntries) && !obj_Flag(this, CB_FLAG_STOP)) {
+            fRc = psxCond_Wait(this->pEmpty);
         }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        EnterCriticalSection(&this->csMutex);
-        while(cb_NumEntries(this) == this->cEntries) {
-            if (obj_Flag(this, CB_FLAG_PAUSE)) {
-                LeaveCriticalSection(&this->csMutex);
-                return false;
-            }
-            SleepConditionVariableCS(&this->cvCondEmpty, &this->csMutex, INFINITE);
-        }
-#endif
         
         if (cb_NumEntries(this) < this->cEntries) {
             TRC_OBJ(
@@ -805,18 +652,10 @@ extern "C" {
             }
         }
 
-#ifdef XYZZY
-        psxLock_Unlock(this->pLock);
-        psxSem_Post(this->pSemFull);
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_unlock(&this->mutex);
-        pthread_cond_signal(&this->condFull);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        LeaveCriticalSection(&this->csMutex);
-        WakeConditionVariable(&this->cvCondFull);
-#endif
+        if (fRc) {
+            psxCond_Signal(this->pFull);
+        }
+        psxMutex_Unlock(this->pMutex);
         
         return fRc;
     }
@@ -830,12 +669,13 @@ extern "C" {
     void *          cb_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         CB_DATA         *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -871,7 +711,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -884,6 +724,7 @@ extern "C" {
         CB_DATA         *this
     )
     {
+        bool            fRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -894,10 +735,10 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
-        obj_FlagSet(this, CB_FLAG_PAUSE, false);
-#endif
-        
+        fRc = psxMutex_Lock(this->pMutex);
+        obj_FlagSet(this, CB_FLAG_STOP, false);
+        fRc = psxMutex_Unlock(this->pMutex);
+
         return true;
     }
     
@@ -925,7 +766,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

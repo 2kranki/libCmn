@@ -53,6 +53,8 @@ extern "C" {
     
     static
     TRACE_DATA      *pShared = OBJ_NIL;
+    static
+    TRACE_DATA      singleton = {{0}};
 
 
  
@@ -76,12 +78,12 @@ extern "C" {
     TRACE_DATA *     trace_Alloc(
     )
     {
-        TRACE_DATA      *this;
+        TRACE_DATA      *this = &singleton;
         uint32_t        cbSize = sizeof(TRACE_DATA);
         
-        // Do initialization.
-        
-        this = obj_Alloc( cbSize );
+        // Fake Obj initialization.
+        memset(this, 0, sizeof(TRACE_DATA));
+        OBJ_INIT_SHARED(this, cbSize);
         
         // Return to caller.
         return this;
@@ -89,17 +91,28 @@ extern "C" {
 
 
 
+    TRACE_DATA *    trace_New(
+    )
+    {
+        TRACE_DATA      *this;
+        
+        if (pShared == OBJ_NIL) {
+            pShared = trace_Alloc( );
+            if (pShared) {
+                pShared = trace_InitStream(pShared, stderr);
+                trace_setTrace(pShared, true);
+            }
+        }
+        this = pShared;
+        return this;
+    }
+    
+    
+    
     TRACE_DATA *    trace_Shared(
     )
     {
-        
-        if (OBJ_NIL == pShared) {
-            pShared = trace_Alloc( );
-            pShared = trace_InitStream(pShared, stderr);
-            trace_setTrace(pShared, true);
-        }
-        
-        return( pShared );
+        return trace_New( );
     }
     
     
@@ -108,11 +121,8 @@ extern "C" {
     )
     {
         
-        while (pShared && (obj_getRetainCount(pShared) > 1)) {
-            obj_Release(pShared);
-        }
         if (pShared) {
-            obj_Release(pShared);
+            trace_Dealloc(pShared);
             pShared = OBJ_NIL;
         }
         
@@ -230,12 +240,9 @@ extern "C" {
             this->pFileOut = NULL;
         }
         
-        if (this->pLock) {
-            obj_Release(this->pLock);
-            this->pLock = OBJ_NIL;
-        }
+        psxLock_Dealloc(&this->lock);
 
-        obj_Dealloc(this);
+        //obj_Dealloc(this);
         this = NULL;
 
         // Return to caller.
@@ -259,7 +266,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = obj_Init( this, cbSize, OBJ_IDENT_TRACE );
+        this = obj_Init(this, cbSize, OBJ_IDENT_TRACE);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -281,7 +288,7 @@ extern "C" {
             this->fOpened = false;
         }
         
-        this->pLock = psxLock_New();
+        psxLock_Init(&this->lock);
 
     #ifdef NDEBUG
     #else
@@ -290,6 +297,7 @@ extern "C" {
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->pFileOut);
+        BREAK_NOT_BOUNDARY4(sizeof(TRACE_DATA));
     #endif
 
         return this;
@@ -333,7 +341,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = trace_Init( this, NULL );
+        this = trace_Init(this, NULL);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -365,7 +373,7 @@ extern "C" {
     )
     {
 
-        psxLock_Lock(this->pLock);
+        psxLock_Lock(&this->lock);
         if (this->pLineOut) {
             this->pLineOut(this->pLineOutObj, pszData);
         }
@@ -380,7 +388,7 @@ extern "C" {
             //OutputDebugStringA( pszData );
 #endif
         }
-        psxLock_Unlock(this->pLock);
+        psxLock_Unlock(&this->lock);
         
     }
 
@@ -414,13 +422,13 @@ extern "C" {
         Buffer[0] = '\0';
         
         if( flg ) {
-            psxLock_Lock(this->pLock);
+            psxLock_Lock(&this->lock);
             va_start( pArgs, pszFormat );
             vsnprintf( Buffer, sizeof(Buffer), pszFormat, pArgs );
             va_end( pArgs );
-            psxLock_Unlock(this->pLock);
+            psxLock_Unlock(&this->lock);
 
-            trace_LineOut( this, Buffer );
+            trace_LineOut(this, Buffer);
         }
         
         // Return to caller.
@@ -500,7 +508,7 @@ extern "C" {
         }
 #endif
         
-        psxLock_Lock(this->pLock);
+        psxLock_Lock(&this->lock);
         //i = index / 32;			        /* horizontal - word */
         i = index >> 5;
         //j = (32-1) - (index % 32);	    /* horizontal - bit */
@@ -510,10 +518,64 @@ extern "C" {
             this->flags[i] |= (1 << j);
         else
             this->flags[i] &= ~(1 << j);
-        psxLock_Unlock(this->pLock);
+        psxLock_Unlock(&this->lock);
         
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          trace_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        TRACE_DATA      *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !trace_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("TraceA", (char *)pStr) == 0) {
+                            return trace_TraceA;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -546,11 +608,11 @@ extern "C" {
         
         Buffer[0] = '\0';
         
-        psxLock_Lock(this->pLock);
+        psxLock_Lock(&this->lock);
         va_start( pArgs, pszFormat );
         vsnprintf( Buffer, sizeof(Buffer), pszFormat, pArgs );
         va_end( pArgs );
-        psxLock_Unlock(this->pLock);
+        psxLock_Unlock(&this->lock);
         
         trace_LineOut( this, Buffer );
         
@@ -583,12 +645,12 @@ extern "C" {
 #endif
         
         Buffer2[0] = '\0';
-        psxLock_Lock(this->pLock);
+        psxLock_Lock(&this->lock);
         va_start( pArgs, pszFormat );
         vsnprintf( Buffer2, sizeof(Buffer2), pszFormat, pArgs );
         va_end( pArgs );
         snprintf( Buffer1, sizeof(Buffer1), "%s: %s", pszFunc, Buffer2 );
-        psxLock_Unlock(this->pLock);
+        psxLock_Unlock(&this->lock);
         
         trace_LineOut( this, Buffer1 );
         

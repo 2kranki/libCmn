@@ -140,8 +140,7 @@ struct hjson_data_s	{
     void *          hjson_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
 
 

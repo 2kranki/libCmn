@@ -43,7 +43,7 @@
 
 
 #include        "u32Array.h"
-#include        "pwr2Array_internal.h"
+#include        "array_internal.h"
 
 
 
@@ -56,7 +56,7 @@ extern "C" {
 struct u32Array_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    PWR2ARRAY_DATA  super;
+    ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 #define U32ARRAY_FLAG_BIGENDIAN 4
 
@@ -76,6 +76,14 @@ struct u32Array_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          u32Array_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			u32Array_Validate(

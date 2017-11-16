@@ -87,8 +87,7 @@ struct srcLoc_data_s	{
     void *          srcLoc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

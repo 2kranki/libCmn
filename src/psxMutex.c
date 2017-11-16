@@ -156,7 +156,6 @@ extern "C" {
         if (iRc) {
             DEBUG_BREAK();
         }
-        obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         CloseHandle(this->m_hMutex);
@@ -253,6 +252,7 @@ extern "C" {
         PSXMUTEX_DATA	*this
     )
     {
+        bool            fRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -263,11 +263,14 @@ extern "C" {
         }
 #endif
         
-        if (obj_IsFlag(this, PSXMUTEX_FLAG_LOCKED))
-            return true;
+        fRc = psxMutex_TryLock(this);
+        if (fRc) {
+            psxMutex_Unlock(this);
+        }
+        fRc = !fRc;
         
         // Return to caller.
-        return false;
+        return fRc;
     }
     
     
@@ -303,15 +306,16 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
         if (iRc == 0) {
-            obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
             return true;
+        }
+        else {
+            DEBUG_BREAK();
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         dwRc = WaitForSingleObject(this->m_hMutex, INFINITE);
         switch (dwRc) {
             case WAIT_OBJECT_0:
-                obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
                 return true;
                 break;
                 
@@ -329,7 +333,6 @@ extern "C" {
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (tnRc == TN_RC_OK) {
-            obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif
@@ -362,7 +365,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -370,7 +373,7 @@ extern "C" {
                      sizeof(str),
                      "{%p(psxMutex)   %s  ",
                      this,
-                     (obj_IsFlag(this,PSXMUTEX_FLAG_LOCKED) ? "Locked" : "Unlocked")
+                     (psxMutex_IsLocked(this) ? "Locked" : "Unlocked")
             );
         AStr_AppendA(pStr, str);
 
@@ -412,7 +415,6 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_trylock(&this->mutex);
         if (iRc == 0) {
-            obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif
@@ -420,7 +422,6 @@ extern "C" {
         dwRc = WaitForSingleObject(this->m_hMutex, 0);
         switch (dwRc) {
             case WAIT_OBJECT_0:
-                obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
                 return true;
                 break;
                 
@@ -438,7 +439,6 @@ extern "C" {
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_lock_polling(&this->mutex);
         if (tnRc == TN_RC_OK) {
-            obj_FlagOn(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif
@@ -477,20 +477,17 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_unlock(&this->mutex);
         if (iRc == 0) {
-            obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         if (ReleaseMutex(this->m_hMutex)) {
-            obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
         if (tnRc == TN_RC_OK) {
-            obj_FlagOff(this, PSXMUTEX_FLAG_LOCKED);
             return true;
         }
 #endif

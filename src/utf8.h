@@ -186,11 +186,11 @@ extern "C" {
         char            *pSrc2
     );
     
-    int             utf8_StrCmpAW(
+    int             utf8_StrCmpAW32(
         const
         char            *pSrc1,
         const
-        int32_t         *pSrc2
+        W32CHR_T        *pSrc2
     );
     
     
@@ -217,9 +217,9 @@ extern "C" {
         char            *pSrc
     );
     
-    int             utf8_StrLenW(
+    int             utf8_StrLenW32(
         const
-        int32_t         *pSrc
+        W32CHR_T        *pSrc
     );
     
     
@@ -236,28 +236,28 @@ extern "C" {
     int32_t         utf8_StrOffset(
         const
         char            *pSrc,
-        int32_t         offset          // Relative to 1
+        uint32_t        offset          // Relative to 1
     );
     
     
-    bool            utf8_isValidWC(
-        int32_t         ch
+    bool            utf8_isValidW32(
+        W32CHR_T        ch
     );
     
     
-    // Utf8ToWC() converts the UTF-8 string to one UNICODE character
+    // Utf8ToW32() converts the UTF-8 string to one UNICODE character
     // if possible and returns the length used of the UTF-8 string.
     // If an error occurred, -1 is returned for both the UNICODE
     // character and the length. If the UNICODE Pointer is NULL,
     // then the length or -1 is still returned.
-    int             utf8_Utf8ToWC(
+    int             utf8_Utf8ToW32(
         const
         char            *pSrc,
-        int32_t         *pChr       // Optional UNICODE Character Ptr
+        W32CHR_T        *pChr       // Optional UNICODE Character Ptr
     );
     
     
-    int32_t         utf8_Utf8ToWC_Scan(
+    W32CHR_T        utf8_Utf8ToW32_Scan(
         const
         char            **ppSrc
     );
@@ -269,8 +269,8 @@ extern "C" {
      If pDest is NULL, we simply return the length needed
      excluding the NUL-terminator.
      */
-    int             utf8_WCToChrCon(
-        int32_t         chr,            // Input
+    int             utf8_W32ToChrCon(
+        W32CHR_T        chr,            // Input
         char            *pDest          // max 11-byte buffer
     );
     
@@ -282,11 +282,11 @@ extern "C" {
      culate the size of area needed including NUL-terminator 
      and return that.
      */
-    uint32_t         utf8_WCToUtf8Str(
+    uint32_t         utf8_W32ToUtf8Str(
         uint32_t        lenStr,       // Input String Length (if zero,
                                       // we use NUL-terminator to stop)
         const
-        int32_t         *pStr,        // Input String pointer
+        W32CHR_T        *pStr,        // Input String pointer
         uint32_t        lenDest,      // In bytes including NUL
         char            *pDest
     );
@@ -297,8 +297,8 @@ extern "C" {
      * If pDest is NULL, we simply return the length needed
      * excluding the NUL-terminator.
      */
-    int             utf8_WCToUtf8(
-        int32_t         chr,            // Input
+    int             utf8_W32ToUtf8(
+        W32CHR_T        chr,            // Input
         char            *pDest          // max 7-byte buffer
     );
     
@@ -309,11 +309,11 @@ extern "C" {
     NUL-terminator. If pDest is NULL, we calculate the size of
     area needed including NUL-terminator and return that.
      */
-    uint32_t         utf8_WCToUtf8Str(
+    uint32_t         utf8_W32ToUtf8Str(
         uint32_t        lenStr,       // Input String Length (if zero,
                                       // we use NUL-terminator to stop)
         const
-        int32_t         *pStr,        // Input String pointer
+        W32CHR_T        *pStr,        // Input String pointer
         uint32_t        lenDest,      // In bytes including NUL
         char            *pDest
     );

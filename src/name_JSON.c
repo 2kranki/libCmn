@@ -42,15 +42,17 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "name_internal.h"
-#include    "token_internal.h"
+#include    <name_internal.h>
+#include    <token_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "hjson.h"
-#include    "node.h"
-#include    "nodeHash.h"
-#include    "utf8.h"
+#include    <dec.h>
+#include    <hex.h>
+#include    <hjson.h>
+#include    <node.h>
+#include    <nodeHash.h>
+#include    <utf8.h>
 
 
 
@@ -86,22 +88,24 @@ extern "C" {
     {
         HJSON_DATA      *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
-        //NODE_DATA       *pNode;
+        NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        //ERESULT         eRc;
+        ERESULT         eRc;
         const
         char            *pFileName = "";
-#ifdef XYZZY
-        uint32_t        lineNo = 0;
+        uint32_t        type = 0;
         uint16_t        colNo = 0;
         int32_t         cls = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pStr2 = OBJ_NIL;
         ASTR_DATA       *pType = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
-#endif
         NAME_DATA       *pNameOut = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
-        
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = name_Vtbl.iVtbl.pInfo;
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
             goto exit00;
@@ -114,8 +118,109 @@ extern "C" {
         if (OBJ_NIL == pFileNode) {
             goto exit00;
         }
-        //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+#ifdef NDEBUG
+#else
+#ifdef TRACE_FUNCTIONS
+        {
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+        }
+#endif
+#endif
 
+        eRc = nodeHash_FindA(pHash, "objectType", &pNode);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pNode = node_getData(pNode);
+            pName = node_getName(pNode);
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+                pStr = node_getData(pNode);
+                if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
+                }
+                else {
+                    fprintf(stderr,
+                            "ERROR - objectType is \"%s\", but need \"%s\"!\n",
+                            AStr_getData(pStr),
+                            pInfo->pClassName
+                            );
+#ifdef TRACE_FUNCTIONS
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
+                    DEBUG_BREAK();
+#endif
+                    eRc = ERESULT_GENERAL_FAILURE;
+                    goto exit00;
+                }
+                
+            }
+            else {
+                fprintf(stderr,
+                        "ERROR - objectType needs to be a \"string\"!\n"
+                        );
+#ifdef TRACE_FUNCTIONS
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
+                DEBUG_BREAK();
+#endif
+                eRc = ERESULT_GENERAL_FAILURE;
+                goto exit00;
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - objectType is missing!\n");
+#ifdef TRACE_FUNCTIONS
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+            DEBUG_BREAK();
+#endif
+            eRc = ERESULT_GENERAL_FAILURE;
+            goto exit00;
+        }
+        
+        eRc = nodeHash_FindA(pHash, "type", &pNode);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pNode = node_getData(pNode);
+            pName = node_getName(pNode);
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
+                pStr = node_getData(pNode);
+                type = (uint32_t)dec_getInt64A(AStr_getData(pStr));
+                if (type == 0) {
+                    fprintf(stderr, "ERROR - type must be greater than zero!\n");
+                    pStr2 = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                    obj_Release(pStr2);
+                    pStr2 = OBJ_NIL;
+                    DEBUG_BREAK();
+                    goto exit00;
+                }
+            }
+            else {
+                fprintf(stderr, "ERROR - type should have a integer!\n");
+                pStr2 = nodeHash_ToDebugString(pHash, 0);
+                fprintf(stderr, "%s\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
+                DEBUG_BREAK();
+                goto exit00;
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - length is missing!\n");
+            pStr2 = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr2));
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+            DEBUG_BREAK();
+            goto exit00;
+        }
+        
 #ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "fileName", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -339,13 +444,8 @@ extern "C" {
     )
     {
         char            str[1024];
-        int             j;
-        int             len;
-        int             lenChars;
         ASTR_DATA       *pStr;
-        WSTR_DATA       *pWStr;
-        ASTR_DATA       *pStr2;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
@@ -387,49 +487,32 @@ extern "C" {
                  );
                 break;
                 
-            case NAME_TYPE_WSTR:
+            case NAME_TYPE_ASTR:
                 AStr_AppendPrint(
                              pStr,
-                             "\"type\":%u \"NAME_TYPE_WSTR\", \"data\":",
-                             NAME_TYPE_WSTR
+                             "\"type\":%u \"NAME_TYPE_ASTR\", \"data\":",
+                             NAME_TYPE_ASTR
                  );
                 AStr_AppendA(pStr, str);
+                pWrkStr = AStr_ToJSON(this->pObj);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                }
                 AStr_AppendA(pStr, " ");
                 break;
                 
             case NAME_TYPE_UTF8:
-                AStr_AppendA(pStr, "\"type\":\"STRING\", \"data\":\"");
-                if (OBJ_IDENT_WSTR == obj_getType(this->pObj)) {
-                    //pWStr = WStr_getData((WSTR_DATA *)this->pObj);
-                }
-                else if (OBJ_IDENT_WSTRC == obj_getType(this->pObj)) {
-                    //pWStr = WStrC_getData((WSTRC_DATA *)this->pObj);
-                }
-                else {
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                    name_setLastError(this, ERESULT_GENERAL_FAILURE);
-                    return pStr;
-                }
-#ifdef XYZZY
-                len = utf8_StrLenW(pWStr);
-                for (j=0; j<len; ++j) {
-                    if (*pWStr == '"') {
-                        AStr_AppendA(pStr, "\\");
-                    }
-                    lenChars = utf8_WCToUtf8(*pWStr, str2);
-                    if (lenChars) {
-                        AStr_AppendA(pStr, str2);
-                    }
-                    ++pWStr;
-                }
-#endif
-                AStr_AppendA(pStr, "\" ");
-                break;
-                
             case NAME_TYPE_UTF8_CON:
-                AStr_AppendA(pStr, "\"type\":\"NAME_TYPE_UTF8\", \"data\":\"");
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(
+                                 pStr,
+                                 "\"type\":%u /*NAME_TYPE_UTF8*/, \"data\":",
+                                 NAME_TYPE_UTF8
+                                 );
+                pWrkStr = utf8_DataToJSON(this->pChrs);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                }
+                AStr_AppendA(pStr, " ");
                 break;
                 
         }

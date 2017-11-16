@@ -393,8 +393,8 @@ extern "C" {
     //                      i s A s c i i
     //**********************************************************
     
-    bool                ascii_isAsciiW(
-        int32_t             chr
+    bool                ascii_isAsciiW32(
+        W32CHR_T            chr
     )
     {
         bool                fRc = false;
@@ -456,8 +456,8 @@ extern "C" {
     }
     
     
-    bool                ascii_isAlphanumericW(
-        int32_t             asciiChar
+    bool                ascii_isAlphanumericW32(
+        W32CHR_T            asciiChar
     )
     {
         bool                fRc = false;
@@ -605,8 +605,8 @@ extern "C" {
     }
     
     
-    bool                ascii_isWhiteSpaceW(
-        int32_t             unicodeChar
+    bool                ascii_isWhiteSpaceW32(
+        W32CHR_T            unicodeChar
     )
     {
         bool                fRc = false;
@@ -657,7 +657,7 @@ extern "C" {
     }
     
     
-    int32_t             ascii_toLexicalClassW(
+    int32_t             ascii_toLexicalClassW32(
         int32_t             unicodeChar
     )
     {
@@ -724,11 +724,11 @@ extern "C" {
     }
     
     
-    int32_t             ascii_toUpperW(
-        int32_t             asciiChar
+    W32CHR_T            ascii_toUpperW32(
+        W32CHR_T            asciiChar
     )
     {
-        int32_t             chr = asciiChar;
+        W32CHR_T            chr = asciiChar;
         
         if ((asciiChar >= 'a') && (asciiChar <= 'z')) {
             chr = (asciiChar - 'a') + 'A';
@@ -851,30 +851,27 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        ASCII_DATA   *cbp = objId;
-        bool            fRc;
+        ASCII_DATA      *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !ascii_Validate( cbp ) ) {
+        if( !ascii_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        fRc = ascii_Disable( cbp );
-
-        if (cbp->pArray) {
-            obj_Release(cbp->pArray);
-            cbp->pArray = OBJ_NIL;
+        if (this->pArray) {
+            obj_Release(this->pArray);
+            this->pArray = OBJ_NIL;
         }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -1033,7 +1030,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

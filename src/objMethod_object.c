@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'execPtr'
-//	Generated 10/07/2017 12:40:01
+//	Class Object Metods and Tables for 'objMethod'
+//	Generated 10/28/2017 08:51:04
 
 
 /*
@@ -33,8 +33,8 @@
 
 
 
-#define			EXECPTR_OBJECT_C	    1
-#include        <execPtr_internal.h>
+#define			OBJMETHOD_OBJECT_C	    1
+#include        <objMethod_internal.h>
 
 
 
@@ -42,14 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct execPtr_class_data_s	{
+struct objMethod_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct execPtr_class_data_s EXECPTR_CLASS_DATA;
+typedef struct objMethod_class_data_s OBJMETHOD_CLASS_DATA;
 
 
 
@@ -62,22 +62,22 @@ typedef struct execPtr_class_data_s EXECPTR_CLASS_DATA;
 
 static
 const
-OBJ_INFO        execPtr_Info;            // Forward Reference
+OBJ_INFO        objMethod_Info;            // Forward Reference
 
 
 
-OBJ_ID          execPtr_Class(
+OBJ_ID          objMethod_Class(
     void
 );
 
 
 
 static
-bool            execPtr_ClassIsKindOf(
+bool            objMethod_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_EXECPTR_CLASS == classID) {
+    if (OBJ_IDENT_OBJMETHOD_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -92,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_EXECPTR_CLASS;
+    return OBJ_IDENT_OBJMETHOD_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&execPtr_Info,
-    execPtr_ClassIsKindOf,
+	&objMethod_Info,
+    objMethod_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -115,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-EXECPTR_CLASS_DATA  execPtr_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_EXECPTR_CLASS, 0, 1},
+OBJMETHOD_CLASS_DATA  objMethod_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJMETHOD_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            execPtr_IsKindOf(
+bool            objMethod_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_EXECPTR == classID) {
+    if (OBJ_IDENT_OBJMETHOD == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,51 +139,51 @@ bool            execPtr_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            execPtr_Dealloc(
+void            objMethod_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          execPtr_Class(
+OBJ_ID          objMethod_Class(
     void
 )
 {
-    return (OBJ_ID)&execPtr_ClassObj;
+    return (OBJ_ID)&objMethod_ClassObj;
 }
 
 
 static
-uint16_t		execPtr_WhoAmI(
+uint16_t		objMethod_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_EXECPTR;
+    return OBJ_IDENT_OBJMETHOD;
 }
 
 
 const
-EXECPTR_VTBL     execPtr_Vtbl = {
+OBJMETHOD_VTBL     objMethod_Vtbl = {
     {
-        &execPtr_Info,
-        execPtr_IsKindOf,
+        &objMethod_Info,
+        objMethod_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        execPtr_Dealloc,
-        execPtr_Class,
-        execPtr_WhoAmI,
-        (P_OBJ_QUERYINFO)execPtr_QueryInfo,
-        (P_OBJ_TOSTRING)execPtr_ToDebugString,
-        NULL,			// execPtr_Enable,
-        NULL,			// execPtr_Disable,
-        NULL,			// (P_OBJ_ASSIGN)execPtr_Assign,
-        NULL,			// (P_OBJ_COMPARE)execPtr_Compare,
-        NULL, 			// (P_OBJ_PTR)execPtr_Copy,
-        NULL 			// (P_OBJ_HASH)execPtr_Hash,
+        objMethod_Dealloc,
+        objMethod_Class,
+        objMethod_WhoAmI,
+        (P_OBJ_QUERYINFO)objMethod_QueryInfo,
+        (P_OBJ_TOSTRING)objMethod_ToDebugString,
+        NULL,			// objMethod_Enable,
+        NULL,			// objMethod_Disable,
+        NULL,			// (P_OBJ_ASSIGN)objMethod_Assign,
+        NULL,			// (P_OBJ_COMPARE)objMethod_Compare,
+        NULL, 			// (P_OBJ_PTR)objMethod_Copy,
+        NULL 			// (P_OBJ_HASH)objMethod_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //execPtr_IsEnabled,
+    //objMethod_IsEnabled,
  
 };
 
@@ -191,12 +191,12 @@ EXECPTR_VTBL     execPtr_Vtbl = {
 
 static
 const
-OBJ_INFO        execPtr_Info = {
-    "execPtr",
-    "Executable Function Ptr",
-    (OBJ_DATA *)&execPtr_ClassObj,
+OBJ_INFO        objMethod_Info = {
+    "objMethod",
+    "Object Method Pointer",
+    (OBJ_DATA *)&objMethod_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&execPtr_Vtbl
+    (OBJ_IUNKNOWN *)&objMethod_Vtbl
 };
 
 

@@ -78,7 +78,7 @@ bool            u32Array_ClassIsKindOf(
     if (OBJ_IDENT_U32ARRAY_CLASS == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_ARRAY_CLASS == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -132,7 +132,7 @@ bool            u32Array_IsKindOf(
     if (OBJ_IDENT_U32ARRAY == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
+    if (OBJ_IDENT_ARRAY == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -176,7 +176,7 @@ U32ARRAY_VTBL     u32Array_Vtbl = {
         u32Array_Dealloc,
         u32Array_Class,
         u32Array_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)u32Array_QueryInfo,
         (P_OBJ_TOSTRING)u32Array_ToDebugString,
         NULL,			// u32Array_Enable,
         NULL,			// u32Array_Disable,
@@ -200,7 +200,7 @@ OBJ_INFO        u32Array_Info = {
     "u32Array",
     "Array of uint32_t",
     (OBJ_DATA *)&u32Array_ClassObj,
-    (OBJ_DATA *)&pwr2Array_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
     (OBJ_IUNKNOWN *)&u32Array_Vtbl
 };
 

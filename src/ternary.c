@@ -101,7 +101,7 @@ extern "C" {
     TERNARY_NODE *  ternary_NodeInsert(
         TERNARY_DATA    *this,
         TERNARY_NODE    *pNode,
-        int32_t         *pChr,
+        W32CHR_T        *pChr,
         void            *pData
     )
     {
@@ -303,9 +303,9 @@ extern "C" {
     //                              A d d
     //---------------------------------------------------------------
     
-    bool            ternary_Add(
+    bool            ternary_AddW32(
         TERNARY_DATA	*this,
-        int32_t			*pName,
+        W32CHR_T		*pName,
         void            *pData
     )
     {
@@ -373,15 +373,15 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
-    void *          ternary_Find(
+    void *          ternary_FindW32(
         TERNARY_DATA	*this,
-        int32_t			*pszKey
+        W32CHR_T		*pszKey
     )
     {
         int32_t			diff;
         TERNARY_NODE    *pNode = NULL;
         void            *pData = NULL;
-        int32_t         *pKey = pszKey;
+        W32CHR_T        *pKey = pszKey;
         
         // Validate the input parameters.
         if( NULL == pszKey ) {

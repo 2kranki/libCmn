@@ -64,6 +64,10 @@ extern	"C" {
     const
     OBJ_INFO        obj_Info;
     
+    static
+    const
+    OBJ_INFO        obj_InfoShared;
+    
 
     static
     bool            obj_ClassIsKindOf(
@@ -90,7 +94,14 @@ extern	"C" {
     }
     
     
-    bool            obj_ClassEnable(
+    void            obj_ClassDealloc(
+        OBJ_ID          id
+    )
+    {
+    }
+    
+    
+   bool            obj_ClassEnable(
         OBJ_ID          id
     )
     {
@@ -113,13 +124,17 @@ extern	"C" {
         obj_ClassIsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        NULL,
+        obj_ClassDealloc,
         obj_Class,
         obj_ClassWhoAmI,
-        NULL,
-        NULL,
+        NULL,           // (P_OBJ_QUERYINFO),
+        NULL,           // (P_OBJ_TOSTRING),
         obj_ClassEnable,
-        obj_ClassDisable
+        obj_ClassDisable,
+        NULL,           // (P_OBJ_ASSIGN),
+        NULL,           // (P_OBJ_COMPARE),
+        NULL,           // (P_OBJ_PTR)obj_Copy,
+        NULL            // (P_OBJ_HASH),
     };
  
     
@@ -172,29 +187,15 @@ extern	"C" {
         obj_Dealloc,
         obj_Class,
         obj_ObjWhoAmI,
-        NULL,
-        NULL,
+        (P_OBJ_QUERYINFO)obj_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING),
         obj_Enable,
-        obj_Disable
+        obj_Disable,
+        NULL,           // (P_OBJ_ASSIGN),
+        NULL,           // (P_OBJ_COMPARE),
+        NULL,           // (P_OBJ_PTR)obj_Copy,
+        NULL            // (P_OBJ_HASH),
     };
-    
-    
-    static
-    const
-    OBJ_IUNKNOWN    obj_VtblShared = {
-        &obj_Info,
-        obj_ObjIsKindOf,
-        obj_RetainNull,
-        obj_ReleaseNull,
-        obj_Dealloc,
-        obj_Class,
-        obj_ObjWhoAmI,
-        NULL,
-        NULL,
-        obj_Enable,
-        obj_Disable
-    };
-    
     
     
     static
@@ -203,11 +204,45 @@ extern	"C" {
         "object",
         "Base Object",
         (OBJ_DATA *)&obj_ClassObj,
-        (OBJ_DATA *)&obj_ClassObj
+        (OBJ_DATA *)&obj_ClassObj,
+        (OBJ_IUNKNOWN *)&obj_Vtbl
+    };
+    
+    
+    static
+    const
+    OBJ_IUNKNOWN    obj_VtblShared = {
+        &obj_InfoShared,
+        obj_ObjIsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        obj_Dealloc,
+        obj_Class,
+        obj_ObjWhoAmI,
+        (P_OBJ_QUERYINFO)obj_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING),
+        obj_Enable,
+        obj_Disable,
+        NULL,           // (P_OBJ_ASSIGN),
+        NULL,           // (P_OBJ_COMPARE),
+        NULL,           // (P_OBJ_PTR)obj_Copy,
+        NULL            // (P_OBJ_HASH),
     };
     
     
     
+    static
+    const
+    OBJ_INFO        obj_InfoShared = {
+        "object",
+        "Shaered Base Object",
+        (OBJ_DATA *)&obj_ClassObj,
+        (OBJ_DATA *)&obj_ClassObj,
+        (OBJ_IUNKNOWN *)&obj_VtblShared
+    };
+    
+    
+
     //---------------------------------------------------------------
     //					Internal Subroutine Definitions     
     //---------------------------------------------------------------
@@ -572,7 +607,7 @@ extern	"C" {
         OBJ_DATA		*this = objId;
         
         if (this == OBJ_NIL) {
-            return 0;
+            return NULL;
         }
         return (void *)this->pVtbl;
     }
@@ -959,7 +994,6 @@ extern	"C" {
 
 
 
-
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -967,12 +1001,13 @@ extern	"C" {
     void *          obj_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         OBJ_DATA        *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }

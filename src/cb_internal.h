@@ -51,7 +51,8 @@
 
 
 #include    <cb.h>
-#include    <psxLock.h>
+#include    <psxCond.h>
+#include    <psxMutex.h>
 #include    <psxSem.h>
 
 
@@ -66,23 +67,11 @@ extern "C" {
          */
         OBJ_DATA        super;
         OBJ_IUNKNOWN    *pSuperVtbl;
-        #define CB_FLAG_PAUSE 5
+        #define CB_FLAG_STOP    5
 
-#ifdef XYZZY
-        PSXSEM_DATA     *pSemEmpty;
-        PSXSEM_DATA     *pSemFull;
-        PSXLOCK_DATA    *pLock;
-#endif
-#if defined(__MACOSX_ENV__)
-        pthread_mutex_t mutex;
-        pthread_cond_t  condEmpty;
-        pthread_cond_t  condFull;
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        CRITICAL_SECTION    csMutex;
-        CONDITION_VARIABLE  cvCondEmpty;
-        CONDITION_VARIABLE  cvCondFull;
-#endif
+        PSXCOND_DATA    *pEmpty;
+        PSXCOND_DATA    *pFull;
+        PSXMUTEX_DATA   *pMutex;
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements
@@ -116,8 +105,7 @@ extern "C" {
     void *          cb_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
 #ifdef RMW_DEBUG

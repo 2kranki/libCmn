@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   token.c
+ * File:   node.c
  *	Generated 05/26/2015 13:40:16
  *
  * Created on December 30, 2014

@@ -59,7 +59,7 @@ extern "C" {
 
     static
     const
-    int32_t         zero = 0;
+    W32CHR_T        zero = 0;
 
 
  
@@ -100,7 +100,7 @@ extern "C" {
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         TOKEN_DATA      *this;
@@ -186,7 +186,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         TOKEN_DATA      *this;
@@ -230,7 +230,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    int32_t         token_getChrW(
+    W32CHR_T        token_getChrW(
         TOKEN_DATA      *this
     )
     {
@@ -254,7 +254,7 @@ extern "C" {
     
     bool            token_setChrW(
         TOKEN_DATA      *this,
-        int32_t         value
+        W32CHR_T        value
     )
     {
 #ifdef NDEBUG
@@ -614,7 +614,7 @@ extern "C" {
             return false;
         }
         type = obj_getType(pValue);
-        if ((OBJ_IDENT_WSTR == type) || (OBJ_IDENT_WSTRC == type)) {
+        if ((OBJ_IDENT_WSTR == type) || (OBJ_IDENT_W32STRC == type)) {
         }
         else
             return false;
@@ -675,7 +675,7 @@ extern "C" {
     
     
     const
-    int32_t *       token_getTextW(
+    W32CHR_T *      token_getTextW(
         TOKEN_DATA      *this
     )
     {
@@ -699,8 +699,8 @@ extern "C" {
                 if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
                     return WStr_getData(this->data.pObj);
                 }
-                if (OBJ_IDENT_WSTRC == obj_getType(this->data.pObj)) {
-                    return WStrC_getData(this->data.pObj);
+                if (OBJ_IDENT_W32STRC == obj_getType(this->data.pObj)) {
+                    return W32StrC_getData(this->data.pObj);
                 }
                 break;
                 
@@ -979,14 +979,14 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_WCHAR:
-                eRc = szTbl_StringWToToken(szTbl_Shared(), this->data.wchr, &token);
+                eRc = szTbl_StringW32ToToken(szTbl_Shared(), this->data.wchr, &token);
                 if (ERESULT_IS_SUCCESSFUL(eRc)) {
                     this->data.strToken = token;
                 }
                 break;
                 
             case TOKEN_TYPE_WSTRING:
-                eRc = szTbl_StringWToToken(szTbl_Shared(), WStr_getData(this->data.pObj), &token);
+                eRc = szTbl_StringW32ToToken(szTbl_Shared(), WStr_getData(this->data.pObj), &token);
                 if (ERESULT_IS_SUCCESSFUL(eRc)) {
                     this->data.strToken = token;
                 }
@@ -1200,7 +1200,7 @@ extern "C" {
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         
@@ -1343,7 +1343,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         ERESULT         eRc;
@@ -1404,12 +1404,13 @@ extern "C" {
     void *          token_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         TOKEN_DATA      *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1448,7 +1449,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -1501,7 +1502,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         chr
+        W32CHR_T        chr
     )
     {
         ERESULT         eRc;
@@ -1574,7 +1575,7 @@ extern "C" {
         uint16_t        colNo,
         int32_t         cls,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     )
     {
         ERESULT         eRc;
@@ -1597,7 +1598,7 @@ extern "C" {
             return eRc;
         }
         
-        pString = WStr_NewW(0, pStr);
+        pString = WStr_NewW32(0, pStr);
         if (OBJ_NIL == pString) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
@@ -1647,7 +1648,7 @@ extern "C" {
                 
             case TOKEN_TYPE_WSTRING:
                 //AStr_AppendA(pStr, "\"");
-                AStr_AppendW(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
+                AStr_AppendW32(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
                 //AStr_AppendA(pStr, "\"");
                 break;
                 
@@ -1704,7 +1705,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1739,7 +1740,7 @@ extern "C" {
                 
             case TOKEN_TYPE_WSTRING:
                 AStr_AppendA(pStr, "type=STRING text=\"");
-                AStr_AppendW(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
+                AStr_AppendW32(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
                 AStr_AppendA(pStr, "\"");
                 break;
                 

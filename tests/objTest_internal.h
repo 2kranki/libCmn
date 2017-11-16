@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   arrayExpand_internal.h
- *	Generated 10/07/2016 10:36:42
+ * File:   objTest_internal.h
+ *	Generated 11/01/2017 08:45:27
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,12 +38,14 @@
 
 
 
-#include    <arrayExpand.h>
+
+#include    <objTest.h>
 #include    <objArray.h>
+#include    <psxLock.h>
 
 
-#ifndef ARRAYEXPAND_INTERNAL_H
-#define	ARRAYEXPAND_INTERNAL_H
+#ifndef OBJTEST_INTERNAL_H
+#define	OBJTEST_INTERNAL_H
 
 
 
@@ -53,44 +56,68 @@ extern "C" {
 
 
 
-#pragma pack(push, 1)
-struct arrayExpand_data_s	{
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+ #pragma pack(push, 1)
+struct objTest_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        elemSize;   // Element Size
-    uint16_t        rsvd;
-    uint32_t        size;       // Controlled by User
-    uint32_t        max;        // Number of Array Elements
-    uint8_t         *pArray;
+    PSXLOCK_DATA    *pLock;
+    OBJARRAY_DATA   *pArray;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct arrayExpand_class_data_s  arrayExpand_ClassObj;
+    struct objTest_class_data_s  objTest_ClassObj;
 
     extern
     const
-    ARRAYEXPAND_VTBL         arrayExpand_Vtbl;
+    OBJTEST_VTBL         objTest_Vtbl;
 
 
-    // Internal Functions
-    void            arrayExpand_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            objTest_setLastError(
+        OBJTEST_DATA     *this,
+        ERESULT         value
+    );
+
+
+    void            objTest_Dealloc(
         OBJ_ID          objId
     );
+
+
+    void *          objTest_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     objTest_ToJSON(
+        OBJTEST_DATA      *this
+    );
+
 
 
 
 #ifdef NDEBUG
 #else
-    bool			arrayExpand_Validate(
-        ARRAYEXPAND_DATA       *cbp
+    bool			objTest_Validate(
+        OBJTEST_DATA       *this
     );
 #endif
 
@@ -100,5 +127,5 @@ struct arrayExpand_data_s	{
 }
 #endif
 
-#endif	/* ARRAYEXPAND_INTERNAL_H */
+#endif	/* OBJTEST_INTERNAL_H */
 

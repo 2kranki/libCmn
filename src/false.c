@@ -77,15 +77,15 @@ extern "C" {
     FALSE_DATA *     false_Alloc(
     )
     {
-        FALSE_DATA      *cbp = &singleton;
+        FALSE_DATA      *this = &singleton;
         uint32_t        cbSize = sizeof(FALSE_DATA);
         
         // Fake Obj initialization.
-        memset(cbp, 0, sizeof(FALSE_DATA));
-        OBJ_INIT_SHARED(cbp,cbSize);
+        memset(this, 0, sizeof(FALSE_DATA));
+        OBJ_INIT_SHARED(this, cbSize);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -93,7 +93,6 @@ extern "C" {
     FALSE_DATA *     false_New(
     )
     {
-        FALSE_DATA       *this;
         
         if (pShared == OBJ_NIL) {
             pShared = false_Alloc( );
@@ -101,8 +100,7 @@ extern "C" {
                 pShared = false_Init(pShared);
             }
         }
-        this = pShared;
-        return this;
+        return pShared;
     }
 
 
@@ -120,10 +118,10 @@ extern "C" {
         void
     )
     {
-        FALSE_DATA      *cbp = &singleton;
+        FALSE_DATA      *this = &singleton;
 
-        false_Dealloc(cbp);
-        memset(cbp, 0, sizeof(FALSE_DATA));
+        false_Dealloc(this);
+        memset(this, 0, sizeof(FALSE_DATA));
     }
     
     
@@ -199,22 +197,25 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        FALSE_DATA   *cbp = objId;
+        FALSE_DATA      *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !false_Validate( cbp ) ) {
+        if( !false_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        //obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -264,12 +265,13 @@ extern "C" {
     void *          false_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         FALSE_DATA      *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -308,7 +310,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -335,7 +337,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

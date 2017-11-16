@@ -65,13 +65,10 @@ struct name_data_s	{
     uint16_t        rsvd;
     union {
         char            chrs[8];            // UTF-8 Character w/NUL
-        int32_t         wchr[2];            // Wide Character w/ NUL
         int64_t			integer;			// Integer
         const
         char            *pChrs;             // UTF-8 Character String
         OBJ_ID			pObj;               // any object
-        const
-        void            *pPtr;              // any address
     };
     uint32_t            hash;
 
@@ -111,8 +108,7 @@ struct name_data_s	{
     void *          name_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

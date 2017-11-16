@@ -181,9 +181,8 @@ extern "C" {
     
     
     
-    NODE_DATA *     node_NewWithPtr(
-        const
-        void            *pValue,
+    NODE_DATA *     node_NewWithObj(
+        OBJ_ID          pValue,
         OBJ_ID          pData
     )
     {
@@ -191,7 +190,7 @@ extern "C" {
         
         this = node_Alloc( );
         if (this) {
-            this = node_InitWithPtr(this, pValue, pData);
+            this = node_InitWithObj(this, pValue, pData);
         }
         
         return this;
@@ -505,8 +504,7 @@ extern "C" {
     }
 
     
-    const
-    void *          node_getNamePtr(
+    uint64_t        node_getNameInt(
         NODE_DATA       *this
     )
     {
@@ -519,8 +517,9 @@ extern "C" {
         }
 #endif
         
-        return name_getPtr(this->pName);
+        return name_getInt(this->pName);
     }
+    
     
     
     const
@@ -972,10 +971,9 @@ extern "C" {
     
     
     
-    NODE_DATA *     node_InitWithPtr(
+    NODE_DATA *     node_InitWithObj(
         NODE_DATA       *this,
-        const
-        void            *pValue,
+        OBJ_ID          pValue,
         OBJ_ID          pData
     )
     {
@@ -992,7 +990,7 @@ extern "C" {
         }
         
         if (pValue) {
-            this->pName = name_NewPtr(pValue);
+            this->pName = name_NewObj(pValue);
             if (OBJ_NIL == this->pName) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -1236,15 +1234,38 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = node_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     this    OBJTEST object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                         character string which represents the method name without
+                         the object name, "node", prefix,
+                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                         address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                 OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
     void *          node_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
         NODE_DATA       *this = objId;
-        
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1280,7 +1301,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     

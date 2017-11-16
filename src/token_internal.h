@@ -61,7 +61,7 @@ extern "C" {
         uint16_t        type;               // Type in union below
         union {
             char            achr[8];            // UTF-8 Character w/ Trailing NUL
-            int32_t         wchr[2];            // Wide Character w/ Trailing NUL
+            W32CHR_T        wchr[2];            // Wide Character w/ Trailing NUL
             double          floatingPoint;
             int64_t         integer;            // Integer
             OBJ_ID          pObj;               // an object
@@ -97,8 +97,7 @@ struct token_data_s	{
     void *          token_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     

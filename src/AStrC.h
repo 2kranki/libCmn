@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4 tw=90
 
 //****************************************************************
-//          Constant NUL-terminated String (AStrC) Header
+//       Constant NUL-terminated UTF8 String (AStrC) Header
 //****************************************************************
 /*
  * Program
- *			Constant NUL-terminated String (AStrC)
+ *			Constant NUL-terminated UTF8 String (AStrC)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate AStrC to run things without complications
@@ -55,6 +55,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <path.h>
 #include        <str.h>
 
 
@@ -102,13 +103,18 @@ extern "C" {
     );
     
     
-    ASTRC_DATA *    AStrC_NewW(
+    ASTRC_DATA *    AStrC_NewW32(
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
+    ASTRC_DATA *   AStrC_NewFromUtf8File(
+        PATH_DATA       *pPath
+    );
     
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -120,10 +126,15 @@ extern "C" {
     );
     
     
+    ERESULT         AStrC_getLastError(
+        ASTRC_DATA      *this
+    );
+    
+    
     /*!
      @return:   return the number of Ascii or Unicode characters in
                 the string, not the actual size of the string in
-                memory.
+                memory.  -1 indicates that an error occurred.
      */
     uint32_t        AStrC_getLength(
         ASTRC_DATA      *this
@@ -136,6 +147,43 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Create a new string that is the current string concatenated with
+     the contents of the provided AStrC object.
+     @return:   If successful, an AStrC object which must be released,
+                 otherwise OBJ_NIL and an Error Code is set.
+     */
+    ASTRC_DATA *    AStrC_Append(
+        ASTRC_DATA      *this,
+        ASTRC_DATA      *pOther
+    );
+    
+    
+    /*!
+     Create a new string that is the current string concatenated with
+     the contents of the provided UTF8 string.
+     @return:   If successful, an AStrC object which must be released,
+                 otherwise OBJ_NIL and an Error Code is set.
+     */
+    ASTRC_DATA *    AStrC_AppendA(
+        ASTRC_DATA      *this,
+        const
+        char            *pStr
+    );
+    
+    
+    /*!
+     Create a new string that is the current string concatenated with
+     the contents of the UTF8 File.
+     @return:   If successful, an AStrC object which must be released,
+                 otherwise OBJ_NIL and an Error Code is set.
+     */
+    ASTRC_DATA *    AStrC_AppendUtf8File(
+        ASTRC_DATA      *this,
+        PATH_DATA       *pPath
+    );
+    
+    
     ERESULT         AStrC_Compare(
         ASTRC_DATA      *this,
         ASTRC_DATA      *pOther
@@ -147,10 +195,10 @@ extern "C" {
         char            *pData
     );
     
-    ERESULT         AStrC_CompareW(
+    ERESULT         AStrC_CompareW32(
         ASTRC_DATA		*this,
         const
-        int32_t         *pData
+        W32CHR_T        *pData
     );
     
     
@@ -170,10 +218,17 @@ extern "C" {
         char           *pStr
     );
     
-    ASTRC_DATA *   AStrC_InitW(
+    ASTRC_DATA *   AStrC_InitW32(
         ASTRC_DATA     *this,
         const
-        int32_t        *pStr
+        W32CHR_T       *pStr
+    );
+    
+    
+    ASTRC_DATA *    AStrC_Mid(
+        ASTRC_DATA      *this,
+        uint32_t        offset,
+        uint32_t        len
     );
     
     

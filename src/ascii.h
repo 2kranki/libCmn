@@ -201,13 +201,13 @@ extern "C" {
     );
     
     
-    bool                ascii_isAlphanumericW(
-        int32_t             asciiChar
+    bool                ascii_isAlphanumericW32(
+        W32CHR_T            w32Char
     );
     
     
-    bool                ascii_isAsciiW(
-        int32_t             chr
+    bool                ascii_isAsciiW32(
+        W32CHR_T            w32Char
     );
     
     
@@ -235,8 +235,8 @@ extern "C" {
         char                asciiChar
     );
     
-    bool                ascii_isWhiteSpaceW(
-        int32_t             unicodeChar
+    bool                ascii_isWhiteSpaceW32(
+        W32CHR_T            w32Char
     );
     
     
@@ -249,8 +249,8 @@ extern "C" {
         char                asciiChar
     );
     
-    int32_t             ascii_toLexicalClassW(
-        int32_t             unicodeChar
+    W32CHR_T            ascii_toLexicalClassW32(
+        W32CHR_T            w32Char
     );
     
     
@@ -264,8 +264,8 @@ extern "C" {
     );
     
     
-    int32_t             ascii_toUpperW(
-        int32_t             asciiChar
+    W32CHR_T            ascii_toUpperW32(
+        W32CHR_T            w32Char
     );
     
     
@@ -281,25 +281,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Disable() terminates the ascii ascii.
-     */
-    bool        ascii_Disable(
-        ASCII_DATA		*cbp
-    );
-
-
-    /* Enable() starts the ascii.
-     */
-    bool        ascii_Enable(
-        ASCII_DATA		*cbp
-    );
-
-
-    bool        ascii_IsEnabled(
-        ASCII_DATA		*cbp
-    );
-    
-    
     /* Init() sets up the default TaskBody() outlined above
      * and initializes other fields needed. Init() assumes 
      * that the size of the stack is passed to in obj_misc1.

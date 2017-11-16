@@ -43,7 +43,7 @@
 
 
 #include    "trace.h"
-#include    <psxLock.h>
+#include    <psxLock_internal.h>
 
 #ifdef	__cplusplus
 extern "C" {
@@ -58,7 +58,7 @@ struct trace_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    PSXLOCK_DATA    *pLock;
+    PSXLOCK_DATA    lock;
 #define NUM_FLAGS   (4*32)
     volatile
     uint32_t        flags[4];
@@ -89,10 +89,18 @@ struct trace_data_s	{
         OBJ_ID          objId
     );
 
+
+    void *          trace_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			trace_Validate(
-        TRACE_DATA       *cbp
+        TRACE_DATA       *this
     );
 #endif
 

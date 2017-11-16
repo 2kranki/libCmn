@@ -161,9 +161,9 @@ extern "C" {
     );
     
     
-    ASTR_DATA *    AStr_NewW(
+    ASTR_DATA *    AStr_NewW32(
         const
-        int32_t			*pszIn			/* Input String Pointer */
+        W32CHR_T		*pszIn			/* Input String Pointer */
     );
     
     
@@ -187,7 +187,7 @@ extern "C" {
     /*!
      @return:   return the number of Ascii or Unicode characters in
                 the string, not the actual size of the string in
-                memory.
+                memory.  -1 indicates an error occurred.
      */
     uint32_t        AStr_getLength(
         ASTR_DATA      *this
@@ -213,7 +213,7 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendStrW(
+    ERESULT         AStr_AppendStrW32(
         ASTR_DATA		*this,
         WSTR_DATA       *pStr
     );
@@ -225,11 +225,11 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendW(
+    ERESULT         AStr_AppendW32(
         ASTR_DATA		*this,
         uint32_t        len,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
@@ -240,10 +240,10 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendCharW(
+    ERESULT         AStr_AppendCharW32(
         ASTR_DATA		*this,
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -255,11 +255,11 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendCharRepeatW(
+    ERESULT         AStr_AppendCharRepeatW32(
         ASTR_DATA		*this,
         uint32_t        len,
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
@@ -291,48 +291,48 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_CharFindNextW(
+    ERESULT         AStr_CharFindNextW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,                // [in-out]
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
-    ERESULT         AStr_CharFindPrevW(
+    ERESULT         AStr_CharFindPrevW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,                // [in-out]
         const
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
-    int32_t         AStr_CharGetW(
+    W32CHR_T        AStr_CharGetW32(
         ASTR_DATA		*this,
         uint32_t        offset
     );
     
     
-    ERESULT         AStr_CharInsertW(
+    ERESULT         AStr_CharInsertW32(
         ASTR_DATA       *this,
         uint32_t        offset,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
-    ERESULT         AStr_CharPutW(
+    ERESULT         AStr_CharPutW32(
         ASTR_DATA		*this,
         uint32_t        offset,
-        int32_t         chr
+        W32CHR_T        chr
     );
     
     
-    ERESULT         AStr_CharReplaceAllW(
+    ERESULT         AStr_CharReplaceAllW32(
         ASTR_DATA		*this,
         const
-        int32_t         chrSrch,
+        W32CHR_T        chrSrch,
         const
-        int32_t         chrRepl
+        W32CHR_T        chrRepl
     );
     
     
@@ -363,10 +363,10 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_CompareW(
+    ERESULT         AStr_CompareW32(
         ASTR_DATA		*this,
         const
-        int32_t         *pOther
+        W32CHR_T        *pOther
     );
     
     
@@ -400,11 +400,11 @@ extern "C" {
         );
 
     
-    ERESULT         AStr_InsertW(
+    ERESULT         AStr_InsertW32(
         ASTR_DATA		*this,
         uint32_t        offset,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
 
     
@@ -475,11 +475,11 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_SpanW(
+    ERESULT         AStr_SpanW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         const
-        int32_t         *pSetStr            // NUL-terminated set of unicode chars
+        W32CHR_T        *pSetStr            // NUL-terminated set of unicode chars
     );
     
     

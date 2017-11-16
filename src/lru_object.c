@@ -169,7 +169,7 @@ LRU_VTBL     lru_Vtbl = {
         lru_Dealloc,
         lru_Class,
         lru_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)lru_QueryInfo,
         (P_OBJ_TOSTRING)lru_ToDebugString,
         NULL,			// lru_Enable,
         NULL,			// lru_Disable,

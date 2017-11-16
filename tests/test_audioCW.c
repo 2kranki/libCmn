@@ -84,7 +84,7 @@ int         test_audioCW_OpenClose(
         eRc = audioCW_CalculateTiming(pObj, 15, 15);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        eRc = audioCW_PutTextW(pObj, 5, L"PARIS");
+        eRc = audioCW_PutTextW32(pObj, 5, L"PARIS");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
         pPath = path_NewA("~/cw_15_15_PARIS.wav");
@@ -123,7 +123,7 @@ int         test_audioCW_Text01(
         eRc = audioCW_CalculateTiming(pObj, 15, 15);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        eRc = audioCW_PutTextW(pObj, 5, L"PARIS");
+        eRc = audioCW_PutTextW32(pObj, 5, L"PARIS");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
         pPath = path_NewA("~/cw_15_15_PARIS.wav");
@@ -162,7 +162,7 @@ int         test_audioCW_Text02(
         eRc = audioCW_CalculateTiming(pObj, 15, 15);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        eRc = audioCW_PutTextW(pObj, 5, L"IRYNA");
+        eRc = audioCW_PutTextW32(pObj, 5, L"IRYNA");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
         pPath = path_NewA("~/cw_15_15_IRYNA.wav");

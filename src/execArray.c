@@ -126,22 +126,22 @@ extern "C" {
     
     
     bool            execArray_setObjects(
-        EXECARRAY_DATA     *cbp,
+        EXECARRAY_DATA  *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !execArray_Validate( cbp ) ) {
+        if( !execArray_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pObjects) {
-            obj_Release(cbp->pObjects);
+        if (this->pObjects) {
+            obj_Release(this->pObjects);
         }
-        cbp->pObjects = pValue;
+        this->pObjects = pValue;
         
         return true;
     }
@@ -149,14 +149,14 @@ extern "C" {
     
     
     uint16_t        execArray_getPriority(
-        EXECARRAY_DATA     *cbp
+        EXECARRAY_DATA  *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !execArray_Validate( cbp ) ) {
+        if( !execArray_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -166,33 +166,33 @@ extern "C" {
     }
 
     bool            execArray_setPriority(
-        EXECARRAY_DATA     *cbp,
+        EXECARRAY_DATA  *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !execArray_Validate( cbp ) ) {
+        if( !execArray_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        //cbp->priority = value;
+        //this->priority = value;
         return true;
     }
 
 
 
     uint32_t        execArray_getSize(
-        EXECARRAY_DATA       *cbp
+        EXECARRAY_DATA  *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !execArray_Validate( cbp ) ) {
+        if( !execArray_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        return( 0 );
+        return  0;
     }
 
 
@@ -206,11 +206,11 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      A d d  M e t h o d
+    //                          A d d
     //---------------------------------------------------------------
 
-    ERESULT         execArray_AddMethod(
-        EXECARRAY_DATA	*cbp,
+    ERESULT         execArray_AddObjectMethod(
+        EXECARRAY_DATA	*this,
         P_VOIDEXIT1_PTR pMethod,
         OBJ_ID          pObject         // May be OBJ_NIL
     )
@@ -222,15 +222,15 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !execArray_Validate( cbp ) ) {
+        if( !execArray_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
     #endif
 
-        eRc = objArray_AppendObj(cbp->pObjects, pObject, &objIndex);
+        eRc = objArray_AppendObj(this->pObjects, pObject, &objIndex);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            eRc = ptrArray_AppendData(cbp->pMethods, pMethod, &mthIndex);
+            eRc = ptrArray_AppendData(this->pMethods, pMethod, &mthIndex);
         }
 #ifdef NDEBUG
 #else
@@ -254,33 +254,36 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        EXECARRAY_DATA   *cbp = objId;
+        EXECARRAY_DATA  *this = objId;
         
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if( !execArray_Validate( cbp ) ) {
+        if( !execArray_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
-        if (cbp->pObjects) {
-            obj_Release(cbp->pObjects);
-            cbp->pObjects = OBJ_NIL;
+        if (this->pObjects) {
+            obj_Release(this->pObjects);
+            this->pObjects = OBJ_NIL;
         }
         
-        if (cbp->pMethods) {
-            obj_Release(cbp->pMethods);
-            cbp->pMethods = OBJ_NIL;
+        if (this->pMethods) {
+            obj_Release(this->pMethods);
+            this->pMethods = OBJ_NIL;
         }
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
-        
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
         // Return to caller.
     }
     
@@ -368,6 +371,87 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = msgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     this    OBJTEST object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+     for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+     character string which represents the method name without
+     the object name, "msgData", prefix,
+     for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+     address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+     OBJ_QUERYINFO_TYPE_INFO: info pointer,
+     OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+     OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          execArray_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        EXECARRAY_DATA  *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !execArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return execArray_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == execArray_ToDebugString)
+                    return "ToDebugString";
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -389,7 +473,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

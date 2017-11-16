@@ -98,8 +98,7 @@ struct enum_data_s	{
     void *          enum_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
 
 

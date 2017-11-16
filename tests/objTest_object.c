@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'WStrC'
-//	Generated 02/19/2016 09:34:06
+//	Class Object Metods and Tables for 'objTest'
+//	Generated 11/01/2017 08:45:27
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,9 +32,9 @@
  */
 
 
-#define			WSTRC_OBJECT_C	    1
-#include        "obj.h"
-#include        "WStrC_internal.h"
+
+#define			OBJTEST_OBJECT_C	    1
+#include        <objTest_internal.h>
 
 
 
@@ -41,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct WStrC_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct objTest_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct WStrC_class_data_s WSTRC_CLASS_DATA;
+typedef struct objTest_class_data_s OBJTEST_CLASS_DATA;
 
 
 
@@ -62,22 +62,22 @@ typedef struct WStrC_class_data_s WSTRC_CLASS_DATA;
 
 static
 const
-OBJ_INFO        WStrC_Info;            // Forward Reference
+OBJ_INFO        objTest_Info;            // Forward Reference
 
 
 
-OBJ_ID          WStrC_Class(
+OBJ_ID          objTest_Class(
     void
 );
 
 
 
 static
-bool            WStrC_ClassIsKindOf(
+bool            objTest_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_WSTRC_CLASS == classID) {
+    if (OBJ_IDENT_OBJTEST_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -92,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_WSTRC_CLASS;
+    return OBJ_IDENT_OBJTEST_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&WStrC_Info,
-    WStrC_ClassIsKindOf,
+	&objTest_Info,
+    objTest_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -115,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-WSTRC_CLASS_DATA  WStrC_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_WSTRC_CLASS, 0, 1},
+OBJTEST_CLASS_DATA  objTest_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJTEST_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            WStrC_IsKindOf(
+bool            objTest_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_WSTRC == classID) {
+    if (OBJ_IDENT_OBJTEST == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,58 +139,51 @@ bool            WStrC_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            WStrC_Dealloc(
+void            objTest_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          WStrC_Class(
+OBJ_ID          objTest_Class(
     void
 )
 {
-    return (OBJ_ID)&WStrC_ClassObj;
+    return (OBJ_ID)&objTest_ClassObj;
 }
 
 
 static
-uint16_t		WStrC_WhoAmI(
+uint16_t		objTest_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_WSTRC;
+    return OBJ_IDENT_OBJTEST;
 }
 
 
 const
-WSTRC_VTBL_INTERNAL WStrC_Vtbl = {
+OBJTEST_VTBL     objTest_Vtbl = {
     {
-        {
-            &WStrC_Info,
-            WStrC_IsKindOf,
-            obj_RetainStandard,
-            obj_ReleaseStandard,
-            WStrC_Dealloc,
-            WStrC_Class,
-            WStrC_WhoAmI,
-            NULL,           // (P_OBJ_QUERYINFO)
-            (P_OBJ_TOSTRING)WStrC_ToDebugString,
-            NULL,			// WStrC_Enable,
-            NULL,			// WStrC_Disable,
-            NULL,			// (P_OBJ_ASSIGN)WStrC_Assign,
-            (P_OBJ_COMPARE)WStrC_Compare,
-            (P_OBJ_PTR)WStrC_Copy,
-            (P_OBJ_HASH)WStrC_Hash
-        },
-        // Put other object method names below this.
-        // Properties:
-        // Methods:
-        WStrC_getData,
-        WStrC_getLength
+        &objTest_Info,
+        objTest_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        objTest_Dealloc,
+        objTest_Class,
+        objTest_WhoAmI,
+        (P_OBJ_QUERYINFO)objTest_QueryInfo,
+        (P_OBJ_TOSTRING)objTest_ToDebugString,
+        NULL,			// objTest_Enable,
+        NULL,			// objTest_Disable,
+        NULL,			// (P_OBJ_ASSIGN)objTest_Assign,
+        NULL,			// (P_OBJ_COMPARE)objTest_Compare,
+        NULL, 			// (P_OBJ_PTR)objTest_Copy,
+        NULL 			// (P_OBJ_HASH)objTest_Hash,
     },
-#ifdef NDEBUG
-#else
-    WStrC_Validate
-#endif
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //objTest_IsEnabled,
  
 };
 
@@ -198,14 +191,13 @@ WSTRC_VTBL_INTERNAL WStrC_Vtbl = {
 
 static
 const
-OBJ_INFO        WStrC_Info = {
-    "WStrC",
-    "Constant Wide String",
-    (OBJ_DATA *)&WStrC_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+OBJ_INFO        objTest_Info = {
+    "objTest",
+    "Test Object",
+    (OBJ_DATA *)&objTest_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&objTest_Vtbl
 };
-//#warning -- adjust super class object in Info above
-//			if object inherits from another class
 
 
 

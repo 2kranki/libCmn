@@ -65,10 +65,10 @@ int         tearDown(
 
 int         test_u32Array_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    U32ARRAY_DATA *pObj = OBJ_NIL;
+    U32ARRAY_DATA   *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -92,13 +92,13 @@ int         test_u32Array_OpenClose(
 
 int         test_u32Array_AddGet01(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     U32ARRAY_DATA	*pObj = OBJ_NIL;
     uint32_t        i;
     ERESULT         eRc;
-    uint32_t         data;
+    uint32_t        data;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     

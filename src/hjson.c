@@ -483,7 +483,7 @@ extern "C" {
             pStr = token_ToDataString(pToken);
             if (pStr) {
                 if (sign) {
-                    AStr_CharInsertW(pStr, 1, sign);
+                    AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tinteger: \"%s\"\n", AStr_getData(pStr));
                 pNode = node_NewWithUTF8Con("integer", pStr);
@@ -496,7 +496,7 @@ extern "C" {
             pStr = token_ToDataString(pToken);
             if (pStr) {
                 if (sign) {
-                    AStr_CharInsertW(pStr, 1, sign);
+                    AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tfloat: \"%s\"\n", AStr_getData(pStr));
                 pNode = node_NewWithUTF8Con("float", pStr);
@@ -1450,12 +1450,13 @@ extern "C" {
     void *          hjson_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     )
     {
-        HJSON_DATA   *this = objId;
-        
+        HJSON_DATA      *this = objId;
+        const
+        char            *pStr = pData;
+
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -1497,7 +1498,7 @@ extern "C" {
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pStr);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -1541,7 +1542,7 @@ extern "C" {
               
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1567,7 +1568,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(hjson)}\n", this);
         AStr_AppendA(pStr, str);

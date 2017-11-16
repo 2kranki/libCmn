@@ -1186,6 +1186,7 @@ extern "C" {
             this->eRc = ERESULT_INVALID_PARAMETER;
             goto eom;
         }
+        BREAK_FALSE((obj_getRetainCount(pEntry) ==  1));
         idxParent = nodeEntry_getParent(pEntry);
         if (idxParent) {                // Not Root
             pParent = nodeTree_NodeEntry(this, idxParent);
@@ -1742,7 +1743,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(

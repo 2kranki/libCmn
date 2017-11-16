@@ -155,11 +155,11 @@ extern "C" {
     
     
     static
-    NODEHASH_NODE * nodeHash_FindNodeW(
+    NODEHASH_NODE * nodeHash_FindNodeW32(
         NODEHASH_DATA   *this,
         uint32_t        hash,
         const
-        int32_t         *pKey
+        W32CHR_T        *pKey
     )
     {
         LISTDL_DATA     *pNodeList;
@@ -175,7 +175,7 @@ extern "C" {
         while ( pNode ) {
             if (pNode->hash == hash) {
                 pName = node_getNameUTF8(pNode->pNode);
-                iRc = utf8_StrCmpAW(pName,pKey);
+                iRc = utf8_StrCmpAW32(pName, pKey);
                 mem_Free((void *)pName);
                 pName = NULL;
                 if (0 == iRc) {
@@ -600,10 +600,10 @@ extern "C" {
     }
 
 
-    ERESULT         nodeHash_FindW(
+    ERESULT         nodeHash_FindW32(
         NODEHASH_DATA	*this,
         const
-        int32_t         *pName,
+        W32CHR_T        *pName,
         NODE_DATA       **ppNode
     )
     {
@@ -623,8 +623,8 @@ extern "C" {
         }
 #endif
         
-        hash = str_HashAcmW(pName, NULL);
-        pEntry = nodeHash_FindNodeW( this, hash, pName );
+        hash = str_HashAcmW32(pName, NULL);
+        pEntry = nodeHash_FindNodeW32( this, hash, pName );
         if (pEntry) {
             if (ppNode) {
                 *ppNode = pEntry->pNode;

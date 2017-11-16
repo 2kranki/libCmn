@@ -151,14 +151,14 @@ extern "C" {
     bool			szHash_setCompare(
         SZHASH_DATA     *this,
         int             (*pCompare)(const char *pKey1, const char *pKey2),
-        int             (*pCompareAW)(const char *pKey1, const int32_t *pKey2)
+        int             (*pCompareAW32)(const char *pKey1, const W32CHR_T *pKey2)
     );
     
     
     bool			szHash_setComputeHash(
         SZHASH_DATA     *this,
         uint32_t        (*pComputeHash)(const char *pszKey1, size_t *pLen),
-        uint32_t        (*pComputeHashW)(const int32_t *pszKey1, size_t *pLen)
+        uint32_t        (*pComputeHashW32)(const W32CHR_T *pszKey1, size_t *pLen)
     );
     
     
@@ -227,10 +227,10 @@ extern "C" {
         char            *pszKey
     );
     
-    void *          szHash_FindW(
+    void *          szHash_FindW32(
         SZHASH_DATA     *this,
         const
-        int32_t         *pszKey
+        W32CHR_T        *pszKey
     );
     
     

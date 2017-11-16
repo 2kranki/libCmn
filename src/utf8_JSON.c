@@ -135,7 +135,7 @@ extern "C" {
         uint32_t        dataSize = 0;
         char            *pData = NULL;
         char            *pChrOut;
-        int32_t         chrW;
+        W32CHR_T        chrW;
         
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
@@ -346,7 +346,7 @@ extern "C" {
                     goto exit00;
                 }
                 chrW = (int32_t)dec_getInt64A(AStr_getData(pStr));
-                len = utf8_WCToUtf8(chrW, pChrOut);
+                len = utf8_W32ToUtf8(chrW, pChrOut);
                 pChrOut += len;
                 dataSize += len;
             }
@@ -452,7 +452,7 @@ extern "C" {
         char            chrs[32];
         CRC_DATA        *pCrc = OBJ_NIL;
         uint32_t        crc = 0;
-        int32_t         chrW;
+        W32CHR_T        chrW;
         uint32_t        len;
         
         if (NULL == pData) {
@@ -483,12 +483,12 @@ extern "C" {
             AStr_AppendA(pStr, ", \"data\":[");
             pChr = pData;
             for (i=0; i<(len-1); ++i) {
-                chrW = utf8_Utf8ToWC_Scan(&pChr);
+                chrW = utf8_Utf8ToW32_Scan(&pChr);
                 utf8_Int64ToChrClean(chrW, chrs);
                 AStr_AppendA(pStr, chrs);
                 AStr_AppendA(pStr, ",");
             }
-            chrW = utf8_Utf8ToWC_Scan(&pChr);
+            chrW = utf8_Utf8ToW32_Scan(&pChr);
             utf8_Int64ToChrClean(chrW, chrs);
             AStr_AppendA(pStr, chrs);
             AStr_AppendA(pStr, "] ");

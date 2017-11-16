@@ -98,15 +98,14 @@ extern "C" {
 
 
     PSXCOND_DATA *     psxCond_New(
-        bool            (*condRoutine)(void *),
-        void            *condData
+        PSXMUTEX_DATA   *pMutex
     )
     {
         PSXCOND_DATA    *this;
         
         this = psxCond_Alloc( );
         if (this) {
-            this = psxCond_Init( this, condRoutine, condData );
+            this = psxCond_Init(this, pMutex);
         } 
         return( this );
     }
@@ -185,6 +184,7 @@ extern "C" {
     )
     {
 #if defined(__MACOSX_ENV__)
+        bool            fRc;
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -203,24 +203,16 @@ extern "C" {
 #endif
         
 #if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_lock(&this->mutex);
-        if (!(iRc == 0)) {
+        fRc = psxMutex_IsLocked(this->pMutex);
+        if (!fRc) {
             DEBUG_BREAK();
             return false;
         }
         iRc = pthread_cond_broadcast(&this->cond);
         if (!(iRc == 0)) {
             DEBUG_BREAK();
-            iRc = pthread_mutex_unlock(&this->mutex);
             return false;
         }
-        iRc = pthread_mutex_unlock(&this->mutex);
-        if (!(iRc == 0)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
@@ -229,7 +221,14 @@ extern "C" {
             return true;
         }
 #endif
-        
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        WakeAllConditionVariable(&this->cvCondEmpty);
+        WakeAllConditionVariable(&this->cvCondFull);
+        Sleep(500);
+#endif
+#endif
+
         // Return to caller.
         return true;
     }
@@ -266,34 +265,21 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((PSXCOND_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
         if (obj_IsFlag(this, PSXCOND_FLAG_COND_INIT)) {
 #if defined(__MACOSX_ENV__)
             iRc = pthread_cond_destroy(&this->cond);
             if (iRc) {
                 DEBUG_BREAK();
             }
-            obj_FlagOff(this,PSXCOND_FLAG_MUTEX_INIT);
+            obj_FlagOff(this, PSXCOND_FLAG_COND_INIT);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
         }
-
-        if (obj_IsFlag(this, PSXCOND_FLAG_MUTEX_INIT)) {
-#if defined(__MACOSX_ENV__)
-            iRc = pthread_mutex_destroy(&this->mutex);
-            if (iRc) {
-                DEBUG_BREAK();
-            }
-            obj_FlagOff(this,PSXCOND_FLAG_MUTEX_INIT);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#endif
+        
+        if (this->pMutex) {
+            obj_Release(this->pMutex);
+            this->pMutex = OBJ_NIL;
         }
         
         obj_setVtbl(this, this->pSuperVtbl);
@@ -371,8 +357,7 @@ extern "C" {
 
     PSXCOND_DATA *   psxCond_Init(
         PSXCOND_DATA    *this,
-        bool            (*condRoutine)(void *),
-        void            *condData
+        PSXMUTEX_DATA   *pMutex
     )
     {
         uint32_t        cbSize = sizeof(PSXCOND_DATA);
@@ -410,17 +395,9 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxCond_Vtbl);
         
-        this->condRoutine = condRoutine;
-        this->condData = condData;
+        obj_Retain(pMutex);
+        this->pMutex = pMutex;
 #if defined(__MACOSX_ENV__)
-        // this->mutex = PTHREAD_MUTEX_INITIALIZER;
-        iRc = pthread_mutex_init(&this->mutex, NULL);
-        if (iRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        obj_FlagOn(this, PSXCOND_FLAG_MUTEX_INIT);
         // this->cond = PTHREAD_COND_INITIALIZER;
         iRc = pthread_cond_init(&this->cond, NULL);
         if (iRc) {
@@ -431,6 +408,11 @@ extern "C" {
         obj_FlagOn(this, PSXCOND_FLAG_COND_INIT);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        InitializeCriticalSection(&this->csMutex);
+        InitializeConditionVariable(&this->cvCondEmpty);
+        InitializeConditionVariable(&this->cvCondFull);
+#endif
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_create(&this->mutex,TN_MUTEX_PROT_INHERIT,0);
@@ -491,6 +473,7 @@ extern "C" {
     )
     {
 #if defined(__MACOSX_ENV__)
+        bool            fRc;
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -509,24 +492,16 @@ extern "C" {
 #endif
         
 #if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_lock(&this->mutex);
-        if (!(iRc == 0)) {
+        fRc = psxMutex_IsLocked(this->pMutex);
+        if (!fRc) {
             DEBUG_BREAK();
             return false;
         }
         iRc = pthread_cond_signal(&this->cond);
         if (!(iRc == 0)) {
             DEBUG_BREAK();
-            iRc = pthread_mutex_unlock(&this->mutex);
             return false;
         }
-        iRc = pthread_mutex_unlock(&this->mutex);
-        if (!(iRc == 0)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);
@@ -535,7 +510,11 @@ extern "C" {
             return true;
         }
 #endif
-        
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        LeaveCriticalSection(&this->csMutex);
+        WakeConditionVariable(&this->cvCondFull);
+#endif
+
         // Return to caller.
         return true;
     }
@@ -564,7 +543,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -634,6 +613,7 @@ extern "C" {
     )
     {
 #if defined(__MACOSX_ENV__)
+        bool            fRc;
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -652,22 +632,27 @@ extern "C" {
 #endif
         
 #if defined(__MACOSX_ENV__)
-        iRc = pthread_mutex_lock(&this->mutex);
-        if (!(iRc == 0)) {
+        fRc = psxMutex_IsLocked(this->pMutex);
+        if (!fRc) {
+            DEBUG_BREAK();
             return false;
         }
-        while (!this->condRoutine(this->condData)) {
-            iRc = pthread_cond_wait(&this->cond, &this->mutex);
-            if (!(iRc == 0)) {
-                DEBUG_BREAK();
-            }
-        }
-        iRc = pthread_mutex_unlock(&this->mutex);
+        iRc = pthread_cond_wait(&this->cond, &this->pMutex->mutex);
         if (!(iRc == 0)) {
-            return false;
+            DEBUG_BREAK();
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        EnterCriticalSection(&this->csMutex);
+        while(cb_NumEntries(this) == 0) {
+            if (obj_Flag(this, CB_FLAG_PAUSE)) {
+                LeaveCriticalSection(&this->csMutex);
+                return false;
+            }
+            SleepConditionVariableCS(&this->cvCondFull, &this->csMutex, INFINITE);
+        }
+#endif
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);

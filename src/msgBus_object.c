@@ -171,7 +171,7 @@ MSGBUS_VTBL     msgBus_Vtbl = {
         msgBus_Dealloc,
         msgBus_Class,
         msgBus_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)msgBus_QueryInfo,
         (P_OBJ_TOSTRING)msgBus_ToDebugString,
         NULL,			// msgBus_Enable,
         NULL,			// msgBus_Disable,

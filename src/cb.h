@@ -111,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     /*!
-     Allocate one contiguous object large enough to all the entries
+     Allocate one contiguous object large enough for all the entries
      of the Circular Buffer.  Round the element size up to a multiple
      of 4 before calculating object size. The total object size is
      limited to <64k.

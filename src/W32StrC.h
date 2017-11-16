@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//        Constant NUL-terminated Wide String (WStrC) Header
+//        Constant NUL-terminated Wide String (W32StrC) Header
 //****************************************************************
 /*
  * Program
- *			Constant NUL-terminated Wide String (WStrC)
+ *			Constant NUL-terminated Wide String (W32StrC)
  * Purpose
  *			This object provides a constant wide NUL-terminated
  *          string which can not be changed. It is important that
@@ -58,8 +58,8 @@
 #include        <str.h>
 
 
-#ifndef         WSTRC_H
-#define         WSTRC_H
+#ifndef         W32STRC_H
+#define         W32STRC_H
 
 
 
@@ -73,7 +73,7 @@ extern "C" {
     //****************************************************************
 
 
-    // WSTRC_DATA and WSTRC_VTBL are defined in "cmn_defs.h"
+    // W32STRC_DATA and W32STRC_VTBL are defined in "cmn_defs.h"
 
 
 
@@ -86,32 +86,32 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    WSTRC_DATA *    WStrC_Alloc(
+    W32STRC_DATA *  W32StrC_Alloc(
         void
     );
     
     
-    WSTRC_DATA *    WStrC_New(
+    W32STRC_DATA *  W32StrC_New(
         void
     );
     
-    WSTRC_DATA *    WStrC_NewA(
+    W32STRC_DATA *  W32StrC_NewA(
         const
         char            *pStr
     );
     
-    WSTRC_DATA *    WStrC_NewConW(
+    W32STRC_DATA *  W32StrC_NewConW32(
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
-    WSTRC_DATA *    WStrC_NewFromStrW(
+    W32STRC_DATA *  W32StrC_NewFromStrW32(
         WSTR_DATA       *pStr
     );
     
-    WSTRC_DATA *    WStrC_NewW(
+    W32STRC_DATA *  W32StrC_NewW32(
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
@@ -122,13 +122,13 @@ extern "C" {
     //---------------------------------------------------------------
 
     const
-    int32_t *       WStrC_getData(
-        WSTRC_DATA     *this
+    W32CHR_T *      W32StrC_getData(
+        W32STRC_DATA   *this
     );
     
     
-    uint32_t        WStrC_getLength(
-        WSTRC_DATA     *this
+    uint32_t        W32StrC_getLength(
+        W32STRC_DATA   *this
     );
     
     
@@ -144,9 +144,9 @@ extern "C" {
      ERESULT_SUCCESS_LESS_THAN if this < other
      or ERESULT_SUCCESS_GREATER_THAN if this > other.
      */
-    ERESULT         WStrC_Compare(
-        WSTRC_DATA		*this,
-        WSTRC_DATA      *pOther
+    ERESULT         W32StrC_Compare(
+        W32STRC_DATA	*this,
+        W32STRC_DATA    *pOther
     );
     
     
@@ -158,8 +158,8 @@ extern "C" {
      ERESULT_SUCCESS_LESS_THAN if this < string
      or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
-    ERESULT         WStrC_CompareA(
-        WSTRC_DATA		*this,
+    ERESULT         W32StrC_CompareA(
+        W32STRC_DATA	*this,
         const
         char            *pString
     );
@@ -173,15 +173,15 @@ extern "C" {
      ERESULT_SUCCESS_LESS_THAN if this < string
      or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
-    ERESULT         WStrC_CompareW(
-        WSTRC_DATA		*this,
+    ERESULT         W32StrC_CompareW32(
+        W32STRC_DATA	*this,
         const
-        int32_t         *pString
+        W32CHR_T        *pString
     );
     
     
-    WSTRC_DATA *    WStrC_Copy(
-        WSTRC_DATA      *this
+    W32STRC_DATA *  W32StrC_Copy(
+        W32STRC_DATA    *this
     );
     
     
@@ -190,32 +190,32 @@ extern "C" {
      If successful, a NUL-terminated UTF-8 string that
      needs to be freed with mem_Free(). Otherwise, NULL.
      */
-    char *          WStrC_CStringA(
-        WSTRC_DATA		*this
+    char *          W32StrC_CStringA(
+        W32STRC_DATA	*this
     );
     
     
-    uint32_t        WStrC_Hash(
-        WSTRC_DATA      *this
+    uint32_t        W32StrC_Hash(
+        W32STRC_DATA    *this
     );
     
     
-    WSTRC_DATA *    WStrC_InitA(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_InitA(
+        W32STRC_DATA    *this,
         const
         char            *pStr
     );
     
-    WSTRC_DATA *    WStrC_InitConW(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_InitConW32(
+        W32STRC_DATA    *this,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
-    WSTRC_DATA *    WStrC_InitW(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_InitW32(
+        W32STRC_DATA    *this,
         const
-        int32_t         *pStr
+        W32CHR_T        *pStr
     );
     
     
@@ -225,8 +225,8 @@ extern "C" {
      @return    If successful, an WStrC object which must be released,
                  otherwise OBJ_NIL.
      */
-    WSTRC_DATA *    WStrC_Mid(
-        WSTRC_DATA      *this,
+    W32STRC_DATA *  W32StrC_Mid(
+        W32STRC_DATA    *this,
         uint32_t        offset,         /* Relative to 1 */
         uint32_t        len
     );
@@ -238,8 +238,8 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     WStrC_ToDebugString(
-        WSTRC_DATA      *this,
+    ASTR_DATA *     W32StrC_ToDebugString(
+        W32STRC_DATA    *this,
         int             indent
     );
     
@@ -250,5 +250,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* WSTRC_H */
+#endif	/* W32STRC_H */
 

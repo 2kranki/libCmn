@@ -121,8 +121,7 @@ struct appl_data_s	{
     void *          appl_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
 
 

@@ -41,8 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <msgBus_internal.h>
-#include <execPtr.h>
+#include    <msgBus_internal.h>
+#include    <objMethod.h>
+#include    <value.h>
 
 
 
@@ -59,36 +60,79 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    /*
+     This routine is passed messages, msgData objects, and consults
+     the array of nodes to know where to send those messages. The
+     data element of each node contains an object method that is to
+     be executed upon receipt of an appropriate message.
+     */
     static
     void *          msgBus_task_body(
         void            *pData
     )
     {
         MSGBUS_DATA     *this = pData;
-        uint8_t         msg[512];
-        MSG_ENTRY       *pEntry = (void *)msg;
-        bool            fRc;
+        MSGDATA_DATA    *pEntry = OBJ_NIL;
+        MSGDATA_DATA    *pCopy = OBJ_NIL;
+        bool            fRc = false;
         uint32_t        i;
         uint32_t        iMax;
         NODE_DATA       *pNode = OBJ_NIL;
-        EXECPTR_DATA    *pFunc = OBJ_NIL;
-        void            (*msgOutBody)(void *, uint8_t *);
-        void            *msgOutData;
-   
+        OBJMETHOD_DATA  *pMethod = OBJ_NIL;
+        void            (*pMsgOutBody)(void *, OBJ_ID) = NULL;
+        void            *pMsgOutData;
+        uint32_t        origin;
+        uint32_t        dest;
+        uint32_t        nodeID;
+
         // WARNING: We had to make this pausible.
-        fRc = cb_Get(this->pBuffer, pEntry);
-        if (fRc) {
+        fRc = objCb_Get(this->pBuffer, (void **)&pEntry);
+        if (fRc && pEntry) {
+            origin = msgData_getOrigin(pEntry);
+            dest = msgData_getDestination(pEntry);
             iMax = nodeArray_getSize(this->pRegistry);
-            for (i=0; i<iMax; ++i) {
-                pNode = nodeArray_Get(this->pRegistry, i+1);
-                if (pNode && !(node_getNamePtr(pNode) == pEntry->pObj)) {
-                    pFunc = node_getExtra(pNode);
-                    msgOutBody = execPtr_getFunc(pFunc);
-                    msgOutData = (void *)node_getNamePtr(pNode);
-                    msgOutBody(msgOutData, pEntry->msg);
+            if (dest) {     /*** Specific Node ***/
+                for (i=0; i<iMax; ++i) {
+                    pNode = nodeArray_Get(this->pRegistry, i+1);
+                    if (pNode) {
+                        nodeID = (uint32_t)node_getNameInt(pNode);
+                        if (nodeID == dest) {
+                            pMethod = node_getData(pNode);
+                            pMsgOutBody = objMethod_getMethod(pMethod);
+                            pMsgOutData = objMethod_getObject(pMethod);
+                            pCopy = msgData_Copy(pEntry);
+                            pMsgOutBody(pMsgOutData, pCopy);
+                            obj_Release(pCopy);
+                            pCopy = OBJ_NIL;
+                            break;
+                        }
+                    }
                 }
+                pNode = OBJ_NIL;
             }
-            pNode = OBJ_NIL;
+            else {          /*** General Broadcast ***/
+                for (i=0; i<iMax; ++i) {
+                    pNode = nodeArray_Get(this->pRegistry, i+1);
+                    if (pNode) {
+                        nodeID = (uint32_t)node_getNameInt(pNode);
+                        if (nodeID == msgData_getOrigin(pEntry))
+                            ;
+                        else {
+                            pMethod = node_getData(pNode);
+                            pMsgOutBody = objMethod_getMethod(pMethod);
+                            pMsgOutData = objMethod_getObject(pMethod);
+                            pCopy = msgData_Copy(pEntry);
+                            msgData_setNum32(pCopy, nodeID);
+                            pMsgOutBody(pMsgOutData, pCopy);
+                            obj_Release(pCopy);
+                            pCopy = OBJ_NIL;
+                        }
+                    }
+                }
+                pNode = OBJ_NIL;
+            }
+            obj_Release(pEntry);
+            pEntry = OBJ_NIL;
         }
         
         return NULL;
@@ -113,7 +157,7 @@ extern "C" {
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+        this = obj_Alloc(cbSize);
         
         // Return to caller.
         return this;
@@ -122,7 +166,6 @@ extern "C" {
 
 
     MSGBUS_DATA *     msgBus_New(
-        uint16_t        messageSize,
         uint16_t        messageCount        // Max Message Queue size
     )
     {
@@ -130,7 +173,7 @@ extern "C" {
         
         this = msgBus_Alloc( );
         if (this) {
-            this = msgBus_Init(this, messageSize, messageCount);
+            this = msgBus_Init(this, messageCount);
         } 
         return this;
     }
@@ -378,26 +421,32 @@ extern "C" {
     
     ERESULT     msgBus_Broadcast(
         MSGBUS_DATA		*this,
-        void            *pRcvData,
-        uint8_t         *pMsg
+        int32_t         msgOrigin,
+        int32_t         msgDest,
+        uint16_t        msgLen,
+        uint8_t         *pMsgData
     )
     {
-        uint8_t         msg[512];
-        MSG_ENTRY       *pEntry = (void *)msg;
-        bool            fRc;
+        MSGDATA_DATA    *pEntry = OBJ_NIL;
+        bool            fRc = false;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        pEntry->pObj = pRcvData;
-        memmove(pEntry->msg, pMsg, this->messageSize);
-        fRc = cb_Put(this->pBuffer, pEntry);
+        pEntry = msgData_New(msgOrigin, msgDest, msgLen, pMsgData);
+        if (OBJ_NIL == pEntry) {
+            msgBus_setLastError(this, ERESULT_INVALID_DATA);
+            return ERESULT_INVALID_DATA;
+        }
+        fRc = objCb_Put(this->pBuffer, pEntry);
+        obj_Release(pEntry);
+        pEntry = OBJ_NIL;
         if (!fRc) {
             msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
             return ERESULT_GENERAL_FAILURE;
@@ -482,7 +531,8 @@ extern "C" {
 
         // WARNING: Order is important here!
 
-        cb_Pause(this->pBuffer);
+        objCb_Pause(this->pBuffer);
+        psxThread_Wait(500);
         psxThread_Terminate(this->pThread);
         
         if (this->pThread) {
@@ -508,8 +558,9 @@ extern "C" {
         msgBus_setRegistry(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //consumer_Dealloc(this);             // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -585,43 +636,11 @@ extern "C" {
 
     MSGBUS_DATA *   msgBus_Init(
         MSGBUS_DATA     *this,
-        uint16_t        messageSize,
         uint16_t        messageCount        // Max Message Queue size
     )
     {
         uint32_t        cbSize = sizeof(MSGBUS_DATA);
-        uint16_t        actualSize = messageSize + sizeof(MSG_ENTRY);
         
-        actualSize = ROUNDUP4(actualSize);
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (messageSize && (actualSize <= 512)) {
-        }
-        else {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        /* cbSize can be zero if Alloc() was not called and we are
-         * are passed the address of a zero'd area.
-         */
-        //cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
-        if (cbSize == 0) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-
-        /***
-        this = (OBJ_ID)consumer_Init(
-                            (CONSUMER_DATA *)this,
-                            messageSize,
-                            messageCount         
-                );    // Needed for Inheritance
-         ***/
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGBUS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -635,8 +654,6 @@ extern "C" {
         
         msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->msWait = 10;
-        this->messageSize = messageSize;
-        this->actualSize = actualSize;
 
         // WARNING: Order is important here!
         
@@ -654,7 +671,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pBuffer = cb_New(actualSize, messageCount);
+        this->pBuffer = objCb_New(messageCount);
         if (OBJ_NIL == this->pBuffer) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -675,6 +692,10 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+#ifdef __APPLE__
+        fprintf(stderr, "msgBus::offsetof(eRc) = %lu\n", offsetof(MSGBUS_DATA,eRc));
+        fprintf(stderr, "msgBus::sizeof(OBJMETHOD_DATA) = %lu\n", sizeof(MSGBUS_DATA));
+#endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(MSGBUS_DATA));
     #endif
@@ -715,13 +736,72 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          msgBus_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        MSGBUS_DATA     *this = objId;
+        const
+        char            *pStr = pData;
+
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return msgBus_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if ((void *)pStr == msgBus_ToDebugString)
+                    return "ToDebugString";
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      R e g i s t e r
     //---------------------------------------------------------------
     
-    ERESULT         msgBus_Register(
-        MSGBUS_DATA		*this,
-        void            (*pRcv)(void *, void *),
-        void            *pRcvData
+    ERESULT         msgBus_RegisterObjectMethod(
+        MSGBUS_DATA     *this,
+        OBJMETHOD_DATA  *pRcvObj,
+        int32_t         *pToken
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
@@ -743,12 +823,56 @@ extern "C" {
             }
         }
         
-        pNode = node_NewWithPtr(pRcvData, OBJ_NIL);
+        ++this->unique;
+        pNode = node_NewWithInt(this->unique, pRcvObj);
         if (pNode == OBJ_NIL) {
             msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return ERESULT_OUT_OF_MEMORY;
         }
-        node_setExtra(pNode, pRcv);
+        
+        nodeArray_AppendNode(this->pRegistry, pNode, NULL);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        
+        // Return to caller.
+        msgBus_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         msgBus_RegisterObjectVtbl(
+        MSGBUS_DATA		*this,
+        OBJ_ID          *pRcvObj,
+        uint16_t        vtblOffset,
+        int32_t         *pToken
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !msgBus_Validate(this) ) {
+            DEBUG_BREAK();
+            return msgBus_getLastError(this);
+        }
+#endif
+        
+        if (this->pRegistry == OBJ_NIL) {
+            this->pRegistry = nodeArray_New();
+            if (this->pRegistry == OBJ_NIL) {
+                msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        ++this->unique;
+        pNode = node_NewWithInt(this->unique, pRcvObj);
+        if (pNode == OBJ_NIL) {
+            msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        node_setMisc(pNode, vtblOffset);
         
         nodeArray_AppendNode(this->pRegistry, pNode, NULL);
         obj_Release(pNode);
@@ -798,7 +922,7 @@ extern "C" {
               
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -821,7 +945,7 @@ extern "C" {
         }
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(msgBus)}\n", this);
         AStr_AppendA(pStr, str);
@@ -833,24 +957,29 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      R e g i s t e r
+    //                      U n r e g i s t e r
     //---------------------------------------------------------------
     
-    ERESULT         msgBus_Unregister(
+    ERESULT         msgBus_UnregisterObject(
         MSGBUS_DATA		*this,
-        void            *pRcvData
+        int32_t         token
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
-        
+        uint32_t        nodeID;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (token == 0) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -863,12 +992,13 @@ extern "C" {
         for (i=0; i<iMax; ++i) {
             pNode = nodeArray_Get(this->pRegistry, i+1);
             if (pNode) {
-                if (pRcvData == node_getNamePtr(pNode)) {
+                nodeID = (uint32_t)node_getNameInt(pNode);
+                if (token == nodeID) {
                     pNode = nodeArray_Delete(this->pRegistry, i+1);
                     obj_Release(pNode);
                     pNode = OBJ_NIL;
                     msgBus_setLastError(this, ERESULT_SUCCESS);
-                    return msgBus_getLastError(this);
+                    return ERESULT_SUCCESS;
                     break;
                 }
             }
@@ -876,7 +1006,7 @@ extern "C" {
         
         // Return to caller.
         msgBus_setLastError(this, ERESULT_DATA_NOT_FOUND);
-        return msgBus_getLastError(this);
+        return ERESULT_DATA_NOT_FOUND;
     }
     
     

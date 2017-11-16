@@ -67,12 +67,12 @@ struct psxLock_data_s	{
 #if defined(__MACOSX_ENV__)
     pthread_mutex_t mutex;
 #endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    struct TN_Mutex mutex;
+#endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     CRITICAL_SECTION
                     csSem;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-    struct TN_Mutex mutex;
 #endif
 
 };

@@ -42,34 +42,21 @@
 #define	WSTR_INTERNAL_H
 
 
-#include        "WStr.h"
-#include        "pwr2Array_internal.h"
-#include        "path.h"
+#include        <WStr.h>
+#include        <array_internal.h>
+#include        <path.h>
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
-    typedef struct WStr_vtbl_internal_s	{
-        WSTR_VTBL          iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in WStrC_object.c.
-        // Properties:
-        // Methods:
-#ifdef NDEBUG
-#else
-        bool			(*pValidate)(WSTR_DATA *);
-#endif
-    } WSTR_VTBL_INTERNAL;
-    
-    
-    
 #pragma pack(push, 1)
 struct WStr_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    PWR2ARRAY_DATA  super;
+    ARRAY_DATA      super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
 
@@ -87,6 +74,14 @@ struct WStr_data_s	{
         OBJ_ID          objId
     );
 
+    
+    void *          WStr_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+    
 #ifdef NDEBUG
 #else
     bool			WStr_Validate(

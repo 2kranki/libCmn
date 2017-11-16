@@ -109,8 +109,7 @@ struct clo_data_s	{
     void *          clo_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
 
 

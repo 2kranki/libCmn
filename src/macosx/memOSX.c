@@ -357,7 +357,7 @@ extern "C" {
         fprintf(stderr, "\n\ndata ptr: %p\n", pData);
         if (fFnd) {
             fprintf(stderr, "\tIs an allocated area from memOSX %p\n", pActual->pMem);
-            fprintf(stderr, "\tRequested Size=%ld  Actual Size=%ld\n",
+            fprintf(stderr, "\tRequested_Size=%ld  Actual_Size=%ld\n",
                             pActual->cbSize, pActual->cbActual);
             if (pActual->flags & MEM_FLAG_OBJECT) {
                 const
@@ -422,7 +422,7 @@ extern "C" {
                 }
                 pObj = (OBJ_DATA *)pData;
                 if (pObj->pVtbl->pToDebugString) {
-                    pStr = pObj->pVtbl->pToDebugString(pObj,0);
+                    pStr = pObj->pVtbl->pToDebugString(pObj, 0);
                     fprintf(stderr, "debug: \n%s\n\n\n", AStr_getData(pStr));
                     obj_Release(pStr);
                 }
@@ -476,10 +476,10 @@ extern "C" {
 #endif
         
         // Find the Area in the Block Header List.
-        for(	pActual = (MEM_BLOCKHEADER *)listdl_Head( &this->blockList );
+        for(pActual = (MEM_BLOCKHEADER *)listdl_Head(&this->blockList);
             pActual;
-            pActual = (MEM_BLOCKHEADER *)listdl_Next( &this->blockList, pActual )
-            ) {
+            pActual = (MEM_BLOCKHEADER *)listdl_Next(&this->blockList, pActual)
+        ) {
             if( pActual->data == pData ) {
                 break;
             }
@@ -663,6 +663,25 @@ extern "C" {
 
 
 
+    bool            memOSX_setLeakExit(
+        MEMOSX_DATA     *this,
+        P_VOIDEXIT1     rtn,
+        void            *pObject
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !memOSX_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->pLeakExit = rtn;
+        this->pLeakExitObject = pObject;
+        return true;
+    }
+    
+    
+    
     uint32_t        memOSX_getSize(
         MEMOSX_DATA       *this
     )
@@ -678,7 +697,43 @@ extern "C" {
 
 
 
-
+    const
+    char *          memOSX_getTitle(
+        MEMOSX_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !memOSX_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pTitle;
+    }
+    
+    
+    
+    bool            memOSX_setTitle(
+        MEMOSX_DATA     *this,
+        const
+        char            *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !memOSX_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->pTitle = pValue;
+        return true;
+    }
+    
+    
+    
     
 
     //===============================================================
@@ -758,7 +813,16 @@ extern "C" {
             memOSX_DebugCheck( this, NULL, 0 );
         }
         if (listdl_Count(&this->blockList)) {
-            memOSX_DebugDump(this, "memOSX_Dealloc", 0);
+            if (this->pLeakExit) {
+                this->pLeakExit(this->pLeakExitObject);
+            }
+                
+            if (this->pTitle)
+                ;
+            else {
+                this->pTitle = "==>memOSX_Dealloc<==";
+            }
+            memOSX_DebugDump(this, this->pTitle, 0);
         }
         
         obj_Dealloc( this );
@@ -932,7 +996,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !memOSX_Validate( this ) ) {
+        if( !memOSX_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -1059,7 +1123,7 @@ extern "C" {
         for(pActual = (MEM_BLOCKHEADER *)listdl_Head( &this->blockList );
             pActual;
             pActual = (MEM_BLOCKHEADER *)listdl_Next( &this->blockList, pActual )
-            ) {
+        ) {
             if (trace_Shared() == (void *)&pActual->data) {
                 continue;
             }
@@ -1604,7 +1668,7 @@ extern "C" {
         }
         
         //cbSize = obj_getSize(this);
-        this = (MEMOSX_DATA *)obj_Init( this, cbSize, OBJ_IDENT_MEMOSX );
+        this = (MEMOSX_DATA *)obj_Init(this, cbSize, OBJ_IDENT_MEMOSX);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1698,7 +1762,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -1741,7 +1805,7 @@ extern "C" {
     )
     {
         if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_MEMOSX) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_MEMOSX) )
                 ;
             else
                 return false;

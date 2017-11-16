@@ -78,6 +78,9 @@ bool            true_ClassIsKindOf(
     if (OBJ_IDENT_TRUE_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_SHARED_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -128,6 +131,9 @@ bool            true_IsKindOf(
 {
     if (OBJ_IDENT_TRUE == classID) {
        return true;
+    }
+    if (OBJ_IDENT_SHARED == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

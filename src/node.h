@@ -167,9 +167,8 @@ extern "C" {
     );
     
     
-    NODE_DATA *     node_NewWithPtr(
-        const
-        void            *pValue,
+    NODE_DATA *     node_NewWithObj(
+        OBJ_ID          pValue,
         OBJ_ID          pData
     );
     
@@ -271,11 +270,7 @@ extern "C" {
         NODE_DATA       *this
     );
     
-    /*!
-     @return    If successful, a void ptr, otherwise NULL.
-     */
-    const
-    void *          node_getNamePtr(
+    uint64_t        node_getNameInt(
         NODE_DATA       *this
     );
     
@@ -337,10 +332,9 @@ extern "C" {
     );
     
     
-    NODE_DATA *     node_InitWithPtr(
+    NODE_DATA *     node_InitWithObj(
         NODE_DATA       *this,
-        const
-        void            *pValue,
+        OBJ_ID          pValue,
         OBJ_ID          pData
     );
     

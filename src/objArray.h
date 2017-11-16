@@ -13,10 +13,7 @@
  *          called a objArray on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal objArray. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	03/22/2016 Generated
@@ -130,6 +127,7 @@ extern "C" {
 
     /*!
      Add the given element to the end of the array.
+     @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
@@ -142,6 +140,7 @@ extern "C" {
     
     /*!
      Add the elements from the other array to the end of the array.
+     @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
@@ -155,6 +154,7 @@ extern "C" {
      Assign the contents of this array to the other array. The
      contents of the other array are released. Then we simply
      retain them so that they are in both arrays.
+     @param     this    object pointer
      @return    If successful, return ERESULT_SUCCESSFUL_COMPLETION
                 otherwise an eResult error code.
      */
@@ -168,6 +168,7 @@ extern "C" {
      Copy this array. Any element of the array that has a copy method
      will have that used to create a new object. Otherwise, the object
      is just retained and added to the new array.
+     @param     this    object pointer
      @return    If successful, return a new array that must be released
                 otherwise return OBJ_NIL.
      */
@@ -178,6 +179,7 @@ extern "C" {
     
     /*!
      Remove the index'th element from the array and return it.
+     @param     this    object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
@@ -189,6 +191,7 @@ extern "C" {
     
     /*!
      Remove the first element from the array and return it.
+     @param     this    object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
@@ -199,6 +202,7 @@ extern "C" {
     
     /*!
      Remove the last element from the array and return it.
+     @param     this    object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
@@ -210,7 +214,7 @@ extern "C" {
     /*!
      Create an enumerator for the Hash in ascending order
      if the object contains a compare() method.
-     @param     this    DIR_DATA object pointer
+     @param     this    object pointer
      @return    If successful, an Enumerator object which must be
      released, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
@@ -222,6 +226,7 @@ extern "C" {
     
     /*!
      Find the nth entry in the array.
+     @param     this    objArray object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
     OBJ_ID          objArray_Get(
@@ -297,6 +302,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
+     @param     this    object pointer
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */

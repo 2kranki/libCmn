@@ -178,6 +178,13 @@ extern "C" {
     );
     
     
+    NODE_DATA *     nodeScan_ScanF(
+        NODESCAN_DATA   *this,
+        char     *pTemplate,
+        ...
+    );
+    
+    
     /*!
      Create a string that describes this object and the
      objects within it.

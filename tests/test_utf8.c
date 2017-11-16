@@ -149,7 +149,7 @@ int         test_utf8_Scan01(
     
     pStr = pString1;
     for (i=1; i<=4; ++i) {
-        j = utf8_Utf8ToWC_Scan(&pStr);
+        j = utf8_Utf8ToW32_Scan(&pStr);
         XCTAssertTrue( (i == j) );
     }
     

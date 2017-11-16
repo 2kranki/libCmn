@@ -104,7 +104,7 @@ int         test_path_CharFindNext(
     if (pObj) {
         
         index = 0;      // Start at the beginning.
-        eRc = AStr_CharFindNextW((ASTR_DATA *)pObj, &index, '/');
+        eRc = AStr_CharFindNextW32((ASTR_DATA *)pObj, &index, '/');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (6 == index) );
         

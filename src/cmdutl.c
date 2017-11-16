@@ -41,13 +41,14 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "cmdutl_internal.h"
-#include "ascii.h"
-#include "AStr.h"
-#include "nodeArray.h"
-#include "nodeHash.h"
-#include "trace.h"
-#include "WStr.h"
+#include <cmdutl_internal.h>
+#include <ascii.h>
+#include <AStr.h>
+#include <nodeArray.h>
+#include <nodeHash.h>
+#include <trace.h>
+#include <utf8.h>
+#include <WStr.h>
 #include <stdio.h>
 
 
@@ -159,16 +160,16 @@ extern "C" {
     
     // Returns the next character from the file as a positive number.
     // If the character returned is negative then it is an ERESULT code.
-    int32_t         cmdutl_UnicodeGetc(
+    W32CHR_T        cmdutl_UnicodeGetc(
         CMDUTL_DATA     *this
     )
     {
-        int32_t         wrkChr;
+        W32CHR_T        wrkChr;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( this ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -176,17 +177,23 @@ extern "C" {
         switch (this->inputType) {
                 
             case OBJ_IDENT_ASTR:
-                wrkChr = AStr_CharGetW(this->pAStr, ++this->fileOffset );
+                wrkChr = AStr_CharGetW32(this->pAStr, ++this->fileOffset);
+                if(EOF == wrkChr) {
+                    obj_FlagSet(this, OBJ_FLAG_EOF, true);
+                    return EOF; //ERESULT_EOF_ERROR;
+                }
                 break;
                 
             case OBJ_IDENT_FILE:
                 wrkChr = fgetwc( this->pFile);
                 if( wrkChr == EOF ) {
                     if( feof(this->pFile) ) {
-                        return -1; //ERESULT_EOF_ERROR;
+                        obj_FlagSet(this, OBJ_FLAG_EOF, true);
+                        return EOF; //ERESULT_EOF_ERROR;
                     }
                     else
-                        return -1; //ERESULT_READ_ERROR;
+                        obj_FlagSet(this, OBJ_FLAG_EOF, true);
+                        return EOF; //ERESULT_READ_ERROR;
                 }
                 break;
                 
@@ -209,7 +216,7 @@ extern "C" {
 #endif
                 
             case OBJ_IDENT_WSTR:
-                wrkChr = WStr_CharGetW(this->pWStr, ++this->fileOffset );
+                wrkChr = WStr_CharGetW32(this->pWStr, ++this->fileOffset );
                 break;
                 
             default:
@@ -224,6 +231,7 @@ extern "C" {
         else if( wrkChr == ASCII_CPM_EOF ) {
             while ((wrkChr = fgetwc(this->pFile)) != EOF) {
             }
+            obj_FlagSet(this, OBJ_FLAG_EOF, true);
             return ERESULT_EOF_ERROR;
         }
         else if( wrkChr == ASCII_TAB )
@@ -244,30 +252,30 @@ extern "C" {
     //                   P a r s e  A l p h a  a-z A-Z
     //---------------------------------------------------------------
     
-    int32_t         cmdutl_ParseAlpha(
-        CMDUTL_DATA       *cbp
+    W32CHR_T        cmdutl_ParseAlpha(
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         
         if( (chr >= 'a') && (chr <= 'z') ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 1);
             chr -= '0';
         }
         else if( (chr >= 'A') && (chr <= 'Z') ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 1);
             chr -= '0';
         }
         else {
@@ -285,10 +293,10 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseArray(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NODE_DATA       *pNode = OBJ_NIL;
         OBJ_ID          pChild = OBJ_NIL;
@@ -297,16 +305,16 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == '[' ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
         }
         else {
             return OBJ_NIL;
@@ -316,15 +324,15 @@ extern "C" {
         if (pArray == OBJ_NIL) {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Out of Memory"
             );
             return pNode;
         }
         
-        pChild = cmdutl_ParseValue(cbp);
+        pChild = cmdutl_ParseValue(this);
         if (pChild) {
             nodeArray_AppendNode(pArray, pChild, NULL);
             obj_Release(pChild);
@@ -335,14 +343,14 @@ extern "C" {
         }
         
         for (;;) {
-            cmdutl_ParseWS(cbp);
-            chr = cmdutl_InputLookAhead(cbp, 1);
+            cmdutl_ParseWS(this);
+            chr = cmdutl_InputLookAhead(this, 1);
             if( chr == ',' ) {
-                cmdutl_InputAdvance(cbp, 1);
+                cmdutl_InputAdvance(this, 1);
             }
             else
                 break;
-            pChild = cmdutl_ParseValue(cbp);
+            pChild = cmdutl_ParseValue(this);
             if (pChild) {
                 nodeArray_AppendNode(pArray, pChild, NULL);
                 obj_Release(pChild);
@@ -350,9 +358,9 @@ extern "C" {
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    path_getData(this->pPath),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting a value, but found %c(0x%02X)",
                     chr,
                     chr
@@ -360,17 +368,17 @@ extern "C" {
             }
         }
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == ']' ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
         }
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting ']', but found %c(0x%02X)",
                 chr,
                 chr
@@ -398,28 +406,28 @@ extern "C" {
     // until there are no more that are acceptable.
     
     bool            cmdutl_ParseChrCon(
-        CMDUTL_DATA       *cbp,
-        int32_t         ending
+        CMDUTL_DATA     *this,
+        W32CHR_T        ending
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         uint32_t        i;
-        int32_t         wrk;
+        W32CHR_T        wrk;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         if (chr == ending) {
             return false;
         }
         if ( chr == '\\') {
-            chr = cmdutl_InputAdvance(cbp, 1);
+            chr = cmdutl_InputAdvance(this, 1);
             switch (chr) {
                     
 #ifdef XYZZY
@@ -431,21 +439,21 @@ extern "C" {
                 case '5':
                 case '6':
                 case '7':
-                    cmdutl_AppendCharToField(cbp, chr);
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, chr);
+                    cmdutl_InputAdvance(this, 1);
                     for (i=0; i<2; ++i) {
                         wrk = 0;
-                        chr = cmdutl_ParseDigitOctal(cbp);
+                        chr = cmdutl_ParseDigitOctal(this);
                         if (chr >= 0) {
                             wrk = (wrk << 3) | chr;
                         }
                         else {
-                            chr = cmdutl_InputLookAhead(cbp, 1);
+                            chr = cmdutl_InputLookAhead(this, 1);
                             eResult_ErrorFatalFLC(
                                 eResult_Shared(),
-                                path_getData(cbp->pPath),
-                                cbp->lineNo,
-                                cbp->colNo,
+                                path_getData(this->pPath),
+                                this->lineNo,
+                                this->colNo,
                                 "Invalid octal char, %c(0x%02X)",
                                 chr,
                                 chr
@@ -456,73 +464,73 @@ extern "C" {
 #endif
                     
                 case 'b':
-                    cmdutl_AppendCharToField(cbp, '\b');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\b');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case 'f':
-                    cmdutl_AppendCharToField(cbp, '\f');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\f');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case 'n':
-                    cmdutl_AppendCharToField(cbp, '\n');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\n');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case 'r':
-                    cmdutl_AppendCharToField(cbp, '\r');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\r');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case 't':
-                    cmdutl_AppendCharToField(cbp, '\t');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\t');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
 
 #ifdef XYZZY
                 case 'v':
-                    cmdutl_AppendCharToField(cbp, '\v');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\v');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
 #endif
                     
                 case '\\':
-                    cmdutl_AppendCharToField(cbp, '\\');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\\');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case '/':
-                    cmdutl_AppendCharToField(cbp, '/');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '/');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case '\'':
-                    cmdutl_AppendCharToField(cbp, '\'');
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, '\'');
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case '"':
-                    cmdutl_AppendCharToField(cbp, chr);
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, chr);
+                    cmdutl_InputAdvance(this, 1);
                     return true;
                     
                 case 'u':
-                    cmdutl_AppendCharToField(cbp, chr);
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_AppendCharToField(this, chr);
+                    cmdutl_InputAdvance(this, 1);
                     for (i=0; i<4; ++i) {
                         wrk = 0;
-                        chr = cmdutl_ParseDigitHex(cbp);
+                        chr = cmdutl_ParseDigitHex(this);
                         if (chr >= 0) {
                             wrk = (wrk << 4) | chr;
                         }
                         else {
-                            chr = cmdutl_InputLookAhead(cbp, 1);
+                            chr = cmdutl_InputLookAhead(this, 1);
                             eResult_ErrorFatalFLC(
                                 eResult_Shared(),
-                                path_getData(cbp->pPath),
-                                cbp->lineNo,
-                                cbp->colNo,
+                                path_getData(this->pPath),
+                                this->lineNo,
+                                this->colNo,
                                 "Invalid hexadecimal char, %c(0x%02X)",
                                 chr,
                                 chr
@@ -532,12 +540,12 @@ extern "C" {
                     break;
                     
                 default:
-                    chr = cmdutl_InputLookAhead(cbp, 1);
+                    chr = cmdutl_InputLookAhead(this, 1);
                     eResult_ErrorFatalFLC(
                                           eResult_Shared(),
-                                          path_getData(cbp->pPath),
-                                          cbp->lineNo,
-                                          cbp->colNo,
+                                          path_getData(this->pPath),
+                                          this->lineNo,
+                                          this->colNo,
                                           "Invalid char after \\, %c(0x%02X)",
                                           chr,
                                           chr
@@ -546,8 +554,8 @@ extern "C" {
             }
         }
         else {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 1);
         }
         
         return true;
@@ -559,25 +567,25 @@ extern "C" {
     //                   P a r s e  D i g i t  0-9
     //---------------------------------------------------------------
     
-    int32_t         cmdutl_ParseDigit0To9(
-        CMDUTL_DATA       *cbp
+    W32CHR_T        cmdutl_ParseDigit0To9(
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         
         if( (chr >= '0') && (chr <= '9') ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 1);
             chr -= '0';
         }
         else {
@@ -594,25 +602,25 @@ extern "C" {
     //                   P a r s e  D i g i t  1-9
     //---------------------------------------------------------------
     
-    int32_t         cmdutl_ParseDigit1To9(
-        CMDUTL_DATA       *cbp
+    W32CHR_T        cmdutl_ParseDigit1To9(
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         
         if( (chr >= '1') && (chr <= '9') ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 1);
             chr -= '0';
         }
         else {
@@ -629,32 +637,32 @@ extern "C" {
     //                   P a r s e  D i g i t  H e x
     //---------------------------------------------------------------
     
-    int32_t         cmdutl_ParseDigitHex(
-        CMDUTL_DATA       *cbp
+    W32CHR_T        cmdutl_ParseDigitHex(
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         
         if( (chr >= '0') && (chr <= '9') ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
             chr -= '0';
         }
         else if( (chr >= 'A') && (chr <= 'F') ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
             chr = chr - 'A' + 10;
         }
         else if( (chr >= 'a') && (chr <= 'f') ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
             chr = chr - 'a' + 10;
         }
         else {
@@ -671,24 +679,24 @@ extern "C" {
     //                   P a r s e  D i g i t  O c t a l
     //---------------------------------------------------------------
     
-    int32_t         cmdutl_ParseDigitOctal(
-        CMDUTL_DATA       *cbp
+    W32CHR_T        cmdutl_ParseDigitOctal(
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         
         if( (chr >= '0') && (chr <= '7') ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
             chr -= '0';
         }
         else {
@@ -706,24 +714,24 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            cmdutl_ParseEOF(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if (chr < 0) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
             return true;
         }
         
@@ -737,34 +745,34 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseFileObject(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA       *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         NODE_DATA       *pNode;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        pNode = cmdutl_ParseHash(cbp);
+        pNode = cmdutl_ParseHash(this);
         if( OBJ_NIL == pNode ) {
             return pNode;
         }
         
-        cmdutl_ParseWS(cbp);
-        if(!cmdutl_ParseEOF(cbp)) {
-            chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        if(!cmdutl_ParseEOF(this)) {
+            chr = cmdutl_InputLookAhead(this, 1);
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting EOF, but found %c(0x%02X)",
                 chr,
                 chr
@@ -781,10 +789,10 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseHash(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         NODE_DATA       *pNode = OBJ_NIL;
         NODEHASH_DATA   *pHash = OBJ_NIL;
         NODE_DATA       *pChild;
@@ -793,16 +801,16 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == '{' ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
         }
         else {
             return pNode;
@@ -814,20 +822,20 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pChild = cmdutl_ParsePair(cbp);
+        pChild = cmdutl_ParsePair(this);
         if (pChild) {
             eRc = nodeHash_Add(pHash, pChild);
             obj_Release(pChild);
             pChild = OBJ_NIL;
             for (;;) {
-                cmdutl_ParseWS(cbp);
-                chr = cmdutl_InputLookAhead(cbp, 1);
+                cmdutl_ParseWS(this);
+                chr = cmdutl_InputLookAhead(this, 1);
                 if( chr == ',' ) {
-                    cmdutl_InputAdvance(cbp, 1);
+                    cmdutl_InputAdvance(this, 1);
                 }
                 else
                     break;
-                pChild = cmdutl_ParsePair(cbp);
+                pChild = cmdutl_ParsePair(this);
                 if (pChild) {
                     eRc = nodeHash_Add(pHash, pChild);
                     obj_Release(pChild);
@@ -836,9 +844,9 @@ extern "C" {
                 else {
                     eResult_ErrorFatalFLC(
                         eResult_Shared(),
-                        path_getData(cbp->pPath),
-                        cbp->lineNo,
-                        cbp->colNo,
+                        path_getData(this->pPath),
+                        this->lineNo,
+                        this->colNo,
                         "Expecting a value, but found %c(0x%02X)",
                         chr,
                         chr
@@ -847,17 +855,17 @@ extern "C" {
             }
         }
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == '}' ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
         }
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting '}', but found %c(0x%02X)",
                 chr,
                 chr
@@ -885,10 +893,10 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseKeyWord(
-        CMDUTL_DATA       *this
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         NODE_DATA       *pNode = OBJ_NIL;
         FALSE_DATA      *pFalse = false_New();
         NULL_DATA       *pNull = null_New();
@@ -908,15 +916,15 @@ extern "C" {
         cmdutl_ParseWS(this);
         while ((chr=cmdutl_ParseAlpha(this)) > 0) {
         }
-        str_ToLowerW(this->pFld);
+        str_ToLowerW32(this->pFld);
         if (this->lenFld) {
-            if (0 == str_CompareW(L"false", this->pFld)) {
+            if (0 == utf8_StrCmpAW32("false", this->pFld)) {
                 pNode = node_NewWithUTF8("false", pFalse);
             }
-            else if (0 == str_CompareW(L"null", this->pFld)) {
+            else if (0 == utf8_StrCmpAW32("null", this->pFld)) {
                 pNode = node_NewWithUTF8("null", pNull);
             }
-            else if (0 == str_CompareW(L"true", this->pFld)) {
+            else if (0 == utf8_StrCmpAW32("true", this->pFld)) {
                 pNode = node_NewWithUTF8("true", pTrue);
             }
             else {
@@ -945,10 +953,10 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseNumber(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
         bool            fRc = false;
@@ -956,26 +964,26 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        cbp->lenFld = 0;
-        cbp->pFld[0] = 0;
+        this->lenFld = 0;
+        this->pFld[0] = 0;
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == '-' ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 4);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 4);
         }
         if( chr == '0' ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            chr = cmdutl_InputAdvance(cbp, 4);
+            cmdutl_AppendCharToField(this, chr);
+            chr = cmdutl_InputAdvance(this, 4);
             fRc = true;
         }
-        else if ( cmdutl_ParseDigit1To9(cbp) >= 0) {
-            while (cmdutl_ParseDigit0To9(cbp) >= 0) {
+        else if ( cmdutl_ParseDigit1To9(this) >= 0) {
+            while (cmdutl_ParseDigit0To9(this) >= 0) {
             }
             fRc = true;
         }
@@ -984,54 +992,54 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == '.' ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 4);
-            if (cmdutl_ParseDigit0To9(cbp) > 0)
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 4);
+            if (cmdutl_ParseDigit0To9(this) > 0)
                 ;
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    path_getData(this->pPath),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting 0-9, but found %c(0x%02X)",
                     chr,
                     chr
                 );
             }
-            while (cmdutl_ParseDigit0To9(cbp) > 0) {
+            while (cmdutl_ParseDigit0To9(this) > 0) {
             }
         }
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( (chr == 'e') || (chr == 'E') ) {
-            cmdutl_AppendCharToField(cbp, chr);
-            cmdutl_InputAdvance(cbp, 4);
+            cmdutl_AppendCharToField(this, chr);
+            cmdutl_InputAdvance(this, 4);
             if( (chr == '-') || (chr == '+') ) {
-                cmdutl_AppendCharToField(cbp, chr);
-                cmdutl_InputAdvance(cbp, 4);
+                cmdutl_AppendCharToField(this, chr);
+                cmdutl_InputAdvance(this, 4);
             }
-            if (cmdutl_ParseDigit0To9(cbp) > 0)
+            if (cmdutl_ParseDigit0To9(this) > 0)
                 ;
             else {
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
-                    path_getData(cbp->pPath),
-                    cbp->lineNo,
-                    cbp->colNo,
+                    path_getData(this->pPath),
+                    this->lineNo,
+                    this->colNo,
                     "Expecting 0-9, but found %c(0x%02X)",
                     chr,
                     chr
                 );
             }
-            while (cmdutl_ParseDigit0To9(cbp) > 0) {
+            while (cmdutl_ParseDigit0To9(this) > 0) {
             }
         }
 
         if (fRc) {
-            pStr = AStr_NewW(cbp->pFld);
+            pStr = AStr_NewW32(this->pFld);
             if (pStr) {
                 pNode = node_NewWithUTF8("number", pStr);
             }
@@ -1053,10 +1061,10 @@ extern "C" {
     // node.
     
     NODE_DATA *     cmdutl_ParsePair(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         NODE_DATA       *pData = OBJ_NIL;
         NODE_DATA       *pName = OBJ_NIL;
         NODE_DATA       *pNode = OBJ_NIL;
@@ -1066,28 +1074,28 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        pName = cmdutl_ParseString(cbp);
+        pName = cmdutl_ParseString(this);
         if (pName == OBJ_NIL) {
             return OBJ_NIL;
         }
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if( chr == ':' ) {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
         }
         else {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting ':', but found %c(0x%02X)",
                 chr,
                 chr
@@ -1097,13 +1105,13 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        pData = cmdutl_ParseValue(cbp);
+        pData = cmdutl_ParseValue(this);
         if (pData == OBJ_NIL) {
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
-                path_getData(cbp->pPath),
-                cbp->lineNo,
-                cbp->colNo,
+                path_getData(this->pPath),
+                this->lineNo,
+                this->colNo,
                 "Expecting a \"value\""
             );
             obj_Release(pName);
@@ -1129,35 +1137,35 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseString(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA     *this
     )
     {
         bool            fRc = false;
-        int32_t         chr;
+        W32CHR_T        chr;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
-        cbp->lenFld = 0;
-        cbp->pFld[0] = 0;
+        TRC_OBJ(this, "%s:\n", __func__);
+        this->lenFld = 0;
+        this->pFld[0] = 0;
         
-        cmdutl_ParseWS(cbp);
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
         if (chr == '"') {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
         }
         else
             return false;
         
         for (;;) {
-            if (cmdutl_ParseChrCon(cbp,'"')) {
+            if (cmdutl_ParseChrCon(this,'"')) {
                 // Do something, maybe!
             }
             else {
@@ -1165,20 +1173,20 @@ extern "C" {
             }
         }
         
-        chr = cmdutl_InputLookAhead(cbp, 1);
+        chr = cmdutl_InputLookAhead(this, 1);
         if (chr == '"') {
-            cmdutl_InputAdvance(cbp, 1);
+            cmdutl_InputAdvance(this, 1);
             fRc = true;
         }
         
         if (fRc) {
-            pStr = AStr_NewW(cbp->pFld);
+            pStr = AStr_NewW32(this->pFld);
             if (pStr) {
                 pNode = node_NewWithUTF8("string", pStr);
 #ifdef NDEBUG
 #else
                 ASTR_DATA   *pStrDbg = AStr_ToDebugString(pStr, 0);
-                TRC_OBJ(cbp,"\tstring: %s\n", AStr_getData(pStrDbg));
+                TRC_OBJ(this, "\tstring: %s\n", AStr_getData(pStrDbg));
                 obj_Release(pStrDbg);
 #endif
             }
@@ -1245,7 +1253,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -1257,7 +1265,7 @@ extern "C" {
         
         for (;;) {
             chr = cmdutl_InputLookAhead(cbp, 1);
-            fRc = WStr_IsWhiteSpaceW(chr);
+            fRc = WStr_IsWhiteSpaceW32(chr);
             if( fRc ) {
                 cmdutl_InputAdvance(cbp, 1);
             }
@@ -1319,13 +1327,13 @@ extern "C" {
                 obj_Release(pStr);
                 return OBJ_NIL;
             }
-            eRc = WStr_AppendCharW(pStr, 1, ' ');
+            eRc = WStr_AppendCharW32(pStr, 1, ' ');
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pStr);
                 return OBJ_NIL;
             }
         }
-        eRc = WStr_AppendCharW(pStr, 1, '\n');
+        eRc = WStr_AppendCharW32(pStr, 1, '\n');
         
         // Return to caller.
         return pStr;
@@ -1463,7 +1471,7 @@ extern "C" {
     
     ERESULT         cmdutl_AppendCharToField(
         CMDUTL_DATA    *this,
-        int32_t        chr
+        W32CHR_T       chr
     )
     {
         
@@ -1587,7 +1595,8 @@ extern "C" {
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_CMDUTL);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&cmdutl_Vtbl);
-        
+        obj_FlagSet(this, OBJ_FLAG_EOF, false);
+
         this->sizeFld = CMDUTL_FIELD_MAX;
         this->pFld = mem_Calloc(this->sizeFld, sizeof(int32_t));
         if (this->pFld == NULL) {
@@ -1773,13 +1782,13 @@ extern "C" {
     //                  I n p u t  A d v a n c e
     //--------------------------------------------------------------
     
-    int32_t         cmdutl_InputAdvance(
-        CMDUTL_DATA      *cbp,
+    W32CHR_T        cmdutl_InputAdvance(
+        CMDUTL_DATA     *cbp,
         uint16_t        numChrs
     )
     {
         uint32_t        i;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1845,25 +1854,25 @@ extern "C" {
     //               I n p u t  L o o k  A h e a d
     //--------------------------------------------------------------
     
-    int32_t         cmdutl_InputLookAhead(
-        CMDUTL_DATA       *cbp,
+    W32CHR_T        cmdutl_InputLookAhead(
+        CMDUTL_DATA     *this,
         uint16_t        num
     )
     {
         uint16_t        idx;
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return -1;
         }
 #endif
         
-        idx = (cbp->curInputs + num - 1) % cbp->sizeInputs;
-        chr = cbp->pInputs[idx];
+        idx = (this->curInputs + num - 1) % this->sizeInputs;
+        chr = this->pInputs[idx];
         
         // Return to caller.
         return chr;
@@ -1877,27 +1886,27 @@ extern "C" {
     //--------------------------------------------------------------
     
     ERESULT         cmdutl_InputNextChar(
-        CMDUTL_DATA      *cbp
+        CMDUTL_DATA     *this
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         // Add the next char to the queue.
-        chr = cmdutl_UnicodeGetc(cbp);
-        cbp->pInputs[cbp->curInputs] = chr;
-        cbp->curInputs = (cbp->curInputs + 1) % cbp->sizeInputs;
+        chr = cmdutl_UnicodeGetc(this);
+        this->pInputs[this->curInputs] = chr;
+        this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1907,7 +1916,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODE_DATA *     cmdutl_ParseFile(
-        CMDUTL_DATA		*cbp
+        CMDUTL_DATA		*this
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
@@ -1915,16 +1924,16 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        TRC_OBJ(cbp,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
         
-        cbp->fileOffset = 0;
-        cmdutl_InputAdvance(cbp, cbp->sizeInputs);
-        pNode = cmdutl_ParseFileObject(cbp);
+        this->fileOffset = 0;
+        cmdutl_InputAdvance(this, this->sizeInputs);
+        pNode = cmdutl_ParseFileObject(this);
         
         // Return to caller.
         return pNode;
@@ -1937,7 +1946,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     cmdutl_ToDebugString(
-        CMDUTL_DATA       *cbp,
+        CMDUTL_DATA     *this,
         int             indent
     )
     {
@@ -1948,28 +1957,28 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
                      "{%p(cmdutl) ",
-                     cbp
+                     this
             );
         AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
-        if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                    cbp->pData,
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -1978,7 +1987,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf( str, sizeof(str), " %p}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;

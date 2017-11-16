@@ -58,19 +58,24 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            u12Array_task_body(
-        void            *pData
+    uint32_t        u12Array_OffsetOf(
+        U12ARRAY_DATA   *this,
+        uint32_t        index
     )
     {
-        //U12ARRAY_DATA  *this = pData;
+        uint32_t        offset = 0;
         
+        offset = ((index - 1) * 3) >> 1;
+   
+        return offset;
     }
-#endif
 
 
 
+    
+    
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -123,12 +128,12 @@ extern "C" {
             if (this) {
                 this = u12Array_Init(this);
                 if (this) {
-                    eRc = arrayExpand_ExpandTo(this->pArray, cBuffer);
+                    eRc = array_Expand(this->pArray, cBuffer);
                     if (ERESULT_FAILED(eRc)) {
                         obj_Release(this);
                         this = OBJ_NIL;
                     }
-                    memmove(arrayExpand_getData(this->pArray), pBuffer, cBuffer);
+                    memmove(array_getData(this->pArray), pBuffer, cBuffer);
                 }
             }
         }
@@ -175,7 +180,7 @@ extern "C" {
         }
 #endif
 
-        size = (arrayExpand_getSize(this->pArray) / 3) * 2;
+        size = (array_getSize(this->pArray) / 3) * 2;
         
         this->eRc = ERESULT_SUCCESS;
         return size;
@@ -391,6 +396,7 @@ extern "C" {
         uint32_t        index
     )
     {
+        ERESULT         eRc;
         uint32_t        offset;         // in bytes
         uint16_t        entry;
         uint8_t         *pData;
@@ -412,10 +418,15 @@ extern "C" {
         // Index according to even or odd index numbers. Each 3 bytes
         // in the array contain two 12-bit entries as 4-bit entities:
         //      e1 e2 | o2 e0 | o0 o1
-        // where e is even addressed cluster number and o is odd addressed
-        // cluster number.
+        // where 'e' is even addressed cluster number and 'o' is odd
+        // addressed cluster number.
         offset = (3 * index) / 2;
-        pData = arrayExpand_Elem(this->pArray, (offset + 1));
+        eRc = array_Expand(this->pArray, (offset + 2));
+        if (ERESULT_FAILED(eRc)) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return 0xFFFF;
+        }
+        pData = array_Ptr(this->pArray, (offset + 1));
         if (NULL == pData) {
             DEBUG_BREAK();
             this->eRc = ERESULT_INVALID_PARAMETER;
@@ -423,7 +434,7 @@ extern "C" {
         }
         if (index & 1) {
             entry  =  (*pData & 0xF0) >> 4;
-            entry |=  ((pData[1+offset] & 0xFF) << 4);
+            entry |=  ((*(pData+1) & 0xFF) << 4);
         }
         else {
             entry  =  (*(pData+1) & 0x0F) << 8;
@@ -472,7 +483,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u12Array_Vtbl);
         
-        this->pArray = arrayExpand_New(1);
+        this->pArray = array_New(1);
 
     #ifdef NDEBUG
     #else
@@ -482,6 +493,7 @@ extern "C" {
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->pArray);
+        BREAK_NOT_BOUNDARY4(sizeof(U12ARRAY_DATA));
     #endif
 
         return this;
@@ -501,6 +513,7 @@ extern "C" {
         uint16_t        value
     )
     {
+        ERESULT         eRc;
         uint32_t        offset;         // in bytes
         uint8_t         *pData;
         
@@ -514,7 +527,7 @@ extern "C" {
         if (index == 0) {
             DEBUG_BREAK();
             this->eRc = ERESULT_INVALID_PARAMETER;
-            return 0xFFFF;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -524,11 +537,16 @@ extern "C" {
         // where e is even addressed cluster number and o is odd addressed
         // cluster number.
         offset = (3 * (index - 1)) / 2;
-        pData = arrayExpand_Elem(this->pArray, (offset + 1));
+        eRc = array_Expand(this->pArray, (offset + 2));
+        if (ERESULT_FAILED(eRc)) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pData = array_Ptr(this->pArray, (offset + 1));
         if (NULL == pData) {
             DEBUG_BREAK();
             this->eRc = ERESULT_INVALID_PARAMETER;
-            return 0xFFFF;
+            return ERESULT_INVALID_PARAMETER;
         }
         if ((index - 1) & 1) {    // odd
             *pData = (*pData & 0x0F) | ((value & 0x000F) << 4);
@@ -540,8 +558,8 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS_FALSE;
-        return this->eRc;
+        this->eRc = ERESULT_SUCCESS;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -580,7 +598,7 @@ extern "C" {
         
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
         j = snprintf(
@@ -606,7 +624,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         j = snprintf(str, sizeof(str), " %p(u12Array)}\n", this);
         AStr_AppendA(pStr, str);

@@ -117,6 +117,4 @@ FOUNDATION_EXPORT const unsigned char libCmnVersionString[];
 #import <libCmn/utf8.h>
 #import <libCmn/wav.h>
 #import <libCmn/WStr.h>
-#import <libCmn/WStrArray.h>
-#import <libCmn/WStrC.h>
 #import <libCmn/xml.h>

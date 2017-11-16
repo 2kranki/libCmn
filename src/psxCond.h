@@ -22,6 +22,11 @@
  *          when a thread has changed something in the program and thus 
  *          wants to wake a sleeping thread waiting on this condition.
  *
+ *          The wait() method can have spurious wake ups. So, it is
+ *          imperative that the condition that is being waited for
+ *          is checked after each wake up and the wait re-entered if
+ *          the conditions have not been met.
+ *
  * Remarks
  *	1.      None for now
  *
@@ -63,6 +68,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <psxMutex.h>
 
 
 #ifndef         PSXCOND_H
@@ -113,8 +119,7 @@ extern "C" {
     
     
     PSXCOND_DATA *     psxCond_New(
-        bool            (*condRoutine)(void *),
-        void            *condData
+        PSXMUTEX_DATA   *pMutex
     );
     
     
@@ -129,18 +134,39 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Wake up all threads waiting on this Condition Variable.
+     @param:    this    psxCond object pointer
+     @return:   If successful, true.  Otherwise, false.
+     @warning:  The mutex provided for this Condition Variable must
+                be locked before this method is called.
+     */
     bool            psxCond_Broadcast(
         PSXCOND_DATA	*this
     );
     
     
+    /*!
+     Initialize the psxCond Object linking the given psxMutex to this condition
+     variable.
+     @param:    this    psxCond object pointer
+     @return:   If successful, a psxCond object which must be released,
+                otherwise OBJ_NIL.
+     @warning: Remember to release the returned psxCond object.
+     */
     PSXCOND_DATA *  psxCond_Init(
         PSXCOND_DATA    *this,
-        bool            (*condRoutine)(void *),
-        void            *condData
+        PSXMUTEX_DATA   *pMutex
     );
 
 
+    /*!
+     Wake up the highest priority thread waiting on this Condition Variable.
+     @param:    this    psxCond object pointer
+     @return:   If successful, true.  Otherwise, false.
+     @warning:  The mutex provided for this Condition Variable must
+                be locked before this method is called.
+     */
     bool            psxCond_Signal(
         PSXCOND_DATA	*this
     );
@@ -168,6 +194,8 @@ extern "C" {
      Wait for the condition routine to return 'true' (ie the condition).
      @param:    this    psxCond object pointer
      @return:   If successful, true is returned. Otherwise, false is returned.
+     @warning:  The mutex provided for this Condition Variable must
+                be locked before this method is called.
      */
     bool            psxCond_Wait(
         PSXCOND_DATA    *this
