@@ -176,7 +176,7 @@ extern "C" {
      returned.
      @param     this    OBJENUM object pointer
      @param     offset  offset of object to return (relative to zero)
-     @param     ppVoid  where the object address should be returned
+     @param     ppObj   where the object address should be returned
      @return    If successful ERESULT_SUCCESS and data returned in ppVoid,
                  otherwise an ERESULT_* error.
      */
@@ -193,11 +193,13 @@ extern "C" {
      past the end, zero will be returned in NumReturned.
      @param     this    OBJENUM object pointer
      @param     arraySize size of ppVoidArray
-     @param     ppVoidArray an array of void pointers which are filled in by this
+     @param     ppObjArray an array of void pointers which are filled in by this
                  this method if any elements are left to enumerate.
-     @return    If successful ERESULT_SUCCESS and data returned in ppVoidArray
+     @param     pNumReturned    where the number of returned objected pointers is
+                                to be put (optional);
+     @return    If successful ERESULT_SUCCESS and data returned in ppObjArray
                  with the number of returned elements in pNumReturned, otherwise
-                 an ERESULT_* error and 0 in NumReturned.
+                 an ERESULT_* error and 0 in pNumReturned.
      */
     ERESULT         objEnum_Next(
         OBJENUM_DATA    *this,

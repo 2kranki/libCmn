@@ -155,7 +155,7 @@ int         test_srcFile_Buffer01(
         
         while (!(cls == -1)) {
             pToken = srcFile_InputLookAhead(pSource, 1);
-            chr = token_getChrW(pToken);
+            chr = token_getChrW32(pToken);
             cls = token_getClass(pToken);
             colNo = token_getColNo(pToken);
             lineNo = token_getLineNo(pToken);
@@ -214,7 +214,7 @@ int         test_srcFile_File(
             if (OBJ_NIL == pToken) {
                 break;
             }
-            chr = token_getChrW(pToken);
+            chr = token_getChrW32(pToken);
             if (-1 == chr) {
                 break;
             }
@@ -270,7 +270,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( (0xA0 == chr) );
         cls = token_getClass(pToken);
         XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == cls) );
@@ -281,7 +281,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('c' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -291,7 +291,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('l' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -301,7 +301,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('a' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -311,7 +311,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('s' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -321,7 +321,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('s' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -331,7 +331,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( (0x2060 == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -341,7 +341,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('a' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -351,7 +351,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('b' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -361,7 +361,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('c' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -371,7 +371,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( (';' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -381,7 +381,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( ('\n' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
@@ -391,7 +391,7 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         XCTAssertTrue( (-1 == chr) );
         cls = token_getClass(pToken);
         XCTAssertTrue( (-1 == cls) );

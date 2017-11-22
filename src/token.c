@@ -94,7 +94,7 @@ extern "C" {
 
 
 
-    TOKEN_DATA *     token_NewCharW(
+    TOKEN_DATA *     token_NewCharW32(
         const
         char            *pFileName,
         uint32_t        lineNo,
@@ -108,7 +108,7 @@ extern "C" {
         // Do initialization.
         
         this = token_Alloc( );
-        this = token_InitCharW(this, pFileName, lineNo, colNo, cls, chr);
+        this = token_InitCharW32(this, pFileName, lineNo, colNo, cls, chr);
         
         // Return to caller.
         return( this );
@@ -230,7 +230,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    W32CHR_T        token_getChrW(
+    W32CHR_T        token_getChrW32(
         TOKEN_DATA      *this
     )
     {
@@ -252,7 +252,7 @@ extern "C" {
     }
     
     
-    bool            token_setChrW(
+    bool            token_setChrW32(
         TOKEN_DATA      *this,
         W32CHR_T        value
     )
@@ -267,7 +267,6 @@ extern "C" {
         
         token_ReleaseDataIfObj(this);
         this->data.type = TOKEN_TYPE_WCHAR;
-        //this->cls = value;
         this->data.wchr[0] = value;
         this->data.wchr[1] = 0;
         
@@ -1193,7 +1192,7 @@ extern "C" {
     }
     
     
-    TOKEN_DATA *     token_InitCharW(
+    TOKEN_DATA *     token_InitCharW32(
         TOKEN_DATA      *this,
         const
         char            *pFileName,
@@ -1213,7 +1212,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        token_setChrW(this, chr);
+        token_setChrW32(this, chr);
         
         return this;
     }
@@ -1521,7 +1520,7 @@ extern "C" {
             return eRc;
         }
         
-        token_setChrW(this, chr);
+        token_setChrW32(this, chr);
         
         return ERESULT_SUCCESS;
     }

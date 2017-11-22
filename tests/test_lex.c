@@ -474,19 +474,19 @@ int         test_lex_Strings01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pWork = token_NewCharW("abc", 1, 1, 'd', 'd');
+        pWork = token_NewCharW32("abc", 1, 1, 'd', 'd');
         eRc = lex_ParseTokenSetup(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pWork);
         pWork = OBJ_NIL;
         
-        pWork = token_NewCharW("abc", 1, 1, 'e', 'e');
+        pWork = token_NewCharW32("abc", 1, 1, 'e', 'e');
         eRc = lex_ParseTokenAppendString(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pWork);
         pWork = OBJ_NIL;
         
-        pWork = token_NewCharW("abc", 1, 1, 'f', 'f');
+        pWork = token_NewCharW32("abc", 1, 1, 'f', 'f');
         eRc = lex_ParseTokenAppendString(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pWork);
@@ -568,8 +568,95 @@ int         test_lex_Strings02(
 
 
 
+int         test_lex_Strings03(
+    const
+    char        *pTestName
+)
+{
+    LEX_DATA        *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    TOKEN_DATA      *pToken;
+    WSTR_DATA       *pStrW;
+    int32_t         cls;
+    TOKEN_DATA      *pWork = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = lex_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = lex_Init( pObj, 3 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pWork = token_NewStrA("abc", 1, 1, 510, "@interface");
+        
+        eRc = lex_ParseTokenSetup(pObj, pWork);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        obj_Release(pWork);
+        pWork = OBJ_NIL;
+        
+        eRc = lex_ParseTokenFinalize(pObj, 512, true);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pToken = lex_getToken(pObj);
+        pStrW = token_getStringW(pToken);
+        XCTAssertFalse( (OBJ_NIL == pObj) );
+        if (pStrW ) {
+            ASTR_DATA           *pStrA = WStr_ToDebugString(pStrW, 0);
+            //fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStrA));
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+            pStrA = WStr_ToChrCon(pStrW);
+            fprintf(stderr, "\tchrcon = \"%s\"\n", AStr_getData(pStrA));
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+            eRc = WStr_CompareA(pStrW, "@interface");
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        }
+        cls = token_getClass(pToken);
+        fprintf(stderr, "\tclass = %d\n", cls);
+        XCTAssertTrue( (512 == cls) );
+
+        
+        pWork = token_NewStrA("abc", 1, 1, 510, "@end");
+        
+        eRc = lex_ParseTokenSetup(pObj, pWork);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        obj_Release(pWork);
+        pWork = OBJ_NIL;
+        
+        eRc = lex_ParseTokenFinalize(pObj, 512, true);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pToken = lex_getToken(pObj);
+        pStrW = token_getStringW(pToken);
+        XCTAssertFalse( (OBJ_NIL == pObj) );
+        if (pStrW ) {
+            ASTR_DATA           *pStrA = WStr_ToDebugString(pStrW, 0);
+            //fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStrA));
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+            pStrA = WStr_ToChrCon(pStrW);
+            fprintf(stderr, "\tchrcon = \"%s\"\n", AStr_getData(pStrA));
+            obj_Release(pStrA);
+            pStrA = OBJ_NIL;
+            eRc = WStr_CompareA(pStrW, "@end");
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        }
+        cls = token_getClass(pToken);
+        fprintf(stderr, "\tclass = %d\n", cls);
+        XCTAssertTrue( (512 == cls) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_cloOpt);
+  TINYTEST_ADD_TEST(test_lex_Strings03,setUp,tearDown);
   TINYTEST_ADD_TEST(test_lex_Strings02,setUp,tearDown);
   TINYTEST_ADD_TEST(test_lex_Strings01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_lex_Number03,setUp,tearDown);

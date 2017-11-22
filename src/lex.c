@@ -699,7 +699,7 @@ extern "C" {
 #endif
         pToken = this->pSrcChrLookAhead(this->pSrcObj,1);
         
-        if(chr == token_getChrW(pToken) ) {
+        if(chr == token_getChrW32(pToken) ) {
             scp = token_Copy(pToken);
             (void)this->pSrcChrAdvance(this->pSrcObj,1);
             return scp;
@@ -769,7 +769,7 @@ extern "C" {
 #endif
         pToken = this->pSrcChrLookAhead(this->pSrcObj,1);
         
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         if((chr >= chrBeg) && (chr <= chrEnd) ) {
             scp = token_Copy(pToken);
             (void)this->pSrcChrAdvance(this->pSrcObj,1);
@@ -809,7 +809,7 @@ extern "C" {
 #endif
         pToken = this->pSrcChrLookAhead(this->pSrcObj,1);
         
-        chr = token_getChrW(pToken);
+        chr = token_getChrW32(pToken);
         while (*pSet) {
             if(chr == *pSet) {
                 scp = token_Copy(pToken);
@@ -853,7 +853,7 @@ extern "C" {
         
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = token_getClass(pInput);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         if ((chr == '\n') || (chr == '\r')) {
             return false;
         }
@@ -969,7 +969,7 @@ extern "C" {
         
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = token_getClass(pInput);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         if ((chr == ending) || (cls == LEX_CLASS_EOF)) {
             return false;
         }
@@ -1086,7 +1086,7 @@ extern "C" {
         
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = token_getClass(pInput);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         
         if(   ((chr >= '0') && (chr <= '9'))
            || ((chr >= 'a') && (chr <= 'f'))
@@ -1145,7 +1145,7 @@ extern "C" {
         
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = token_getClass(pInput);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         
         if( ((chr >= '0') && (chr <= '7')) ) {
             lex_ParseTokenAppendString(this, pInput);
@@ -1205,7 +1205,7 @@ extern "C" {
 #endif
         
         obj_setSize(&this->token, sizeof(TOKEN_DATA));
-        pToken =    token_InitCharW(
+        pToken =    token_InitCharW32(
                         &this->token,
                         NULL,
                         0,
@@ -1268,12 +1268,12 @@ extern "C" {
 #endif
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = token_getClass(pInput);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         
         switch (chr) {
             case '0':
                 pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = token_getChrW(pInput);
+                chr = token_getChrW32(pInput);
                 if ((chr == 'x') || (chr == 'X')) {
                     this->pSrcChrAdvance(this->pSrcObj, 1);
                     if( !lex_ParseDigitsHex(this) ) {
@@ -1299,7 +1299,7 @@ extern "C" {
             case '9':
                 for (;;) {
                     pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if ((chr >= '0') && (chr <= '9')) {
                         lex_ParseTokenAppendString(this, pInput);
                     }
@@ -1321,14 +1321,14 @@ extern "C" {
         
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = token_getClass(pInput);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         if (cls == '.') {
             lex_ParseTokenAppendString(this, pInput);
             this->pSrcChrAdvance(this->pSrcObj, 1);
             for (;;) {
                 pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
                 cls = token_getClass(pInput);
-                chr = token_getChrW(pInput);
+                chr = token_getChrW32(pInput);
                 if ((chr >= '0') && (chr <= '9')) {
                     lex_ParseTokenAppendString(this, pInput);
                     this->pSrcChrAdvance(this->pSrcObj, 1);
@@ -1367,18 +1367,18 @@ extern "C" {
 #endif
         
         pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        chr = token_getChrW(pInput);
+        chr = token_getChrW32(pInput);
         switch (chr) {
             case 'l':
                 lex_ParseTokenAppendString(this, pInput);
                 clsNew = TOKEN_MISC_SL;
                 pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = token_getChrW(pInput);
+                chr = token_getChrW32(pInput);
                 if ('l' == chr) {
                     lex_ParseTokenAppendString(this, pInput);
                     clsNew = TOKEN_MISC_SLL;
                     pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if (('u' == chr) || ('U' == chr)) {
                         lex_ParseTokenAppendString(this, pInput);
                         clsNew = TOKEN_MISC_ULL;
@@ -1398,12 +1398,12 @@ extern "C" {
                 lex_ParseTokenAppendString(this, pInput);
                 clsNew = TOKEN_MISC_SL;
                 pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = token_getChrW(pInput);
+                chr = token_getChrW32(pInput);
                 if ('L' == chr) {
                     lex_ParseTokenAppendString(this, pInput);
                     clsNew = TOKEN_MISC_SLL;
                     pInput = ((LEX_DATA *)this)->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if (('u' == chr) || ('U' == chr)) {
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
                         clsNew = TOKEN_MISC_ULL;
@@ -1424,12 +1424,12 @@ extern "C" {
                 lex_ParseTokenAppendString(this, pInput);
                 clsNew = TOKEN_MISC_UI;
                 pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = token_getChrW(pInput);
+                chr = token_getChrW32(pInput);
                 if ('l' == chr) {
                     lex_ParseTokenAppendString(this, pInput);
                     clsNew = TOKEN_MISC_UL;
                     pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if ('l' == chr) {
                         lex_ParseTokenAppendString(this, pInput);
                         clsNew = TOKEN_MISC_ULL;
@@ -1441,7 +1441,7 @@ extern "C" {
                     lex_ParseTokenAppendString(this, pInput);
                     clsNew = TOKEN_MISC_UL;
                     pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if ('L' == chr) {
                         lex_ParseTokenAppendString(this, pInput);
                         clsNew = TOKEN_MISC_ULL;
@@ -1456,12 +1456,12 @@ extern "C" {
                 lex_ParseTokenAppendString(this, pInput);
                 clsNew = TOKEN_MISC_UI;
                 pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = token_getChrW(pInput);
+                chr = token_getChrW32(pInput);
                 if ('l' == chr) {
                     lex_ParseTokenAppendString(this, pInput);
                     clsNew = TOKEN_MISC_UL;
                     pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if ('l' == chr) {
                         lex_ParseTokenAppendString(this, pInput);
                         clsNew = TOKEN_MISC_ULL;
@@ -1473,7 +1473,7 @@ extern "C" {
                     lex_ParseTokenAppendString(this, pInput);
                     clsNew = TOKEN_MISC_UL;
                     pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = token_getChrW(pInput);
+                    chr = token_getChrW32(pInput);
                     if ('L' == chr) {
                         lex_ParseTokenAppendString(this, pInput);
                         clsNew = TOKEN_MISC_ULL;
@@ -1599,7 +1599,7 @@ extern "C" {
         for (;;) {
             pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
             cls = token_getClass(pInput);
-            chr = token_getChrW(pInput);
+            chr = token_getChrW32(pInput);
             if ( chr == '\n' ) {
                 break;
             }
@@ -1672,7 +1672,7 @@ extern "C" {
         if (!obj_IsFlag(this, LEX_INIT_DONE)) {
             for (i=0; i<this->sizeOutputs; ++i) {
                 pToken = &this->pOutputs[i];
-                token_InitCharW(pToken, "", 1, 1, 0, 0);
+                token_InitCharW32(pToken, "", 1, 1, 0, 0);
             }
             for (i=0; i<this->sizeOutputs; ++i) {
                 lex_TokenNext(this);
@@ -1747,7 +1747,7 @@ extern "C" {
 #else
             for (idx=0; idx<this->sizeOutputs; ++idx) {
                 pToken = &this->pOutputs[idx];
-                token_InitCharW(pToken, "", 1, 1, LEX_CLASS_EOF, 0);
+                token_InitCharW32(pToken, "", 1, 1, LEX_CLASS_EOF, 0);
             }
 #endif
             for (idx=0; idx<this->sizeOutputs; ++idx) {
@@ -1864,7 +1864,7 @@ extern "C" {
         type = token_getType(pToken);
         switch (type) {
             case TOKEN_TYPE_WCHAR:
-                chr = token_getChrW(pToken);
+                chr = token_getChrW32(pToken);
                 if (chr == '\n') {
                     WStr_AppendA(this->pStr, "\\n");
                 }

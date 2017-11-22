@@ -298,6 +298,18 @@ extern "C" {
     );
     
     
+    /*!
+     Zeroes the data in the array and adjust array size if needed.
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error.
+     */
+    ERESULT         array_Zero(
+        ARRAY_DATA      *this,
+        uint32_t        offset,             // in elements (relative to 1)
+        uint32_t        numElems
+    );
+    
+    
 
     
 #ifdef	__cplusplus

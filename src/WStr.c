@@ -557,7 +557,9 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        
+        uint32_t        len = array_getSize((ARRAY_DATA *)this);
+        uint32_t        len2add = array_getSize((ARRAY_DATA *)pOther);
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -567,11 +569,11 @@ extern "C" {
         }
 #endif
 
-        if (array_getSize((ARRAY_DATA *)pOther) > 1) {
+        if (len2add > 1) {
             eRc =   array_InsertData(
                                 (ARRAY_DATA *)this,
-                                array_getSize((ARRAY_DATA *)this),
-                                array_getSize((ARRAY_DATA *)pOther)-1,
+                                len,
+                                (len2add - 1),
                                 array_getData((ARRAY_DATA *)pOther)
                     );
             if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -2456,7 +2458,8 @@ extern "C" {
     )
     {
         uint32_t        lenStr;
-        W32CHR_T        *pData;
+        W32CHR_T        data = 0;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2472,10 +2475,8 @@ extern "C" {
         }
         
         // Insert new EOD char and adjust size.
-        pData  = array_Ptr((ARRAY_DATA *)this, (len + 1));
-        if (pData) {
-            *pData = '\0';
-        }
+        eRc = array_Put((ARRAY_DATA *)this, (len + 1), 1, &data);
+        BREAK_FAILED(eRc);
         array_setSize((ARRAY_DATA *)this, (len + 1));
         
         // Return to caller.

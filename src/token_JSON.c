@@ -233,7 +233,7 @@ extern "C" {
         if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "CHAR")) {
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
-                pToken =    token_NewCharW(
+                pToken =    token_NewCharW32(
                                            pFileName,
                                            lineNo,
                                            colNo,

@@ -17,8 +17,9 @@
  * Remarks
  *	1.      All indices are relative to 1, not 0.
  *  2.      Strings are uint8_t values 0 - 255. 0 is used to denote
- *          the end of the string. UTF-8 should work since it is
- *          greater than 0 for each byte representing a character.
+ *          the end of the string. UTF-8 works since it is greater
+ *          than 0 for each byte representing a character.  W32
+ *          characters are stored as UTF-8.
  *
  * History
  *	06/12/2015 Generated

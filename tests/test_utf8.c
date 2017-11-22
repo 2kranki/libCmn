@@ -32,6 +32,18 @@
 static
 const
 char        *pString1 = "\x01\xC0\x82\xE0\x80\x83\xF8\x80\x80\x84\x00";
+static
+const
+int32_t     string1W32[5] = {0x01, 0x02, 0x03, 0x04, 0};
+static
+const
+char        string1A[5] = {0x01, 0x02, 0x03, 0x04, 0};
+static
+const
+char        string2A[5] = {0x01, 0x02, 0x03, 0x03, 0};
+static
+const
+char        string3A[5] = {0x01, 0x02, 0x03, 0x05, 0};
 
 
 #ifdef XYZZY
@@ -294,8 +306,36 @@ int         test_utf8_FromJSON01(
 
 
 
+int         test_utf8_StrW32_01(
+    const
+    char        *pTestName
+)
+{
+    int32_t     len = 0;
+    int32_t     wrkW32[5];
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    len = utf8_StrLenA(string1A);
+    XCTAssertTrue( (4 == len) );
+    len = utf8_StrLenW32(string1W32);
+    XCTAssertTrue( (4 == len) );
+    len = utf8_StrCmpAW32((const char *)string1A, (const int32_t *)string1W32);
+    XCTAssertTrue( (0 == len) );
+    len = utf8_StrCmpAW32((const char *)string2A, (const int32_t *)string1W32);
+    XCTAssertTrue( (0 > len) );
+    len = utf8_StrCmpAW32((const char *)string3A, (const int32_t *)string1W32);
+    XCTAssertTrue( (0 < len) );
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_utf8);
+  TINYTEST_ADD_TEST(test_utf8_StrW32_01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_FromJSON01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_ToJSON01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_StrOffset01,setUp,tearDown);

@@ -1042,7 +1042,7 @@ extern "C" {
             memmove(
                     array_Ptr(this, (offset + numElems)),
                     array_Ptr(this, offset),
-                    array_OffsetOf(this, (this->size - offset + 1))
+                    array_OffsetOf(this, (this->size - offset + 2))
                     );
         }
         
@@ -1513,7 +1513,63 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                       Z e r o
+    //---------------------------------------------------------------
     
+    ERESULT         array_Zero(
+        ARRAY_DATA      *this,
+        uint32_t        offset,             // in elements (relative to 1)
+        uint32_t        numElems
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef XYZZY
+        if( (offset > this->size) ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (numElems)
+            ;
+        else {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = array_Expand(this, (offset + numElems));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        // Clear the elements.
+        if (this->pArray) {
+            memset(
+                    array_Ptr(this, offset),
+                    '\0',
+                    array_OffsetOf(this, (numElems + 1))
+                    );
+        }
+        
+        if ((offset + numElems - 1) > this->size)
+            this->size = offset + numElems - 1;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+
     
 #ifdef	__cplusplus
 }

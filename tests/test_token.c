@@ -183,7 +183,7 @@ int         test_token_JSON02(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = token_InitCharW(pObj, "abc", 52, 22, 11, 'Z');
+    pObj = token_InitCharW32(pObj, "abc", 52, 22, 11, 'Z');
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -191,7 +191,7 @@ int         test_token_JSON02(
         XCTAssertTrue( (52 == token_getLineNo(pObj)) );
         XCTAssertTrue( (22 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
-        XCTAssertTrue( ('Z' == token_getChrW(pObj)) );
+        XCTAssertTrue( ('Z' == token_getChrW32(pObj)) );
         
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
@@ -205,7 +205,7 @@ int         test_token_JSON02(
         XCTAssertTrue( (52 == token_getLineNo(pToken)) );
         XCTAssertTrue( (22 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
-        XCTAssertTrue( ('Z' == token_getChrW(pObj)) );
+        XCTAssertTrue( ('Z' == token_getChrW32(pObj)) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
         

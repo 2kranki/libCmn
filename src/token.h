@@ -95,6 +95,7 @@ extern "C" {
         TOKEN_TYPE_FLOAT,           // double
         TOKEN_TYPE_INTEGER,         // int64_t
         TOKEN_TYPE_STRTOKEN,        // String Token
+        TOKEN_TYPE_UTF8,            // A string of UTF-8 chars, NUL terminated
         TOKEN_TYPE_WCHAR,           // A single unicode character
         TOKEN_TYPE_WSTRING          // A string of unicode chars, NUL terminated
     } TOKEN_TYPE;
@@ -129,7 +130,7 @@ extern "C" {
     );
     
     
-    TOKEN_DATA *     token_NewCharW(
+    TOKEN_DATA *     token_NewCharW32(
         const
         char            *pFileName,
         uint32_t        lineNo,
@@ -221,11 +222,11 @@ extern "C" {
 
     /* A Character Token is only one character.
      */
-    W32CHR_T        token_getChrW(
+    W32CHR_T        token_getChrW32(
         TOKEN_DATA      *this
     );
     
-    bool            token_setChrW(
+    bool            token_setChrW32(
         TOKEN_DATA      *this,
         W32CHR_T        value
     );
@@ -428,7 +429,7 @@ extern "C" {
         W32CHR_T        chr
     );
     
-    TOKEN_DATA *     token_InitCharW(
+    TOKEN_DATA *     token_InitCharW32(
         TOKEN_DATA      *this,
         const
         char            *pFileName,

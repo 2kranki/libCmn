@@ -982,7 +982,7 @@ extern "C" {
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
         obj_FlagOff(pToken, OBJ_FLAG_INIT);
-        token_InitCharW(
+        token_InitCharW32(
                        pToken,
                        this->pFileName,
                        this->lineNo,

@@ -639,13 +639,27 @@ int         test_wstr_Append(
         eRc = WStr_Append( pObj, pObj2 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-        XCTAssertTrue( (0 == wcscmp(L"abc",WStr_getData(pObj))) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abc")) );
         
         eRc = WStr_Append( pObj, pObj3 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (6 == WStr_getLength(pObj)) );
-        XCTAssertTrue( (0 == wcscmp(L"abcdef",WStr_getData(pObj))) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abcdef")) );
         
+        eRc = WStr_Append( pObj, pObj3 );
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (9 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abcdefdef")) );
+        
+        eRc = WStr_Truncate(pObj, 0);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (0 == WStr_getLength(pObj)) );
+        
+        eRc = WStr_Append( pObj, pObj3 );
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "def")) );
+
         obj_Release(pObj3);
         pObj3 = OBJ_NIL;
         
@@ -885,6 +899,7 @@ int         test_wstr_Trim(
 {
     WSTR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
+    int32_t     chrW32 = 'x';
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -930,6 +945,12 @@ int         test_wstr_Trim(
         XCTAssertTrue( (2 == WStr_getLength(pObj)) );
         eRc = WStr_CompareA( pObj, "bb" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        
+        eRc = WStr_Truncate(pObj, 0);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        eRc = array_Get((ARRAY_DATA *)pObj, 1, 1, &chrW32);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (0 == chrW32) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
