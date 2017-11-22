@@ -138,10 +138,6 @@ extern "C" {
     /*!
      Extract a UTF-8 string from a previously saved UTF-8 JSON String.
      @param     pInputString required pointer to JSON input string
-     @param     ppDataOut   optional pointer to uint32_t which will contain
-                             the number of wide characters in the UTF-8 string
-                             if extraction is successful and this field is
-                             not NULL.
      @param     ppDataOut   optional pointer to a pointer which will contain
                              a NUL-terminated UTF-8 string pointer if
                              extraction is successful and this field is not
@@ -170,7 +166,7 @@ extern "C" {
      objects within it.
      @param     pData   pointer to a NUL-terminated UTF-8 string
      @return    If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+                otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     utf8_DataToJSON(

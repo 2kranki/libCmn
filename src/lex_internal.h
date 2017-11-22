@@ -127,7 +127,7 @@ struct lex_data_s	{
     /*!
      Check for a match with the given character and if it does
      advance the input tokens before returning.
-     @return:   If successful, a token which must be released
+     @return    If successful, a token which must be released
                 with obj_Release(), otherwise OBJ_NIL.
      */
     TOKEN_DATA *    lex_MatchInputChr(
@@ -141,7 +141,7 @@ struct lex_data_s	{
     /*!
      Check for a match with the given token class and if it does
      advance the input tokens before returning.
-     @return:   If successful, a token which must be released
+     @return    If successful, a token which must be released
                 with obj_Release(), otherwise OBJ_NIL.
      */
     TOKEN_DATA *    lex_MatchInputCls(
@@ -156,7 +156,7 @@ struct lex_data_s	{
      Check for a match with the character range (ie [chrBeg..chrEnd]
      and if it does advance the input tokens before returning.
      chrBeg must be <= chrEnd.
-     @return:   If successful, a token which must be released
+     @return    If successful, a token which must be released
                 with obj_Release(), otherwise OBJ_NIL.
      */
     TOKEN_DATA *    lex_MatchInputRange(
@@ -171,8 +171,8 @@ struct lex_data_s	{
      Check for a match with the character set (ie nul-terminated list
      of characters) and if it does advance the input tokens before
      returning.
-     @return:   If successful, a token which must be released
-     with obj_Release(), otherwise OBJ_NIL.
+     @return    If successful, a token which must be released
+                with obj_Release(), otherwise OBJ_NIL.
      */
     TOKEN_DATA *    lex_MatchInputSet(
         LEX_DATA		*this,
@@ -238,7 +238,7 @@ struct lex_data_s	{
      Parse a number of varying formats. The first character of the number
      has already been parsed and appended, but not advanced over. So, we
      can look at it and make decisions based on it.
-     @return:   If successful, LEX_CONSTANT_* class, otherwise 0. Also,
+     @return    If successful, LEX_CONSTANT_* class, otherwise 0. Also,
                  the token string is accumulated.
      */
     uint16_t        lex_ParseNumber(
@@ -250,7 +250,7 @@ struct lex_data_s	{
     /*!
      Append the token data to the parse string and ignore the other
      token properties.
-     @param:    this    LEX object pointer
+     @param     this    LEX object pointer
      @param     pToken  pointer to the token of this phrase which
                          will be appended to the string
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
@@ -265,12 +265,12 @@ struct lex_data_s	{
     /*!
      Finalize the string being built by the parser creating the token
      to be returned.
-     @param:    this    LEX object pointer
+     @param     this    LEX object pointer
      @param     newClass If non-zero, use this class for the token
                          being built.
      @param     fSaveStr If true, the string being built by the parse is saved
                          into the token being built replacing the original string.
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenFinalize(
         LEX_DATA        *this,
@@ -284,12 +284,12 @@ struct lex_data_s	{
      Setup the given token as the beginning of the next parse output
      token (ie First element of the next parse) and initialize the ac-
      cumulation string to the contents of the given token.
-     @param:    this    LEX object pointer
-     @param     pInput  pointer to a token that is used to define the
+     @param     this    LEX object pointer
+     @param     pToken  pointer to a token that is used to define the
                          next parsed output token. The string/char within the
                          token is used as the first char/string of the new
                          parsed token.
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenSetup(
         LEX_DATA        *this,
@@ -300,8 +300,8 @@ struct lex_data_s	{
     /*** @protected ***/
     /*!
      Truncate the parse string accumulated so far.
-     @param:    this    LEX object pointer
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     @param     this    LEX object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenTruncate(
         LEX_DATA        *this
