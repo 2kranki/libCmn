@@ -106,7 +106,12 @@ extern "C" {
     );
     
     
+    FBSI_DATA *     fbsi_New(
+        PATH_DATA       *pFilePath
+    );
     
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***

@@ -74,20 +74,37 @@ extern "C" {
     FBSI_DATA *     fbsi_Alloc(
     )
     {
-        FBSI_DATA       *cbp;
+        FBSI_DATA       *this;
         uint32_t        cbSize = sizeof(FBSI_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
 
+    FBSI_DATA *     fbsi_New(
+        PATH_DATA       *pFilePath
+    )
+    {
+        FBSI_DATA       *this;
+
+        this = fbsi_Alloc( );
+        if (this) {
+            this = fbsi_Init(this, pFilePath);
+        }
+        
+        // Return to caller.
+        return this;
+    }
     
+    
+    
+
 
     //===============================================================
     //                      P r o p e r t i e s

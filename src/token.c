@@ -710,6 +710,7 @@ extern "C" {
         return &zero;
     }
     
+ 
     
     uint16_t        token_getType(
         TOKEN_DATA      *this
@@ -995,7 +996,7 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                eRc = ERESULT_SUCCESS;
                 break;
                 
             default:
@@ -1647,7 +1648,11 @@ extern "C" {
                 
             case TOKEN_TYPE_WSTRING:
                 //AStr_AppendA(pStr, "\"");
-                AStr_AppendW32(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
+                AStr_AppendW32(
+                               pStr,
+                               WStr_getLength(this->data.pObj),
+                               WStr_getData(this->data.pObj)
+                );
                 //AStr_AppendA(pStr, "\"");
                 break;
                 
@@ -1777,6 +1782,58 @@ extern "C" {
         
         return pStr;
     }
+    
+
+    char *          token_ToStringA(
+        TOKEN_DATA      *this
+    )
+    {
+        const
+        W32CHR_T        *pStrW = NULL;
+        char            *pStrA;
+        uint32_t        strLen;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (this->data.type) {
+                
+            case TOKEN_TYPE_WCHAR:
+                pStrW = this->data.wchr;
+                break;
+                
+            case TOKEN_TYPE_WSTRING:
+                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
+                    pStrW = WStr_getData(this->data.pObj);
+                }
+                if (OBJ_IDENT_W32STRC == obj_getType(this->data.pObj)) {
+                    pStrW = W32StrC_getData(this->data.pObj);
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        if (pStrW) {
+            strLen = utf8_W32ToUtf8Str(0, pStrW, 0, NULL);
+            ++strLen;
+            pStrA = mem_Malloc(strLen);
+            if (pStrA) {
+                strLen = utf8_W32ToUtf8Str(0, pStrW, strLen, pStrA);
+            }
+            return pStrA;
+        }
+        
+        return NULL;
+    }
+    
     
 
     //---------------------------------------------------------------

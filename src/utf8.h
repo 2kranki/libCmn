@@ -288,7 +288,7 @@ extern "C" {
     );
     
     
-    /* WCToUtf8() converts the given UNICODE character to a
+    /* W32ToUtf8() converts the given UNICODE character to a
      * NUL-terminated UTF-8 string and returns its length.
      * If pDest is NULL, we simply return the length needed
      * excluding the NUL-terminator.
@@ -300,7 +300,7 @@ extern "C" {
     
     
     /*!
-    WCToUtf8Str() converts an input string to a UTF-8 character
+    W32ToUtf8Str() converts an input string to a UTF-8 character
     string and returns the size of the new string excluding the
     NUL-terminator. If pDest is NULL, we calculate the size of
     area needed including NUL-terminator and return that.

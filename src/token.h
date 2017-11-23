@@ -616,7 +616,22 @@ extern "C" {
     );
 
     
+    /*!
+     Create a string of the token data in string format if possible.
+     This returns just the data, not any other fields such a filename,
+     line or col.
+     @return    If successful, a character string which must be freed
+                using mem_Free(), otherwise NULL.
+     @warning   Remember to release the returned character string using
+                mem_Free();.
+     */
+    char *          token_ToStringA(
+        TOKEN_DATA      *this
+    );
     
+    
+    
+
 #ifdef	__cplusplus
 }
 #endif
