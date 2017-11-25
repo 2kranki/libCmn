@@ -1243,7 +1243,7 @@ extern "C" {
      // Return a method pointer for a string or NULL if not found.
      void        *pMethod = node_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode
-     @param     this    OBJTEST object pointer
+     @param     objId   OBJTEST object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                          for OBJ_QUERYINFO_TYPE_METHOD, this field points to a

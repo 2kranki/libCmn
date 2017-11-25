@@ -65,7 +65,7 @@ extern "C" {
     ****************************************************************/
 
     static
-    int32_t         srcFile_UnicodeGetc(
+    W32CHR_T        srcFile_UnicodeGetc(
         SRCFILE_DATA    *this
     );
     
@@ -73,15 +73,15 @@ extern "C" {
     static
     ERESULT         srcFile_FileGetc(
         SRCFILE_DATA    *this,
-        int32_t         *pChar
+        W32CHR_T        *pChar
     )
     {
-        int32_t         chr;
+        W32CHR_T        chr;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if( !srcFile_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }

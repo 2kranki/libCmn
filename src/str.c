@@ -38,7 +38,7 @@
 
 /* Header File Inclusion
  */
-#include	"str_internal.h"
+#include	<str_internal.h>
 
 
 // Hashing function described in

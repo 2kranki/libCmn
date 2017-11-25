@@ -139,9 +139,9 @@ extern "C" {
     
     /*!
      Set the lock unconditionally.
-     @param:    this    PSXLOCK object pointer
-     @return:   If successful, true is returned. Otherwise, false.
-     @warning:  This will put the thread in an infinite wait until
+     @param     this    PSXLOCK object pointer
+     @return    If successful, true is returned. Otherwise, false.
+     @warning   This will put the thread in an infinite wait until
                 the lock provided for its use.
      */
     bool            psxLock_Lock(
@@ -152,14 +152,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = psxLock_ToDebugString(this,4);
-     @endcode:
-     @param:    this    PSXLOCK object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    PSXLOCK object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     psxLock_ToDebugString(
         PSXLOCK_DATA    *this,

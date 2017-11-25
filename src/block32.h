@@ -174,8 +174,8 @@ extern "C" {
 
     /*!
      Add data to the end of the data area within the block.
-     @param:    this    BLOCK32 object pointer
-     @return:   true if successful, otherwise false.
+     @param     this    BLOCK32 object pointer
+     @return    true if successful, otherwise false.
      */
     bool			block32_AddData(
         BLOCK32_DATA	*this,
@@ -210,14 +210,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = block_ToDebugString(this,4);
-     @endcode:
-     @param:    this    BLOCK32 object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    BLOCK32 object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    block32_ToDebugString(
         BLOCK32_DATA    *this,

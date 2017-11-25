@@ -1008,12 +1008,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = hjson__Assign(this,pOther);
-     @endcode:
-     @param:    this    HJSON object pointer
-     @param:    pOther  a pointer to another HJSON object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    HJSON object pointer
+     @param     pOther  a pointer to another HJSON object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         hjson_Assign(
@@ -1078,13 +1078,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         hjson      *pCopy = hjson_Copy(this);
-     @endcode:
-     @param:    this    HJSON object pointer
-     @return:   If successful, a HJSON object which must be released,
+     @endcode
+     @param     this    HJSON object pointer
+     @return       If successful, a HJSON object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the HJSON object.
+     @warning   Remember to release the returned the HJSON object.
      */
     HJSON_DATA *     hjson_Copy(
         HJSON_DATA       *this

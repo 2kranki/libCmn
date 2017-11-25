@@ -201,13 +201,12 @@ extern "C" {
     /*!
         Convert 16 uint8_t to printable form at a time.
      Example:
-     @code:
+     @code
         uint32_t   strlen = hex_putU8(this, 4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    offset  number to be displayed as the address/offset
-     @param:    input   number to be converted
-     @return:   If successful, ppBuffer is advanced past the outputted chars and
+     @endcode
+     @param     this    HEX object pointer
+     @param     offset  number to be displayed as the address/offset
+     @return    If successful, ppBuffer is advanced past the outputted chars and
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
@@ -259,12 +258,12 @@ extern "C" {
     /*!
      Convert uint8_t to printable form.
      Example:
-     @code:
+     @code
         uint32_t   strlen = hex_putU8A(this, 4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    input   number to be converted
-     @return:   If successful, ppBuffer is advanced past the outputted chars and
+     @endcode
+     @param     this    HEX object pointer
+     @param     input   number to be converted
+     @return    If successful, ppBuffer is advanced past the outputted chars and
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
@@ -288,12 +287,12 @@ extern "C" {
     /*!
      Convert uint16_t to printable form.
      Example:
-     @code:
+     @code
      uint32_t   strlen = hex_putU16A(this, 4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    input   number to be converted
-     @return:   If successful, ppBuffer is advanced past the outputted chars and
+     @endcode
+     @param     this    HEX object pointer
+     @param     input   number to be converted
+     @return    If successful, ppBuffer is advanced past the outputted chars and
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
@@ -317,14 +316,14 @@ extern "C" {
     /*!
      Convert uint32_t (low 24-bits only) to printable form.
      Example:
-     @code:
+     @code
      uint32_t   strlen = hex_putU24A(this, 4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    input   number to be converted
-     @return:   If successful, ppBuffer is advanced past the outputted chars and
-     *pLen is decremented. The value returned is the length of the
-     data put in the buffer.
+     @endcode
+     @param     this    HEX object pointer
+     @param     input   number to be converted
+     @return    If successful, ppBuffer is advanced past the outputted chars and
+                *pLen is decremented. The value returned is the length of the
+                data put in the buffer.
      */
     uint32_t        hex_putU24A(
         HEX_DATA		*this,
@@ -346,12 +345,12 @@ extern "C" {
     /*!
      Convert  to printable form.
      Example:
-     @code:
+     @code
      uint32_t   strlen = hex_putU32A(this, 4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    input   number to be converted
-     @return:   If successful, ppBuffer is advanced past the outputted chars and
+     @endcode
+     @param     this    HEX object pointer
+     @param     input   number to be converted
+     @return    If successful, ppBuffer is advanced past the outputted chars and
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
@@ -375,12 +374,12 @@ extern "C" {
     /*!
      Convert  to printable form.
      Example:
-     @code:
+     @code
      uint32_t   strlen = hex_putU64A(this, 4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    input   number to be converted
-     @return:   If successful, ppBuffer is advanced past the outputted chars and
+     @endcode
+     @param     this    HEX object pointer
+     @param     input   number to be converted
+     @return    If successful, ppBuffer is advanced past the outputted chars and
                 *pLen is decremented. The value returned is the length of the
                 data put in the buffer.
      */
@@ -404,14 +403,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = hex_ToDebugString(this,4);
-     @endcode:
-     @param:    this    HEX object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    HEX object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     hex_ToDebugString(
         HEX_DATA        *this,

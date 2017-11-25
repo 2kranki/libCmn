@@ -112,10 +112,10 @@ extern "C" {
     
     /*!
      Create a new objMethod object from an object pointer and its method name.
-     @param:    pObject Pointer to the object
-     @param:    pMethodA UTF-8 method name which must be included in the objects's
+     @param     pObject Pointer to the object
+     @param     pMethodA UTF-8 method name which must be included in the objects's
                  QueryInfo method.
-     @return:   If successful, a new object, otherwise OBJ_NIL.
+     @return    If successful, a new object, otherwise OBJ_NIL.
      */
     OBJMETHOD_DATA * objMethod_NewObjectA(
         OBJ_ID          pObject,

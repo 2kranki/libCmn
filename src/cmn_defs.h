@@ -391,6 +391,8 @@ extern "C" {
         OBJ_IDENT_TABLE_CLASS,
         OBJ_IDENT_TERNARY,              // Ternary Tree
         OBJ_IDENT_TERNARY_CLASS,
+        OBJ_IDENT_TEXTIN,               // Text Input Class
+        OBJ_IDENT_TEXTIN_CLASS,
         OBJ_IDENT_THREAD,               // Separate Threads with own stack
         OBJ_IDENT_THREAD_CLASS,
         OBJ_IDENT_TIMER,
@@ -707,22 +709,22 @@ typedef struct W32StrC_vtbl_s	{
 
 
 #if defined(__MACOSX_ENV__)
-#	include     <cmn_osx.h>
-#   include     <memOSX.h>
+#	include     <macosx/cmn_osx.h>
+#   include     <macosx/memOSX.h>
 #endif
 #if defined(__WIN32_ENV__)
-#	include     <cmn_win32.h>
-#   include     <memWin32.h>
+#	include     <win32/cmn_win32.h>
+#   include     <win32/memWin32.h>
 #endif
 #if defined(__WIN64_ENV__)
-#	include     <cmn_win64.h>
-#   include     <memWin64.h>
+#	include     <win64/cmn_win64.h>
+#   include     <win64/memWin64.h>
 #endif
 #if defined(__PIC32MX_ENV__)
-#	include    <cmn_pic32mx.h>
+#	include    <pic32mx/cmn_pic32mx.h>
 #endif
 #if defined( __PIC32MZ_ENV__ )
-#	include    <cmn_pic32mz.h>
+#	include    <pic32mz/cmn_pic32mz.h>
 #endif
 
 

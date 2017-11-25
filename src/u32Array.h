@@ -205,14 +205,14 @@ extern "C" {
      Create a string that describes this object and the
      objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = u32Array_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released,
+     @endcode
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     u32Array_ToDebugString(
         U32ARRAY_DATA   *this,

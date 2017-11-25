@@ -125,11 +125,11 @@ extern "C" {
     /*!
      Return the number of blocks in the list.
      Example:
-     @code:
+     @code
         uint32_t cBlocks = blocks_getSize(this);
-     @endcode:
-     @param:    this    BLOCKS object pointer
-     @return:   The amount the number of blocks in the list.
+     @endcode
+     @param     this    BLOCKS object pointer
+     @return    The amount the number of blocks in the list.
      */
     uint32_t        blocks_getSize(
         BLOCKS_DATA     *this
@@ -149,9 +149,9 @@ extern "C" {
 
     /*!
      Create an Enumerator that will enumerate through all the blocks.
-     @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
-     error code.
-     @warning: Remember to release the returned Enumeration object.
+     @return    If successful, valid enumerator. Otherwise, OBJ_NIL.
+                error code.
+     @warning   Remember to release the returned Enumeration object.
      */
     ERESULT         blocks_Enum(
         BLOCKS_DATA     *this,
@@ -187,14 +187,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = blocks_ToDebugString(this,4);
-     @endcode:
-     @param:    this    BLOCKS object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    BLOCKS object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    blocks_ToDebugString(
         BLOCKS_DATA     *this,

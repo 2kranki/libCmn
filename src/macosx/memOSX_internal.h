@@ -38,7 +38,7 @@
 
 
 
-#include        <memOSX.h>
+#include        <macosx/memOSX.h>
 #include        <AStr.h>
 #include        <listdl.h>
 #include        <objArray.h>

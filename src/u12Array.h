@@ -184,7 +184,6 @@ extern "C" {
      Get the data from the array at the specified location.
      @param     this    object pointer
      @param     index   index into the array (relative to 1)
-     @param     data    data to be put into the array
      @return    If successful, the data, otherwise 0xFFFF
      */
     uint16_t        u12Array_Get(

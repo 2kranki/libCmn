@@ -56,7 +56,6 @@
 extern "C" {
 #endif
 
-
 #pragma pack(push, 1)
 struct fbsi_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
@@ -68,7 +67,6 @@ struct fbsi_data_s	{
 //#define FBSI_FLAG_REFRESH  10               // ???
 
     // Common Data
-    ERESULT         eRc;
     uint32_t        bufferSize;             // Buffer Size
     uint32_t        bufferUsed;
     char            *pBuffer;

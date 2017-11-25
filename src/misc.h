@@ -152,8 +152,8 @@ extern "C" {
     
     
     /*! Compute even parity given a value.
-     @param:    value   integer value of which we need the parity for
-     @return:   true if even parity, otherwise false.
+     @param     value   integer value of which we need the parity for
+     @return    true if even parity, otherwise false.
      */
     
     bool            misc_ComputeEvenParity32(
@@ -258,11 +258,11 @@ extern "C" {
      @code:
      ASTR_DATA      *pDesc = misc_ToDebugString(this,4);
      @endcode:
-     @param:    this    MISC object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @param     this    MISC object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
      description, otherwise OBJ_NIL.
-     @warning:  Remember to release the returned AStr object when you are done
+     @warning   Remember to release the returned AStr object when you are done
      with it.
      */
     ASTR_DATA *    misc_ToDebugString(

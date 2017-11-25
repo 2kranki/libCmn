@@ -146,17 +146,17 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = prodcons_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    prodcons object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    PRODCONS object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    prodcons_ToDebugString(
-        PRODCONS_DATA     *this,
+        PRODCONS_DATA   *this,
         int             indent
     );
     

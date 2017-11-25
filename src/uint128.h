@@ -154,9 +154,9 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @param:    this    object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released,
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     uint128_ToDebugString(

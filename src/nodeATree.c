@@ -70,9 +70,9 @@ extern "C" {
 
     /*!
      Calculate First Child index given the parent.
-     @param:    this    nodeATree object pointer
-     @param:    index   parent node index (relative to 1)
-     @return:   If successful, an Node index, otherwise 0.
+     @param     this    nodeATree object pointer
+     @param     index   parent node index (relative to 1)
+     @return    If successful, an Node index, otherwise 0.
      */
     uint32_t        nodeATree_FirstChildIndex(
         NODEATREE_DATA  *this,
@@ -90,9 +90,9 @@ extern "C" {
 
     /*!
      Calculate Parent index given a Child Index.
-     @param:    this    nodeATree object pointer
-     @param:    index   child node index (relative to 1)
-     @return:   If successful, an Node index, otherwise 0.
+     @param     this    nodeATree object pointer
+     @param     index   child node index (relative to 1)
+     @return    If successful, an Node index, otherwise 0.
      */
     uint32_t        nodeATree_ParentIndex(
         NODEATREE_DATA  *this,
@@ -409,12 +409,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = nodeATree__Assign(this,pOther);
-     @endcode:
-     @param:    this    NODEATREE object pointer
-     @param:    pOther  a pointer to another NODEATREE object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    NODEATREE object pointer
+     @param     pOther  a pointer to another NODEATREE object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         nodeATree_Assign(
@@ -477,13 +477,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         nodeATree      *pCopy = nodeATree_Copy(this);
-     @endcode:
-     @param:    this    NODEATREE object pointer
-     @return:   If successful, a NODEATREE object which must be released,
+     @endcode
+     @param     this    NODEATREE object pointer
+     @return    If successful, a NODEATREE object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the NODEATREE object.
+     @warning   Remember to release the returned the NODEATREE object.
      */
     NODEATREE_DATA *     nodeATree_Copy(
         NODEATREE_DATA       *this
@@ -848,14 +848,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = nodeATree_ToDebugString(this,4);
-     @endcode:
-     @param:    this    NODEATREE object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    NODEATREE object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     nodeATree_ToDebugString(
         NODEATREE_DATA      *this,

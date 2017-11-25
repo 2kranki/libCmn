@@ -154,15 +154,15 @@ extern "C" {
     /*!
      Broadcast a message to one or all of the objects registered on
      the message bus except the originator if the originator is identified.
-     @param:    this    MSGBUS object pointer
-     @param:    origin  Token for originater or 0
-     @param:    msgDest If 0, all receivers will get the message.
+     @param     this    MSGBUS object pointer
+     @param     origin  Token for originater or 0
+     @param     msgDest If 0, all receivers will get the message.
                          Otherwise, it is a token previously returned
                          by the registration process and only that
                          receiver will get the message.
-     @param:    msgLen  length of the message
-     @param:    pMsg    Pointer to the message
-     @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
+     @param     msglen  length of the message
+     @param     pMsg    Pointer to the message
+     @return    If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_Broadcast(
         MSGBUS_DATA		*this,
@@ -187,16 +187,16 @@ extern "C" {
     
     /*!
      Add an object to the message bus giving its method for message reception.
-     @param:    this    MSGBUS object pointer
-     @param:    pRcvData Pointer to the receive object which must have a method,
+     @param     this    MSGBUS object pointer
+     @param     pRcvObj Pointer to the receive object which must have a method,
                                void receiver(OBJ_ID, uint16 len, uint8_t *pMsg);
                            in its vtbl. A receiver is registered using the OBJ_ID
                            and the offset of receiver method in the objects vtbl.
-     @param:    pMethodA UTF-8 method name which must be included in the objects's
+     @param     pMethodA UTF-8 method name which must be included in the objects's
                          QueryInfo method.
-     @param:    pToken  an optional token number used to unregister this receiver
+     @param     pToken  an optional token number used to unregister this receiver
                          if needed
-     @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
+     @return    If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_RegisterObjectA(
         MSGBUS_DATA		*this,
@@ -209,14 +209,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = msgBus_ToDebugString(this,4);
-     @endcode:
-     @param:    this    MSGBUS object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    MSGBUS object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    msgBus_ToDebugString(
         MSGBUS_DATA     *this,
@@ -226,10 +226,10 @@ extern "C" {
     
     /*!
      Remove an object from the message bus.
-     @param:    this    MSGBUS object pointer
-     @param:    token   When the object was registered, this token was returned.
+     @param     this    MSGBUS object pointer
+     @param     token   When the object was registered, this token was returned.
                          it is used to identify which object is to be unregistered.
-     @return:   If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
+     @return    If successful, ERESULT_SUCCESS, otherwise and ERESULT_* error.
      */
     ERESULT     msgBus_UnregisterObject(
         MSGBUS_DATA		*this,

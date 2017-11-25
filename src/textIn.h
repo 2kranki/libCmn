@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          CLOOPT Console Transmit Task (cloOpt) Header
+//          TEXTIN Console Transmit Task (textIn) Header
 //****************************************************************
 /*
  * Program
- *			Separate cloOpt (cloOpt)
+ *			Separate textIn (textIn)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate cloOpt to run things without complications
- *          of interfering with the main cloOpt. A cloOpt may be 
- *          called a cloOpt on other O/S's.
+ *          a separate textIn to run things without complications
+ *          of interfering with the main textIn. A textIn may be 
+ *          called a textIn on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal cloOpt. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	06/05/2017 Generated
+ *	11/23/2017 Generated
  */
 
 
@@ -58,8 +55,8 @@
 #include        <AStr.h>
 
 
-#ifndef         CLOOPT_H
-#define         CLOOPT_H
+#ifndef         TEXTIN_H
+#define         TEXTIN_H
 
 
 
@@ -73,25 +70,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef enum cloOpt_type_e {
-        CLOOPT_TYPE_UNKNOWN=0,
-        CLOOPT_TYPE_CSV,
-        CLOOPT_TYPE_NUMBER,
-        CLOOPT_TYPE_PATH,
-        CLOOPT_TYPE_SWITCH,
-    } CLOOPT_TYPE;
-    
+    typedef struct textIn_data_s	TEXTIN_DATA;    // Inherits from OBJ.
 
-    typedef struct cloOpt_data_s	CLOOPT_DATA;    // Inherits from OBJ.
-
-    typedef struct cloOpt_vtbl_s	{
+    typedef struct textIn_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in cloOpt_object.c.
+        // method names to the vtbl definition in textIn_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CLOOPT_DATA *);
-    } CLOOPT_VTBL;
+        //bool        (*pIsEnabled)(TEXTIN_DATA *);
+    } TEXTIN_VTBL;
 
 
 
@@ -108,25 +96,30 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to cloOpt object if successful, otherwise OBJ_NIL.
+     @return    pointer to textIn object if successful, otherwise OBJ_NIL.
      */
-    CLOOPT_DATA *     cloOpt_Alloc(
+    TEXTIN_DATA *     textIn_Alloc(
         void
     );
     
     
-    CLOOPT_DATA *     cloOpt_New(
+    TEXTIN_DATA *     textIn_New(
         void
     );
     
-    
+    TEXTIN_DATA *   textIn_NewFromAStr(
+        ASTR_DATA       *pStr,          // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     cloOpt_getLastError(
-        CLOOPT_DATA		*this
+    ERESULT     textIn_getLastError(
+        TEXTIN_DATA		*this
     );
 
 
@@ -136,40 +129,87 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     cloOpt_Disable(
-        CLOOPT_DATA		*this
+    ERESULT     textIn_Disable(
+        TEXTIN_DATA		*this
     );
 
 
-    ERESULT     cloOpt_Enable(
-        CLOOPT_DATA		*this
+    ERESULT     textIn_Enable(
+        TEXTIN_DATA		*this
     );
 
    
-    CLOOPT_DATA *   cloOpt_Init(
-        CLOOPT_DATA     *this
+    TEXTIN_DATA *  textIn_InitAStr(
+        TEXTIN_DATA     *this,
+        ASTR_DATA       *pStr,        // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
     );
 
+    TEXTIN_DATA *  textIn_InitFile(
+        TEXTIN_DATA     *this,
+        FILE            *pFile,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    TEXTIN_DATA *  textIn_InitPath(
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    TEXTIN_DATA *  textIn_InitU8Array(
+        TEXTIN_DATA     *this,
+        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    TEXTIN_DATA *  textIn_InitWStr(
+        TEXTIN_DATA     *this,
+        WSTR_DATA       *pWStr,         // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
 
-    ERESULT     cloOpt_IsEnabled(
-        CLOOPT_DATA		*this
+    /*! Get the location for the last character received.
+     */
+    ERESULT         textIn_Location(
+        TEXTIN_DATA     *this,
+        const
+        char            **ppPath,
+        uint32_t        *pLineNo,
+        uint16_t        *pColNo
     );
     
  
     /*!
+     Return the next character in the file.
+     @return    If successful, ERESULT_SUCCESS and *pChar contains the next
+                character from the file, otherwise, an ERESULT_* error and
+                *pChar contains EOF(-1).
+     */
+    ERESULT             textIn_NextChar(
+        TEXTIN_DATA         *this,
+        W32CHR_T            *pChar
+    );
+    
+    
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = cloOpt_ToDebugString(this,4);
-     @endcode
-     @param     this    CLOOPT object pointer
+     @code 
+        ASTR_DATA      *pDesc = textIn_ToDebugString(this,4);
+     @endcode 
+     @param     this    TEXTIN object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    cloOpt_ToDebugString(
-        CLOOPT_DATA     *this,
+    ASTR_DATA *    textIn_ToDebugString(
+        TEXTIN_DATA     *this,
         int             indent
     );
     
@@ -180,5 +220,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* CLOOPT_H */
+#endif	/* TEXTIN_H */
 

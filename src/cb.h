@@ -115,10 +115,10 @@ extern "C" {
      of the Circular Buffer.  Round the element size up to a multiple
      of 4 before calculating object size. The total object size is
      limited to <64k.
-     @param:    elemSize the size of one element. This must be a
+     @param     elemSize the size of one element. This must be a
                 mutiple of 4.
-     @param:    size    the number of elements in the Circular Buffer
-     @return:   If successful, a pointer to the new object,
+     @param     size    the number of elements in the Circular Buffer
+     @return    If successful, a pointer to the new object,
                 otherwise OBJ_NIL.
      */
     CB_DATA *      cb_Alloc(
@@ -164,12 +164,9 @@ extern "C" {
      Get the next element from the buffer if available within the given time.
      Normally, this method is called from one thread and Put() from a different
      thread.
-     @param:    this    CB object pointer
-     @param:    pValue  ptr to returned element data area
-     @param:    msWait  the maximum number of milliseconds to wait for
-                        data. 0 means do not wait, -1 (0xFFFFFFFF) means
-                        perform an infinite wait
-     @return:   If successful, true and the element is moved to pValue,
+     @param     this    CB object pointer
+     @param     pValue  ptr to returned element data area
+     @return    If successful, true and the element is moved to pValue,
                 otherwise false.
      */
     bool            cb_Get(
@@ -213,9 +210,9 @@ extern "C" {
      is not available, wait until it is.
      Normally, this method is called from one thread and Get() from a different
      thread.
-     @param:    this    CB object pointer
-     @param:    pValue  ptr to returned element data area
-     @return:   If successful, true and the element is moved to pValue,
+     @param     this    CB object pointer
+     @param     pValue  ptr to returned element data area
+     @return    If successful, true and the element is moved to pValue,
                 otherwise false.
      */
     bool            cb_Put(

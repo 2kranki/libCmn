@@ -335,12 +335,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = audioCW__Assign(this,pOther);
-     @endcode:
-     @param:    this    AUDIOCW object pointer
-     @param:    pOther  a pointer to another AUDIOCW object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    AUDIOCW object pointer
+     @param     pOther  a pointer to another AUDIOCW object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         audioCW_Assign(
@@ -462,13 +462,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         audioCW      *pCopy = audioCW_Copy(this);
-     @endcode:
-     @param:    this    AUDIOCW object pointer
-     @return:   If successful, a AUDIOCW object which must be released,
+     @endcode
+     @param     this    AUDIOCW object pointer
+     @return    If successful, a AUDIOCW object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the AUDIOCW object.
+     @warning   Remember to release the returned the AUDIOCW object.
      */
     AUDIOCW_DATA *  audioCW_Copy(
         AUDIOCW_DATA    *this
@@ -769,14 +769,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = audioCW_ToDebugString(this,4);
-     @endcode:
-     @param:    this    AUDIOCW object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    AUDIOCW object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     audioCW_ToDebugString(
         AUDIOCW_DATA    *this,

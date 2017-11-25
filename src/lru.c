@@ -281,12 +281,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = lru__Assign(this,pOther);
-     @endcode:
-     @param:    this    LRU object pointer
-     @param:    pOther  a pointer to another LRU object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    LRU object pointer
+     @param     pOther  a pointer to another LRU object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         lru_Assign(
@@ -353,13 +353,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         lru      *pCopy = lru_Copy(this);
-     @endcode:
-     @param:    this    LRU object pointer
-     @return:   If successful, a LRU object which must be released,
+     @endcode
+     @param     this    LRU object pointer
+     @return    If successful, a LRU object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the LRU object.
+     @warning   Remember to release the returned the LRU object.
      */
     LRU_DATA *     lru_Copy(
         LRU_DATA       *this
@@ -701,14 +701,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = lru_ToDebugString(this,4);
-     @endcode:
-     @param:    this    LRU object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    LRU object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     lru_ToDebugString(
         LRU_DATA        *this,

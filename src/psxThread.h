@@ -208,12 +208,12 @@ extern "C" {
     
     /*!
      Initialize the Thread Object and set up for execution.
-     @param: this pointer to object data area to be used. Normally, this would
-            point to an object that was allocated using psxThread_Alloc().
-     @param: startRoutine address of the routine to be executed in the thread
-     @param: stackSize the size of the initial stack to be allocated in words. 
+     @param     this pointer to object data area to be used. Normally, this would
+                    point to an object that was allocated using psxThread_Alloc().
+     @param     startRoutine address of the routine to be executed in the thread
+     @param     stackSize the size of the initial stack to be allocated in words.
             Currently, this is only needed for TNEO.
-     @return:   pointer to PSXThread object if successful, otherwise OBJ_NIL.
+     @return    pointer to PSXThread object if successful, otherwise OBJ_NIL.
      */
     PSXTHREAD_DATA * psxThread_Init(
         PSXTHREAD_DATA  *this,
@@ -246,10 +246,10 @@ extern "C" {
      ended and its return value should optionally be stored in the area provided.
      Note that this does not request the thread to end. It simply waits for it to
      end.
-     @param: ppReturn optionally points to an area where the thread's void * return 
-            value will be stored. It may be NULL ignoring the result value of
-            this thread.
-     @return: True if successful, otherwise False.
+     @param     ppReturn optionally points to an area where the thread's void * return
+                    value will be stored. It may be NULL ignoring the result value of
+                    this thread.
+     @return    True if successful, otherwise False.
      */
     bool        psxThread_Join(
         PSXTHREAD_DATA  *this,
@@ -269,7 +269,7 @@ extern "C" {
     
     /*!
      Request the worker thread to stop its execution.
-     @return:   True if successful, otherwise False.
+     @return    True if successful, otherwise False.
      */
     bool        psxThread_Terminate(
         PSXTHREAD_DATA	*this
@@ -279,7 +279,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA * psxThread_ToDebugString(

@@ -368,12 +368,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = lexj__Assign(this,pOther);
-     @endcode:
-     @param:    this    LEXJ object pointer
-     @param:    pOther  a pointer to another LEXJ object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    LEXJ object pointer
+     @param     pOther  a pointer to another LEXJ object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         lexj_Assign(
@@ -438,13 +438,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         lexj      *pCopy = lexj_Copy(this);
-     @endcode:
-     @param:    this    LEXJ object pointer
-     @return:   If successful, a LEXJ object which must be released,
+     @endcode
+     @param     this    LEXJ object pointer
+     @return    If successful, a LEXJ object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the LEXJ object.
+     @warning   Remember to release the returned the LEXJ object.
      */
     LEXJ_DATA *     lexj_Copy(
         LEXJ_DATA       *this
@@ -1363,14 +1363,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = lexj_ToDebugString(this,4);
-     @endcode:
-     @param:    this    LEXJ object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    LEXJ object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     lexj_ToDebugString(
         LEXJ_DATA      *this,

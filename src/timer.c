@@ -234,12 +234,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = timer__Assign(this,pOther);
-     @endcode:
-     @param:    this    TIMER object pointer
-     @param:    pOther  a pointer to another TIMER object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    TIMER object pointer
+     @param     pOther  a pointer to another TIMER object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         timer_Assign(
@@ -304,13 +304,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         timer      *pCopy = timer_Copy(this);
-     @endcode:
-     @param:    this    TIMER object pointer
-     @return:   If successful, a TIMER object which must be released,
+     @endcode
+     @param     this    TIMER object pointer
+     @return    If successful, a TIMER object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the TIMER object.
+     @warning   Remember to release the returned the TIMER object.
      */
     TIMER_DATA *     timer_Copy(
         TIMER_DATA       *this
@@ -666,14 +666,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = timer_ToDebugString(this,4);
-     @endcode:
-     @param:    this    TIMER object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    TIMER object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     timer_ToDebugString(
         TIMER_DATA      *this,

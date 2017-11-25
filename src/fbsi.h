@@ -106,7 +106,7 @@ extern "C" {
     );
     
     
-    FBSI_DATA *     fbsi_New(
+    FBSI_DATA *     fbsi_NewPath(
         PATH_DATA       *pFilePath
     );
     
@@ -133,32 +133,26 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         fbsi_Getc(
-        FBSI_DATA		*this,
-        char            *pChar
-    );
-    
-    
     ERESULT         fbsi_Getwc(
         FBSI_DATA		*this,
         int32_t         *pChar
     );
     
     
-    ERESULT         fbsi_Gets(
-        FBSI_DATA		*this,
-        uint16_t        max,
-        char            *pStr
-    );
-    
-    
-    FBSI_DATA *     fbsi_Init(
+    FBSI_DATA *     fbsi_InitPath(
         FBSI_DATA       *this,
         PATH_DATA       *pFilePath
     );
 
 
-    ERESULT         fbsi_IsAtEOF(
+    FBSI_DATA *     fbsi_InitAStr(
+        FBSI_DATA       *this,
+        ASTR_DATA       *pStr,          // Buffer of file data
+        PATH_DATA       *pFilePath      // Optoinal File Path used for Documentation Purposes
+    );
+    
+    
+    bool            fbsi_IsAtEOF(
         FBSI_DATA		*this
     );
     

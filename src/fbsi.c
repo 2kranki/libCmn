@@ -87,7 +87,7 @@ extern "C" {
 
 
 
-    FBSI_DATA *     fbsi_New(
+    FBSI_DATA *     fbsi_NewPath(
         PATH_DATA       *pFilePath
     )
     {
@@ -95,7 +95,7 @@ extern "C" {
 
         this = fbsi_Alloc( );
         if (this) {
-            this = fbsi_Init(this, pFilePath);
+            this = fbsi_InitPath(this, pFilePath);
         }
         
         // Return to caller.
@@ -332,7 +332,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    FBSI_DATA *   fbsi_Init(
+    FBSI_DATA *   fbsi_InitPath(
         FBSI_DATA       *this,
         PATH_DATA       *pPath
     )
@@ -393,7 +393,7 @@ extern "C" {
     //                      I s  A t  E O F
     //---------------------------------------------------------------
     
-    ERESULT         fbsi_IsAtEOF(
+    bool            fbsi_IsAtEOF(
         FBSI_DATA		*this
     )
     {
@@ -405,11 +405,11 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (!feof(this->pFile)) {
-            return ERESULT_FAILURE_FALSE;
+        if (feof(this->pFile)) {
+            return true;
         }
         
-        return ERESULT_SUCCESS;
+        return false;
     }
     
     
@@ -418,6 +418,18 @@ extern "C" {
     //                          G e t w c
     //---------------------------------------------------------------
     
+    /*!
+     Push the given character onto the stack for retrieval on the next Getc or
+     Getwc.
+     Example:
+     @code
+     ERESULT      eRc = fbsi_Push(pObj,'/');
+     @endcode
+     @param     this    fbsi object pointer
+     @param     chr     character to be pushed
+     @return    If successful, ERESULT_SUCCESS is returned, otherwise an
+                ERESULT error code is returned.
+     */
     ERESULT         fbsi_Push(
         FBSI_DATA		*this,
         int32_t         chr

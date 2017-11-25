@@ -287,12 +287,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = objList__Assign(this,pOther);
-     @endcode:
-     @param:    this    OBJLIST object pointer
-     @param:    pOther  a pointer to another OBJLIST object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    OBJLIST object pointer
+     @param     pOther  a pointer to another OBJLIST object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         objList_Assign(
@@ -359,13 +359,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         objList      *pCopy = objList_Copy(this);
-     @endcode:
-     @param:    this    OBJLIST object pointer
-     @return:   If successful, a OBJLIST object which must be released,
+     @endcode
+     @param     this    OBJLIST object pointer
+     @return    If successful, a OBJLIST object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the OBJLIST object.
+     @warning   Remember to release the returned the OBJLIST object.
      */
     OBJLIST_DATA *     objList_Copy(
         OBJLIST_DATA       *this
@@ -730,11 +730,11 @@ extern "C" {
      @code:
         ASTR_DATA      *pDesc = objList_ToDebugString(this,4);
      @endcode:
-     @param:    this    OBJLIST object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @param     this    OBJLIST object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     objList_ToDebugString(
         OBJLIST_DATA      *this,

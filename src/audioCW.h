@@ -159,9 +159,9 @@ extern "C" {
     
     /*!
      Checks the given character to see if it is valid for CW.
-     @param:    chr     the character to be checked
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
-     ERESULT_* Error Code.
+     @param     chr     the character to be checked
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* Error Code.
      */
     ERESULT         audioCW_IsValidW32(
         uint32_t        chr
@@ -234,14 +234,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = audioCW_ToDebugString(this,4);
-     @endcode:
-     @param:    this    AUDIOCW object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    AUDIOCW object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    audioCW_ToDebugString(
         AUDIOCW_DATA    *this,

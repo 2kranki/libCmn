@@ -383,18 +383,18 @@ extern "C" {
      // Return a method pointer for a string or NULL if not found.
      void        *pMethod = msgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode
-     @param     this    OBJTEST object pointer
+     @param     objId   OBJTEST object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-     for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
-     character string which represents the method name without
-     the object name, "msgData", prefix,
-     for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-     address of the method to be found.
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                        character string which represents the method name without
+                        the object name, "msgData", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
-     OBJ_QUERYINFO_TYPE_INFO: info pointer,
-     OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-     OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
     void *          execArray_QueryInfo(
         OBJ_ID          objId,

@@ -173,12 +173,11 @@ extern "C" {
     
     
     /*!
-     @param:    pLen    buffer len ptr (len must be greater than 0)
-     @param:    ppBuffer buffer ptr (12 bytes required minimum)
-     @return:
-                if successful, buffer will contain ascii representation of number
-                with leading zeros and trailing NUL char. First byte will be '-'
-                for negative value or ' '.
+     If successful, buffer will contain ascii representation of number
+     with leading zeros and trailing NUL char. First byte will be '-'
+     for negative value or ' '.
+     @param     pLen    buffer len ptr (len must be greater than 0)
+     @param     ppBuffer buffer ptr (12 bytes required minimum)
      */
     void            dec_putInt32A(
         int32_t			input,
@@ -195,12 +194,11 @@ extern "C" {
     
     
     /*!
-     @param:    pLen    buffer len ptr (len must be greater than 0)
-     @param:    ppBuffer buffer ptr (22 bytes required minimum)
-     @return:
-                if successful, buffer will contain ascii representation of number
-                with leading zeros and trailing NUL char. First byte will be '-'
-                for negative value or ' '.
+     If successful, buffer will contain ascii representation of number
+     with leading zeros and trailing NUL char. First byte will be '-'
+     for negative value or ' '.
+     @param     pLen    buffer len ptr (len must be greater than 0)
+     @param     ppBuffer buffer ptr (22 bytes required minimum)
      */
     void            dec_putInt64A(
         int64_t			input,
@@ -212,11 +210,10 @@ extern "C" {
     /*!
      Format an int16_t with or without leading zeroes and with an implied
      decimal point if needed.
-     @param:    pLen    buffer len ptr (len must be greater than 0)
-     @param:    ppBuffer buffer ptr (11 bytes required minimum)
-     @return:
-     if successful, buffer will contain ascii representation of number
-     with leading zeros and trailing NUL char.
+     @param     pLen    buffer len ptr (len must be greater than 0)
+     @param     ppBuffer buffer ptr (11 bytes required minimum)
+     @return    If successful, buffer will contain ascii representation of number
+                with leading zeros and trailing NUL char.
      */
     bool            dec_putInt64DecA(
         int64_t         input,
@@ -249,11 +246,10 @@ extern "C" {
     
 
     /*!
-     @param:    pLen    buffer len ptr (len must be greater than 0)
-     @param:    ppBuffer buffer ptr (11 bytes required minimum)
-     @return:
-                if successful, buffer will contain ascii representation of number
-                with leading zeros and trailing NUL char.
+     If successful, buffer will contain ascii representation of number
+     with leading zeros and trailing NUL char.
+     @param     pLen    buffer len ptr (len must be greater than 0)
+     @param     ppBuffer buffer ptr (11 bytes required minimum)
      */
     void            dec_putUint32A(
         uint32_t		input,
@@ -270,11 +266,10 @@ extern "C" {
     
     
     /*!
-     @param:    pLen    buffer len ptr (len must be greater than 0)
-     @param:    ppBuffer buffer ptr (21 bytes required minimum)
-     @return:
-                if successful, buffer will contain ascii representation of number
-                with leading zeros and trailing NUL char.
+     If successful, buffer will contain ascii representation of number
+     with leading zeros and trailing NUL char.
+     @param     pLen    buffer len ptr (len must be greater than 0)
+     @param     ppBuffer buffer ptr (21 bytes required minimum)
      */
     void            dec_putUint64A(
         uint64_t        input,
@@ -355,14 +350,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = dec_ToDebugString(this,4);
-     @endcode:
-     @param:    this    DEC object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    DEC object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    dec_ToDebugString(
         DEC_DATA     *this,

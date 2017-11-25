@@ -184,16 +184,16 @@ extern "C" {
      will be added to the LRU cache possibly bumping out the oldest sector
      if the LRU cache was full.
      Example:
-     @code:
+     @code
         ERESULT  eRc = lru_Read(this, 4, &buffer[0]);
         if (!ERESULT_FAILED(eRc)) {
             // Process data here...
         }
-     @endcode:
-     @param:    this    LRU object pointer
-     @param:    lsn     logical sector number
-     @param:    pBuffer pointer to the buffer of sector size bytes or larger
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     @endcode
+     @param     this    LRU object pointer
+     @param     lsn     logical sector number
+     @param     pBuffer pointer to the buffer of sector size bytes or larger
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         lru_Read(
@@ -206,14 +206,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = lru_ToDebugString(this,4);
-     @endcode:
-     @param:    this    LRU object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    LRU object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    lru_ToDebugString(
         LRU_DATA        *this,
@@ -226,17 +226,17 @@ extern "C" {
      The sector will be added to the LRU cache possibly bumping out 
      the oldest sector if the LRU cache was full.
      Example:
-     @code:
+     @code
          ERESULT  eRc = lru_Write(this, 4, &buffer[0]);
          if (ERESULT_FAILED(eRc)) {
             // Process error here...
          }
-     @endcode:
-     @param:    this    LRU object pointer
-     @param:    lsn     logical sector number
-     @param:    pBuffer pointer to the buffer of sector size bytes or larger
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-     error code.
+     @endcode
+     @param     this    LRU object pointer
+     @param     lsn     logical sector number
+     @param     pBuffer pointer to the buffer of sector size bytes or larger
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
     ERESULT         lru_Write(
         LRU_DATA        *this,

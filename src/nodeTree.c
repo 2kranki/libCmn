@@ -179,10 +179,10 @@ extern "C" {
      Visit the root (or current node) then visit each child recursively 
      recording the visits in the given array. Preorder visitation is
      also known as a depth-first traversal.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    index   Current Node Index
-     @param:    pArray  NODEARRAY Pointer where visits will be recorded
-     @return:   If successful, ERESULT_SUCCESS otherwise an ERESULT_*
+     @param     this    NODETREE_DATA object pointer
+     @param     index   Current Node Index
+     @param     pArray  NODEARRAY Pointer where visits will be recorded
+     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
      error.
      */
     ERESULT         nodeTree_UpDownNodePre(
@@ -409,14 +409,14 @@ extern "C" {
     /*!
      Visit the root (or current node) then visit each child recursively.
      This is also known as a depth-first traversal.
-     @param:    this    NODETREE_DATA object pointer
-     @param:    pVisitor Function pointer to the routine called as each
-     node is visited
-     @param:    pObject Object Pointer
-     @param:    index   Current Node Index
-     @param:    indent  Current Level Indent
-     @return:   If successful, ERESULT_SUCCESS otherwise an ERESULT_*
-     error.
+     @param     this    NODETREE_DATA object pointer
+     @param     pVisitor Function pointer to the routine called as each
+                        node is visited
+     @param     pObject Object Pointer
+     @param     index   Current Node Index
+     @param     indent  Current Level Indent
+     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
+                error.
      */
     ERESULT         nodeTree_NodePreorder(
         NODETREE_DATA	*this,

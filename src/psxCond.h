@@ -136,9 +136,9 @@ extern "C" {
 
     /*!
      Wake up all threads waiting on this Condition Variable.
-     @param:    this    psxCond object pointer
-     @return:   If successful, true.  Otherwise, false.
-     @warning:  The mutex provided for this Condition Variable must
+     @param     this    psxCond object pointer
+     @return    If successful, true.  Otherwise, false.
+     @warning   The mutex provided for this Condition Variable must
                 be locked before this method is called.
      */
     bool            psxCond_Broadcast(
@@ -149,10 +149,10 @@ extern "C" {
     /*!
      Initialize the psxCond Object linking the given psxMutex to this condition
      variable.
-     @param:    this    psxCond object pointer
-     @return:   If successful, a psxCond object which must be released,
+     @param     this    psxCond object pointer
+     @return    If successful, a psxCond object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned psxCond object.
+     @warning   Remember to release the returned psxCond object.
      */
     PSXCOND_DATA *  psxCond_Init(
         PSXCOND_DATA    *this,
@@ -162,9 +162,9 @@ extern "C" {
 
     /*!
      Wake up the highest priority thread waiting on this Condition Variable.
-     @param:    this    psxCond object pointer
-     @return:   If successful, true.  Otherwise, false.
-     @warning:  The mutex provided for this Condition Variable must
+     @param     this    psxCond object pointer
+     @return    If successful, true.  Otherwise, false.
+     @warning   The mutex provided for this Condition Variable must
                 be locked before this method is called.
      */
     bool            psxCond_Signal(
@@ -175,14 +175,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = psxCond_ToDebugString(pObj,4);
-     @endcode:
-     @param:    this    psxCond object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    psxCond object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     psxCond_ToDebugString(
         PSXCOND_DATA    *this,
@@ -192,9 +192,9 @@ extern "C" {
     
     /*!
      Wait for the condition routine to return 'true' (ie the condition).
-     @param:    this    psxCond object pointer
-     @return:   If successful, true is returned. Otherwise, false is returned.
-     @warning:  The mutex provided for this Condition Variable must
+     @param     this    psxCond object pointer
+     @return    If successful, true is returned. Otherwise, false is returned.
+     @warning   The mutex provided for this Condition Variable must
                 be locked before this method is called.
      */
     bool            psxCond_Wait(

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'prodcons'
-//	Generated 06/27/2016 23:55:42
+//	Class Object Metods and Tables for 'textIn'
+//	Generated 11/23/2017 23:46:18
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -32,8 +33,8 @@
 
 
 
-#define			PRODCONS_OBJECT_C	    1
-#include        "prodcons_internal.h"
+#define			TEXTIN_OBJECT_C	    1
+#include        <textIn_internal.h>
 
 
 
@@ -41,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct prodcons_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct textIn_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct prodcons_class_data_s PRODCONS_CLASS_DATA;
+typedef struct textIn_class_data_s TEXTIN_CLASS_DATA;
 
 
 
@@ -62,22 +62,22 @@ typedef struct prodcons_class_data_s PRODCONS_CLASS_DATA;
 
 static
 const
-OBJ_INFO        prodcons_Info;            // Forward Reference
+OBJ_INFO        textIn_Info;            // Forward Reference
 
 
 
-OBJ_ID          prodcons_Class(
+OBJ_ID          textIn_Class(
     void
 );
 
 
 
 static
-bool            prodcons_ClassIsKindOf(
+bool            textIn_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PRODCONS_CLASS == classID) {
+    if (OBJ_IDENT_TEXTIN_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -92,15 +92,15 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_PRODCONS_CLASS;
+    return OBJ_IDENT_TEXTIN_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&prodcons_Info,
-    prodcons_ClassIsKindOf,
+	&textIn_Info,
+    textIn_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
@@ -115,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-PRODCONS_CLASS_DATA  prodcons_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PRODCONS_CLASS, 0, 1},
+TEXTIN_CLASS_DATA  textIn_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_TEXTIN_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            prodcons_IsKindOf(
+bool            textIn_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PRODCONS == classID) {
+    if (OBJ_IDENT_TEXTIN == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -139,48 +139,51 @@ bool            prodcons_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            prodcons_Dealloc(
+void            textIn_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          prodcons_Class(
+OBJ_ID          textIn_Class(
     void
 )
 {
-    return (OBJ_ID)&prodcons_ClassObj;
+    return (OBJ_ID)&textIn_ClassObj;
 }
 
 
 static
-uint16_t		prodcons_WhoAmI(
+uint16_t		textIn_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_PRODCONS;
+    return OBJ_IDENT_TEXTIN;
 }
 
 
 const
-PRODCONS_VTBL     prodcons_Vtbl = {
-	&prodcons_Info,
-    prodcons_IsKindOf,
-    obj_RetainStandard,
-    obj_ReleaseStandard,
-    prodcons_Dealloc,
-    prodcons_Class,
-    prodcons_WhoAmI,
-    NULL,           // (P_OBJ_QUERYINFO)prodcons_QueryInfo,
-    (P_OBJ_TOSTRING)prodcons_ToDebugString,
-    NULL,           // prodcons_Enable,
-    NULL,           // prodcons_Disable,
-    NULL,			// (P_OBJ_ASSIGN)prodcons_Assign,
-    NULL,			// (P_OBJ_COMPARE)prodcons_Compare,
-    NULL, 			// (P_OBJ_PTR)prodcons_Copy,
-    NULL, 			// (P_OBJ_HASH)prodcons_Hash,
+TEXTIN_VTBL     textIn_Vtbl = {
+    {
+        &textIn_Info,
+        textIn_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        textIn_Dealloc,
+        textIn_Class,
+        textIn_WhoAmI,
+        (P_OBJ_QUERYINFO)textIn_QueryInfo,
+        (P_OBJ_TOSTRING)textIn_ToDebugString,
+        NULL,			// textIn_Enable,
+        NULL,			// textIn_Disable,
+        NULL,			// (P_OBJ_ASSIGN)textIn_Assign,
+        NULL,			// (P_OBJ_COMPARE)textIn_Compare,
+        NULL, 			// (P_OBJ_PTR)textIn_Copy,
+        NULL 			// (P_OBJ_HASH)textIn_Hash,
+    },
     // Put other object method names below this.
     // Properties:
     // Methods:
+    //textIn_IsEnabled,
  
 };
 
@@ -188,12 +191,12 @@ PRODCONS_VTBL     prodcons_Vtbl = {
 
 static
 const
-OBJ_INFO        prodcons_Info = {
-    "prodcons",
-    "Producer/Consumer Pattern",
-    (OBJ_DATA *)&prodcons_ClassObj,
+OBJ_INFO        textIn_Info = {
+    "textIn",
+    "Text Input",
+    (OBJ_DATA *)&textIn_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&prodcons_Vtbl
+    (OBJ_IUNKNOWN *)&textIn_Vtbl
 };
 
 

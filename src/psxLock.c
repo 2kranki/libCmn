@@ -175,12 +175,12 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
+     @code
         ERESULT eRc = psxLock__Assign(this,pOther);
-     @endcode:
-     @param:    this    PSXLOCK object pointer
-     @param:    pOther  a pointer to another PSXLOCK object
-     @return:   If successful, ERESULT_SUCCESS otherwise an 
+     @endcode
+     @param     this    PSXLOCK object pointer
+     @param     pOther  a pointer to another PSXLOCK object
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
     ERESULT         psxLock_Assign(
@@ -245,13 +245,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code:
+     @code
         psxLock      *pCopy = psxLock_Copy(this);
-     @endcode:
-     @param:    this    PSXLOCK object pointer
-     @return:   If successful, a PSXLOCK object which must be released,
+     @endcode
+     @param     this    PSXLOCK object pointer
+     @return    If successful, a PSXLOCK object which must be released,
                 otherwise OBJ_NIL.
-     @warning: Remember to release the returned the PSXLOCK object.
+     @warning   Remember to release the returned the PSXLOCK object.
      */
     PSXLOCK_DATA *     psxLock_Copy(
         PSXLOCK_DATA       *this
@@ -497,14 +497,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = psxLock_ToDebugString(this,4);
-     @endcode:
-     @param:    this    PSXLOCK object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    PSXLOCK object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     psxLock_ToDebugString(
         PSXLOCK_DATA      *this,
