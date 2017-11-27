@@ -91,7 +91,7 @@ int         test_fbs_OpenClose(
     
     pObjI = fbsi_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObjI) );
-    pObjI = fbsi_Init( pObjI, pFilePath );
+    pObjI = fbsi_InitPath( pObjI, pFilePath );
     XCTAssertFalse( (OBJ_NIL == pObjI) );
     if (pObjI) {
         obj_Release(pObjI);

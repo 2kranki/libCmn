@@ -97,7 +97,8 @@ struct textIn_data_s	{
     uint16_t        colNo;              /* Current Column Number */
     uint16_t        tabSize;            /* Tab Spacing Size */
     size_t          fileOffset;
-    bool            fStripCR;
+    uint8_t         fStripCR;
+    uint8_t         rsvd8_1[3];
     PATH_DATA       *pPath;
     const
     char            *pPathA;

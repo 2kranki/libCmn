@@ -89,8 +89,60 @@ int         test_textIn_OpenClose(
 
 
 
+int             test_textIn_Input01(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    W32CHR_T        chr = 0;
+    ERESULT         eRc;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pStr = AStr_NewA("abc\n");
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    pObj = textIn_NewFromAStr(pStr, OBJ_NIL, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = textIn_NextChar(pObj, &chr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (chr == 'a') );
+
+        eRc = textIn_NextChar(pObj, &chr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (chr == 'b') );
+        
+        eRc = textIn_NextChar(pObj, &chr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (chr == 'c') );
+        
+        eRc = textIn_NextChar(pObj, &chr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (chr == '\n') );
+        
+        eRc = textIn_NextChar(pObj, &chr);
+        TINYTEST_TRUE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (chr == EOF) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_textIn);
+    TINYTEST_ADD_TEST(test_textIn_Input01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_textIn_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

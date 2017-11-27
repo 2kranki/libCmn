@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (11/16/2017 15:14:18.000)
+# (11/27/2017 16:15:21.000)
 
 
 LIBNAM=libCmn
@@ -129,6 +129,7 @@ OBJS = $(OBJS) $(OBJDIR)\szHash.obj $(OBJDIR)\szHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szTbl.obj $(OBJDIR)\szTbl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\table.obj $(OBJDIR)\table_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ternary.obj $(OBJDIR)\ternary_object.obj
+OBJS = $(OBJS) $(OBJDIR)\textIn.obj $(OBJDIR)\textIn_object.obj
 OBJS = $(OBJS) $(OBJDIR)\timer.obj $(OBJDIR)\timer_object.obj
 OBJS = $(OBJS) $(OBJDIR)\token.obj $(OBJDIR)\token_object.obj
 OBJS = $(OBJS) $(OBJDIR)\tokenList.obj $(OBJDIR)\tokenList_object.obj
@@ -1055,6 +1056,14 @@ TESTS = $(TESTS) test_ternary
 
 test_ternary:
 	$(CC) $(CFLAGS) /Itests tests\test_ternary.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_textIn
+
+test_textIn:
+	$(CC) $(CFLAGS) /Itests tests\test_textIn.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

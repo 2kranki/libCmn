@@ -646,14 +646,26 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((TEXTIN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        if ((this->type == TEXTIN_TYPE_ASTR) && (this->pAStr)) {
+            obj_Release(this->pAStr);
+            this->pAStr = OBJ_NIL;
         }
-#endif
-
-        textIn_setPath(this, OBJ_NIL);
-
+        
+        if ((this->type == TEXTIN_TYPE_FILE) && (this->pFile)) {
+            fclose(this->pFile);
+            this->pFile = NULL;
+        }
+        
+        if ((this->type == TEXTIN_TYPE_U8ARRAY) && (this->pU8Array)) {
+            obj_Release(this->pU8Array);
+            this->pU8Array = OBJ_NIL;
+        }
+        
+        if ((this->type == TEXTIN_TYPE_WSTR) && (this->pWStr)) {
+            obj_Release(this->pWStr);
+            this->pWStr = OBJ_NIL;
+        }
+        
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -822,7 +834,7 @@ extern "C" {
         }
         
         // Open the file.
-        this->type = OBJ_IDENT_ASTR;
+        this->type = TEXTIN_TYPE_ASTR;
         this->pAStr = pStr;
         this->flags &= ~FLG_EOF;
         this->flags |= FLG_OPN;
@@ -856,7 +868,7 @@ extern "C" {
         }
         
         // Open the file.
-        this->type = OBJ_IDENT_FILE;
+        this->type = TEXTIN_TYPE_FILE;
         this->pFile = pFile;
         this->flags &= ~FLG_EOF;
         this->flags |= FLG_OPN;
@@ -891,7 +903,7 @@ extern "C" {
         }
         
         // Open the file.
-        this->type = OBJ_IDENT_FILE;
+        this->type = TEXTIN_TYPE_FILE;
         pszFileName = path_CStringA(pFilePath);
         if (pszFileName) {
             this->pFile = fopen( pszFileName, "r" );
@@ -945,7 +957,7 @@ extern "C" {
         }
         
         // Open the file.
-        this->type = OBJ_IDENT_U8ARRAY;
+        this->type = TEXTIN_TYPE_U8ARRAY;
         this->pU8Array = pBuffer;
         this->flags &= ~FLG_EOF;
         this->flags |= FLG_OPN;
@@ -982,7 +994,7 @@ extern "C" {
         }
         
         // Open the file.
-        this->type = OBJ_IDENT_WSTR;
+        this->type = TEXTIN_TYPE_WSTR;
         this->pWStr = pWStr;
         this->flags &= ~FLG_EOF;
         this->flags |= FLG_OPN;
@@ -1136,6 +1148,8 @@ extern "C" {
         // Return to caller.
         if (pChar)
             *pChar = chr;
+        if (chr == EOF)
+            eRc = ERESULT_DATA_NOT_FOUND;
         return eRc;
     }
     

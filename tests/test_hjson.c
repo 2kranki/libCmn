@@ -373,7 +373,7 @@ int             test_hjson_File01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA("/Users/bob/git/libCan/other/pic32mx/can.json.txt");
+    pPath = path_NewA("/Users/bob/Support/testFiles/test_hjson_01.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
     pObj = hjson_NewFromPath(pPath, 4);
@@ -422,7 +422,7 @@ int             test_hjson_File02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pInput = fopen("/Users/bob/git/libCan/other/pic32mx/can.json.txt", "r");
+    pInput = fopen("/Users/bob/Support/testFiles/test_hjson_02.txt", "r");
     XCTAssertFalse( (OBJ_NIL == pInput) );
     
     pObj = hjson_NewFromFile( pInput, 4 );

@@ -150,7 +150,7 @@
         "scanstring.c",
         "scanwhite.c",
         "shellSortPtrs.c",
-        "srcLoc_JSON.c"
+        "srcLoc_JSON.c",
         "str.c",
         "token_JSON.c",
         "utf8_JSON.c",
@@ -189,7 +189,7 @@
         "test_blocks.c":null,
         "test_bptree.c":null,
         "test_btp.c":null,
-        "test_cb.c":[objTest.c,objTest_object.c],
+        "test_cb.c":[objTest.c, objTest_object.c],
         "test_cb16.c":null,
         "test_cb32.c":null,
         "test_cfa.c":null,

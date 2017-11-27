@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (11/16/2017 15:14:20.000)
+# (11/27/2017 16:15:23.000)
 
 
 LIBNAM=libCmn
@@ -1188,6 +1188,18 @@ $(OBJDIR)/ternary_object.o: $(SRCDIR)/ternary_object.c
 
 
 
+OBJS += $(OBJDIR)/textIn.o $(OBJDIR)/textIn_object.o
+
+
+$(OBJDIR)/textIn.o: $(SRCDIR)/textIn.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/textIn_object.o: $(SRCDIR)/textIn_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/timer.o $(OBJDIR)/timer_object.o
 
 
@@ -2250,6 +2262,13 @@ TESTS += test_ternary
 
 test_ternary:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ternary.c 
+	$(OBJDIR)/$(@F)
+
+
+TESTS += test_textIn
+
+test_textIn:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_textIn.c 
 	$(OBJDIR)/$(@F)
 
 

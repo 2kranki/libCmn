@@ -52,7 +52,6 @@ int         tearDown(
 
     
     trace_SharedReset( ); 
-    mem_Dump( );
     mem_Release( );
     
     return 1; 
@@ -128,6 +127,8 @@ int         test_path_DateLastUpdated(
     uint32_t        index;
     DATETIME_DATA   *pTime = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStrA;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = path_NewA("/Users/bob/Support/testFiles/test_ebcdic.txt");
@@ -141,8 +142,20 @@ int         test_path_DateLastUpdated(
         if (pTime) {
             pStr = dateTime_ToString(pTime);
             if (pStr) {
-                fprintf(stderr, "\tDate = \"%s\"\n", AStr_getData(pStr));
-                XCTAssertTrue( (0 == strcmp(" 4/ 3/2000  1:37:14.000", AStr_getData(pStr))) );
+                pStrA = AStr_getData(pStr);
+                fprintf(stderr, "\tDate = \"%s\"\n", pStrA);
+                //XCTAssertTrue( (0 == strcmp(" 4/ 3/2000  1:37:14.000", AStr_getData(pStr))) );
+                XCTAssertTrue( ((*pStrA == ' ') || (*pStrA == '1')) );
+                ++pStrA;
+                XCTAssertTrue( ((*pStrA >= '0') && (*pStrA <= '9')) );
+                ++pStrA;
+                XCTAssertTrue( (*pStrA == '/') );
+                ++pStrA;
+                XCTAssertTrue( ((*pStrA == ' ') || ((*pStrA >= '1') && (*pStrA <= '3'))) );
+                ++pStrA;
+                XCTAssertTrue( ((*pStrA >= '0') && (*pStrA <= '9')) );
+                ++pStrA;
+                XCTAssertTrue( (*pStrA == '/') );
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
