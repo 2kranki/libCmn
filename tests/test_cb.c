@@ -138,8 +138,18 @@ int         tearDown(
     
     trace_SharedReset( ); 
     fprintf(stderr, "\ttrace_SharedReset()\n");
-    mem_Dump( );
-    fprintf(stderr, "\tmem_Dump()\n");
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     fprintf(stderr, "\tmem_Release()\n");
     pCB = OBJ_NIL;

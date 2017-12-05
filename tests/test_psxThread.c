@@ -56,6 +56,18 @@ int         tearDown(
 
     
     mem_Dump( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     return 1; 
 }
