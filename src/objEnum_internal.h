@@ -65,7 +65,7 @@ struct objEnum_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;     // Needed for Inheritance
-    #define OBJENUM_SORTED  8        // File Path is open
+    #define OBJENUM_SORTED  OBJ_FLAG_USER1  // File Path is open
 
     // Common Data
     ERESULT         eRc;

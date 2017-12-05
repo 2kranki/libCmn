@@ -178,6 +178,7 @@ PTRARRAY_VTBL   ptrArray_Vtbl = {
         NULL,            // (P_OBJ_ASSIGN)ptrArray_Assign,
         NULL,            // (P_OBJ_COMPARE)ptrArray_Compare,
         NULL,             // (P_OBJ_PTR)ptrArray_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL             // (P_OBJ_HASH)ptrArray_Hash
     }
 };

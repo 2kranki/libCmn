@@ -178,6 +178,7 @@ BITSET_VTBL     bitSet_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)bitSet_Assign,
         NULL,			// (P_OBJ_COMPARE)bitSet_Compare,
         NULL, 			// (P_OBJ_PTR)bitSet_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)bitSet_Hash
     },
     // Put other object method names below this.

@@ -179,6 +179,7 @@ CB32_VTBL     cb32_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)cb32_Assign,
         NULL,			// (P_OBJ_COMPARE)cb32_Compare,
         NULL, 			// (P_OBJ_PTR)cb32_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)cb32_Hash,
     },
     // Put other object method names below this.

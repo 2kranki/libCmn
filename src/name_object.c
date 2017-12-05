@@ -184,6 +184,7 @@ NAME_VTBL       name_Vtbl = {
         (P_OBJ_ASSIGN)name_Assign,
         (P_OBJ_COMPARE)name_Compare,
         (P_OBJ_PTR)name_Copy,
+        (P_OBJ_DEEPCOPY)name_DeepCopy,
         (P_OBJ_HASH)name_Hash
     },
 };

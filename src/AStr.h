@@ -382,6 +382,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     AStr_DeepCopy(
+        ASTR_DATA       *this
+    );
+    
+    
     uint32_t        AStr_Hash(
         ASTR_DATA       *this
     );
@@ -480,6 +485,18 @@ extern "C" {
         uint32_t        *pIndex,            // [in-out]
         const
         W32CHR_T        *pSetStr            // NUL-terminated set of unicode chars
+    );
+    
+    
+    /*!
+     Convert this string to a constant string object.
+     @param     this    object pointer
+     @return    If successful, an AStrC object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStrC object.
+     */
+    ASTRC_DATA *    AStr_ToAStrC(
+        ASTR_DATA       *this
     );
     
     

@@ -177,6 +177,7 @@ PWR2ARRAY_VTBL  pwr2Array_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)pwr2Array_Assign,
         NULL,			// (P_OBJ_COMPARE)pwr2Array_Compare,
         NULL, 			// (P_OBJ_PTR)pwr2Array_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)pwr2Array_Hash
     },
 };

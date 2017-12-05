@@ -64,7 +64,7 @@ extern "C" {
          */
         OBJ_DATA        super;
         OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define OBJCB_FLAG_STOP    5
+#define OBJCB_FLAG_STOP    OBJ_FLAG_USER1
         
         PSXCOND_DATA    *pEmpty;
         PSXCOND_DATA    *pFull;

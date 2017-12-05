@@ -178,6 +178,7 @@ MSGDATA_VTBL     msgData_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)msgData_Assign,
         NULL,			// (P_OBJ_COMPARE)msgData_Compare,
         NULL, 			// (P_OBJ_PTR)msgData_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)msgData_Hash,
     },
     // Put other object method names below this.

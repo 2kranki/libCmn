@@ -97,7 +97,7 @@ struct objList_data_s	{
 
     extern
     const
-    OBJLIST_VTBL         objList_Vtbl;
+    OBJLIST_VTBL    objList_Vtbl;
 
 
     // Internal Functions
@@ -106,11 +106,17 @@ struct objList_data_s	{
     );
 
 
-
+    void *          objList_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			objList_Validate(
-        OBJLIST_DATA       *cbp
+        OBJLIST_DATA    *this
     );
 #endif
 

@@ -58,7 +58,7 @@ struct u32Array_data_s	{
      */
     ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define U32ARRAY_FLAG_BIGENDIAN 4
+#define U32ARRAY_FLAG_BIGENDIAN OBJ_FLAG_USER1
 
     // Common Data
 

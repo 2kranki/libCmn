@@ -178,6 +178,7 @@ VALUE_VTBL     value_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)value_Assign,
         NULL,			// (P_OBJ_COMPARE)value_Compare,
         NULL, 			// (P_OBJ_PTR)value_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)value_Hash,
     },
     // Put other object method names below this.

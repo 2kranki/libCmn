@@ -60,7 +60,7 @@ struct psxLock_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define PSXLOCK_FLAG_LOCKED    6
+#define PSXLOCK_FLAG_LOCKED    OBJ_FLAG_USER1
 
     // Common Data
     ERESULT         eRc;

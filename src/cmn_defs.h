@@ -356,9 +356,6 @@ extern "C" {
         OBJ_IDENT_PTRCB_CLASS,
         OBJ_IDENT_PTRTBL,
         OBJ_IDENT_PTRTBL_CLASS,
-        OBJ_IDENT_PWR2ARRAY,            // An Array of elements that have a size
-        //                              // which is a power of 2
-        OBJ_IDENT_PWR2ARRAY_CLASS,
         OBJ_IDENT_RECEIVE,              // Protocol Receive Handler
         OBJ_IDENT_RECEIVE_CLASS,
         OBJ_IDENT_RESPONDER,

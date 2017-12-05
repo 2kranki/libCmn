@@ -46,8 +46,8 @@ extern "C" {
         /* Warning - OBJ_DATA must be first in this object!
          */
         OBJ_DATA        super;
-#define TRCTBL_FLAG_LOCKED      4
-#define TRCTBL_FLAG_IGNORE      5   /* Ignore any adds or puts */
+#define TRCTBL_FLAG_LOCKED      OBJ_FLAG_USER1
+#define TRCTBL_FLAG_IGNORE      OBJ_FLAG_USER2   /* Ignore any adds or puts */
         
         // Common Data
 #ifdef USE_PIC32

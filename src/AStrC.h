@@ -207,6 +207,11 @@ extern "C" {
     );
     
     
+    ASTRC_DATA *    AStrC_DeepCopy(
+        ASTRC_DATA      *this
+    );
+    
+    
     uint32_t        AStrC_Hash(
         ASTRC_DATA      *this
     );

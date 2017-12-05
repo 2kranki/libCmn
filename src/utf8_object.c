@@ -177,6 +177,7 @@ UTF8_VTBL       utf8_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)utf8_Assign,
         NULL,			// (P_OBJ_COMPARE)utf8_Compare,
         NULL, 			// (P_OBJ_PTR)utf8_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)utf8_Hash
     }
 };

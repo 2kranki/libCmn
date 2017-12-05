@@ -99,6 +99,7 @@ extern	"C" {
     typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID, OBJ_ID);
     typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID, OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_COPY)(OBJ_ID);
+    typedef OBJ_ID      (*P_OBJ_DEEPCOPY)(OBJ_ID);
     typedef bool        (*P_OBJ_DISABLE)(OBJ_ID);
     typedef bool        (*P_OBJ_ENABLE)(OBJ_ID);
     typedef uint32_t    (*P_OBJ_HASH)(OBJ_ID);
@@ -119,18 +120,16 @@ extern	"C" {
 #define OBJ_FLAG_INIT       1               /* Object is initialized. */
 #define OBJ_FLAG_ENABLED    2               /* Object is enabled. */
 #define OBJ_FLAG_TRACE      3               /* Object tracing */
-#define OBJ_FLAG_USER1      4               /* First User Useable flag */
-#define OBJ_FLAG_USER2      5
-#define OBJ_FLAG_USER3      6
-#define OBJ_FLAG_USER4      7
-#define OBJ_FLAG_USER5      8
-#define OBJ_FLAG_USER6      9
-#define OBJ_FLAG_USER7      10
-#define OBJ_FLAG_USER8      11
-#define OBJ_FLAG_USER9      12
-#define OBJ_FLAG_USER10     13
-#define OBJ_FLAG_USER11     14
-#define OBJ_FLAG_USER12     15              /* Last User Useable flag */
+#define OBJ_FLAG_RO         4               /* Object is Read-Only (ie immutable). */
+// Reserved 4-7
+#define OBJ_FLAG_USER1      8               /* First User Useable flag */
+#define OBJ_FLAG_USER2      9
+#define OBJ_FLAG_USER3      10
+#define OBJ_FLAG_USER4      11
+#define OBJ_FLAG_USER5      12
+#define OBJ_FLAG_USER6      13
+#define OBJ_FLAG_USER7      14
+#define OBJ_FLAG_USER8      15              /* Last User Useable flag */
 
         uint16_t		cbRetainCount;
         union {
@@ -194,8 +193,14 @@ extern	"C" {
         ERESULT     (*pCompare)(OBJ_ID, OBJ_ID); // P_OBJ_COMPARE
         // Creates a new copy of the object. If the object is
         // immmutable (ie can not be changed) then it just returns
-        // a retained self.
-        OBJ_ID      (*pCopy)(OBJ_ID);           // P_OBJ_PTR
+        // a retained self. Objects within this object will simply
+        // be retained.
+        OBJ_ID      (*pCopy)(OBJ_ID);           // P_OBJ_COPY
+        // Creates a new copy of the object. If the object is
+        // immmutable (ie can not be changed) then it just returns
+        // a retained self. Objects within this object will be
+        // recreated in a new object unless they are read-only.
+        OBJ_ID      (*pDeepCopy)(OBJ_ID);       // P_OBJ_DEEPCOPY
         // Creates hash of this object.
         uint32_t    (*pHash)(OBJ_ID);           // P_OBJ_HASH
     };
@@ -351,6 +356,11 @@ extern	"C" {
     bool			obj_setMisc2(
         OBJ_ID          objId,
         uint16_t        value
+    );
+    
+    
+    bool            obj_IsReadOnly(
+        OBJ_ID          objId
     );
     
     

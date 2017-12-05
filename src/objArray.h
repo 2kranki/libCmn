@@ -165,15 +165,27 @@ extern "C" {
     
     
     /*!
-     Copy this array. Any element of the array that has a copy method
-     will have that used to create a new object. Otherwise, the object
-     is just retained and added to the new array.
+     Copy this array. All elements of the array will be retained for
+     use in the new array.
      @param     this    object pointer
      @return    If successful, return a new array that must be released
                 otherwise return OBJ_NIL.
      */
     OBJARRAY_DATA * objArray_Copy(
         OBJARRAY_DATA	*this
+    );
+    
+    
+    /*!
+     Copy this array. Any element of the array that has a copy method
+     will have that used to create a new object. Otherwise, the object
+     is just retained and added to the new array.
+     @param     this    object pointer
+     @return    If successful, return a new array that must be released
+     otherwise return OBJ_NIL.
+     */
+    OBJARRAY_DATA * objArray_DeepCopy(
+        OBJARRAY_DATA    *this
     );
     
     

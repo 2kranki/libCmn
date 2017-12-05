@@ -63,8 +63,8 @@ struct lex_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define LEX_INIT_DONE   5
-#define LEX_CHECKPOINT  6
+#define LEX_INIT_DONE   OBJ_FLAG_USER1
+#define LEX_CHECKPOINT  OBJ_FLAG_USER2
     
     ERESULT         eRc;
     ERESULT_DATA    *pErrors;

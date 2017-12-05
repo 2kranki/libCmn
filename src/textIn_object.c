@@ -178,6 +178,7 @@ TEXTIN_VTBL     textIn_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)textIn_Assign,
         NULL,			// (P_OBJ_COMPARE)textIn_Compare,
         NULL, 			// (P_OBJ_PTR)textIn_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)textIn_Hash,
     },
     // Put other object method names below this.

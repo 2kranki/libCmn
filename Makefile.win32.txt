@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (11/27/2017 16:15:21.000)
+# (12/ 5/2017  4:14:47.000)
 
 
 LIBNAM=libCmn
@@ -119,7 +119,6 @@ OBJS = $(OBJS) $(OBJDIR)\psxMutex.obj $(OBJDIR)\psxMutex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxSem.obj $(OBJDIR)\psxSem_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxThread.obj $(OBJDIR)\psxThread_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ptrArray.obj $(OBJDIR)\ptrArray_object.obj
-OBJS = $(OBJS) $(OBJDIR)\pwr2Array.obj $(OBJDIR)\pwr2Array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\rrds32.obj $(OBJDIR)\rrds32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\sidx.obj $(OBJDIR)\sidx_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcFile.obj $(OBJDIR)\srcFile_object.obj
@@ -936,14 +935,6 @@ TESTS = $(TESTS) test_ptrArray
 
 test_ptrArray:
 	$(CC) $(CFLAGS) /Itests tests\test_ptrArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
-	del *.obj
-	$(OBJDIR)\$(@F).exe
-
-
-TESTS = $(TESTS) test_pwr2Array
-
-test_pwr2Array:
-	$(CC) $(CFLAGS) /Itests tests\test_pwr2Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

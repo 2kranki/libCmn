@@ -178,6 +178,7 @@ RRDS32_VTBL     rrds32_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)rrds_Assign,
         NULL,			// (P_OBJ_COMPARE)rrds_Compare,
         NULL, 			// (P_OBJ_PTR)rrds_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)rrds_Hash
     },
     // Put other object method names below this.

@@ -207,7 +207,8 @@ extern "C" {
 #define ERESULT_FAILED(x) (x < 0)
 #define ERESULT_HAS_FAILED(x) (x < 0)
 #define ERESULT_IS_SUCCESSFUL(x) (x >= 0)
-    
+#define ERESULT_SUCCESSFUL(x) (x >= 0)
+
 
 
 

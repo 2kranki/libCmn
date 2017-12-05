@@ -178,6 +178,7 @@ DBCSV_VTBL      dbCsv_Vtbl = {
         NULL,            // (P_OBJ_ASSIGN)dbCsv_Assign,
         NULL,            // (P_OBJ_COMPARE)dbCsv_Compare,
         NULL,             // (P_OBJ_PTR)dbCsv_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL             // (P_OBJ_HASH)dbCsv_Hash
     }
 };

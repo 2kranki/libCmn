@@ -179,6 +179,7 @@ SIDX_VTBL     sidx_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)sidx_Assign,
         NULL,			// (P_OBJ_COMPARE)sidx_Compare,
         NULL, 			// (P_OBJ_PTR)sidx_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)sidx_Hash,
     },
     // Put other object method names below this.

@@ -179,6 +179,7 @@ GREG_VTBL     greg_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)greg_Assign,
         NULL,			// (P_OBJ_COMPARE)greg_Compare,
         NULL, 			// (P_OBJ_PTR)greg_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)greg_Hash,
     },
     // Put other object method names below this.

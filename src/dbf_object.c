@@ -179,6 +179,7 @@ DBF_VTBL     dbf_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)dbf_Assign,
         NULL,			// (P_OBJ_COMPARE)dbf_Compare,
         NULL, 			// (P_OBJ_PTR)dbf_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)dbf_Hash,
     },
     // Put other object method names below this.

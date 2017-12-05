@@ -177,6 +177,7 @@ NODE_VTBL       node_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)node_Assign,
         NULL,			// (P_OBJ_COMPARE)node_Compare,
         NULL, 			// (P_OBJ_PTR)node_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)node_Hash
     },
     node_getClass,

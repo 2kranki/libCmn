@@ -179,6 +179,7 @@ PRT_VTBL     prt_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)prt_Assign,
         NULL,			// (P_OBJ_COMPARE)prt_Compare,
         NULL, 			// (P_OBJ_PTR)prt_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)prt_Hash,
     },
     // Put other object method names below this.

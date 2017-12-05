@@ -177,6 +177,7 @@ TOKEN_VTBL     token_Vtbl = {
         (P_OBJ_ASSIGN)token_Assign,
         (P_OBJ_COMPARE)token_Compare,
         (P_OBJ_PTR)token_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)token_Hash
     },
     // Put other object method names below this.

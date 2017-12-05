@@ -176,6 +176,7 @@ LRU_VTBL     lru_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)lru_Assign,
         NULL,			// (P_OBJ_COMPARE)lru_Compare,
         NULL, 			// (P_OBJ_PTR)lru_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)lru_Hash
     },
     // Put other object method names below this.

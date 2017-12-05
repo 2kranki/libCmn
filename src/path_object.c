@@ -82,7 +82,7 @@ bool            path_ClassIsKindOf(
     if (OBJ_IDENT_ASTR_CLASS == classID) {
         return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_ARRAY_CLASS == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -139,7 +139,7 @@ bool            path_IsKindOf(
     if (OBJ_IDENT_ASTR == classID) {
         return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
+    if (OBJ_IDENT_ARRAY == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -190,6 +190,7 @@ PATH_VTBL       path_Vtbl = {
         (P_OBJ_ASSIGN)AStr_Assign,
         (P_OBJ_COMPARE)AStr_Compare,
         (P_OBJ_PTR)path_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         (P_OBJ_HASH)AStr_Hash
     }
 };

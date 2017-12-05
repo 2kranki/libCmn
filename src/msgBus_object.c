@@ -178,6 +178,7 @@ MSGBUS_VTBL     msgBus_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)msgBus_Assign,
         NULL,			// (P_OBJ_COMPARE)msgBus_Compare,
         NULL, 			// (P_OBJ_PTR)msgBus_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)msgBus_Hash,
     },
     // Put other object method names below this.

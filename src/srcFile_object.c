@@ -178,6 +178,7 @@ SRCFILE_VTBL    srcFile_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)srcFile_Assign,
         NULL,			// (P_OBJ_COMPARE)srcFile_Compare,
         NULL, 			// (P_OBJ_PTR)srcFile_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)srcFile_Hash
     },
 };

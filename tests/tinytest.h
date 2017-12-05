@@ -31,7 +31,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static
 int     exitCode = 0;
+static
+int     cArgs;
+static
+char    **ppArgs;
 
 
 typedef int (*TinyTestFunc)(const char *);
@@ -186,7 +191,9 @@ void Suite##suiteName(TinyTestRegistry* registry)                       \
   int main(int argc, char* argv[])                                      \
   {                                                                     \
     TinyTestRegistry registry;                                          \
-    registry.m_headSuite = NULL
+    registry.m_headSuite = NULL;                                        \
+    cArgs = argc;                                                       \
+    ppArgs = argv
 
 #define TINYTEST_RUN_SUITE(suiteName)                                   \
   Suite##suiteName(&registry) 

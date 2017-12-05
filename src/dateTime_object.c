@@ -176,6 +176,7 @@ DATETIME_VTBL     dateTime_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)dateTime_Assign,
         NULL,			// (P_OBJ_COMPARE)dateTime_Compare,
         NULL, 			// (P_OBJ_PTR)dateTime_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)dateTime_Hash
     },
     // Put other object method names below this.

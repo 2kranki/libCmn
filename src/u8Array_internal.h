@@ -43,7 +43,7 @@
 
 
 #include        "u8Array.h"
-#include        "pwr2Array_internal.h"
+#include        "array_internal.h"
 
 
 
@@ -58,12 +58,12 @@ struct u8Array_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define U8ARRAY_FLAG_BIGENDIAN 4
+#define U8ARRAY_FLAG_BIGENDIAN OBJ_FLAG_USER1
 
     // Common Data
     ERESULT         eRc;
     uint32_t        misc;
-    PWR2ARRAY_DATA  *pData;
+    ARRAY_DATA      *pData;
 
 };
 #pragma pack(pop)

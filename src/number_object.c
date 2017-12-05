@@ -179,6 +179,7 @@ NUMBER_VTBL     number_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)number_Assign,
         NULL,			// (P_OBJ_COMPARE)number_Compare,
         NULL, 			// (P_OBJ_PTR)number_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)number_Hash,
     },
     // Put other object method names below this.

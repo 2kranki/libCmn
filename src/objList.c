@@ -296,12 +296,13 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         objList_Assign(
-        OBJLIST_DATA		*this,
-        OBJLIST_DATA      *pOther
+        OBJLIST_DATA    *this,
+        OBJLIST_DATA    *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+        OBJLIST_NODE    *pEntry = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -316,38 +317,29 @@ extern "C" {
 #endif
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
+        while (objList_getSize(pOther)) {
+            eRc = objList_DeleteHead(pOther);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
         }
-#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+        pEntry = listdl_Head(&this->list);
+        while ( pEntry ) {
+            if (pEntry->pObject) {
+                eRc = objList_Add2Tail(pOther, pEntry->pObject);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
             }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
+            pEntry = listdl_Next(&this->list, pEntry);
         }
-#endif
-
-        // Copy other data from this object to other.
-        
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
-        //goto eom;
 
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
-        this->eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
-    //eom:
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -390,11 +382,12 @@ extern "C" {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
+            else {
+                this->eRc = ERESULT_SUCCESS;
+            }
         }
         
         // Return to caller.
-        //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -454,6 +447,69 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                        D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     objList      *pCopy = objList_DeepCopy(this);
+     @endcode
+     @param     this    OBJLIST object pointer
+     @return    If successful, a OBJLIST object which must be released,
+     otherwise OBJ_NIL.
+     @warning   Remember to release the returned the OBJLIST object.
+     */
+    OBJLIST_DATA *  objList_DeepCopy(
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJLIST_DATA    *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJ_ID          pObject;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = objList_New();
+        if (pOther) {
+            pEntry = listdl_Head(&this->list);
+            while ( pEntry ) {
+                if (pEntry->pObject) {
+                    if (pEntry->pObject) {
+                        if (obj_getVtbl(pEntry->pObject)->pDeepCopy) {
+                            pObject = obj_getVtbl(pEntry->pObject)->pCopy(pEntry->pObject);
+                        }
+                        else {
+                            obj_Retain(pEntry->pObject);
+                            pObject = pEntry->pObject;
+                        }
+                        eRc = objList_Add2Tail(pOther, pObject);
+                        if (ERESULT_FAILED(eRc)) {
+                            break;
+                        }
+                        obj_Release(pObject);
+                    }
+                }
+                pEntry = listdl_Next(&this->list, pEntry);
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          D e l e t e
     //---------------------------------------------------------------
@@ -688,6 +744,82 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = name_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     objId   OBJTEST object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+     for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+     character string which represents the method name without
+     the object name, "name", prefix,
+     for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+     address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+     OBJ_QUERYINFO_TYPE_INFO: info pointer,
+     OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+     OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          objList_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        OBJLIST_DATA    *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return objList_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          T a i l
     //---------------------------------------------------------------

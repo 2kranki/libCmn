@@ -179,6 +179,7 @@ PLIST_VTBL     plist_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)plist_Assign,
         NULL,			// (P_OBJ_COMPARE)plist_Compare,
         NULL, 			// (P_OBJ_PTR)plist_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)plist_Hash,
     },
     // Put other object method names below this.

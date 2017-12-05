@@ -179,6 +179,7 @@ XML_VTBL     xml_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)xml_Assign,
         NULL,			// (P_OBJ_COMPARE)xml_Compare,
         NULL, 			// (P_OBJ_PTR)xml_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)xml_Hash,
     },
     // Put other object method names below this.

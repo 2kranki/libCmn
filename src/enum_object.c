@@ -178,6 +178,7 @@ ENUM_VTBL     enum_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)enum_Assign,
         NULL,			// (P_OBJ_COMPARE)enum_Compare,
         NULL, 			// (P_OBJ_PTR)enum_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)enum_Hash,
     },
     // Put other object method names below this.

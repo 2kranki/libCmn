@@ -43,12 +43,15 @@
 #include <node.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
+#include <objArray.h>
 #include <szHash.h>
 
 
 
 
 void			show_usage(
+    const
+    char            *pMsg
 );
 
 
@@ -179,8 +182,9 @@ void            genMakeFile_initial(
                         );
                         fprintf(
                                 pResults->pOutput,
-                                "CFLAGS_LIBS += -l%s -L$(HOME)/Support/lib/$(SYS)/lib%s\n",
+                                "CFLAGS_LIBS += -l%s -L$(HOME)/Support/lib/$(SYS)/%s%s\n",
                                 AStr_getData(pStr),
+                                pLibIncludePrefix,
                                 AStr_getData(pStr)
                         );
                         obj_Release(pStr);
@@ -238,16 +242,20 @@ void            genMakeFile_initial(
                         pStr = node_getData(pNode);
                         fprintf(
                                 pResults->pOutput,
-                                "CFLAGS = $(CFLAGS) /I..\\lib%s\\src "
-                                "/I..\\lib%s\\src\\$(SYS)\n",
+                                "CFLAGS = $(CFLAGS) /I..\\%s%s\\src "
+                                "/I..\\%s%s\\src\\$(SYS)\n",
+                                pLibIncludePrefix,
                                 AStr_getData(pStr),
+                                pLibIncludePrefix,
                                 AStr_getData(pStr)
                                 );
                         fprintf(
                                 pResults->pOutput,
                                 "LIBS = $(LIBS) "
-                                "$(INSTALL_BASE)\\lib%s\\lib%s.lib\n",
+                                "$(INSTALL_BASE)\\%s%s\\%s%s.lib\n",
+                                pLibIncludePrefix,
                                 AStr_getData(pStr),
+                                pLibIncludePrefix,
                                 AStr_getData(pStr)
                         );
                         obj_Release(pStr);
@@ -511,7 +519,7 @@ void            genMakeFile_objects(
 
 void            genMakeFile_macosx(
     ARGS            *pResults,
-    NODEHASH_DATA   *pObjects
+    NODEHASH_DATA   *pSection
 )
 {
     ERESULT         eRc;
@@ -522,93 +530,92 @@ void            genMakeFile_macosx(
     int             iMax;
     ASTR_DATA       *pStr;
     ASTR_DATA       *pWrk;
-    
+
     BREAK_NULL(pResults);
+    // The "macosx" section contains the sub-sections, "headers" and "sources".
+    // The "headers" need to be copied to the "macosx" subdirectory of the
+    // library header. So, the subdirectory needs to be created as well as
+    // the headers copied across.
     
-    switch (pResults->makeType) {
-            
-        case MAKETYPE_MACOSX:
-            if (pObjects) {
-                eRc = nodeHash_Nodes(pObjects, &pArray);
-                if (ERESULT_FAILED(eRc)) {
-                }
-                else {
-                    iMax = nodeArray_getSize(pArray);
-                    for (i=0; i<iMax; ++i) {
-                        pNode = nodeArray_Get(pArray, i+1);
-                        if (pNode) {
-                            pName = node_getName(pNode);
-                            pStr = name_getStrA(pName);
-                            pWrk = AStr_Copy(pStr);
-                            if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
-                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                            }
-                            else if (AStr_CompareRightA(pWrk, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                            }
-                            else if (AStr_CompareRightA(pWrk, ".s") == ERESULT_SUCCESS_EQUAL) {
-                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                            }
-                            else if (AStr_CompareRightA(pWrk, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                            }
-                            fprintf(
-                                    pResults->pOutput,
-                                    "OBJS += $(OBJDIR)/%s.o\n",
-                                    AStr_getData(pWrk)
-                            );
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput,
-                                    "$(OBJDIR)/%s.o: src/$(SYS)/%s\n",
-                                    AStr_getData(pWrk),
-                                    AStr_getData(pStr)
-                            );
-                            if (AStr_CompareRightA(pStr, ".c") == ERESULT_SUCCESS_EQUAL) {
-                                fprintf(pResults->pOutput,
-                                        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) "
-                                        "src/$(SYS)/%s\n",
-                                        AStr_getData(pStr)
-                                );
-                            }
-                            else if (AStr_CompareRightA(pStr, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                                fprintf(pResults->pOutput,
-                                        "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) "
-                                        "src/$(SYS)/%s\n",
-                                        AStr_getData(pStr)
-                                );
-                            }
-                            else if (AStr_CompareRightA(pStr, ".s") == ERESULT_SUCCESS_EQUAL) {
-                                fprintf(pResults->pOutput,
-                                        "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) "
-                                        "src/$(SYS)/%s\n",
-                                        AStr_getData(pStr)
-                                );
-                            }
-                            else if (AStr_CompareRightA(pStr, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                                fprintf(pResults->pOutput,
-                                        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) "
-                                        "src/$(SYS)/%s\n",
-                                        AStr_getData(pStr)
-                                );
-                            }
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\n");
-                            obj_Release(pWrk);
-                            pWrk = OBJ_NIL;
-                            obj_Release(pStr);
-                            pStr = OBJ_NIL;
-                        }
+    if (pSection) {
+        eRc = nodeHash_Nodes(pSection, &pArray);
+        if (ERESULT_FAILED(eRc)) {
+        }
+        else {
+            iMax = nodeArray_getSize(pArray);
+            for (i=0; i<iMax; ++i) {
+                pNode = nodeArray_Get(pArray, i+1);
+                if (pNode) {
+                    pName = node_getName(pNode);
+                    pStr = name_getStrA(pName);
+                    pWrk = AStr_Copy(pStr);
+                    if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
+                        AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
                     }
+                    else if (AStr_CompareRightA(pWrk, ".asm") == ERESULT_SUCCESS_EQUAL) {
+                        AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
+                    }
+                    else if (AStr_CompareRightA(pWrk, ".s") == ERESULT_SUCCESS_EQUAL) {
+                        AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
+                    }
+                    else if (AStr_CompareRightA(pWrk, ".S") == ERESULT_SUCCESS_EQUAL) {
+                        AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
+                    }
+                    else if (AStr_CompareRightA(pWrk, ".cpp") == ERESULT_SUCCESS_EQUAL) {
+                        AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
+                    }
+                    fprintf(
+                            pResults->pOutput,
+                            "OBJS += $(OBJDIR)/%s.o\n",
+                            AStr_getData(pWrk)
+                    );
+                    fprintf(pResults->pOutput, "\n");
+                    fprintf(pResults->pOutput, "\n");
+                    fprintf(pResults->pOutput,
+                            "$(OBJDIR)/%s.o: src/$(SYS)/%s\n",
+                            AStr_getData(pWrk),
+                            AStr_getData(pStr)
+                    );
+                    if (AStr_CompareRightA(pStr, ".c") == ERESULT_SUCCESS_EQUAL) {
+                        fprintf(pResults->pOutput,
+                                "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) "
+                                "src/$(SYS)/%s\n",
+                                AStr_getData(pStr)
+                        );
+                    }
+                    else if (AStr_CompareRightA(pStr, ".asm") == ERESULT_SUCCESS_EQUAL) {
+                        fprintf(pResults->pOutput,
+                                "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) "
+                                "src/$(SYS)/%s\n",
+                                AStr_getData(pStr)
+                        );
+                    }
+                    else if (AStr_CompareRightA(pStr, ".s") == ERESULT_SUCCESS_EQUAL) {
+                        fprintf(pResults->pOutput,
+                                "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) "
+                                "src/$(SYS)/%s\n",
+                                AStr_getData(pStr)
+                        );
+                    }
+                    else if (AStr_CompareRightA(pStr, ".cpp") == ERESULT_SUCCESS_EQUAL) {
+                        fprintf(pResults->pOutput,
+                                "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) "
+                                "src/$(SYS)/%s\n",
+                                AStr_getData(pStr)
+                        );
+                    }
+                    fprintf(pResults->pOutput, "\n");
+                    fprintf(pResults->pOutput, "\n");
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
                 }
-                fprintf(pResults->pOutput, "\n");
-                fprintf(pResults->pOutput, "\n");
-                fprintf(pResults->pOutput, "\n");
             }
-            break;
-            
-        default:
-            break;
+        }
+        fprintf(pResults->pOutput, "\n");
+        fprintf(pResults->pOutput, "\n");
+        fprintf(pResults->pOutput, "\n");
     }
     
 }
@@ -1069,7 +1076,7 @@ void            genMakeFile_tests(
                                 pDeps = OBJ_NIL;
                            }
                             fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\t$(OBJDIR)/$(@F)\n");
+                            fprintf(pResults->pOutput, "\t$(OBJDIR)/$(@F) ./tests\n");
                             fprintf(pResults->pOutput, "\n");
                             fprintf(pResults->pOutput, "\n");
                             
@@ -1218,12 +1225,12 @@ void            genMakeFile_final(
             fprintf(
                 pResults->pOutput,
                 "\t-cd $(INSTALL_BASE) ; "
-                "[ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include\n"
+                "[ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
             );
             fprintf(pResults->pOutput, "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n");
             fprintf(pResults->pOutput, "\tcp src/*.h $(INSTALLDIR)/include/\n");
             fprintf(pResults->pOutput, "\tif [ -d src/$(SYS) ]; then \\\n");
-            fprintf(pResults->pOutput, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/; \\\n");
+            fprintf(pResults->pOutput, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n");
             fprintf(pResults->pOutput, "\tfi\n");
             fprintf(pResults->pOutput, "\n");
             fprintf(pResults->pOutput, "\n");
@@ -1295,8 +1302,8 @@ int             genMakeFile(
     ERESULT         eRc;
     NODE_DATA       *pNode;
     NODEARRAY_DATA  *pLibDeps = OBJ_NIL;
-    NODEHASH_DATA   *pPrimaryHash;
-    NODEHASH_DATA   *pObjects;
+    NODEHASH_DATA   *pPrimaryHash = OBJ_NIL;
+    NODEHASH_DATA   *pObjects = OBJ_NIL;
     NODEHASH_DATA   *pPrograms = OBJ_NIL;
     NODEARRAY_DATA  *pRoutines = OBJ_NIL;
     NODEHASH_DATA   *pTests = OBJ_NIL;

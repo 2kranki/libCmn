@@ -177,6 +177,7 @@ PSXSEM_VTBL     psxSem_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)psxSem_Assign,
         NULL,			// (P_OBJ_COMPARE)psxSem_Compare,
         NULL, 			// (P_OBJ_PTR)psxSem_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)psxSem_Hash
     },
 };

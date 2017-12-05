@@ -362,7 +362,7 @@ int             test_hjson_File01(
     char            *pTestName
 )
 {
-    //ERESULT         eRc;
+    ERESULT         eRc;
     HJSON_DATA      *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
@@ -373,8 +373,11 @@ int             test_hjson_File01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA("/Users/bob/Support/testFiles/test_hjson_01.txt");
+    XCTAssertTrue( (cArgs > 1) );
+    pPath = path_NewA(ppArgs[1]);
     XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = path_AppendFileNameA(pPath, "test_hjson_01.txt");
+    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
     
     pObj = hjson_NewFromPath(pPath, 4);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -410,7 +413,7 @@ int             test_hjson_File02(
     char            *pTestName
 )
 {
-    //ERESULT         eRc;
+    ERESULT         eRc;
     HJSON_DATA      *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
@@ -422,10 +425,16 @@ int             test_hjson_File02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pInput = fopen("/Users/bob/Support/testFiles/test_hjson_02.txt", "r");
+    XCTAssertTrue( (cArgs > 1) );
+    pPath = path_NewA(ppArgs[1]);
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = path_AppendFileNameA(pPath, "test_hjson_02.txt");
+    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+
+    pInput = fopen(path_getData(pPath), "r");
     XCTAssertFalse( (OBJ_NIL == pInput) );
     
-    pObj = hjson_NewFromFile( pInput, 4 );
+    pObj = hjson_NewFromFile(pInput, 4);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     obj_Release(pPath);
     if (pObj) {

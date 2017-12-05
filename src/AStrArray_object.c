@@ -179,6 +179,7 @@ ASTRARRAY_VTBL     AStrArray_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)AStrArray_Assign,
         NULL,			// (P_OBJ_COMPARE)AStrArray_Compare,
         NULL, 			// (P_OBJ_PTR)AStrArray_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)AStrArray_Hash,
     },
     // Put other object method names below this.

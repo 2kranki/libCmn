@@ -176,6 +176,7 @@ U12ARRAY_VTBL     u12Array_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)u12Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u12Array_Compare,
         NULL, 			// (P_OBJ_PTR)u12Array_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)u12Array_Hash
     },
     // Put other object method names below this.

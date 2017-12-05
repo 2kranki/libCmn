@@ -176,6 +176,7 @@ ENDIAN_VTBL     endian_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)endian_Assign,
         NULL,			// (P_OBJ_COMPARE)endian_Compare,
         NULL, 			// (P_OBJ_PTR)endian_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)endian_Hash
     },
     // Put other object method names below this.

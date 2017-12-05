@@ -179,6 +179,7 @@ W32STRC_VTBL_INTERNAL W32StrC_Vtbl = {
             NULL,			// (P_OBJ_ASSIGN)WStrC_Assign,
             (P_OBJ_COMPARE)W32StrC_Compare,
             (P_OBJ_PTR)W32StrC_Copy,
+            NULL,           // (P_OBJ_DEEPCOPY)
             (P_OBJ_HASH)W32StrC_Hash
         },
         // Put other object method names below this.

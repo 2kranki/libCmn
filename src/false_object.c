@@ -184,6 +184,7 @@ FALSE_VTBL      false_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)false_Assign,
         NULL,			// (P_OBJ_COMPARE)false_Compare,
         NULL, 			// (P_OBJ_PTR)false_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)false_Hash
     },
 };

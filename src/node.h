@@ -318,6 +318,20 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new Node Array from the data for this node if that
+     data is a Node Array or a Node Hash.
+     @result    If successful, a new nodeArray that contains the
+                contents of the Data property's node array or
+                node hash. Otherwise, OBJ_NIL and the Last Error
+                property contains an ERESULT_* error.
+     @warning   Remember to release the returned object.
+     */
+    NODEARRAY_DATA * node_DataToArray(
+        NODE_DATA       *this
+    );
+    
+    
     NODE_DATA *     node_InitWithInt(
         NODE_DATA       *this,
         int64_t         ident,
@@ -352,6 +366,11 @@ extern "C" {
         const
         char            *pName,
         OBJ_ID          pData
+    );
+    
+    
+    NODEARRAY_DATA * node_DataToArray(
+        NODE_DATA       *this
     );
     
     

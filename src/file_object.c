@@ -177,6 +177,7 @@ FILE_VTBL     file_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)file_Assign,
         NULL,			// (P_OBJ_COMPARE)file_Compare,
         NULL, 			// (P_OBJ_PTR)file_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)file_Hash
     },
     // Put other object method names below this.

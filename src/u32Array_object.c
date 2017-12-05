@@ -183,6 +183,7 @@ U32ARRAY_VTBL     u32Array_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)u32Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u32Array_Compare,
         NULL, 			// (P_OBJ_PTR)u32Array_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL, 			// (P_OBJ_HASH)u32Array_Hash,
     },
     // Put other object method names below this.

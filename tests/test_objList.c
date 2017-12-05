@@ -55,7 +55,18 @@ int         tearDown(
     
     szTbl_SharedReset();
     trace_SharedReset( ); 
-    mem_Dump( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     
     return 1; 
@@ -99,6 +110,7 @@ int         test_objList_BasicList01(
 )
 {
     OBJLIST_DATA	*pObj = OBJ_NIL;
+    OBJLIST_DATA    *pObj2 = OBJ_NIL;
     NAME_DATA       *pNameA = OBJ_NIL;
     NAME_DATA       *pNameB = OBJ_NIL;
     NAME_DATA       *pNameC = OBJ_NIL;
@@ -155,6 +167,36 @@ int         test_objList_BasicList01(
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
+        
+        pObj2 = objList_Copy(pObj);
+        XCTAssertFalse( (OBJ_NIL == pObj) );
+        XCTAssertTrue( (!(pObj == pObj2)) );
+        XCTAssertTrue( (objList_getSize(pObj) == objList_getSize(pObj2)) );
+
+        pStr = objList_ToDebugString(pObj2, 0);
+        fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        fprintf(stderr, "Check that each of the entries in the new list are the same"
+                        " addresses from first set of objects displayed.\n\n\n");
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        pObj2 = objList_DeepCopy(pObj);
+        XCTAssertFalse( (OBJ_NIL == pObj) );
+        XCTAssertTrue( (!(pObj == pObj2)) );
+        XCTAssertTrue( (objList_getSize(pObj) == objList_getSize(pObj2)) );
+
+        pStr = objList_ToDebugString(pObj2, 0);
+        fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        fprintf(stderr, "Check that each of the entries in the new list are different"
+                " addresses from first set of objects displayed.\n\n\n");
+        
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
         
         obj_Release(pNameE);
         pNameE = OBJ_NIL;

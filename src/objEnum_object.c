@@ -178,6 +178,7 @@ OBJENUM_VTBL     objEnum_Vtbl = {
         (P_OBJ_ASSIGN)objEnum_Assign,
         NULL,			// (P_OBJ_COMPARE)objEnum_Compare,
         (P_OBJ_PTR)objEnum_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)objEnum_Hash,
     },
     // Put other object method names below this.

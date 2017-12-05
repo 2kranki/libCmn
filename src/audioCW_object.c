@@ -176,6 +176,7 @@ AUDIOCW_VTBL     audioCW_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)audioCW_Assign,
         NULL,			// (P_OBJ_COMPARE)audioCW_Compare,
         NULL, 			// (P_OBJ_PTR)audioCW_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)audioCW_Hash
     },
     // Put other object method names below this.

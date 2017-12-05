@@ -29,7 +29,7 @@
 
 static
 const
-char        *ppArgs[] = {
+char        *ppArgs2[] = {
     "program_name",
     "--debug",
     "1",
@@ -38,7 +38,7 @@ char        *ppArgs[] = {
     NULL
 };
 static
-int         cArgs = 5;
+int         cArgs2 = 5;
 
 
 
@@ -78,7 +78,18 @@ int         tearDown(
 
     
     trace_SharedReset( ); 
-    mem_Dump( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     
     return 1; 
@@ -100,7 +111,7 @@ int         test_appl_OpenClose(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = appl_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = appl_Init(pObj, cArgs, ppArgs);
+    pObj = appl_Init(pObj, cArgs2, ppArgs2);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 

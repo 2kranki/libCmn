@@ -59,7 +59,7 @@ struct nodeEntry_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define NODEENTRY_FLAG_VISITED  4
+#define NODEENTRY_FLAG_VISITED  OBJ_FLAG_USER1
 
     // Common Data
     NODE_DATA       *pNode;

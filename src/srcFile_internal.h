@@ -59,7 +59,7 @@ struct srcFile_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define SRCFILE_INIT_DONE   5
+#define SRCFILE_INIT_DONE   OBJ_FLAG_USER1
 
     // Common Data
     PATH_DATA       *pPath;

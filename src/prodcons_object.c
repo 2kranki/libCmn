@@ -177,6 +177,7 @@ PRODCONS_VTBL     prodcons_Vtbl = {
     NULL,			// (P_OBJ_ASSIGN)prodcons_Assign,
     NULL,			// (P_OBJ_COMPARE)prodcons_Compare,
     NULL, 			// (P_OBJ_PTR)prodcons_Copy,
+    NULL,           // (P_OBJ_DEEPCOPY)
     NULL, 			// (P_OBJ_HASH)prodcons_Hash,
     // Put other object method names below this.
     // Properties:

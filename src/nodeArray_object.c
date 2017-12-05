@@ -177,6 +177,7 @@ NODEARRAY_VTBL  nodeArray_Vtbl = {
         (P_OBJ_ASSIGN)nodeArray_Assign,
         NULL,           // (P_OBJ_COMPARE)nodeArray_Compare,
         (P_OBJ_PTR)nodeArray_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)nodeArray_Hash
     },
 };

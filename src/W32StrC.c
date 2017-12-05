@@ -620,6 +620,7 @@ extern "C" {
         }
         *pInsert = '\0';
         
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
         return this;
     }
     
@@ -657,6 +658,7 @@ extern "C" {
         this->pArray = pStr;
         this->len = len;
         
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
         return this;
     }
     
@@ -706,6 +708,7 @@ extern "C" {
         memmove(pInsert, pStr, (len * sizeof(W32CHR_T)));
         pInsert[len] = '\0';
         
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
         return this;
     }
     

@@ -598,7 +598,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTRC_DATA *    AStrC_Copy(
-        ASTRC_DATA     *this
+        ASTRC_DATA      *this
     )
     {
         
@@ -659,6 +659,32 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStrC_DeepCopy(
+        ASTRC_DATA      *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        obj_Retain(this);
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------
@@ -763,6 +789,7 @@ extern "C" {
         this->len = utf8_StrLenA(this->pData);
         obj_FlagOn(this, ASTRC_FLAG_MALLOC);
         
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
         return this;
     }
     
@@ -804,6 +831,7 @@ extern "C" {
             obj_FlagOn(this, ASTRC_FLAG_MALLOC);
         }
         
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
         return this;
     }
     

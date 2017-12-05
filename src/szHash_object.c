@@ -179,6 +179,7 @@ SZHASH_VTBL     szHash_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)szHash_Assign,
         NULL,			// (P_OBJ_COMPARE)szHash_Compare,
         NULL, 			// (P_OBJ_PTR)szHash_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)szHash_Hash,
     },
     // Put other object method names below this.

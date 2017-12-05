@@ -60,7 +60,7 @@ struct psxCond_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define PSXCOND_FLAG_COND_INIT      6
+#define PSXCOND_FLAG_COND_INIT      OBJ_FLAG_USER1
 
     // Common Data
     PSXMUTEX_DATA   *pMutex;

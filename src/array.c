@@ -102,7 +102,7 @@ extern "C" {
         if( this->pArray == NULL )
             ;
         else {
-            memmove( pWork, this->pArray, oldMaxLen);
+            memmove(pWork, this->pArray, oldMaxLen);
         }
         
         // Clear the new entries.
@@ -733,8 +733,6 @@ extern "C" {
         // Return to caller.
         array_setLastError(this, ERESULT_SUCCESS);
     eom:
-        //FIXME: Implement the assignment.        
-        array_setLastError(this, ERESULT_NOT_IMPLEMENTED);
         return array_getLastError(this);
     }
     
@@ -809,6 +807,7 @@ extern "C" {
             return;
         }
 #endif
+        BREAK_TRUE((obj_getRetainCount(this) > 0));
 
         array_FreeArray(this);
 
@@ -824,6 +823,64 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     array      *pCopy = array_DeepCopy(this);
+     @endcode
+     @param     this    ARRAY object pointer
+     @return    If successful, a ARRAY object which must be released,
+     otherwise OBJ_NIL.
+     @warning  Remember to release the returned the ARRAY object.
+     */
+    ARRAY_DATA *    array_DeepCopy(
+        ARRAY_DATA      *this
+    )
+    {
+        ARRAY_DATA      *pOther = OBJ_NIL;
+        uint32_t        newSize;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = array_New(this->elemSize);
+        if (OBJ_NIL == pOther) {
+            array_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        
+        // Copy our data to the other object.
+        newSize = array_OffsetOf(this, (this->max + 1));
+        pOther->pArray = mem_Malloc(newSize);
+        if (pOther->pArray == NULL) {
+            array_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            obj_Release(pOther);
+            return OBJ_NIL;
+        }
+        memmove(pOther->pArray, this->pArray, newSize);
+        pOther->max = this->max;
+        pOther->size = this->size;
+        pOther->fZeroNew = this->fZeroNew;
+        pOther->eRc = ERESULT_SUCCESS;
+        
+        // Return to caller.
+        array_setLastError(this, ERESULT_SUCCESS);
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          D e l e t e
     //---------------------------------------------------------------
     
@@ -833,7 +890,7 @@ extern "C" {
         uint32_t        numElems
     )
     {
-        int             shiftSize;
+        uint32_t        shiftSize;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -842,26 +899,29 @@ extern "C" {
             DEBUG_BREAK();
             return false;
         }
-        if( (0 ==  offset) || (offset > this->size) ) {
+        if((0 ==  offset) || (0 ==  numElems)) {
             return ERESULT_INVALID_PARAMETER;
         }
-        if (numElems) {
-            if ((numElems + offset - 1) > this->size) {
-                return ERESULT_DATA_OUT_OF_RANGE;
-            }
-        }
-        else {
-            return ERESULT_INVALID_PARAMETER;
+        if ((numElems + offset - 1) > this->size) {
+            return ERESULT_DATA_OUT_OF_RANGE;
         }
 #endif
         
         // Shift down elements past deletion point if not at end of array.
-        if ((offset + numElems - 1) < this->size) {
-            shiftSize = (this->size - (numElems + offset - 1));
+        shiftSize = (this->size - (numElems + offset - 1));
+        if (shiftSize && ((offset + numElems - 1) < this->size)) {
             memmove(
                     array_Ptr(this, offset),
                     array_Ptr(this, (offset + numElems)),
                     array_OffsetOf(this, (shiftSize + 1))
+            );
+        }
+        if (this->fZeroNew && shiftSize) {
+            // Zero the end of the array that was left over.
+            memset(
+                   array_Ptr(this, (offset + shiftSize)),
+                   0,
+                   array_OffsetOf(this, (numElems + 1))
             );
         }
         this->size -= numElems;
@@ -877,7 +937,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         array_Get(
-        ARRAY_DATA  *this,
+        ARRAY_DATA      *this,
         uint32_t        offset,             // in elements (relative to 1)
         uint32_t        numElems,
         void            *pData
@@ -1359,11 +1419,13 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) elemSize=%d  size=%d\n",
+                    "{%p(%s) elemSize=%d  size=%d  max=%d  retain=%d\n",
                     this,
                     pInfo->pClassName,
                     array_getElemSize(this),
-                    array_getSize(this)
+                    array_getSize(this),
+                    array_getMax(this),
+                    obj_getRetainCount(this)
             );
 
         if (this->pArray) {

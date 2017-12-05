@@ -176,6 +176,7 @@ BLOCKS_VTBL     blocks_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)blocks_Assign,
         NULL,			// (P_OBJ_COMPARE)blocks_Compare,
         NULL, 			// (P_OBJ_PTR)blocks_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)blocks_Hash
     },
     // Put other object method names below this.

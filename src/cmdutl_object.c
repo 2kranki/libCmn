@@ -178,6 +178,7 @@ CMDUTL_VTBL     cmdutl_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)cmdutl_Assign,
         NULL,			// (P_OBJ_COMPARE)cmdutl_Compare,
         NULL, 			// (P_OBJ_PTR)cmdutl_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)cmdutl_Hash
     },
     // Put other object method names below this.

@@ -182,6 +182,7 @@ OBJ_IUNKNOWN    true_Vtbl = {
     NULL,			// (P_OBJ_ASSIGN)true_Assign,
     NULL,			// (P_OBJ_COMPARE)true_Compare,
     NULL, 			// (P_OBJ_PTR)true_Copy,
+    NULL,           // (P_OBJ_DEEPCOPY)
     NULL 			// (P_OBJ_HASH)true_Hash
 };
 

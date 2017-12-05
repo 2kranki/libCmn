@@ -178,6 +178,7 @@ NODETREE_VTBL     nodeTree_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)nodeTree_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeTree_Compare,
         NULL, 			// (P_OBJ_PTR)nodeTree_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)nodeTree_Hash,
     },
     // Put other object method names below this.

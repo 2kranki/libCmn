@@ -72,7 +72,7 @@ struct W32StrC_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define W32STRC_FLAG_MALLOC 5
+#define W32STRC_FLAG_MALLOC OBJ_FLAG_USER1
 
     // Common Data
     uint32_t        len;		// Number of chars excluding trailing NUL

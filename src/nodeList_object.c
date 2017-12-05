@@ -177,6 +177,7 @@ NODELIST_VTBL     nodeList_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)nodeList_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeList_Compare,
         NULL, 			// (P_OBJ_PTR)nodeList_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)nodeList_Hash
     },
     // Put other object method names below this.

@@ -178,6 +178,7 @@ PSXMUTEX_VTBL   psxMutex_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)psxMutex_Assign,
         NULL,			// (P_OBJ_COMPARE)psxMutex_Compare,
         NULL, 			// (P_OBJ_PTR)psxMutex_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)psxMutex_Hash
     },
 };

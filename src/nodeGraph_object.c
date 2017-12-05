@@ -176,6 +176,7 @@ NODEGRAPH_VTBL     nodeGraph_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)nodeGraph_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeGraph_Compare,
         NULL, 			// (P_OBJ_PTR)nodeGraph_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)nodeGraph_Hash
     },
     // Put other object method names below this.

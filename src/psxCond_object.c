@@ -177,6 +177,7 @@ PSXCOND_VTBL     psxCond_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)psxCond_Assign,
         NULL,			// (P_OBJ_COMPARE)psxCond_Compare,
         NULL, 			// (P_OBJ_PTR)psxCond_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)psxCond_Hash
     },
     // Put other object method names below this.

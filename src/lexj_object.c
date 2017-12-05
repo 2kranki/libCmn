@@ -184,6 +184,7 @@ LEXJ_VTBL     lexj_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)lexj_Assign,
         NULL,			// (P_OBJ_COMPARE)lexj_Compare,
         NULL, 			// (P_OBJ_PTR)lexj_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)lexj_Hash,
     },
     // Put other object method names below this.

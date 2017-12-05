@@ -178,6 +178,7 @@ PSXTHREAD_VTBL  psxThread_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)psxThread_Assign,
         NULL,			// (P_OBJ_COMPARE)psxThread_Compare,
         NULL, 			// (P_OBJ_PTR)psxThread_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)psxThread_Hash
     },
 };

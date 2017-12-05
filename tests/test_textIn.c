@@ -21,7 +21,7 @@
 
 
 
-#include    "tinytest.h"
+#include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <textIn_internal.h>

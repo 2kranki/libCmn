@@ -177,6 +177,7 @@ DIR_VTBL     dir_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)dir_Assign,
         NULL,			// (P_OBJ_COMPARE)dir_Compare,
         NULL, 			// (P_OBJ_PTR)dir_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)dir_Hash
     },
     // Put other object method names below this.

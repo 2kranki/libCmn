@@ -177,7 +177,8 @@ ASTRC_VTBL      AStrC_Vtbl = {
         NULL,			// AStrC_Disable,
         NULL,			// (P_OBJ_ASSIGN)AStrC_Assign,
         (P_OBJ_COMPARE)AStrC_Compare,
-        (P_OBJ_PTR)AStrC_Copy,
+        (P_OBJ_COPY)AStrC_Copy,
+        (P_OBJ_DEEPCOPY)AStrC_DeepCopy,
         (P_OBJ_HASH)AStrC_Hash
     },
     // Put other object method names below this.

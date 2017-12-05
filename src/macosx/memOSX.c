@@ -408,18 +408,6 @@ extern "C" {
                 if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER8)) {
                     fprintf(stderr, "\t\tFlag: User8\n");
                 }
-                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER9)) {
-                    fprintf(stderr, "\t\tFlag: User9\n");
-                }
-                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER10)) {
-                    fprintf(stderr, "\t\tFlag: User10\n");
-                }
-                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER11)) {
-                    fprintf(stderr, "\t\tFlag: User11\n");
-                }
-                if (obj_IsFlag(&pActual->data, OBJ_FLAG_USER12)) {
-                    fprintf(stderr, "\t\tFlag: User12\n");
-                }
                 pObj = (OBJ_DATA *)pData;
                 if (pObj->pVtbl->pToDebugString) {
                     pStr = pObj->pVtbl->pToDebugString(pObj, 0);

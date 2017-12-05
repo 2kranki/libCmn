@@ -177,6 +177,7 @@ BLOCK32_VTBL    block32_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)block32_Assign,
         NULL,			// (P_OBJ_COMPARE)block32_Compare,
         NULL, 			// (P_OBJ_PTR)block32_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)block32_Hash
     }
 };

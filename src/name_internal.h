@@ -57,7 +57,7 @@ struct name_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define NAME_FLAG_HASH  5               /* Hash is initialized. */
+#define NAME_FLAG_HASH  OBJ_FLAG_USER1  /* Hash is initialized. */
 
     // Common Data
     ERESULT         eRc;

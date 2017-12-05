@@ -78,7 +78,7 @@ bool            AStr_ClassIsKindOf(
     if (OBJ_IDENT_ASTR_CLASS == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_ARRAY_CLASS == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -131,7 +131,7 @@ bool            AStr_IsKindOf(
     if (OBJ_IDENT_ASTR == classID) {
        return true;
     }
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
+    if (OBJ_IDENT_ARRAY == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -181,7 +181,8 @@ ASTR_VTBL       AStr_Vtbl = {
         NULL,            // AStr_Disable,
         (P_OBJ_ASSIGN)AStr_Assign,
         (P_OBJ_COMPARE)AStr_Compare,
-        (P_OBJ_PTR)AStr_Copy,
+        (P_OBJ_COPY)AStr_Copy,
+        (P_OBJ_DEEPCOPY)AStr_DeepCopy,
         (P_OBJ_HASH)AStr_Hash
     },
     // Put other object method names below this.
@@ -200,7 +201,7 @@ OBJ_INFO        AStr_Info = {
     "AStr",
     "Ascii String (UTF-8)",
     (OBJ_DATA *)&AStr_ClassObj,
-    (OBJ_DATA *)&pwr2Array_ClassObj
+    (OBJ_DATA *)&array_ClassObj
 };
 
 

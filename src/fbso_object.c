@@ -177,6 +177,7 @@ FBSO_VTBL     fbso_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)fbso_Assign,
         NULL,			// (P_OBJ_COMPARE)fbso_Compare,
         NULL, 			// (P_OBJ_PTR)fbso_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)fbso_Hash
     },
     // Put other object method names below this.

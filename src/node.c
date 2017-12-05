@@ -143,6 +143,21 @@ extern "C" {
     
     
     
+    NODE_DATA *     node_New(
+    )
+    {
+        NODE_DATA       *this;
+        
+        this = node_Alloc( );
+        if (this) {
+            this = node_Init(this);
+        }
+        
+        return this;
+    }
+    
+    
+    
     NODE_DATA *     node_NewWithInt(
         int64_t         ident,
         OBJ_ID          pData
@@ -446,6 +461,49 @@ extern "C" {
 #endif
         
         this->index = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         node_getLastError(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            node_setLastError(
+        NODE_DATA       *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
         
         return true;
     }
@@ -826,6 +884,139 @@ extern "C" {
         // Return to caller.
         //obj_Release(pOther);
         return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     node_DeepCopy(
+        NODE_DATA       *this
+    )
+    {
+        NODE_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        OBJ_ID          *pData = OBJ_NIL;
+        NAME_DATA       *pName = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = node_New( );
+        if (OBJ_NIL == pOther) {
+            node_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        
+        // Make a copy of the optional data.
+        if (this->pData) {
+            if (obj_getVtbl(this->pData)->pDeepCopy) {
+                pData = obj_getVtbl(this->pData)->pDeepCopy(this->pData);
+            }
+            else {
+                node_setLastError(this, ERESULT_GENERAL_FAILURE);
+                return OBJ_NIL;
+            }
+        }
+        
+        // Make a copy of the required name.
+        if (this->pName) {
+            if (obj_getVtbl(this->pName)->pDeepCopy) {
+                pData = obj_getVtbl(this->pName)->pDeepCopy(this->pName);
+            }
+            else {
+                node_setLastError(this, ERESULT_GENERAL_FAILURE);
+                return OBJ_NIL;
+            }
+        }
+        else {
+            node_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+
+        pOther = node_NewWithName(pName, pData);
+        obj_Release(pData);
+        pData = OBJ_NIL;
+        obj_Release(pName);
+        pName = OBJ_NIL;
+        if (this->pOther) {
+            if (obj_getVtbl(this->pOther)->pDeepCopy) {
+                pData = obj_getVtbl(this->pOther)->pDeepCopy(this->pOther);
+            }
+        }
+        node_setOther(pOther, pData);
+        obj_Release(pData);
+        pData = OBJ_NIL;
+        
+        DEBUG_BREAK();                      //ERESULT_NOT_IMPLEMENTED;
+        
+        //FIXME: Assign does not work!
+        eRc = node_Assign(this, pOther);
+        if (ERESULT_HAS_FAILED(eRc)) {
+            obj_Release(pOther);
+            pOther = OBJ_NIL;
+            return OBJ_NIL;
+        }
+        
+        // Return to caller.
+        //obj_Release(pOther);
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                 D a t a  T o  A r r a y
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * node_DataToArray(
+        NODE_DATA       *this
+    )
+    {
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        OBJ_ID          *pData = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pData = node_getData(this);
+        if (OBJ_NIL == pData) {
+            node_setLastError(this, ERESULT_DATA_MISSING);
+            return pArray;
+        }
+        
+        if (obj_IsKindOf(pData,OBJ_IDENT_NODEHASH)) {
+            this->eRc = nodeHash_Nodes((NODEHASH_DATA *)pData, &pArray);
+        }
+        else if (obj_IsKindOf(pData,OBJ_IDENT_NODEARRAY)) {
+            pArray = nodeArray_Copy((NODEARRAY_DATA *)pData);
+            if (pArray) {
+                node_setLastError(this, ERESULT_SUCCESS);
+            }
+            else {
+                node_setLastError(this, ERESULT_DATA_ERROR);
+            }
+        }
+        else {
+            node_setLastError(this, ERESULT_DATA_MISSING);
+        }
+
+        // Return to caller.
+        return pArray;
     }
     
     

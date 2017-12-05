@@ -62,9 +62,9 @@ struct fbsi_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-//#define FBSI_FLAG_OPEN      8               // File Path is open
-//#define FBSI_FLAG_EOF       9               // File is at EOF
-//#define FBSI_FLAG_REFRESH  10               // ???
+//#define FBSI_FLAG_OPEN      OBJ_FLAG_USER1               // File Path is open
+//#define FBSI_FLAG_EOF       OBJ_FLAG_USER2               // File is at EOF
+//#define FBSI_FLAG_REFRESH   OBJ_FLAG_USER3               // ???
 
     // Common Data
     uint32_t        bufferSize;             // Buffer Size

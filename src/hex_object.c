@@ -176,6 +176,7 @@ HEX_VTBL     hex_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)hex_Assign,
         NULL,			// (P_OBJ_COMPARE)hex_Compare,
         NULL, 			// (P_OBJ_PTR)hex_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)hex_Hash
     },
     // Put other object method names below this.

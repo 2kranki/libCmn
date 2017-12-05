@@ -192,8 +192,8 @@ extern "C" {
     
     
     /*!
-     Clean up the path by removing "//", "/./" or "/../"
-        - replacingstring that describes this object and the objects within it.
+     Clean up the path by removing "//", "/./" or "/../" combinations and
+     replace a leading '~' with the $HOME or $HOMEDRIVE Environment variable.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
      */
     ERESULT         path_Clean(

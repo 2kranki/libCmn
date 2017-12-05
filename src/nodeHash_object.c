@@ -178,6 +178,7 @@ NODEHASH_VTBL   nodeHash_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)nodeHash_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeHash_Compare,
         (P_OBJ_PTR)nodeHash_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)nodeHash_Hash
     },
 };

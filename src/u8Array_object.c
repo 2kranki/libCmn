@@ -177,6 +177,7 @@ U8ARRAY_VTBL     u8Array_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)u8Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u8Array_Compare,
         NULL, 			// (P_OBJ_PTR)u8Array_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)u8Array_Hash
     },
     // Put other object method names below this.

@@ -225,6 +225,11 @@ extern "C" {
     );
     
     
+    NAME_DATA *     name_DeepCopy(
+        NAME_DATA       *this
+    );
+    
+    
     /*!
      Create a hash for the name value. The name value is always
      converted to a UTF-8 string and then that is hashed.

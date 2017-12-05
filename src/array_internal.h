@@ -119,11 +119,21 @@ struct array_data_s	{
     );
     
     
+    ARRAY_DATA *    array_Copy(
+        ARRAY_DATA      *this
+    );
+    
+    
     void            array_Dealloc(
         OBJ_ID          objId
     );
 
 
+    ARRAY_DATA *    array_DeepCopy(
+        ARRAY_DATA      *this
+    );
+    
+    
     ERESULT         array_Expand(
         ARRAY_DATA      *this,
         uint32_t        min

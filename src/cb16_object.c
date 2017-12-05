@@ -179,6 +179,7 @@ CB16_VTBL     cb16_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)cb16_Assign,
         NULL,			// (P_OBJ_COMPARE)cb16_Compare,
         NULL, 			// (P_OBJ_PTR)cb16_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)cb16_Hash,
     },
     // Put other object method names below this.

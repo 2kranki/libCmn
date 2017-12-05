@@ -179,6 +179,7 @@ BTP_VTBL     btp_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)btp_Assign,
         NULL,			// (P_OBJ_COMPARE)btp_Compare,
         NULL, 			// (P_OBJ_PTR)btp_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)btp_Hash
     },
     // Put other object method names below this.

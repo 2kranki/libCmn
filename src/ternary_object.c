@@ -183,6 +183,7 @@ TERNARY_VTBL     ternary_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)ternary_Assign,
         NULL,			// (P_OBJ_COMPARE)ternary_Compare,
         NULL, 			// (P_OBJ_PTR)ternary_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)ternary_Hash
     },
     // Put other object method names below this.

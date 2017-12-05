@@ -185,6 +185,7 @@ WSTR_VTBL   WStr_Vtbl = {
         (P_OBJ_ASSIGN)WStr_Assign,
         (P_OBJ_COMPARE)WStr_Compare,
         (P_OBJ_PTR)WStr_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         (P_OBJ_HASH)WStr_Hash
     },
     // Put other object method names below this.

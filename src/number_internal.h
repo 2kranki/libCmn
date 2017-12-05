@@ -54,7 +54,7 @@ struct number_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-#define NUMBER_FLAG_SIGNED  5
+#define NUMBER_FLAG_SIGNED  OBJ_FLAG_USER1
 
     // Common Data
     uint16_t        reserved;

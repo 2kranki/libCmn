@@ -57,7 +57,7 @@ struct AStrC_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define ASTRC_FLAG_MALLOC 5
+#define ASTRC_FLAG_MALLOC OBJ_FLAG_USER1
 
     // Common Data
     ERESULT         eRc;

@@ -179,6 +179,7 @@ ERESULT_VTBL     eResult_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)eResult_Assign,
         NULL,			// (P_OBJ_COMPARE)eResult_Compare,
         NULL, 			// (P_OBJ_PTR)eResult_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)eResult_Hash,
     },
     // Put other object method names below this.

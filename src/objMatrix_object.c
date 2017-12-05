@@ -179,6 +179,7 @@ OBJMATRIX_VTBL     objMatrix_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)objMatrix_Assign,
         NULL,			// (P_OBJ_COMPARE)objMatrix_Compare,
         NULL, 			// (P_OBJ_PTR)objMatrix_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)objMatrix_Hash,
     },
     // Put other object method names below this.

@@ -450,7 +450,7 @@ extern "C" {
         }
 #endif
         pInfo = AStr_Vtbl.iVtbl.pInfo;
-        pData  = pwr2Array_Ptr(this->pData, 1);
+        pData  = array_Ptr(this->pData, 1);
 
         pStr = AStr_New();
         str[0] = '\0';

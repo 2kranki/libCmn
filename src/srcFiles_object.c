@@ -177,6 +177,7 @@ OBJ_IUNKNOWN    srcFiles_Vtbl = {
     NULL,			// (P_OBJ_ASSIGN)srcFiles_Assign,
     NULL,			// (P_OBJ_COMPARE)srcFiles_Compare,
     NULL, 			// (P_OBJ_PTR)srcFiles_Copy,
+    NULL,           // (P_OBJ_DEEPCOPY)
     NULL 			// (P_OBJ_HASH)srcFiles_Hash
 };
 

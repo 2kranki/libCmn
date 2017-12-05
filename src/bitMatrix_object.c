@@ -178,6 +178,7 @@ BITMATRIX_VTBL     bitMatrix_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)bitMatrix_Assign,
         NULL,			// (P_OBJ_COMPARE)bitMatrix_Compare,
         NULL, 			// (P_OBJ_PTR)bitMatrix_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)bitMatrix_Hash
     },
     // Put other object method names below this.

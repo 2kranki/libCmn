@@ -178,6 +178,7 @@ JSONOUT_VTBL     jsonOut_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)jsonOut_Assign,
         NULL,			// (P_OBJ_COMPARE)jsonOut_Compare,
         NULL, 			// (P_OBJ_PTR)jsonOut_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)jsonOut_Hash,
     },
     // Put other object method names below this.

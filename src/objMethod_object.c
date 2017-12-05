@@ -178,6 +178,7 @@ OBJMETHOD_VTBL     objMethod_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)objMethod_Assign,
         NULL,			// (P_OBJ_COMPARE)objMethod_Compare,
         NULL, 			// (P_OBJ_PTR)objMethod_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)objMethod_Hash,
     },
     // Put other object method names below this.

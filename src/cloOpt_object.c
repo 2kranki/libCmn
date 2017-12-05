@@ -178,6 +178,7 @@ CLOOPT_VTBL     cloOpt_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)cloOpt_Assign,
         NULL,			// (P_OBJ_COMPARE)cloOpt_Compare,
         NULL, 			// (P_OBJ_PTR)cloOpt_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)cloOpt_Hash,
     },
     // Put other object method names below this.

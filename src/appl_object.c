@@ -178,6 +178,7 @@ APPL_VTBL     appl_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)appl_Assign,
         NULL,			// (P_OBJ_COMPARE)appl_Compare,
         NULL, 			// (P_OBJ_PTR)appl_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)appl_Hash,
     },
     // Put other object method names below this.

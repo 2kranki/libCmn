@@ -183,6 +183,7 @@ NULL_VTBL       null_Vtbl = {
     NULL,			// (P_OBJ_ASSIGN)null_Assign,
     NULL,			// (P_OBJ_COMPARE)null_Compare,
     NULL, 			// (P_OBJ_PTR)null_Copy,
+    NULL,           // (P_OBJ_DEEPCOPY)
     NULL 			// (P_OBJ_HASH)null_Hash
 };
 

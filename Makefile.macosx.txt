@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (11/27/2017 16:15:23.000)
+# (12/ 5/2017  4:14:49.000)
 
 
 LIBNAM=libCmn
@@ -1068,18 +1068,6 @@ $(OBJDIR)/ptrArray_object.o: $(SRCDIR)/ptrArray_object.c
 
 
 
-OBJS += $(OBJDIR)/pwr2Array.o $(OBJDIR)/pwr2Array_object.o
-
-
-$(OBJDIR)/pwr2Array.o: $(SRCDIR)/pwr2Array.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/pwr2Array_object.o: $(SRCDIR)/pwr2Array_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
 OBJS += $(OBJDIR)/rrds32.o $(OBJDIR)/rrds32_object.o
 
 
@@ -1562,819 +1550,812 @@ TESTS += test_AStr
 
 test_AStr:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_AStr.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_AStrArray
 
 test_AStrArray:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_AStrArray.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_AStrC
 
 test_AStrC:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_AStrC.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_W32StrC
 
 test_W32StrC:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_W32StrC.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_WStr
 
 test_WStr:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStr.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_appl
 
 test_appl:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_appl.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_array
 
 test_array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_array.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_ascii
 
 test_ascii:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ascii.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_audioCW
 
 test_audioCW:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_audioCW.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_audioWAV
 
 test_audioWAV:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_audioWAV.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_bitMatrix
 
 test_bitMatrix:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bitMatrix.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_bitSet
 
 test_bitSet:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bitSet.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_blkdrcds16
 
 test_blkdrcds16:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_blkdrcds16.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_block16
 
 test_block16:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_block16.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_block32
 
 test_block32:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_block32.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_blocks
 
 test_blocks:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_blocks.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_bptree
 
 test_bptree:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bptree.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_btp
 
 test_btp:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_btp.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_cb
 
 test_cb:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb.c tests/objTest.c tests/objTest_object.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_cb16
 
 test_cb16:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb16.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_cb32
 
 test_cb32:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cb32.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_cfa
 
 test_cfa:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cfa.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_clo
 
 test_clo:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_clo.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_consumer
 
 test_consumer:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_consumer.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_crc
 
 test_crc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_crc.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_csv
 
 test_csv:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_csv.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dateTime
 
 test_dateTime:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dateTime.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dbCsv
 
 test_dbCsv:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dbCsv.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dbField
 
 test_dbField:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dbField.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dbf
 
 test_dbf:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dbf.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dec
 
 test_dec:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dec.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dir
 
 test_dir:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dir.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_dirEntry
 
 test_dirEntry:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_dirEntry.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_eResult
 
 test_eResult:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_eResult.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_ebcdic
 
 test_ebcdic:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ebcdic.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_endian
 
 test_endian:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_endian.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_enum
 
 test_enum:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_enum.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_execArray
 
 test_execArray:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_execArray.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_false
 
 test_false:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_false.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_fbs
 
 test_fbs:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_fbs.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_fileio
 
 test_fileio:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_fileio.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_greg
 
 test_greg:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_greg.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_hash32
 
 test_hash32:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hash32.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_hex
 
 test_hex:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hex.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hjson.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_jsonOut
 
 test_jsonOut:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_jsonOut.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_lex
 
 test_lex:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_lex.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_lexj
 
 test_lexj:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_lexj.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_listdl
 
 test_listdl:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_listdl.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_lru
 
 test_lru:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_lru.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_memOSX
 
 test_memOSX:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_memOSX.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_misc
 
 test_misc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_misc.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_msgBus
 
 test_msgBus:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_msgBus.c tests/objTest.c tests/objTest_object.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_msgData
 
 test_msgData:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_msgData.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_name
 
 test_name:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_name.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_node
 
 test_node:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_node.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeATree
 
 test_nodeATree:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeATree.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeArc
 
 test_nodeArc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeArc.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeArray
 
 test_nodeArray:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeArray.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeEntry
 
 test_nodeEntry:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeEntry.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeGraph
 
 test_nodeGraph:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeGraph.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeHash
 
 test_nodeHash:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeHash.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeList
 
 test_nodeList:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeList.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeMatrix
 
 test_nodeMatrix:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeMatrix.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeScan
 
 test_nodeScan:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeScan.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_nodeTree
 
 test_nodeTree:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeTree.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_null
 
 test_null:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_null.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_number
 
 test_number:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_number.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_obj
 
 test_obj:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_obj.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objArray
 
 test_objArray:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objArray.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objCb
 
 test_objCb:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objCb.c tests/objTest.c tests/objTest_object.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objEnum
 
 test_objEnum:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objEnum.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objHash
 
 test_objHash:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objHash.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objList
 
 test_objList:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objList.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objMatrix
 
 test_objMatrix:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objMatrix.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objMethod
 
 test_objMethod:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objMethod.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_objTest
 
 test_objTest:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_objTest.c tests/objTest.c tests/objTest_object.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_path
 
 test_path:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_path.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_plist
 
 test_plist:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_plist.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_psxCond
 
 test_psxCond:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxCond.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_psxLock
 
 test_psxLock:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxLock.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_psxMutex
 
 test_psxMutex:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxMutex.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_psxSem
 
 test_psxSem:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxSem.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_psxThread
 
 test_psxThread:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxThread.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_ptrArray
 
 test_ptrArray:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ptrArray.c 
-	$(OBJDIR)/$(@F)
-
-
-TESTS += test_pwr2Array
-
-test_pwr2Array:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_pwr2Array.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_rrds32
 
 test_rrds32:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_rrds32.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_scanDate
 
 test_scanDate:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanDate.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_scanDec32
 
 test_scanDec32:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanDec32.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_scanString
 
 test_scanString:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanString.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_scanWhite
 
 test_scanWhite:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_scanWhite.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_sidx
 
 test_sidx:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_sidx.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_srcFile
 
 test_srcFile:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcFile.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_srcFiles
 
 test_srcFiles:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcFiles.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_srcLoc
 
 test_srcLoc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcLoc.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_str
 
 test_str:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_str.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_szHash
 
 test_szHash:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_szHash.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_szTbl
 
 test_szTbl:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_szTbl.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_table
 
 test_table:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_table.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_ternary
 
 test_ternary:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_ternary.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_textIn
 
 test_textIn:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_textIn.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_timer
 
 test_timer:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_timer.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_token
 
 test_token:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_token.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_tokenList
 
 test_tokenList:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_tokenList.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_trace
 
 test_trace:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_trace.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_true
 
 test_true:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_true.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_u12Array
 
 test_u12Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u12Array.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_u16Array
 
 test_u16Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u16Array.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_u16Matrix
 
 test_u16Matrix:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u16Matrix.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_u32Array
 
 test_u32Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u32Array.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_u8Array
 
 test_u8Array:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_u8Array.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_uint128
 
 test_uint128:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_uint128.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_utf8
 
 test_utf8:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_utf8.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_value
 
 test_value:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_value.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_wav
 
 test_wav:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wav.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 TESTS += test_xml
 
 test_xml:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_xml.c 
-	$(OBJDIR)/$(@F)
+	$(OBJDIR)/$(@F) ./tests
 
 
 
@@ -2396,11 +2377,11 @@ clean:
 .PHONY: install
 install:
 	-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
-	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include
+	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)
 	cp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a
 	cp src/*.h $(INSTALLDIR)/include/
 	if [ -d src/$(SYS) ]; then \
-		cp src/$(SYS)/*.h $(INSTALLDIR)/include/; \
+		cp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \
 	fi
 
 

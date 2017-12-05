@@ -178,6 +178,7 @@ TOKENLIST_VTBL  tokenList_Vtbl = {
         NULL,            // (P_OBJ_ASSIGN)tokenList_Assign,
         NULL,            // (P_OBJ_COMPARE)tokenList_Compare,
         NULL,             // (P_OBJ_PTR)tokenList_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL             // (P_OBJ_HASH)tokenList_Hash
     }
 };

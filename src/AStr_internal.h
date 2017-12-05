@@ -47,7 +47,7 @@
 #include    <path.h>
 #include    <str.h>
 #include    <objArray.h>
-#include    <pwr2Array_internal.h>
+#include    <array_internal.h>
 
 #ifdef	__cplusplus
 extern "C" {
@@ -61,7 +61,7 @@ struct AStr_data_s	{
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
 
-    PWR2ARRAY_DATA  *pData;
+    ARRAY_DATA      *pData;
 };
 #pragma pack(pop)
 

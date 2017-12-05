@@ -179,6 +179,7 @@ CSV_VTBL     csv_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)csv_Assign,
         NULL,			// (P_OBJ_COMPARE)csv_Compare,
         NULL, 			// (P_OBJ_PTR)csv_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)csv_Hash,
     },
     // Put other object method names below this.

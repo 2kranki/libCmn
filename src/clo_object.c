@@ -178,6 +178,7 @@ CLO_VTBL     clo_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)clo_Assign,
         NULL,			// (P_OBJ_COMPARE)clo_Compare,
         NULL, 			// (P_OBJ_PTR)clo_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)clo_Hash,
     },
     // Put other object method names below this.

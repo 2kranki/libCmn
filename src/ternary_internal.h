@@ -76,7 +76,7 @@ struct ternary_data_s	{
      */
     BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define TERNARY_FLAG_OBJECT    5        /* Data is an object */
+#define TERNARY_FLAG_OBJECT    OBJ_FLAG_USER1        /* Data is an object */
 
     // Common Data
     ERESULT         eRc;

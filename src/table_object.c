@@ -177,6 +177,7 @@ TABLE_VTBL     table_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)table_Assign,
         NULL,			// (P_OBJ_COMPARE)table_Compare,
         NULL, 			// (P_OBJ_PTR)table_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)table_Hash
     },
     // Put other object method names below this.

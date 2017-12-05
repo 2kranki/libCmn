@@ -62,9 +62,10 @@ struct node_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define NODE_DUP_NAME   5   /* We allocated Name */
+#define NODE_DUP_NAME   OBJ_FLAG_USER1   /* We allocated Name */
 
     // Common Data
+    ERESULT         eRc;
     int32_t         cls;
     uint32_t        index;
     NAME_DATA       *pName;

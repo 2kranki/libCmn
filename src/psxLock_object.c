@@ -178,6 +178,7 @@ PSXLOCK_VTBL     psxLock_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)psxLock_Assign,
         NULL,			// (P_OBJ_COMPARE)psxLock_Compare,
         NULL, 			// (P_OBJ_PTR)psxLock_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)psxLock_Hash,
     },
     // Put other object method names below this.

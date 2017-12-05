@@ -179,6 +179,7 @@ BPTREE_VTBL     bptree_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)bptree_Assign,
         NULL,			// (P_OBJ_COMPARE)bptree_Compare,
         NULL, 			// (P_OBJ_PTR)bptree_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)bptree_Hash
     },
     // Put other object method names below this.

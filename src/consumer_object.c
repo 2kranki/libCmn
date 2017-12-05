@@ -177,6 +177,7 @@ CONSUMER_VTBL     consumer_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)consumer_Assign,
         NULL,			// (P_OBJ_COMPARE)consumer_Compare,
         NULL, 			// (P_OBJ_PTR)consumer_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)consumer_Hash
     },
     // Put other object method names below this.

@@ -265,6 +265,7 @@ EBCDIC_VTBL     ebcdic_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)ebcdic_Assign,
         NULL,			// (P_OBJ_COMPARE)ebcdic_Compare,
         NULL, 			// (P_OBJ_PTR)ebcdic_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)ebcdic_Hash
     },
     // Put other object method names below this.

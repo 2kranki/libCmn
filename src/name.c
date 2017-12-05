@@ -432,16 +432,16 @@ extern "C" {
                 break;
                 
             case NAME_TYPE_ASTR:
-            {
-                OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
-                if (pVtbl->pCopy) {
-                    pOther->pObj = pVtbl->pCopy(this->pObj);
+                {
+                    OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
+                    if (pVtbl->pCopy) {
+                        pOther->pObj = pVtbl->pCopy(this->pObj);
+                    }
+                    else {
+                        obj_Retain(this->pObj);
+                        pOther->pObj = this->pObj;
+                    }
                 }
-                else {
-                    obj_Retain(this->pObj);
-                    pOther->pObj = this->pObj;
-                }
-            }
                 break;
                 
             case NAME_TYPE_UTF8:
@@ -677,6 +677,71 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                      D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    NAME_DATA *     name_DeepCopy(
+        NAME_DATA       *this
+    )
+    {
+        NAME_DATA       *pOther;
+        ERESULT         eRc;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pOther = name_Alloc();
+        pOther = name_Init( pOther );
+        if (OBJ_NIL == pOther) {
+            return OBJ_NIL;
+        }
+        
+        pOther->type = this->type;
+        switch (this->type) {
+                
+            case NAME_TYPE_UNKNOWN:
+                break;
+                
+            case NAME_TYPE_INTEGER:
+                pOther->integer = this->integer;
+                break;
+                
+            case NAME_TYPE_ASTR:
+                {
+                    OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
+                    if (pVtbl->pDeepCopy) {
+                        pOther->pObj = pVtbl->pDeepCopy(this->pObj);
+                    }
+                    else {
+                        obj_Retain(this->pObj);
+                        pOther->pObj = this->pObj;
+                    }
+                }
+                break;
+                
+            case NAME_TYPE_UTF8:
+                pOther->pChrs = str_DupA(this->pChrs);
+                break;
+                
+            case NAME_TYPE_UTF8_CON:
+                pOther->pChrs = this->pChrs;
+                break;
+                
+            default:
+                DEBUG_BREAK();
+                name_setLastError(this, ERESULT_GENERAL_FAILURE);
+                obj_Release(pOther);
+                return OBJ_NIL;
+                
+        }
+        
+        return pOther;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------

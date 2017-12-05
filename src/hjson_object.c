@@ -178,6 +178,7 @@ HJSON_VTBL     hjson_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)hjson_Assign,
         NULL,			// (P_OBJ_COMPARE)hjson_Compare,
         NULL, 			// (P_OBJ_PTR)hjson_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)hjson_Hash,
     },
     // Put other object method names below this.

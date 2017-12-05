@@ -179,6 +179,7 @@ NODESCAN_VTBL     nodeScan_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)nodeScan_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeScan_Compare,
         NULL, 			// (P_OBJ_PTR)nodeScan_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)nodeScan_Hash
     },
     // Put other object method names below this.

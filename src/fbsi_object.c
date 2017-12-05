@@ -177,6 +177,7 @@ FBSI_VTBL     fbsi_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)fbsi_Assign,
         NULL,			// (P_OBJ_COMPARE)fbsi_Compare,
         NULL, 			// (P_OBJ_PTR)fbsi_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)fbsi_Hash
     },
     // Put other object method names below this.

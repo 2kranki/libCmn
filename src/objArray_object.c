@@ -176,7 +176,8 @@ OBJARRAY_VTBL     objArray_Vtbl = {
         NULL,			// objArray_Disable,
         NULL,			// (P_OBJ_ASSIGN)objArray_Assign,
         NULL,			// (P_OBJ_COMPARE)objArray_Compare,
-        NULL, 			// (P_OBJ_PTR)objArray_Copy,
+        (P_OBJ_COPY)objArray_Copy,
+        (P_OBJ_DEEPCOPY)objArray_DeepCopy,
         NULL 			// (P_OBJ_HASH)objArray_Hash
     },
     // Put other object method names below this.

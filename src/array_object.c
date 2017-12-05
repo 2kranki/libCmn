@@ -177,7 +177,8 @@ ARRAY_VTBL     array_Vtbl = {
         NULL,			// array_Disable,
         NULL,			// (P_OBJ_ASSIGN)array_Assign,
         NULL,			// (P_OBJ_COMPARE)array_Compare,
-        NULL, 			// (P_OBJ_PTR)array_Copy,
+        (P_OBJ_COPY)array_Copy,
+        (P_OBJ_DEEPCOPY)array_DeepCopy,
         NULL 			// (P_OBJ_HASH)array_Hash,
     },
     // Put other object method names below this.

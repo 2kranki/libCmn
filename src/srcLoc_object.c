@@ -176,6 +176,7 @@ OBJ_IUNKNOWN    srcLoc_Vtbl = {
     NULL,			// (P_OBJ_ASSIGN)srcLoc_Assign,
     NULL,			// (P_OBJ_COMPARE)srcLoc_Compare,
     NULL, 			// (P_OBJ_PTR)srcLoc_Copy,
+    NULL,           // (P_OBJ_DEEPCOPY)
     NULL 			// (P_OBJ_HASH)srcLoc_Hash
 };
 

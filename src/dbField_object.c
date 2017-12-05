@@ -179,6 +179,7 @@ DBFIELD_VTBL     dbField_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)dbField_Assign,
         NULL,			// (P_OBJ_COMPARE)dbField_Compare,
         NULL, 			// (P_OBJ_PTR)dbField_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)dbField_Hash,
     },
     // Put other object method names below this.

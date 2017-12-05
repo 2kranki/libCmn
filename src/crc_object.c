@@ -178,6 +178,7 @@ CRC_VTBL     crc_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)crc_Assign,
         NULL,			// (P_OBJ_COMPARE)crc_Compare,
         NULL, 			// (P_OBJ_PTR)crc_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)crc_Hash,
     },
     // Put other object method names below this.

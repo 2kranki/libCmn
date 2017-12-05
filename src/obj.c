@@ -653,6 +653,10 @@ extern	"C" {
         
         // Free the main control block.
         if (obj_IsFlag(this, OBJ_FLAG_ALLOC)) {
+#ifdef NDEBUG
+#else
+            obj_setVtbl(this, NULL);
+#endif
             mem_FreeObject(this);
             this = OBJ_NIL;
         }
@@ -800,6 +804,27 @@ extern	"C" {
         return false;
     }
     
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      I s  R e a d  O n l y
+    //---------------------------------------------------------------
+    
+    bool            obj_IsReadOnly(
+        void            *pVoid
+    )
+    {
+        OBJ_DATA        *this = pVoid;
+        
+        // Do initialization.
+        
+        if (this->cbFlags & (1 << OBJ_FLAG_RO))
+            return true;
+        
+        // Return to caller.
+        return false;
+    }
     
     
     

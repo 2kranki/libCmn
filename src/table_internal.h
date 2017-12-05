@@ -90,7 +90,7 @@ extern "C" {
          */
         OBJ_DATA            super;
         OBJ_IUNKNOWN        *pSuperVtbl;
-#define TABLE_FLAG_FIXED    5
+#define TABLE_FLAG_FIXED    OBJ_FLAG_USER1
 
         ERESULT             eRc;
 

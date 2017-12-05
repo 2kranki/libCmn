@@ -137,6 +137,57 @@ extern "C" {
     );
     
     
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+     ERESULT eRc = objList__Assign(this,pOther);
+     @endcode
+     @param     this    OBJLIST object pointer
+     @param     pOther  a pointer to another OBJLIST object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+     ERESULT_* error
+     */
+    ERESULT         objList_Assign(
+        OBJLIST_DATA    *this,
+        OBJLIST_DATA    *pOther
+    );
+    
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     objList      *pCopy = objList_Copy(this);
+     @endcode
+     @param     this    OBJLIST object pointer
+     @return    If successful, a OBJLIST object which must be released,
+     otherwise OBJ_NIL.
+     @warning   Remember to release the returned the OBJLIST object.
+     */
+    OBJLIST_DATA *     objList_Copy(
+        OBJLIST_DATA       *this
+    );
+    
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     objList      *pCopy = objList_DeepCopy(this);
+     @endcode
+     @param     this    OBJLIST object pointer
+     @return    If successful, a OBJLIST object which must be released,
+     otherwise OBJ_NIL.
+     @warning   Remember to release the returned the OBJLIST object.
+     */
+    OBJLIST_DATA *  objList_DeepCopy(
+        OBJLIST_DATA    *this
+    );
+    
+    
     ERESULT         objList_DeleteHead(
         OBJLIST_DATA	*this
     );

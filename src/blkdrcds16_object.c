@@ -179,6 +179,7 @@ BLKDRCDS16_VTBL     blkdrcds16_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)blkdrcds16_Assign,
         NULL,			// (P_OBJ_COMPARE)blkdrcds16_Compare,
         NULL, 			// (P_OBJ_PTR)blkdrcds16_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)blkdrcds16_Hash,
     },
     // Put other object method names below this.

@@ -52,7 +52,18 @@ int         tearDown(
 
     
     trace_SharedReset( ); 
-    mem_Dump( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     
     return 1; 
@@ -108,6 +119,7 @@ int         test_array_Insert01(
 )
 {
     ARRAY_DATA      *pObj = OBJ_NIL;
+    ARRAY_DATA      *pObj2 = OBJ_NIL;
     ERESULT         eRc;
     char            *pStr;
     uint32_t        i;
@@ -130,10 +142,26 @@ int         test_array_Insert01(
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
         
-        pStr = array_Ptr(pObj,1);
-        XCTAssertTrue( (0 == strcmp("defabc", pStr)) );
+        pStr = array_Ptr(pObj, 1);
+        XCTAssertTrue( (0 == memcmp("defabc\x00", pStr, array_getSize(pObj))) );
+ 
+        pObj2 = array_Copy(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        pStr = array_Ptr(pObj2, 1);
+        XCTAssertTrue( (0 == memcmp("defabc\x00", pStr, array_getSize(pObj))) );
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+        
+        pObj2 = array_DeepCopy(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        pStr = array_Ptr(pObj2, 1);
+        XCTAssertTrue( (0 == memcmp("defabc\x00", pStr, array_getSize(pObj))) );
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
+        
     }
     
     fprintf(stderr, "...%s completed.\n", pTestName);
@@ -177,7 +205,7 @@ int         test_array_Insert02(
         XCTAssertTrue( (7 == i) );
         
         pStr = array_Ptr(pObj,1);
-        XCTAssertTrue( (0 == strcmp("abdefc", pStr)) );
+        XCTAssertTrue( (0 == memcmp("abdefc\x00", pStr, array_getSize(pObj))) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -224,7 +252,7 @@ int         test_array_Insert03(
         XCTAssertTrue( (7 == i) );
         
         pStr = array_Ptr(pObj, 1);
-        XCTAssertTrue( (0 == strcmp("abcdef", pStr)) );
+        XCTAssertTrue( (0 == memcmp("abcdef\x00", pStr, array_getSize(pObj))) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -386,6 +414,7 @@ int         test_array_Delete01(
         
         i = array_getElemSize(pObj);
         XCTAssertTrue( (1 == i) );
+        array_setZeroNew(pObj, true);
         
         pStr = "abcdef";
         len = (uint32_t)(strlen(pStr) + 1);
@@ -395,20 +424,23 @@ int         test_array_Delete01(
         XCTAssertTrue( (len == i) );
         pStr = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strcmp("abcdef", pStr)) );
-        
+        fprintf(stderr, "\tmax = %d\n", array_getMax(pObj));
+        XCTAssertTrue( (0 == memcmp("abcdef\x00\x00", pStr, array_getMax(pObj))) );
+
         eRc = array_Delete(pObj, 1, 1);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (6 == i) );
         pStr = array_Ptr(pObj, 1);
-        XCTAssertTrue( (0 == strcmp("bcdef", pStr)) );
-        
+        XCTAssertTrue( (0 == memcmp("bcdef\x00", pStr, array_getSize(pObj))) );
+        XCTAssertTrue( (0 == memcmp("bcdef\x00\x00\x00", pStr, array_getMax(pObj))) );
+
         eRc = array_Delete(pObj, 4, 2);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (4 == i) );
         pStr = array_Ptr(pObj, 1);
-        XCTAssertTrue( (0 == strcmp("bcd", pStr)) );
+        XCTAssertTrue( (0 == memcmp("bcd\x00", pStr, array_getSize(pObj))) );
         
         eRc = array_Delete(pObj, 2, 2);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -444,7 +476,8 @@ int         test_array_Delete02(
         
         i = array_getElemSize(pObj);
         XCTAssertTrue( (1 == i) );
-        
+        array_setZeroNew(pObj, true);
+
         pStr = "cabbaadeee";
         len = (uint16_t)(strlen(pStr) + 1);
         eRc = array_InsertData(pObj, 1, len, pStr);

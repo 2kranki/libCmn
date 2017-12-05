@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include    <AStr_internal.h>
 #include    <ascii.h>
+#include    <AStrC.h>
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
@@ -456,11 +457,11 @@ extern "C" {
 #endif
 
         pCrc = crc_New(CRC_TYPE_IEEE_32);
-        len = pwr2Array_getSize(this->pData);
+        len = array_getSize(this->pData);
         crc = crc_AccumBlock(
                             pCrc,
                             len,
-                            (void *)pwr2Array_Ptr(this->pData, 1)
+                            (void *)array_Ptr(this->pData, 1)
               );
         obj_Release(pCrc);
         pCrc = OBJ_NIL;
@@ -485,7 +486,7 @@ extern "C" {
         }
 #endif
         
-        pData = pwr2Array_Ptr(this->pData, 1);
+        pData = array_Ptr(this->pData, 1);
         
         return pData;
     }
@@ -534,15 +535,15 @@ extern "C" {
         }
 #endif
         
-        if (pwr2Array_getSize(pOther->pData) > 1) {
-            eRc =   pwr2Array_InsertData(
+        if (array_getSize(pOther->pData) > 1) {
+            eRc =   array_InsertData(
                                     this->pData,
-                                    pwr2Array_getSize(this->pData),
-                                    pwr2Array_getSize(pOther->pData)-1,
-                                    pwr2Array_getData(pOther->pData)
+                                    array_getSize(this->pData),
+                                    array_getSize(pOther->pData)-1,
+                                    array_getData(pOther->pData)
                     );
             if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                pwr2Array_AdjustSize( this->pData, -1 );
+                array_AdjustSize(this->pData, -1);
             }
         }
         
@@ -579,14 +580,14 @@ extern "C" {
         }
         
         // Insert space for the data and then copy it.
-        index = pwr2Array_getSize(this->pData);
-        eRc =   pwr2Array_InsertSpacing(
+        index = array_getSize(this->pData);
+        eRc =   array_InsertSpacing(
                         this->pData,
                         index,
                         len
                 );
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pInsert = pwr2Array_Ptr(this->pData, index);
+            pInsert = array_Ptr(this->pData, index);
             for (i=0; i<len; ++i) {
                 *pInsert++ = *pStr++;
             }
@@ -655,9 +656,9 @@ extern "C" {
             if (pStr8) {
                 lenChars = utf8_W32ToUtf8Str(len, pStr, lenChars, pStr8);
                 if (lenChars) {
-                    eRc =   pwr2Array_InsertData(
+                    eRc =   array_InsertData(
                                     this->pData,
-                                    pwr2Array_getSize(this->pData),
+                                    array_getSize(this->pData),
                                     lenChars,
                                     (void *)pStr8
                             );
@@ -695,14 +696,10 @@ extern "C" {
         }
 #endif
         
-        offset = pwr2Array_getSize(this->pData);
-        eRc =   pwr2Array_InsertSpacing(
-                                        this->pData,
-                                        offset,
-                                        1
-                );
+        offset = array_getSize(this->pData);
+        eRc =   array_InsertSpacing(this->pData, offset, 1);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pData = pwr2Array_Ptr(this->pData, offset);
+            pData = array_Ptr(this->pData, offset);
             *pData = chr;
         }
         
@@ -734,14 +731,14 @@ extern "C" {
         
         len = utf8_W32ToUtf8(chr, data);
         if (len) {
-            offset = pwr2Array_getSize(this->pData);
-            eRc =   pwr2Array_InsertSpacing(
+            offset = array_getSize(this->pData);
+            eRc =   array_InsertSpacing(
                                             this->pData,
                                             offset,
                                             len
                                             );
             if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                pData = pwr2Array_Ptr(this->pData, offset);
+                pData = array_Ptr(this->pData, offset);
                 memmove(pData, data, len);
             }
         }
@@ -775,14 +772,14 @@ extern "C" {
         }
 #endif
         
-        offset = pwr2Array_getSize(this->pData);
-        eRc =   pwr2Array_InsertSpacing(
+        offset = array_getSize(this->pData);
+        eRc =   array_InsertSpacing(
                                         this->pData,
                                         offset,
                                         len
                                         );
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pData = pwr2Array_Ptr(this->pData, offset);
+            pData = array_Ptr(this->pData, offset);
             for (i=0; i<len; ++i) {
                 *pData++ = chr;
             };
@@ -822,14 +819,14 @@ extern "C" {
 #endif
         chrsLen = utf8_W32ToUtf8(chr, chrs);
         
-        offset = pwr2Array_getSize(this->pData);
-        eRc =   pwr2Array_InsertSpacing(
+        offset = array_getSize(this->pData);
+        eRc =   array_InsertSpacing(
                         this->pData,
                         offset,
                         (len * chrsLen)
                 );
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pData = pwr2Array_Ptr(this->pData, offset);
+            pData = array_Ptr(this->pData, offset);
             if (chrsLen ==  1) {
                 for (i=0; i<len; ++i) {
                     *pData++ = chrs[0];
@@ -1045,13 +1042,13 @@ extern "C" {
         }
 #endif
         
-        eRc = pwr2Array_Assign(this->pData, pOther->pData);
+        eRc = array_Assign(this->pData, pOther->pData);
         if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1100,7 +1097,7 @@ extern "C" {
         
         for ( i=index; i<=lenStr; ++i ) {
             off = utf8_StrOffset(AStr_getData(this), i);
-            pChr = pwr2Array_Ptr(this->pData, off);
+            pChr = array_Ptr(this->pData, off);
             if (0 == strncmp(pChr, chrsSrch, cChrsSrch)) {
                 *pIndex = i;
                 return ERESULT_SUCCESS;
@@ -1157,7 +1154,7 @@ extern "C" {
         
         for ( i=index; i; --i ) {
             off = utf8_StrOffset(AStr_getData(this), i);
-            pChr = pwr2Array_Ptr(this->pData, off);
+            pChr = array_Ptr(this->pData, off);
             if (0 == strncmp(pChr, chrsSrch, cChrsSrch)) {
                 *pIndex = i;
                 return ERESULT_SUCCESSFUL_COMPLETION;
@@ -1200,7 +1197,7 @@ extern "C" {
         }
         off = utf8_StrOffset(AStr_getData(this), offset);
         
-        pChr = pwr2Array_Ptr(this->pData, off);
+        pChr = array_Ptr(this->pData, off);
         if (pChr) {
             lenStr = utf8_Utf8ToW32(pChr, &chr);
         }
@@ -1244,10 +1241,10 @@ extern "C" {
         }
         off = utf8_StrOffset(AStr_getData(this), offset);
         
-        pChr = pwr2Array_Ptr(this->pData, off);
+        pChr = array_Ptr(this->pData, off);
         lenStr = utf8_Utf8ToW32(pChr, NULL);
         if (pChr && lenStr) {
-            eRc = pwr2Array_InsertData(this->pData, off, chrsLen, chrs);
+            eRc = array_InsertData(this->pData, off, chrsLen, chrs);
         }
         
         // Return to caller.
@@ -1289,12 +1286,12 @@ extern "C" {
         }
         off = utf8_StrOffset(AStr_getData(this), offset);
         
-        pChr = pwr2Array_Ptr(this->pData, off);
+        pChr = array_Ptr(this->pData, off);
         lenStr = utf8_Utf8ToW32(pChr, NULL);
         if (pChr && lenStr) {
-            eRc = pwr2Array_Delete(this->pData, off, lenStr);
+            eRc = array_Delete(this->pData, off, lenStr);
             if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                eRc = pwr2Array_InsertData(this->pData, off, chrsLen, chrs);
+                eRc = array_InsertData(this->pData, off, chrsLen, chrs);
             }
         }
         
@@ -1339,14 +1336,14 @@ extern "C" {
         cChrsSrch = utf8_W32ToUtf8(chrSrch, chrsSrch);
         cChrsRepl = utf8_W32ToUtf8(chrRepl, chrsRepl);
         
-        pChr = pwr2Array_Ptr(this->pData, 1);
+        pChr = array_Ptr(this->pData, 1);
         for ( i=0; i<lenStr; ++i ) {
             off = utf8_StrOffset(AStr_getData(this), i+1);
-            pChr = pwr2Array_Ptr(this->pData, off);
+            pChr = array_Ptr(this->pData, off);
             if (0 == strncmp(pChr, chrsSrch, cChrsSrch)) {
-                eRc = pwr2Array_Delete(this->pData, off, cChrsSrch);
+                eRc = array_Delete(this->pData, off, cChrsSrch);
                 if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                    eRc =   pwr2Array_InsertData(
+                    eRc =   array_InsertData(
                                             this->pData,
                                             off,
                                             cChrsRepl,
@@ -1395,8 +1392,8 @@ extern "C" {
         }
         
         i = utf8_StrCmp(
-                    pwr2Array_Ptr(this->pData,1),
-                    pwr2Array_Ptr(pOther->pData,1)
+                    array_Ptr(this->pData,1),
+                    array_Ptr(pOther->pData,1)
             );
         if( i < 0 )
             eRc = ERESULT_SUCCESS_LESS_THAN;
@@ -1431,7 +1428,7 @@ extern "C" {
 #endif
         
         i = utf8_StrCmp(
-                        pwr2Array_Ptr(this->pData,1),
+                        array_Ptr(this->pData, 1),
                         pData
             );
         if( i < 0 )
@@ -1475,7 +1472,7 @@ extern "C" {
         }
         
         offset = len - lenData + 1;
-        i = utf8_StrCmp(pwr2Array_Ptr(this->pData, offset), pData);
+        i = utf8_StrCmp(array_Ptr(this->pData, offset), pData);
         if( i < 0 )
             eRc = ERESULT_SUCCESS_LESS_THAN;
         if( i > 0 )
@@ -1508,10 +1505,7 @@ extern "C" {
         }
 #endif
         
-        i = utf8_StrCmpAW32(
-                        pwr2Array_Ptr(this->pData,1),
-                        pData
-                        );
+        i = utf8_StrCmpAW32(array_Ptr(this->pData, 1), pData);
         if( i < 0 )
             eRc = ERESULT_SUCCESS_LESS_THAN;
         if( i > 0 )
@@ -1580,11 +1574,11 @@ extern "C" {
             return NULL;
         }
 #endif
-        lenStr = pwr2Array_getSize(this->pData);
+        lenStr = array_getSize(this->pData);
         
         pAStr = (char *)mem_Malloc(lenStr);
         if (pAStr) {
-            memmove(pAStr, pwr2Array_Ptr(this->pData, 1), lenStr);
+            memmove(pAStr, array_Ptr(this->pData, 1), lenStr);
         }
         
         // Return to caller.
@@ -1632,6 +1626,42 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *    AStr_DeepCopy(
+        ASTR_DATA      *this
+    )
+    {
+        ASTR_DATA      *pOther = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = AStr_New();
+        if (pOther) {
+            obj_Release(pOther->pData);
+            //pOther->pData = OBJ_NIL;
+            pOther->pData = array_DeepCopy(this->pData);
+            if (OBJ_NIL == pOther->pData) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------
     
@@ -1649,7 +1679,7 @@ extern "C" {
         }
 #endif
         
-        pStr = pwr2Array_Ptr(this->pData, 1);
+        pStr = array_Ptr(this->pData, 1);
         if (pStr) {
             hash = str_HashAcmA( pStr, NULL );
         }
@@ -1686,15 +1716,15 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStr_Vtbl);
         
-        this->pData = pwr2Array_New(0);
+        this->pData = array_New(1);
         if (OBJ_NIL == this->pData) {
             obj_Release(this);
             return OBJ_NIL;
         }
-        pwr2Array_setDontZero(this->pData, true);
+        //array_setZeroNew(this->pData, true);
         
         // Set up the End-Of-Data marker (ie '\0')
-        eRc = pwr2Array_AppendData(this->pData, 1, &eod);
+        eRc = array_AppendData(this->pData, 1, &eod);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1755,7 +1785,7 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         
-        eRc =   pwr2Array_InsertData(
+        eRc =   array_InsertData(
                             this->pData,
                             off,
                             len,
@@ -1800,7 +1830,7 @@ extern "C" {
         pChrs = mem_Malloc(len);
         if (pChrs) {
             len = utf8_W32ToUtf8Str(0,pStr,len,pChrs);
-            eRc = pwr2Array_InsertData(
+            eRc = array_InsertData(
                                 this->pData,
                                 off,
                                 len,
@@ -1842,7 +1872,7 @@ extern "C" {
 #endif
         lenStr = AStr_getLength(this);
         
-        pData = pwr2Array_Ptr(this->pData, 1);
+        pData = array_Ptr(this->pData, 1);
         if (pData) {
             while (*pData) {
                 if (*pData > 0x7F) {
@@ -1922,7 +1952,7 @@ extern "C" {
 #endif
         
         lenStr = AStr_getLength(this);
-        pData  = pwr2Array_Ptr(this->pData, 1);
+        pData  = array_Ptr(this->pData, 1);
         if (lenStr) {
             while( *pData ) {
                 if( (*pData >= 'A') && (*pData <= 'Z') )
@@ -2024,9 +2054,9 @@ extern "C" {
         if (OBJ_NIL == pNew) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
-        pData  = pwr2Array_Ptr(this->pData, offBgn);
+        pData  = array_Ptr(this->pData, offBgn);
         if (pData) {
-            eRc =   pwr2Array_InsertData(
+            eRc =   array_InsertData(
                                 pNew->pData,
                                 1,
                                 lenStr,
@@ -2139,7 +2169,7 @@ extern "C" {
         offBgn = utf8_StrOffset(AStr_getData(this), offset);
         offEnd = utf8_StrOffset(AStr_getData(this), (offset + len - 1));
         
-        eRc =   pwr2Array_Delete(
+        eRc =   array_Delete(
                             this->pData,
                             offBgn,
                             (offEnd - offBgn + 1)
@@ -2236,10 +2266,10 @@ extern "C" {
             return ERESULT_OUT_OF_RANGE;
         }
         
-        pData = pwr2Array_Ptr(this->pData,index);
+        pData = array_Ptr(this->pData,index);
         for ( i=index; i<lenStr; ++i ) {
             off = utf8_StrOffset(AStr_getData(this), i);
-            pData  = pwr2Array_Ptr(this->pData, off);
+            pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
             if (WStr_ChrInStr(chr,pSetStr))
                 ;
@@ -2317,7 +2347,7 @@ extern "C" {
         }
 #endif
 
-        pData  = pwr2Array_Ptr(this->pData, 1);
+        pData  = array_Ptr(this->pData, 1);
         num = dec_getInt64A(pData);
         
         // Return to caller.
@@ -2346,7 +2376,7 @@ extern "C" {
         }
 #endif
         
-        pData  = pwr2Array_Ptr(this->pData, 1);
+        pData  = array_Ptr(this->pData, 1);
         num = (uint64_t)dec_getInt64A(pData);
         
         // Return to caller.
@@ -2380,7 +2410,7 @@ extern "C" {
         if (pStr) {
             lenStr = AStr_getLength(pStr);
             if (lenStr) {
-                pData = pwr2Array_Ptr(pStr->pData,1);
+                pData = array_Ptr(pStr->pData,1);
                 while( *pData ) {
                     if( (*pData >= 'A') && (*pData <= 'Z') )
                         *pData = (char)(*pData + ('a' - 'A'));
@@ -2397,6 +2427,22 @@ extern "C" {
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStr_ToAStrC(
+        ASTR_DATA       *this
+    )
+    {
+        ASTRC_DATA      *pStr;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStrC_NewA(AStr_getData(this));
+        
+        return pStr;
+    }
+    
     
     ASTR_DATA *     AStr_ToDebugString(
         ASTR_DATA       *this,
@@ -2421,12 +2467,13 @@ extern "C" {
         }
         eRc =   AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) \n",
+                    "{%p(%s) retain=%d\n",
                     this,
-                    pInfo->pClassName
+                    pInfo->pClassName,
+                    obj_getRetainCount(this)
                 );
 
-        pWrkStr = pwr2Array_ToDebugString(this->pData, indent+3 );
+        pWrkStr = array_ToDebugString(this->pData, indent+3);
         if (pWrkStr) {
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
@@ -2483,7 +2530,7 @@ extern "C" {
         if (pStr) {
             lenStr = AStr_getLength(pStr);
             if (lenStr) {
-                pData = pwr2Array_Ptr(pStr->pData,1);
+                pData = array_Ptr(pStr->pData,1);
                 while( *pData ) {
                     if( (*pData >= 'a') && (*pData <= 'z') )
                         *pData = (char)(*pData - ('a' - 'A'));
@@ -2585,7 +2632,7 @@ extern "C" {
         k = 0;
         for (i=1; i<=lenStr; ++i) {
             off = utf8_StrOffset(AStr_getData(this), i);
-            pData  = pwr2Array_Ptr(this->pData, off);
+            pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
             j = WStr_ChrInStr(chr, WStr_WhiteSpaceW32());
             if (0 == j) {
@@ -2606,7 +2653,7 @@ extern "C" {
         k = 0;
         for (i=lenStr; i; --i) {
             off = utf8_StrOffset(AStr_getData(this), i);
-            pData  = pwr2Array_Ptr(this->pData, off);
+            pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
             j = WStr_ChrInStr(chr, WStr_WhiteSpaceW32());
             if (0 == j) {
@@ -2653,18 +2700,18 @@ extern "C" {
         // Insert new EOD char and adjust size.
         if (len) {
             off = utf8_StrOffset(AStr_getData(this), (len + 1));
-            pData  = pwr2Array_Ptr(this->pData, off);
+            pData  = array_Ptr(this->pData, off);
             if (pData) {
                 *pData = '\0';
             }
-            pwr2Array_setSize(this->pData, off);
+            array_setSize(this->pData, off);
         }
         else {
-            pData  = pwr2Array_Ptr(this->pData, 1);
+            pData  = array_Ptr(this->pData, 1);
             if (pData) {
                 *pData = '\0';
             }
-            pwr2Array_setSize(this->pData, 1);
+            array_setSize(this->pData, 1);
         }
         
         // Return to caller.
@@ -2695,7 +2742,7 @@ extern "C" {
         lenStr = AStr_getLength(this);
         
         if (lenStr) {
-            pData = pwr2Array_Ptr(this->pData,1);
+            pData = array_Ptr(this->pData,1);
             while( *pData ) {
                 if( (*pData >= 'a') && (*pData <= 'z') )
                     *pData = (char)(*pData - ('a' - 'A'));

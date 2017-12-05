@@ -177,6 +177,7 @@ BLOCK16_VTBL    block16_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)block16_Assign,
         NULL,			// (P_OBJ_COMPARE)block16_Compare,
         NULL, 			// (P_OBJ_PTR)block16_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)block16_Hash
     }
 };

@@ -178,6 +178,7 @@ EXECARRAY_VTBL     execArray_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)execArray_Assign,
         NULL,			// (P_OBJ_COMPARE)execArray_Compare,
         NULL, 			// (P_OBJ_PTR)execArray_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)execArray_Hash
     },
     // Put other object method names below this.

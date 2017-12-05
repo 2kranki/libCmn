@@ -178,6 +178,7 @@ HASH32_VTBL     hash32_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)hash32_Assign,
         NULL,			// (P_OBJ_COMPARE)hash32_Compare,
         NULL, 			// (P_OBJ_PTR)hash32_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)hash32_Hash,
     },
     // Put other object method names below this.

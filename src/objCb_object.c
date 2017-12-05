@@ -179,6 +179,7 @@ OBJCB_VTBL     objCb_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)objCb_Assign,
         NULL,			// (P_OBJ_COMPARE)objCb_Compare,
         NULL, 			// (P_OBJ_PTR)objCb_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)objCb_Hash,
     },
     // Put other object method names below this.

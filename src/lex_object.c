@@ -176,6 +176,7 @@ LEX_VTBL        lex_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)lex_Assign,
         NULL,			// (P_OBJ_COMPARE)lex_Compare,
         NULL, 			// (P_OBJ_PTR)lex_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)lex_Hash
     },
     lex_getErrors,

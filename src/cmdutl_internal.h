@@ -80,7 +80,7 @@ struct cmdutl_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define OBJ_FLAG_EOF        4           /* At EOF */
+#define OBJ_FLAG_EOF        OBJ_FLAG_USER1           /* At EOF */
 
     // Common Data
     SRCFILE_DATA    *pSrc;

@@ -179,6 +179,7 @@ CFA_VTBL     cfa_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)cfa_Assign,
         NULL,			// (P_OBJ_COMPARE)cfa_Compare,
         NULL, 			// (P_OBJ_PTR)cfa_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)cfa_Hash,
     },
     // Put other object method names below this.

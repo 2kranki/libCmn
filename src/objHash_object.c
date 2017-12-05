@@ -178,6 +178,7 @@ OBJHASH_VTBL    objHash_Vtbl = {
         NULL,            // (P_OBJ_ASSIGN)objHash_Assign,
         NULL,            // (P_OBJ_COMPARE)objHash_Compare,
         NULL,             // (P_OBJ_PTR)objHash_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL             // (P_OBJ_HASH)objHash_Hash
     }
 };

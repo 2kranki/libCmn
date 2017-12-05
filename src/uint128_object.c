@@ -179,6 +179,7 @@ UINT128_VTBL     uint128_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)uint128_Assign,
         NULL,			// (P_OBJ_COMPARE)uint128_Compare,
         NULL, 			// (P_OBJ_PTR)uint128_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)uint128_Hash,
     },
     // Put other object method names below this.

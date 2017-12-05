@@ -185,6 +185,7 @@ U16ARRAY_VTBL     u16Array_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)u16Array_Assign,
         NULL,			// (P_OBJ_COMPARE)u16Array_Compare,
         NULL, 			// (P_OBJ_PTR)u16Array_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)u16Array_Hash,
     },
     // Put other object method names below this.

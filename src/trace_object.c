@@ -177,6 +177,7 @@ OBJ_IUNKNOWN    trace_Vtbl = {
     NULL,			// (P_OBJ_ASSIGN)trace_Assign,
     NULL,			// (P_OBJ_COMPARE)trace_Compare,
     NULL, 			// (P_OBJ_PTR)trace_Copy,
+    NULL,           // (P_OBJ_DEEPCOPY)
     NULL 			// (P_OBJ_HASH)trace_Hash
 };
 

@@ -1019,6 +1019,7 @@ DEC_VTBL     dec_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)dec_Assign,
         NULL,			// (P_OBJ_COMPARE)dec_Compare,
         NULL, 			// (P_OBJ_PTR)dec_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)dec_Hash
     },
     // Put other object method names below this.

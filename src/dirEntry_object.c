@@ -178,6 +178,7 @@ DIRENTRY_VTBL     dirEntry_Vtbl = {
         (P_OBJ_ASSIGN)dirEntry_Assign,
         (P_OBJ_COMPARE)dirEntry_Compare,
         (P_OBJ_PTR)dirEntry_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)dirEntry_Hash,
     },
     // Put other object method names below this.

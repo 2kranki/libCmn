@@ -179,6 +179,7 @@ SZTBL_VTBL     szTbl_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)szTbl_Assign,
         NULL,			// (P_OBJ_COMPARE)szTbl_Compare,
         NULL, 			// (P_OBJ_PTR)szTbl_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)szTbl_Hash,
     },
     // Put other object method names below this.

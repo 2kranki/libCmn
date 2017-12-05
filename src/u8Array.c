@@ -160,7 +160,7 @@ extern "C" {
             return 0;
         }
 #endif
-        return pwr2Array_Ptr(this->pData, 1);
+        return array_Ptr(this->pData, 1);
     }
     
     
@@ -213,7 +213,7 @@ extern "C" {
             return 0;
         }
 #endif
-        return pwr2Array_getSize(this->pData);
+        return array_getSize(this->pData);
     }
 
 
@@ -250,7 +250,7 @@ extern "C" {
         }
 #endif
         
-        eRc =   pwr2Array_Append(
+        eRc =   array_Append(
                         this->pData,
                         other->pData
                 );
@@ -281,7 +281,7 @@ extern "C" {
         }
 #endif
         
-        eRc =   pwr2Array_AppendData(
+        eRc =  array_AppendData(
                             this->pData,
                             size,
                             pData
@@ -313,8 +313,8 @@ extern "C" {
         }
 #endif
         
-        offset = pwr2Array_getSize(this->pData);
-        eRc =   pwr2Array_AppendData(
+        offset = array_getSize(this->pData);
+        eRc =   array_AppendData(
                         this->pData,
                         1,
                         &data
@@ -396,7 +396,7 @@ extern "C" {
             obj_Release(pOther->pData);
         }
         
-        pOther->pData = pwr2Array_Copy(this->pData);
+        pOther->pData = array_Copy(this->pData);
         if (OBJ_NIL == pOther->pData) {
             DEBUG_BREAK();
             return ERESULT_GENERAL_FAILURE;
@@ -498,7 +498,7 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if ((index > 0) && (index <= pwr2Array_getSize(this->pData)))
+        if ((index > 0) && (index <= array_getSize(this->pData)))
             ;
         else {
             DEBUG_BREAK();
@@ -506,10 +506,10 @@ extern "C" {
         }
 #endif
         
-        pData = pwr2Array_Ptr(this->pData, index);
+        pData = array_Ptr(this->pData, index);
         if (pData) {
             data = *pData;
-            eRc = pwr2Array_Delete(this->pData, index, 1);
+            eRc = array_Delete(this->pData, index, 1);
             if (ERESULT_HAS_FAILED(eRc)) {
                 return 0;
             }
@@ -557,7 +557,7 @@ extern "C" {
         }
 #endif
         
-        data = u8Array_Delete(this, pwr2Array_getSize(this->pData));
+        data = u8Array_Delete(this, array_getSize(this->pData));
         
         // Return to caller.
         return data;
@@ -583,7 +583,7 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if ((index > 0) && (index <= pwr2Array_getSize(this->pData)))
+        if ((index > 0) && (index <= array_getSize(this->pData)))
             ;
         else {
             DEBUG_BREAK();
@@ -591,7 +591,7 @@ extern "C" {
         }
 #endif
         
-        data = *((uint8_t *)pwr2Array_Ptr(this->pData, index));
+        data = *((uint8_t *)array_Ptr(this->pData, index));
         
         return data;
     }
@@ -633,7 +633,7 @@ extern "C" {
         }
 #endif
         
-        data = u8Array_Get(this, pwr2Array_getSize(this->pData));
+        data = u8Array_Get(this, array_getSize(this->pData));
         
         return data;
     }
@@ -655,7 +655,7 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if ((index > 0) && (index <= pwr2Array_getSize(this->pData)))
+        if ((index > 0) && (index <= array_getSize(this->pData)))
             ;
         else {
             DEBUG_BREAK();
@@ -663,7 +663,7 @@ extern "C" {
         }
 #endif
         
-        value = *((uint8_t *)pwr2Array_Ptr(this->pData, index));
+        value = *((uint8_t *)array_Ptr(this->pData, index));
         
         
         // Return to caller.
@@ -694,13 +694,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((index > 0) && (index <= (pwr2Array_getSize(this->pData)+1)))
+        if ((index > 0) && (index <= (array_getSize(this->pData)+1)))
             ;
         else {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if ((index + 1) <= pwr2Array_getSize(this->pData))
+        if ((index + 1) <= array_getSize(this->pData))
             ;
         else {
             DEBUG_BREAK();
@@ -708,7 +708,7 @@ extern "C" {
         }
 #endif
         
-        pData = pwr2Array_Ptr(this->pData, index);
+        pData = array_Ptr(this->pData, index);
         if (NULL == pData) {
             return ERESULT_INVALID_MEMORY_ADDRESS;
         }
@@ -749,13 +749,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((index > 0) && (index <= (pwr2Array_getSize(this->pData)+1)))
+        if ((index > 0) && (index <= (array_getSize(this->pData)+1)))
             ;
         else {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if ((index + 2) <= pwr2Array_getSize(this->pData))
+        if ((index + 2) <= array_getSize(this->pData))
             ;
         else {
             DEBUG_BREAK();
@@ -763,7 +763,7 @@ extern "C" {
         }
 #endif
         
-        pData = pwr2Array_Ptr(this->pData, index);
+        pData = array_Ptr(this->pData, index);
         if (NULL == pData) {
             return ERESULT_INVALID_MEMORY_ADDRESS;
         }
@@ -802,13 +802,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((index > 0) && (index <= (pwr2Array_getSize(this->pData)+1)))
+        if ((index > 0) && (index <= (array_getSize(this->pData)+1)))
             ;
         else {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if ((index + 3) <= pwr2Array_getSize(this->pData))
+        if ((index + 3) <= array_getSize(this->pData))
             ;
         else {
             DEBUG_BREAK();
@@ -816,7 +816,7 @@ extern "C" {
         }
 #endif
         
-        pData = pwr2Array_Ptr(this->pData, index);
+        pData = array_Ptr(this->pData, index);
         if (NULL == pData) {
             return ERESULT_INVALID_MEMORY_ADDRESS;
         }
@@ -866,7 +866,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u8Array_Vtbl);
         
-        this->pData = pwr2Array_New(0);
+        this->pData = array_New(1);
         if (OBJ_NIL == this->pData) {
             obj_Release(this);
             return OBJ_NIL;
@@ -878,7 +878,7 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(U8ARRAY_DATA));
     #endif
 
         return this;
@@ -905,7 +905,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((index > 0) && (index <= (pwr2Array_getSize(this->pData)+1)))
+        if ((index > 0) && (index <= (array_getSize(this->pData)+1)))
             ;
         else {
             DEBUG_BREAK();
@@ -913,7 +913,7 @@ extern "C" {
         }
 #endif
         
-        eRc = pwr2Array_InsertData(this->pData, index, 1, &data);
+        eRc = array_InsertData(this->pData, index, 1, &data);
         
         // Return to caller.
         return eRc;
@@ -951,7 +951,7 @@ extern "C" {
         }
 #endif
         
-        eRc = pwr2Array_InsertData(this->pData, index, len, (void *)pData);
+        eRc = array_InsertData(this->pData, index, len, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -988,11 +988,11 @@ extern "C" {
         }
 #endif
         
-        while (index > pwr2Array_getSize(this->pData)) {
+        while (index > array_getSize(this->pData)) {
             eRc = u8Array_AppendData(this, 0);
         }
         
-        *((uint8_t *)pwr2Array_Ptr(this->pData, index)) = data;
+        *((uint8_t *)array_Ptr(this->pData, index)) = data;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1025,11 +1025,11 @@ extern "C" {
         }
 #endif
         
-        while ((index + 1) > pwr2Array_getSize(this->pData)) {
+        while ((index + 1) > array_getSize(this->pData)) {
             eRc = u8Array_AppendData(this, 0);
         }
         
-        pChr = (uint8_t *)pwr2Array_Ptr(this->pData, index);
+        pChr = (uint8_t *)array_Ptr(this->pData, index);
         if (obj_Flag(this, U8ARRAY_FLAG_BIGENDIAN)) {
             *pChr++ = (data >> 8) & 0xFF;
             *pChr++ = data & 0xFF;
@@ -1070,11 +1070,11 @@ extern "C" {
         }
 #endif
         
-        while ((index + 2) > pwr2Array_getSize(this->pData)) {
+        while ((index + 2) > array_getSize(this->pData)) {
             eRc = u8Array_AppendData(this, 0);
         }
         
-        pChr = (uint8_t *)pwr2Array_Ptr(this->pData, index);
+        pChr = (uint8_t *)array_Ptr(this->pData, index);
         if (obj_Flag(this, U8ARRAY_FLAG_BIGENDIAN)) {
             *pChr++ = (data >> 16) & 0xFF;
             *pChr++ = (data >> 8) & 0xFF;
@@ -1117,11 +1117,11 @@ extern "C" {
         }
 #endif
         
-        while ((index + 3) > pwr2Array_getSize(this->pData)) {
+        while ((index + 3) > array_getSize(this->pData)) {
             eRc = u8Array_AppendData(this, 0);
         }
         
-        pChr = (uint8_t *)pwr2Array_Ptr(this->pData, index);
+        pChr = (uint8_t *)array_Ptr(this->pData, index);
         if (obj_Flag(this, U8ARRAY_FLAG_BIGENDIAN)) {
             *pChr++ = (data >> 24) & 0xFF;
             *pChr++ = (data >> 16) & 0xFF;
@@ -1169,8 +1169,8 @@ extern "C" {
             return pWrkStr;
         }
         
-        iMax = pwr2Array_getSize(this->pData);
-        pData = pwr2Array_Ptr(this->pData, 1);
+        iMax = array_getSize(this->pData);
+        pData = array_Ptr(this->pData, 1);
         if (iMax) {
             for (i=0; i<iMax; ++i) {
                 wchr = *pData++;
@@ -1236,12 +1236,12 @@ extern "C" {
                      sizeof(str),
                      "{%p(u8Array) size=%d max=%d data=[\n",
                      this,
-                     pwr2Array_getSize(this->pData),
-                     pwr2Array_getMax(this->pData)
+                     array_getSize(this->pData),
+                     array_getMax(this->pData)
                      );
         AStr_AppendA(pStr, str);
 
-        pWrkStr = pwr2Array_ToDebugString(this->pData,indent+3);
+        pWrkStr = array_ToDebugString(this->pData,indent+3);
         if (pWrkStr) {
             AStr_Append(pStr, pWrkStr);
             obj_Release(pWrkStr);
@@ -1249,8 +1249,8 @@ extern "C" {
         }
 
 #ifdef XYZZY
-        jMax = pwr2Array_getSize(this->pData);
-        pData = pwr2Array_Ptr(this->pData, 1);
+        jMax = array_getSize(this->pData);
+        pData = array_Ptr(this->pData, 1);
         if (jMax) {
             for (j=0; j<(jMax-1); ++j) {
                 snprintf( str, sizeof(str), "%d,", *pData++ );
@@ -1308,8 +1308,8 @@ extern "C" {
         pFile = NULL;
 #endif
         
-        pChr = pwr2Array_getData(this->pData);
-        size = pwr2Array_getSizeInBytes(this->pData);
+        pChr = (char *)array_Ptr(this->pData, 1);
+        size = array_getSizeInBytes(this->pData);
         pFile = fopen(path_getData(pPath), "w");
         if (NULL == pFile) {
             return ERESULT_OPEN_ERROR;

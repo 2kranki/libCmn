@@ -19,6 +19,11 @@
         "test_defs.h",
         "objTest.h"
     ],
+    "headers_macosx":
+    [
+        "cmn_osx.h",
+        "memOSX.h"
+    ],
     "objects":
     {
         "appl":null,
@@ -106,7 +111,6 @@
         "psxSem":["cmn","AStr"],
         "psxThread":["cmn","AStr","psxMutex","psxSem"],
         "ptrArray":["cmn"],
-        "pwr2Array":["cmn","AStr"],
         "rrds32":["cmn","AStr","hash32","listdl","path"],
         "sidx":["cmn","AStr"],
         "srcFile":["cmn","AStr","ascii","fbsi","path","token",
@@ -160,7 +164,7 @@
     "macosx": {
         "cmn_osx.c":null,
         "memOSX.c":null,
-        "memOSX_object.c":null
+        "memOSX_object.c":null`
     },
     "win32": {
         "cmn_win32.c":null,
@@ -258,7 +262,6 @@
         "test_psxSem.c":null,
         "test_psxThread.c":null,
         "test_ptrArray.c":null,
-        "test_pwr2Array.c":null,
         "test_rrds32.c":null,
         "test_scanDate.c":null,
         "test_scanDec32.c":null,

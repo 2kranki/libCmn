@@ -178,6 +178,7 @@ WAV_VTBL        wav_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)wav_Assign,
         NULL,			// (P_OBJ_COMPARE)wav_Compare,
         NULL, 			// (P_OBJ_PTR)wav_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)wav_Hash
     }
 };

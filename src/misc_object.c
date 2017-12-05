@@ -177,6 +177,7 @@ MISC_VTBL     misc_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)misc_Assign,
         NULL,			// (P_OBJ_COMPARE)misc_Compare,
         NULL, 			// (P_OBJ_PTR)misc_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)misc_Hash
     },
     // Put other object method names below this.

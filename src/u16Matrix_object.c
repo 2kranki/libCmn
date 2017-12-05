@@ -179,6 +179,7 @@ U16MATRIX_VTBL     u16Matrix_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)u16Matrix_Assign,
         NULL,			// (P_OBJ_COMPARE)u16Matrix_Compare,
         NULL, 			// (P_OBJ_PTR)u16Matrix_Copy,
+        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)u16Matrix_Hash,
     },
     // Put other object method names below this.

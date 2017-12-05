@@ -50,6 +50,10 @@
 extern "C" {
 #endif
 
+    
+    typedef struct arrayEntry_s {
+        OBJ_ID          pObj;
+    } ARRAY_ENTRY;
 
 
 
@@ -63,7 +67,7 @@ struct objArray_data_s	{
     // Common Data
     ERESULT         eRc;
     ARRAY_DATA      *pArray;
-    uint32_t        elemSize;
+    //uint32_t        elemSize;
 
 };
 #pragma pack(pop)
