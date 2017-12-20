@@ -124,6 +124,11 @@ struct objEnum_data_s	{
     );
 
 
+    ERESULT         objEnum_SortAscending(
+        OBJENUM_DATA    *this
+    );
+    
+    
     ASTR_DATA *     objEnum_ToJSON(
         OBJENUM_DATA      *this
     );

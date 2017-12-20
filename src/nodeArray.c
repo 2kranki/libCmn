@@ -483,8 +483,7 @@ extern "C" {
         }
 #endif
         
-        pOther = nodeArray_Alloc();
-        pOther = nodeArray_Init(pOther);
+        pOther = nodeArray_New();
         if (OBJ_NIL == pOther) {
             return OBJ_NIL;
         }
@@ -558,6 +557,43 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                      D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * nodeArray_DeepCopy(
+        NODEARRAY_DATA    *this
+    )
+    {
+        NODEARRAY_DATA  *pOther;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = nodeArray_New();
+        if (OBJ_NIL == pOther) {
+            return OBJ_NIL;
+        }
+        
+        pOther->pArray = objArray_DeepCopy(this->pArray);
+        if (pOther->pArray) {
+            pOther->pCompare = this->pCompare;
+            return pOther;
+        }
+        
+        // Return to caller.
+        obj_Release(pOther);
+        return( OBJ_NIL );
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                        D e l e t e
     //---------------------------------------------------------------

@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    psxThread_Class,
     obj_ClassWhoAmI
 };
 

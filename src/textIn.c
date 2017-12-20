@@ -183,9 +183,9 @@ extern "C" {
                 break;
                 
             case TEXTIN_TYPE_WSTR:
-                chr = WStr_CharGetW32(this->pWStr, (uint32_t)this->fileOffset++ );
+                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->fileOffset++ );
                 if( chr == ASCII_CPM_EOF ) {
-                    this->fileOffset = WStr_getLength(this->pWStr);
+                    this->fileOffset = W32Str_getLength(this->pWStr);
                     chr = EOF;
                 }
                 break;
@@ -778,15 +778,15 @@ extern "C" {
         this->flags  |= FLG_EOF;
         if (pPath) {
             this->pPath  = path_Copy(pPath);
-            eRc =   szTbl_StringToString(
+            this->pPathA = szTbl_StringToString(
                                          szTbl_Shared(),
-                                         path_getData(this->pPath),
-                                         &this->pPathA
-                    );
+                                         path_getData(this->pPath)
+                            );
         }
         this->lineNo  = 1;
         this->colNo   = 0;
         this->tabSize = tabSize;
+        this->state = TEXTIN_STATE_NORMAL;
 
     #ifdef NDEBUG
     #else
@@ -969,7 +969,7 @@ extern "C" {
     
     TEXTIN_DATA *  textIn_InitWStr(
         TEXTIN_DATA     *this,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
@@ -1042,8 +1042,8 @@ extern "C" {
     
     ERESULT         textIn_Location(
         TEXTIN_DATA     *this,
-        const
-        char            **ppPath,
+        uint16_t        *pFilenameIndex,
+        size_t          *pOffset,
         uint32_t        *pLineNo,
         uint16_t        *pColNo
     )
@@ -1058,8 +1058,10 @@ extern "C" {
         }
 #endif
         
-        if (ppPath)
-            *ppPath = this->pPathA;
+        if (pFilenameIndex)
+            *pFilenameIndex = this->filenameIndex;
+        if (pOffset)
+            *pOffset = this->fileOffset;
         if (pLineNo)
             *pLineNo = this->lineNo;
         if (pColNo)
@@ -1076,13 +1078,12 @@ extern "C" {
     //                      N e x t  C h a r
     //--------------------------------------------------------------
     
-    ERESULT             textIn_NextChar(
-        TEXTIN_DATA         *this,
-        W32CHR_T            *pChar
+    W32CHR_T            textIn_NextChar(
+        TEXTIN_DATA         *this
     )
     {
-        W32CHR_T            chr;
-        int32_t             cls;
+        W32CHR_T            chr = 0;
+        int32_t             cls = 0;
         ERESULT             eRc = ERESULT_SUCCESS;
         
         // Do initialization.
@@ -1090,54 +1091,73 @@ extern "C" {
 #else
         if( !textIn_Validate( this ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return -2;
         }
 #endif
-        
-        chr = textIn_UnicodeGetc(this);
-        if (chr > 0) {
-            switch (chr) {
-                    
-                case '\b':
-                    if (this->colNo) {
-                        --this->colNo;
+        this->eRc = ERESULT_SUCCESS;
+
+        switch (this->state) {
+            case TEXTIN_STATE_IN_TAB:
+                if (this->colNo % this->tabSize) {
+                    chr = ' ';
+                    ++this->colNo;
+                    break;
+                }
+                this->state = TEXTIN_STATE_NORMAL;
+                
+            case TEXTIN_STATE_NORMAL:
+                chr = textIn_UnicodeGetc(this);
+                if (chr > 0) {
+                    switch (chr) {
+                            
+                        case '\b':
+                            if (this->colNo) {
+                                --this->colNo;
+                            }
+                            break;
+                            
+                        case 0x85:              // Unicode NEL
+                            chr = '\n';
+                            
+                        case '\f':
+                        case '\n':
+                            ++this->lineNo;
+                            this->colNo = 0;
+                            break;
+                            
+                        case '\r':
+                            this->colNo = 0;
+                            break;
+                            
+                        case '\t':
+                            if( this->tabSize ) {
+                                chr = ' ';
+                                ++this->colNo;
+                                this->state = TEXTIN_STATE_IN_TAB;
+                            }
+                            else {
+                                ++this->colNo;
+                            }
+                            break;
+                            
+                        case EOF:
+                            eRc = ERESULT_EOF_ERROR;
+                            break;
+                            
+                        default:
+                            if (chr) {
+                                ++this->colNo;
+                            }
+                            break;
                     }
-                    break;
-                    
-                case '\f':
-                case '\n':
-                    ++this->lineNo;
-                    this->colNo = 0;
-                    break;
-                    
-                case '\r':
-                    this->colNo = 0;
-                    break;
-                    
-                case '\t':
-                    if( this->tabSize ) {
-                        chr = ' ';
-                        if( ((this->colNo-1) % this->tabSize) )
-                            this->colNo += ((this->colNo-1) % this->tabSize);
-                        else
-                            this->colNo += this->tabSize;
-                    }
-                    else {
-                        ++this->colNo;
-                    }
-                    break;
-                    
-                case EOF:
-                    eRc = ERESULT_EOF_ERROR;
-                    break;
-                    
-                default:
-                    if (chr) {
-                        ++this->colNo;
-                    }
-                    break;
-            }
+                }
+                break;
+                
+            default:
+                break;
         }
+        
+        
         if (chr >= 0) {
             cls = ascii_toLexicalClassW32(chr);
         }
@@ -1146,11 +1166,10 @@ extern "C" {
         }
         
         // Return to caller.
-        if (pChar)
-            *pChar = chr;
-        if (chr == EOF)
-            eRc = ERESULT_DATA_NOT_FOUND;
-        return eRc;
+        if (chr == EOF) {
+            this->eRc = ERESULT_DATA_NOT_FOUND;
+        }
+        return chr;
     }
     
     

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'pwr2Array'
-//	Generated 01/24/2016 22:34:47
+//	Class Object Metods and Tables for 'genObj'
+//	Generated 12/09/2017 07:54:00
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,9 @@
  */
 
 
-#include        "obj.h"
-#include        "pwr2Array_internal.h"
+
+#define			GENOBJ_OBJECT_C	    1
+#include        <genObj_internal.h>
 
 
 
@@ -40,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct pwr2Array_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct genObj_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct pwr2Array_class_data_s PWR2ARRAY_CLASS_DATA;
+typedef struct genObj_class_data_s GENOBJ_CLASS_DATA;
 
 
 
@@ -61,22 +62,22 @@ typedef struct pwr2Array_class_data_s PWR2ARRAY_CLASS_DATA;
 
 static
 const
-OBJ_INFO        pwr2Array_Info;            // Forward Reference
+OBJ_INFO        genObj_Info;            // Forward Reference
 
 
 
-OBJ_ID          pwr2Array_Class(
+OBJ_ID          genObj_Class(
     void
 );
 
 
 
 static
-bool            pwr2Array_ClassIsKindOf(
+bool            genObj_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PWR2ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_GENOBJ_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -91,19 +92,19 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_PWR2ARRAY_CLASS;
+    return OBJ_IDENT_GENOBJ_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&pwr2Array_Info,
-    pwr2Array_ClassIsKindOf,
+	&genObj_Info,
+    genObj_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    genObj_Class,
     obj_ClassWhoAmI
 };
 
@@ -114,19 +115,19 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-PWR2ARRAY_CLASS_DATA  pwr2Array_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PWR2ARRAY_CLASS, 0, 1},
+GENOBJ_CLASS_DATA  genObj_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_GENOBJ_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            pwr2Array_IsKindOf(
+bool            genObj_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_PWR2ARRAY == classID) {
+    if (OBJ_IDENT_GENOBJ == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -138,60 +139,65 @@ bool            pwr2Array_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            pwr2Array_Dealloc(
+void            genObj_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          pwr2Array_Class(
+OBJ_ID          genObj_Class(
     void
 )
 {
-    return (OBJ_ID)&pwr2Array_ClassObj;
+    return (OBJ_ID)&genObj_ClassObj;
 }
 
 
 static
-uint16_t		pwr2Array_WhoAmI(
+uint16_t		genObj_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_PWR2ARRAY;
+    return OBJ_IDENT_GENOBJ;
 }
 
 
+
 const
-PWR2ARRAY_VTBL  pwr2Array_Vtbl = {
+GENOBJ_VTBL     genObj_Vtbl = {
     {
-        &pwr2Array_Info,
-        pwr2Array_IsKindOf,
+        &genObj_Info,
+        genObj_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        pwr2Array_Dealloc,
-        pwr2Array_Class,
-        pwr2Array_WhoAmI,
-        (P_OBJ_QUERYINFO)pwr2Array_QueryInfo,
-        (P_OBJ_TOSTRING)pwr2Array_ToDebugString,
-        NULL,			// pwr2Array_Enable,
-        NULL,			// pwr2Array_Disable,
-        NULL,			// (P_OBJ_ASSIGN)pwr2Array_Assign,
-        NULL,			// (P_OBJ_COMPARE)pwr2Array_Compare,
-        NULL, 			// (P_OBJ_PTR)pwr2Array_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL 			// (P_OBJ_HASH)pwr2Array_Hash
+        genObj_Dealloc,
+        genObj_Class,
+        genObj_WhoAmI,
+        (P_OBJ_QUERYINFO)genObj_QueryInfo,
+        (P_OBJ_TOSTRING)genObj_ToDebugString,
+        NULL,			// genObj_Enable,
+        NULL,			// genObj_Disable,
+        NULL,			// (P_OBJ_ASSIGN)genObj_Assign,
+        NULL,			// (P_OBJ_COMPARE)genObj_Compare,
+        NULL, 			// (P_OBJ_PTR)genObj_Copy,
+        NULL 			// (P_OBJ_HASH)genObj_Hash,
     },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //genObj_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        pwr2Array_Info = {
-    "pwr2Array",
-    "Power of 2 Array",
-    (OBJ_DATA *)&pwr2Array_ClassObj,
+OBJ_INFO        genObj_Info = {
+    "genObj",
+    "Generate an Object",
+    (OBJ_DATA *)&genObj_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&pwr2Array_Vtbl
+    (OBJ_IUNKNOWN *)&genObj_Vtbl
 };
 
 

@@ -9,7 +9,8 @@
  * Purpose
  *				These subroutines provide a general purpose set of
  *				routines to build and manipulate a block of variable
- *				length data records.
+ *				length data records. The block size is restricted to
+ *              32,768.
  *
  *              All offsets within the block are numeric. No addresses
  *              are maintained in the block. So, it can be safely

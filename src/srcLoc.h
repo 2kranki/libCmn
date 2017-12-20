@@ -75,6 +75,18 @@ extern "C" {
 
     typedef struct srcLoc_data_s	SRCLOC_DATA;
 
+#pragma pack(push, 1)
+    typedef struct srcLoc_s    {
+        uint16_t        fileIndex;          // File Name Index
+        //                                  // Note: If zero, then the entire
+        //                                  //      location is ignored.
+        uint16_t        colNo;              // Source Input Column Number
+        uint32_t        lineNo;             // Source Input Line Number
+        int64_t         offset;             // File Offset
+    } SRCLOC;
+#pragma pack(pop)
+    
+    
 
 
 
@@ -93,8 +105,8 @@ extern "C" {
     
     
     SRCLOC_DATA *     srcLoc_NewFLC(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,              // File Index
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
     );
@@ -127,14 +139,13 @@ extern "C" {
     );
     
     
-    const char *    srcLoc_getFileName(
+    uint16_t        srcLoc_getFileIndex(
         SRCLOC_DATA      *this
     );
     
-    bool            srcLoc_setFileName(
+    bool            srcLoc_setFileIndex(
         SRCLOC_DATA      *this,
-        const
-        char            *pValue
+        uint16_t         value
     );
     
     
@@ -148,16 +159,25 @@ extern "C" {
     );
     
     
+    int64_t         srcLoc_getOffset(
+        SRCLOC_DATA     *this
+    );
     
+    bool            srcLoc_setOffset(
+        SRCLOC_DATA     *this,
+        int64_t         value
+    );
+    
+
+
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
     /*!
-     @result    ERESULT_SUCCESS_EQUAL if this == other,
-                ERESULT_SUCCESS_LESS_THAN if this < other or
-                ERESULT_SUCCESS_GREATER_THAN if this > other.
+     @result    ERESULT_SUCCESS_EQUAL if this == other or
+                ERESULT_SUCCESS_UNEQUAL
      */
     ERESULT         srcLoc_Compare(
         SRCLOC_DATA		*this,
@@ -171,8 +191,8 @@ extern "C" {
 
     SRCLOC_DATA *   srcLoc_InitFLC(
         SRCLOC_DATA     *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,              // File Index
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
     );
@@ -190,6 +210,19 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = srcLoc_ToJSON(this);
+     @endcode
+     @param     this    SRCLOC object pointer
+     @return    If successful, an AStr object which must be released containing the
+     JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+     ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     srcLoc_ToJSON(
         SRCLOC_DATA     *this
     );

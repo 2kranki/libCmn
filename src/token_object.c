@@ -102,7 +102,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    token_Class,
     obj_ClassWhoAmI
 };
 
@@ -175,7 +175,7 @@ TOKEN_VTBL     token_Vtbl = {
         NULL,			// token_Enable,
         NULL,			// token_Disable,
         (P_OBJ_ASSIGN)token_Assign,
-        (P_OBJ_COMPARE)token_Compare,
+        NULL,           // (P_OBJ_COMPARE)token_Compare,
         (P_OBJ_PTR)token_Copy,
         NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)token_Hash

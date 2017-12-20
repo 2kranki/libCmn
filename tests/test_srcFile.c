@@ -111,7 +111,7 @@ int         test_srcFile_OpenClose(
     if (pBuf) {
         pObj = srcFile_Alloc();
         XCTAssertFalse( (OBJ_NIL == pObj) );
-        pObj = srcFile_InitAStr( pObj, pBuf, pPath, 4, true, true );
+        pObj = srcFile_InitAStr( pObj, pBuf, pPath, 1, 4, true, true );
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pObj) {
             obj_Release(pObj);
@@ -143,8 +143,7 @@ int         test_srcFile_Buffer01(
     uint16_t        colNo;
     uint32_t        lineNo;
     uint32_t        i;
-    const
-    char            *pFileName;
+    uint16_t        fileIndex;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -156,7 +155,7 @@ int         test_srcFile_Buffer01(
     
     pSource = srcFile_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pSource) );
-    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 4, true, false );
+    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 1, 4, true, false );
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     
@@ -166,15 +165,16 @@ int         test_srcFile_Buffer01(
         
         while (!(cls == -1)) {
             pToken = srcFile_InputLookAhead(pSource, 1);
+            XCTAssertTrue( (token_Validate(pToken)) );
             chr = token_getChrW32(pToken);
             cls = token_getClass(pToken);
             colNo = token_getColNo(pToken);
             lineNo = token_getLineNo(pToken);
-            pFileName = token_getFileName(pToken);
+            fileIndex = token_getFileIndex(pToken);
             fprintf(
                     stderr,
-                    "\tfile: %s, line: %d col: %d cls: %04X chr: %02X\n",
-                    pFileName,
+                    "\tfile: %d, line: %2d col: %2d cls: %08X chr: %02X\n",
+                    fileIndex,
                     lineNo,
                     colNo,
                     cls,
@@ -216,7 +216,7 @@ int         test_srcFile_File(
     
     pObj = srcFile_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = srcFile_InitPath( pObj, pPath, 4, true, false );
+    pObj = srcFile_InitPath( pObj, pPath, 1, 4, true, false );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -225,6 +225,7 @@ int         test_srcFile_File(
             if (OBJ_NIL == pToken) {
                 break;
             }
+            XCTAssertTrue( (token_Validate(pToken)) );
             chr = token_getChrW32(pToken);
             if (-1 == chr) {
                 break;
@@ -257,12 +258,11 @@ int         test_srcFile_Test02(
     TOKEN_DATA      *pToken;
     int32_t         cls = 1;
     int32_t         chr;
-    const
-    char            *pFileName;
     uint16_t        colNo;
     uint32_t        lineNo;
     uint32_t        i;
     PATH_DATA       *pPath = path_NewA("abc");
+    uint16_t        fileIndex;
     
     pBuf = AStr_NewA(pTest02);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
@@ -272,7 +272,7 @@ int         test_srcFile_Test02(
     
     pSource = srcFile_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pSource) );
-    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 4, true, false );
+    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 1, 4, true, false );
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     obj_TraceSet(pSource,true);
@@ -281,134 +281,385 @@ int         test_srcFile_Test02(
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( (0xA0 == chr) );
         cls = token_getClass(pToken);
         XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == cls) );
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('c' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('l' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('a' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('s' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('s' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( (0x2060 == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('a' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('b' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('c' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( (';' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( ('\n' == chr) );
         cls = token_getClass(pToken);
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
         XCTAssertTrue( (-1 == chr) );
         cls = token_getClass(pToken);
         XCTAssertTrue( (-1 == cls) );
         colNo = token_getColNo(pToken);
         lineNo = token_getLineNo(pToken);
-        pFileName = token_getFileName(pToken);
+        fileIndex = token_getFileIndex(pToken);
+        srcFile_InputAdvance(pSource, 1);
+        
+        obj_Release(pSource);
+        pSource = OBJ_NIL;
+    }
+    
+    obj_Release(pBuf);
+    pBuf = OBJ_NIL;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_srcFile_Test03(
+    const
+    char        *pTestName
+)
+{
+    SRCFILE_DATA    *pSource = OBJ_NIL;
+    ASTR_DATA       *pBuf = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    int32_t         cls = 1;
+    int32_t         chr;
+    uint16_t        colNo;
+    uint32_t        lineNo;
+    uint32_t        i;
+    PATH_DATA       *pPath = path_NewA("abc");
+    uint16_t        fileIndex;
+    
+    pBuf = AStr_NewA("{oNe: +123}\n");
+    XCTAssertFalse( (OBJ_NIL == pBuf) );
+    i = AStr_getLength(pBuf);
+    XCTAssertTrue( (12 == i) );
+    //TRC( "\tpBuf = %p\n", pBuffer );
+    
+    pSource = srcFile_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pSource) );
+    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 1, 4, true, false );
+    XCTAssertFalse( (OBJ_NIL == pSource) );
+    fprintf( stderr, "\tpSource = %p\n", pSource );
+    obj_TraceSet(pSource,true);
+    
+    if (pSource) {
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('{' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( ('{' == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (1 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('o' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (2 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('N' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_UPPER == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (3 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('e' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (4 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( (':' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (':' == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (5 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( (' ' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (6 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('+' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( ('+' == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (7 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('1' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_NUMBER == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (8 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('2' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_NUMBER == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (9 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('3' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_NUMBER == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (10 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('}' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( ('}' == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (11 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (1 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+       pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( ('\n' == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (ASCII_LEXICAL_EOL == cls) );
+        colNo = token_getColNo(pToken);
+        XCTAssertTrue( (0 == colNo) );
+        lineNo = token_getLineNo(pToken);
+        XCTAssertTrue( (2 == lineNo) );
+        fileIndex = token_getFileIndex(pToken);
+        XCTAssertTrue( (1 == fileIndex) );
+        srcFile_InputAdvance(pSource, 1);
+        
+        pToken = srcFile_InputLookAhead(pSource, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (token_Validate(pToken)) );
+        chr = token_getChrW32(pToken);
+        XCTAssertTrue( (-1 == chr) );
+        cls = token_getClass(pToken);
+        XCTAssertTrue( (-1 == cls) );
+        colNo = token_getColNo(pToken);
+        lineNo = token_getLineNo(pToken);
+        fileIndex = token_getFileIndex(pToken);
         srcFile_InputAdvance(pSource, 1);
         
         obj_Release(pSource);
@@ -428,10 +679,11 @@ int         test_srcFile_Test02(
 
 
 TINYTEST_START_SUITE(test_srcFile);
-  TINYTEST_ADD_TEST(test_srcFile_Test02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_srcFile_File,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_srcFile_Buffer01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_srcFile_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFile_Test03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFile_Test02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFile_File,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFile_Buffer01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFile_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_srcFile);

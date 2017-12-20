@@ -65,11 +65,6 @@ OBJ_INFO        null_Info;            // Forward Reference
 
 
 
-OBJ_ID          null_Class(
-    void
-);
-
-
 
 static
 bool            null_ClassIsKindOf(
@@ -98,6 +93,55 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          obj_ClassQueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    const
+    char            *pStr = pData;
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)&null_Info;
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'T':
+                    if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                        return null_ToDebugString;
+                    }
+#ifdef XYZZY
+                    if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        return null_ToJSON;
+                    }
+#endif
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
@@ -106,8 +150,9 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
-    obj_ClassWhoAmI
+    null_Class,
+    obj_ClassWhoAmI,
+    obj_ClassQueryInfo
 };
 
 

@@ -45,6 +45,7 @@
 #include <trace.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
+#include <srcErrors.h>
 
 
 
@@ -97,13 +98,7 @@ extern "C" {
         
         pArray = nodeArray_New( );
         if (pArray == OBJ_NIL) {
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                token_getFileName(pToken),
-                token_getLineNo(pToken),
-                token_getColNo(pToken),
-                "Out of Memory"
-            );
+            srcErrors_AddFatalFromToken(OBJ_NIL, pToken, "Out of Memory");
             return pNode;
         }
         
@@ -150,14 +145,12 @@ extern "C" {
         else {
             ASTR_DATA           *pStr;
             pStr = token_ToDataString(pToken);
-            eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                        token_getFileName(pToken),
-                        token_getLineNo(pToken),
-                        token_getColNo(pToken),
+            srcErrors_AddFatalFromToken(
+                        OBJ_NIL,
+                        pToken,
                         "Expecting ']', but found %s",
                         AStr_getData(pStr)
-                    );
+            );
             obj_Release(pStr);
             return pNode;
         }
@@ -284,13 +277,11 @@ extern "C" {
         else {
             ASTR_DATA           *pStr;
             pStr = token_ToDataString(pToken);
-            eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                    token_getFileName(pToken),
-                    token_getLineNo(pToken),
-                    token_getColNo(pToken),
-                    "Expecting '}', but found %s",
-                    AStr_getData(pStr)
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
+                "Expecting '}', but found %s",
+                AStr_getData(pStr)
             );
             obj_Release(pStr);
             obj_Release(pNode);
@@ -405,13 +396,11 @@ extern "C" {
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
-            eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                    token_getFileName(pToken),
-                    token_getLineNo(pToken),
-                    token_getColNo(pToken),
-                    "Expecting a \"name\" but found %s",
-                    AStr_getData(pStr)
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
+                "Expecting a \"name\", but found %s",
+                AStr_getData(pStr)
             );
             obj_Release(pStr);
             return pNode;
@@ -441,7 +430,8 @@ extern "C" {
         int32_t         tokenClass;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
-        char            sign = '\0';
+        ASTR_DATA       *pSign = OBJ_NIL;
+        char            sign = 0;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -458,15 +448,19 @@ extern "C" {
         TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
 #ifdef NDEBUG
 #else
-        if (token_getTextW(pToken)) {
-            TRC_OBJ(this, "\ttoken string = \"%ls\"\n", token_getTextW(pToken));
+        if (token_getChrW32(pToken)) {
+            TRC_OBJ(this, "\ttoken string = \"%lc\"\n", token_getChrW32(pToken));
         }
         //fprintf(stderr, "\tLEX_SEP_MINUS = %d\n", LEXJ_SEP_MINUS);
 #endif
         if( (tokenClass == LEXJ_SEP_MINUS) || (tokenClass == LEXJ_SEP_PLUS) ) {
-            sign = *token_getTextW(pToken) & 0xFF;
+            pSign = token_getTextA(pToken);
+            sign = *AStr_getData(pSign);
+            obj_Release(pSign);
+            pSign = OBJ_NIL;
             lexj_TokenAdvance(this->pLexJ, 1);
             TRC_OBJ(this, "\tsign = %c\n", sign);
+            BREAK_FALSE(((sign == '-') || (sign == '+')));
 
             pToken = lexj_TokenLookAhead(this->pLexJ, 1);
             BREAK_NULL(pToken);
@@ -474,8 +468,8 @@ extern "C" {
             TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
 #ifdef NDEBUG
 #else
-            if (token_getTextW(pToken)) {
-                TRC_OBJ(this, "\ttoken string = \"%ls\"\n", token_getTextW(pToken));
+            if (token_getChrW32(pToken)) {
+                TRC_OBJ(this, "\ttoken string = \"%lc\"\n", token_getChrW32(pToken));
             }
 #endif
         }
@@ -559,12 +553,10 @@ extern "C" {
             TRC_OBJ(this, "\tfound :\n");
         }
         else {
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  token_getFileName(pToken),
-                                  token_getLineNo(pToken),
-                                  token_getColNo(pToken),
-                                  "Expecting a \":\""
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
+                "Expecting ':'"
             );
             obj_Release(pName);
             return OBJ_NIL;
@@ -572,12 +564,10 @@ extern "C" {
         
         pData = hjson_ParseValue(this);
         if (pData == OBJ_NIL) {
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  token_getFileName(pToken),
-                                  token_getLineNo(pToken),
-                                  token_getColNo(pToken),
-                                  "Expecting a \"value\""
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
+                "Expecting \"value\""
             );
             obj_Release(pName);
             return OBJ_NIL;

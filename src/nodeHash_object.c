@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    nodeHash_Class,
     obj_ClassWhoAmI
 };
 
@@ -161,6 +161,7 @@ uint16_t		nodeHash_WhoAmI(
 }
 
 
+
 const
 NODEHASH_VTBL   nodeHash_Vtbl = {
     {
@@ -171,14 +172,14 @@ NODEHASH_VTBL   nodeHash_Vtbl = {
         nodeHash_Dealloc,
         nodeHash_Class,
         nodeHash_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)nodeHash_QueryInfo,
         (P_OBJ_TOSTRING)nodeHash_ToDebugString,
         NULL,			// nodeHash_Enable,
         NULL,			// nodeHash_Disable,
         NULL,			// (P_OBJ_ASSIGN)nodeHash_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeHash_Compare,
         (P_OBJ_PTR)nodeHash_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
+        (P_OBJ_DEEPCOPY)nodeHash_DeepCopy,
         NULL 			// (P_OBJ_HASH)nodeHash_Hash
     },
 };

@@ -122,6 +122,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         szTbl_getLastError(
+        SZTBL_DATA      *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -136,44 +141,52 @@ extern "C" {
     /* StringToString adds the input string to the table and returns
      * the address of the string in the table.
      */
-    ERESULT          szTbl_StringToString(
+    const
+    char *          szTbl_StringToString(
         SZTBL_DATA      *this,
         const
-        char            *pStr,          // [in]
-        const
-        char            **ppStr         // [out] Returned String Pointer (stored in table)
+        char            *pStr           // [in]
     );
     
-    ERESULT          szTbl_StringW32ToString(
+    const
+    char *          szTbl_StringW32ToString(
         SZTBL_DATA      *this,
         const
-        W32CHR_T        *pStr,          // [in]
-        const
-        char            **ppStr         // [out] Returned String Pointer (stored in table)
-    );
-    
-    
-    ERESULT          szTbl_StringToToken(
-        SZTBL_DATA      *this,
-        const
-        char            *pStr,          // [in]
-        uint32_t        *pToken         // [out] Returned Token
+        W32CHR_T        *pStr           // [in]
     );
     
     
-    ERESULT          szTbl_StringW32ToToken(
+    /*!
+     Add a string to the table if it is not already present and return a token used to
+     identify the string in the table.
+     Example:
+     @code
+     ERESULT    eRc = szTbl_StringToToken(this, &utf8_char_string, &token);
+     @endcode
+     @param     this    SZTBL_DATA object pointer
+     @param     pStr    Pointer to a NUL-terminated UTF-8 Character String
+     @return    If successful, the token for the string in the string table
+                and Last Error is ERESULT_SUCCESS. If unsuccessful, an ap-
+                propriate ERESULT_* error is put in Last Errorreturned and *pToken contains 0.
+     */
+    uint32_t         szTbl_StringToToken(
         SZTBL_DATA      *this,
         const
-        W32CHR_T        *pStr,          // [in]
-        uint32_t        *pToken         // [out] Returned Token
+        char            *pStr           // [in]
     );
     
     
-    ERESULT          szTbl_TokenToString(
+    uint32_t         szTbl_StringW32ToToken(
         SZTBL_DATA      *this,
-        uint32_t        token,          // [in]
         const
-        char            **ppStr         // [out] Returned String
+        W32CHR_T        *pStr          // [in]
+    );
+    
+    
+    const
+    char *           szTbl_TokenToString(
+        SZTBL_DATA      *this,
+        uint32_t        token           // [in]
     );
     
     

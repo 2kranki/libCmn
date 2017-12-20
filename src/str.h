@@ -385,7 +385,7 @@ APIRET APIENTRY str_Str2Long(
 /* str_ToLower() converts all upper case letters in a string
  * to lower case.
  * Returns:
- *  Nothing
+ *     pointer to input string
  */
 char *          str_ToLowerA(
 	char			*pszIn			/* Input String Pointer */
@@ -399,7 +399,7 @@ W32CHR_T *      str_ToLowerW32(
 /* str_ToUpper() converts all lower case letters in a string
  * to upper case.
  * Returns:
- *  Nothing
+ *      pointer to input string
  */
 char *          str_ToUpperA(
 	char			*pszIn			/* Input String Pointer */

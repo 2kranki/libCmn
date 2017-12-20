@@ -41,9 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "nodeHash_internal.h"
-#include "nodeArray.h"
-#include "utf8.h"
+#include <nodeHash_internal.h>
+#include <nodeArray.h>
+#include <utf8.h>
 
 
 
@@ -410,7 +410,8 @@ extern "C" {
         NODE_DATA       *pItem;
         OBJ_IUNKNOWN    *pVtbl;
         ERESULT         eRc;
-        
+        bool            fRelease;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -420,8 +421,7 @@ extern "C" {
         }
 #endif
         
-        pOther = nodeHash_Alloc();
-        pOther = nodeHash_Init(pOther, this->cHash);
+        pOther = nodeHash_New(this->cHash);
         if (OBJ_NIL == pOther) {
             return OBJ_NIL;
         }
@@ -432,17 +432,22 @@ extern "C" {
             while ( pEntry ) {
                 pItem = pEntry->pNode;
                 if (pItem) {
+                    fRelease = false;
                     pVtbl = obj_getVtbl(pItem);
                     if (pVtbl->pCopy) {
                         pItem = pVtbl->pCopy(pItem);
+                        fRelease = true;
                     }
                     else {
-                        obj_Retain(pEntry);
+                        obj_Retain(pItem);
                     }
                     eRc = nodeHash_Add(pOther, pItem);
                     if (ERESULT_HAS_FAILED(eRc)) {
                         obj_Release(pOther);
                         return OBJ_NIL;
+                    }
+                    if (fRelease) {
+                        obj_Release(pItem);
                     }
                 }
                 pEntry = listdl_Next(pNodeList, pEntry);
@@ -506,6 +511,75 @@ extern "C" {
         this = NULL;
         
         // Return to caller.
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    NODEHASH_DATA * nodeHash_DeepCopy(
+        NODEHASH_DATA    *this
+    )
+    {
+        NODEHASH_DATA   *pOther;
+        LISTDL_DATA     *pNodeList;
+        NODEHASH_NODE   *pEntry = OBJ_NIL;
+        uint32_t        i;
+        NODE_DATA       *pItem;
+        OBJ_IUNKNOWN    *pVtbl;
+        ERESULT         eRc;
+        bool            fRelease;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = nodeHash_New(this->cHash);
+        if (OBJ_NIL == pOther) {
+            return OBJ_NIL;
+        }
+        
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            pEntry = listdl_Head(pNodeList);
+            while ( pEntry ) {
+                pItem = pEntry->pNode;
+                if (pItem) {
+                    fRelease = false;
+                    pVtbl = obj_getVtbl(pItem);
+                    if (pVtbl->pDeepCopy) {
+                        pItem = pVtbl->pDeepCopy(pItem);
+                        fRelease = true;
+                    }
+                    else if (pVtbl->pCopy) {
+                        pItem = pVtbl->pCopy(pItem);
+                        fRelease = true;
+                    }
+                    else {
+                        obj_Retain(pItem);
+                    }
+                    eRc = nodeHash_Add(pOther, pItem);
+                    if (ERESULT_HAS_FAILED(eRc)) {
+                        obj_Release(pOther);
+                        return OBJ_NIL;
+                    }
+                    if (fRelease) {
+                        obj_Release(pItem);
+                    }
+                }
+                pEntry = listdl_Next(pNodeList, pEntry);
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
     }
     
     
@@ -796,6 +870,88 @@ extern "C" {
             *ppKeys = pKeys;
         }
         return ERESULT_SUCCESSFUL_COMPLETION;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = nodeHash_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                        character string which represents the method name without
+                        the object name, "nodeHash", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          nodeHash_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        NODEHASH_DATA   *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return nodeHash_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == nodeHash_ToDebugString) {
+                    return "ToDebugString";
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     

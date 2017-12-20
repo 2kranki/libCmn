@@ -1354,9 +1354,11 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return value_ToDebugString;
                         }
+#ifdef XYZZY
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return value_ToJSON;
                         }
+#endif
                         break;
                         
                     default:

@@ -7,10 +7,10 @@
  * Program
  *			Separate textIn (textIn)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate textIn to run things without complications
- *          of interfering with the main textIn. A textIn may be 
- *          called a textIn on other O/S's.
+ *			This object provides the means of processing an input
+ *          text file from several different types of sources and
+ *          tracking the source location as each character is
+ *          returned.
  *
  * Remarks
  *	1.      None
@@ -129,16 +129,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     textIn_Disable(
-        TEXTIN_DATA		*this
-    );
-
-
-    ERESULT     textIn_Enable(
-        TEXTIN_DATA		*this
-    );
-
-   
     TEXTIN_DATA *  textIn_InitAStr(
         TEXTIN_DATA     *this,
         ASTR_DATA       *pStr,        // Buffer of file data
@@ -167,7 +157,7 @@ extern "C" {
     
     TEXTIN_DATA *  textIn_InitWStr(
         TEXTIN_DATA     *this,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
@@ -177,8 +167,8 @@ extern "C" {
      */
     ERESULT         textIn_Location(
         TEXTIN_DATA     *this,
-        const
-        char            **ppPath,
+        uint16_t        *pFilenameIndex,
+        size_t          *pOffset,
         uint32_t        *pLineNo,
         uint16_t        *pColNo
     );
@@ -190,9 +180,8 @@ extern "C" {
                 character from the file, otherwise, an ERESULT_* error and
                 *pChar contains EOF(-1).
      */
-    ERESULT             textIn_NextChar(
-        TEXTIN_DATA         *this,
-        W32CHR_T            *pChar
+    W32CHR_T            textIn_NextChar(
+        TEXTIN_DATA         *this
     );
     
     

@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   WStr_JSON.c
+ * File:   objHash_JSON.c
  *
- * Created on 10/13/2017 from AStr_JSON
+ * Created on 12/19/2017 from W32Str_JSON
  */
 
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <WStr_internal.h>
+#include    <objHash_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -70,7 +70,7 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            WStr_Int64ToChrClean(
+    void            objHash_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
     )
@@ -108,9 +108,9 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         WStr_NewFromJSONString(
+    ERESULT         objHash_NewFromJSONString(
         ASTR_DATA       *pString,
-        WSTR_DATA       **ppData
+        W32STR_DATA     **ppData
     )
     {
         HJSON_DATA      *pParser;
@@ -120,7 +120,7 @@ extern "C" {
         NODEARRAY_DATA  *pArray;
         ERESULT         eRc = ERESULT_SUCCESS;
         const
-        OBJ_INFO        *pInfo = WStr_Vtbl.iVtbl.pInfo;
+        OBJ_INFO        *pInfo = objHash_Vtbl.iVtbl.pInfo;
         uint32_t        i = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
 #ifdef TRACE_FUNCTIONS
@@ -134,7 +134,7 @@ extern "C" {
         //char            *pData = NULL;
         //char            *pChrOut;
         int32_t         chrW;
-        WSTR_DATA       *pStrOut = OBJ_NIL;
+        W32STR_DATA     *pStrOut = OBJ_NIL;
         
         pParser = hjson_NewAStr(pString, 4);
         if (OBJ_NIL == pParser) {
@@ -304,7 +304,7 @@ extern "C" {
                     goto exit00;
                 }
                 // Parse the data array creating the UTF-8 string.
-                pStrOut = WStr_New();
+                //FIXME: pStrOut = W32Str_New();
                 for (i=0; i<length; ++i) {
                     pNode = nodeArray_Get(pArray, i+1);
                     pName = node_getName(pNode);
@@ -322,11 +322,11 @@ extern "C" {
                         goto exit00;
                     }
                     chrW = (int32_t)dec_getInt64A(AStr_getData(pStr));
-                    WStr_AppendCharW32(pStrOut, 1, chrW);
+                    //FIXME: W32Str_AppendCharW32(pStrOut, 1, chrW);
                 }
             }
             else if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null")) {
-                pStrOut = WStr_New();
+                //FIXME: pStrOut = W32Str_New();
             }
             else {
                 fprintf(stderr, "ERROR - data should be an array!\n");
@@ -342,9 +342,10 @@ extern "C" {
             }
             // Now verify the crc.
             pCrc = crc_New(CRC_TYPE_IEEE_32);
-            chkCrc = WStr_getCrcIEEE(pStrOut);
+            //FIXME: chkCrc = W32Str_getCrcIEEE(pStrOut);
             obj_Release(pCrc);
             pCrc = OBJ_NIL;
+#ifdef XYZZY
             if (chkCrc == crc)
                 ;
             else {
@@ -359,6 +360,7 @@ extern "C" {
                 eRc = ERESULT_BAD_CRC;
                 goto exit00;
             }
+#endif
         }
         else {
             fprintf(stderr, "ERROR - data is missing!\n");
@@ -399,10 +401,10 @@ extern "C" {
     
     
 
-    ERESULT         WStr_NewFromJSONStringA(
+    ERESULT         objHash_NewFromJSONStringA(
         const
         char            *pString,
-        WSTR_DATA       **ppData
+        W32STR_DATA     **ppData
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -410,7 +412,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = WStr_NewFromJSONString(pStr, ppData);
+            eRc = objHash_NewFromJSONString(pStr, ppData);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -421,17 +423,18 @@ extern "C" {
     
     
     
-    ASTR_DATA *     WStr_ToJSON(
-        WSTR_DATA       *this
+    ASTR_DATA *     objHash_ToJSON(
+        OBJHASH_DATA    *this
     )
     {
         char            str[256];
         uint32_t        i;
         int             j;
+        bool            fRc;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        //ASTR_DATA       *pWrk;
+        ASTR_DATA       *pWrk;
         const
         char            *pChr;
         char            chrs[32];
@@ -441,29 +444,97 @@ extern "C" {
         uint32_t        len;
         const
         char            *pData;
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJSON)(
+            OBJ_ID          objId
+        );
 
 #ifdef NDEBUG
 #else
-        if( !WStr_Validate(this) ) {
+        if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
-        pInfo = WStr_Vtbl.iVtbl.pInfo;
-        pData  = array_Ptr((ARRAY_DATA *)this, 1);
+        pInfo = objHash_Vtbl.iVtbl.pInfo;
 
+        // Scan the Hash Table insuring that all entries have
+        // an "ToJSON" method.
+        fRc = true;
+        for (i=0; ((i < this->cHash) && fRc); ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
+                if (pQueryInfo) {
+                    pToJSON = (*pQueryInfo)(
+                                pNode->pObject,
+                                OBJ_QUERYINFO_TYPE_METHOD,
+                                "ToJSON"
+                            );
+                    if (NULL == pToJSON) {
+                        fRc = false;
+                        break;
+                    }
+                }
+                else {
+                    fRc = false;
+                    break;
+                }
+                pNode = listdl_Next(pNodeList, pNode);
+            }
+        }
+        if (!fRc) {
+            this->eRc = ERESULT_DATA_ERROR;
+            return OBJ_NIL;
+        }
+        
         pStr = AStr_New();
         str[0] = '\0';
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"%s\"",
+                     "{\"objectType\":\"%s\"\n\"entries:[",
                      pInfo->pClassName
                      );
         AStr_AppendA(pStr, str);
         
-        crc = WStr_getCrcIEEE(this);
+        // Scan the Hash Table creating entries for each of the objects
+        // in the table.
+        for (i=0; ((i < this->cHash) && fRc); ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
+                if (pQueryInfo) {
+                    pToJSON =   (*pQueryInfo)(
+                                          pNode->pObject,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                );
+                    if (pToJSON) {
+                        pWrk = (*pToJSON)(pNode->pObject);
+                        if (pWrk) {
+                            //FIXME: Add this to JSON for objHash
+                        }
+                    }
+                }
+                pNode = listdl_Next(pNodeList, pNode);
+            }
+        }
+        AStr_AppendA(pStr, "\n\n\n");
+
+        
+        
+#ifdef XYZZY
+        crc = W32Str_getCrcIEEE(this);
         AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
         len = array_getSize((ARRAY_DATA *)this) - 1;
@@ -474,19 +545,20 @@ extern "C" {
             for (i=0; i<(len-1); ++i) {
                 pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
                 chrW = *pChrW;
-                WStr_Int64ToChrClean(chrW, chrs);
+                W32Str_Int64ToChrClean(chrW, chrs);
                 AStr_AppendA(pStr, chrs);
                 AStr_AppendA(pStr, ",");
             }
             pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
             chrW = *pChrW;
-            WStr_Int64ToChrClean(chrW, chrs);
+            W32Str_Int64ToChrClean(chrW, chrs);
             AStr_AppendA(pStr, chrs);
             AStr_AppendA(pStr, "] ");
         }
         else {
             AStr_AppendA(pStr, ", \"data\":null ");
         }
+#endif
         
         AStr_AppendA(pStr, "}\n");
         

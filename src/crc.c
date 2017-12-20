@@ -312,7 +312,6 @@ extern "C" {
         }
 #endif
 
-        //this->eRc = ERESULT_SUCCESS;
         return this->eRc;
     }
 

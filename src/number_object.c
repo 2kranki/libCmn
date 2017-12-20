@@ -96,6 +96,52 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          obj_ClassQueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    const
+    char            *pStr = pData;
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)&number_Info;
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'T':
+                    if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                        return number_ToDebugString;
+                    }
+                    if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        return number_ToJSON;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
@@ -104,8 +150,9 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
-    obj_ClassWhoAmI
+    number_Class,
+    obj_ClassWhoAmI,
+    obj_ClassQueryInfo
 };
 
 
@@ -172,7 +219,7 @@ NUMBER_VTBL     number_Vtbl = {
         number_Dealloc,
         number_Class,
         number_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)number_QueryInfo,
+        (P_OBJ_QUERYINFO)number_QueryInfo,
         (P_OBJ_TOSTRING)number_ToDebugString,
         NULL,			// number_Enable,
         NULL,			// number_Disable,

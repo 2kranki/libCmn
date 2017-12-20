@@ -216,7 +216,7 @@ extern "C" {
         
         this = objHash_Alloc( );
         if (this) {
-            this = objHash_Init( this, cHash );
+            this = objHash_Init(this, cHash);
         } 
         return this;
     }
@@ -229,6 +229,23 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    ERESULT         objHash_getLastError(
+        OBJHASH_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->eRc;
+    }
+    
+    
+    
     uint32_t        objHash_getSize(
         OBJHASH_DATA    *this
     )
@@ -316,6 +333,124 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       A s s i g n
+    //---------------------------------------------------------------
+    
+    ERESULT         objHash_Assign(
+        OBJHASH_DATA    *this,
+        OBJHASH_DATA    *pOther
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
+        OBJ_IUNKNOWN    *pVtbl;
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        OBJ_ID          pObj;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !objHash_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        //FIXME: Restore this.
+#ifdef XYZZY
+        // Release any objects that the Other Array has.
+        obj_Release(pOther->)
+        for (i=0; i<pOther->size; ++i) {
+            pItem = pOther->ppArray[i];
+            obj_Release(pItem);
+            pOther->ppArray[i] = OBJ_NIL;
+        }
+        pOther->size = 0;
+        
+        // Increase size of the other array if needed.
+        while (pOther->max < this->max) {
+            if ((this->max - pOther->max) < 32768) {
+                i = this->max - pOther->max;
+            }
+            else {
+                i = 32768;
+            }
+            objArray_ExpandArray( pOther, i );
+        }
+#endif
+
+        // Copy over the objects.
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                pObj = pNode->pObject;
+                if (pObj) {
+                    pVtbl = obj_getVtbl(pNode->pObject);
+                    if (pVtbl->pCopy) {
+                        pObj = pVtbl->pCopy(pObj);
+                    }
+                    else {
+                        obj_Retain(pObj);
+                    }
+                    objHash_Add(pOther, pNode->pObject);
+                }
+                pNode = listdl_Next(pNodeList, pNode);
+            }
+        }
+        
+        // Return to caller.
+        this->eRc = eRc;
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          C o p y
+    //---------------------------------------------------------------
+    
+    OBJHASH_DATA *  objHash_Copy(
+        OBJHASH_DATA    *this
+    )
+    {
+        OBJHASH_DATA    *pOther = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+ 
+        pOther = objHash_New(this->cHash);
+        if (OBJ_NIL == pOther) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return OBJ_NIL;
+        }
+        
+        this->eRc = objHash_Assign(this, pOther);
+        if (ERESULT_HAS_FAILED(this->eRc)) {
+            obj_Release(pOther);
+            return OBJ_NIL;
+        }
+        
+
+        // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -325,6 +460,7 @@ extern "C" {
     {
         OBJHASH_DATA    *this = objId;
         OBJHASH_BLOCK   *pBlock;
+        ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -338,7 +474,7 @@ extern "C" {
         }
 #endif
         
-        //TODO: Release all active objects.
+        eRc = objHash_DeleteAll(this);
 
         while ( listdl_Count(&this->blocks) ) {
             pBlock = listdl_DeleteHead(&this->blocks);
@@ -358,64 +494,91 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                      D i s a b l e
-    //---------------------------------------------------------------
-
-    bool            objHash_Disable(
-        OBJHASH_DATA	*this
+    //----------------------------------------------------------
+    //                      D e l e t e
+    //----------------------------------------------------------
+    
+    OBJ_ID          objHash_Delete(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject
     )
     {
-
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        uint32_t        hash;
+        OBJ_ID          pReturn = OBJ_NIL;
+        const
+        OBJ_IUNKNOWN    *pVtbl;
+        
         // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
-    #endif
+#endif
+        pVtbl = obj_getVtbl(pObject);
+        
+        hash = pVtbl->pHash(pObject);
+        pNodeList = objHash_NodeListFromHash(this, hash);
 
-        // Put code here...
-
-        obj_Disable(this);
+        pNode = objHash_FindNode(this, hash, pObject);
+        if (pNode) {
+            listdl_Delete(pNodeList, pNode);
+            pReturn = pNode->pObject;
+            pNode->pObject = OBJ_NIL;
+            listdl_Add2Head(&this->freeList, pNode);
+        }
         
         // Return to caller.
-        return true;
+        return pReturn;
     }
-
-
-
-    //---------------------------------------------------------------
-    //                          E n a b l e
-    //---------------------------------------------------------------
-
-    bool            objHash_Enable(
-        OBJHASH_DATA	*this
+    
+    
+    ERESULT         objHash_DeleteAll(
+        OBJHASH_DATA    *this
     )
     {
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        OBJHASH_NODE    *pNext;
+        uint32_t        i;
+        OBJ_ID          pReturn = OBJ_NIL;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
-        obj_Enable(this);
-
-        // Put code here...
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while ( pNode ) {
+                pNext = listdl_Next(pNodeList, pNode);
+                listdl_Delete(pNodeList, pNode);
+                pReturn = pNode->pObject;
+                pNode->pObject = OBJ_NIL;
+                listdl_Add2Head(&this->freeList, pNode);
+                if (pReturn) {
+                    --this->num;
+                    obj_Release(pReturn);
+                    pReturn = OBJ_NIL;
+                }
+                pNode = pNext;
+            }
+        }
         
         // Return to caller.
-        return true;
+        this->eRc = ERESULT_SUCCESS;
+        return ERESULT_SUCCESS;
     }
-
-
+    
+    
 
     //---------------------------------------------------------------
     //                      E n u m
@@ -443,15 +606,21 @@ extern "C" {
         }
 #endif
         
+        pEnum = objEnum_New();
+        if (OBJ_NIL == pEnum) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return OBJ_NIL;
+        }
+        
         for (i=0; i<this->cHash; ++i) {
             pNodeList = &this->pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
-                objEnum_Append(pEnum, pNode);
+                objEnum_Append(pEnum, pNode->pObject);
                 pNode = listdl_Next(pNodeList, pNode);
             }
         }
-        eRc = objArray_SortAscending(pEnum->pArray, NULL);
+        eRc = objEnum_SortAscending(pEnum);
         
         // Return to caller.
         return pEnum;
@@ -465,7 +634,7 @@ extern "C" {
     
     OBJ_ID          objHash_Find(
         OBJHASH_DATA    *this,
-        OBJ_ID          *pObject
+        OBJ_ID          pObject
     )
     {
         OBJHASH_NODE    *pNode;
@@ -485,7 +654,7 @@ extern "C" {
         
         hash = pVtbl->pHash(pObject);
         
-        pNode = objHash_FindNode( this, hash, pObject );
+        pNode = objHash_FindNode(this, hash, pObject);
         if (pNode) {
             return pNode->pObject;
         }
@@ -580,6 +749,82 @@ extern "C" {
         
         // Return to caller.
         return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = objHash_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     objId   OBJHASH object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+     for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+     character string which represents the method name without
+     the object name, "name", prefix,
+     for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+     address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+     OBJ_QUERYINFO_TYPE_INFO: info pointer,
+     OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+     OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          objHash_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        OBJHASH_DATA    *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return objHash_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
     }
     
     

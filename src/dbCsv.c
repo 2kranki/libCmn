@@ -41,10 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "dbCsv_internal.h"
-#include "ascii.h"
-#include "str.h"
-#include "WStr.h"
+#include <dbCsv_internal.h>
+#include <ascii.h>
+#include <srcErrors.h>
+#include <str.h>
+#include <W32Str.h>
 #include <stdio.h>
 #include <wchar.h>
 
@@ -195,11 +196,12 @@ extern "C" {
             return pStr;
         }
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        token_ErrorFatalFLC(
-                              pToken,
-                              "Missing Field data"
+        srcErrors_AddFatalFromToken(
+            OBJ_NIL,
+            pToken,
+            "Missing Field data"
         );
-        
+
         return pStr;
     }
 
@@ -239,9 +241,10 @@ extern "C" {
         if (pRecord == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            token_ErrorFatalFLC(
-                                pToken,
-                                  "Out of memory"
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
+                "Out of Memory"
             );
             return OBJ_NIL;
         }
@@ -250,8 +253,9 @@ extern "C" {
         if (ERESULT_HAS_FAILED(eRc)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            token_ErrorFatalFLC(
-                                pToken,
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
                 "Could not save field to record"
             );
         }
@@ -266,10 +270,11 @@ extern "C" {
             if (pStr == OBJ_NIL) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                token_ErrorFatalFLC(
-                                    pToken,
-                                      "Malformed Record at field %d",
-                                      fieldNo
+                srcErrors_AddFatalFromToken(
+                    OBJ_NIL,
+                    pToken,
+                    "Malformed Record at field %d",
+                    fieldNo
                 );
                 return OBJ_NIL;
             }
@@ -278,9 +283,10 @@ extern "C" {
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                token_ErrorFatalFLC(
-                                    pToken,
-                                      "Could not save field to record"
+                srcErrors_AddFatalFromToken(
+                    OBJ_NIL,
+                    pToken,
+                    "Could not save field to record"
                 );
             }
             obj_Release(pStr);
@@ -290,11 +296,12 @@ extern "C" {
         if (!dbCsv_ParseCRLF(this)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            token_ErrorFatalFLC(
+            srcErrors_AddFatalFromToken(
+                                OBJ_NIL,
                                 pToken,
                                 "Expected line end, but found %lc",
                                 token_getChrW32(pToken)
-                                );
+            );
         }
 
         return pRecord;
@@ -329,9 +336,10 @@ extern "C" {
         if (pRecords == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            token_ErrorFatalFLC(
-                                  pToken,
-                                  "Out of memory"
+            srcErrors_AddFatalFromToken(
+                OBJ_NIL,
+                pToken,
+                "Out of Memory"
             );
             return OBJ_NIL;
         }
@@ -345,10 +353,11 @@ extern "C" {
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                token_ErrorFatalFLC(
-                                    pToken,
-                                    "Could not save record"
-                                    );
+                srcErrors_AddFatalFromToken(
+                    OBJ_NIL,
+                    pToken,
+                    "Could not save record"
+                );
             }
         }
         obj_Release(pRecord);
@@ -372,10 +381,11 @@ extern "C" {
                 if (ERESULT_HAS_FAILED(eRc)) {
                     TOKEN_DATA      *pToken;
                     pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                    token_ErrorFatalFLC(
+                    srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
                                         pToken,
                                         "Could not save record"
-                                        );
+                    );
                 }
             }
             obj_Release(pRecord);
@@ -388,7 +398,8 @@ extern "C" {
         if (!dbCsv_ParseEOF(this)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            token_ErrorFatalFLC(
+            srcErrors_AddFatalFromToken(
+                                OBJ_NIL,
                                 pToken,
                                 "Malformed file, missing EOF at record %d",
                                 recordNo
@@ -491,7 +502,8 @@ extern "C" {
                 }
             }
             else {
-                token_ErrorFatalFLC(
+                srcErrors_AddFatalFromToken(
+                            OBJ_NIL,
                             pToken,
                             "Invalid characters in escaped text"
                 );
@@ -937,7 +949,7 @@ extern "C" {
         }
         
         this->pSrc = srcFile_Alloc();
-        this->pSrc = srcFile_InitAStr(this->pSrc, pAStr, pPath, tabSize, false, false);
+        this->pSrc = srcFile_InitAStr(this->pSrc, pAStr, pPath, 1, tabSize, false, false);
         if (OBJ_NIL == this->pSrc) {
             obj_Release(this);
             return OBJ_NIL;
@@ -968,7 +980,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pSrc = srcFile_NewFromPath(pPath, tabSize, false, false);
+        this->pSrc = srcFile_NewFromPath(pPath, 1, tabSize, false, false);
         if (OBJ_NIL == this->pSrc) {
             obj_Release(this);
             return OBJ_NIL;
@@ -980,7 +992,7 @@ extern "C" {
     
     DBCSV_DATA *    dbCsv_InitWStr(
         DBCSV_DATA      *this,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -1000,7 +1012,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pSrc = srcFile_InitWStr(this->pSrc, pWStr, pPath, tabSize, false, false);
+        this->pSrc = srcFile_InitW32Str(this->pSrc, pWStr, pPath, 1, tabSize, false, false);
         if (OBJ_NIL == this->pSrc) {
             obj_Release(this);
             return OBJ_NIL;

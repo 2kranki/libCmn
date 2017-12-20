@@ -177,9 +177,9 @@ extern "C" {
     
     
     /*!
-     Copy this array. Any element of the array that has a copy method
-     will have that used to create a new object. Otherwise, the object
-     is just retained and added to the new array.
+     Copy this array. Any element of the array that has a DeepCopy or
+     Copy method will have that used to create a new object. Otherwise,
+     the object is just retained and added to the new array.
      @param     this    object pointer
      @return    If successful, return a new array that must be released
      otherwise return OBJ_NIL.

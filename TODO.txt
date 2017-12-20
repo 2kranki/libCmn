@@ -3,6 +3,17 @@
 The following are things that are being throught about. Whether they get done or not
 will depend upon time and resources.
 
+
+--  Change srcLoc to use a file name index rather than a pointer so that it can
+    be written to/read from a file.
+    -- change srcFile so that the file name index is supplied at object creation
+        and passed to all tokens generated from the file.
+
+--  srcFile
+    -- a sidx table to track the lines from the file.
+    -- provide the ability to set current location in the file as needed using
+        the sidx table.
+
 --  WIN32/WIN64
     -- (IMPORTANT) we must remove ALL L'' and L"" constants from all objects since
         we are assuming them to use int32_t, but Windows uses int16_t for those

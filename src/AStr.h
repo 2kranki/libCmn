@@ -127,8 +127,8 @@ extern "C" {
     );
     
 
-    ASTR_DATA *    AStr_NewFromStrW(
-        WSTR_DATA       *pStr
+    ASTR_DATA *    AStr_NewFromW32Str(
+        W32STR_DATA     *pStr
     );
     
     
@@ -213,9 +213,9 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendStrW32(
+    ERESULT         AStr_AppendW32Str(
         ASTR_DATA		*this,
-        WSTR_DATA       *pStr
+        W32STR_DATA     *pStr
     );
     
     
@@ -316,6 +316,14 @@ extern "C" {
     ERESULT         AStr_CharInsertW32(
         ASTR_DATA       *this,
         uint32_t        offset,
+        W32CHR_T        chr
+    );
+    
+    
+    ERESULT         AStr_CharInsertW32Repeat(
+        ASTR_DATA       *this,
+        uint32_t        offset,
+        uint32_t        len,
         W32CHR_T        chr
     );
     
@@ -576,7 +584,7 @@ extern "C" {
     
     
     // The string returned from this must be obj_Release'd.
-    WSTR_DATA *     AStr_ToWStr(
+    W32STR_DATA *   AStr_ToW32Str(
         ASTR_DATA       *this
     );
     

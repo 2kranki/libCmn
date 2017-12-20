@@ -50,7 +50,7 @@
 #include    <misc.h>
 #include    <str.h>
 #include    <utf8.h>
-#include    <WStr.h>
+#include    <W32Str.h>
 #include    <stdio.h>
 #include    <time.h>
 
@@ -272,8 +272,8 @@ extern "C" {
     
     
     
-    ASTR_DATA *     AStr_NewFromStrW(
-        WSTR_DATA       *pStr
+    ASTR_DATA *     AStr_NewFromW32Str(
+        W32STR_DATA     *pStr
     )
     {
         ASTR_DATA       *this =  OBJ_NIL;
@@ -286,7 +286,7 @@ extern "C" {
         
         this = AStr_New();
         if (this) {
-            eRc = AStr_AppendStrW32(this, pStr);
+            eRc = AStr_AppendW32Str(this, pStr);
         }
         
         // Return to caller.
@@ -599,9 +599,9 @@ extern "C" {
     }
     
     
-    ERESULT         AStr_AppendStrW32(
+    ERESULT         AStr_AppendW32Str(
         ASTR_DATA		*this,
-        WSTR_DATA       *pStr
+        W32STR_DATA     *pStr
     )
     {
         ERESULT         eRc = ERESULT_DATA_MISSING;
@@ -620,9 +620,9 @@ extern "C" {
         }
 #endif
         
-        len = WStr_getLength(pStr);
+        len = W32Str_getLength(pStr);
         if (len) {
-            eRc = AStr_AppendW32(this, len, WStr_getData(pStr));
+            eRc = AStr_AppendW32(this, len, W32Str_getData(pStr));
         }
         
         // Return to caller.
@@ -1245,6 +1245,49 @@ extern "C" {
         lenStr = utf8_Utf8ToW32(pChr, NULL);
         if (pChr && lenStr) {
             eRc = array_InsertData(this->pData, off, chrsLen, chrs);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         AStr_CharInsertW32Repeat(
+        ASTR_DATA       *this,
+        uint32_t        offset,
+        uint32_t        len,
+        W32CHR_T        chr
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        lenStr;
+        uint32_t        off;
+        char            *pChr;
+        uint32_t        chrsLen;
+        char            chrs[8];
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStr_getLength(this);
+        chrsLen = utf8_W32ToUtf8(chr, chrs);
+        
+        if( (0 == offset) || (offset > lenStr) ) {
+            return -1;
+        }
+        off = utf8_StrOffset(AStr_getData(this), offset);
+        
+        pChr = array_Ptr(this->pData, off);
+        lenStr = utf8_Utf8ToW32(pChr, NULL);
+        if (pChr && lenStr) {
+            while (len--) {
+                eRc = array_InsertData(this->pData, off, chrsLen, chrs);
+            }
         }
         
         // Return to caller.
@@ -2117,9 +2160,11 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return AStr_ToDebugString;
                         }
+#ifdef XYZZY
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return AStr_ToJSON;
                         }
+#endif
                         break;
                         
                     default:
@@ -2271,7 +2316,7 @@ extern "C" {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
-            if (WStr_ChrInStr(chr,pSetStr))
+            if (W32Str_ChrInStr(chr,pSetStr))
                 ;
             else {
                 *pIndex = i;
@@ -2450,7 +2495,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        uint32_t        j;
+        //uint32_t        j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
         const
@@ -2488,17 +2533,17 @@ extern "C" {
     }
     
     
-    WSTR_DATA *     AStr_ToWStr(
+    W32STR_DATA *   AStr_ToW32Str(
         ASTR_DATA      *this
     )
     {
-        WSTR_DATA       *pStr;
+        W32STR_DATA    *pStr;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        pStr = WStr_NewA(AStr_getData(this));
+        pStr = W32Str_NewA(AStr_getData(this));
         
         return pStr;
     }
@@ -2634,7 +2679,7 @@ extern "C" {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
-            j = WStr_ChrInStr(chr, WStr_WhiteSpaceW32());
+            j = W32Str_ChrInStr(chr, W32Str_WhiteSpaceW32());
             if (0 == j) {
                 break;
             }
@@ -2655,7 +2700,7 @@ extern "C" {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
-            j = WStr_ChrInStr(chr, WStr_WhiteSpaceW32());
+            j = W32Str_ChrInStr(chr, W32Str_WhiteSpaceW32());
             if (0 == j) {
                 break;
             }

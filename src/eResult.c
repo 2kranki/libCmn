@@ -53,6 +53,10 @@ extern "C" {
     
 
     
+    static
+    ERESULT_DATA    singleton = {{0}};
+    
+    
 
 
  
@@ -61,10 +65,6 @@ extern "C" {
     ****************************************************************/
 
 
-    static
-    ERESULT_DATA    singleton = {{0}};
-    
-    
     
 
 
@@ -264,6 +264,7 @@ extern "C" {
     //                         E r r o r
     //---------------------------------------------------------------
     
+#ifdef XYZZY
     void            eResult_Error(
         ERESULT_DATA   *cbp,
         const
@@ -368,6 +369,7 @@ extern "C" {
         }
         
     }
+#endif
     
     
     
@@ -376,6 +378,7 @@ extern "C" {
     //                       F a t a l  E r r o r
     //---------------------------------------------------------------
     
+#ifdef XYZZY
     void            eResult_ErrorFatal(
         ERESULT_DATA    *cbp,
         const
@@ -467,6 +470,7 @@ extern "C" {
         
         exit( 99 );
     }
+#endif
     
     
     

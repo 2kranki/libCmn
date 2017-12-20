@@ -102,7 +102,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    lex_Class,
     obj_ClassWhoAmI
 };
 
@@ -185,8 +185,6 @@ LEX_VTBL        lex_Vtbl = {
     lex_setSourceFunction,
     lex_getString,
     lex_getToken,
-    lex_Error,
-    lex_ErrorFatal,
     lex_InputAdvance,
     lex_InputLookAhead,
     lex_TokenAdvance,

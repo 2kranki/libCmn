@@ -46,8 +46,9 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "szTbl.h"
-#include    "utf8.h"
+#include    <ascii.h>
+#include    <szTbl.h>
+#include    <utf8.h>
 
 
 
@@ -78,25 +79,31 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
+    /*! Allocate an area large enough for the object data and the
+        token data. Initialize the data pointer to within the area gotten.
+     @return        A pointer to the combined data and object if
+                    successful or OBJ_NIL if not.
+     */
     TOKEN_DATA *     token_Alloc(
     )
     {
-        TOKEN_DATA      *cbp;
+        TOKEN_DATA      *this;
         uint32_t        cbSize = sizeof(TOKEN_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
 
+
     TOKEN_DATA *     token_NewCharW32(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -108,7 +115,14 @@ extern "C" {
         // Do initialization.
         
         this = token_Alloc( );
-        this = token_InitCharW32(this, pFileName, lineNo, colNo, cls, chr);
+        if (this) {
+            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            if (this) {
+                this->data.w32chr[0] = chr;
+                this->data.w32chr[1] = 0;
+                this->data.type = TOKEN_TYPE_W32CHAR;
+            }
+        }
         
         // Return to caller.
         return( this );
@@ -116,8 +130,8 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewInteger(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -129,37 +143,51 @@ extern "C" {
         // Do initialization.
         
         this = token_Alloc( );
-        this = token_InitInteger(this, pFileName, lineNo, colNo, cls, num);
-        
+        if (this) {
+            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            if (this) {
+                this->data.integer = num;
+                this->data.type = TOKEN_TYPE_INTEGER;
+            }
+        }
+
         // Return to caller.
         return( this );
     }
     
     
-    TOKEN_DATA *     token_NewStringW(
-        const
-        char            *pFileName,
+    TOKEN_DATA *     token_NewFromW32STR(
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        WSTR_DATA       *pString
+        W32STR_DATA     *pString
     )
     {
         TOKEN_DATA      *this;
-        
+        uint32_t        token;
+
         // Do initialization.
         
         this = token_Alloc( );
-        this = token_InitStringW(this, pFileName, lineNo, colNo, cls, pString);
-        
+        if (this) {
+            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            if (this) {
+                token = szTbl_StringW32ToToken(szTbl_Shared(), W32Str_getData(pString));
+                this->data.strToken = token;
+                this->data.type = TOKEN_TYPE_STRTOKEN;
+            }
+        }
+
         // Return to caller.
         return( this );
     }
     
     
     TOKEN_DATA *     token_NewStrA(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -168,20 +196,33 @@ extern "C" {
     )
     {
         TOKEN_DATA      *this;
-        
+        uint32_t        strlen = 0;
+        uint32_t        token;
+
         // Do initialization.
         
+        strlen = utf8_StrLenChars(pStr);
         this = token_Alloc( );
-        this = token_InitStrA(this, pFileName, lineNo, colNo, cls, pStr);
+        if (this) {
+            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            if (OBJ_NIL == this) {
+                return OBJ_NIL;
+            }
+            
+            // Create a string token.
+            token = szTbl_StringToToken(szTbl_Shared(), pStr);
+            this->data.strToken = token;
+            this->data.type = TOKEN_TYPE_STRTOKEN;
+        }
         
         // Return to caller.
-        return( this );
+        return this;
     }
     
     
-    TOKEN_DATA *     token_NewStrW(
-        const
-        char            *pFileName,
+    TOKEN_DATA *     token_NewStrW32(
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -190,11 +231,20 @@ extern "C" {
     )
     {
         TOKEN_DATA      *this;
+        uint32_t        token;
         
         // Do initialization.
         
         this = token_Alloc( );
-        this = token_InitStrW(this, pFileName, lineNo, colNo, cls, pStr);
+        if (this) {
+            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            if (this) {
+                token = szTbl_StringW32ToToken(szTbl_Shared(), pStr);
+                this->data.strToken = token;
+                this->data.type = TOKEN_TYPE_STRTOKEN;
+            }
+        }
+        //FIXME: this = token_InitStrW(this, pFileName, lineNo, colNo, cls, pStr);
         
         // Return to caller.
         return( this );
@@ -202,12 +252,11 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewStrToken(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        const
         uint32_t        token
     )
     {
@@ -216,7 +265,13 @@ extern "C" {
         // Do initialization.
         
         this = token_Alloc( );
-        this = token_InitStrToken(this, pFileName, lineNo, colNo, cls, token);
+        if (this) {
+            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            if (this) {
+                this->data.strToken = token;
+                this->data.type = TOKEN_TYPE_STRTOKEN;
+            }
+        }
         
         // Return to caller.
         return( this );
@@ -234,7 +289,7 @@ extern "C" {
         TOKEN_DATA      *this
     )
     {
-        int32_t         i = -1;
+        W32CHR_T        chr = -1;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -245,10 +300,10 @@ extern "C" {
         }
 #endif
         
-        if (TOKEN_TYPE_WCHAR == this->data.type) {
-            i = this->data.wchr[0];
+        if (TOKEN_TYPE_W32CHAR == this->data.type) {
+            chr = this->data.w32chr[0];
         }
-        return i;
+        return chr;
     }
     
     
@@ -265,11 +320,10 @@ extern "C" {
         }
 #endif
         
-        token_ReleaseDataIfObj(this);
-        this->data.type = TOKEN_TYPE_WCHAR;
-        this->data.wchr[0] = value;
-        this->data.wchr[1] = 0;
-        
+        this->data.w32chr[0] = value;
+        this->data.w32chr[1] = 0;
+        this->data.type = TOKEN_TYPE_W32CHAR;
+
         return true;
     }
     
@@ -347,7 +401,7 @@ extern "C" {
     
     
     
-    const char *    token_getFileName(
+    uint16_t        token_getFileIndex(
         TOKEN_DATA      *this
     )
     {
@@ -357,18 +411,17 @@ extern "C" {
 #else
         if( !token_Validate(this) ) {
             DEBUG_BREAK();
-            return NULL;
+            return 0;
         }
 #endif
         
-        return this->data.src.pFileName;
+        return this->data.src.fileIndex;
     }
 
     
-    bool            token_setFileName(
+    bool            token_setFileIndex(
         TOKEN_DATA      *this,
-        const
-        char            *pValue
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
@@ -378,7 +431,7 @@ extern "C" {
             return false;
         }
 #endif
-        this->data.src.pFileName = pValue;
+        this->data.src.fileIndex = value;
         return true;
     }
     
@@ -418,7 +471,6 @@ extern "C" {
         }
 #endif
 
-        token_ReleaseDataIfObj(this);
         this->data.type = TOKEN_TYPE_INTEGER;
         this->data.integer = value;
         
@@ -498,6 +550,23 @@ extern "C" {
     
     
     
+    SRCLOC *        token_getLoc(
+        TOKEN_DATA      *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return &this->data.src;
+    }
+    
     uint16_t        token_getMisc(
         TOKEN_DATA      *this
     )
@@ -534,7 +603,7 @@ extern "C" {
     
     
     
-    OBJ_ID          token_getObj(
+    int64_t         token_getOffset(
         TOKEN_DATA      *this
     )
     {
@@ -544,20 +613,17 @@ extern "C" {
 #else
         if( !token_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
         
-        if (TOKEN_TYPE_OBJECT == this->data.type) {
-            return this->data.pObj;
-        }
-        return OBJ_NIL;
+        return this->data.src.offset;
     }
     
     
-    bool            token_setObj(
+    bool            token_setOffset(
         TOKEN_DATA      *this,
-        OBJ_ID          pValue
+        int64_t         value
     )
     {
 #ifdef NDEBUG
@@ -567,64 +633,7 @@ extern "C" {
             return false;
         }
 #endif
-        obj_Retain(pValue);
-        
-        token_ReleaseDataIfObj(this);
-        this->data.type = TOKEN_TYPE_OBJECT;
-        this->data.pObj = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    WSTR_DATA *     token_getStringW(
-        TOKEN_DATA      *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !token_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        if (TOKEN_TYPE_WSTRING == this->data.type) {
-            return this->data.pObj;
-        }
-        
-        return OBJ_NIL;
-    }
-    
-    
-    bool            token_setStringW(
-        TOKEN_DATA      *this,
-        OBJ_ID          pValue
-    )
-    {
-        uint16_t        type;
-#ifdef NDEBUG
-#else
-        if( !token_Validate( this ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-        type = obj_getType(pValue);
-        if ((OBJ_IDENT_WSTR == type) || (OBJ_IDENT_W32STRC == type)) {
-        }
-        else
-            return false;
-#endif
-        
-        obj_Retain(pValue);
-        
-        token_ReleaseDataIfObj(this);
-        this->data.type = TOKEN_TYPE_WSTRING;
-        this->data.pObj = pValue;
-        
+        this->data.src.offset = value;
         return true;
     }
     
@@ -664,7 +673,6 @@ extern "C" {
         }
 #endif
         
-        token_ReleaseDataIfObj(this);
         this->data.type = TOKEN_TYPE_STRTOKEN;
         this->data.strToken = value;
         
@@ -673,11 +681,43 @@ extern "C" {
     
     
     
-    const
-    W32CHR_T *      token_getTextW(
+    bool            token_setStrW32(
+        TOKEN_DATA      *this,
+        const
+        W32CHR_T        *pStr
+    )
+    {
+        uint32_t        token;
+
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        token = szTbl_StringW32ToToken(szTbl_Shared(), pStr);
+        if (token) {
+            this->data.type = TOKEN_TYPE_STRTOKEN;
+            this->data.strToken = token;
+        }
+        else {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    
+    ASTR_DATA *     token_getTextA(
         TOKEN_DATA      *this
     )
     {
+        const
+        char            *pStr = NULL;
+        ASTR_DATA       *pAStr = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -687,30 +727,25 @@ extern "C" {
             return NULL;
         }
 #endif
-
+        
         switch (this->data.type) {
-
-            case TOKEN_TYPE_WCHAR:
-                return this->data.wchr;
+                
+            case TOKEN_TYPE_W32CHAR:
+                pAStr = AStr_NewW32(this->data.w32chr);
                 break;
                 
-            case TOKEN_TYPE_WSTRING:
-                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
-                    return WStr_getData(this->data.pObj);
-                }
-                if (OBJ_IDENT_W32STRC == obj_getType(this->data.pObj)) {
-                    return W32StrC_getData(this->data.pObj);
-                }
+            case TOKEN_TYPE_STRTOKEN:
+                pAStr = AStr_NewA(szTbl_TokenToString(szTbl_Shared(), this->data.strToken));
                 break;
                 
             default:
                 break;
         }
-
-        return &zero;
+        
+        return pAStr;
     }
     
- 
+    
     
     uint16_t        token_getType(
         TOKEN_DATA      *this
@@ -748,6 +783,35 @@ extern "C" {
     
     
     
+    bool            token_setW32STR(
+        TOKEN_DATA      *this,
+        W32STR_DATA     *pStr
+    )
+    {
+        uint32_t        token;
+        
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        token = szTbl_StringW32ToToken(szTbl_Shared(), W32Str_getData(pStr));
+        if (token) {
+            this->data.type = TOKEN_TYPE_STRTOKEN;
+            this->data.strToken = token;
+        }
+        else {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    
 
     
 
@@ -778,8 +842,6 @@ extern "C" {
         }
 #endif
         
-        token_ReleaseDataIfObj(pOther);
-        
         pOther->data.src = this->data.src;
         pOther->data.cls = this->data.cls;
         pOther->data.type = this->data.type;
@@ -790,28 +852,21 @@ extern "C" {
             case TOKEN_TYPE_UNKNOWN:
                 break;
                 
-            case TOKEN_TYPE_WCHAR:
-                // Since integer is as large as anything,
-                // we just use it to copy the data.
-                pOther->data.integer = this->data.integer;
-                break;
-                
-            case TOKEN_TYPE_OBJECT:
-            case TOKEN_TYPE_WSTRING:
-            {
-                OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->data.pObj);
-                if (pVtbl->pCopy) {
-                    pOther->data.pObj = pVtbl->pCopy(this->data.pObj);
-                }
-                else {
-                    obj_Retain(this->data.pObj);
-                    pOther->data.pObj = this->data.pObj;
-                }
-            }
+            case TOKEN_TYPE_FLOAT:
+                pOther->data.floatingPoint = this->data.floatingPoint;
                 break;
                 
             case TOKEN_TYPE_INTEGER:
                 pOther->data.integer = this->data.integer;
+                break;
+                
+            case TOKEN_TYPE_STRTOKEN:
+                pOther->data.strToken = this->data.strToken;
+                break;
+                
+            case TOKEN_TYPE_W32CHAR:
+                pOther->data.w32chr[0] = this->data.w32chr[0];
+                pOther->data.w32chr[1] = this->data.w32chr[1];
                 break;
                 
             default:
@@ -820,7 +875,7 @@ extern "C" {
                 
         }
         
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -848,161 +903,49 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        if (this->data.type == pOther->data.type)
-            ;
-        else {
-            return ERESULT_SUCCESS_UNEQUAL;
-        }
-        switch (this->data.type) {
-                
-            case TOKEN_TYPE_UNKNOWN:
-                return ERESULT_GENERAL_FAILURE;
-                break;
-                
-            case TOKEN_TYPE_WCHAR:
-                switch (pOther->data.type) {
-                        
-                    case TOKEN_TYPE_UNKNOWN:
-                        return ERESULT_GENERAL_FAILURE;
-                        break;
-                        
-                    case TOKEN_TYPE_WCHAR:
-                        i = this->data.wchr[0] - pOther->data.wchr[0];
-                        break;
-                        
-                    case TOKEN_TYPE_OBJECT:
-                        return ERESULT_GENERAL_FAILURE;
-                        break;
-                        
-                    case TOKEN_TYPE_WSTRING:
-                        eRc = WStr_Cmp(this->data.wchr, WStr_getData(pOther->data.pObj));
-                        return eRc;
-                        
-                    case TOKEN_TYPE_INTEGER:
-                        return ERESULT_GENERAL_FAILURE;
-                        break;
-                        
-                    default:
-                        DEBUG_BREAK();
-                        return ERESULT_GENERAL_FAILURE;
-                        
+        
+        if (this->data.type == pOther->data.type) {
+            switch (this->data.type) {
+                    
+            case TOKEN_TYPE_FLOAT:
+                if (this->data.floatingPoint == pOther->data.floatingPoint)
+                    ;
+                else {
+                    eRc = ERESULT_SUCCESS_UNEQUAL;
                 }
                 break;
-                
-            case TOKEN_TYPE_OBJECT:
-                if (pOther->data.type == TOKEN_TYPE_OBJECT) {
-                    OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->data.pObj);
-                    if (pVtbl->pCompare) {
-                        return pVtbl->pCompare(this->data.pObj, pOther->data.pObj);
-                    }
-                }
-                return ERESULT_GENERAL_FAILURE;
-                break;
-                
-            case TOKEN_TYPE_WSTRING:
-                eRc = WStr_Compare(this->data.pObj, pOther->data.pObj);
-                switch (pOther->data.type) {
-                        
-                    case TOKEN_TYPE_UNKNOWN:
-                        return ERESULT_GENERAL_FAILURE;
-                        break;
-                        
-                    case TOKEN_TYPE_WCHAR:
-                        eRc = WStr_Cmp(WStr_getData(this->data.pObj), pOther->data.wchr);
-                        break;
-                        
-                    case TOKEN_TYPE_OBJECT:
-                        return ERESULT_GENERAL_FAILURE;
-                        break;
-                        
-                    case TOKEN_TYPE_WSTRING:
-                        eRc = WStr_Compare(this->data.pObj, pOther->data.pObj);
-                        break;
-                        
-                    case TOKEN_TYPE_INTEGER:
-                        return ERESULT_GENERAL_FAILURE;
-                        break;
-                        
-                    default:
-                        DEBUG_BREAK();
-                        return ERESULT_GENERAL_FAILURE;
-                        
-                }
-                return eRc;
-                
+                    
             case TOKEN_TYPE_INTEGER:
-                if (pOther->data.type == TOKEN_TYPE_INTEGER) {
-                    i = (int)(this->data.integer - pOther->data.integer);
+                if (this->data.integer == pOther->data.integer)
+                    ;
+                else {
+                    eRc = ERESULT_SUCCESS_UNEQUAL;
                 }
                 break;
-                
-            default:
-                DEBUG_BREAK();
-                return ERESULT_GENERAL_FAILURE;
-                
-        }
-       
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //         C o n v e r t  T o  S t r i n g  T o k e n
-    //---------------------------------------------------------------
-    
-    ERESULT         token_ConvertToStringToken(
-        TOKEN_DATA      *this
-    )
-    {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        uint32_t        token = 0;
-        
-#ifdef NDEBUG
-#else
-        if( !token_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        switch (this->data.type) {
-                
-            case TOKEN_TYPE_UNKNOWN:
-                break;
-                
-            case TOKEN_TYPE_WCHAR:
-                eRc = szTbl_StringW32ToToken(szTbl_Shared(), this->data.wchr, &token);
-                if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                    this->data.strToken = token;
-                }
-                break;
-                
-            case TOKEN_TYPE_WSTRING:
-                eRc = szTbl_StringW32ToToken(szTbl_Shared(), WStr_getData(this->data.pObj), &token);
-                if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                    this->data.strToken = token;
-                }
-                break;
-                
-            case TOKEN_TYPE_INTEGER:
-                break;
-                
+                    
             case TOKEN_TYPE_STRTOKEN:
-                eRc = ERESULT_SUCCESS;
+                if (this->data.strToken == pOther->data.strToken)
+                    ;
+                else {
+                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                }
                 break;
-                
+                    
+            case TOKEN_TYPE_W32CHAR:
+                if (this->data.w32chr[0] == pOther->data.w32chr[0])
+                    ;
+                else {
+                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                }
+                break;
+                    
             default:
-                DEBUG_BREAK();
+                eRc = ERESULT_SUCCESS_UNEQUAL;
                 break;
-                
+            }
+        }
+        else {
+            eRc = ERESULT_SUCCESS_UNEQUAL;
         }
         
         return eRc;
@@ -1025,7 +968,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        pOther = token_Alloc();
+        pOther = token_Alloc( );
         pOther = token_Init( pOther );
         if (OBJ_NIL == pOther) {
             return OBJ_NIL;
@@ -1065,65 +1008,18 @@ extern "C" {
         }
 #endif
 
-        token_ReleaseDataIfObj(this);
-        
-        obj_Dealloc(this);
-        this = NULL;
+
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
 
 
 
-    //---------------------------------------------------------------
-    //                      E r r o r F L C
-    //---------------------------------------------------------------
-    
-    void            token_ErrorFLC(
-        TOKEN_DATA      *this,
-        const
-        char			*fmt,
-        ...
-    )
-    {
-        va_list 		argsp;
-        
-        va_start( argsp, fmt );
-        
-        eResult_ErrorFLCArg(
-            eResult_Shared(),
-            token_getFileName(this),
-            token_getLineNo(this),
-            token_getColNo(this),
-            fmt,
-            argsp
-        );
-    }
-    
-    
-    void            token_ErrorFatalFLC(
-        TOKEN_DATA      *this,
-        const
-        char			*fmt,
-        ...
-    )
-    {
-        va_list 		argsp;
-        
-        va_start( argsp, fmt );
-
-        eResult_ErrorFatalFLCArg(
-            eResult_Shared(),
-            token_getFileName(this),
-            token_getLineNo(this),
-            token_getColNo(this),
-            fmt,
-            argsp
-        );
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -1137,12 +1033,12 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        token_ReleaseDataIfObj(this);   // If a prior token was present.
         
-        this = obj_Init( this, cbSize, OBJ_IDENT_TOKEN );
+        this = obj_Init(this, cbSize, OBJ_IDENT_TOKEN);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&token_Vtbl);
         
 #ifdef NDEBUG
@@ -1152,6 +1048,8 @@ extern "C" {
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->data.integer);
+        BREAK_NOT_BOUNDARY4(sizeof(TOKEN_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(TOKEN));
 #endif
 
         return this;
@@ -1160,16 +1058,13 @@ extern "C" {
      
     TOKEN_DATA *     token_InitFnLCC(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls
     )
     {
-        const
-        char            *pSavedFileName = NULL;
-        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1180,23 +1075,20 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        if (pFileName) {
-            eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
-            BREAK_TRUE(ERESULT_FAILED(eRc));
-        }
-        token_setFileName(this, pSavedFileName);
+        token_setFileIndex(this, fileIndex);
+        token_setOffset(this, offset);
         token_setLineNo(this, lineNo);
         token_setColNo(this, colNo);
-        this->data.cls       = cls;
+        this->data.cls = cls;
         
         return this;
     }
     
-    
+
     TOKEN_DATA *     token_InitCharW32(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1208,7 +1100,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, pFileName, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1221,8 +1113,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitInteger(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1234,7 +1126,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, pFileName, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1246,10 +1138,11 @@ extern "C" {
     }
     
     
+#ifdef XYZZY
     TOKEN_DATA *     token_InitObj(
-        TOKEN_DATA      *cbp,
-        const
-        char            *pFileName,
+        TOKEN_DATA      *this,
+        uint16_t        fileIndex,
+        int32_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1257,26 +1150,26 @@ extern "C" {
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbp = token_InitFnLCC( cbp, pFileName, lineNo, colNo, cls );
-        if (OBJ_NIL == cbp) {
+        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        token_setObj(cbp, pObj);
+        token_setObj(this, pObj);
         
-        return cbp;
+        return this;
     }
     
     
     
     TOKEN_DATA *     token_InitStringW(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int32_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1288,7 +1181,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, pFileName, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1301,8 +1194,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStrA(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int32_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1310,25 +1203,29 @@ extern "C" {
         char            *pStr
     )
     {
+        uint32_t        strlen = 0;
         WSTR_DATA       *pString;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+        if (NULL == pStr) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
-        this = token_InitFnLCC( this, pFileName, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        pString = WStr_NewA(pStr);
-        if (OBJ_NIL == pString) {
-            DEBUG_BREAK();
+        strlen = utf8_StrLenChars(pStr);
+        if (strlen > obj_getMisc1(this)) {
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->data.pObj = pString;
-        this->data.type = TOKEN_TYPE_WSTRING;
+        //FIXME: memmove(this->pData->str, pStr, (strlen + 1));
+        this->pData->type = TOKEN_TYPE_UTF8STR;
         
         return this;
     }
@@ -1337,8 +1234,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStrW(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int32_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1366,12 +1263,14 @@ extern "C" {
 
         return this;
     }
+#endif
     
     
+#ifdef XYZZY
     TOKEN_DATA *     token_InitStrToken(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int32_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1384,16 +1283,17 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, pFileName, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        this->data.strToken = token;
-        this->data.type = TOKEN_TYPE_STRTOKEN;
+        this->pData->strToken = token;
+        this->pData->type = TOKEN_TYPE_STRTOKEN;
         
         return this;
     }
+#endif
     
     
     
@@ -1435,9 +1335,11 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return token_ToDebugString;
                         }
+#ifdef XYZZY
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return token_ToJSON;
                         }
+#endif
                         break;
                         
                     default:
@@ -1455,49 +1357,13 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //              R e l e a s e  D a t a  I f  O b j
-    //---------------------------------------------------------------
-    
-    void            token_ReleaseDataIfObj(
-        TOKEN_DATA      *this
-    )
-    {
-        uint32_t        cbSize = sizeof(TOKEN_DATA);
-        
-        /* "this" might point to an area which is
-         * an initialized token. Therefore, we need
-         * to add as many checks as we can to insure
-         * that we are releasing an object really
-         * assigned to a token.
-         */
-        if ( (obj_getType(this) == OBJ_IDENT_TOKEN)
-            && (obj_getSize(this) >= cbSize)
-            && (this->data.pObj)
-        ) {
-            switch (this->data.type) {
-                case TOKEN_TYPE_OBJECT:
-                case TOKEN_TYPE_WSTRING:
-                    obj_Release(this->data.pObj);
-                    this->data.pObj = OBJ_NIL;
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                              S e t
     //---------------------------------------------------------------
     
-    ERESULT     token_SetupCharW(
+    ERESULT     token_SetupCharW32(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1516,7 +1382,7 @@ extern "C" {
         }
 #endif
 
-        eRc = token_SetupFnLCC( this, pFileName, lineNo, colNo, cls );
+        eRc = token_SetupFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1530,16 +1396,13 @@ extern "C" {
     
     ERESULT         token_SetupFnLCC(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls
     )
     {
-        const
-        char            *pSavedFileName = NULL;
-        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1549,28 +1412,22 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (pFileName) {
-            eRc = szTbl_StringToString(szTbl_Shared(), pFileName, &pSavedFileName);
-            if (ERESULT_FAILED(eRc)) {
-                return eRc;
-            }
-        }
-        
-        token_ReleaseDataIfObj(this);
-        token_setFileName(this, pSavedFileName);
+
+        token_setFileIndex(this, fileIndex);
+        token_setOffset(this, offset);
         token_setLineNo(this, lineNo);
         token_setColNo(this, colNo);
-        this->data.cls       = cls;
+        this->data.cls = cls;
         
         return ERESULT_SUCCESS;
     }
     
 
     
-    ERESULT     token_SetupStrW(
+    ERESULT     token_SetupStrW32(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -1579,7 +1436,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        WSTR_DATA       *pString;
+        SZTBL_DATA      *pTbl = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1593,18 +1450,18 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-        eRc = token_SetupFnLCC( this, pFileName, lineNo, colNo, cls );
+        eRc = token_SetupFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
         
-        pString = WStr_NewW32(0, pStr);
-        if (OBJ_NIL == pString) {
-            DEBUG_BREAK();
-            return ERESULT_OUT_OF_MEMORY;
+        pTbl = szTbl_Shared();
+        if (OBJ_NIL == pTbl) {
+            return ERESULT_GENERAL_FAILURE;
         }
-        this->data.pObj = pString;
-        this->data.type = TOKEN_TYPE_WSTRING;
+        this->data.strToken = szTbl_StringW32ToToken(pTbl, pStr);
+        BREAK_ZERO(this->data.strToken);
+        this->data.type = TOKEN_TYPE_STRTOKEN;
         
         return ERESULT_SUCCESS;
     }
@@ -1629,31 +1486,29 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
         pStr = AStr_New();
         str[0] = '\0';
         
         switch (this->data.type) {
                 
-            case TOKEN_TYPE_WCHAR:
-                j = snprintf(
-                             str,
-                             sizeof(str),
-                             "%c",
-                             (((this->data.wchr[0] >= ' ') && (this->data.wchr[0] < 0x7F))
-                                        ? this->data.wchr[0] : ' ')
-                             );
+            case TOKEN_TYPE_W32CHAR:
+                if (ascii_isPrintableW32(this->data.w32chr[0])) {
+                    str[0] = this->data.w32chr[0];
+                    str[1] = '\0';
+                }
+                else {
+                    str[0] = ' ';
+                    str[1] = '\0';
+                }                
                 AStr_AppendA(pStr, str);
-                break;
-                
-            case TOKEN_TYPE_WSTRING:
-                //AStr_AppendA(pStr, "\"");
-                AStr_AppendW32(
-                               pStr,
-                               WStr_getLength(this->data.pObj),
-                               WStr_getData(this->data.pObj)
-                );
-                //AStr_AppendA(pStr, "\"");
                 break;
                 
             case TOKEN_TYPE_INTEGER:
@@ -1667,17 +1522,10 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                pStr = NULL;
-                eRc = szTbl_TokenToString(szTbl_Shared(), this->data.strToken, &pString);
+                pString = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
                 if (pString) {
                     //AStr_AppendA(pStr, "\"");
-                    j = snprintf(
-                                 str,
-                                 sizeof(str),
-                                 "%s",
-                                 pString
-                                 );
-                    AStr_AppendA(pStr, str);
+                    AStr_AppendA(pStr, pString);
                     //AStr_AppendA(pStr, "\"");
                 }
                 break;
@@ -1706,7 +1554,14 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
@@ -1715,9 +1570,10 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(token) fileName=%s line=%d col=%d cls=%d ",
+                     "{%p(token) fileIndex=%2d offset=%4lld line=%2d col=%d cls=%4d ",
                      this,
-                     (token_getFileName(this) ? token_getFileName(this) : ""),
+                     token_getFileIndex(this),
+                     token_getOffset(this),
                      token_getLineNo(this),
                      token_getColNo(this),
                      this->data.cls
@@ -1730,22 +1586,16 @@ extern "C" {
                 AStr_AppendA(pStr, "type=UNKNOWN ");
                 break;
                 
-            case TOKEN_TYPE_WCHAR:
+            case TOKEN_TYPE_W32CHAR:
                 j = snprintf(
                             str,
                             sizeof(str),
                             "type=CHAR char=(0x%X)%c ",
-                            this->data.wchr[0],
-                            (((this->data.wchr[0] >= ' ') && (this->data.wchr[0] < 0x7F))
-                                ? this->data.wchr[0] : ' ')
+                            this->data.w32chr[0],
+                            (((this->data.w32chr[0] >= ' ') && (this->data.w32chr[0] < 0x7F))
+                                ? this->data.w32chr[0] : ' ')
                     );
                 AStr_AppendA(pStr, str);
-                break;
-                
-            case TOKEN_TYPE_WSTRING:
-                AStr_AppendA(pStr, "type=STRING text=\"");
-                AStr_AppendW32(pStr, WStr_getLength(this->data.pObj), WStr_getData(this->data.pObj));
-                AStr_AppendA(pStr, "\"");
                 break;
                 
             case TOKEN_TYPE_INTEGER:
@@ -1784,58 +1634,7 @@ extern "C" {
     }
     
 
-    char *          token_ToStringA(
-        TOKEN_DATA      *this
-    )
-    {
-        const
-        W32CHR_T        *pStrW = NULL;
-        char            *pStrA;
-        uint32_t        strLen;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !token_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        switch (this->data.type) {
-                
-            case TOKEN_TYPE_WCHAR:
-                pStrW = this->data.wchr;
-                break;
-                
-            case TOKEN_TYPE_WSTRING:
-                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
-                    pStrW = WStr_getData(this->data.pObj);
-                }
-                if (OBJ_IDENT_W32STRC == obj_getType(this->data.pObj)) {
-                    pStrW = W32StrC_getData(this->data.pObj);
-                }
-                break;
-                
-            default:
-                break;
-        }
-        
-        if (pStrW) {
-            strLen = utf8_W32ToUtf8Str(0, pStrW, 0, NULL);
-            ++strLen;
-            pStrA = mem_Malloc(strLen);
-            if (pStrA) {
-                strLen = utf8_W32ToUtf8Str(0, pStrW, strLen, pStrA);
-            }
-            return pStrA;
-        }
-        
-        return NULL;
-    }
     
-    
-
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
@@ -1843,18 +1642,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            token_Validate(
-        TOKEN_DATA      *cbp
+        TOKEN_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_TOKEN) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_TOKEN) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(TOKEN_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(TOKEN_DATA)) )
             return false;
 
         // Return to caller.

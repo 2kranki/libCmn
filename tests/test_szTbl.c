@@ -27,6 +27,7 @@
 #include    <str.h>
 #include    <szTbl_internal.h>
 #include    <utf8.h>
+#include    <W32Str.h>
 
 
 static
@@ -154,7 +155,8 @@ int         test_szTbl_Add(
     const
     char        *pStr;
     ASTR_DATA	*pAStr = OBJ_NIL;
-    
+    W32STR_DATA *pWStr = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = szTbl_Shared();
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -163,14 +165,9 @@ int         test_szTbl_Add(
         ppStr = strings;
         while (*ppStr) {
             ++i;
-            eRc = szTbl_StringToToken(pObj, *ppStr, &token);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            if (ERESULT_HAS_FAILED(eRc)) {
-                fprintf( stderr, "error word = %s\n", *ppStr );
-            }
+            token = szTbl_StringToToken(pObj, *ppStr);
             XCTAssertTrue( (token == i) );
-            eRc = szTbl_TokenToString(pObj, token, &pStr);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pStr = szTbl_TokenToString(pObj, token);
             XCTAssertFalse( (NULL == pStr) );
             if (pStr) {
                 XCTAssertTrue( (0 == strcmp(*ppStr,pStr)) );
@@ -178,18 +175,22 @@ int         test_szTbl_Add(
             ++ppStr;
         }
         
-        eRc = szTbl_StringToToken(pObj, "item", &token);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        eRc = szTbl_StringW32ToToken(pObj, L"item", &tokenW);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        token = szTbl_StringToToken(pObj, "item");
+        pWStr = W32Str_NewA("item");
+        XCTAssertFalse( (OBJ_NIL == pWStr) );
+        tokenW = szTbl_StringW32ToToken(pObj, W32Str_getData(pWStr));
         XCTAssertTrue( (token == tokenW) );
+        obj_Release(pWStr);
+        pWStr = OBJ_NIL;
         
-        eRc = szTbl_StringW32ToToken(pObj, L"item size", &tokenW);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        eRc = szTbl_StringToToken(pObj, "item size", &token);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pWStr = W32Str_NewA("item size");
+        XCTAssertFalse( (OBJ_NIL == pWStr) );
+        tokenW = szTbl_StringW32ToToken(pObj, W32Str_getData(pWStr));
+        token = szTbl_StringToToken(pObj, "item size");
         XCTAssertTrue( (token == tokenW) );
-        
+        obj_Release(pWStr);
+        pWStr = OBJ_NIL;
+
         pAStr = szTbl_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));

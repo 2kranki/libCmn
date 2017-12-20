@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include "ternary_internal.h"
 #include "trace.h"
-#include "WStr.h"
+#include "W32Str.h"
 #include <stdio.h>
 
 
@@ -323,7 +323,7 @@ extern "C" {
             return false;
         }
 #endif
-        keyLen = WStr_StrLen(pName);
+        keyLen = W32Str_StrLen(pName);
         if (keyLen > this->maxKeyLen) {
             this->maxKeyLen = keyLen;
         }

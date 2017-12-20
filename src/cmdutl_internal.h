@@ -59,8 +59,8 @@ extern "C" {
     
     typedef struct cmdutl_entry_s {
         OBJ_ID              pArg;
-        WSTR_DATA           *pLongName;
-        WSTR_DATA           *pShortName;
+        W32STR_DATA         *pLongName;
+        W32STR_DATA         *pShortName;
     } CMDUTL_ENTRY;
     
     
@@ -91,7 +91,7 @@ struct cmdutl_data_s	{
         //FBSI_DATA           *pFbsi;
         FILE                *pFile;
         //U8ARRAY_DATA        *pU8Array;
-        WSTR_DATA           *pWStr;
+        W32STR_DATA         *pWStr;
     };
     uint32_t        lineNo;             // Current Line Number
     uint16_t        colNo;              // Current Column Number

@@ -7,10 +7,7 @@
  * Program
  *          Dynamic Array of uint32_t (u32Array)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate u32Array to run things without complications
- *          of interfering with the main u32Array. A u32Array may be
- *          called a u32Array on other O/S's.
+ *			This object provides a dynamic array of uint32_t entries.
  *
  * Remarks
  *	1.      All offsets or indices are relative to 1, not 0. 0 is

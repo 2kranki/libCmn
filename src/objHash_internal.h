@@ -77,8 +77,9 @@ struct objHash_data_s	{
     OBJ_DATA        super;
 
     // Common Data
+    ERESULT         eRc;
     uint32_t        unique;
-    uint32_t        num;            /* Current Number of Entries */
+    uint32_t        num;            // Current Number of Entries
     LISTDL_DATA     freeList;       // Free Node Linked List
     LISTDL_DATA     blocks;
     uint16_t        cBlock;         // Number of Nodes per Block
@@ -99,6 +100,13 @@ struct objHash_data_s	{
         OBJ_ID          objId
     );
 
+    void *          objHash_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			objHash_Validate(

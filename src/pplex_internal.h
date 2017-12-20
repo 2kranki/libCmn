@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   WStr_internal.h
- *	Generated 08/14/2015 07:22:10
+ * File:   pplex_internal.h
+ *	Generated 09/29/2015 11:29:54
  *
  * Notes:
  *  --	N/A
@@ -37,14 +37,16 @@
 
 
 
+#include    <pplex.h>
+#include    <lex_internal.h>
+#include    <pplex1.h>
+#include    <pplex2.h>
+#include    <pplex3.h>
 
-#ifndef WSTR_INTERNAL_H
-#define	WSTR_INTERNAL_H
 
+#ifndef PPLEX_INTERNAL_H
+#define	PPLEX_INTERNAL_H
 
-#include        <WStr.h>
-#include        <array_internal.h>
-#include        <path.h>
 
 #ifdef	__cplusplus
 extern "C" {
@@ -52,40 +54,51 @@ extern "C" {
 
 
 #pragma pack(push, 1)
-struct WStr_data_s	{
+struct pplex_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    ARRAY_DATA      super;
+    LEX_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    // OBJ_FLAG_USER1-OBJ_FLAG_USER4 Reserved for Lex
+#define PPLEX_FLAG_DEBUG     OBJ_FLAG_USER5
 
     // Common Data
+    LEX_DATA        *pLex1;
+    LEX_DATA        *pLex2;
+    LEX_DATA        *pLex3;
+    SRCFILE_DATA    *pSrc;
+    uint16_t        lang;
+    uint16_t        k;
+    uint8_t         fReturnWS;
+    uint8_t         fReturnNL;
+    uint8_t         rsvd8[2];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    WSTR_VTBL       WStr_Vtbl;
+    PPLEX_VTBL      pplex_Vtbl;
 
 
 
     // Internal Functions
-    void            WStr_Dealloc(
+    void            pplex_Dealloc(
         OBJ_ID          objId
     );
 
-    
-    void *          WStr_QueryInfo(
+
+    void *          pplex_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-
+    
     
 #ifdef NDEBUG
 #else
-    bool			WStr_Validate(
-        WSTR_DATA       *cbp
+    bool			pplex_Validate(
+        PPLEX_DATA       *cbp
     );
 #endif
 
@@ -95,5 +108,5 @@ struct WStr_data_s	{
 }
 #endif
 
-#endif	/* WSTR_INTERNAL_H */
+#endif	/* PPLEX_INTERNAL_H */
 

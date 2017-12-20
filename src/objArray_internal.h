@@ -93,6 +93,13 @@ struct objArray_data_s	{
     );
 
 
+    void *          objArray_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			objArray_Validate(

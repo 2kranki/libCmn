@@ -263,7 +263,7 @@ extern "C" {
      *		TRUE	= Entry successfully deleted.
      *		FALSE	= Entry could not be deleted.
      */
-    ERESULT         szHash_Update(
+    ERESULT         szHash_UpdateA(
         SZHASH_DATA		*this,
         const
         char            *pszKey,

@@ -54,6 +54,7 @@ struct number_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;
 #define NUMBER_FLAG_SIGNED  OBJ_FLAG_USER1
 
     // Common Data
@@ -85,6 +86,14 @@ struct number_data_s	{
         OBJ_ID          objId
     );
 
+    
+    void *          number_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			number_Validate(

@@ -192,6 +192,11 @@ extern "C" {
     );
     
     
+    NODEARRAY_DATA * nodeArray_DeepCopy(
+        NODEARRAY_DATA    *this
+    );
+    
+    
     /*!
      Remove the index'th element from the array and return it.
      @return    If successful, an object pointer, otherwise OBJ_NIL.

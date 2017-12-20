@@ -323,29 +323,38 @@ extern "C" {
         OBJARRAY_DATA   *pOther;
         uint32_t        i;
         uint32_t        iMax;
-        OBJ_DATA        **ppItem;
-        
+        ARRAY_ENTRY     *pEntry;
+        OBJ_IUNKNOWN    *pVtbl;
+        OBJ_ID          pItem;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objArray_Validate( this ) ) {
+        if( !objArray_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = objArray_Alloc();
-        pOther = objArray_Init(pOther);
+        pOther = objArray_New();
         if (OBJ_NIL == pOther) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
         }
         
         iMax = array_getMax(this->pArray);
         for (i=0; i<iMax; ++i) {
-            ppItem = array_Ptr(this->pArray, (i + 1));
-            if (ppItem && *ppItem) {
-                obj_Retain(*ppItem);
-                array_AppendData(pOther->pArray, 1, ppItem);
+            pEntry = array_Ptr(this->pArray, (i + 1));
+            if (pEntry && pEntry->pObj) {
+                pItem = pEntry->pObj;
+                pVtbl = obj_getVtbl(pItem);
+                if (pVtbl->pCopy) {
+                    pItem = pVtbl->pCopy(pItem);
+                }
+                else {
+                    obj_Retain(pItem);
+                }
+                array_AppendData(pOther->pArray, 1, &pItem);
             }
         }
         
@@ -430,9 +439,9 @@ extern "C" {
         }
 #endif
         
-        pOther = objArray_Alloc();
-        pOther = objArray_Init(pOther);
+        pOther = objArray_New();
         if (OBJ_NIL == pOther) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
         }
         
@@ -443,7 +452,10 @@ extern "C" {
                 pItem = pEntry->pObj;
                 pVtbl = obj_getVtbl(pItem);
                 if (pVtbl->pDeepCopy) {
-                    pItem = pVtbl->pDeepCopy(pEntry->pObj);
+                    pItem = pVtbl->pDeepCopy(pItem);
+                }
+                else if (pVtbl->pCopy) {
+                    pItem = pVtbl->pCopy(pItem);
                 }
                 else {
                     obj_Retain(pItem);
@@ -867,6 +879,82 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = objArray_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     objId   OBJARRAY object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                        character string which represents the method name without
+                        the object name, "name", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          objArray_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        OBJARRAY_DATA   *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return objArray_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       S o r t
     //---------------------------------------------------------------
     
@@ -881,7 +969,7 @@ extern "C" {
         OBJ_ID          pObj2;
         uint32_t        i;
         uint32_t        j;
-        OBJ_ID          pSave;
+        //OBJ_ID          pSave;
         OBJ_IUNKNOWN    *pUnk;
         
         /*      Insertion Sort from Wikipedia

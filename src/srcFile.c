@@ -41,11 +41,12 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "srcFile_internal.h"
-#include    "ascii.h"
-#include    "szTbl.h"
-#include    "trace.h"
-#include    "utf8.h"
+#include    <srcFile_internal.h>
+#include    <token_internal.h>
+#include    <ascii.h>
+#include    <szTbl.h>
+#include    <trace.h>
+#include    <utf8.h>
 #include    <stdio.h>
 #include    <wchar.h>
 
@@ -204,10 +205,10 @@ extern "C" {
                 }
                 break;
                 
-            case OBJ_IDENT_WSTR:
-                chr = WStr_CharGetW32(this->pWStr, (uint32_t)this->fileOffset++ );
+            case OBJ_IDENT_W32STR:
+                chr = W32Str_CharGetW32(this->pW32Str, (uint32_t)this->fileOffset++ );
                 if( chr == ASCII_CPM_EOF ) {
-                    this->fileOffset = WStr_getLength(this->pWStr);
+                    this->fileOffset = W32Str_getLength(this->pW32Str);
                     chr = EOF;
                 }
                 break;
@@ -253,6 +254,7 @@ extern "C" {
     SRCFILE_DATA *  srcFile_NewFromAStr(
         ASTR_DATA       *pStr,        // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -262,7 +264,7 @@ extern "C" {
         
         this = srcFile_Alloc( );
         if (this) {
-            this = srcFile_InitAStr(this, pStr, pFilePath, tabSize, fExpandTabs, fRemoveNLs);
+            this = srcFile_InitAStr(this, pStr, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs);
         }
         
         return this;
@@ -272,6 +274,7 @@ extern "C" {
 
     SRCFILE_DATA *  srcFile_NewFromFile(
         FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -281,7 +284,7 @@ extern "C" {
         
         this = srcFile_Alloc( );
         if (this) {
-            this = srcFile_InitFile(this, pFile, tabSize, fExpandTabs, fRemoveNLs);
+            this = srcFile_InitFile(this, pFile, fileIndex, tabSize, fExpandTabs, fRemoveNLs);
         }
         
         return this;
@@ -291,6 +294,7 @@ extern "C" {
     
     SRCFILE_DATA *  srcFile_NewFromPath(
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -300,7 +304,7 @@ extern "C" {
         
         this = srcFile_Alloc( );
         if (this) {
-            this = srcFile_InitPath(this, pFilePath, tabSize, fExpandTabs, fRemoveNLs);
+            this = srcFile_InitPath(this, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs);
         }
         
         return this;
@@ -395,6 +399,39 @@ extern "C" {
             this->flags &= ~FLG_TAB;
         }
         
+        return true;
+    }
+    
+    
+    
+    uint16_t        srcFile_getFileIndex(
+        SRCFILE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcFile_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->fileIndex;
+    }
+    
+    bool            srcFile_setFileIndex(
+        SRCFILE_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !srcFile_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->fileIndex = value;
         return true;
     }
     
@@ -522,9 +559,9 @@ extern "C" {
             this->pU8Array = OBJ_NIL;
         }
         
-        if ((this->type == OBJ_IDENT_WSTR) && (this->pWStr)) {
-            obj_Release(this->pWStr);
-            this->pWStr = OBJ_NIL;
+        if ((this->type == OBJ_IDENT_W32STR) && (this->pW32Str)) {
+            obj_Release(this->pW32Str);
+            this->pW32Str = OBJ_NIL;
         }
         
         if (this->pPath) {
@@ -560,6 +597,7 @@ extern "C" {
     SRCFILE_DATA *  srcFile_Init(
         SRCFILE_DATA    *this,
         PATH_DATA       *pPath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -580,6 +618,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFile_Vtbl);
 
+        this->fileIndex = fileIndex;
         obj_setSize( &this->curchr, sizeof(TOKEN_DATA) );
         pToken = token_Init(&this->curchr);
         if (OBJ_NIL == pToken) {
@@ -595,11 +634,10 @@ extern "C" {
         this->flags  |= FLG_EOF;
         if (pPath) {
             this->pPath  = path_Copy(pPath);
-            eRc =   szTbl_StringToString(
-                                szTbl_Shared(),
-                                path_getData(this->pPath),
-                                &this->pFileName
-                    );
+            this->pFileName = szTbl_StringToString(
+                                            szTbl_Shared(),
+                                            path_getData(this->pPath)
+                              );
         }
         this->lineNo  = 1;
         this->colNo   = 0;
@@ -621,6 +659,7 @@ extern "C" {
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->lineNo);
+        BREAK_NOT_BOUNDARY4(sizeof(SRCFILE_DATA));
     #endif
 
         return this;
@@ -632,6 +671,7 @@ extern "C" {
         SRCFILE_DATA    *this,
         ASTR_DATA       *pStr,        // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -649,7 +689,7 @@ extern "C" {
         }
         obj_Retain(pStr);
         
-        this = srcFile_Init( this, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
+        this = srcFile_Init( this, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
         if (OBJ_NIL == this) {
             //obj_Release(this);
             obj_Release(pStr);
@@ -673,6 +713,7 @@ extern "C" {
     SRCFILE_DATA *  srcFile_InitFile(
         SRCFILE_DATA    *this,
         FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -689,7 +730,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = srcFile_Init( this, OBJ_NIL, tabSize, fExpandTabs, fRemoveNLs );
+        this = srcFile_Init( this, OBJ_NIL, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -711,6 +752,7 @@ extern "C" {
     SRCFILE_DATA *  srcFile_InitPath(
         SRCFILE_DATA    *this,
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -728,7 +770,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = srcFile_Init( this, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
+        this = srcFile_Init( this, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -767,6 +809,7 @@ extern "C" {
         SRCFILE_DATA    *cbp,
         U8ARRAY_DATA    *pBuffer,       // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -784,7 +827,7 @@ extern "C" {
         }
         obj_Retain(pBuffer);
         
-        cbp = srcFile_Init( cbp, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
+        cbp = srcFile_Init( cbp, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
         if (OBJ_NIL == cbp) {
             obj_Release(cbp);
             obj_Release(pBuffer);
@@ -804,10 +847,11 @@ extern "C" {
     
     
     
-    SRCFILE_DATA *  srcFile_InitWStr(
+    SRCFILE_DATA *  srcFile_InitW32Str(
         SRCFILE_DATA    *cbp,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -825,7 +869,7 @@ extern "C" {
         }
         obj_Retain(pWStr);
         
-        cbp = srcFile_Init( cbp, pFilePath, tabSize, fExpandTabs, fRemoveNLs );
+        cbp = srcFile_Init( cbp, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
         if (OBJ_NIL == cbp) {
             obj_Release(cbp);
             obj_Release(pWStr);
@@ -833,8 +877,8 @@ extern "C" {
         }
         
         // Open the file.
-        cbp->type = OBJ_IDENT_WSTR;
-        cbp->pWStr = pWStr;
+        cbp->type = OBJ_IDENT_W32STR;
+        cbp->pW32Str = pWStr;
         cbp->flags &= ~FLG_EOF;
         cbp->flags |= FLG_OPN;
         cbp->fileOffset = 1;
@@ -983,12 +1027,13 @@ extern "C" {
         pToken = &this->pInputs[this->curInputs];
         obj_FlagOff(pToken, OBJ_FLAG_INIT);
         token_InitCharW32(
-                       pToken,
-                       this->pFileName,
-                       this->lineNo,
-                       this->colNo,
-                       cls,
-                       chr
+                    pToken,
+                    this->fileIndex,
+                    this->fileOffset,
+                    this->lineNo,
+                    this->colNo,
+                    cls,
+                    chr
         );
         this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         
@@ -1068,12 +1113,12 @@ extern "C" {
                 }
                 break;
                 
-            case OBJ_IDENT_WSTR:
+            case OBJ_IDENT_W32STR:
                 AStr_AppendA(pStr, "Type=WStr\n");
                 if (this->pAStr) {
-                    if (((OBJ_DATA *)(this->pWStr))->pVtbl->pToDebugString) {
-                        pWrkStr =   ((OBJ_DATA *)(this->pWStr))->pVtbl->pToDebugString(
-                                                        this->pWStr,
+                    if (((OBJ_DATA *)(this->pW32Str))->pVtbl->pToDebugString) {
+                        pWrkStr =   ((OBJ_DATA *)(this->pW32Str))->pVtbl->pToDebugString(
+                                                        this->pW32Str,
                                                         indent+3
                                     );
                         AStr_Append(pStr, pWrkStr);

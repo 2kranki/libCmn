@@ -88,8 +88,8 @@ extern "C" {
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
         ERESULT         eRc;
-        const
-        char            *pFileName = "";
+        uint16_t        fileIndex = 0;
+        int32_t         offset = 0;
         uint32_t        lineNo = 0;
         uint16_t        colNo = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -116,17 +116,32 @@ extern "C" {
         }
         //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
         
-        eRc = nodeHash_FindA(pHash, "FileName", &pNode);
+        eRc = nodeHash_FindA(pHash, "FileIndex", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
-                pFileName = AStr_CStringA(pStr, NULL);
-                srcLoc_setFileName(pSrcLoc, pFileName);
+                fileIndex = AStr_ToInt64(pStr) & 0xFFFFFFFF;
             }
             else {
-                fprintf(stderr, "ERROR - fileName should have a string!\n");
+                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
+                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+                DEBUG_BREAK();
+                goto exit00;
+            }
+        }
+        
+        eRc = nodeHash_FindA(pHash, "Offset", &pNode);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pNode = node_getData(pNode);
+            pName = node_getName(pNode);
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
+                pStr = node_getData(pNode);
+                offset = AStr_ToInt64(pStr) & 0xFFFFFFFF;
+            }
+            else {
+                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
                 fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
                 DEBUG_BREAK();
                 goto exit00;
@@ -167,10 +182,6 @@ extern "C" {
               
         // Return to caller.
     exit00:
-        if (pFileName) {
-            mem_Free((void *)pFileName);
-            pFileName = NULL;
-        }
         if (pFileNode) {
             obj_Release(pFileNode);
             pFileNode = OBJ_NIL;
@@ -209,9 +220,22 @@ extern "C" {
     
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = srcLoc_ToJSON(this);
+     @endcode
+     @param     this    SRCLOC object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     srcLoc_ToJSON(
-                                  SRCLOC_DATA     *this
-                                  )
+        SRCLOC_DATA     *this
+    )
     {
         char            str[256];
         int             j;
@@ -234,11 +258,12 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{ \"objectType\":\"%s\", \"FileName\":\"%s\", \"LineNo\":%d, \"ColNo\":%d ",
+                     "{ \"objectType\":\"%s\", \"FileIndex\":%d, \"Offset\":%lld, \"LineNo\":%d, \"ColNo\":%d ",
                      pInfo->pClassName,
-                     (this->data.pFileName ? this->data.pFileName : ""),
-                     this->data.lineNo,
-                     this->data.colNo
+                     this->pData->fileIndex,
+                     this->pData->offset,
+                     this->pData->lineNo,
+                     this->pData->colNo
                      );
         AStr_AppendA(pStr, str);
         

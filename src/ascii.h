@@ -225,8 +225,17 @@ extern "C" {
         char                asciiChar
     );
     
+    bool                ascii_isPrintableW32(
+        W32CHR_T            w32Char
+    );
     
+
     bool                ascii_isQuoteA(
+        char                asciiChar
+    );
+    
+    
+    bool                ascii_isUpperA(
         char                asciiChar
     );
     

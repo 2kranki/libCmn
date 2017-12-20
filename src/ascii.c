@@ -541,7 +541,22 @@ extern "C" {
     }
     
     
+    bool                ascii_isPrintableW32(
+        W32CHR_T            w32Char
+    )
+    {
+        bool                fRc = false;
+        
+        if ( (w32Char >= ' ') && (w32Char < 0x7F) ) {
+            fRc = true;
+        }
+        
+        return( fRc );
+        
+    }
     
+    
+
     
     //**********************************************************
     //                      i s Q u o t e
@@ -616,13 +631,19 @@ extern "C" {
                 fRc = true;
             }
         }
-        else if (unicodeChar == 0x0085) {       // Next New Line (Paragraph break)
+        else if (unicodeChar == 0x0085) {       // NEL - Next Line (same as ebcdic NL)
             fRc = true;
         }
         else if (unicodeChar == 0x00A0) {       // no-break space
             fRc = true;
         }
         else if (unicodeChar == 0x200B) {       // zero width space
+            fRc = true;
+        }
+        else if (unicodeChar == 0x2028) {       // LS - Line Separator
+            fRc = true;
+        }
+        else if (unicodeChar == 0x2029) {       // PS - Paragraph Separator
             fRc = true;
         }
         else if (unicodeChar == 0x2060) {       // word joiner

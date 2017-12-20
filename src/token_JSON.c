@@ -42,14 +42,14 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "token_internal.h"
+#include    <token_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "hjson.h"
-#include    "node.h"
-#include    "nodeHash.h"
-#include    "utf8.h"
+#include    <hjson.h>
+#include    <node.h>
+#include    <nodeHash.h>
+#include    <utf8.h>
 
 
 
@@ -90,6 +90,8 @@ extern "C" {
         ERESULT         eRc;
         const
         char            *pFileName = NULL;
+        uint16_t        fileIndex = 0;
+        int64_t         offset = 0;
         uint32_t        lineNo = 0;
         uint16_t        colNo = 0;
         int32_t         cls = 0;
@@ -118,16 +120,36 @@ extern "C" {
             obj_Release(pStr);
         }
         
-        eRc = nodeHash_FindA(pHash, "FileName", &pNode);
+        eRc = nodeHash_FindA(pHash, "FileIndex", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
-                pFileName = AStr_CStringA(pStr, NULL);
+                fileIndex = AStr_ToInt64(pStr) & 0xFFFF;
             }
             else {
-                fprintf(stderr, "ERROR - fileName should have a string!\n");
+                fprintf(stderr, "ERROR - FileIndex should be an integer!\n");
+                {
+                    ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
+                DEBUG_BREAK();
+                goto exit00;
+            }
+        }
+        
+        eRc = nodeHash_FindA(pHash, "Offset", &pNode);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pNode = node_getData(pNode);
+            pName = node_getName(pNode);
+            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
+                pStr = node_getData(pNode);
+                offset = AStr_ToInt64(pStr);
+            }
+            else {
+                fprintf(stderr, "ERROR - Offset should have a integer!\n");
                 {
                     ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
                     fprintf(stderr, "%s\n", AStr_getData(pStr));
@@ -234,7 +256,8 @@ extern "C" {
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 pToken =    token_NewCharW32(
-                                           pFileName,
+                                           fileIndex,
+                                           offset,
                                            lineNo,
                                            colNo,
                                            cls,
@@ -256,7 +279,8 @@ extern "C" {
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 pToken =    token_NewInteger(
-                                             pFileName,
+                                             fileIndex,
+                                             offset,
                                              lineNo,
                                              colNo,
                                              cls,
@@ -278,9 +302,10 @@ extern "C" {
         else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "STRING")) {
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
                 pStr = node_getData(pNode);
-                WSTR_DATA   *pWStr = AStr_ToWStr(pStr);
-                pToken =    token_NewStringW(
-                                             pFileName,
+                W32STR_DATA *pWStr = AStr_ToW32Str(pStr);
+                pToken =    token_NewFromW32STR(
+                                             fileIndex,
+                                             offset,
                                              lineNo,
                                              colNo,
                                              cls,
@@ -303,7 +328,8 @@ extern "C" {
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
                 pStr = node_getData(pNode);
                 pToken =    token_NewStrToken(
-                                              pFileName,
+                                              fileIndex,
+                                              offset,
                                               lineNo,
                                               colNo,
                                               cls,
@@ -383,12 +409,6 @@ extern "C" {
         char            str[256];
         int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
-        char            str2[256];
-        uint32_t        len;
-        uint32_t        lenChars;
-        const
-        W32CHR_T        *pWStr = NULL;
         const
         OBJ_INFO        *pInfo;
         
@@ -406,9 +426,9 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"%s\",\"FileName\":\"%s\",\"LineNo\":%d,\"ColNo\":%d,\"Class\":%d,",
+                     "{\"objectType\":\"%s\",\"FileIndex\":%d,\"LineNo\":%d,\"ColNo\":%d,\"Class\":%d,",
                      pInfo->pClassName,
-                     (token_getFileName(this) ? token_getFileName(this) : ""),
+                     token_getFileIndex(this),
                      token_getLineNo(this),
                      token_getColNo(this),
                      this->data.cls
@@ -421,36 +441,14 @@ extern "C" {
                 AStr_AppendA(pStr, "\"Type\":\"UNKNOWN\"");
                 break;
                 
-            case TOKEN_TYPE_WCHAR:
+            case TOKEN_TYPE_W32CHAR:
                 j = snprintf(
                              str,
                              sizeof(str),
                              "\"Type\":\"CHAR\",\"Data\":%d",
-                             this->data.wchr[0]
+                             this->data.w32chr[0]
                              );
                 AStr_AppendA(pStr, str);
-                break;
-                
-            case TOKEN_TYPE_WSTRING:
-                AStr_AppendA(pStr, "\"Type\":\"STRING\",\"Data\":\"");
-                if (OBJ_IDENT_WSTR == obj_getType(this->data.pObj)) {
-                    pWStr = WStr_getData(this->data.pObj);
-                }
-                if (OBJ_IDENT_W32STRC == obj_getType(this->data.pObj)) {
-                    pWStr = W32StrC_getData(this->data.pObj);
-                }
-                len = utf8_StrLenW32(pWStr);
-                for (j=0; j<len; ++j) {
-                    if (*pWStr == '"') {
-                        AStr_AppendA(pStr, "\\");
-                    }
-                    lenChars = utf8_W32ToUtf8(*pWStr, str2);
-                    if (lenChars) {
-                        AStr_AppendA(pStr, str2);
-                    }
-                    ++pWStr;
-                }
-                AStr_AppendA(pStr, "\"");
                 break;
                 
             case TOKEN_TYPE_INTEGER:

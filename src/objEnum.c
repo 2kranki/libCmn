@@ -261,7 +261,7 @@ extern "C" {
 #endif
 
         objEnum_setLastError(this, ERESULT_SUCCESS);
-        return 0;
+        return objArray_getSize(this->pArray);
     }
 
 
@@ -373,8 +373,6 @@ extern "C" {
         // Return to caller.
         objEnum_setLastError(this, ERESULT_SUCCESS);
     eom:
-        //FIXME: Implement the assignment.        
-        objEnum_setLastError(this, ERESULT_NOT_IMPLEMENTED);
         return objEnum_getLastError(this);
     }
     
@@ -884,6 +882,36 @@ extern "C" {
         // Return to caller.
         objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S o r t
+    //---------------------------------------------------------------
+    
+    ERESULT         objEnum_SortAscending(
+        OBJENUM_DATA    *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objEnum_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pArray) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        this->eRc = objArray_SortAscending(this->pArray, NULL);
+        obj_FlagOn(this, OBJENUM_SORTED);
+        
+        return this->eRc;
     }
     
     

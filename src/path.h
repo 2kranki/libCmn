@@ -119,8 +119,8 @@ extern "C" {
     );
     
     
-    PATH_DATA *     path_NewFromWStr(
-        WSTR_DATA       *pStr
+    PATH_DATA *     path_NewFromW32STR(
+        W32STR_DATA     *pStr
     );
     
     

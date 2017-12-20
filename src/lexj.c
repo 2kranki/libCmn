@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <lexj_internal.h>
+#include <srcErrors.h>
 #include <trace.h>
 
 
@@ -672,6 +673,7 @@ extern "C" {
                                     this->pInput,
                                     pStr,
                                     OBJ_NIL,
+                                    1,
                                     tabSize,
                                     fExpandTabs,
                                     false
@@ -730,6 +732,7 @@ extern "C" {
         
         this->pInput =  srcFile_NewFromFile(
                             pFile,
+                            1,
                             tabSize,
                             fExpandTabs,
                             false
@@ -787,10 +790,11 @@ extern "C" {
         }
         
         this->pInput =  srcFile_NewFromPath(
-                                         pFilePath,
-                                         tabSize,
-                                         fExpandTabs,
-                                         false
+                                        pFilePath,
+                                        1,
+                                        tabSize,
+                                        fExpandTabs,
+                                        false
                         );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -981,7 +985,7 @@ extern "C" {
                 case ASCII_LEXICAL_ALPHA_LOWER:
                 case ASCII_LEXICAL_ALPHA_UPPER:
                     lexj_ParseQuotelessString(this);
-                    pStr = AStr_NewFromStrW(this->super.pStr);
+                    pStr = AStr_NewFromW32Str(this->super.pStr);
                     if (pStr) {
                         AStr_Trim(pStr);
                         if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "null")) {
@@ -1013,7 +1017,7 @@ extern "C" {
                     TRC_OBJ(
                             this,
                             "\tquote-less string: \"%ls\"\n",
-                            WStr_getData(this->super.pStr)
+                            W32Str_getData(this->super.pStr)
                     );
                     break;
                     
@@ -1028,7 +1032,7 @@ extern "C" {
                     TRC_OBJ(
                             this,
                             "\tnumber: \"%ls\"\n",
-                            WStr_getData(this->super.pStr)
+                            W32Str_getData(this->super.pStr)
                             );
                     fMore = false;
                     break;
@@ -1049,17 +1053,15 @@ extern "C" {
                         TRC_OBJ(
                                 this,
                                 "\tquoted string: \"%ls\"\n",
-                                WStr_getData(this->super.pStr)
+                                W32Str_getData(this->super.pStr)
                         );
                         break;
                     }
                     else {
-                        lex_ErrorFatal(
-                            (LEX_DATA *)this,
-                            token_getFileName(pInput),
-                            token_getLineNo(pInput),
-                            token_getColNo(pInput),
-                            "Malformed String constant"
+                        srcErrors_AddFatalFromToken(
+                                    OBJ_NIL,
+                                    pInput,
+                                    "Malformed String Constant"
                         );
                     }
                     break;
@@ -1142,11 +1144,9 @@ extern "C" {
                                 }
                             }
                             if (cls == -1) {
-                                lex_ErrorFatal(
-                                    (LEX_DATA *)this,
-                                    token_getFileName(pInput),
-                                    token_getLineNo(pInput),
-                                    token_getColNo(pInput),
+                                srcErrors_AddFatalFromToken(
+                                    OBJ_NIL,
+                                    pInput,
                                     "Unexpected EOF within a Comment"
                                 );
                             }
@@ -1201,7 +1201,7 @@ extern "C" {
                     TRC_OBJ(
                             this,
                             "\tquote-less string: \"%ls\"\n",
-                            WStr_getData(this->super.pStr)
+                            W32Str_getData(this->super.pStr)
                     );
                     break;
             }

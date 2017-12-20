@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,               // trace_ClassDealloc
-    obj_Class,
+    trace_Class,
     obj_ClassWhoAmI
 };
 

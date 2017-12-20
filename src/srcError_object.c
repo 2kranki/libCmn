@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'WStr'
-//	Generated 01/29/2016 22:02:46
+//	Class Object Metods and Tables for 'srcError'
+//	Generated 12/17/2017 07:12:31
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,9 +32,9 @@
  */
 
 
-#include        <obj.h>
-#include        <WStr_internal.h>
-#include        <array_internal.h>
+
+#define			SRCERROR_OBJECT_C	    1
+#include        <srcError_internal.h>
 
 
 
@@ -41,15 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct WStr_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct srcError_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct WStr_class_data_s WSTR_CLASS_DATA;
+typedef struct srcError_class_data_s SRCERROR_CLASS_DATA;
 
 
 
@@ -62,26 +62,23 @@ typedef struct WStr_class_data_s WSTR_CLASS_DATA;
 
 static
 const
-OBJ_INFO        WStr_Info;            // Forward Reference
+OBJ_INFO        srcError_Info;            // Forward Reference
 
 
 
-OBJ_ID          WStr_Class(
+OBJ_ID          srcError_Class(
     void
 );
 
 
 
 static
-bool            WStr_ClassIsKindOf(
+bool            srcError_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_WSTR_CLASS == classID) {
+    if (OBJ_IDENT_SRCERROR_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_ARRAY_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -95,19 +92,19 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_WSTR_CLASS;
+    return OBJ_IDENT_SRCERROR_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&WStr_Info,
-    WStr_ClassIsKindOf,
+	&srcError_Info,
+    srcError_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    srcError_Class,
     obj_ClassWhoAmI
 };
 
@@ -117,25 +114,21 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
 const
-WSTR_CLASS_DATA  WStr_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_WSTR_CLASS, 0, 1},
+SRCERROR_CLASS_DATA  srcError_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SRCERROR_CLASS, 0, 1},
 	//0
 };
 
 
 
 static
-bool            WStr_IsKindOf(
+bool            srcError_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_WSTR == classID) {
+    if (OBJ_IDENT_SRCERROR == classID) {
        return true;
-    }
-    if (OBJ_IDENT_ARRAY == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -146,65 +139,64 @@ bool            WStr_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            WStr_Dealloc(
+void            srcError_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          WStr_Class(
+OBJ_ID          srcError_Class(
     void
 )
 {
-    return (OBJ_ID)&WStr_ClassObj;
+    return (OBJ_ID)&srcError_ClassObj;
 }
 
 
 static
-uint16_t		WStr_WhoAmI(
+uint16_t		srcError_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_WSTR;
+    return OBJ_IDENT_SRCERROR;
 }
 
 
 const
-WSTR_VTBL   WStr_Vtbl = {
+SRCERROR_VTBL     srcError_Vtbl = {
     {
-        &WStr_Info,
-        WStr_IsKindOf,
+        &srcError_Info,
+        srcError_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        WStr_Dealloc,
-        WStr_Class,
-        WStr_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
-        (P_OBJ_TOSTRING)WStr_ToDebugString,
-        NULL,            // WStr_Enable,
-        NULL,            // WStr_Disable,
-        (P_OBJ_ASSIGN)WStr_Assign,
-        (P_OBJ_COMPARE)WStr_Compare,
-        (P_OBJ_PTR)WStr_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        (P_OBJ_HASH)WStr_Hash
+        srcError_Dealloc,
+        srcError_Class,
+        srcError_WhoAmI,
+        (P_OBJ_QUERYINFO)srcError_QueryInfo,
+        (P_OBJ_TOSTRING)srcError_ToDebugString,
+        NULL,			// srcError_Enable,
+        NULL,			// srcError_Disable,
+        (P_OBJ_ASSIGN)srcError_Assign,
+        NULL,			// (P_OBJ_COMPARE)srcError_Compare,
+        (P_OBJ_PTR)srcError_Copy,
+        NULL 			// (P_OBJ_HASH)srcError_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    WStr_getData,
-    WStr_getLength
+    //srcError_IsEnabled,
+ 
 };
-
 
 
 
 static
 const
-OBJ_INFO        WStr_Info = {
-    "WStr",
-    "Wide String (int32)",		
-    (OBJ_DATA *)&WStr_ClassObj,
-    (OBJ_DATA *)&array_ClassObj
+OBJ_INFO        srcError_Info = {
+    "srcError",
+    "Source File Error",
+    (OBJ_DATA *)&srcError_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&srcError_Vtbl
 };
 
 

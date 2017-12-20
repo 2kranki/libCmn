@@ -48,16 +48,6 @@
 extern "C" {
 #endif
 
-#pragma pack(push, 1)
-    typedef struct srcLoc_s    {
-        const
-        char            *pFileName;
-        uint32_t        lineNo;             /* Source Input Line Number */
-        uint16_t        colNo;              /* Source Input Column Number */
-        uint16_t        misc;
-    } SRCLOC;
-#pragma pack(pop)
-    
 
     
 #pragma pack(push, 1)
@@ -65,10 +55,11 @@ struct srcLoc_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+#define SRCLOC_FLAG_ALLOC       OBJ_FLAG_USER1  // We allocated token data
 
     // Common Data
-    SRCLOC          data;
-
+    SRCLOC          *pData;
+    // NOTE -- Do NOT declare any variables here, put them above "data".
 };
 #pragma pack(pop)
 

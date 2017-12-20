@@ -139,7 +139,7 @@ extern "C" {
     );
     
     
-    WSTR_DATA *     cmdutl_ConvertArgcToWStr(
+    W32STR_DATA *   cmdutl_ConvertArgcToWStr(
         int             argc,
         const
         char            *argv[]
@@ -152,8 +152,8 @@ extern "C" {
         uint16_t		tabSize         // Tab Spacing if any
     );
     
-    CMDUTL_DATA *   cmdutl_NewWStr(
-        WSTR_DATA       *pSzStr,        // Buffer of file data
+    CMDUTL_DATA *   cmdutl_NewW32Str(
+        W32STR_DATA     *pSzStr,        // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     );
@@ -200,9 +200,9 @@ extern "C" {
         uint16_t		tabSize         // Tab Spacing if any
     );
     
-    CMDUTL_DATA *     cmdutl_InitWStr(
+    CMDUTL_DATA *     cmdutl_InitW32Str(
         CMDUTL_DATA     *this,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     );

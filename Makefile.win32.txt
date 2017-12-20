@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (12/ 5/2017  4:14:47.000)
+# (12/20/2017 11:37:12.000)
 
 
 LIBNAM=libCmn
@@ -36,8 +36,8 @@ OBJS =
 OBJS = $(OBJS) $(OBJDIR)\AStr.obj $(OBJDIR)\AStr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\AStrArray.obj $(OBJDIR)\AStrArray_object.obj
 OBJS = $(OBJS) $(OBJDIR)\AStrC.obj $(OBJDIR)\AStrC_object.obj
+OBJS = $(OBJS) $(OBJDIR)\W32Str.obj $(OBJDIR)\W32Str_object.obj
 OBJS = $(OBJS) $(OBJDIR)\W32StrC.obj $(OBJDIR)\W32StrC_object.obj
-OBJS = $(OBJS) $(OBJDIR)\WStr.obj $(OBJDIR)\WStr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\appl.obj $(OBJDIR)\appl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\array.obj $(OBJDIR)\array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ascii.obj $(OBJDIR)\ascii_object.obj
@@ -58,6 +58,7 @@ OBJS = $(OBJS) $(OBJDIR)\cfa.obj $(OBJDIR)\cfa_object.obj
 OBJS = $(OBJS) $(OBJDIR)\clo.obj $(OBJDIR)\clo_object.obj
 OBJS = $(OBJS) $(OBJDIR)\cloOpt.obj $(OBJDIR)\cloOpt_object.obj
 OBJS = $(OBJS) $(OBJDIR)\cmdutl.obj $(OBJDIR)\cmdutl_object.obj
+OBJS = $(OBJS) $(OBJDIR)\compiler.obj $(OBJDIR)\compiler_object.obj
 OBJS = $(OBJS) $(OBJDIR)\consumer.obj $(OBJDIR)\consumer_object.obj
 OBJS = $(OBJS) $(OBJDIR)\crc.obj $(OBJDIR)\crc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\csv.obj $(OBJDIR)\csv_object.obj
@@ -86,6 +87,7 @@ OBJS = $(OBJS) $(OBJDIR)\jsonOut.obj $(OBJDIR)\jsonOut_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lexj.obj $(OBJDIR)\lexj_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lru.obj $(OBJDIR)\lru_object.obj
+OBJS = $(OBJS) $(OBJDIR)\macro.obj $(OBJDIR)\macro_object.obj
 OBJS = $(OBJS) $(OBJDIR)\misc.obj $(OBJDIR)\misc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\msgBus.obj $(OBJDIR)\msgBus_object.obj
 OBJS = $(OBJS) $(OBJDIR)\msgData.obj $(OBJDIR)\msgData_object.obj
@@ -110,8 +112,13 @@ OBJS = $(OBJS) $(OBJDIR)\objHash.obj $(OBJDIR)\objHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objList.obj $(OBJDIR)\objList_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objMatrix.obj $(OBJDIR)\objMatrix_object.obj
 OBJS = $(OBJS) $(OBJDIR)\objMethod.obj $(OBJDIR)\objMethod_object.obj
+OBJS = $(OBJS) $(OBJDIR)\parser.obj $(OBJDIR)\parser_object.obj
 OBJS = $(OBJS) $(OBJDIR)\path.obj $(OBJDIR)\path_object.obj
 OBJS = $(OBJS) $(OBJDIR)\plist.obj $(OBJDIR)\plist_object.obj
+OBJS = $(OBJS) $(OBJDIR)\pplex.obj $(OBJDIR)\pplex_object.obj
+OBJS = $(OBJS) $(OBJDIR)\pplex1.obj $(OBJDIR)\pplex1_object.obj
+OBJS = $(OBJS) $(OBJDIR)\pplex2.obj $(OBJDIR)\pplex2_object.obj
+OBJS = $(OBJS) $(OBJDIR)\pplex3.obj $(OBJDIR)\pplex3_object.obj
 OBJS = $(OBJS) $(OBJDIR)\prt.obj $(OBJDIR)\prt_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxCond.obj $(OBJDIR)\psxCond_object.obj
 OBJS = $(OBJS) $(OBJDIR)\psxLock.obj $(OBJDIR)\psxLock_object.obj
@@ -121,14 +128,19 @@ OBJS = $(OBJS) $(OBJDIR)\psxThread.obj $(OBJDIR)\psxThread_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ptrArray.obj $(OBJDIR)\ptrArray_object.obj
 OBJS = $(OBJS) $(OBJDIR)\rrds32.obj $(OBJDIR)\rrds32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\sidx.obj $(OBJDIR)\sidx_object.obj
+OBJS = $(OBJS) $(OBJDIR)\srcError.obj $(OBJDIR)\srcError_object.obj
+OBJS = $(OBJS) $(OBJDIR)\srcErrors.obj $(OBJDIR)\srcErrors_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcFile.obj $(OBJDIR)\srcFile_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcFiles.obj $(OBJDIR)\srcFiles_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLoc.obj $(OBJDIR)\srcLoc_object.obj
+OBJS = $(OBJS) $(OBJDIR)\symEntry.obj $(OBJDIR)\symEntry_object.obj
+OBJS = $(OBJS) $(OBJDIR)\symTable.obj $(OBJDIR)\symTable_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szHash.obj $(OBJDIR)\szHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szTbl.obj $(OBJDIR)\szTbl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\table.obj $(OBJDIR)\table_object.obj
 OBJS = $(OBJS) $(OBJDIR)\ternary.obj $(OBJDIR)\ternary_object.obj
 OBJS = $(OBJS) $(OBJDIR)\textIn.obj $(OBJDIR)\textIn_object.obj
+OBJS = $(OBJS) $(OBJDIR)\textOut.obj $(OBJDIR)\textOut_object.obj
 OBJS = $(OBJS) $(OBJDIR)\timer.obj $(OBJDIR)\timer_object.obj
 OBJS = $(OBJS) $(OBJDIR)\token.obj $(OBJDIR)\token_object.obj
 OBJS = $(OBJS) $(OBJDIR)\tokenList.obj $(OBJDIR)\tokenList_object.obj
@@ -150,18 +162,22 @@ OBJS = $(OBJS) $(OBJDIR)\hex_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
 OBJS = $(OBJS) $(OBJDIR)\name_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\node_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\null_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\number_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\obj.obj
+OBJS = $(OBJS) $(OBJDIR)\objHash_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\scandec32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanhex32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanstring.obj
 OBJS = $(OBJS) $(OBJDIR)\scanwhite.obj
 OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
+OBJS = $(OBJS) $(OBJDIR)\srcError_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLoc_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\token_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\utf8_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\value_JSON.obj
-OBJS = $(OBJS) $(OBJDIR)\WStr_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\W32Str_JSON.obj
 
 
 {src}.asm{$(OBJDIR)}.obj:
@@ -275,18 +291,18 @@ test_AStrC:
 	$(OBJDIR)\$(@F).exe
 
 
-TESTS = $(TESTS) test_W32StrC
+TESTS = $(TESTS) test_W32Str
 
-test_W32StrC:
-	$(CC) $(CFLAGS) /Itests tests\test_W32StrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+test_W32Str:
+	$(CC) $(CFLAGS) /Itests tests\test_W32Str.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
 
-TESTS = $(TESTS) test_WStr
+TESTS = $(TESTS) test_W32StrC
 
-test_WStr:
-	$(CC) $(CFLAGS) /Itests tests\test_WStr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+test_W32StrC:
+	$(CC) $(CFLAGS) /Itests tests\test_W32StrC.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -439,6 +455,14 @@ TESTS = $(TESTS) test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) /Itests tests\test_cloOpt.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_compiler
+
+test_compiler:
+	$(CC) $(CFLAGS) /Itests tests\test_compiler.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -659,6 +683,14 @@ test_lru:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_macro
+
+test_macro:
+	$(CC) $(CFLAGS) /Itests tests\test_macro.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_memOSX
 
 test_memOSX:
@@ -875,6 +907,14 @@ test_objTest:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_parser
+
+test_parser:
+	$(CC) $(CFLAGS) /Itests tests\test_parser.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_path
 
 test_path:
@@ -887,6 +927,38 @@ TESTS = $(TESTS) test_plist
 
 test_plist:
 	$(CC) $(CFLAGS) /Itests tests\test_plist.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_pplex
+
+test_pplex:
+	$(CC) $(CFLAGS) /Itests tests\test_pplex.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_pplex1
+
+test_pplex1:
+	$(CC) $(CFLAGS) /Itests tests\test_pplex1.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_pplex2
+
+test_pplex2:
+	$(CC) $(CFLAGS) /Itests tests\test_pplex2.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_pplex3
+
+test_pplex3:
+	$(CC) $(CFLAGS) /Itests tests\test_pplex3.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -987,6 +1059,22 @@ test_sidx:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_srcError
+
+test_srcError:
+	$(CC) $(CFLAGS) /Itests tests\test_srcError.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_srcErrors
+
+test_srcErrors:
+	$(CC) $(CFLAGS) /Itests tests\test_srcErrors.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_srcFile
 
 test_srcFile:
@@ -1015,6 +1103,22 @@ TESTS = $(TESTS) test_str
 
 test_str:
 	$(CC) $(CFLAGS) /Itests tests\test_str.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_symEntry
+
+test_symEntry:
+	$(CC) $(CFLAGS) /Itests tests\test_symEntry.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_symTable
+
+test_symTable:
+	$(CC) $(CFLAGS) /Itests tests\test_symTable.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 
@@ -1055,6 +1159,14 @@ TESTS = $(TESTS) test_textIn
 
 test_textIn:
 	$(CC) $(CFLAGS) /Itests tests\test_textIn.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_textOut
+
+test_textOut:
+	$(CC) $(CFLAGS) /Itests tests\test_textOut.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

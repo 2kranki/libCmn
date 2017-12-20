@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   pwr2Array_internal.h
- *	Generated 08/25/2015 20:42:16
+ * File:   W32Str_internal.h
+ *	Generated 08/14/2015 07:22:10
  *
  * Notes:
  *  --	N/A
@@ -38,11 +38,13 @@
 
 
 
-#ifndef PWR2ARRAY_INTERNAL_H
-#define	PWR2ARRAY_INTERNAL_H
+#ifndef W32STR_INTERNAL_H
+#define	W32STR_INTERNAL_H
 
 
-#include    <pwr2Array.h>
+#include        <W32Str.h>
+#include        <array_internal.h>
+#include        <path.h>
 
 #ifdef	__cplusplus
 extern "C" {
@@ -50,64 +52,40 @@ extern "C" {
 
 
 #pragma pack(push, 1)
-struct pwr2Array_data_s	{
+struct W32Str_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
-    uint16_t        reserved;
-    struct {
-        uint16_t        dontZero:1;
-        uint16_t        rsvd:9;
-        uint16_t        powerOf2:6;     // Element Size as power of two
-        //                              // 0 == 1, 1 == 2, 2 == 4, ...
-    };
-
-    uint32_t        max;
-    uint32_t        size;
-    uint8_t         *pArray;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    PWR2ARRAY_VTBL  pwr2Array_Vtbl;
-    extern
-    const
-    struct pwr2Array_class_data_s   pwr2Array_ClassObj;
+    W32STR_VTBL     W32Str_Vtbl;
 
 
 
     // Internal Functions
-    void            pwr2Array_Dealloc(
-        OBJ_ID              objId
+    void            W32Str_Dealloc(
+        OBJ_ID          objId
     );
 
-    ERESULT             pwr2Array_Expand(
-        PWR2ARRAY_DATA      *cbp
-    );
     
-    void *              pwr2Array_Ptr(
-        PWR2ARRAY_DATA      *cbp,
-        uint32_t            elem        // Element Number (relative to 1)
-    );
-    
-    
-    void *          pwr2Array_QueryInfo(
+    void *          W32Str_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
+
     
 #ifdef NDEBUG
 #else
-    bool			pwr2Array_Validate(
-        PWR2ARRAY_DATA      *cbp
+    bool			W32Str_Validate(
+        W32STR_DATA     *cbp
     );
 #endif
 
@@ -117,5 +95,5 @@ struct pwr2Array_data_s	{
 }
 #endif
 
-#endif	/* PWR2ARRAY_INTERNAL_H */
+#endif	/* WSTR_INTERNAL_H */
 

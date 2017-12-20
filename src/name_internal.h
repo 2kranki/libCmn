@@ -39,7 +39,7 @@
 
 #include    <name.h>
 #include    <AStr.h>
-#include    <WStr.h>
+#include    <W32Str.h>
 
 
 #ifndef NAME_INTERNAL_H

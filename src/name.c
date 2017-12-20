@@ -709,12 +709,16 @@ extern "C" {
                 break;
                 
             case NAME_TYPE_ASTR:
+            case NAME_TYPE_OBJ:
                 {
                     OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
                     if (pVtbl->pDeepCopy) {
                         pOther->pObj = pVtbl->pDeepCopy(this->pObj);
                     }
-                    else {
+                    else if (pVtbl->pCopy) {
+                        pOther->pObj = pVtbl->pCopy(this->pObj);
+                    }
+                   else {
                         obj_Retain(this->pObj);
                         pOther->pObj = this->pObj;
                     }
@@ -723,6 +727,12 @@ extern "C" {
                 
             case NAME_TYPE_UTF8:
                 pOther->pChrs = str_DupA(this->pChrs);
+                if (NULL == pOther->pChrs) {
+                    DEBUG_BREAK();
+                    name_setLastError(this, ERESULT_GENERAL_FAILURE);
+                    obj_Release(pOther);
+                    return OBJ_NIL;
+                }
                 break;
                 
             case NAME_TYPE_UTF8_CON:
@@ -799,6 +809,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&name_Vtbl);
         
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
         if (this->type) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -812,7 +823,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(NAME_DATA));
     #endif
 
         return this;

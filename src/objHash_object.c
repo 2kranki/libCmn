@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    objHash_Class,
     obj_ClassWhoAmI
 };
 
@@ -171,15 +171,15 @@ OBJHASH_VTBL    objHash_Vtbl = {
         objHash_Dealloc,
         objHash_Class,
         objHash_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)objHash_QueryInfo,
         (P_OBJ_TOSTRING)objHash_ToDebugString,
-        NULL,            // objHash_Enable,
-        NULL,            // objHash_Disable,
-        NULL,            // (P_OBJ_ASSIGN)objHash_Assign,
-        NULL,            // (P_OBJ_COMPARE)objHash_Compare,
-        NULL,             // (P_OBJ_PTR)objHash_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL             // (P_OBJ_HASH)objHash_Hash
+        NULL,               // objHash_Enable,
+        NULL,               // objHash_Disable,
+        (P_OBJ_ASSIGN)objHash_Assign,
+        NULL,               // (P_OBJ_COMPARE)objHash_Compare,
+        (P_OBJ_PTR)objHash_Copy,
+        NULL,               // (P_OBJ_DEEPCOPY)
+        NULL                // (P_OBJ_HASH)objHash_Hash
     }
 };
 

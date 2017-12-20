@@ -121,7 +121,7 @@ extern	"C" {
 #define OBJ_FLAG_ENABLED    2               /* Object is enabled. */
 #define OBJ_FLAG_TRACE      3               /* Object tracing */
 #define OBJ_FLAG_RO         4               /* Object is Read-Only (ie immutable). */
-// Reserved 4-7
+// Reserved 5-7
 #define OBJ_FLAG_USER1      8               /* First User Useable flag */
 #define OBJ_FLAG_USER2      9
 #define OBJ_FLAG_USER3      10
@@ -169,6 +169,9 @@ extern	"C" {
         OBJ_ID      (*pRetain)(OBJ_ID);
         OBJ_ID      (*pRelease)(OBJ_ID);
         void        (*pDealloc)(OBJ_ID);
+        // Return the Class Object for this object. If the object is already
+        // a Class Object, then it simply returns itself. The Info address
+        // then allows you to find Super objects if needed.
         OBJ_ID      (*pClassObject)(void);
         uint16_t    (*pWhoAmI)(void);
         // Everything before this is required and does not need to be
@@ -254,7 +257,7 @@ extern	"C" {
     );
     
    
-    OBJ_ID          obj_Class(
+    OBJ_ID          obj_BaseClass(
         void
     );
     

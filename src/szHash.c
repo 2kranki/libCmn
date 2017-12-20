@@ -733,7 +733,7 @@ extern "C" {
     //					  U p d a t e
     //----------------------------------------------------------
     
-    ERESULT         szHash_Update(
+    ERESULT         szHash_UpdateA(
         SZHASH_DATA     *this,
         const
         char            *pszKey,

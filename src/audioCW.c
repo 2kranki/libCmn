@@ -79,7 +79,7 @@
 
 /* Header File Inclusion */
 #include    "audioCW_internal.h"
-#include    "WStr.h"
+#include    "W32Str.h"
 
 
 
@@ -641,7 +641,7 @@ extern "C" {
         }
         len = cData;
         if (cData == 0) {
-            len = WStr_StrLen(pData);
+            len = W32Str_StrLen(pData);
         }
 
         for (i=0; i<len; ++i) {

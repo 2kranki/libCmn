@@ -70,7 +70,7 @@ struct srcFile_data_s	{
         ASTR_DATA           *pAStr;
         FILE                *pFile;
         U8ARRAY_DATA        *pU8Array;
-        WSTR_DATA           *pWStr;
+        W32STR_DATA         *pW32Str;
     };
     uint16_t        type;               // OBJ_CLASS_FBSI or OBJ_CLASS_SBUF
     uint16_t        flags;              /* Flags */
@@ -81,15 +81,17 @@ struct srcFile_data_s	{
 #define FLG_TAB         0x0800                  /* Expand Horizontal Tabs. */
 #define FLG_FILE        0x0400                  /* FILE file was provided */
     uint32_t        lineNo;             /* Current Line Number */
-    uint16_t        colNo;              /* Current Column Number */
-    uint16_t        tabSize;            /* Tab Spacing Size */
     size_t          fileOffset;
+    uint16_t        colNo;              /* Current Column Number */
+    uint8_t         fStripCR;
+    uint8_t         fBackTrack;
+    uint16_t        tabSize;            /* Tab Spacing Size */
+    uint16_t        fileIndex;
     TOKEN_DATA      curchr;             /*  Current Character */
-    bool            fStripCR;
-    bool            fBackTrack;
 
     // Input Routines
     TOKENLIST_DATA  *pTokens;
+    uint32_t        rsvd32;
     uint16_t        sizeInputs;
     uint16_t        curInputs;
     TOKEN_DATA      *pInputs;
@@ -104,13 +106,21 @@ struct srcFile_data_s	{
 
 
     // Internal Functions
+    bool            srcFile_setFileIndex(
+        SRCFILE_DATA    *this,
+        uint16_t        value
+    );
+    
+    
     void            srcFile_Dealloc(
         OBJ_ID          objId
     );
+    
 
     int32_t         srcFile_InputNextChar(
         SRCFILE_DATA	*cbp
     );
+    
     
 #ifdef NDEBUG
 #else

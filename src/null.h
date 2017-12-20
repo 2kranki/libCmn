@@ -102,6 +102,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          null_Class(
+        void
+    );
+    
+    
     NULL_DATA *     null_New(
         void
     );

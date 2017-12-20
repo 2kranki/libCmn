@@ -125,7 +125,7 @@ extern	"C" {
         obj_RetainNull,
         obj_ReleaseNull,
         obj_ClassDealloc,
-        obj_Class,
+        obj_BaseClass,
         obj_ClassWhoAmI,
         NULL,           // (P_OBJ_QUERYINFO),
         NULL,           // (P_OBJ_TOSTRING),
@@ -185,7 +185,7 @@ extern	"C" {
         obj_RetainStandard,
         obj_ReleaseStandard,
         obj_Dealloc,
-        obj_Class,
+        obj_BaseClass,
         obj_ObjWhoAmI,
         (P_OBJ_QUERYINFO)obj_QueryInfo,
         NULL,           // (P_OBJ_TOSTRING),
@@ -217,7 +217,7 @@ extern	"C" {
         obj_RetainNull,
         obj_ReleaseNull,
         obj_Dealloc,
-        obj_Class,
+        obj_BaseClass,
         obj_ObjWhoAmI,
         (P_OBJ_QUERYINFO)obj_QueryInfo,
         NULL,           // (P_OBJ_TOSTRING),
@@ -311,7 +311,7 @@ extern	"C" {
     //                          C l a s s
     //---------------------------------------------------------------
     
-    OBJ_ID          obj_Class(
+    OBJ_ID          obj_BaseClass(
     )
     {
         return (OBJ_ID)&obj_ClassObj;
@@ -1075,6 +1075,9 @@ extern	"C" {
                     case 'D':
                         if (str_Compare("Dealloc", (char *)pStr) == 0) {
                             return this->pVtbl->pDealloc;
+                        }
+                        if (str_Compare("DeepCopy", (char *)pStr) == 0) {
+                            return this->pVtbl->pDeepCopy;
                         }
                         if (str_Compare("Disable", (char *)pStr) == 0) {
                             return this->pVtbl->pDisable;

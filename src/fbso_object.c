@@ -102,7 +102,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    fbso_Class,
     obj_ClassWhoAmI
 };
 

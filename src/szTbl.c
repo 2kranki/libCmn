@@ -196,40 +196,45 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    uint16_t        szTbl_getPriority(
-        SZTBL_DATA     *this
+    ERESULT         szTbl_getLastError(
+        SZTBL_DATA      *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
             DEBUG_BREAK();
+            return this->eRc;
         }
 #endif
-
-        //return this->priority;
-        return 0;
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
     }
-
-    bool            szTbl_setPriority(
-        SZTBL_DATA     *this,
-        uint16_t        value
+    
+    
+    bool            szTbl_setLastError(
+        SZTBL_DATA      *this,
+        ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        //this->priority = value;
+        
+        this->eRc = value;
+        
         return true;
     }
-
-
-
+    
+    
+    
     uint32_t        szTbl_getSize(
         SZTBL_DATA       *this
     )
@@ -361,12 +366,11 @@ extern "C" {
     //                 S t r i n g  T o  S t r i n g
     //---------------------------------------------------------------
     
-    ERESULT          szTbl_StringToString(
+    const
+    char *          szTbl_StringToString(
         SZTBL_DATA      *this,
         const
-        char            *pStr,          // [in]
-        const
-        char            **ppStr         // [out] Returned String
+        char            *pStr           // [in]
     )
     {
         SZTBL_HEAP      *pHb;
@@ -376,28 +380,26 @@ extern "C" {
         uint32_t        nodeSize;
         ERESULT         eRc;
         uint32_t        index;
+        const
+        char            *pStrRet = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return NULL;
         }
         if (NULL == pStr) {
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (NULL == ppStr) {
-            return ERESULT_INVALID_PARAMETER;
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return NULL;
         }
 #endif
         
         pNode = (SZTBL_NODE *)szHash_FindA(this->pHashTable, pStr);
         if (pNode) {
-            if (ppStr) {
-                *ppStr = (const char *)pNode->data;
-            }
-            return ERESULT_SUCCESS_DATA_EXISTS;
+            this->eRc = ERESULT_SUCCESS;
+            return (const char *)pNode->data;
         }
 
         hash = str_HashA(pStr, &strLen);
@@ -413,14 +415,16 @@ extern "C" {
         if( NULL == pHb ) {
             pHb = szTbl_BlockAdd(this);
             if( NULL == pHb ) {
-                return ERESULT_INSUFFICIENT_MEMORY;
+                this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+                return NULL;
             }
         }
         
         if( (pHb->size - pHb->used) >= nodeSize )
             ;
         else {
-            return ERESULT_INSUFFICIENT_MEMORY;
+            this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+            return NULL;
         }
         pNode = (SZTBL_NODE *)(((char *)pHb->node) + pHb->used);
         BREAK_NOT_BOUNDARY4(pNode);
@@ -431,18 +435,18 @@ extern "C" {
         str_Copy((char *)pNode->data, pNode->len+1, pStr);
         eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
-            return ERESULT_GENERAL_FAILURE;
+            this->eRc = ERESULT_GENERAL_FAILURE;
+            return NULL;
         }
         pNode->ident = index;
-        if (ppStr) {
-            *ppStr = (const char *)pNode->data;
-        }
+        pStrRet = (const char *)pNode->data;
         
         pHb->used += nodeSize;
         eRc = szHash_AddA(this->pHashTable, (const char *)pNode->data, pNode);
 
         // Return to caller.
-        return eRc;
+        this->eRc = ERESULT_SUCCESS;
+        return pStrRet;
     }
     
 
@@ -451,11 +455,10 @@ extern "C" {
     //                 S t r i n g  T o  T o k e n
     //---------------------------------------------------------------
     
-    ERESULT          szTbl_StringToToken(
+    uint32_t        szTbl_StringToToken(
         SZTBL_DATA      *this,
         const
-        char            *pStr,          // [in]
-        uint32_t        *pToken         // [out] Returned Token
+        char            *pStr           // [in]
     )
     {
         SZTBL_HEAP      *pHb;
@@ -465,25 +468,25 @@ extern "C" {
         uint32_t        nodeSize;
         ERESULT         eRc;
         uint32_t        index;
+        uint32_t        token;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return 0;
         }
         if (NULL == pStr) {
-            return ERESULT_INVALID_PARAMETER;
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
         }
 #endif
         
         pNode = (SZTBL_NODE *)szHash_FindA(this->pHashTable, pStr);
         if (pNode) {
-            if (pToken) {
-                *pToken = pNode->ident;
-            }
-            return ERESULT_SUCCESS_DATA_EXISTS;
+            this->eRc = ERESULT_SUCCESS_DATA_EXISTS;
+            return pNode->ident;
         }
         
         hash = str_HashA(pStr, &strLen);
@@ -499,14 +502,16 @@ extern "C" {
         if( NULL == pHb ) {
             pHb = szTbl_BlockAdd(this);
             if( NULL == pHb ) {
-                return ERESULT_INSUFFICIENT_MEMORY;
+                this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+                return 0;
             }
         }
         
         if( (pHb->size - pHb->used) >= nodeSize )
             ;
         else {
-            return ERESULT_INSUFFICIENT_MEMORY;
+            this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+            return 0;
         }
         pNode = (SZTBL_NODE *)(((char *)pHb->node) + pHb->used);
         BREAK_NOT_BOUNDARY4(pNode);
@@ -517,26 +522,25 @@ extern "C" {
         str_Copy((char *)pNode->data, pNode->len+1, pStr);
         eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
-            return ERESULT_GENERAL_FAILURE;
+            this->eRc = ERESULT_GENERAL_FAILURE;
+            return 0;
         }
         pNode->ident = index;
-        if (pToken) {
-            *pToken = pNode->ident;
-        }
+        token = pNode->ident;
         
         pHb->used += nodeSize;
         eRc = szHash_AddA(this->pHashTable, (char *)pNode->data, pNode);
         
         // Return to caller.
-        return eRc;
+        this->eRc = ERESULT_SUCCESS;
+        return token;
     }
     
     
-    ERESULT          szTbl_StringW32ToToken(
+    uint32_t         szTbl_StringW32ToToken(
         SZTBL_DATA      *this,
         const
-        W32CHR_T        *pStr,          // [in]
-        uint32_t        *pToken         // [out] Returned Token
+        W32CHR_T        *pStr           // [in]
     )
     {
         SZTBL_HEAP      *pHb;
@@ -548,7 +552,8 @@ extern "C" {
         ERESULT         eRc;
         uint32_t        index;
         uint32_t        i;
-        
+        uint32_t        token;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -557,16 +562,15 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (NULL == pStr) {
-            return ERESULT_INVALID_PARAMETER;
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
         }
 #endif
 
         pNode = (SZTBL_NODE *)szHash_FindW32(this->pHashTable, pStr);
         if (pNode) {
-            if (pToken) {
-                *pToken = pNode->ident;
-            }
-            return ERESULT_SUCCESS_DATA_EXISTS;
+            this->eRc = ERESULT_SUCCESS_DATA_EXISTS;
+            return pNode->ident;
         }
         
         hash = str_HashW32(pStr, &strLen);
@@ -583,14 +587,16 @@ extern "C" {
         if( NULL == pHb ) {
             pHb = szTbl_BlockAdd(this);
             if( NULL == pHb ) {
-                return ERESULT_INSUFFICIENT_MEMORY;
+                this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+                return 0;
             }
         }
         
         if( (pHb->size - pHb->used) >= nodeSize )
             ;
         else {
-            return ERESULT_INSUFFICIENT_MEMORY;
+            this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+            return 0;
         }
         pNode = (SZTBL_NODE *)(((char *)pHb->node) + pHb->used);
         BREAK_NOT_BOUNDARY4(pNode);
@@ -601,18 +607,18 @@ extern "C" {
         i = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
         eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
-            return ERESULT_GENERAL_FAILURE;
+            this->eRc = ERESULT_GENERAL_FAILURE;
+            return 0;
         }
         pNode->ident = index;
-        if (pToken) {
-            *pToken = pNode->ident;
-        }
+        token = pNode->ident;
         
         pHb->used += nodeSize;
         eRc = szHash_AddA(this->pHashTable, (char *)pNode->data, pNode);
         
         // Return to caller.
-        return eRc;
+        this->eRc = ERESULT_SUCCESS;
+        return token;
     }
     
     
@@ -621,11 +627,10 @@ extern "C" {
     //                T o k e n  T o  S t r i n g
     //---------------------------------------------------------------
     
-    ERESULT          szTbl_TokenToString(
+    const
+    char *           szTbl_TokenToString(
         SZTBL_DATA      *this,
-        uint32_t        token,          // [in]
-        const
-        char            **ppStr         // [out] Returned String
+        uint32_t        token           // [in]
     )
     {
         SZTBL_NODE      *pNode;
@@ -635,23 +640,18 @@ extern "C" {
 #else
         if( !szTbl_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == ppStr) {
-            return ERESULT_INVALID_PARAMETER;
+            return NULL;
         }
 #endif
         
         pNode = (SZTBL_NODE *)ptrArray_GetData(this->pPtrArray, token);
         if (NULL == pNode) {
-            return ERESULT_DATA_NOT_FOUND;
+            this->eRc = ERESULT_DATA_NOT_FOUND;
         }
         
         // Return to caller.
-        if (ppStr) {
-            *ppStr = (const char *)pNode->data;
-        }
-        return ERESULT_SUCCESS;
+        this->eRc = ERESULT_SUCCESS;
+        return (const char *)pNode->data;
     }
     
     

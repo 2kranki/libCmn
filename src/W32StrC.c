@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include <W32StrC_internal.h>
 #include <utf8.h>
-#include <WStr.h>
+#include <W32Str.h>
 #include <stdio.h>
 
 
@@ -177,14 +177,14 @@ extern "C" {
     
     
     W32STRC_DATA *  W32StrC_NewFromStrW32(
-        WSTR_DATA       *pStr
+        W32STR_DATA     *pStr
     )
     {
         W32STRC_DATA    *this;
         
         this = W32StrC_Alloc( );
         if (this) {
-            this = W32StrC_InitW32(this, WStr_getData(pStr));
+            this = W32StrC_InitW32(this, W32Str_getData(pStr));
         }
         return( this );
     }
@@ -282,7 +282,7 @@ extern "C" {
             return ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        eRc = WStr_Cmp(this->pArray, pOther->pArray);
+        eRc = W32Str_Cmp(this->pArray, pOther->pArray);
         
         // Return to caller.
         return eRc;
@@ -365,7 +365,7 @@ extern "C" {
         }
 #endif
         
-        eRc = WStr_Cmp(this->pArray, pString);
+        eRc = W32Str_Cmp(this->pArray, pString);
         
         // Return to caller.
         return eRc;

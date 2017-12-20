@@ -105,7 +105,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    u32Array_Class,
     obj_ClassWhoAmI
 };
 

@@ -50,23 +50,29 @@
 extern "C" {
 #endif
 
-
+    // The TOKEN data contains all the information for a token. It is a fixed
+    // length which facilitates it being used in arrays of data. If you want
+    // to store variable length data such as character strings, then you MUST
+    // use a mechanism such as the global/shared string table.  All data within
+    // this struct must be only primitive types that can be written to or read
+    // from disk files.
+    
 #pragma pack(push, 1)
     typedef struct token_s    {
         SRCLOC          src;
-        int32_t         cls;                // Character/Token Class (Optional)
-        uint16_t        misc;
         uint16_t        len;                // Character/Token Length (Optional)
+        uint16_t        misc;
         uint16_t        offset;             // offset into token string (Optional)
         uint16_t        type;               // Type in union below
+        int32_t         cls;                // Character/Token Class (Optional)
+        uint32_t        rsvd32;
         union {
-            char            achr[8];            // UTF-8 Character w/ Trailing NUL
-            W32CHR_T        wchr[2];            // Wide Character w/ Trailing NUL
             double          floatingPoint;
             int64_t         integer;            // Integer
-            OBJ_ID          pObj;               // an object
             uint32_t        strToken;           // String Index Token
+            W32CHR_T        w32chr[2];          // Unicode Character followed by NUL
         };
+        // Do NOT declare any variables here, put them above the union.
     } TOKEN;
 #pragma pack(pop)
     
@@ -75,8 +81,10 @@ struct token_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
+    ERESULT         eRc;
     TOKEN           data;
 
 };
@@ -94,6 +102,16 @@ struct token_data_s	{
     );
 
 
+    TOKEN_DATA *     token_InitFnLCC(
+        TOKEN_DATA      *this,
+        uint16_t        fileIndex,
+        int64_t         offset,
+        uint32_t        lineNo,
+        uint16_t        colNo,
+        int32_t         cls
+    );
+    
+    
     void *          token_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

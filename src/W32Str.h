@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Wide (32 bit) NUL-terminated String (WStr) Header
+//          Wide (32 bit) NUL-terminated String (W32Str) Header
 //****************************************************************
 /*
  * Program
- *			Wide (32 bit) NUL-terminated String (WStr)
+ *			Wide (32 bit) NUL-terminated String (W32Str)
  * Purpose
  *			This object provides a NUL-terminated Wide string
  *          and its manipulation.
@@ -56,8 +56,8 @@
 #include        <str.h>
 
 
-#ifndef         WSTR_H
-#define         WSTR_H
+#ifndef         W32STR_H
+#define         W32STR_H
 
 
 #ifdef	__cplusplus
@@ -70,7 +70,7 @@ extern "C" {
     //****************************************************************
 
 
-    // WSTR_DATA and WSTR_VTBL are defined in "cmn_defs.h"
+    // W32STR_DATA and W32STR_VTBL are defined in "cmn_defs.h"
 
 
 
@@ -88,14 +88,14 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    WSTR_DATA *     WStr_Alloc(
+    W32STR_DATA *   W32Str_Alloc(
         void
     );
     
     
     // Return offset of chr in string (relative to 1)
     // Returns 0 if not found.
-    uint32_t        WStr_ChrInStr(
+    uint32_t        W32Str_ChrInStr(
         W32CHR_T        chr,
         const
         W32CHR_T        *pStr
@@ -108,7 +108,7 @@ extern "C" {
      ERESULT_SUCCESS_LESS_THAN if str1 < str2
      or ERESULT_SUCCESS_GREATER_THAN if str1 > str2.
      */
-    ERESULT         WStr_Cmp(
+    ERESULT         W32Str_Cmp(
         const
         W32CHR_T        *pStr1,
         const
@@ -116,59 +116,59 @@ extern "C" {
     );
     
     
-    bool            WStr_IsWhiteSpaceW32(
+    bool            W32Str_IsWhiteSpaceW32(
         W32CHR_T        chr
     );
     
     
-    uint32_t        WStr_StrLen(
+    uint32_t        W32Str_StrLen(
         const
         W32CHR_T        *pData
     );
     
     
-    WSTR_DATA *     WStr_New(
+    W32STR_DATA *   W32Str_New(
         void
     );
     
     
-    WSTR_DATA *     WStr_NewA(
+    W32STR_DATA *   W32Str_NewA(
         const
         char            *pStr
     );
     
     
-    WSTR_DATA *     WStr_NewW32(
+    W32STR_DATA *   W32Str_NewW32(
         uint32_t        len,
         const
         W32CHR_T        *pStr
     );
     
     
-    WSTR_DATA *     WStr_NewFromEnv(
+    W32STR_DATA *   W32Str_NewFromEnv(
         const
         char            *pStr
     );
     
     
-    ERESULT         WStr_NewFromJSONString(
+    ERESULT         W32Str_NewFromJSONString(
         ASTR_DATA       *pString,
-        WSTR_DATA       **ppData
+        W32STR_DATA     **ppData
     );
     
-    ERESULT         WStr_NewFromJSONStringA(
+    ERESULT         W32Str_NewFromJSONStringA(
         const
         char            *pString,
-        WSTR_DATA       **ppData
+        W32STR_DATA     **ppData
     );
     
 
-    WSTR_DATA *     WStr_NewFromTimeNow(
+    W32STR_DATA *   W32Str_NewFromTimeNow(
         void
     );
     
 
-    WSTR_DATA *     WStr_NewFromUtf8File(
+    W32STR_DATA *   W32Str_NewFromUtf8File(
         PATH_DATA       *pPath
     );
     
@@ -176,7 +176,7 @@ extern "C" {
     // Returns a ptr to an array of white space
     // characters terminated with a NUL.
     const
-    W32CHR_T *      WStr_WhiteSpaceW32(
+    W32CHR_T *      W32Str_WhiteSpaceW32(
         void
     );
     
@@ -187,19 +187,19 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        WStr_getCrcIEEE(
-        WSTR_DATA       *this
+    uint32_t        W32Str_getCrcIEEE(
+        W32STR_DATA     *this
     );
     
     
     const
-    W32CHR_T *      WStr_getData(
-        WSTR_DATA     *this
+    W32CHR_T *      W32Str_getData(
+        W32STR_DATA     *this
     );
     
     
-    uint32_t        WStr_getLength(
-        WSTR_DATA     *this
+    uint32_t        W32Str_getLength(
+        W32STR_DATA     *this
     );
 
     
@@ -209,41 +209,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         WStr_Append(
-        WSTR_DATA		*this,
-        WSTR_DATA       *pOther
+    ERESULT         W32Str_Append(
+        W32STR_DATA     *this,
+        W32STR_DATA     *pOther
     );
     
     
-    ERESULT         WStr_AppendA(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_AppendA(
+        W32STR_DATA		*this,
         const
         char            *pStr               // UTF-8 String
     );
     
     
-    ERESULT         WStr_AppendPrint(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_AppendPrint(
+        W32STR_DATA		*this,
         const
         char            *pFormat,
         ...
     );
     
     
-    ERESULT         WStr_AppendUtf8File(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_AppendUtf8File(
+        W32STR_DATA		*this,
         PATH_DATA       *pPath
     );
     
     
-    ERESULT         WStr_AppendStrA(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_AppendStrA(
+        W32STR_DATA		*this,
         ASTR_DATA       *pStr
     );
     
     
-    ERESULT         WStr_AppendW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_AppendW32(
+        W32STR_DATA		*this,
         uint32_t        len,                // Data Length or 0 to use NUL-terminator
         const
         W32CHR_T        *pStr
@@ -251,25 +251,25 @@ extern "C" {
     
     
     // Append len number of chr's to string.
-    ERESULT         WStr_AppendCharW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_AppendCharW32(
+        W32STR_DATA		*this,
         uint32_t        len,
         const
         W32CHR_T        chr
     );
     
     
-    ERESULT         WStr_Assign(
-        WSTR_DATA		*this,
-        WSTR_DATA       *pOther
+    ERESULT         W32Str_Assign(
+        W32STR_DATA		*this,
+        W32STR_DATA     *pOther
     );
     
     
     // Search the string for the provided char. If *pIndex
     // is set to 0, then the search begins at the begin-
     // ning of the string.
-    ERESULT         WStr_CharFindNextW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_CharFindNextW32(
+        W32STR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         const
         W32CHR_T        chr
@@ -279,8 +279,8 @@ extern "C" {
     // Search the string backwards for the provided char. If
     // *pIndex is set to 0, then the search begins at the
     // end of the string.
-    ERESULT         WStr_CharFindPrevW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_CharFindPrevW32(
+        W32STR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         W32CHR_T        chr
     );
@@ -293,16 +293,16 @@ extern "C" {
         valid character if returned character is greater than or 
         equal to zero, otherwise -1
      */
-    W32CHR_T        WStr_CharGetW32(
-        WSTR_DATA		*this,
+    W32CHR_T        W32Str_CharGetW32(
+        W32STR_DATA		*this,
         uint32_t        offset              // Relative to 1
     );
     
 
     /*! Simple scan and replace of single characters
      */
-    ERESULT         WStr_CharReplaceAllW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_CharReplaceAllW32(
+        W32STR_DATA		*this,
         const
         W32CHR_T        chrSrch,
         const
@@ -310,8 +310,8 @@ extern "C" {
     );
     
     
-    ERESULT         WStr_CharPutW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_CharPutW32(
+        W32STR_DATA		*this,
         uint32_t        offset,             // Relative to 1
         const
         W32CHR_T        chr
@@ -324,9 +324,9 @@ extern "C" {
         ERESULT_SUCCESS_LESS_THAN if this < other
         or ERESULT_SUCCESS_GREATER_THAN if this > other.
      */
-    ERESULT         WStr_Compare(
-        WSTR_DATA		*this,
-        WSTR_DATA       *pOther
+    ERESULT         W32Str_Compare(
+        W32STR_DATA		*this,
+        W32STR_DATA     *pOther
     );
     
     
@@ -338,8 +338,8 @@ extern "C" {
         ERESULT_SUCCESS_LESS_THAN if this < string
         or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
-    ERESULT         WStr_CompareA(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_CompareA(
+        W32STR_DATA		*this,
         const
         char            *pString
     );
@@ -353,15 +353,15 @@ extern "C" {
         ERESULT_SUCCESS_LESS_THAN if this < string
         or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
-    ERESULT         WStr_CompareW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_CompareW32(
+        W32STR_DATA		*this,
         const
         W32CHR_T        *pString
     );
     
     
-    WSTR_DATA *     WStr_Copy(
-        WSTR_DATA		*this
+    W32STR_DATA *   W32Str_Copy(
+        W32STR_DATA		*this
     );
     
     
@@ -370,8 +370,8 @@ extern "C" {
         If successful, a NUL-terminated UTF-8 string that
         needs to be freed with mem_Free(). Otherwise, NULL.
      */
-    char *          WStr_CStringA(
-        WSTR_DATA		*this,
+    char *          W32Str_CStringA(
+        W32STR_DATA		*this,
         uint32_t        *pLen       // Optional returned string length
                                     // less terminating NUL
     );
@@ -383,31 +383,31 @@ extern "C" {
      @result
         If successful, ERESULT_SUCCESS. Otherwise, ERESULT_FAULURE.
      */
-    ERESULT         WStr_EscapeForC(
-        WSTR_DATA		*this
+    ERESULT         W32Str_EscapeForC(
+        W32STR_DATA		*this
     );
     
     
-    uint32_t        WStr_Hash(
-        WSTR_DATA     *this
+    uint32_t        W32Str_Hash(
+        W32STR_DATA     *this
     );
     
     
-    ERESULT         WStr_IndexUntil(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_IndexUntil(
+        W32STR_DATA		*this,
         const
         W32CHR_T        *pSetStr,
         uint32_t        *pIndex             // [in-out]
     );
     
     
-    WSTR_DATA *     WStr_Init(
-        WSTR_DATA       *this
+    W32STR_DATA *   W32Str_Init(
+        W32STR_DATA     *this
     );
 
     
-    ERESULT         WStr_InsertA(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_InsertA(
+        W32STR_DATA		*this,
         uint32_t        offset,
         const
         char            *pStr
@@ -418,50 +418,50 @@ extern "C" {
     // larger than 0x7E.
     // If found, returns FAILURE.
     // Otherwise, returns SUCCESS.
-    ERESULT         WStr_IsOnlyASCII(
-        WSTR_DATA		*this
+    ERESULT         W32Str_IsOnlyASCII(
+        W32STR_DATA		*this
     );
     
     
-    ERESULT         WStr_Left(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_Left(
+        W32STR_DATA		*this,
         uint32_t        len,
-        WSTR_DATA       **ppOther           // [out]
+        W32STR_DATA     **ppOther           // [out]
     );
     
     
-    ERESULT         WStr_Lower(
-        WSTR_DATA		*this
+    ERESULT         W32Str_Lower(
+        W32STR_DATA		*this
     );
     
     
-    ERESULT         WStr_Mid(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_Mid(
+        W32STR_DATA		*this,
         uint32_t        offset,
         uint32_t        len,
-        WSTR_DATA       **ppOther           // [out]
+        W32STR_DATA     **ppOther           // [out]
     );
     
     
-    ERESULT         WStr_Remove(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_Remove(
+        W32STR_DATA		*this,
         uint32_t        offset,
         uint32_t        len
     );
     
     
-    ERESULT         WStr_Right(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_Right(
+        W32STR_DATA		*this,
         uint32_t        len,
-        WSTR_DATA       **ppOther           // [out]
+        W32STR_DATA     **ppOther           // [out]
     );
     
     
     // Calculates the index into the string for all the
     // characters found in the Set String. Returns 0
     // if the end of string is found.
-    ERESULT         WStr_SpanW32(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_SpanW32(
+        W32STR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         const
         W32CHR_T        *pSetStr
@@ -476,8 +476,8 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     WStr_ToChrCon(
-        WSTR_DATA       *this
+    ASTR_DATA *     W32Str_ToChrCon(
+        W32STR_DATA     *this
     );
     
     
@@ -494,8 +494,8 @@ extern "C" {
                  otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     WStr_ToDebugString(
-        WSTR_DATA       *this,
+    ASTR_DATA *     W32Str_ToDebugString(
+        W32STR_DATA     *this,
         int             indent
     );
     
@@ -503,8 +503,8 @@ extern "C" {
     // ToInt32() tries to convert the string to a signed 32-bit
     // number with format [+ | -][0..9]*
     // 0 is returned if the number is mal-formed.
-    int32_t         WStr_ToInt32(
-        WSTR_DATA		*this
+    int32_t         W32Str_ToInt32(
+        W32STR_DATA		*this
     );
     
     
@@ -514,13 +514,13 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     WStr_ToJSON(
-        WSTR_DATA       *this
+    ASTR_DATA *     W32Str_ToJSON(
+        W32STR_DATA     *this
     );
     
     
-    ERESULT         WStr_ToUtf8File(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_ToUtf8File(
+        W32STR_DATA		*this,
         PATH_DATA       *pPath
     );
     
@@ -528,19 +528,19 @@ extern "C" {
     // Trim() removes white-space from both ends of the string.
     // White-space is considered any character that is numeri-
     // cally less than or equal to a space ( ' ' ).
-    ERESULT         WStr_Trim(
-        WSTR_DATA		*this
+    ERESULT         W32Str_Trim(
+        W32STR_DATA		*this
     );
     
     
-    ERESULT         WStr_Truncate(
-        WSTR_DATA		*this,
+    ERESULT         W32Str_Truncate(
+        W32STR_DATA		*this,
         uint32_t        len
     );
     
     
-    ERESULT         WStr_Upper(
-        WSTR_DATA		*this
+    ERESULT         W32Str_Upper(
+        W32STR_DATA		*this
     );
     
     
@@ -549,5 +549,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* BSTR_H */
+#endif	/* W32STR_H */
 

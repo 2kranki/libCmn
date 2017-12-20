@@ -72,6 +72,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
+    /*! Allocate an area large enough for the object data and the
+     srcloc data. Initialize the data pointer to within the area gotten.
+     @return        A pointer to the combined data and  object if
+                    successful or OBJ_NIL if not.
+     */
     SRCLOC_DATA *     srcLoc_Alloc(
     )
     {
@@ -80,7 +85,9 @@ extern "C" {
         
         // Do initialization.
         
+        cbSize += ROUNDUP4(sizeof(SRCLOC));
         this = obj_Alloc( cbSize );
+        this->pData = (SRCLOC *)((uint8_t *)this + sizeof(SRCLOC_DATA));
         
         // Return to caller.
         return this;
@@ -89,8 +96,8 @@ extern "C" {
 
 
     SRCLOC_DATA *     srcLoc_NewFLC(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,              // File Index
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
     )
@@ -99,7 +106,7 @@ extern "C" {
         
         this = srcLoc_Alloc( );
         if (this) {
-            this = srcLoc_InitFLC(this, pFileName, lineNo, colNo);
+            this = srcLoc_InitFLC(this, fileIndex, offset, lineNo, colNo);
         } 
         return this;
     }
@@ -112,6 +119,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          C o l  N o
+    //---------------------------------------------------------------
+    
     uint16_t        srcLoc_getColNo(
         SRCLOC_DATA     *this
     )
@@ -125,7 +136,7 @@ extern "C" {
         }
 #endif
         
-        return this->data.colNo;
+        return this->pData->colNo;
     }
     
     
@@ -140,13 +151,13 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        this->data.colNo = value;
+        this->pData->colNo = value;
         return true;
     }
     
     
     
-    const char *    srcLoc_getFileName(
+    uint16_t        srcLoc_getFileIndex(
         SRCLOC_DATA     *this
     )
     {
@@ -156,18 +167,17 @@ extern "C" {
 #else
         if( !srcLoc_Validate(this) ) {
             DEBUG_BREAK();
-            return NULL;
+            return 0;
         }
 #endif
         
-        return this->data.pFileName;
+        return this->pData->fileIndex;
     }
     
     
-    bool            srcLoc_setFileName(
+    bool            srcLoc_setFileIndex(
         SRCLOC_DATA     *this,
-        const
-        char            *pValue
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
@@ -177,11 +187,15 @@ extern "C" {
             return false;
         }
 #endif
-        this->data.pFileName = pValue;
+        this->pData->fileIndex = value;
         return true;
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                         L i n e  N o
+    //---------------------------------------------------------------
     
     uint32_t        srcLoc_getLineNo(
         SRCLOC_DATA     *this
@@ -196,7 +210,7 @@ extern "C" {
         }
 #endif
         
-        return this->data.lineNo;
+        return this->pData->lineNo;
     }
     
     bool            srcLoc_setLineNo(
@@ -210,7 +224,44 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        this->data.lineNo = value;
+        this->pData->lineNo = value;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         O f f s e t
+    //---------------------------------------------------------------
+    
+    int64_t         srcLoc_getOffset(
+        SRCLOC_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pData->offset;
+    }
+    
+    bool            srcLoc_setOffset(
+        SRCLOC_DATA     *this,
+        int64_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->pData->offset = value;
         return true;
     }
     
@@ -233,7 +284,6 @@ extern "C" {
         SRCLOC_DATA     *pOther
     )
     {
-        int             iRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -248,40 +298,30 @@ extern "C" {
         }
 #endif
         
-        if ((NULL == this->data.pFileName) && (NULL == pOther->data.pFileName)) {
-        }
-        else if ((NULL == this->data.pFileName) && pOther->data.pFileName) {
-            return ERESULT_SUCCESS_LESS_THAN;
-        }
-        else if (this->data.pFileName && (NULL == pOther->data.pFileName)) {
-            return ERESULT_SUCCESS_GREATER_THAN;
-        }
-        else {
-            iRc = strcmp(this->data.pFileName, pOther->data.pFileName);
-            if (iRc < 0) {
-                return ERESULT_SUCCESS_LESS_THAN;
-            }
-            if (iRc > 0) {
-                return ERESULT_SUCCESS_GREATER_THAN;
-            }
-        }
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_SUCCESS_GREATER_THAN;
+            return ERESULT_SUCCESS_UNEQUAL;
         }
                 
-        if (this->data.lineNo < pOther->data.lineNo) {
-            return ERESULT_SUCCESS_LESS_THAN;
+        if (this->pData->fileIndex == pOther->pData->fileIndex) {
+            ;
         }
-        if (this->data.lineNo > pOther->data.lineNo) {
-            return ERESULT_SUCCESS_GREATER_THAN;
+        else {
+            return ERESULT_SUCCESS_UNEQUAL;
         }
-
-        if (this->data.colNo < pOther->data.colNo) {
-            return ERESULT_SUCCESS_LESS_THAN;
+        
+        if (this->pData->lineNo == pOther->pData->lineNo) {
+            ;
         }
-        if (this->data.colNo > pOther->data.colNo) {
-            return ERESULT_SUCCESS_GREATER_THAN;
+        else {
+            return ERESULT_SUCCESS_UNEQUAL;
+        }
+        
+        if (this->pData->colNo == pOther->pData->colNo) {
+            ;
+        }
+        else {
+            return ERESULT_SUCCESS_UNEQUAL;
         }
         
         // Return to caller.
@@ -311,70 +351,16 @@ extern "C" {
             return;
         }
 #endif
+        
+        if (obj_Flag(this, SRCLOC_FLAG_ALLOC)) {
+            mem_Free(this->pData);
+            this->pData = NULL;
+        }
 
         obj_Dealloc(this);
         this = NULL;
 
         // Return to caller.
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      D i s a b l e
-    //---------------------------------------------------------------
-
-    bool            srcLoc_Disable(
-        SRCLOC_DATA     *this
-    )
-    {
-
-        // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-    #ifdef NDEBUG
-    #else
-        if( !srcLoc_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-    #endif
-
-        // Put code here...
-
-        obj_Disable(this);
-        
-        // Return to caller.
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          E n a b l e
-    //---------------------------------------------------------------
-
-    bool            srcLoc_Enable(
-        SRCLOC_DATA		*this
-    )
-    {
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !srcLoc_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-    #endif
-        
-        obj_Enable(this);
-
-        // Put code here...
-        
-        // Return to caller.
-        return true;
     }
 
 
@@ -423,8 +409,8 @@ extern "C" {
      
     SRCLOC_DATA *   srcLoc_InitFLC(
         SRCLOC_DATA     *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,              // File Index
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
     )
@@ -435,7 +421,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        srcLoc_setFileName(this, pFileName);
+        srcLoc_setFileIndex(this, fileIndex);
+        srcLoc_setOffset(this, offset);
         srcLoc_setLineNo(this, lineNo);
         srcLoc_setColNo(this, colNo);
         
@@ -454,33 +441,6 @@ extern "C" {
     
     
 
-    //---------------------------------------------------------------
-    //                       I s E n a b l e d
-    //---------------------------------------------------------------
-    
-    bool            srcLoc_IsEnabled(
-        SRCLOC_DATA		*this
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !srcLoc_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        if (obj_IsEnabled(this))
-            return true;
-        
-        // Return to caller.
-        return false;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -519,9 +479,11 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return srcLoc_ToDebugString;
                         }
+#ifdef XYZZY
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return srcLoc_ToJSON;
                         }
+#endif
                         break;
                         
                     default:
@@ -566,9 +528,10 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(srcLoc) file=%s line=%d col=%d ",
+                     "{%p(srcLoc) fileIndex=%4d offset=%lld line=%d col=%d ",
                      this,
-                     srcLoc_getFileName(this),
+                     srcLoc_getFileIndex(this),
+                     srcLoc_getOffset(this),
                      srcLoc_getLineNo(this),
                      srcLoc_getColNo(this)
             );

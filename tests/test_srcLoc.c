@@ -32,9 +32,10 @@ static
 const
 char        *pJsonA =   "{ "
                         "\"objectType\":\"srcLoc\", "
-                        "\"FileName\":\"\", "
-                        "\"LineNo\":0, "
-                         "\"ColNo\":0 "
+                        "\"FileIndex\":1, "
+                        "\"Offset\":20, "
+                        "\"LineNo\":3, "
+                         "\"ColNo\":4 "
                          "}\n";
 
 
@@ -97,10 +98,16 @@ int         test_srcLoc_OpenClose(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = srcLoc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcLoc_Init( pObj );
+    pObj = srcLoc_InitFLC( pObj, 1, 20, 3, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        TINYTEST_TRUE( (1 == srcLoc_getFileIndex(pObj)) );
+        TINYTEST_TRUE( (20 == srcLoc_getOffset(pObj)) );
+        TINYTEST_TRUE( (3 == srcLoc_getLineNo(pObj)) );
+        TINYTEST_TRUE( (4 == srcLoc_getColNo(pObj)) );
+
+#ifdef XYZZY
         pAStr = srcLoc_ToJSON(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));
@@ -112,6 +119,7 @@ int         test_srcLoc_OpenClose(
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
+#endif
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

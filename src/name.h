@@ -258,9 +258,9 @@ extern "C" {
     );
     
     
-    NAME_DATA *   name_InitStrW(
+    NAME_DATA *   name_InitW32Str(
         NAME_DATA       *this,
-        WSTR_DATA       *pValue
+        W32STR_DATA     *pValue
     );
     
     

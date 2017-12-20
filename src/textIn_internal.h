@@ -40,9 +40,10 @@
 
 
 #include    <textIn.h>
+#include    <srcLoc_internal.h>
 #include    <ascii.h>
 #include    <u8Array.h>
-#include    <WStr.h>
+#include    <W32Str.h>
 
 
 #ifndef TEXTIN_INTERNAL_H
@@ -55,6 +56,13 @@ extern "C" {
 #endif
 
 
+    typedef enum textIn_state_e {
+        TEXTIN_STATE_UNKNOWN=0,
+        TEXTIN_STATE_IN_TAB,
+        TEXTIN_STATE_NORMAL
+    } TEXTIN_STATE;
+    
+    
     typedef enum textIn_type_e {
         TEXTIN_TYPE_UNKNOWN=0,
         TEXTIN_TYPE_ASTR,
@@ -83,7 +91,7 @@ struct textIn_data_s	{
         ASTR_DATA           *pAStr;
         FILE                *pFile;
         U8ARRAY_DATA        *pU8Array;
-        WSTR_DATA           *pWStr;
+        W32STR_DATA         *pWStr;
     };
     uint16_t        type;               // OBJ_CLASS_FBSI or OBJ_CLASS_SBUF
     uint16_t        flags;              /* Flags */
@@ -98,11 +106,14 @@ struct textIn_data_s	{
     uint16_t        tabSize;            /* Tab Spacing Size */
     size_t          fileOffset;
     uint8_t         fStripCR;
-    uint8_t         rsvd8_1[3];
+    uint8_t         state;
+    uint8_t         rsvd8_1[2];
     PATH_DATA       *pPath;
     const
     char            *pPathA;
     uint8_t         *pBuffer;
+    uint16_t        filenameIndex;
+    uint16_t        rsvd16;
 
 };
 #pragma pack(pop)

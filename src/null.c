@@ -307,7 +307,15 @@ extern "C" {
                 break;
         }
         
-        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+        if (obj_getVtbl(null_Class())->pQueryInfo) {
+            return obj_getVtbl(null_Class())->pQueryInfo(objId, type, pData);
+        }
+        else {
+            if (obj_getVtbl(obj_ClassSuper(null_Class()))->pQueryInfo) {
+                return obj_getVtbl(obj_ClassSuper(null_Class()))->pQueryInfo(objId, type, pData);
+            }
+            return NULL;
+        }
     }
     
     

@@ -233,6 +233,11 @@ extern "C" {
     );
     
 
+    ASTR_DATA *     number_ToJSON(
+        NUMBER_DATA     *this
+    );
+    
+    
     /*!
      Create a string that describes this object and the
      objects within it.

@@ -210,7 +210,7 @@ extern "C" {
     
     DBCSV_DATA *    dbCsv_InitWStr(
         DBCSV_DATA      *this,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     );

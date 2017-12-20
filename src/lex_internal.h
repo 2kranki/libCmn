@@ -65,7 +65,8 @@ struct lex_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 #define LEX_INIT_DONE   OBJ_FLAG_USER1
 #define LEX_CHECKPOINT  OBJ_FLAG_USER2
-    
+    // OBJ_FLAG_USER1-OBJ_FLAG_USER4 Reserved for Lex
+
     ERESULT         eRc;
     ERESULT_DATA    *pErrors;
 
@@ -88,9 +89,7 @@ struct lex_data_s	{
     bool            (*pParser)(OBJ_ID, TOKEN_DATA *); // Lexical Parser
     OBJ_ID          pParseObj;
     TOKEN_DATA      token;              // Next Output Token (output of pParser)
-    WSTR_DATA       *pStr;              // String from accumulated tokens
-    uint8_t         fUseStringTable;
-    uint8_t         rsvd[3];
+    W32STR_DATA     *pStr;              // String from accumulated tokens
     
 };
 #pragma pack(pop)

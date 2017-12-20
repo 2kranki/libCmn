@@ -277,7 +277,7 @@ int         test_name_ToJSON_UTF8Con(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    W32STR_DATA *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     const
     char        *pChrs = NULL;
@@ -313,18 +313,35 @@ int         test_name_ToJSON_Int(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    W32STR_DATA *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
     fprintf(stderr, "Performing: %s\n", pTestName);
+    
     pName1 = name_NewInt( 123456 );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
         
         pAStr1 = name_getStrA(pName1);
-        fprintf(stderr, "strA = %s\n", AStr_getData(pAStr1));
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "00000000000000123456")) );
+        fprintf(stderr, "Need = \"0000000000000123456\"\n");
+        fprintf(stderr, "Got  = \"%s\"\n", AStr_getData(pAStr1));
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "0000000000000123456")) );
+        obj_Release(pAStr1);
+        pAStr1 = OBJ_NIL;
+        
+        obj_Release(pName1);
+        pName1 = OBJ_NIL;
+    }
+    
+    pName1 = name_NewInt( -123456 );
+    XCTAssertFalse( (OBJ_NIL == pName1) );
+    if (pName1) {
+        
+        pAStr1 = name_getStrA(pName1);
+        fprintf(stderr, "Need = \"-0000000000000123456\"\n");
+        fprintf(stderr, "Got  = \"%s\"\n", AStr_getData(pAStr1));
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "-0000000000000123456")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
         
@@ -346,7 +363,7 @@ int         test_name_ToJSON_Obj(
     NAME_DATA	*pName1 = OBJ_NIL;
     const
     char        *pStr = NULL;
-    WSTR_DATA   *pWStr1 = OBJ_NIL;
+    W32STR_DATA *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
@@ -374,7 +391,7 @@ int         test_name_ToJSON_Obj(
 
 TINYTEST_START_SUITE(test_name);
   //TINYTEST_ADD_TEST(test_name_ToJSON_Obj,setUp,tearDown);
-  //TINYTEST_ADD_TEST(test_name_ToJSON_Int,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_ToJSON_Int,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_ToJSON_UTF8Con,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_ToJSON_UTF8,setUp,tearDown);
   //TINYTEST_ADD_TEST(test_name_Obj,setUp,tearDown);

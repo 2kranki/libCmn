@@ -104,7 +104,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    sidx_Class,
     obj_ClassWhoAmI
 };
 

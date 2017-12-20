@@ -396,9 +396,6 @@ extern "C" {
         
         // Release all the tokens.
         while ( (pEntry = listdl_Head(&this->list)) ) {
-            if (obj_getType(&pEntry->token)) {
-                token_ReleaseDataIfObj(&pEntry->token);
-            }
             listdl_DeleteHead(&this->list);
         }
         
@@ -440,9 +437,6 @@ extern "C" {
                 break;
             }
             
-            if (obj_getType(&pEntry->token)) {
-                token_ReleaseDataIfObj(&pEntry->token);
-            }
             listdl_Delete(&this->list, pEntry);
             listdl_Add2Tail(&this->freeList, pEntry);
         }
@@ -472,9 +466,6 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         
-        if (obj_getType(&pEntry->token)) {
-            token_ReleaseDataIfObj(&pEntry->token);
-        }
         listdl_Delete(&this->list, pEntry);
         listdl_Add2Tail(&this->freeList, pEntry);
         
@@ -503,9 +494,6 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         
-        if (obj_getType(&pEntry->token)) {
-            token_ReleaseDataIfObj(&pEntry->token);
-        }
         listdl_Delete(&this->list, pEntry);
         listdl_Add2Tail(&this->freeList, pEntry);
         

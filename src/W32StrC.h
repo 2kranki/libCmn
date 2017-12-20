@@ -105,8 +105,8 @@ extern "C" {
         W32CHR_T        *pStr
     );
     
-    W32STRC_DATA *  W32StrC_NewFromStrW32(
-        WSTR_DATA       *pStr
+    W32STRC_DATA *  W32StrC_NewFromW32Str(
+        W32STR_DATA     *pStr
     );
     
     W32STRC_DATA *  W32StrC_NewW32(

@@ -160,6 +160,11 @@ extern "C" {
     );
     
     
+    NODEHASH_DATA * nodeHash_DeepCopy(
+        NODEHASH_DATA    *this
+    );
+    
+    
     ERESULT         nodeHash_Delete(
         NODEHASH_DATA	*this,
         const
@@ -201,6 +206,35 @@ extern "C" {
     ERESULT         nodeHash_Nodes(
         NODEHASH_DATA	*this,
         NODEARRAY_DATA  **ppKeys
+    );
+    
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = nodeHash_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                        character string which represents the method name without
+                        the object name, "nodeHash", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          nodeHash_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
     );
     
     

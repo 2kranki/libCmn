@@ -106,6 +106,49 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    ASTRARRAY_DATA *    srcFiles_getPaths(
+        SRCFILES_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcFiles_Validate(this) )
+            return false;
+#endif
+        
+        // Return to caller.
+        return this->pPaths;
+    }
+    
+    
+    bool            srcFiles_setPaths(
+        SRCFILES_DATA   *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcFiles_Validate(this) )
+            return false;
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pPaths) {
+            obj_Release(this->pPaths);
+            //this->pPaths = OBJ_NIL;
+        }
+        this->pPaths = pValue;
+        
+        // Return to caller.
+        return true;
+    }
+    
+    
+    
     bool            srcFiles_getReuse(
         SRCFILES_DATA   *cbp
     )
@@ -180,28 +223,30 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        SRCFILES_DATA   *cbp = objId;
+        SRCFILES_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !srcFiles_Validate( cbp ) ) {
+        if( !srcFiles_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if (cbp->pStack) {
-            obj_Release(cbp->pStack);
-            cbp->pStack = OBJ_NIL;
-            cbp->pTop = OBJ_NIL;
+        srcFiles_setPaths(this, OBJ_NIL);
+        if (this->pStack) {
+            obj_Release(this->pStack);
+            this->pStack = OBJ_NIL;
+            this->pTop = OBJ_NIL;
         }
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        obj_Dealloc(this);
+        this = NULL;
 
         // Return to caller.
     }
@@ -225,7 +270,8 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        obj_setVtbl(this, &srcFiles_Vtbl);
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFiles_Vtbl);
         
         //cbp->stackSize = obj_getMisc1(cbp);
 
@@ -236,6 +282,7 @@ extern "C" {
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->fReuse);
+        BREAK_NOT_BOUNDARY4(sizeof(SRCFILES_DATA));
     #endif
 
         return this;
@@ -246,6 +293,7 @@ extern "C" {
         SRCFILES_DATA   *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -259,7 +307,7 @@ extern "C" {
         }
         
         pSrc = srcFile_Alloc();
-        pSrc = srcFile_InitAStr(pSrc, pAStr, pFilePath, tabSize, false, false);
+        pSrc = srcFile_InitAStr(pSrc, pAStr, pFilePath, fileIndex, tabSize, false, false);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
             return OBJ_NIL;
@@ -270,10 +318,11 @@ extern "C" {
     }
     
     
-    SRCFILES_DATA * srcFiles_InitWStr(
+    SRCFILES_DATA * srcFiles_InitW32Str(
         SRCFILES_DATA   *this,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
@@ -287,7 +336,7 @@ extern "C" {
         }
         
         pSrc = srcFile_Alloc();
-        pSrc = srcFile_InitWStr(pSrc, pWStr, pFilePath, tabSize, false, false);
+        pSrc = srcFile_InitW32Str(pSrc, pWStr, pFilePath, fileIndex, tabSize, false, false);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
             return OBJ_NIL;
@@ -424,7 +473,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT			srcFiles_StackPush(
-        SRCFILES_DATA   *cbp,
+        SRCFILES_DATA   *this,
         SRCFILE_DATA    *pItem
     )
     {
@@ -433,7 +482,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcFiles_Validate( cbp ) ) {
+        if( !srcFiles_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -443,15 +492,15 @@ extern "C" {
         }
 #endif
         
-        eRc = objArray_AppendObj(cbp->pStack,pItem,NULL);
+        eRc = objArray_AppendObj(this->pStack, pItem, NULL);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
         }
-        cbp->pTop = pItem;
+        this->pTop = pItem;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     

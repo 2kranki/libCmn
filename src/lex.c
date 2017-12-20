@@ -41,10 +41,12 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "lex_internal.h"
+#include    <lex_internal.h>
 #include    <szTbl.h>
 #include    <trace.h>
-#include    <WStr.h>
+#include    <dec.h>
+#include    <srcErrors.h>
+#include    <W32Str.h>
 #include    <stdarg.h>
 #include    <stdio.h>
 
@@ -136,7 +138,7 @@ extern "C" {
     W32CHR_T *      lex_WhiteSpaceW(
     )
     {
-        return WStr_WhiteSpaceW32();
+        return W32Str_WhiteSpaceW32();
     }
     
     
@@ -276,7 +278,7 @@ extern "C" {
     
     
     
-    WSTR_DATA *     lex_getString(
+    W32STR_DATA *   lex_getString(
         LEX_DATA        *this
     )
     {
@@ -421,12 +423,6 @@ extern "C" {
         }
         
         if (this->pOutputs) {
-            uint16_t        ui16;
-            for (ui16=0; ui16<this->sizeOutputs; ++ui16) {
-                if (obj_getType(&this->pOutputs[ui16]) == OBJ_IDENT_TOKEN) {
-                    token_ReleaseDataIfObj(&this->pOutputs[ui16]);
-                }
-            }
             mem_Free(this->pOutputs);
             this->pOutputs = NULL;
             this->sizeOutputs = 0;
@@ -442,8 +438,6 @@ extern "C" {
             this->pFIFO = OBJ_NIL;
         }
         
-        token_ReleaseDataIfObj(&this->token);
-
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
         //other_Dealloc(this);          // Needed for inheritance
         obj_Dealloc( this );
@@ -482,67 +476,6 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          E r r o r
-    //---------------------------------------------------------------
-    
-    void            lex_Error(
-        LEX_DATA        *this,
-        const
-        char            *pFileName,
-        uint32_t		linnum,
-        uint16_t		colnum,
-        const
-        char			*fmt,
-        ...
-    )
-    {
-        va_list 		argsp;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return;
-        }
-#endif
-        
-        va_start( argsp, fmt );
-        eResult_ErrorArg(this->pErrors, fmt, argsp);
-        va_end( argsp );
-        
-        // Return to caller.
-    }
-    
-    
-    void            lex_ErrorFatal(
-        LEX_DATA        *this,
-        const
-        char			*fmt,
-        ...
-    )
-    {
-        va_list 		argsp;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return;
-        }
-#endif
-        
-        va_start( argsp, fmt );
-        eResult_ErrorFatalArg(this->pErrors, fmt, argsp);
-        va_end( argsp );
-
-        // Return to caller.
     }
     
     
@@ -600,7 +533,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pStr = WStr_New();
+        this->pStr = W32Str_New();
         this->pErrors = eResult_Shared();
         
         lex_setParserFunction(this, lex_DefaultParser, this);
@@ -1207,7 +1140,8 @@ extern "C" {
         obj_setSize(&this->token, sizeof(TOKEN_DATA));
         pToken =    token_InitCharW32(
                         &this->token,
-                        NULL,
+                        0,
+                        0,
                         0,
                         0,
                         -1,
@@ -1672,7 +1606,7 @@ extern "C" {
         if (!obj_IsFlag(this, LEX_INIT_DONE)) {
             for (i=0; i<this->sizeOutputs; ++i) {
                 pToken = &this->pOutputs[i];
-                token_InitCharW32(pToken, "", 1, 1, 0, 0);
+                token_InitCharW32(pToken, 0, 0, 1, 1, 0, 0);
             }
             for (i=0; i<this->sizeOutputs; ++i) {
                 lex_TokenNext(this);
@@ -1743,13 +1677,10 @@ extern "C" {
         }
         
         if (!obj_IsFlag(this, LEX_INIT_DONE)) {
-#ifdef NDEBUG
-#else
             for (idx=0; idx<this->sizeOutputs; ++idx) {
                 pToken = &this->pOutputs[idx];
-                token_InitCharW32(pToken, "", 1, 1, LEX_CLASS_EOF, 0);
+                token_InitCharW32(pToken, 0, 0, 1, 1, LEX_CLASS_EOF, 0);
             }
-#endif
             for (idx=0; idx<this->sizeOutputs; ++idx) {
                 lex_TokenNext(this);
             }
@@ -1764,7 +1695,7 @@ extern "C" {
 #else
         if (obj_Trace(this)) {
             ASTR_DATA           *pStr = token_ToDebugString(pToken, 0);
-            TRC_OBJ( this, "lex_InputLookAhead:  %s \n", AStr_getData(pStr) );
+            TRC_OBJ(this, "lex_InputLookAhead:  %s \n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -1781,12 +1712,12 @@ extern "C" {
     /*!
      Finalize the string being built by the parser creating the token
      to be returned.
-     @param:    this    LEX object pointer
+     @param     this     object pointer
      @param     newClass If non-zero, use this class for the token
-     being built.
+                being built.
      @param     fSaveStr
-     If true, the string being built by the parse is saved
-     into the token being built replacing the original string.
+                If true, the string being built by the parse is saved
+                into the token being built replacing the original string.
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         lex_ParseTokenFinalize(
@@ -1795,7 +1726,7 @@ extern "C" {
         bool            fSaveStr
     )
     {
-        ERESULT         eRc;
+        bool            fRc;
         uint32_t        strToken;
         
         // Do initialization.
@@ -1809,21 +1740,13 @@ extern "C" {
         
         token_setClass(&this->token, newClass);
         if (fSaveStr && this->pStr) {
-            if (this->fUseStringTable) {
-                eRc =   szTbl_StringW32ToToken(
-                                             szTbl_Shared(),
-                                             WStr_getData(this->pStr),
-                                             &strToken
-                                             );
-                BREAK_TRUE(ERESULT_HAS_FAILED(eRc));
-            }
-            else {
-                WSTR_DATA       *pStr;
-                pStr = WStr_Copy(this->pStr);
-                token_setStringW(&this->token, pStr);
-                WStr_Truncate(this->pStr, 0);
-                obj_Release(pStr);
-            }
+            strToken =  szTbl_StringW32ToToken(
+                                 szTbl_Shared(),
+                                 W32Str_getData(this->pStr)
+                        );
+            BREAK_ZERO(strToken);
+            fRc = token_setStrToken(&this->token, strToken);
+            BREAK_FALSE(fRc);
         }
         
         // Return to caller.
@@ -1844,6 +1767,11 @@ extern "C" {
     {
         uint16_t        type;
         W32CHR_T        chr;
+        uint32_t        cStrNum = 32;
+        char            strNum[32];
+        char            *pStrNum = strNum;
+        const
+        char            *pStr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1852,39 +1780,45 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
-        if (OBJ_NIL == pToken) {
+        if ((OBJ_NIL == pToken) || !obj_IsKindOf(pToken, OBJ_IDENT_TOKEN)) {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
         if (this->pStr == OBJ_NIL) {
-            this->pStr = WStr_New();
+            this->pStr = W32Str_New();
         }
         
         type = token_getType(pToken);
         switch (type) {
-            case TOKEN_TYPE_WCHAR:
+            case TOKEN_TYPE_W32CHAR:
                 chr = token_getChrW32(pToken);
                 if (chr == '\n') {
-                    WStr_AppendA(this->pStr, "\\n");
+                    W32Str_AppendA(this->pStr, "\\n");
+                }
+                else if (chr == '\f') {
+                    W32Str_AppendA(this->pStr, "\\f");
                 }
                 else if (chr == '\r') {
-                    WStr_AppendA(this->pStr, "\\r");
+                    W32Str_AppendA(this->pStr, "\\r");
                 }
                 else if (chr == '\t') {
-                    WStr_AppendA(this->pStr, "\\t");
+                    W32Str_AppendA(this->pStr, "\\t");
                 }
                 else {
-                    WStr_AppendW32(this->pStr, 1, &chr);
+                    W32Str_AppendW32(this->pStr, 1, &chr);
                 }
                 break;
                 
             case TOKEN_TYPE_INTEGER:
-                WStr_Append(this->pStr, token_getStringW(pToken));
+                strNum[0] = '\0';
+                dec_putInt64A(token_getInteger(pToken), &cStrNum, &pStrNum);
+                W32Str_AppendA(this->pStr, strNum);
                 break;
                 
-            case TOKEN_TYPE_WSTRING:
-                WStr_Append(this->pStr, token_getStringW(pToken));
+            case TOKEN_TYPE_STRTOKEN:
+                pStr = szTbl_TokenToString(szTbl_Shared(), token_getStrToken(pToken));
+                W32Str_AppendA(this->pStr, pStr);
                 break;
                 
             default:
@@ -1918,7 +1852,7 @@ extern "C" {
         }
 #endif
         
-        WStr_Truncate(this->pStr, 0);
+        W32Str_Truncate(this->pStr, 0);
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1982,9 +1916,6 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
-        // Release current token data;
-        token_ReleaseDataIfObj(&this->pOutputs[this->curOutputs]);
         
         fRc = this->pParser(this->pParseObj, &this->token);
         if (!fRc) {
@@ -2076,14 +2007,14 @@ extern "C" {
         }
 #endif
         
-        WStr_Truncate(this->pStr, 0);
+        W32Str_Truncate(this->pStr, 0);
         if (OBJ_NIL == pInput) {
             DEBUG_BREAK();
             lex_ParseEOF(this);
             return ERESULT_EOF_ERROR;
         }
         eRc = lex_ParseTokenAppendString(this, pInput);
-        if(ERESULT_HAS_FAILED(eRc)) {
+        if(ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_GENERAL_FAILURE;
         }

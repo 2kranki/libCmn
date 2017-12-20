@@ -127,6 +127,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        objHash_getSize(
+        OBJHASH_DATA    *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -141,10 +146,34 @@ extern "C" {
     );
     
     
-    // Delete() deletes the first entry found matching the given object.
-    ERESULT         objHash_Delete(
+    ERESULT         objHash_Assign(
         OBJHASH_DATA    *this,
-        OBJ_ID          *pObject
+        OBJHASH_DATA    *pOther
+    );
+    
+    
+    OBJHASH_DATA *  objHash_Copy(
+        OBJHASH_DATA    *this
+    );
+    
+    
+    /*! Delete the first entry found matching the given object
+        from the hash and returns it.
+     @return    return the object deleted from the hash if successful.
+                Otherwise, return OBJ_NIL and set an ERESULT_* error.
+     */
+    OBJ_ID          objHash_Delete(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject
+    );
+    
+    
+    /*! Delete all entries found in the hash.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         objHash_DeleteAll(
+        OBJHASH_DATA    *this
     );
     
     
@@ -165,7 +194,7 @@ extern "C" {
      */
     OBJ_ID          objHash_Find(
         OBJHASH_DATA    *this,
-        OBJ_ID          *pObject
+        OBJ_ID          pObject
     );
     
     

@@ -119,7 +119,7 @@ extern "C" {
 
     /*!
      Add a method/object pair to the array.
-     @return:       ERESULT_SUCCESS
+     @return        ERESULT_SUCCESS
      */
     ERESULT         execArray_AddMethod(
         EXECARRAY_DATA	*this,
@@ -130,7 +130,7 @@ extern "C" {
 
     /*!
      Execute all the methods/objects in the array.
-     @return:       ERESULT_SUCCESS
+     @return        ERESULT_SUCCESS
      */
     ERESULT         execArray_Execute(
         EXECARRAY_DATA  *this
@@ -145,7 +145,7 @@ extern "C" {
     /*!
      Create a string that describes this object and the
      objects within it.
-     @return:   If successful, an AStr object which must be released,
+     @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     execArray_ToDebugString(

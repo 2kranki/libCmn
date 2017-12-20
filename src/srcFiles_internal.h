@@ -55,9 +55,10 @@ struct srcFiles_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    OBJARRAY_DATA   *pPaths;
+    ASTRARRAY_DATA  *pPaths;
     OBJARRAY_DATA   *pStack;
     SRCFILE_DATA    *pTop;
     bool            fReuse;
@@ -72,6 +73,12 @@ struct srcFiles_data_s	{
 
 
     // Internal Functions
+    bool            srcFiles_setPaths(
+        SRCFILES_DATA   *this,
+        ASTRARRAY_DATA  *pValue
+    );
+    
+
     void            srcFiles_Dealloc(
         OBJ_ID          objId
     );

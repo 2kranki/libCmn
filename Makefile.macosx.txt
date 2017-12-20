@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (12/ 5/2017  4:14:49.000)
+# (12/20/2017 11:37:14.000)
 
 
 LIBNAM=libCmn
@@ -72,6 +72,18 @@ $(OBJDIR)/AStrC_object.o: $(SRCDIR)/AStrC_object.c
 
 
 
+OBJS += $(OBJDIR)/W32Str.o $(OBJDIR)/W32Str_object.o
+
+
+$(OBJDIR)/W32Str.o: $(SRCDIR)/W32Str.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/W32Str_object.o: $(SRCDIR)/W32Str_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/W32StrC.o $(OBJDIR)/W32StrC_object.o
 
 
@@ -80,18 +92,6 @@ $(OBJDIR)/W32StrC.o: $(SRCDIR)/W32StrC.c
 
 
 $(OBJDIR)/W32StrC_object.o: $(SRCDIR)/W32StrC_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/WStr.o $(OBJDIR)/WStr_object.o
-
-
-$(OBJDIR)/WStr.o: $(SRCDIR)/WStr.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/WStr_object.o: $(SRCDIR)/WStr_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -332,6 +332,18 @@ $(OBJDIR)/cmdutl.o: $(SRCDIR)/cmdutl.c
 
 
 $(OBJDIR)/cmdutl_object.o: $(SRCDIR)/cmdutl_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/compiler.o $(OBJDIR)/compiler_object.o
+
+
+$(OBJDIR)/compiler.o: $(SRCDIR)/compiler.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/compiler_object.o: $(SRCDIR)/compiler_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -672,6 +684,18 @@ $(OBJDIR)/lru_object.o: $(SRCDIR)/lru_object.c
 
 
 
+OBJS += $(OBJDIR)/macro.o $(OBJDIR)/macro_object.o
+
+
+$(OBJDIR)/macro.o: $(SRCDIR)/macro.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/macro_object.o: $(SRCDIR)/macro_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/misc.o $(OBJDIR)/misc_object.o
 
 
@@ -960,6 +984,18 @@ $(OBJDIR)/objMethod_object.o: $(SRCDIR)/objMethod_object.c
 
 
 
+OBJS += $(OBJDIR)/parser.o $(OBJDIR)/parser_object.o
+
+
+$(OBJDIR)/parser.o: $(SRCDIR)/parser.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/parser_object.o: $(SRCDIR)/parser_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/path.o $(OBJDIR)/path_object.o
 
 
@@ -980,6 +1016,54 @@ $(OBJDIR)/plist.o: $(SRCDIR)/plist.c
 
 
 $(OBJDIR)/plist_object.o: $(SRCDIR)/plist_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/pplex.o $(OBJDIR)/pplex_object.o
+
+
+$(OBJDIR)/pplex.o: $(SRCDIR)/pplex.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/pplex_object.o: $(SRCDIR)/pplex_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/pplex1.o $(OBJDIR)/pplex1_object.o
+
+
+$(OBJDIR)/pplex1.o: $(SRCDIR)/pplex1.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/pplex1_object.o: $(SRCDIR)/pplex1_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/pplex2.o $(OBJDIR)/pplex2_object.o
+
+
+$(OBJDIR)/pplex2.o: $(SRCDIR)/pplex2.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/pplex2_object.o: $(SRCDIR)/pplex2_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/pplex3.o $(OBJDIR)/pplex3_object.o
+
+
+$(OBJDIR)/pplex3.o: $(SRCDIR)/pplex3.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/pplex3_object.o: $(SRCDIR)/pplex3_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1092,6 +1176,30 @@ $(OBJDIR)/sidx_object.o: $(SRCDIR)/sidx_object.c
 
 
 
+OBJS += $(OBJDIR)/srcError.o $(OBJDIR)/srcError_object.o
+
+
+$(OBJDIR)/srcError.o: $(SRCDIR)/srcError.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/srcError_object.o: $(SRCDIR)/srcError_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/srcErrors.o $(OBJDIR)/srcErrors_object.o
+
+
+$(OBJDIR)/srcErrors.o: $(SRCDIR)/srcErrors.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/srcErrors_object.o: $(SRCDIR)/srcErrors_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/srcFile.o $(OBJDIR)/srcFile_object.o
 
 
@@ -1124,6 +1232,30 @@ $(OBJDIR)/srcLoc.o: $(SRCDIR)/srcLoc.c
 
 
 $(OBJDIR)/srcLoc_object.o: $(SRCDIR)/srcLoc_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/symEntry.o $(OBJDIR)/symEntry_object.o
+
+
+$(OBJDIR)/symEntry.o: $(SRCDIR)/symEntry.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/symEntry_object.o: $(SRCDIR)/symEntry_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/symTable.o $(OBJDIR)/symTable_object.o
+
+
+$(OBJDIR)/symTable.o: $(SRCDIR)/symTable.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/symTable_object.o: $(SRCDIR)/symTable_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1184,6 +1316,18 @@ $(OBJDIR)/textIn.o: $(SRCDIR)/textIn.c
 
 
 $(OBJDIR)/textIn_object.o: $(SRCDIR)/textIn_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/textOut.o $(OBJDIR)/textOut_object.o
+
+
+$(OBJDIR)/textOut.o: $(SRCDIR)/textOut.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/textOut_object.o: $(SRCDIR)/textOut_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1404,12 +1548,30 @@ $(OBJDIR)/node_JSON.o: $(SRCDIR)/node_JSON.c
 
 
 OBJS += $(OBJDIR)/node_JSON.o
+$(OBJDIR)/null_JSON.o: $(SRCDIR)/null_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/null_JSON.o
+$(OBJDIR)/number_JSON.o: $(SRCDIR)/number_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/number_JSON.o
 $(OBJDIR)/obj.o: $(SRCDIR)/obj.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
 OBJS += $(OBJDIR)/obj.o
+$(OBJDIR)/objHash_JSON.o: $(SRCDIR)/objHash_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/objHash_JSON.o
 $(OBJDIR)/scandec32.o: $(SRCDIR)/scandec32.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1440,6 +1602,12 @@ $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c
 
 
 OBJS += $(OBJDIR)/shellSortPtrs.o
+$(OBJDIR)/srcError_JSON.o: $(SRCDIR)/srcError_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/srcError_JSON.o
 $(OBJDIR)/srcLoc_JSON.o: $(SRCDIR)/srcLoc_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -1470,12 +1638,12 @@ $(OBJDIR)/value_JSON.o: $(SRCDIR)/value_JSON.c
 
 
 OBJS += $(OBJDIR)/value_JSON.o
-$(OBJDIR)/WStr_JSON.o: $(SRCDIR)/WStr_JSON.c
+$(OBJDIR)/W32Str_JSON.o: $(SRCDIR)/W32Str_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
 
-OBJS += $(OBJDIR)/WStr_JSON.o
+OBJS += $(OBJDIR)/W32Str_JSON.o
 
 
 
@@ -1567,17 +1735,17 @@ test_AStrC:
 	$(OBJDIR)/$(@F) ./tests
 
 
+TESTS += test_W32Str
+
+test_W32Str:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_W32Str.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
 TESTS += test_W32StrC
 
 test_W32StrC:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_W32StrC.c 
-	$(OBJDIR)/$(@F) ./tests
-
-
-TESTS += test_WStr
-
-test_WStr:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_WStr.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
@@ -1711,6 +1879,13 @@ TESTS += test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_compiler
+
+test_compiler:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_compiler.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
@@ -1903,6 +2078,13 @@ test_lru:
 	$(OBJDIR)/$(@F) ./tests
 
 
+TESTS += test_macro
+
+test_macro:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_macro.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
 TESTS += test_memOSX
 
 test_memOSX:
@@ -2092,6 +2274,13 @@ test_objTest:
 	$(OBJDIR)/$(@F) ./tests
 
 
+TESTS += test_parser
+
+test_parser:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_parser.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
 TESTS += test_path
 
 test_path:
@@ -2103,6 +2292,34 @@ TESTS += test_plist
 
 test_plist:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_plist.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_pplex
+
+test_pplex:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_pplex.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_pplex1
+
+test_pplex1:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_pplex1.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_pplex2
+
+test_pplex2:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_pplex2.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_pplex3
+
+test_pplex3:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_pplex3.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
@@ -2190,6 +2407,20 @@ test_sidx:
 	$(OBJDIR)/$(@F) ./tests
 
 
+TESTS += test_srcError
+
+test_srcError:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcError.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_srcErrors
+
+test_srcErrors:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcErrors.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
 TESTS += test_srcFile
 
 test_srcFile:
@@ -2215,6 +2446,20 @@ TESTS += test_str
 
 test_str:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_str.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_symEntry
+
+test_symEntry:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_symEntry.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_symTable
+
+test_symTable:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_symTable.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
@@ -2250,6 +2495,13 @@ TESTS += test_textIn
 
 test_textIn:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_textIn.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_textOut
+
+test_textOut:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_textOut.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

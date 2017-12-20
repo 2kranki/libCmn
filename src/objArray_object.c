@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    objArray_Class,
     obj_ClassWhoAmI
 };
 
@@ -170,7 +170,7 @@ OBJARRAY_VTBL     objArray_Vtbl = {
         objArray_Dealloc,
         objArray_Class,
         objArray_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)objArray_QueryInfo,
         (P_OBJ_TOSTRING)objArray_ToDebugString,
         NULL,			// objArray_Enable,
         NULL,			// objArray_Disable,

@@ -26,7 +26,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <utf8.h>
-#include    <WStr_internal.h>
+#include    <W32Str_internal.h>
 
 
 
@@ -125,12 +125,12 @@ int         tearDown(
 
 
 
-int         test_wstr_OpenClose(
+int         test_w32str_OpenClose(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     const
     int32_t     *pData;
@@ -138,36 +138,36 @@ int         test_wstr_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        pData = WStr_getData(pObj);
+        pData = W32Str_getData(pObj);
         XCTAssertTrue( (pData) );
         XCTAssertTrue( (pData[0] == 0) );
         
-        eRc = WStr_AppendA( pObj, "abc" );
+        eRc = W32Str_AppendA( pObj, "abc" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
         
-        chr = WStr_CharGetW32(pObj, 2);
+        chr = W32Str_CharGetW32(pObj, 2);
         XCTAssertTrue( ('b' == chr) );
         
-        eRc = WStr_CharPutW32(pObj, 2, 'x');
+        eRc = W32Str_CharPutW32(pObj, 2, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_CompareA( pObj, "axc" );
+        eRc = W32Str_CompareA( pObj, "axc" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_IsOnlyASCII(pObj);
+        eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_CharPutW32(pObj, 2, 0xFEFF);
+        eRc = W32Str_CharPutW32(pObj, 2, 0xFEFF);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_IsOnlyASCII(pObj);
+        eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertFalse( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         obj_Release(pObj);
@@ -180,47 +180,47 @@ int         test_wstr_OpenClose(
 
 
 
-int         test_wstr_Span(
+int         test_w32str_Span(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     uint32_t    index = 0;
     int32_t     scanStr[4] = {'x','y','z',0};
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_AppendA( pObj, "xABCyDEFzGHI" );
+        eRc = W32Str_AppendA( pObj, "xABCyDEFzGHI" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (12 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (12 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "xABCyDEFzGHI" );
+        eRc = W32Str_CompareA( pObj, "xABCyDEFzGHI" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_IndexUntil(pObj, scanStr, &index);
+        eRc = W32Str_IndexUntil(pObj, scanStr, &index);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (1 == index) );
         
         ++index;
-        eRc = WStr_IndexUntil(pObj, scanStr, &index);
+        eRc = W32Str_IndexUntil(pObj, scanStr, &index);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (5 == index) );
         
         ++index;
-        eRc = WStr_IndexUntil(pObj, scanStr, &index);
+        eRc = W32Str_IndexUntil(pObj, scanStr, &index);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == index) );
         
         ++index;
-        eRc = WStr_IndexUntil(pObj, scanStr, &index);
+        eRc = W32Str_IndexUntil(pObj, scanStr, &index);
         XCTAssertTrue( (ERESULT_OUT_OF_RANGE == eRc) );
         XCTAssertTrue( (0 == index) );
         
@@ -234,13 +234,13 @@ int         test_wstr_Span(
 
 
 
-int         test_wstr_AssignCopy(
+int         test_w32str_AssignCopy(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
-    WSTR_DATA	*pOther = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pOther = OBJ_NIL;
     ERESULT     eRc;
     const
     int32_t     *pData1;
@@ -249,30 +249,30 @@ int         test_wstr_AssignCopy(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_AppendA( pObj, "abcdefghi" );
+        eRc = W32Str_AppendA( pObj, "abcdefghi" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (9 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (9 == W32Str_getLength(pObj)) );
         
-        pOther = WStr_Copy(pObj);
+        pOther = W32Str_Copy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         
-        eRc = WStr_CompareA( pObj, "abcdefghi" );
+        eRc = W32Str_CompareA( pObj, "abcdefghi" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Compare( pOther, pObj );
+        eRc = W32Str_Compare( pOther, pObj );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_IsOnlyASCII(pObj);
+        eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        pData1 = WStr_getData(pObj);
-        pData2 = WStr_getData(pOther);
+        pData1 = W32Str_getData(pObj);
+        pData2 = W32Str_getData(pOther);
         XCTAssertTrue( (!(pData1 == pData2)) );
         
         obj_Release(pOther);
@@ -288,38 +288,38 @@ int         test_wstr_AssignCopy(
 
 
 
-int         test_wstr_Compare(
+int         test_w32str_Compare(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_AppendA( pObj, "xABCxDEFxG" );
+        eRc = W32Str_AppendA( pObj, "xABCxDEFxG" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_CompareA(pObj, "xABCxDEFxG");
+        eRc = W32Str_CompareA(pObj, "xABCxDEFxG");
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_CompareA(pObj, "xABCxDEFxA");
+        eRc = W32Str_CompareA(pObj, "xABCxDEFxA");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_GREATER_THAN) );
 
-        eRc = WStr_CompareA(pObj, "xABCxDEFxZ");
+        eRc = W32Str_CompareA(pObj, "xABCxDEFxZ");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_LESS_THAN) );
         
-        eRc = WStr_CompareA(pObj, "xABCxDEF");
+        eRc = W32Str_CompareA(pObj, "xABCxDEF");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_GREATER_THAN) );
         
-        eRc = WStr_CompareA(pObj, "xABCxDEFxGx");
+        eRc = W32Str_CompareA(pObj, "xABCxDEFxGx");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_LESS_THAN) );
         
         obj_Release(pObj);
@@ -332,67 +332,67 @@ int         test_wstr_Compare(
 
 
 
-int         test_wstr_CompareA(
+int         test_w32str_CompareA(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     const
     int32_t     *pData;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pData = WStr_getData(pObj);
+        pData = W32Str_getData(pObj);
         XCTAssertTrue( (pData) );
         XCTAssertTrue( (pData[0] == 0) );
         
-        eRc = WStr_AppendA( pObj, "abc" );
+        eRc = W32Str_AppendA( pObj, "abc" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
         
-        pData = WStr_getData(pObj);
+        pData = W32Str_getData(pObj);
         XCTAssertTrue( (pData) );
         XCTAssertTrue( (pData[0] == 'a') );
         XCTAssertTrue( (pData[1] == 'b') );
         XCTAssertTrue( (pData[2] == 'c') );
         XCTAssertTrue( (pData[3] == 0) );
         
-        eRc = WStr_CompareA( pObj, "abc" );
+        eRc = W32Str_CompareA( pObj, "abc" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_CompareA( pObj, "000" );
+        eRc = W32Str_CompareA( pObj, "000" );
         XCTAssertTrue( (ERESULT_SUCCESS_GREATER_THAN == eRc) );
         
-        eRc = WStr_CompareA( pObj, "def" );
+        eRc = W32Str_CompareA( pObj, "def" );
         XCTAssertTrue( (ERESULT_SUCCESS_LESS_THAN == eRc) );
         
-        eRc = WStr_CompareA( pObj, "\xC0\x82" );
+        eRc = W32Str_CompareA( pObj, "\xC0\x82" );
         XCTAssertTrue( (ERESULT_SUCCESS_GREATER_THAN == eRc) );
         
-        eRc = WStr_AppendW32( pObj, 0, string2 );
+        eRc = W32Str_AppendW32( pObj, 0, string2 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (6 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "abcxyz" );
+        eRc = W32Str_CompareA( pObj, "abcxyz" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Truncate(pObj, 0);
+        eRc = W32Str_Truncate(pObj, 0);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (0 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_AppendA( pObj, "xABCxDEFxG" );
+        eRc = W32Str_AppendA( pObj, "xABCxDEFxG" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (10 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "xABCxDEFxG" );
+        eRc = W32Str_CompareA( pObj, "xABCxDEFxG" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
         obj_Release(pObj);
@@ -405,12 +405,12 @@ int         test_wstr_CompareA(
 
 
 
-int         test_wstr_CompareW(
+int         test_w32str_CompareW(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     const
     int32_t     *pData;
@@ -420,21 +420,21 @@ int         test_wstr_CompareW(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pData = WStr_getData(pObj);
+        pData = W32Str_getData(pObj);
         XCTAssertTrue( (pData) );
         XCTAssertTrue( (pData[0] == 0) );
         
-        eRc = WStr_AppendW32( pObj, 10, whiteSpace );
+        eRc = W32Str_AppendW32( pObj, 10, whiteSpace );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (10 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
         
-        pData = WStr_getData(pObj);
+        pData = W32Str_getData(pObj);
         XCTAssertTrue( (pData) );
         XCTAssertTrue( (pData[0] == ' ') );
         XCTAssertTrue( (pData[1] == '\f') );
@@ -448,24 +448,24 @@ int         test_wstr_CompareW(
         XCTAssertTrue( (pData[9] == 0xFEFF) );
         XCTAssertTrue( (pData[10] == 0) );
         
-        eRc = WStr_CompareW32( pObj, whiteSpace );
+        eRc = W32Str_CompareW32( pObj, whiteSpace );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
-        pStr = WStr_CStringA(pObj, &len);
+        pStr = W32Str_CStringA(pObj, &len);
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         XCTAssertTrue( (19 == len) );
         lenStr = utf8_StrLenA(pStr);
         XCTAssertTrue( (10 == lenStr) );
-        XCTAssertTrue( (10 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
 
-        pObj = WStr_NewA(pStr);
+        pObj = W32Str_NewA(pStr);
         XCTAssertFalse( (OBJ_NIL == pObj) );
-        XCTAssertTrue( (10 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
 
-        eRc = WStr_CompareW32( pObj, whiteSpace );
+        eRc = W32Str_CompareW32( pObj, whiteSpace );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
         obj_Release(pObj);
@@ -474,14 +474,14 @@ int         test_wstr_CompareW(
         mem_Free(pStr);
         pStr = NULL;
 
-        pObj = WStr_NewW32(0, whiteSpace);
+        pObj = W32Str_NewW32(0, whiteSpace);
         XCTAssertFalse( (OBJ_NIL == pObj) );
-        XCTAssertTrue( (10 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareW32( pObj, whiteSpace );
+        eRc = W32Str_CompareW32( pObj, whiteSpace );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Compare( pObj, pObj );
+        eRc = W32Str_Compare( pObj, pObj );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
         obj_Release(pObj);
@@ -495,124 +495,124 @@ int         test_wstr_CompareW(
 
 
 
-int         test_wstr_AppendChr(
+int         test_w32str_AppendChr(
     const
     char            *pTestName
 )
 {
-    WSTR_DATA	    *pObj = OBJ_NIL;
-    WSTR_DATA	    *pOther = OBJ_NIL;
+    W32STR_DATA	    *pObj = OBJ_NIL;
+    W32STR_DATA	    *pOther = OBJ_NIL;
     ERESULT         eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_New( );
+    pObj = W32Str_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_AppendCharW32( pObj, 3, 'a' );
+        eRc = W32Str_AppendCharW32( pObj, 3, 'a' );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_IsOnlyASCII(pObj);
+        eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_CompareA( pObj, "aaa" );
+        eRc = W32Str_CompareA( pObj, "aaa" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Upper( pObj );
+        eRc = W32Str_Upper( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "AAA" );
+        eRc = W32Str_CompareA( pObj, "AAA" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Lower( pObj );
+        eRc = W32Str_Lower( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "aaa" );
+        eRc = W32Str_CompareA( pObj, "aaa" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_InsertA( pObj, 2, "bb" );
+        eRc = W32Str_InsertA( pObj, 2, "bb" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (5 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "abbaa" );
+        eRc = W32Str_CompareA( pObj, "abbaa" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_InsertA( pObj, 1, "c" );
+        eRc = W32Str_InsertA( pObj, 1, "c" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (6 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "cabbaa" );
+        eRc = W32Str_CompareA( pObj, "cabbaa" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_InsertA( pObj, 7, "d" );
+        eRc = W32Str_InsertA( pObj, 7, "d" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (7 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (7 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "cabbaad" );
+        eRc = W32Str_CompareA( pObj, "cabbaad" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_AppendA( pObj, "eee" );
+        eRc = W32Str_AppendA( pObj, "eee" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (10 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_CompareA( pObj, "cabbaadeee" );
+        eRc = W32Str_CompareA( pObj, "cabbaadeee" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_IsOnlyASCII(pObj);
+        eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
        
-        eRc = WStr_Mid(pObj, 1, 2, &pOther);
+        eRc = W32Str_Mid(pObj, 1, 2, &pOther);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == WStr_getLength(pOther)) );
-        eRc = WStr_CompareA( pOther, "ca" );
+        XCTAssertTrue( (2 == W32Str_getLength(pOther)) );
+        eRc = W32Str_CompareA( pOther, "ca" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         obj_Release(pOther);
         pOther = OBJ_NIL;
         
-        eRc = WStr_Mid(pObj, 8, 3, &pOther);
+        eRc = W32Str_Mid(pObj, 8, 3, &pOther);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pOther)) );
-        eRc = WStr_CompareA( pOther, "eee" );
+        XCTAssertTrue( (3 == W32Str_getLength(pOther)) );
+        eRc = W32Str_CompareA( pOther, "eee" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         obj_Release(pOther);
         pOther = OBJ_NIL;
         
-        eRc = WStr_Left(pObj, 2, &pOther);
+        eRc = W32Str_Left(pObj, 2, &pOther);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == WStr_getLength(pOther)) );
-        eRc = WStr_CompareA( pOther, "ca" );
+        XCTAssertTrue( (2 == W32Str_getLength(pOther)) );
+        eRc = W32Str_CompareA( pOther, "ca" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         obj_Release(pOther);
         pOther = OBJ_NIL;
         
-        eRc = WStr_Right(pObj, 3, &pOther);
+        eRc = W32Str_Right(pObj, 3, &pOther);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pOther)) );
-        eRc = WStr_CompareA( pOther, "eee" );
+        XCTAssertTrue( (3 == W32Str_getLength(pOther)) );
+        eRc = W32Str_CompareA( pOther, "eee" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         obj_Release(pOther);
         pOther = OBJ_NIL;
         
-        eRc = WStr_Remove(pObj, 1, 1);
+        eRc = W32Str_Remove(pObj, 1, 1);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (9 == WStr_getLength(pObj)) );
-        eRc = WStr_CompareA( pObj, "abbaadeee" );
+        XCTAssertTrue( (9 == W32Str_getLength(pObj)) );
+        eRc = W32Str_CompareA( pObj, "abbaadeee" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Remove(pObj, 7, 3);
+        eRc = W32Str_Remove(pObj, 7, 3);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == WStr_getLength(pObj)) );
-        eRc = WStr_CompareA( pObj, "abbaad" );
+        XCTAssertTrue( (6 == W32Str_getLength(pObj)) );
+        eRc = W32Str_CompareA( pObj, "abbaad" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Remove(pObj, 4, 2);
+        eRc = W32Str_Remove(pObj, 4, 2);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (4 == WStr_getLength(pObj)) );
-        eRc = WStr_CompareA( pObj, "abbd" );
+        XCTAssertTrue( (4 == W32Str_getLength(pObj)) );
+        eRc = W32Str_CompareA( pObj, "abbd" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
         obj_Release(pObj);
@@ -625,52 +625,52 @@ int         test_wstr_AppendChr(
 
 
 
-int         test_wstr_Append(
+int         test_w32str_Append(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
-    WSTR_DATA	*pObj2 = OBJ_NIL;
-    WSTR_DATA	*pObj3 = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj2 = OBJ_NIL;
+    W32STR_DATA	*pObj3 = OBJ_NIL;
     ERESULT     eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pObj2 = WStr_NewA("abc");
+        pObj2 = W32Str_NewA("abc");
         XCTAssertFalse( (OBJ_NIL == pObj2) );
-        pObj3 = WStr_NewA("def");
+        pObj3 = W32Str_NewA("def");
         XCTAssertFalse( (OBJ_NIL == pObj3) );
         
-        eRc = WStr_Append( pObj, pObj2 );
+        eRc = W32Str_Append( pObj, pObj2 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abc")) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "abc")) );
         
-        eRc = WStr_Append( pObj, pObj3 );
+        eRc = W32Str_Append( pObj, pObj3 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (6 == WStr_getLength(pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abcdef")) );
+        XCTAssertTrue( (6 == W32Str_getLength(pObj)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "abcdef")) );
         
-        eRc = WStr_Append( pObj, pObj3 );
+        eRc = W32Str_Append( pObj, pObj3 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (9 == WStr_getLength(pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abcdefdef")) );
+        XCTAssertTrue( (9 == W32Str_getLength(pObj)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "abcdefdef")) );
         
-        eRc = WStr_Truncate(pObj, 0);
+        eRc = W32Str_Truncate(pObj, 0);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (0 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_Append( pObj, pObj3 );
+        eRc = W32Str_Append( pObj, pObj3 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "def")) );
+        XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "def")) );
 
         obj_Release(pObj3);
         pObj3 = OBJ_NIL;
@@ -689,43 +689,43 @@ int         test_wstr_Append(
 
 
 
-int         test_wstr_CharFindNext(
+int         test_w32str_CharFindNext(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     uint32_t    index;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        eRc = WStr_AppendA( pObj, "xABCxDEFxG" );
+        eRc = W32Str_AppendA( pObj, "xABCxDEFxG" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         index = 0;      // Start at the beginning.
-        eRc = WStr_CharFindNextW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (1 == index) );
         
         ++index;
-        eRc = WStr_CharFindNextW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (5 == index) );
         
         ++index;
-        eRc = WStr_CharFindNextW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindNextW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == index) );
         
         ++index;
-        eRc = WStr_CharFindNextW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindNextW32(pObj, &index, 'x');
         XCTAssertFalse( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (0 == index) );
         
@@ -739,38 +739,38 @@ int         test_wstr_CharFindNext(
 
 
 
-int         test_wstr_CharFindPrev(
+int         test_w32str_CharFindPrev(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     uint32_t    index;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_AppendA( pObj, "xABCxDEFxG" );
+        eRc = W32Str_AppendA( pObj, "xABCxDEFxG" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         index = 0;      // Start at the beginning.
-        eRc = WStr_CharFindPrevW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindPrevW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == index) );
         
         --index;
-        eRc = WStr_CharFindPrevW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindPrevW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (5 == index) );
         
         --index;
-        eRc = WStr_CharFindPrevW32(pObj, &index, 'x');
+        eRc = W32Str_CharFindPrevW32(pObj, &index, 'x');
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (1 == index) );
         
@@ -784,38 +784,38 @@ int         test_wstr_CharFindPrev(
 
 
 
-int         test_wstr_LeftRightMid(
+int         test_w32str_LeftRightMid(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
-    WSTR_DATA	*pOther = OBJ_NIL;
+    W32STR_DATA	*pOther = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_AppendA( pObj, "xABCxDEFxG" );
+        eRc = W32Str_AppendA( pObj, "xABCxDEFxG" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
-        eRc = WStr_Left(pObj, 4, &pOther);
+        eRc = W32Str_Left(pObj, 4, &pOther);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (4 == WStr_getLength(pOther)) );
-        eRc = WStr_CompareA( pOther, "xABC" );
+        XCTAssertTrue( (4 == W32Str_getLength(pOther)) );
+        eRc = W32Str_CompareA( pOther, "xABC" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         obj_Release(pOther);
         pOther = OBJ_NIL;
         
-        eRc = WStr_Right(pObj, 2, &pOther);
+        eRc = W32Str_Right(pObj, 2, &pOther);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == WStr_getLength(pOther)) );
-        eRc = WStr_CompareA( pOther, "xG" );
+        XCTAssertTrue( (2 == W32Str_getLength(pOther)) );
+        eRc = W32Str_CompareA( pOther, "xG" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         obj_Release(pOther);
         pOther = OBJ_NIL;
@@ -830,21 +830,21 @@ int         test_wstr_LeftRightMid(
 
 
 
-int         test_wstr_NewFromEnv(
+int         test_w32str_NewFromEnv(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_NewFromEnv("HOME");
+    pObj = W32Str_NewFromEnv("HOME");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_CompareA(pObj, "/Users/bob");
+        eRc = W32Str_CompareA(pObj, "/Users/bob");
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         obj_Release(pObj);
@@ -857,35 +857,35 @@ int         test_wstr_NewFromEnv(
 
 
 
-int         test_wstr_File(
+int         test_w32str_File(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     PATH_DATA   *pPath = OBJ_NIL;
-    WSTR_DATA	*pOther = OBJ_NIL;
+    W32STR_DATA	*pOther = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_NewFromEnv("HOME");
+    pObj = W32Str_NewFromEnv("HOME");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = WStr_CompareA(pObj, "/Users/bob");
+        eRc = W32Str_CompareA(pObj, "/Users/bob");
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        eRc = WStr_AppendA(pObj, "/test.txt");
+        eRc = W32Str_AppendA(pObj, "/test.txt");
         
-        pPath = path_NewFromWStr(pObj);
+        pPath = path_NewFromW32STR(pObj);
         XCTAssertFalse( (OBJ_NIL == pPath) );
         if (pPath) {
-            eRc = WStr_ToUtf8File(pObj, pPath);
+            eRc = W32Str_ToUtf8File(pObj, pPath);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            pOther = WStr_NewFromUtf8File(pPath);
+            pOther = W32Str_NewFromUtf8File(pPath);
             XCTAssertFalse( (OBJ_NIL == pOther) );
             if (pOther) {
-                eRc = WStr_Compare(pObj, pOther);
+                eRc = W32Str_Compare(pObj, pOther);
                 XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -904,61 +904,61 @@ int         test_wstr_File(
 
 
 
-int         test_wstr_Trim(
+int         test_w32str_Trim(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     int32_t     chrW32 = 'x';
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_Alloc( );
+    pObj = W32Str_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = WStr_Init( pObj );
+    pObj = W32Str_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
         // Leading Spaces
-        eRc = WStr_AppendA( pObj, "   bb" );
+        eRc = W32Str_AppendA( pObj, "   bb" );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (5 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_Trim( pObj );
+        eRc = W32Str_Trim( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == WStr_getLength(pObj)) );
-        eRc = WStr_CompareA( pObj, "bb" );
+        XCTAssertTrue( (2 == W32Str_getLength(pObj)) );
+        eRc = W32Str_CompareA( pObj, "bb" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
         // Trailing spaces
-        eRc = WStr_AppendA( pObj, "   " );
+        eRc = W32Str_AppendA( pObj, "   " );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (5 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (5 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_Trim( pObj );
+        eRc = W32Str_Trim( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == WStr_getLength(pObj)) );
-        eRc = WStr_CompareA( pObj, "bb" );
+        XCTAssertTrue( (2 == W32Str_getLength(pObj)) );
+        eRc = W32Str_CompareA( pObj, "bb" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Truncate( pObj, 0 );
+        eRc = W32Str_Truncate( pObj, 0 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (0 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == W32Str_getLength(pObj)) );
 
         // Leading and Trailing spaces
-        eRc = WStr_AppendA( pObj, "   bb   " );
+        eRc = W32Str_AppendA( pObj, "   bb   " );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (8 == WStr_getLength(pObj)) );
+        XCTAssertTrue( (8 == W32Str_getLength(pObj)) );
         
-        eRc = WStr_Trim( pObj );
+        eRc = W32Str_Trim( pObj );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (2 == WStr_getLength(pObj)) );
-        eRc = WStr_CompareA( pObj, "bb" );
+        XCTAssertTrue( (2 == W32Str_getLength(pObj)) );
+        eRc = W32Str_CompareA( pObj, "bb" );
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         
-        eRc = WStr_Truncate(pObj, 0);
+        eRc = W32Str_Truncate(pObj, 0);
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
         eRc = array_Get((ARRAY_DATA *)pObj, 1, 1, &chrW32);
         XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
@@ -974,12 +974,12 @@ int         test_wstr_Trim(
 
 
 
-int         test_wstr_EscapeForC(
+int         test_w32str_EscapeForC(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA	*pObj = OBJ_NIL;
+    W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     uint32_t    i;
     W32CHR_T    chrW32;
@@ -988,85 +988,85 @@ int         test_wstr_EscapeForC(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = WStr_NewA("\\");
+    pObj = W32Str_NewA("\\");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 1) );
-        chrW32 = WStr_CharGetW32(pObj, 1);
+        chrW32 = W32Str_CharGetW32(pObj, 1);
         XCTAssertTrue( (chrW32 == '\\') );
-        pChrW32 = WStr_getData(pObj);
+        pChrW32 = W32Str_getData(pObj);
         XCTAssertTrue( (*pChrW32 == '\\') );
         XCTAssertTrue( (*(pChrW32+1) == 0) );
-        eRc = WStr_EscapeForC(pObj);
+        eRc = W32Str_EscapeForC(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 2) );
-        chrW32 = WStr_CharGetW32(pObj, 1);
+        chrW32 = W32Str_CharGetW32(pObj, 1);
         XCTAssertTrue( (chrW32 == '\\') );
-        chrW32 = WStr_CharGetW32(pObj, 2);
+        chrW32 = W32Str_CharGetW32(pObj, 2);
         XCTAssertTrue( (chrW32 == '\\') );
-        pChrW32 = WStr_getData(pObj);
+        pChrW32 = W32Str_getData(pObj);
         XCTAssertTrue( (*pChrW32 == '\\') );
         XCTAssertTrue( (*(pChrW32+1) == '\\') );
         XCTAssertTrue( (*(pChrW32+2) == '\0') );
-        //fprintf(stderr, "string=(%d)\"%ls\"\n", i, WStr_getData(pObj) );
-        eRc = WStr_CompareA(pObj, "\\\\");
+        //fprintf(stderr, "string=(%d)\"%ls\"\n", i, W32Str_getData(pObj) );
+        eRc = W32Str_CompareA(pObj, "\\\\");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    pObj = WStr_NewA("\"a\"");
+    pObj = W32Str_NewA("\"a\"");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 3) );
-        eRc = WStr_EscapeForC(pObj);
+        eRc = W32Str_EscapeForC(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 5) );
-        fprintf(stderr, "string=(%d)\"%ls\"\n",i,WStr_getData(pObj));
-        eRc = WStr_CompareA(pObj, "\\\"a\\\"");
+        fprintf(stderr, "string=(%d)\"%ls\"\n",i,W32Str_getData(pObj));
+        eRc = W32Str_CompareA(pObj, "\\\"a\\\"");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    pObj = WStr_NewA("\t\t\n");
+    pObj = W32Str_NewA("\t\t\n");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 3) );
-        eRc = WStr_EscapeForC(pObj);
+        eRc = W32Str_EscapeForC(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 6) );
-        fprintf(stderr, "string=(%d)\"%ls\"\n",i,WStr_getData(pObj));
-        eRc = WStr_CompareA(pObj, "\\t\\t\\n");
+        fprintf(stderr, "string=(%d)\"%ls\"\n",i,W32Str_getData(pObj));
+        eRc = W32Str_CompareA(pObj, "\\t\\t\\n");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    pObj = WStr_NewA("\n  \n");
+    pObj = W32Str_NewA("\n  \n");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 4) );
-        eRc = WStr_EscapeForC(pObj);
+        eRc = W32Str_EscapeForC(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        i = WStr_getLength( pObj );
+        i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 6) );
-        fprintf(stderr, "string=(%d)\"%ls\"\n",i,WStr_getData(pObj));
-        eRc = WStr_CompareA(pObj, "\\n  \\n");
+        fprintf(stderr, "string=(%d)\"%ls\"\n",i,W32Str_getData(pObj));
+        eRc = W32Str_CompareA(pObj, "\\n  \\n");
         XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
         
         obj_Release(pObj);
@@ -1079,23 +1079,23 @@ int         test_wstr_EscapeForC(
 
 
 
-int         test_WStr_CRC01(
+int         test_w32str_CRC01(
     const
     char        *pTestName
 )
 {
-    WSTR_DATA   *pObj = OBJ_NIL;
+    W32STR_DATA   *pObj = OBJ_NIL;
     uint32_t    crc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = WStr_NewA("abc");
+    pObj = W32Str_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abc")) );
+    XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "abc")) );
     if (pObj) {
         
-        crc = WStr_getCrcIEEE(pObj);
+        crc = W32Str_getCrcIEEE(pObj);
         fprintf(stderr, "\tcrc(\"abc\") = %u\n", crc);
         XCTAssertTrue( (3785294476 == crc) );
         
@@ -1103,13 +1103,13 @@ int         test_WStr_CRC01(
         pObj = OBJ_NIL;
     }
     
-    pObj = WStr_NewA("");
+    pObj = W32Str_NewA("");
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    XCTAssertTrue( (0 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "")) );
+    XCTAssertTrue( (0 == W32Str_getLength(pObj)) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "")) );
     if (pObj) {
         
-        crc = WStr_getCrcIEEE(pObj);
+        crc = W32Str_getCrcIEEE(pObj);
         fprintf(stderr, "\tcrc(\"\") = %u\n", crc);
         //XCTAssertTrue( (2807916624 == crc) );
         
@@ -1123,33 +1123,33 @@ int         test_WStr_CRC01(
 
 
 
-int         test_WStr_JSON01(
+int         test_w32str_JSON01(
     const
     char        *pTestName
 )
 {
     ERESULT     eRc;
-    WSTR_DATA   *pObj = OBJ_NIL;
+    W32STR_DATA   *pObj = OBJ_NIL;
     //uint32_t    crc;
     ASTR_DATA   *pJson = OBJ_NIL;
-    WSTR_DATA   *pJsonOut = OBJ_NIL;
+    W32STR_DATA   *pJsonOut = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = WStr_NewA("abc");
+    pObj = W32Str_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    XCTAssertTrue( (3 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "abc")) );
+    XCTAssertTrue( (3 == W32Str_getLength(pObj)) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "abc")) );
     if (pObj) {
         
-        pJson = WStr_ToJSON(pObj);
+        pJson = W32Str_ToJSON(pObj);
         fprintf(stderr, "\tJSON(\"abc\") = %s\n", AStr_getData(pJson));
-        eRc = WStr_NewFromJSONString(pJson, &pJsonOut);
+        eRc = W32Str_NewFromJSONString(pJson, &pJsonOut);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         if (pJsonOut) {
             XCTAssertFalse( (OBJ_NIL == pJsonOut) );
-            XCTAssertTrue( (3 == WStr_getLength(pJsonOut)) );
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pJsonOut, "abc")) );
+            XCTAssertTrue( (3 == W32Str_getLength(pJsonOut)) );
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pJsonOut, "abc")) );
             obj_Release(pJsonOut);
             pJsonOut = OBJ_NIL;
         }
@@ -1160,20 +1160,20 @@ int         test_WStr_JSON01(
         pObj = OBJ_NIL;
     }
     
-    pObj = WStr_NewA("");
+    pObj = W32Str_NewA("");
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    XCTAssertTrue( (0 == WStr_getLength(pObj)) );
-    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pObj, "")) );
+    XCTAssertTrue( (0 == W32Str_getLength(pObj)) );
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pObj, "")) );
     if (pObj) {
         
-        pJson = WStr_ToJSON(pObj);
+        pJson = W32Str_ToJSON(pObj);
         fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJson));
-        eRc = WStr_NewFromJSONString(pJson, &pJsonOut);
+        eRc = W32Str_NewFromJSONString(pJson, &pJsonOut);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertFalse( (OBJ_NIL == pJsonOut) );
         if (pJsonOut) {
-            XCTAssertTrue( (0 == WStr_getLength(pJsonOut)) );
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == WStr_CompareA(pJsonOut, "")) );
+            XCTAssertTrue( (0 == W32Str_getLength(pJsonOut)) );
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32Str_CompareA(pJsonOut, "")) );
             obj_Release(pJsonOut);
             pJsonOut = OBJ_NIL;
         }
@@ -1191,27 +1191,27 @@ int         test_WStr_JSON01(
 
 
 
-TINYTEST_START_SUITE(test_wstr);
-    TINYTEST_ADD_TEST(test_WStr_JSON01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_WStr_CRC01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_EscapeForC,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_Trim,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_File,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_NewFromEnv,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_LeftRightMid,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_CharFindPrev,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_CharFindNext,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_Append,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_AppendChr,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_CompareW,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_CompareA,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_Compare,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_AssignCopy,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_Span,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_wstr_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_w32str);
+    TINYTEST_ADD_TEST(test_w32str_JSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_CRC01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_EscapeForC,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_Trim,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_File,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_NewFromEnv,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_LeftRightMid,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_CharFindPrev,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_CharFindNext,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_Append,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_AppendChr,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_CompareW,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_CompareA,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_Compare,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_AssignCopy,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_Span,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_wstr);
+TINYTEST_MAIN_SINGLE_SUITE(test_w32str);
 
 
 

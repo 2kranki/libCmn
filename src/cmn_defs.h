@@ -198,6 +198,8 @@ extern "C" {
         OBJ_IDENT_CLOOPT_CLASS,
         OBJ_IDENT_CMDUTL,               // Command Utilities
         OBJ_IDENT_CMDUTL_CLASS,
+        OBJ_IDENT_COMPILER,
+        OBJ_IDENT_COMPILER_CLASS,
         OBJ_IDENT_CON,                  // Console Object
         OBJ_IDENT_CON_CLASS,
         OBJ_IDENT_CON_FIO,              // Console File I/O Object
@@ -246,6 +248,8 @@ extern "C" {
         OBJ_IDENT_FILE_CLASS,
         OBJ_IDENT_FILEIO,               // File I/O
         OBJ_IDENT_FILEIO_CLASS,
+        OBJ_IDENT_GENOBJ,               // Generate an Object
+        OBJ_IDENT_GENOBJ_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
         OBJ_IDENT_HASH32,
@@ -266,6 +270,8 @@ extern "C" {
         OBJ_IDENT_LISTDL_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching
         OBJ_IDENT_LRU_CLASS,
+        OBJ_IDENT_MACRO,
+        OBJ_IDENT_MACRO_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMOSX,               // Memory Debug for OSX
@@ -326,6 +332,8 @@ extern "C" {
         OBJ_IDENT_OSC_CLASS,
         OBJ_IDENT_PACKET,
         OBJ_IDENT_PACKET_CLASS,
+        OBJ_IDENT_PARSER,
+        OBJ_IDENT_PARSER_CLASS,
         OBJ_IDENT_PASSTR,
         OBJ_IDENT_PASSTR_CLASS,
         OBJ_IDENT_PATH,                 // File Path
@@ -334,6 +342,14 @@ extern "C" {
         OBJ_IDENT_PBXPROJ_CLASS,
         OBJ_IDENT_PLIST,                // PLIST Parser
         OBJ_IDENT_PLIST_CLASS,
+        OBJ_IDENT_PPLEX,                // Preprocessor Lexical Constants
+        OBJ_IDENT_PPLEX_CLASS,
+        OBJ_IDENT_PPLEX1,               // Preprocessor Lexical Scanner - Phase 1
+        OBJ_IDENT_PPLEX1_CLASS,
+        OBJ_IDENT_PPLEX2,               // Preprocessor Lexical Scanner - Phase 2
+        OBJ_IDENT_PPLEX2_CLASS,
+        OBJ_IDENT_PPLEX3,               // Preprocessor Lexical Scanner - Phase 3
+        OBJ_IDENT_PPLEX3_CLASS,
         OBJ_IDENT_PRODCONS,             // Producer/Consumer Pattern
         OBJ_IDENT_PRODCONS_CLASS,
         OBJ_IDENT_PROTOCOL,             // Protocol LAYER which uses RECEIVE and TRANSMIT
@@ -370,12 +386,20 @@ extern "C" {
         OBJ_IDENT_SIDX_CLASS,
         OBJ_IDENT_SRC,
         OBJ_IDENT_SRC_CLASS,
+        OBJ_IDENT_SRCERROR,             // Source Error Message
+        OBJ_IDENT_SRCERROR_CLASS,
+        OBJ_IDENT_SRCERRORS,            // Source Error Messages
+        OBJ_IDENT_SRCERRORS_CLASS,
         OBJ_IDENT_SRCFILE,
         OBJ_IDENT_SRCFILE_CLASS,
         OBJ_IDENT_SRCFILES,
         OBJ_IDENT_SRCFILES_CLASS,
         OBJ_IDENT_SRCLOC,               // Source Location (File, Line, Col)
         OBJ_IDENT_SRCLOC_CLASS,
+        OBJ_IDENT_SYMENTRY,             // Symbol Table Entry
+        OBJ_IDENT_SYMENTRY_CLASS,
+        OBJ_IDENT_SYMTABLE,             // Symbol Table
+        OBJ_IDENT_SYMTABLE_CLASS,
         OBJ_IDENT_SZSTRARRAY,           // An Array of szStr's
         OBJ_IDENT_SZSTRARRAY_CLASS,
         OBJ_IDENT_SZHASH,               // Store void data with a char string key
@@ -390,12 +414,16 @@ extern "C" {
         OBJ_IDENT_TERNARY_CLASS,
         OBJ_IDENT_TEXTIN,               // Text Input Class
         OBJ_IDENT_TEXTIN_CLASS,
+        OBJ_IDENT_TEXTOUT,              // Text Output Class
+        OBJ_IDENT_TEXTOUT_CLASS,
         OBJ_IDENT_THREAD,               // Separate Threads with own stack
         OBJ_IDENT_THREAD_CLASS,
         OBJ_IDENT_TIMER,
         OBJ_IDENT_TIMER_CLASS,
         OBJ_IDENT_TOKEN,                // Lexical Token
         OBJ_IDENT_TOKEN_CLASS,
+        OBJ_IDENT_TOKENC,               // Immutable Lexical Token
+        OBJ_IDENT_TOKENC_CLASS,
         OBJ_IDENT_TOKENLIST,            // A List of Lexical Tokens
         OBJ_IDENT_TOKENLIST_CLASS,
         OBJ_IDENT_TRACE,
@@ -430,10 +458,10 @@ extern "C" {
         OBJ_IDENT_VALUE_CLASS,
         OBJ_IDENT_WAV,                  // WAV File
         OBJ_IDENT_WAV_CLASS,
-        OBJ_IDENT_WSTR,
-        OBJ_IDENT_WSTR_CLASS,
-        OBJ_IDENT_WSTRARRAY,            // an Array of Wide Strings
-        OBJ_IDENT_WSTRARRAY_CLASS,
+        OBJ_IDENT_W32STR,
+        OBJ_IDENT_W32STR_CLASS,
+        OBJ_IDENT_W32STRARRAY,            // an Array of Wide Strings
+        OBJ_IDENT_W32STRARRAY_CLASS,
         OBJ_IDENT_W32STRC,
         OBJ_IDENT_W32STRC_CLASS,
         OBJ_IDENT_XML,
@@ -675,17 +703,17 @@ typedef struct u8Array_vtbl_s	{
 } U8ARRAY_VTBL;
 
 
-typedef struct WStr_data_s          WSTR_DATA;
-typedef struct WStr_vtbl_s	{
+typedef struct W32Str_data_s        W32STR_DATA;
+typedef struct W32Str_vtbl_s	{
     OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
     // Put other methods below this as pointers and add their
     // method names to the vtbl definition in WStrC_object.c.
     // Properties:
     // Methods:
     const
-    W32CHR_T *  (*pGetData)(WSTR_DATA *);
-    uint32_t    (*pGetLength)(WSTR_DATA *);
-} WSTR_VTBL;
+    W32CHR_T *  (*pGetData)(W32STR_DATA *);
+    uint32_t    (*pGetLength)(W32STR_DATA *);
+} W32STR_VTBL;
 
 
 typedef struct W32StrC_data_s       W32STRC_DATA;

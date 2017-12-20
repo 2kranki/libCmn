@@ -14,10 +14,7 @@
  *              the tokens back to a file name.
 *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal srcFiles. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	08/06/2015 Generated
@@ -105,6 +102,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ASTRARRAY_DATA * srcFiles_getPaths(
+        SRCFILES_DATA   *this
+    );
+    
+
     bool            srcFiles_getReuse(
         SRCFILES_DATA   *this
     );
@@ -134,16 +136,18 @@ extern "C" {
         SRCFILES_DATA   *this,
         ASTR_DATA       *pStr,          // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs
     );
     
     
-    SRCFILES_DATA * srcFiles_InitWStr(
+    SRCFILES_DATA * srcFiles_InitW32Str(
         SRCFILES_DATA   *this,
-        WSTR_DATA       *pStr,          // Buffer of file data
+        W32STR_DATA     *pStr,          // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs,
         bool            fRemoveNLs

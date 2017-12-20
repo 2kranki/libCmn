@@ -210,8 +210,8 @@ extern "C" {
     
     
     
-    PATH_DATA *     path_NewFromWStr(
-        WSTR_DATA       *pStr
+    PATH_DATA *     path_NewFromW32STR(
+        W32STR_DATA     *pStr
     )
     {
         PATH_DATA       *cbp;
@@ -225,7 +225,7 @@ extern "C" {
         cbp = path_Alloc( );
         cbp = path_Init(cbp);
         if (cbp) {
-            eRc = AStr_AppendStrW32((ASTR_DATA *)cbp, pStr);
+            eRc = AStr_AppendW32Str((ASTR_DATA *)cbp, pStr);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(cbp);
                 cbp = OBJ_NIL;

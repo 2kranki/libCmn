@@ -102,7 +102,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    obj_Class,
+    nodeArray_Class,
     obj_ClassWhoAmI
 };
 
@@ -177,7 +177,7 @@ NODEARRAY_VTBL  nodeArray_Vtbl = {
         (P_OBJ_ASSIGN)nodeArray_Assign,
         NULL,           // (P_OBJ_COMPARE)nodeArray_Compare,
         (P_OBJ_PTR)nodeArray_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
+        (P_OBJ_DEEPCOPY)nodeArray_DeepCopy,
         NULL 			// (P_OBJ_HASH)nodeArray_Hash
     },
 };

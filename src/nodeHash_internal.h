@@ -104,14 +104,6 @@ struct nodeHash_data_s	{
     );
 
 
-    void *          nodeHash_QueryInfo(
-        OBJ_ID          objId,
-        uint32_t        type,
-        const
-        char            *pStr
-    );
-    
-    
 #ifdef NDEBUG
 #else
     bool			nodeHash_Validate(

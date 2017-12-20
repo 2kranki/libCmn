@@ -38,6 +38,9 @@
  *          input look ahead and advance function.  In addition,
  *          you probably want to provide a parse function and
  *          possibly error functions.
+ *  2.      This object requires the use of the Static String table
+ *          for any tokenized strings. Strings may not be self-
+ *          contained within a token.
  *
  * History
  *	09/07/2015 Generated
@@ -160,7 +163,7 @@ extern "C" {
             OBJ_ID          pSrcObj
         );
         
-        WSTR_DATA *     (*pGetString)(
+        W32STR_DATA *   (*pGetString)(
             LEX_DATA        *this
         );
         
@@ -169,24 +172,6 @@ extern "C" {
         );
         
         // Methods:
-        void            (*pError)(
-            LEX_DATA        *this,
-            const
-            char            *pFileName,
-            uint32_t		linnum,
-            uint16_t		colnum,
-            const
-            char			*fmt,
-            ...
-        );
-        
-        void            (*pErrorFatal)(
-            LEX_DATA        *this,
-            const
-            char			*fmt,
-            ...
-        );
-        
         TOKEN_DATA *    (*pInputAdvance)(
             LEX_DATA		*this,
             uint16_t        numChrs
@@ -281,7 +266,7 @@ extern "C" {
     );
     
     
-    WSTR_DATA *     lex_getString(
+    W32STR_DATA *   lex_getString(
         LEX_DATA        *this
     );
     
@@ -317,26 +302,6 @@ extern "C" {
      */
     ERESULT         lex_Restart(
         LEX_DATA        *this
-    );
-    
-    
-    void            lex_Error(
-        LEX_DATA        *this,
-        const
-        char            *pFileName,
-        uint32_t		linnum,
-        uint16_t		colnum,
-        const
-        char			*fmt,
-        ...
-    );
-    
-    
-    void            lex_ErrorFatal(
-        LEX_DATA        *this,
-        const
-        char			*fmt,
-        ...
     );
     
     

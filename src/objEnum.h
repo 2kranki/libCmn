@@ -118,11 +118,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     objEnum_getLastError(
-        OBJENUM_DATA		*this
+    ERESULT         objEnum_getLastError(
+        OBJENUM_DATA    *this
     );
 
 
+    uint32_t        objEnum_getSize(
+        OBJENUM_DATA    *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------

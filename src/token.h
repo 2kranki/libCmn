@@ -8,16 +8,17 @@
  *			Text Token (token)
  * Purpose
  *			This object provides a standardized way of handling
- *          pieces of text parsed from a text string. Internally,
- *          tokens are stored in wide character format to facilitate
- *          searching and text manipulation.
+ *          pieces of text parsed from a text string. Initially,
+ *          tokens consist of individual characters. As they are
+ *          combined into character strings, those strings must
+ *          stored in an external table such as szTbl.
  *
  * Remarks
- *	1.      The file name should remain constant and valid for the
- *          life of this object. The file name is saved in szTbl
- *          internally.
+ *	1.      The file index should remain constant and valid for the
+ *          life of this object.
  *  2.      String Tokens must be unique per string so that they can 
- *          be used in lieu of an actual string.
+ *          be used in lieu of an actual string.  The token is used
+ *          as an index into the shared szTbl.
  *
  * History
  *	05/26/2015 Generated
@@ -58,7 +59,8 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrC.h>
-#include        <WStr.h>
+#include        <srcLoc.h>
+#include        <W32Str.h>
 #include        <W32StrC.h>
 
 
@@ -91,13 +93,10 @@ extern "C" {
     
     typedef enum token_type_e {
         TOKEN_TYPE_UNKNOWN=0,
-        TOKEN_TYPE_OBJECT,
         TOKEN_TYPE_FLOAT,           // double
         TOKEN_TYPE_INTEGER,         // int64_t
-        TOKEN_TYPE_STRTOKEN,        // String Token
-        TOKEN_TYPE_UTF8,            // A string of UTF-8 chars, NUL terminated
-        TOKEN_TYPE_WCHAR,           // A single unicode character
-        TOKEN_TYPE_WSTRING          // A string of unicode chars, NUL terminated
+        TOKEN_TYPE_STRTOKEN,        // String Token for szTbl
+        TOKEN_TYPE_W32CHAR          // A single Unicode character
     } TOKEN_TYPE;
     
     
@@ -131,8 +130,8 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewCharW32(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -141,8 +140,8 @@ extern "C" {
     
     
     TOKEN_DATA *    token_NewInteger(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -160,19 +159,19 @@ extern "C" {
     );
     
    
-    TOKEN_DATA *     token_NewStringW(
-        const
-        char            *pFileName,
+    TOKEN_DATA *     token_NewFromW32STR(
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        WSTR_DATA       *pString
+        W32STR_DATA     *pString
     );
     
     
     TOKEN_DATA *     token_NewStrA(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -181,9 +180,9 @@ extern "C" {
     );
     
     
-    TOKEN_DATA *     token_NewStrW(
-        const
-        char            *pFileName,
+    TOKEN_DATA *     token_NewStrW32(
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -196,20 +195,20 @@ extern "C" {
      Create a new token object with the given parameter of a String Token Number.
      Normally, String Token Numbers are indexes into an szTbl object that will 
      return the string.
-     @param     pFileName pointer to a nul-terminated path character string (optional)
-     @param     lineNo  Line Number for the start of the token
-     @param     colNo   Column Number for the start of the token
-     @param     cls     Token class (see PPLEX.H for examples)
-     @param     token   Token String Number (probably returned by szTbl)
+     @param     fileIndex   index to a file path held in an array (relative to 1) (optional)
+     @param     offset      file offset of first character
+     @param     lineNo      Line Number for the start of the token
+     @param     colNo       Column Number for the start of the token
+     @param     cls         Token class (see PPLEX.H for examples)
+     @param     token       Token String Number (probably returned by szTbl)
      @return    If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
      */
     TOKEN_DATA *     token_NewStrToken(
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
-        const
         uint32_t        token
     );
     
@@ -256,14 +255,13 @@ extern "C" {
     );
     
     
-    const char *    token_getFileName(
+    uint16_t        token_getFileIndex(
         TOKEN_DATA      *this
     );
-    
-    bool            token_setFileName(
+
+    bool            token_setFileIndex(
         TOKEN_DATA      *this,
-        const
-        char            *pValue
+        uint16_t        value
     );
     
     
@@ -297,6 +295,11 @@ extern "C" {
     );
 
 
+    SRCLOC *        token_getLoc(
+        TOKEN_DATA      *this
+    );
+    
+    
     uint16_t        token_getMisc(
         TOKEN_DATA      *this
     );
@@ -307,26 +310,16 @@ extern "C" {
     );
     
     
-    OBJ_ID          token_getObj(
+    int64_t         token_getOffset(
         TOKEN_DATA      *this
     );
     
-    bool            token_setObj(
+    bool            token_setOffset(
         TOKEN_DATA      *this,
-        OBJ_ID          pValue
+        int64_t         value
     );
     
-    
-    WSTR_DATA *     token_getStringW(
-        TOKEN_DATA      *this
-    );
-    
-    bool            token_setStringW(
-        TOKEN_DATA      *this,
-        OBJ_ID          pValue
-    );
-    
-    
+
     uint32_t        token_getStrToken(
         TOKEN_DATA      *this
     );
@@ -337,8 +330,25 @@ extern "C" {
     );
     
     
-    const
-    W32CHR_T *      token_getTextW(
+    /*!
+     Add the string to the shared string table and set up the token
+     as a string token reference.
+     @return    If successful, true; otherwise false.
+     */
+    bool            token_setStrW32(
+        TOKEN_DATA      *this,
+        const
+        W32CHR_T        *pStr
+    );
+    
+    
+    /*!
+     Get the token's data as an AStr object.
+     @return    If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     token_getTextA(
         TOKEN_DATA      *this
     );
 
@@ -357,7 +367,18 @@ extern "C" {
     );
     
     
+    /*!
+     Add the string to the shared string table and set up the token
+     as a string token reference.
+     @return    If successful, true; otherwise false.
+     */
+    bool            token_setW32STR(
+        TOKEN_DATA      *this,
+        W32STR_DATA     *pStr
+        );
     
+    
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -376,18 +397,13 @@ extern "C" {
      Compare this token with the other specified. Only
      the type and the actual value are compared.
      @return
-        ERESULT_SUCCESS_LESS_THAN    (this < pOther)
-        ERESULT_SUCCESS_EQUAL        (this == pOther)
-        ERESULT_SUCCESS_GREATER_THAN (this > pOther)
+        ERESULT_SUCCESS_UNEQUAL     (this < pOther)
+        ERESULT_SUCCESS_EQUAL       (this == pOther)
+        ERESULT_SUCCESS_UNEQUAL     (this > pOther)
      */
     ERESULT         token_Compare(
         TOKEN_DATA       *this,
         TOKEN_DATA       *pOther
-    );
-    
-    
-    ERESULT         token_ConvertToStringToken(
-        TOKEN_DATA      *this
     );
     
     
@@ -399,40 +415,14 @@ extern "C" {
     );
 
     
-    void            token_ErrorFLC(
-        TOKEN_DATA      *this,
-        const
-        char			*fmt,
-        ...
-    );
-    
-    
-    void            token_ErrorFatalFLC(
-        TOKEN_DATA      *this,
-        const
-        char			*fmt,
-        ...
-    );
-    
-    
     TOKEN_DATA *     token_Init(
         TOKEN_DATA       *this
     );
 
-    TOKEN_DATA *     token_InitCharA(
-        TOKEN_DATA      *this,
-        const
-        char            *pFileName,
-        uint32_t        lineNo,
-        uint16_t        colNo,
-        int32_t         cls,
-        W32CHR_T        chr
-    );
-    
     TOKEN_DATA *     token_InitCharW32(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -441,18 +431,19 @@ extern "C" {
     
     TOKEN_DATA *    token_InitInteger(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
         int64_t         integer
     );
 
+#ifdef XYZZY
     TOKEN_DATA *     token_InitObj(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -461,8 +452,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStringA(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -471,8 +462,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStringW(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -481,8 +472,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStrA(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -492,8 +483,8 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStrW(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -506,7 +497,8 @@ extern "C" {
      Normally, String Token Numbers are indexes into an szTbl object that
      will return the string.
      @param     this    TOKEN_DATA object pointer (released if an error occurs)
-     @param     pFileName pointer to a nul-terminated path character string
+     @param     fileIndex   index to a file path held in an array (relative to 1) (optional)
+     @param     offset      file offset of first character
      @param     lineNo  Line Number for the start of the token
      @param     colNo   Column Number for the start of the token
      @param     cls     Token class (see PPLEX.H for examples)
@@ -515,25 +507,21 @@ extern "C" {
      */
     TOKEN_DATA *    token_InitStrToken(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
         const
         uint32_t        token
     );
+#endif
     
 
-    void            token_ReleaseDataIfObj(
-        TOKEN_DATA      *this
-    );
-    
-    
-    ERESULT     token_SetupCharW(
+    ERESULT     token_SetupCharW32(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -550,13 +538,14 @@ extern "C" {
      ERESULT      eRc = token_SetFnLCC(this,"zyzzy",256,16,CLASS_TERMINAL);
      @endcode
      @param     this    TOKEN_DATA object pointer
-     @param     pFileName  pointer to a nul-terminated path character string
+     @param     fileIndex   index to a file path held in an array (relative to 1) (optional)
+     @param     offset      file offset of first character
      @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_* error code
      */
     ERESULT         token_SetupFnLCC(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls
@@ -565,8 +554,8 @@ extern "C" {
     
     ERESULT     token_SetupStrW(
         TOKEN_DATA      *this,
-        const
-        char            *pFileName,
+        uint16_t        fileIndex,
+        int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo,
         int32_t         cls,
@@ -615,20 +604,6 @@ extern "C" {
         int             indent
     );
 
-    
-    /*!
-     Create a string of the token data in string format if possible.
-     This returns just the data, not any other fields such a filename,
-     line or col.
-     @return    If successful, a character string which must be freed
-                using mem_Free(), otherwise NULL.
-     @warning   Remember to release the returned character string using
-                mem_Free();.
-     */
-    char *          token_ToStringA(
-        TOKEN_DATA      *this
-    );
-    
     
     
 

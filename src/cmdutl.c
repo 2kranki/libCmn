@@ -46,9 +46,10 @@
 #include <AStr.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
+#include <srcErrors.h>
 #include <trace.h>
 #include <utf8.h>
-#include <WStr.h>
+#include <W32Str.h>
 #include <stdio.h>
 
 
@@ -215,8 +216,8 @@ extern "C" {
                 break;
 #endif
                 
-            case OBJ_IDENT_WSTR:
-                wrkChr = WStr_CharGetW32(this->pWStr, ++this->fileOffset );
+            case OBJ_IDENT_W32STR:
+                wrkChr = W32Str_CharGetW32(this->pWStr, ++this->fileOffset );
                 break;
                 
             default:
@@ -322,6 +323,13 @@ extern "C" {
         
         pArray = nodeArray_New( );
         if (pArray == OBJ_NIL) {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
                 path_getData(this->pPath),
@@ -329,6 +337,7 @@ extern "C" {
                 this->colNo,
                 "Out of Memory"
             );
+#endif
             return pNode;
         }
         
@@ -356,6 +365,13 @@ extern "C" {
                 obj_Release(pChild);
             }
             else {
+                //FIXME: Add proper error
+#ifdef XYZZY
+                srcErrors_AddFatalFromToken(
+                                            OBJ_NIL,
+                                            pToken,
+                                            "Expecting ':'"
+                                            );
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
                     path_getData(this->pPath),
@@ -365,6 +381,7 @@ extern "C" {
                     chr,
                     chr
                 );
+#endif
             }
         }
         
@@ -374,6 +391,13 @@ extern "C" {
             cmdutl_InputAdvance(this, 1);
         }
         else {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
                 path_getData(this->pPath),
@@ -383,6 +407,7 @@ extern "C" {
                 chr,
                 chr
             );
+#endif
         }
         
         pNode = node_NewWithUTF8("array", pArray);
@@ -526,6 +551,13 @@ extern "C" {
                         }
                         else {
                             chr = cmdutl_InputLookAhead(this, 1);
+                            //FIXME: Add proper error
+#ifdef XYZZY
+                            srcErrors_AddFatalFromToken(
+                                                        OBJ_NIL,
+                                                        pToken,
+                                                        "Expecting ':'"
+                                                        );
                             eResult_ErrorFatalFLC(
                                 eResult_Shared(),
                                 path_getData(this->pPath),
@@ -535,12 +567,20 @@ extern "C" {
                                 chr,
                                 chr
                             );
+#endif
                         }
                     }
                     break;
                     
                 default:
                     chr = cmdutl_InputLookAhead(this, 1);
+                    //FIXME: Add proper error
+#ifdef XYZZY
+                    srcErrors_AddFatalFromToken(
+                                                OBJ_NIL,
+                                                pToken,
+                                                "Expecting ':'"
+                                                );
                     eResult_ErrorFatalFLC(
                                           eResult_Shared(),
                                           path_getData(this->pPath),
@@ -550,6 +590,7 @@ extern "C" {
                                           chr,
                                           chr
                     );
+#endif
                     break;
             }
         }
@@ -768,6 +809,13 @@ extern "C" {
         cmdutl_ParseWS(this);
         if(!cmdutl_ParseEOF(this)) {
             chr = cmdutl_InputLookAhead(this, 1);
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
                 path_getData(this->pPath),
@@ -777,6 +825,7 @@ extern "C" {
                 chr,
                 chr
             );
+#endif
         }
         
         return pNode;
@@ -842,6 +891,13 @@ extern "C" {
                     pChild = OBJ_NIL;
                 }
                 else {
+                    //FIXME: Add proper error
+#ifdef XYZZY
+                    srcErrors_AddFatalFromToken(
+                                                OBJ_NIL,
+                                                pToken,
+                                                "Expecting ':'"
+                                                );
                     eResult_ErrorFatalFLC(
                         eResult_Shared(),
                         path_getData(this->pPath),
@@ -851,6 +907,7 @@ extern "C" {
                         chr,
                         chr
                     );
+#endif
                 }
             }
         }
@@ -861,6 +918,13 @@ extern "C" {
             cmdutl_InputAdvance(this, 1);
         }
         else {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
                 path_getData(this->pPath),
@@ -870,6 +934,7 @@ extern "C" {
                 chr,
                 chr
             );
+#endif
             obj_Release(pNode);
             pNode = OBJ_NIL;
             return pNode;
@@ -928,6 +993,13 @@ extern "C" {
                 pNode = node_NewWithUTF8("true", pTrue);
             }
             else {
+                //FIXME: Add proper error
+#ifdef XYZZY
+                srcErrors_AddFatalFromToken(
+                                            OBJ_NIL,
+                                            pToken,
+                                            "Expecting ':'"
+                                            );
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
                     path_getData(this->pPath),
@@ -937,6 +1009,7 @@ extern "C" {
                     chr,
                     chr
                 );
+#endif
             }
         }
         
@@ -999,6 +1072,13 @@ extern "C" {
             if (cmdutl_ParseDigit0To9(this) > 0)
                 ;
             else {
+                //FIXME: Add proper error
+#ifdef XYZZY
+                srcErrors_AddFatalFromToken(
+                                            OBJ_NIL,
+                                            pToken,
+                                            "Expecting ':'"
+                                            );
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
                     path_getData(this->pPath),
@@ -1008,6 +1088,7 @@ extern "C" {
                     chr,
                     chr
                 );
+#endif
             }
             while (cmdutl_ParseDigit0To9(this) > 0) {
             }
@@ -1024,6 +1105,13 @@ extern "C" {
             if (cmdutl_ParseDigit0To9(this) > 0)
                 ;
             else {
+                //FIXME: Add proper error
+#ifdef XYZZY
+                srcErrors_AddFatalFromToken(
+                                            OBJ_NIL,
+                                            pToken,
+                                            "Expecting ':'"
+                                            );
                 eResult_ErrorFatalFLC(
                     eResult_Shared(),
                     path_getData(this->pPath),
@@ -1033,6 +1121,7 @@ extern "C" {
                     chr,
                     chr
                 );
+#endif
             }
             while (cmdutl_ParseDigit0To9(this) > 0) {
             }
@@ -1091,6 +1180,13 @@ extern "C" {
             cmdutl_InputAdvance(this, 1);
         }
         else {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
                 path_getData(this->pPath),
@@ -1100,6 +1196,7 @@ extern "C" {
                 chr,
                 chr
             );
+#endif
             obj_Release(pNode);
             pNode = OBJ_NIL;
             return OBJ_NIL;
@@ -1107,6 +1204,13 @@ extern "C" {
 
         pData = cmdutl_ParseValue(this);
         if (pData == OBJ_NIL) {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
             eResult_ErrorFatalFLC(
                 eResult_Shared(),
                 path_getData(this->pPath),
@@ -1114,6 +1218,7 @@ extern "C" {
                 this->colNo,
                 "Expecting a \"value\""
             );
+#endif
             obj_Release(pName);
             return OBJ_NIL;
         }
@@ -1265,7 +1370,7 @@ extern "C" {
         
         for (;;) {
             chr = cmdutl_InputLookAhead(cbp, 1);
-            fRc = WStr_IsWhiteSpaceW32(chr);
+            fRc = W32Str_IsWhiteSpaceW32(chr);
             if( fRc ) {
                 cmdutl_InputAdvance(cbp, 1);
             }
@@ -1310,30 +1415,30 @@ extern "C" {
     //                C o n v e r t  A r g c  t o  W S t r
     //---------------------------------------------------------------
     
-    WSTR_DATA *     cmdutl_ConvertArgcToWStr(
+    W32STR_DATA *   cmdutl_ConvertArgcToWStr(
         int             argc,
         const
         char            *argv[]
     )
     {
         int             i;
-        WSTR_DATA       *pStr = OBJ_NIL;
+        W32STR_DATA     *pStr = OBJ_NIL;
         ERESULT         eRc;
         
-        pStr = WStr_New();
+        pStr = W32Str_New();
         for (i=0; i<argc; ++i) {
-            eRc = WStr_AppendA(pStr, argv[i]);
+            eRc = W32Str_AppendA(pStr, argv[i]);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pStr);
                 return OBJ_NIL;
             }
-            eRc = WStr_AppendCharW32(pStr, 1, ' ');
+            eRc = W32Str_AppendCharW32(pStr, 1, ' ');
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pStr);
                 return OBJ_NIL;
             }
         }
-        eRc = WStr_AppendCharW32(pStr, 1, '\n');
+        eRc = W32Str_AppendCharW32(pStr, 1, '\n');
         
         // Return to caller.
         return pStr;
@@ -1358,8 +1463,8 @@ extern "C" {
     
     
     
-    CMDUTL_DATA *   cmdutl_NewWStr(
-        WSTR_DATA       *pWStr,         // Buffer of file data
+    CMDUTL_DATA *   cmdutl_NewW32Str(
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,         // Program Path (Arg[0])
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -1368,7 +1473,7 @@ extern "C" {
         
         this = cmdutl_Alloc( );
         if (this) {
-            this = cmdutl_InitWStr( this, pWStr, pPath, tabSize );
+            this = cmdutl_InitW32Str( this, pWStr, pPath, tabSize );
         }
         return( this );
     }
@@ -1535,7 +1640,7 @@ extern "C" {
                 }
                 break;
                 
-            case OBJ_IDENT_WSTR:
+            case OBJ_IDENT_W32STR:
                 if (cbp->pWStr) {
                     obj_Release(cbp->pWStr);
                     cbp->pWStr = OBJ_NIL;
@@ -1630,8 +1735,8 @@ extern "C" {
 
      
 
-    CMDUTL_DATA *     cmdutl_InitFile(
-        CMDUTL_DATA       *cbp,
+    CMDUTL_DATA *   cmdutl_InitFile(
+        CMDUTL_DATA     *cbp,
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -1679,8 +1784,8 @@ extern "C" {
     
     
     
-    CMDUTL_DATA *     cmdutl_InitAStr(
-        CMDUTL_DATA       *cbp,
+    CMDUTL_DATA *   cmdutl_InitAStr(
+        CMDUTL_DATA     *cbp,
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
@@ -1728,9 +1833,9 @@ extern "C" {
     }
     
     
-    CMDUTL_DATA *     cmdutl_InitWStr(
-        CMDUTL_DATA       *cbp,
-        WSTR_DATA       *pWStr,         // Buffer of file data
+    CMDUTL_DATA *   cmdutl_InitW32Str(
+        CMDUTL_DATA     *cbp,
+        W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -1758,7 +1863,7 @@ extern "C" {
         cbp->tabSize = tabSize;
         
         // Open the file.
-        cbp->inputType = OBJ_IDENT_WSTR;
+        cbp->inputType = OBJ_IDENT_W32STR;
         //obj_Retain(pWStr);    // retained above
         cbp->pWStr = pWStr;
         cbp->fileOffset = 0;
