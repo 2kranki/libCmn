@@ -64,11 +64,6 @@ OBJ_INFO        hex_Info;            // Forward Reference
 
 
 
-OBJ_ID          hex_Class(
-    void
-);
-
-
 
 static
 bool            hex_ClassIsKindOf(

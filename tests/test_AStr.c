@@ -221,7 +221,7 @@ int         test_AStr_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -314,7 +314,7 @@ int         test_AStr_AppendBig(
     obj_Release(pLowerA);
     pLowerA = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -345,7 +345,7 @@ int         test_AStr_AppendPrint01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -390,7 +390,7 @@ int         test_AStr_AssignCopy(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -445,7 +445,7 @@ int         test_AStr_CharFindNext(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -490,7 +490,7 @@ int         test_AStr_CharFindPrev(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -524,7 +524,7 @@ int         test_AStr_CompareRight(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -573,7 +573,7 @@ int         test_AStr_File(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -604,7 +604,7 @@ int         test_AStr_Hex01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -636,7 +636,7 @@ int         test_AStr_Hex02(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -672,7 +672,7 @@ int         test_AStr_Insert01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -723,7 +723,7 @@ int         test_AStr_LeftMidRight(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -764,7 +764,7 @@ int         test_AStr_NewParenthesized(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -800,7 +800,7 @@ int         test_AStr_Remove01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -863,7 +863,7 @@ int         test_AStr_Trim(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -907,7 +907,7 @@ int         test_AStr_ToChrCon01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -951,7 +951,7 @@ int         test_AStr_CRC01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -962,59 +962,80 @@ int         test_AStr_JSON01(
     char        *pTestName
 )
 {
-    ERESULT     eRc;
+    //ERESULT     eRc;
     ASTR_DATA   *pObj = OBJ_NIL;
-    uint32_t    crc;
-    ASTR_DATA   *pJson = OBJ_NIL;
-    ASTR_DATA   *pJsonOut = OBJ_NIL;
+    ASTR_DATA   *pJsonStr = OBJ_NIL;
+    ASTR_DATA   *pJsonStrOut = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pObj = AStr_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (1 == obj_getRetainCount(pObj)) );
     XCTAssertTrue( (3 == AStr_getLength(pObj)) );
     XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))) );
     if (pObj) {
         
-        pJson = AStr_ToJSON(pObj);
-        fprintf(stderr, "\tJSON(\"abc\") = %s\n", AStr_getData(pJson));
-        eRc = AStr_NewFromJSONString(pJson, &pJsonOut);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertFalse( (OBJ_NIL == pJsonOut) );
-        XCTAssertTrue( (3 == AStr_getLength(pJsonOut)) );
-        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pJsonOut))) );
-        obj_Release(pJsonOut);
-        pJsonOut = OBJ_NIL;
-        obj_Release(pJson);
-        pJson = OBJ_NIL;
+        pJsonStr = AStr_ToJSON(pObj);
+        fprintf(stderr, "\tJSON(\"abc\") = (%p) %s\n", pJsonStr, AStr_getData(pJsonStr));
+        pJsonStrOut = AStr_NewFromJSONString(pJsonStr);
+        XCTAssertFalse( (OBJ_NIL == pJsonStrOut) );
+        fprintf(stderr, "\tJSON_OUT(\"abc\") = (%p) %s\n", pJsonStrOut, AStr_getData(pJsonStrOut));
+        XCTAssertTrue( (3 == AStr_getLength(pJsonStrOut)) );
+        XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pJsonStrOut))) );
+        XCTAssertTrue( (1 == obj_getRetainCount(pJsonStrOut)) );
+        obj_Release(pJsonStrOut);
+        pJsonStrOut = OBJ_NIL;
+        XCTAssertTrue( (1 == obj_getRetainCount(pJsonStr)) );
+        obj_Release(pJsonStr);
+        pJsonStr = OBJ_NIL;
 
+        XCTAssertTrue( (1 == obj_getRetainCount(pObj)) );
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+    int         test_AStr_JSON02(
+        const
+        char        *pTestName
+    )
+    {
+        //ERESULT     eRc;
+        ASTR_DATA   *pObj = OBJ_NIL;
+        ASTR_DATA   *pJsonStr = OBJ_NIL;
+        ASTR_DATA   *pJsonStrOut = OBJ_NIL;
+        
+        fprintf(stderr, "Performing: %s\n", pTestName);
+        
     pObj = AStr_NewA("");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     XCTAssertTrue( (0 == AStr_getLength(pObj)) );
     XCTAssertTrue( (0 == strcmp("", AStr_getData(pObj))) );
     if (pObj) {
         
-        pJson = AStr_ToJSON(pObj);
-        fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJson));
-        eRc = AStr_NewFromJSONString(pJson, &pJsonOut);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertFalse( (OBJ_NIL == pJsonOut) );
-        XCTAssertTrue( (0 == AStr_getLength(pJsonOut)) );
-        XCTAssertTrue( (0 == strcmp("", AStr_getData(pJsonOut))) );
-        obj_Release(pJsonOut);
-        pJsonOut = OBJ_NIL;
-        obj_Release(pJson);
-        pJson = OBJ_NIL;
+        pJsonStr = AStr_ToJSON(pObj);
+        fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJsonStr));
+        pJsonStrOut = AStr_NewFromJSONString(pJsonStr);
+        XCTAssertFalse( (OBJ_NIL == pJsonStrOut) );
+        XCTAssertTrue( (0 == AStr_getLength(pJsonStrOut)) );
+        XCTAssertTrue( (0 == strcmp("", AStr_getData(pJsonStrOut))) );
+        obj_Release(pJsonStrOut);
+        pJsonStrOut = OBJ_NIL;
+        obj_Release(pJsonStr);
+        pJsonStr = OBJ_NIL;
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -1071,7 +1092,7 @@ int             test_AStr_Match01(
         pStr = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -1080,6 +1101,7 @@ int             test_AStr_Match01(
 
 TINYTEST_START_SUITE(test_AStr);
     TINYTEST_ADD_TEST(test_AStr_Match01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_JSON02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_CRC01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_ToChrCon01,setUp,tearDown);

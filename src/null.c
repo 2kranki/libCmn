@@ -79,10 +79,14 @@ extern "C" {
     )
     {
         NULL_DATA       *this = &singleton;
-        //uint32_t        cbSize = sizeof(NULL_DATA);
+        uint32_t        cbSize = sizeof(NULL_DATA);
         
         // Fake Obj initialization.
-        memset(this, 0, sizeof(NULL_DATA));
+        memset(this, 0, cbSize);
+        obj_setVtbl(this, obj_StaticVtblShared());
+        obj_setIdent(this, OBJ_IDENT_OBJ);
+        obj_setSize(this, cbSize);
+        obj_setRetainCount(this, 1);
         
         // Return to caller.
         return this;
@@ -247,7 +251,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(NULL_DATA));
     #endif
 
         return this;
@@ -281,6 +285,10 @@ extern "C" {
 #endif
         
         switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)null_Class();
+                break;
                 
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
@@ -368,42 +376,6 @@ extern "C" {
         
         j = snprintf(str, sizeof(str), " %p(Null)}\n", this);
         AStr_AppendA(pStr, str);
-        
-        return pStr;
-    }
-    
-    
-    
-    ASTR_DATA *     null_ToJSON(
-        NULL_DATA       *this
-    )
-    {
-        char            str[256];
-        int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !null_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{\"objectType\":\"%s\"",
-                     pInfo->pClassName
-                     );
-        AStr_AppendA(pStr, str);
-        
-        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }

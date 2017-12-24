@@ -98,11 +98,6 @@ OBJ_INFO        dec_Info;            // Forward Reference
 
 
 
-OBJ_ID          dec_Class(
-    void
-);
-
-
 
 static
 bool            dec_ClassIsKindOf(

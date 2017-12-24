@@ -876,7 +876,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            eRc = nodeHash_FindA(this->pProperties, pName, &pProperty);
+            pProperty = nodeHash_FindA(this->pProperties, pName);
         }
         
         // Return to caller.

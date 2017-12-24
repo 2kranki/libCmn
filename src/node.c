@@ -196,23 +196,6 @@ extern "C" {
     
     
     
-    NODE_DATA *     node_NewWithObj(
-        OBJ_ID          pValue,
-        OBJ_ID          pData
-    )
-    {
-        NODE_DATA       *this;
-        
-        this = node_Alloc( );
-        if (this) {
-            this = node_InitWithObj(this, pValue, pData);
-        }
-        
-        return this;
-    }
-    
-    
-    
     NODE_DATA *     node_NewWithUTF8(
         const
         char            *pName,
@@ -1148,40 +1131,6 @@ extern "C" {
         if (pName) {
             obj_Retain(pName);
             this->pName = pName;
-            if (OBJ_NIL == this->pName) {
-                DEBUG_BREAK();
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-        }
-        
-        node_setData(this, pData);
-        
-        return this;
-    }
-    
-    
-    
-    NODE_DATA *     node_InitWithObj(
-        NODE_DATA       *this,
-        OBJ_ID          pValue,
-        OBJ_ID          pData
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        if (pValue) {
-            this->pName = name_NewObj(pValue);
             if (OBJ_NIL == this->pName) {
                 DEBUG_BREAK();
                 obj_Release(this);

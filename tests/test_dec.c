@@ -521,7 +521,7 @@ int         test_dec_Uint64ToJSON(
     eRc = AStr_CompareA(pStrA, pCon01);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     data = 0;
-    eRc = dec_UInt64FromJSONString(pStrA, &data);
+    data = dec_UInt64FromJSONString(pStrA);
     XCTAssertTrue( (9223372036854775807ull == data) );
     obj_Release(pStrA);
     pStrA = OBJ_NIL;
@@ -531,7 +531,7 @@ int         test_dec_Uint64ToJSON(
     eRc = AStr_CompareA(pStrA, pCon02);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     data = 0;
-    eRc = dec_UInt64FromJSONString(pStrA, &data);
+    data = dec_UInt64FromJSONString(pStrA);
     XCTAssertTrue( (0ull == data) );
     obj_Release(pStrA);
     pStrA = OBJ_NIL;
@@ -541,7 +541,7 @@ int         test_dec_Uint64ToJSON(
     eRc = AStr_CompareA(pStrA, pCon03);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     data = 0;
-    eRc = dec_UInt64FromJSONString(pStrA, &data);
+    data = dec_UInt64FromJSONString(pStrA);
     XCTAssertTrue( (18446744073709551615ull == data) );
     obj_Release(pStrA);
     pStrA = OBJ_NIL;

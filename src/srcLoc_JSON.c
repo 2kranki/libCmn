@@ -42,14 +42,15 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "srcLoc_internal.h"
+#include    <srcLoc_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "hjson.h"
-#include    "node.h"
-#include    "nodeHash.h"
-#include    "utf8.h"
+#include    <dec.h>
+#include    <jsonIn.h>
+#include    <node.h>
+#include    <nodeHash.h>
+#include    <utf8.h>
 
 
 
@@ -69,6 +70,7 @@ extern "C" {
     
     
     
+    
     /****************************************************************
      * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
      ****************************************************************/
@@ -83,7 +85,7 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
+        JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
@@ -95,20 +97,19 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
         SRCLOC_DATA     *pSrcLoc = OBJ_NIL;
-        PATH_DATA       *pPath = path_NewA("?");
+        const
+        OBJ_INFO        *pInfo;
         
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
+        pInfo = srcLoc_Vtbl.pInfo;
+        
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
+        
+        //FIXME: Rework below
+#ifdef XYZZY
         pSrcLoc = srcLoc_Alloc();
         pSrcLoc = srcLoc_Init(pSrcLoc);
         if (OBJ_NIL == pSrcLoc) {
@@ -179,6 +180,7 @@ extern "C" {
                 goto exit00;
             }
         }
+#endif
               
         // Return to caller.
     exit00:
@@ -189,10 +191,6 @@ extern "C" {
         if (pParser) {
             obj_Release(pParser);
             pParser = OBJ_NIL;
-        }
-        if (pPath) {
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
         }
         return pSrcLoc;
     }

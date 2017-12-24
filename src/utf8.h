@@ -135,29 +135,28 @@ extern "C" {
     );
     
 
+    OBJ_ID          utf8_Class(
+        void
+    );
+    
+    
     /*!
      Extract a UTF-8 string from a previously saved UTF-8 JSON String.
      @param     pInputString required pointer to JSON input string
-     @param     ppDataOut   optional pointer to a pointer which will contain
-                             a NUL-terminated UTF-8 string pointer if
-                             extraction is successful and this field is not
-                             NULL.
-     @return    If successful, ERESULT_SUCCESS, a pointer to UTF-8
-                 string which must be freed and a returned length,
-                 otherwise OBJ_NIL.
+     @return    If successful, a pointer to UTF-8 string which must be
+                freed using mem_Free() and a returned length,
+                 otherwise NULL and length of 0.
      @warning   Remember to free the returned UTF-8 string using mem_Free().
      */
-    ERESULT         utf8_DataFromJSONString(
+    uint8_t *       utf8_DataFromJSONString(
         ASTR_DATA       *pInputString,
-        uint32_t        *pLengthOut,
-        void            **ppDataOut
+        uint32_t        *pLengthOut
     );
     
-    ERESULT         utf8_DataFromJSONStringA(
+    uint8_t *       utf8_DataFromJSONStringA(
         const
         char            *pInputString,
-        uint32_t        *pLengthOut,
-        void            **ppDataOut
+        uint32_t        *pLengthOut
     );
     
     
@@ -238,6 +237,17 @@ extern "C" {
     
     bool            utf8_isValidW32(
         W32CHR_T        ch
+    );
+    
+    
+    /*!
+     Convert a character constant to a Unicode Character incrementing
+     the source pointer as data is used.
+     @return    -1 for EOL or error; otherwise, a Unicode Character
+     */
+    W32CHR_T        utf8_ChrConToW32_Scan(
+        const
+        char            **ppSrc
     );
     
     

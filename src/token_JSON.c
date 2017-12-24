@@ -46,7 +46,7 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <hjson.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -83,7 +83,7 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
+        JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
@@ -100,26 +100,19 @@ extern "C" {
         NAME_DATA       *pName = OBJ_NIL;
         TOKEN_DATA      *pToken = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
+        const
+        OBJ_INFO        *pInfo;
         
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
+        pInfo = token_Vtbl.iVtbl.pInfo;
+        
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
-        }
-        //obj_TraceSet(pParser, true);
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        {
-            ASTR_DATA       *pStr = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr));
-            obj_Release(pStr);
         }
         
+        //FIXME: Rework below
+#ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "FileIndex", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
@@ -357,6 +350,7 @@ extern "C" {
             DEBUG_BREAK();
             goto exit00;
         }
+#endif
         
         // Return to caller.
     exit00:

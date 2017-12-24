@@ -1144,7 +1144,7 @@ int         test_w32str_JSON01(
         
         pJson = W32Str_ToJSON(pObj);
         fprintf(stderr, "\tJSON(\"abc\") = %s\n", AStr_getData(pJson));
-        eRc = W32Str_NewFromJSONString(pJson, &pJsonOut);
+        pJsonOut = W32Str_NewFromJSONString(pJson);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         if (pJsonOut) {
             XCTAssertFalse( (OBJ_NIL == pJsonOut) );
@@ -1168,7 +1168,7 @@ int         test_w32str_JSON01(
         
         pJson = W32Str_ToJSON(pObj);
         fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJson));
-        eRc = W32Str_NewFromJSONString(pJson, &pJsonOut);
+        pJsonOut = W32Str_NewFromJSONString(pJson);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertFalse( (OBJ_NIL == pJsonOut) );
         if (pJsonOut) {

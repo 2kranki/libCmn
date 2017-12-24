@@ -101,20 +101,23 @@ extern "C" {
     );
     
     
+    OBJ_ID          dec_Class(
+        void
+    );
+    
+    
     DEC_DATA *      dec_New(
         void
     );
     
     
-    ERESULT         dec_UInt64FromJSONString(
-        ASTR_DATA       *pString,
-        uint64_t        *pData
+    uint64_t        dec_UInt64FromJSONString(
+        ASTR_DATA       *pString
     );
     
-    ERESULT         dec_UInt64FromJSONStringA(
+    uint64_t        dec_UInt64FromJSONStringA(
         const
-        char            *pString,
-        uint64_t        *pData
+        char            *pString
     );
     
 

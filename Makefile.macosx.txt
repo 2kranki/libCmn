@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (12/20/2017 11:37:14.000)
+# (12/21/2017 21:30:35.000)
 
 
 LIBNAM=libCmn
@@ -632,6 +632,18 @@ $(OBJDIR)/hjson.o: $(SRCDIR)/hjson.c
 
 
 $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/jsonIn.o $(OBJDIR)/jsonIn_object.o
+
+
+$(OBJDIR)/jsonIn.o: $(SRCDIR)/jsonIn.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/jsonIn_object.o: $(SRCDIR)/jsonIn_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -2040,6 +2052,13 @@ TESTS += test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hjson.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_jsonIn
+
+test_jsonIn:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_jsonIn.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

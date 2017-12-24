@@ -41,6 +41,7 @@
 
 
 #include    <dec.h>
+#include    <jsonIn.h>
 
 
 #ifndef DEC_INTERNAL_H
@@ -86,16 +87,25 @@ struct dec_data_s	{
 
 
     // Internal Functions
-    void            dec_Dealloc(
-        OBJ_ID          objId
-    );
-
     bool            dec_setLastError(
         DEC_DATA     *this,
         ERESULT         value
     );
+    
+    
+    void            dec_Dealloc(
+        OBJ_ID          objId
+    );
 
-
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    the number if successful, otherwise, 0
+     */
+    uint64_t        dec_ParseObject(
+        JSONIN_DATA     *pParser
+    );
 
 
 #ifdef NDEBUG

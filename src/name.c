@@ -104,21 +104,7 @@ extern "C" {
     }
     
     
-    NAME_DATA *     name_NewObj(
-        OBJ_ID          pValue
-    )
-    {
-        NAME_DATA       *this;
-        
-        this = name_Alloc( );
-        if (this) {
-            this = name_InitObj(this, pValue);
-        }
-        return this;
-    }
-    
-    
-    NAME_DATA *     name_NewStrA(
+    NAME_DATA *     name_NewAStr(
         ASTR_DATA       *pValue
     )
     {
@@ -126,7 +112,7 @@ extern "C" {
         
         this = name_Alloc( );
         if (this) {
-            this = name_InitStrA(this, pValue);
+            this = name_InitAStr(this, pValue);
         }
         return( this );
     }
@@ -560,8 +546,7 @@ extern "C" {
     {
         int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        const
-        char            *pStr1;
+        int64_t         integer;
         
 #ifdef NDEBUG
 #else
@@ -578,9 +563,11 @@ extern "C" {
         switch (this->type) {
                 
             case NAME_TYPE_INTEGER:
-                pStr1 = name_getUTF8(this);
-                i = strcmp(pStr1, pOther);
-                mem_Free((void *)pStr1);
+                integer = dec_getInt64A(pOther);
+                if((this->integer - integer) < 0)
+                    i = -1;
+                else if((this->integer - integer) > 0)
+                    i = 1;
                 break;
                 
             case NAME_TYPE_ASTR:
@@ -709,7 +696,6 @@ extern "C" {
                 break;
                 
             case NAME_TYPE_ASTR:
-            case NAME_TYPE_OBJ:
                 {
                     OBJ_IUNKNOWN *pVtbl = obj_getVtbl(this->pObj);
                     if (pVtbl->pDeepCopy) {
@@ -853,47 +839,7 @@ extern "C" {
     }
     
     
-    NAME_DATA *   name_InitObj(
-        NAME_DATA       *this,
-        OBJ_ID          pValue
-    )
-    {
-        OBJ_IUNKNOWN    *pVtbl;
-
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-#ifdef NDEBUG
-#else
-        if( pValue == OBJ_NIL ) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
-        
-        this = name_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this->type = NAME_TYPE_OBJ;
-        pVtbl = obj_getVtbl(pValue);
-        if (pVtbl->pCopy) {
-            pValue = pVtbl->pCopy(pValue);
-        }
-        else {
-            obj_Retain(pValue);
-            this->pObj = pValue;
-        }
-        
-        return this;
-    }
-    
-    
-    NAME_DATA *   name_InitStrA(
+    NAME_DATA *   name_InitAStr(
         NAME_DATA       *this,
         ASTR_DATA       *pValue
     )
@@ -1095,7 +1041,6 @@ extern "C" {
                     // nothing to release.
                     break;
                     
-                case NAME_TYPE_OBJ:
                 case NAME_TYPE_ASTR:
                     obj_Release(this->pObj);
                     this->pObj = OBJ_NIL;

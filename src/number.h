@@ -75,15 +75,17 @@ extern "C" {
 
     typedef enum number_type_e {
         NUMBER_TYPE_UNKNOWN=0,
+#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         NUMBER_TYPE_FLOAT,          // Float or Double
+#endif
         NUMBER_TYPE_INT16,          // int16_t
         NUMBER_TYPE_INT32,          // int32_t
         NUMBER_TYPE_INT64,          // int64_t
         //NUMBER_TYPE_INT128,         // int128_t
-        NUMBER_TYPE_UINT16,         // int16_t
-        NUMBER_TYPE_UINT32,         // int32_t
-        NUMBER_TYPE_UINT64,         // int64_t
-        //NUMBER_TYPE_UINT128,        // int128_t
+        NUMBER_TYPE_UINT16,         // uint16_t
+        NUMBER_TYPE_UINT32,         // uint32_t
+        NUMBER_TYPE_UINT64,         // uint64_t
+        //NUMBER_TYPE_UINT128,        // uint128_t
     } NUMBER_TYPE;
     
     
@@ -116,10 +118,20 @@ extern "C" {
     );
     
     
+    OBJ_ID          number_Class(
+        void
+    );
+    
+    
     NUMBER_DATA *   number_New(
         void
     );
 
+    
+    NUMBER_DATA *   number_NewInt16(
+        int16_t         value
+    );
+    
     
     NUMBER_DATA *   number_NewInt32(
         int32_t         value
@@ -129,6 +141,12 @@ extern "C" {
     NUMBER_DATA *   number_NewInt64(
         int64_t         value
     );
+    
+    
+    NUMBER_DATA *   number_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+
     
     
 
@@ -150,6 +168,19 @@ extern "C" {
     ERESULT         number_Assign(
         NUMBER_DATA		*this,
         NUMBER_DATA		*pOther
+    );
+    
+    
+    /*!
+     Compare the number to the provided string converted to integer.
+     @return    ERESULT_SUCCESS_EQUAL if number == other
+                ERESULT_SUCCESS_LESS_THAN if number < other
+                ERESULT_SUCCESS_GREATER_THAN if number > other
+     */
+    ERESULT         number_CompareA(
+        NUMBER_DATA     *this,
+        const
+        char            *pOther
     );
     
     

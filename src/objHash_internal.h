@@ -96,10 +96,16 @@ struct objHash_data_s	{
 
 
     // Internal Functions
+    OBJ_ID          objHash_Class(
+        void
+    );
+    
+    
     void            objHash_Dealloc(
         OBJ_ID          objId
     );
 
+    
     void *          objHash_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

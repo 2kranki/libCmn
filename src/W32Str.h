@@ -102,6 +102,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          W32Str_Class(
+        void
+    );
+    
+    
     /*!
      @result
      ERESULT_SUCCESS_EQUAL if str1 == str2,
@@ -151,15 +156,13 @@ extern "C" {
     );
     
     
-    ERESULT         W32Str_NewFromJSONString(
-        ASTR_DATA       *pString,
-        W32STR_DATA     **ppData
+    W32STR_DATA *   W32Str_NewFromJSONString(
+        ASTR_DATA       *pString
     );
     
-    ERESULT         W32Str_NewFromJSONStringA(
+    W32STR_DATA *   W32Str_NewFromJSONStringA(
         const
-        char            *pString,
-        W32STR_DATA     **ppData
+        char            *pString
     );
     
 

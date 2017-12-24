@@ -167,12 +167,6 @@ extern "C" {
     );
     
     
-    NODE_DATA *     node_NewWithObj(
-        OBJ_ID          pValue,
-        OBJ_ID          pData
-    );
-    
-    
     NODE_DATA *     node_NewWithUTF8(
         const
         char            *pName,
@@ -342,13 +336,6 @@ extern "C" {
     NODE_DATA *     node_InitWithName(
         NODE_DATA       *this,
         NAME_DATA       *pName,         // Retained, not copied
-        OBJ_ID          pData
-    );
-    
-    
-    NODE_DATA *     node_InitWithObj(
-        NODE_DATA       *this,
-        OBJ_ID          pValue,
         OBJ_ID          pData
     );
     

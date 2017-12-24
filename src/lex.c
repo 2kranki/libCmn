@@ -762,13 +762,13 @@ extern "C" {
     //                    P a r s e  C h a r s
     //---------------------------------------------------------------
     
-    // The first character of the name has already been parsed, but
-    // not advanced. So, we just keep accumulating the proper letters
-    // until there are no more that are acceptable.
+    // The first character of the character constant has already been
+    // parsed, but not advanced. So, we just keep accumulating the proper
+    // letters until there are no more that are acceptable.
     
     bool            lex_ParseChrCon(
         LEX_DATA        *this,
-        W32CHR_T        ending
+        W32CHR_T        endingChar
     )
     {
         int32_t         cls;
@@ -790,14 +790,15 @@ extern "C" {
         if ((chr == '\n') || (chr == '\r')) {
             return false;
         }
-        if (chr == ending) {
+        if (chr == endingChar) {
             return false;
         }
         if ( cls == '\\') {
             lex_ParseTokenAppendString(this, pInput);
             pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
             cls = token_getClass(pInput);
-            switch (cls) {
+            chr = token_getChrW32(pInput);
+            switch (chr) {
                     
                 case '0':
                 case '1':
@@ -862,7 +863,11 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            srcErrors_AddFatal(
+                                    OBJ_NIL,
+                                    &pInput->data.src,
+                                    "Malformed Unicode Escape Sequence - \\xHH"
+                            );
                             return false;
                         }
                     }
@@ -906,11 +911,12 @@ extern "C" {
         if ((chr == ending) || (cls == LEX_CLASS_EOF)) {
             return false;
         }
-        if ( cls == '\\') {
+        if ( chr == '\\') {
             lex_ParseTokenAppendString(this, pInput);
             pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
             cls = token_getClass(pInput);
-            switch (cls) {
+            chr = token_getChrW32(pInput);
+            switch (chr) {
                     
                 case '0':
                 case '1':
@@ -1051,6 +1057,7 @@ extern "C" {
 #endif
         
         while (lex_ParseDigitHex(this)) {
+            rc = true;
         }
         
         // Return to caller.

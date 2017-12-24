@@ -108,7 +108,7 @@ int         test_lex_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -261,7 +261,7 @@ int         test_lex_Input01(
     obj_Release(pPath);
     pPath = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 #endif
@@ -329,7 +329,7 @@ int         test_lex_Number01(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -395,7 +395,7 @@ int         test_lex_Number02(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -461,7 +461,7 @@ int         test_lex_Number03(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -518,7 +518,7 @@ int         test_lex_Strings01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -570,7 +570,7 @@ int         test_lex_Strings02(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -645,6 +645,85 @@ int         test_lex_Strings03(
         pObj = OBJ_NIL;
     }
     
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_lex_Strings04(
+    const
+    char        *pTestName
+)
+{
+    SRCFILE_DATA    *pSrc = OBJ_NIL;
+    ASTR_DATA       *pBuf = OBJ_NIL;
+    LEX_DATA        *pLex = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    bool            fRc;
+    PATH_DATA       *pPath = path_NewA("abc");
+    ERESULT         eRc;
+    W32CHR_T        ch;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pBuf = AStr_NewA("\"\\x01\\x02\"");
+    XCTAssertFalse( (OBJ_NIL == pBuf) );
+    if (pBuf) {
+        
+        pSrc = srcFile_Alloc();
+        XCTAssertFalse( (OBJ_NIL == pSrc) );
+        pSrc = srcFile_InitAStr( pSrc, pBuf, pPath, 1, 4, true, true );
+        XCTAssertFalse( (OBJ_NIL == pSrc) );
+        if (pSrc) {
+            
+            pLex = (LEX_DATA *)lex_New(5);
+            XCTAssertFalse( (OBJ_NIL == pLex) );
+            if (pLex) {
+                
+                obj_TraceSet(pLex, true);
+                fRc =   lex_setSourceFunction(
+                                              pLex,
+                                              (void *)srcFile_InputAdvance,
+                                              (void *)srcFile_InputLookAhead,
+                                              pSrc
+                        );
+                XCTAssertTrue( (fRc) );
+                
+                pToken = lex_InputLookAhead(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                eRc = lex_ParseTokenSetup(pLex, pToken);
+
+                // The following tests lex_ParseChrCon() as found in ppLex2.
+                lex_InputAdvance(pLex, 1);
+                while (lex_ParseChrCon(pLex, '\"'))
+                    ;
+                pToken = lex_InputLookAhead(pLex, 1);
+                ch = token_getChrW32(pToken);
+                XCTAssertTrue( (ch == '"') );
+                lex_ParseTokenAppendString(pLex, pToken);
+                {
+                    ASTR_DATA       *pWrk2 = W32Str_ToChrCon(pLex->pStr);
+                    fprintf(stderr, "\tDATA=\"%s\"\n", AStr_getData(pWrk2));
+                    obj_Release(pWrk2);
+                }
+                eRc = W32Str_CompareA(pLex->pStr, "\"\\x01\\x02\"");
+                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                
+                obj_Release(pLex);
+                pLex = OBJ_NIL;
+            }
+            
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+        }
+        
+        obj_Release(pBuf);
+        pBuf = OBJ_NIL;
+    }
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -653,14 +732,15 @@ int         test_lex_Strings03(
 
 
 TINYTEST_START_SUITE(test_cloOpt);
-  TINYTEST_ADD_TEST(test_lex_Strings03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_lex_Strings02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_lex_Strings01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_lex_Number03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_lex_Number02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_lex_Number01,setUp,tearDown);
-  //TINYTEST_ADD_TEST(test_lex_Input01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_lex_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Strings04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Strings03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Strings02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Strings01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Number03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Number02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Number01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_lex_Input01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_cloOpt);

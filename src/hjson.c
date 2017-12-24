@@ -1143,8 +1143,9 @@ extern "C" {
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -1297,8 +1298,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_TraceSet(this->pLexJ, true);
-        
+
 #ifdef NDEBUG
 #else
         if( !hjson_Validate(this) ) {
@@ -1421,6 +1421,12 @@ extern "C" {
         if( !hjson_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            obj_TraceSet(this->pLexJ, true);
         }
 #endif
         TRC_OBJ(this, "%s:\n", __func__);

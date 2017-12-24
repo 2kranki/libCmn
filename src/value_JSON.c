@@ -46,11 +46,12 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <hex.h>
-#include    <hjson.h>
+#include    <dec_internal.h>
+#include    <hex_internal.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
-#include    <utf8.h>
+#include    <utf8_internal.h>
 
 
 
@@ -68,6 +69,68 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new null object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    VALUE_DATA *    value_ParseObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        VALUE_DATA      *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        uint32_t        crc = 0;
+        uint32_t        length = 0;
+        uint32_t        i;
+        W32CHR_T        ch;
+        const
+        char            *pSrc;
+        ASTR_DATA       *pWrk;
+        
+        pInfo = obj_getInfo(AStr_Class());
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+        
+        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
+        
+        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        
+        pObject = value_New();
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+#ifdef XYZZY
+        if (length && pObject) {
+            pWrk = jsonIn_FindStringNodeInHash(pParser, "data");
+            pSrc = AStr_getData(pWrk);
+            for (i=0; i<length; ++i) {
+                ch = utf8_ChrConToW32_Scan(&pSrc);
+                AStr_AppendW32(pObject, 1, &ch);
+            }
+            if (!(crc == AStr_getCrcIEEE(pObject))) {
+                obj_Release(pObject);
+                pObject = OBJ_NIL;
+            }
+        }
+#endif
+        
+        // Return to caller.
+    exit00:
+        return pObject;
+    }
+    
+    
+    
+
     
     
     /****************************************************************
@@ -84,11 +147,11 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
+        JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         //NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        //ERESULT         eRc;
+        ERESULT         eRc;
         const
         char            *pFileName = "";
 #ifdef XYZZY
@@ -100,22 +163,18 @@ extern "C" {
         NAME_DATA       *pName = OBJ_NIL;
 #endif
         VALUE_DATA      *pValueOut = OBJ_NIL;
-        PATH_DATA       *pPath = path_NewA("?");
+        const
+        OBJ_INFO        *pInfo;
         
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
+        pInfo = value_Vtbl.iVtbl.pInfo;
+        
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-
+        
+        //FIXME: Rework below
 #ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "fileName", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -304,10 +363,6 @@ extern "C" {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
-        if (pPath) {
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
         return pValueOut;
     }
     
@@ -338,15 +393,14 @@ extern "C" {
         VALUE_DATA      *this
     )
     {
-        char            str[256];
-        //uint32_t        i;
-        int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         ASTR_DATA       *pWrk;
         //char            *pChr;
         //char            chrs[12];
+        ASTR_DATA *     (*pToJSON)(OBJ_ID);
+        OBJ_IUNKNOWN    *pVtbl;
         
 #ifdef NDEBUG
 #else
@@ -358,14 +412,7 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{\"objectType\":\"%s\"",
-                     pInfo->pClassName
-                     );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"", pInfo->pClassName);
         
         switch (this->type) {
                 
@@ -396,7 +443,22 @@ extern "C" {
             case VALUE_TYPE_OBJECT:
                 AStr_AppendA(pStr, ", \"type\":\"VALUE_TYPE_OBJECT\", \"data\":");
                 if (this->value.pObject) {
-                    //TODO: Finish this!
+                    pVtbl = obj_getVtbl(this->value.pObject);
+                    if (pVtbl) {
+                        pToJSON =   pVtbl->pQueryInfo(
+                                                    this->value.pObject,
+                                                    OBJ_QUERYINFO_TYPE_METHOD,
+                                                    "ToJSON"
+                                    );
+                        if (pToJSON) {
+                            pWrk = (*pToJSON)(this->value.pObject);
+                            if (pWrk) {
+                                AStr_Append(pStr, pWrk);
+                                obj_Release(pWrk);
+                                pWrk = OBJ_NIL;
+                            }
+                        }
+                    }
                 }
                 else {
                     AStr_AppendA(pStr, "null");
@@ -413,11 +475,12 @@ extern "C" {
                 break;
                 
             default:
-                AStr_AppendA(pStr, ", \"type\":\"VALUE_TYPE_UNKNOWN\"");
-                
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
         }
         
-        AStr_AppendA(pStr, "}\n");
+        if (pStr)
+            AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }

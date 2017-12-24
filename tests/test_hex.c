@@ -91,45 +91,13 @@ int         test_hex_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_hex_DataFromJSON01(
-    const
-    char        *pTestName
-)
-{
-    //ASTR_DATA	*pStr = OBJ_NIL;
-    char        *pData = "\x00\x01\x02\x03\x04\x05\x06\x07";
-    char        *pOutput =  "{\"objectType\":\"hex\", "
-                            "\"len\":8, "
-                            "\"crc\":2292869279, "
-                            "\"data\":\"0001020304050607\""
-                            "}\n";
-    ERESULT     eRc;
-    uint32_t    length = 0;
-    uint8_t     *pData2 = NULL;
-   
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    eRc = hex_DataFromJSONStringA(pOutput, &length, (void **)&pData2);
-    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-    fprintf(stderr, "returned length = %d\n", length);
-    TINYTEST_TRUE( (8 == length) );
-    TINYTEST_TRUE( (0 == strncmp((char *)pData2, pData, 8)) );
-    mem_Free(pData2);
-    pData2 = NULL;
-
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-
-int         test_hex_DataToJSON01(
+int         test_hex_JSON01(
     const
     char        *pTestName
 )
@@ -139,19 +107,36 @@ int         test_hex_DataToJSON01(
     char        *pOutput =  "{\"objectType\":\"hex\", "
                             "\"len\":8, "
                             "\"crc\":2292869279, "
-                            "\"data\":\"0001020304050607\""
+                            "\"data\":\"\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\""
                             "}\n";
+    uint32_t    length = 0;
+    uint8_t     *pData2 = NULL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pStr = hex_DataToJSON(8, pData);
-    fprintf(stderr, "JSON='%s'\n", AStr_getData(pStr));
+
+    fprintf(stderr, "\tTesting ToJSON...\n");
+    pStr = hex_DataToJSON( 8, (void *)pData);
+    fprintf(stderr, "\tJSON='%s'\n", AStr_getData(pStr));
     TINYTEST_TRUE( (0 == strcmp(pOutput, AStr_getData(pStr))) );
+    fprintf(stderr, "\tToJSON passed!\n");
+
+    fprintf(stderr, "\n\tTesting FromJSON...\n");
+    pData2 = hex_DataFromJSONString(pStr, &length);
+    fprintf(stderr, "\treturned length = %d\n", length);
+    fprintf(stderr, "\treturned data = %p\n", pData2);
+    TINYTEST_TRUE( (8 == length) );
+    TINYTEST_TRUE( (0 == memcmp(pData2, pData, 8)) );
+    fprintf(stderr, "\tFromJSON passed!\n");
+
+    mem_Free(pData2);
+    pData2 = NULL;
     obj_Release(pStr);
     pStr = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
+
 
 
 
@@ -185,7 +170,7 @@ int         test_hex_Shared01(
     TINYTEST_TRUE( (0 == strcmp(buffer, pOutput)) );
 
     hex_SharedReset();
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -221,7 +206,7 @@ int         test_hex_Shared02(
     TINYTEST_TRUE( (0 == strcmp(buffer, pOutput)) );
     
     hex_SharedReset();
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -257,7 +242,7 @@ int         test_hex_Shared03(
     TINYTEST_TRUE( (0 == strcmp(buffer, pOutput)) );
     
     hex_SharedReset();
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -268,8 +253,7 @@ TINYTEST_START_SUITE(test_hex);
     TINYTEST_ADD_TEST(test_hex_Shared03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hex_Shared02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hex_Shared01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_hex_DataToJSON01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_hex_DataFromJSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hex_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

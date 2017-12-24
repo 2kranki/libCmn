@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <null_internal.h>
 
@@ -51,7 +52,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -94,7 +96,7 @@ int         test_null_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -106,6 +108,7 @@ int         test_null_ToJSON(
 )
 {
     NULL_DATA       *pObj = OBJ_NIL;
+    NULL_DATA       *pObj2 = OBJ_NIL;
     ASTR_DATA       *pAStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -119,6 +122,13 @@ int         test_null_ToJSON(
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON = '%s'\n", AStr_getData(pAStr));
         XCTAssertTrue( (0 == strcmp("{\"objectType\":\"null\"}\n", AStr_getData(pAStr))) );
+        
+        pObj2 = null_NewFromJSONString(pAStr);
+        XCTAssertFalse( (OBJ_NIL == pObj2) );
+        XCTAssertTrue( (pObj2 == pObj) );
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 
@@ -126,7 +136,7 @@ int         test_null_ToJSON(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 

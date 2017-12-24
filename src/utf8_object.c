@@ -64,11 +64,6 @@ OBJ_INFO        utf8_Info;            // Forward Reference
 
 
 
-OBJ_ID          utf8_Class(
-    void
-);
-
-
 
 static
 bool            utf8_ClassIsKindOf(

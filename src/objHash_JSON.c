@@ -48,7 +48,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <hjson.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -97,6 +97,10 @@ extern "C" {
         *pBuffer++ = '\0';
     }
     
+
+    
+    
+    
     
     /****************************************************************
      * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -113,7 +117,7 @@ extern "C" {
         W32STR_DATA     **ppData
     )
     {
-        HJSON_DATA      *pParser;
+        JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
@@ -136,33 +140,14 @@ extern "C" {
         int32_t         chrW;
         W32STR_DATA     *pStrOut = OBJ_NIL;
         
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
-            eRc = ERESULT_GENERAL_FAILURE;
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            eRc = ERESULT_GENERAL_FAILURE;
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            eRc = ERESULT_GENERAL_FAILURE;
-            goto exit00;
-        }
-#ifdef NDEBUG
-#else
-#ifdef TRACE_FUNCTIONS
-        {
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-        }
-#endif
-#endif
-
+        
+        //FIXME: Rework below
+#ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "objectType", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
@@ -374,6 +359,7 @@ extern "C" {
             eRc = ERESULT_GENERAL_FAILURE;
             goto exit00;
         }
+#endif
         
         // Return to caller.
     exit00:

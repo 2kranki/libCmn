@@ -742,8 +742,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "srcErrors::offsetof(eRc) = %lu\n", offsetof(SRCERRORS_DATA,eRc));
-        fprintf(stderr, "srcErrors::sizeof(SRCERRORS_DATA) = %lu\n", sizeof(SRCERRORS_DATA));
+        //fprintf(stderr, "srcErrors::offsetof(eRc) = %lu\n", offsetof(SRCERRORS_DATA,eRc));
+        //fprintf(stderr, "srcErrors::sizeof(SRCERRORS_DATA) = %lu\n", sizeof(SRCERRORS_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(SRCERRORS_DATA));

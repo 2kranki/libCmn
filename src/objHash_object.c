@@ -65,11 +65,6 @@ OBJ_INFO        objHash_Info;            // Forward Reference
 
 
 
-OBJ_ID          objHash_Class(
-    void
-);
-
-
 
 static
 bool            objHash_ClassIsKindOf(

@@ -44,6 +44,7 @@
 
 #include    <AStr.h>
 #include    <file.h>
+#include    <jsonIn.h>
 #include    <path.h>
 #include    <str.h>
 #include    <objArray.h>
@@ -78,11 +79,24 @@ struct AStr_data_s	{
         OBJ_ID          objId
     );
 
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new null object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    ASTR_DATA *     AStr_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
+    
     void *          AStr_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
+
     
 #ifdef NDEBUG
 #else

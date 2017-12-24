@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'name'
-//	Generated 02/07/2016 15:50:27
+//	Class Object Metods and Tables for 'jsonIn'
+//	Generated 12/21/2017 05:41:06
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,8 +32,14 @@
  */
 
 
-#include        "obj.h"
-#include        "name_internal.h"
+
+#define			JSONIN_OBJECT_C	    1
+#include        <jsonIn_internal.h>
+#include        <dec.h>
+#include        <hex.h>
+#include        <name.h>
+#include        <node.h>
+#include        <nodeHash.h>
 
 
 
@@ -40,15 +47,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct name_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct jsonIn_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-    uint32_t        unique;
+    //uint32_t        misc;
 };
-typedef struct name_class_data_s NAME_CLASS_DATA;
+typedef struct jsonIn_class_data_s JSONIN_CLASS_DATA;
 
 
 
@@ -61,17 +67,17 @@ typedef struct name_class_data_s NAME_CLASS_DATA;
 
 static
 const
-OBJ_INFO        name_Info;            // Forward Reference
+OBJ_INFO        jsonIn_Info;            // Forward Reference
 
 
 
 
 static
-bool            name_ClassIsKindOf(
+bool            jsonIn_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NAME_CLASS == classID) {
+    if (OBJ_IDENT_JSONIN_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -86,19 +92,19 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return OBJ_IDENT_NAME_CLASS;
+    return OBJ_IDENT_JSONIN_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&name_Info,
-    name_ClassIsKindOf,
+	&jsonIn_Info,
+    jsonIn_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    name_Class,
+    jsonIn_Class,
     obj_ClassWhoAmI
 };
 
@@ -108,19 +114,20 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NAME_CLASS_DATA  name_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NAME_CLASS, 0, 1},
-	0
+const
+JSONIN_CLASS_DATA  jsonIn_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_JSONIN_CLASS, 0, 1},
+	//0
 };
 
 
 
 static
-bool            name_IsKindOf(
+bool            jsonIn_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NAME == classID) {
+    if (OBJ_IDENT_JSONIN == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -132,67 +139,64 @@ bool            name_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            name_Dealloc(
+void            jsonIn_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          name_Class(
+OBJ_ID          jsonIn_Class(
     void
 )
 {
-    return (OBJ_ID)&name_ClassObj;
-}
-
-
-uint32_t        name_NewUnique(
-    OBJ_ID          objId
-)
-{
-    return ++name_ClassObj.unique;
+    return (OBJ_ID)&jsonIn_ClassObj;
 }
 
 
 static
-uint16_t		name_WhoAmI(
+uint16_t		jsonIn_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_NAME;
+    return OBJ_IDENT_JSONIN;
 }
 
 
 const
-NAME_VTBL       name_Vtbl = {
+JSONIN_VTBL     jsonIn_Vtbl = {
     {
-        &name_Info,
-        name_IsKindOf,
+        &jsonIn_Info,
+        jsonIn_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        name_Dealloc,
-        name_Class,
-        name_WhoAmI,
-        (P_OBJ_QUERYINFO)name_QueryInfo,
-        (P_OBJ_TOSTRING)name_ToDebugString,
-        NULL,			// name_Enable,
-        NULL,			// name_Disable,
-        (P_OBJ_ASSIGN)name_Assign,
-        (P_OBJ_COMPARE)name_Compare,
-        (P_OBJ_PTR)name_Copy,
-        (P_OBJ_DEEPCOPY)name_DeepCopy,
-        (P_OBJ_HASH)name_Hash
+        jsonIn_Dealloc,
+        jsonIn_Class,
+        jsonIn_WhoAmI,
+        (P_OBJ_QUERYINFO)jsonIn_QueryInfo,
+        (P_OBJ_TOSTRING)jsonIn_ToDebugString,
+        NULL,			// jsonIn_Enable,
+        NULL,			// jsonIn_Disable,
+        NULL,			// (P_OBJ_ASSIGN)jsonIn_Assign,
+        NULL,			// (P_OBJ_COMPARE)jsonIn_Compare,
+        NULL, 			// (P_OBJ_PTR)jsonIn_Copy,
+        NULL 			// (P_OBJ_HASH)jsonIn_Hash,
     },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //jsonIn_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        name_Info = {
-    "name",
-    "Name",
-    (OBJ_DATA *)&name_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+OBJ_INFO        jsonIn_Info = {
+    "jsonIn",
+    "JSON Input Parse Assistance",
+    (OBJ_DATA *)&jsonIn_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&jsonIn_Vtbl
 };
 
 

@@ -43,8 +43,9 @@
 
 /* Header File Inclusion */
 #include    <srcError_internal.h>
+#include    <dec.h>
 #include    <srcLoc.h>
-#include    <hjson.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -70,6 +71,7 @@ extern "C" {
     
     
     
+    
     /*****************************************************************
      * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
      ****************************************************************/
@@ -84,7 +86,7 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
+        JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
@@ -98,25 +100,19 @@ extern "C" {
         SRCLOC_DATA     *pSrcLoc = OBJ_NIL;
         SRCERROR_DATA   *pError = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
+        const
+        OBJ_INFO        *pInfo;
         
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
-            goto exit00;
-        }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pError = srcError_New(0, NULL, OBJ_NIL);
-        if (OBJ_NIL == pError) {
-            goto exit00;
-        }
-        //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
+        pInfo = srcError_Vtbl.iVtbl.pInfo;
         
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
+            goto exit00;
+        }
+        
+        //FIXME: Rework below
+#ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "FileIndex", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
@@ -180,6 +176,7 @@ extern "C" {
                 goto exit00;
             }
         }
+#endif
               
         // Return to caller.
     exit00:

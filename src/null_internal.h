@@ -43,6 +43,10 @@
 
 
 #include    <null.h>
+#include    <jsonIn.h>
+#include    <nodeHash.h>
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -66,10 +70,25 @@ struct null_data_s	{
 
 
     // Internal Functions
+    OBJ_ID          null_Class(
+        void
+    );
+    
+    
+    NULL_DATA *     null_NewFromHash(
+        NODEHASH_DATA   *pHash
+    );
+    
+    
     void            null_Dealloc(
         OBJ_ID          objId
     );
 
+    
+    NULL_DATA *     null_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
     
     void *          null_QueryInfo(
         OBJ_ID          objId,

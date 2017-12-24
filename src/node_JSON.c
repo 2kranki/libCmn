@@ -42,15 +42,15 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "node_internal.h"
-#include    "token_internal.h"
+#include    <node_internal.h>
+#include    <token_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "hjson.h"
-#include    "node.h"
-#include    "nodeHash.h"
-#include    "utf8.h"
+#include    <jsonIn.h>
+#include    <node.h>
+#include    <nodeHash.h>
+#include    <utf8.h>
 
 
 
@@ -70,6 +70,7 @@ extern "C" {
     
     
     
+    
     /****************************************************************
      * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
      ****************************************************************/
@@ -84,11 +85,11 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
+        JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         //NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        //ERESULT         eRc;
+        ERESULT         eRc;
         const
         char            *pFileName = "";
 #ifdef XYZZY
@@ -102,20 +103,13 @@ extern "C" {
         NODE_DATA       *pNodeOut = OBJ_NIL;
         PATH_DATA       *pPath = path_NewA("?");
         
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-
+        
+        //FIXME: Rework below
 #ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "fileName", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {

@@ -71,7 +71,6 @@ extern "C" {
     typedef enum name_type_e {
         NAME_TYPE_UNKNOWN=0,
         NAME_TYPE_INTEGER,          // int64_t
-        NAME_TYPE_OBJ,              // OBJ_ID
         NAME_TYPE_UTF8,             // UTF-8 NUL-terminated String
         NAME_TYPE_UTF8_CON,         // UTF-8 NUL-terminated String Constant
         NAME_TYPE_ASTR,             // AStr Object
@@ -106,6 +105,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          name_Class(
+        void
+    );
+    
+    
     NAME_DATA *     name_NewFromJSONString(
         ASTR_DATA       *pString
     );
@@ -125,11 +129,7 @@ extern "C" {
         int64_t         value
     );
     
-    NAME_DATA *     name_NewObj(
-        OBJ_ID          pValue
-    );
-    
-    NAME_DATA *     name_NewStrA(
+    NAME_DATA *     name_NewAStr(
         ASTR_DATA       *pValue
     );
     
@@ -246,13 +246,7 @@ extern "C" {
     );
 
 
-    NAME_DATA *   name_InitObj(
-        NAME_DATA       *this,
-        OBJ_ID          pValue
-    );
-    
-    
-    NAME_DATA *   name_InitStrA(
+    NAME_DATA *   name_InitAStr(
         NAME_DATA       *this,
         ASTR_DATA       *pValue
     );

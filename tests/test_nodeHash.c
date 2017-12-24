@@ -148,6 +148,7 @@ int         test_nodeHash_AddFindDelete01(
 {
     NODEHASH_DATA   *pHash;
     NODE_DATA       *pNode;
+    NODE_DATA       *pNodeFnd;
     uint32_t        i;
     uint32_t        cnt;
     ERESULT         eRc;
@@ -166,8 +167,8 @@ int         test_nodeHash_AddFindDelete01(
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeHash_getSize(pHash);
             XCTAssertTrue( (cnt == (i+1)) );
-            eRc = nodeHash_FindA(pHash, strings[i], NULL);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNodeFnd = nodeHash_FindA(pHash, strings[i]);
+            XCTAssertTrue( (pNode) );
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
@@ -176,8 +177,8 @@ int         test_nodeHash_AddFindDelete01(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = nodeHash_getSize(pHash);
         XCTAssertTrue( (cnt == 9) );
-        eRc = nodeHash_FindA(pHash, strings[11], NULL);
-        XCTAssertFalse( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pNodeFnd = nodeHash_FindA(pHash, strings[11]);
+        XCTAssertTrue( (OBJ_NIL == pNodeFnd) );
         
         obj_Release(pHash);
         pHash = OBJ_NIL;

@@ -802,6 +802,9 @@ extern "C" {
         
         switch (type) {
                 
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)objHash_Class();
+                
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;

@@ -64,11 +64,6 @@ OBJ_INFO        AStr_Info;            // Forward Reference
 
 
 
-OBJ_ID          AStr_Class(
-    void
-);
-
-
 
 static
 bool            AStr_ClassIsKindOf(

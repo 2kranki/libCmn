@@ -40,6 +40,7 @@
 
 #include    <utf8.h>
 #include    <AStr.h>
+#include    <jsonIn.h>
 
 
 
@@ -82,9 +83,16 @@ struct utf8_data_s	{
         OBJ_ID          objId
     );
 
+    
     void            utf8_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
+    );
+    
+    
+    uint8_t *       utf8_ParseObject(
+        JSONIN_DATA     *pParser,
+        uint32_t        *pLength
     );
     
     

@@ -86,6 +86,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          AStr_Class(
+        void
+    );
+    
+    
     ASTR_DATA *    AStr_New(
         void
     );
@@ -115,15 +120,13 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_NewFromJSONString(
-        ASTR_DATA       *pString,
-        ASTR_DATA       **ppData
+    ASTR_DATA *    AStr_NewFromJSONString(
+        ASTR_DATA       *pString
     );
     
-    ERESULT         AStr_NewFromJSONStringA(
+    ASTR_DATA *     AStr_NewFromJSONStringA(
         const
-        char            *pString,
-        ASTR_DATA       **ppData
+        char            *pString
     );
     
 
@@ -510,7 +513,7 @@ extern "C" {
     
     /*!
      Convert this string to an ascii character constant format using escape
-     sequences for non-printable character.
+     sequences for non-printable characters.
      @param     this    object pointer
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.

@@ -1454,7 +1454,7 @@ extern "C" {
         char            *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.

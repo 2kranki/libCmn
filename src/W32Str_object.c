@@ -66,11 +66,6 @@ OBJ_INFO        W32Str_Info;            // Forward Reference
 
 
 
-OBJ_ID          W32Str_Class(
-    void
-);
-
-
 
 static
 bool            W32Str_ClassIsKindOf(

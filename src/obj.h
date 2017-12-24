@@ -180,7 +180,8 @@ extern	"C" {
         // (ie NULL).
         // ------- Beginning of Methods likely to be in all objects -------
         // Query an object for specific data including object size,
-        // method name(s) in character format, etc.
+        // method name(s) in character format, etc.  See obj_QueryInfoType_e
+        // for more information.
         void *      (*pQueryInfo)(OBJ_ID, uint32_t, void *);
         OBJ_ID      (*pToDebugString)(OBJ_ID, int);
         // ------- End of Methods likely to be in all objects -------
@@ -212,11 +213,12 @@ extern	"C" {
     
     typedef enum obj_QueryInfoType_e {
         OBJ_QUERYINFO_TYPE_UNKNOWN=0,
-        OBJ_QUERYINFO_TYPE_INFO,       // Return class info structure
-        OBJ_QUERYINFO_TYPE_METHOD,     // Search for a Method by using the string
-        //                             // which is the method name without object prefix
-        OBJ_QUERYINFO_TYPE_PTR,        // Search for a Method by using its address and
-        //                             // returning a string which represents the method
+        OBJ_QUERYINFO_TYPE_CLASS_OBJECT,    // Return class object
+        OBJ_QUERYINFO_TYPE_INFO,            // Return class info structure
+        OBJ_QUERYINFO_TYPE_METHOD,          // Search for a Method by using the string
+        //                                  // which is the method name without object prefix
+        OBJ_QUERYINFO_TYPE_PTR,             // Search for a Method by using its address and
+        //                                  // returning a string which represents the method
     } OBJ_QUERYINFO_TYPE;
 
 

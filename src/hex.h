@@ -106,28 +106,31 @@ extern "C" {
     );
     
     
+    OBJ_ID          hex_Class(
+        void
+    );
+    
+    
     HEX_DATA *     hex_New(
         void
     );
     
     
-    ERESULT         hex_DataFromJSONString(
+    uint8_t *        hex_DataFromJSONString(
         ASTR_DATA       *pString,
-        uint32_t        *pLength,
-        void            **ppData
+        uint32_t        *pLength
     );
     
-    ERESULT         hex_DataFromJSONStringA(
+    uint8_t *       hex_DataFromJSONStringA(
         const
         char            *pString,
-        uint32_t        *pLength,
-        void            **ppData
+        uint32_t        *pLength
     );
     
     
     ASTR_DATA *     hex_DataToJSON(
         uint32_t        length,
-        void            *pData
+        uint8_t         *pData
     );
     
     

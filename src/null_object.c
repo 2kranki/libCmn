@@ -110,6 +110,10 @@ void *          obj_ClassQueryInfo(
     
     switch (type) {
             
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return (void *)null_Class();
+            break;
+            
         case OBJ_QUERYINFO_TYPE_INFO:
             return (void *)&null_Info;
             break;

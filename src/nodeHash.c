@@ -271,6 +271,53 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeHash_getLastError(
+        NODEHASH_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            nodeHash_setLastError(
+        NODEHASH_DATA   *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
     uint16_t        nodeHash_getPriority(
         NODEHASH_DATA     *this
     )
@@ -305,6 +352,10 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                           S i z e
+    //---------------------------------------------------------------
+    
     uint32_t        nodeHash_getSize(
         NODEHASH_DATA   *this
     )
@@ -634,11 +685,10 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
 
-    ERESULT         nodeHash_FindA(
+    NODE_DATA *     nodeHash_FindA(
         NODEHASH_DATA	*this,
         const
-        char            *pName,
-        NODE_DATA       **ppNode
+        char            *pName
     )
     {
         NODEHASH_NODE   *pEntry = OBJ_NIL;
@@ -649,36 +699,32 @@ extern "C" {
     #else
         if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
         if( OBJ_NIL == pName ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
         }
     #endif
         
         hash = str_HashAcmA((const char *)pName, NULL);
         pEntry = nodeHash_FindNodeA(this, hash, pName);
         if (pEntry) {
-            if (ppNode) {
-                *ppNode = pEntry->pNode;
-            }
-            return ERESULT_SUCCESSFUL_COMPLETION;
+            this->eRc = ERESULT_SUCCESS;
+            return pEntry->pNode;
         }
         
         // Return to caller.
-        if (ppNode) {
-            *ppNode = OBJ_NIL;
-        }
-        return ERESULT_DATA_NOT_FOUND;
+        this->eRc = ERESULT_DATA_NOT_FOUND;
+        return OBJ_NIL;
     }
 
 
-    ERESULT         nodeHash_FindW32(
+    NODE_DATA *     nodeHash_FindW32(
         NODEHASH_DATA	*this,
         const
-        W32CHR_T        *pName,
-        NODE_DATA       **ppNode
+        W32CHR_T        *pName
     )
     {
         NODEHASH_NODE   *pEntry = OBJ_NIL;
@@ -689,28 +735,25 @@ extern "C" {
 #else
         if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
         if( OBJ_NIL == pName ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
         }
 #endif
         
         hash = str_HashAcmW32(pName, NULL);
         pEntry = nodeHash_FindNodeW32( this, hash, pName );
         if (pEntry) {
-            if (ppNode) {
-                *ppNode = pEntry->pNode;
-            }
-            return ERESULT_SUCCESSFUL_COMPLETION;
+            this->eRc = ERESULT_SUCCESS;
+            return pEntry->pNode;
         }
         
         // Return to caller.
-        if (ppNode) {
-            *ppNode = OBJ_NIL;
-        }
-        return ERESULT_DATA_NOT_FOUND;
+        this->eRc = ERESULT_DATA_NOT_FOUND;
+        return OBJ_NIL;
     }
     
     

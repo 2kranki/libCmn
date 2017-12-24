@@ -47,7 +47,7 @@
 #include    <string.h>
 #include    <crc.h>
 #include    <dec.h>
-#include    <hjson.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -69,6 +69,73 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new null object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    uint64_t        dec_ParseObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        const
+        OBJ_INFO        *pInfo;
+        CRC_DATA        *pCrc = OBJ_NIL;
+        uint32_t        crc = 0;
+        uint32_t        crc2 = 0;
+        uint32_t        length = 0;
+        uint64_t        object = 0;
+        
+        pInfo = obj_getInfo(dec_Class());
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+        
+        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
+        
+        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        if (length == 8) {
+            ;
+        }
+        else {
+            fprintf(stderr, "ERROR - Invalid Length! %u\n", length);
+            goto exit00;
+        }
+
+        object = (uint64_t)jsonIn_FindIntegerNodeInHash(pParser, "data");
+        
+        pCrc = crc_New(CRC_TYPE_IEEE_32);
+        if (pCrc) {
+            crc2 = crc_AccumBlock(pCrc, 8, (void *)&object);
+            obj_Release(pCrc);
+            pCrc = OBJ_NIL;
+            if (crc == crc2) {
+                ;
+            }
+            else {
+                fprintf(stderr, "ERROR - CRC check failed! %u vs %u\n", crc, crc2);
+                goto exit00;
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - CRC object creation failed!\n");
+            goto exit00;
+        }
+        
+        
+        // Return to caller.
+    exit00:
+        return object;
+    }
+    
+    
+    
+
     
     
     /****************************************************************
@@ -81,269 +148,50 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         dec_UInt64FromJSONString(
-        ASTR_DATA       *pString,
-        uint64_t        *pData
+    uint64_t        dec_UInt64FromJSONString(
+        ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
-        NODE_DATA       *pFileNode = OBJ_NIL;
-        NODE_DATA       *pNode;
-        NODEHASH_DATA   *pHash;
+        JSONIN_DATA     *pParser;
         ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pStr2 = OBJ_NIL;
-        NAME_DATA       *pName = OBJ_NIL;
-        CRC_DATA        *pCrc = OBJ_NIL;
-        uint32_t        crc;
-        uint32_t        chkCrc;
-        uint32_t        length = 0;
         uint64_t        data = 0;
-        const
-        OBJ_INFO        *pInfo;
 
-        pInfo = dec_Vtbl.iVtbl.pInfo;
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
-            goto exit00;
-        }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-#ifdef NDEBUG
-#else
-#ifdef TRACE_FUNCTIONS
-        {
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-        }
-#endif
-#endif
-
-        eRc = nodeHash_FindA(pHash, "objectType", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
-                pStr = node_getData(pNode);
-                if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
-                }
-                else {
-                    fprintf(stderr,
-                            "ERROR - objectType is \"%s\", but need \"%s\"!\n",
-                            AStr_getData(pStr),
-                            pInfo->pClassName
-                            );
-#ifdef TRACE_FUNCTIONS
-                    pStr2 = nodeHash_ToDebugString(pHash, 0);
-                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                    DEBUG_BREAK();
-#endif
-                    eRc = ERESULT_GENERAL_FAILURE;
-                    goto exit00;
-                }
-                
-            }
-            else {
-                fprintf(stderr,
-                        "ERROR - objectType needs to be a \"string\"!\n"
-                        );
-#ifdef TRACE_FUNCTIONS
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-#endif
-                eRc = ERESULT_GENERAL_FAILURE;
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - objectType is missing!\n");
-#ifdef TRACE_FUNCTIONS
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-            DEBUG_BREAK();
-#endif
-            eRc = ERESULT_GENERAL_FAILURE;
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
         
-        eRc = nodeHash_FindA(pHash, "crc", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                crc = dec_getUint32A(AStr_getData(pStr));
-            }
-            else {
-                fprintf(stderr, "ERROR - crc should have a integer!\n");
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - crc is missing!\n");
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-            DEBUG_BREAK();
-            goto exit00;
-        }
-        
-        eRc = nodeHash_FindA(pHash, "len", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                length = (uint32_t)dec_getInt64A(AStr_getData(pStr));
-                if (!(length == 8)) {
-                    fprintf(stderr, "ERROR - length must be 8!\n");
-                    pStr2 = nodeHash_ToDebugString(pHash, 0);
-                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                    DEBUG_BREAK();
-                    goto exit00;
-                }
-            }
-            else {
-                fprintf(stderr, "ERROR - length should have a integer!\n");
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - length is missing!\n");
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-            DEBUG_BREAK();
-            goto exit00;
-        }
-        
-        eRc = nodeHash_FindA(pHash, "data", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                if (AStr_getLength(pStr) < 23) {
-                    data = dec_getUint64A(AStr_getData(pStr));
-                    pCrc = crc_New(CRC_TYPE_IEEE_32);
-                    chkCrc = crc_AccumBlock(pCrc, 8, (void *)&data);
-                    obj_Release(pCrc);
-                    pCrc = OBJ_NIL;
-                    if (chkCrc == crc)
-                        ;
-                    else {
-                        fprintf(stderr, "ERROR - crc does not match!\n");
-                        pStr2 = nodeHash_ToDebugString(pHash, 0);
-                        fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                        obj_Release(pStr2);
-                        pStr2 = OBJ_NIL;
-                        DEBUG_BREAK();
-                        goto exit00;
-                    }
-                }
-                else {
-                    fprintf(stderr, "ERROR - data size is wrong!\n");
-                    pStr2 = nodeHash_ToDebugString(pHash, 0);
-                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                    DEBUG_BREAK();
-                    goto exit00;
-                }
-            }
-            else {
-                fprintf(stderr, "ERROR - data should be an integer!\n");
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - data is missing!\n");
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-            DEBUG_BREAK();
-            goto exit00;
-        }
+        data = dec_ParseObject(pParser);
         
         // Return to caller.
     exit00:
-        if (pStr) {
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        if (pFileNode) {
-            obj_Release(pFileNode);
-            pFileNode = OBJ_NIL;
-        }
         if (pParser) {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
-        if (pData) {
-            *pData = data;
-        }
-        else {
-            mem_Free(pData);
-            pData = NULL;
-        }
-        return eRc;
+        return data;
     }
     
     
 
-    ERESULT         dec_UInt64FromJSONStringA(
+    uint64_t        dec_UInt64FromJSONStringA(
         const
-        char            *pString,
-        uint64_t        *pData
+        char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        ERESULT         eRc = ERESULT_FAILURE;
+        uint64_t        object = 0;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = dec_UInt64FromJSONString(pStr, pData);
+            object = dec_UInt64FromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
         // Return to caller.
-        return eRc;
+        return object;
     }
     
     

@@ -1018,6 +1018,45 @@ extern	"C" {
     }
 
 
+    OBJ_ID          obj_InitShared(
+        void            *pVoid,
+        uint16_t        size,
+        uint16_t        objectIdentifier
+    )
+    {
+        OBJ_DATA        *this = pVoid;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+#ifdef NDEBUG
+#else
+        if (size >= sizeof(OBJ_DATA)) {
+        }
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        this->cbFlags = 0;
+        // The following must initialize all fields in the
+        // OBJ_DATA structure;
+        this->pVtbl = &obj_Vtbl;
+        this->cbSize = size;
+        this->cbIdent = objectIdentifier;
+        obj_FlagOn(this, OBJ_FLAG_INIT);
+        this->cbRetainCount = 1;
+        //this->cbMisc = 0;
+        // We can't zero cbMisc, because data may be passed in it
+        // from Alloc().
+        
+        // Return to caller.
+        return (OBJ_ID)this;
+    }
+    
+    
 
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o

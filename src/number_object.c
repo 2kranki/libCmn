@@ -66,11 +66,6 @@ OBJ_INFO        number_Info;            // Forward Reference
 
 
 
-OBJ_ID          number_Class(
-    void
-);
-
-
 
 static
 bool            number_ClassIsKindOf(

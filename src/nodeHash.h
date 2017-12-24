@@ -125,6 +125,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    ERESULT         nodeHash_getLastError(
+        NODEHASH_DATA   *this
+    );
+    
+    
     /* Size() returns the current number of used entries.
      * Returns:
      *		Current Number of Entries in the Hash
@@ -172,19 +177,17 @@ extern "C" {
     );
 
 
-    ERESULT         nodeHash_FindA(
+    NODE_DATA *     nodeHash_FindA(
         NODEHASH_DATA	*this,
         const
-        char            *pName,
-        NODE_DATA       **ppNode
+        char            *pName
     );
     
     
-    ERESULT         nodeHash_FindW32(
+    NODE_DATA *     nodeHash_FindW32(
         NODEHASH_DATA	*this,
         const
-        W32CHR_T        *pName,
-        NODE_DATA       **ppNode
+        W32CHR_T        *pName
     );
     
     

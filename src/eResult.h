@@ -192,7 +192,8 @@ extern "C" {
         ERESULT_STOPPING                    = -259,
         ERESULT_STOPPED                     = -260,
         ERESULT_TIMEOUT                     = -261,
-        
+        ERESULT_PARSE_ERROR                 = -262,
+
         ERESULT_USER_START                  = -1024    /* First code for user usage */
         
     } ERESULT_CODES;

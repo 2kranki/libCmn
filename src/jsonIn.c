@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   srcError.c
- *	Generated 12/17/2017 07:12:30
+ * File:   jsonIn.c
+ *	Generated 12/21/2017 05:41:06
  *
  */
 
@@ -41,7 +41,12 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <srcError_internal.h>
+#include        <jsonIn_internal.h>
+#include        <dec.h>
+#include        <hex.h>
+#include        <name.h>
+#include        <node.h>
+#include        <nodeHash.h>
 
 
 
@@ -60,11 +65,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            srcError_task_body(
+    void            jsonIn_task_body(
         void            *pData
     )
     {
-        //SRCERROR_DATA  *this = pData;
+        //JSONIN_DATA  *this = pData;
         
     }
 #endif
@@ -80,11 +85,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SRCERROR_DATA *     srcError_Alloc(
+    JSONIN_DATA *     jsonIn_Alloc(
     )
     {
-        SRCERROR_DATA   *this;
-        uint32_t        cbSize = sizeof(SRCERROR_DATA);
+        JSONIN_DATA     *this;
+        uint32_t        cbSize = sizeof(JSONIN_DATA);
         
         // Do initialization.
         
@@ -96,112 +101,89 @@ extern "C" {
 
 
 
-    SRCERROR_DATA * srcError_New(
-        uint16_t        severity,
-        const
-        SRCLOC          *pLoc,
-        const
-        char            *pErrorString
+    JSONIN_DATA *   jsonIn_New(
     )
     {
-        SRCERROR_DATA   *this;
-
-        this = srcError_Alloc( );
+        JSONIN_DATA     *this;
+        
+        this = jsonIn_Alloc( );
         if (this) {
-            this = srcError_Init(this);
-            if (this) {
-                srcError_setSeverity(this, severity);
-                srcError_setLocation(this, pLoc);
-                this->pErrorStr = AStr_NewA(pErrorString);
-            }
+            this = jsonIn_Init(this);
         } 
         return this;
     }
 
 
-
-    SRCERROR_DATA * srcError_NewFatalFromToken(
-        TOKEN_DATA      *pToken,
-        const
-        char            *pErrorString
+    JSONIN_DATA *   jsonIn_NewFromHash(
+        NODEHASH_DATA   *pHash
     )
     {
-        SRCERROR_DATA   *this;
+        JSONIN_DATA     *this;
         
-        this = srcError_Alloc( );
+        if (OBJ_NIL == pHash) {
+            return OBJ_NIL;
+        }
+        this = jsonIn_Alloc( );
         if (this) {
-            this = srcError_Init(this);
+            this = jsonIn_Init(this);
             if (this) {
-                srcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
-                srcError_setLocation(this, token_getLoc(pToken));
-                this->pErrorStr = AStr_NewA(pErrorString);
+                jsonIn_setHash(this, pHash);
             }
         }
         return this;
     }
+    
+    
 
     
 
-
-    
-    
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                     E r r o r  S t r
+    //                         H a s h
     //---------------------------------------------------------------
     
-    ASTR_DATA *     srcError_getErrorStr(
-        SRCERROR_DATA   *this
+    NODEHASH_DATA * jsonIn_getHash(
+        JSONIN_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        srcError_setLastError(this, ERESULT_SUCCESS);
-        return this->pErrorStr;
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
+        return this->pHash;
     }
     
     
-    bool            srcError_setErrorStr(
-        SRCERROR_DATA   *this,
-        ASTR_DATA       *pValue
+    bool            jsonIn_setHash(
+        JSONIN_DATA     *this,
+        NODEHASH_DATA   *pValue
     )
     {
-        ASTR_DATA       *pStr;
-        
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-       
-        if (pValue) {
-            pStr = AStr_Copy(pValue);
-            if (OBJ_NIL == pStr) {
-                srcError_setLastError(this, ERESULT_OUT_OF_MEMORY);
-                return false;
-            }
-        }
-        //obj_Retain(pValue);
         
-        if (this->pErrorStr) {
-            obj_Release(this->pErrorStr);
+        obj_Retain(pValue);
+        if (this->pHash) {
+            obj_Release(this->pHash);
         }
-        this->pErrorStr = pValue;
+        this->pHash = pValue;
         
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -211,15 +193,15 @@ extern "C" {
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         srcError_getLastError(
-        SRCERROR_DATA     *this
+    ERESULT         jsonIn_getLastError(
+        JSONIN_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -230,14 +212,14 @@ extern "C" {
     }
 
 
-    bool            srcError_setLastError(
-        SRCERROR_DATA     *this,
+    bool            jsonIn_setLastError(
+        JSONIN_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -251,94 +233,93 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //                     L o c a t i o n
+    //                         L i s t
     //---------------------------------------------------------------
     
-    SRCLOC *        srcError_getLocation(
-        SRCERROR_DATA   *this
+    OBJLIST_DATA *  jsonIn_getList(
+        JSONIN_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        srcError_setLastError(this, ERESULT_SUCCESS);
-        return &this->loc;
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
+        return this->pList;
     }
     
     
-    bool            srcError_setLocation(
-        SRCERROR_DATA   *this,
-        const
-        SRCLOC          *pValue
+    bool            jsonIn_setList(
+        JSONIN_DATA     *this,
+        OBJLIST_DATA    *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (pValue) {
-            memmove(&this->loc, pValue, sizeof(SRCLOC));
+        obj_Retain(pValue);
+        if (this->pList) {
+            obj_Release(this->pList);
         }
-        else {
-            memset(&this->loc, 0, sizeof(SRCLOC));
-        }
+        this->pList = pValue;
         
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
     
     //---------------------------------------------------------------
-    //                          S e v e r i t y
+    //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        srcError_getSeverity(
-        SRCERROR_DATA   *this
+    uint16_t        jsonIn_getPriority(
+        JSONIN_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        srcError_setLastError(this, ERESULT_SUCCESS);
-        return this->severity;
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
+        //return this->priority;
+        return 0;
     }
 
 
-    bool            srcError_setSeverity(
-        SRCERROR_DATA   *this,
+    bool            jsonIn_setPriority(
+        JSONIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        this->severity = value;
+        //this->priority = value;
 
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -348,19 +329,19 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        srcError_getSize(
-        SRCERROR_DATA       *this
+    uint32_t        jsonIn_getSize(
+        JSONIN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -370,22 +351,22 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  srcError_getSuperVtbl(
-        SRCERROR_DATA     *this
+    OBJ_IUNKNOWN *  jsonIn_getSuperVtbl(
+        JSONIN_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -408,58 +389,105 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = srcError__Assign(this,pOther);
+        ERESULT eRc = jsonIn__Assign(this,pOther);
      @endcode 
-     @param     this    SRCERROR object pointer
-     @param     pOther  a pointer to another SRCERROR object
+     @param     this    JSONIN object pointer
+     @param     pOther  a pointer to another JSONIN object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         srcError_Assign(
-        SRCERROR_DATA		*this,
-        SRCERROR_DATA      *pOther
+    ERESULT         jsonIn_Assign(
+        JSONIN_DATA		*this,
+        JSONIN_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !srcError_Validate(pOther) ) {
+        if( !jsonIn_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-        srcError_setErrorStr(pOther, OBJ_NIL);
+#ifdef  XYZZY
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
+        }
+#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        
-        if (this->pErrorStr) {
-            if (obj_getVtbl(this->pErrorStr)->pCopy) {
-                pOther->pErrorStr = obj_getVtbl(this->pErrorStr)->pCopy(this->pErrorStr);
+#ifdef  XYZZY
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
             }
             else {
-                obj_Retain(this->pErrorStr);
-                pOther->pErrorStr = this->pErrorStr;
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
             }
         }
+#endif
 
         // Copy other data from this object to other.
-        pOther->severity = this->severity;
-        srcError_setLocation(pOther, &this->loc);
         
         //goto eom;
 
         // Return to caller.
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
     eom:
-        return srcError_getLastError(this);
+        //FIXME: Implement the assignment.        
+        jsonIn_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return jsonIn_getLastError(this);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //              C o n f i r m  O b j e c t  T y p e
+    //---------------------------------------------------------------
+    
+    ERESULT         jsonIn_ConfirmObjectType(
+        JSONIN_DATA     *this,
+        const
+        char            *pType
+    )
+    {
+        ASTR_DATA       *pStr;
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pStr = jsonIn_FindStringNodeInHash(this, "objectType");
+        if (OBJ_NIL == pStr) {
+            this->eRc = ERESULT_DATA_NOT_FOUND;
+            return this->eRc;
+        }
+        
+        iRc = strcmp(pType, AStr_getData(pStr));
+        if (!(0 == iRc)) {
+            this->eRc = ERESULT_DATA_NOT_FOUND;
+            return this->eRc;
+        }
+        
+        // Return to caller.
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     
@@ -472,42 +500,41 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        srcError      *pCopy = srcError_Copy(this);
+        jsonIn      *pCopy = jsonIn_Copy(this);
      @endcode 
-     @param     this    SRCERROR object pointer
-     @return    If successful, a SRCERROR object which must be released,
+     @param     this    JSONIN object pointer
+     @return    If successful, a JSONIN object which must be released,
                 otherwise OBJ_NIL.
-     @warning  Remember to release the returned the SRCERROR object.
+     @warning  Remember to release the returned the JSONIN object.
      */
-    SRCERROR_DATA * srcError_Copy(
-        SRCERROR_DATA   *this
+    JSONIN_DATA *   jsonIn_Copy(
+        JSONIN_DATA     *this
     )
     {
-        SRCERROR_DATA       *pOther = OBJ_NIL;
+        JSONIN_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther =    srcError_New(
-                                 this->severity,
-                                 &this->loc,
-                                 AStr_getData(this->pErrorStr)
-                    );
-        if (OBJ_NIL == pOther) {
-            srcError_setLastError(this, ERESULT_GENERAL_FAILURE);
-            return OBJ_NIL;
+        pOther = jsonIn_New( );
+        if (pOther) {
+            eRc = jsonIn_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
         }
         
         // Return to caller.
         //obj_Release(pOther);
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -517,11 +544,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            srcError_Dealloc(
+    void            jsonIn_Dealloc(
         OBJ_ID          objId
     )
     {
-        SRCERROR_DATA   *this = objId;
+        JSONIN_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -529,19 +556,17 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((SRCERROR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        while (objList_getSize(this->pList)) {
+            jsonIn_SubobjectEnd(this);
         }
-#endif
-
-        srcError_setErrorStr(this, OBJ_NIL);
+        jsonIn_setHash(this, OBJ_NIL);
+        jsonIn_setList(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -558,15 +583,15 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         srcError_Disable(
-        SRCERROR_DATA		*this
+    ERESULT         jsonIn_Disable(
+        JSONIN_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -577,7 +602,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -587,15 +612,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         srcError_Enable(
-        SRCERROR_DATA		*this
+    ERESULT         jsonIn_Enable(
+        JSONIN_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -606,21 +631,134 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
 
 
     //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     jsonIn_FindNodeInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection,
+        const
+        char            *pType
+    )
+    {
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(this->pHash, pSection);
+        if (OBJ_NIL == pNode) {
+            return OBJ_NIL;
+        }
+        pNode = node_getData(pNode);
+        if (OBJ_NIL == pNode) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pNode);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, pType))) {
+            return OBJ_NIL;
+        }
+
+        return pNode;
+    }
+    
+    
+    
+    int64_t         jsonIn_FindIntegerNodeInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection
+    )
+    {
+        NODE_DATA       *pNode;
+        ASTR_DATA       *pData;
+        int64_t         num = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        pNode = jsonIn_FindNodeInHash(this, pSection, "integer");
+        if (OBJ_NIL == pNode) {
+            return num;
+        }
+        pData = node_getData(pNode);
+        if (pData) {
+            num = dec_getInt64A(AStr_getData(pData));
+        }
+        
+        return num;
+    }
+    
+    
+    
+    bool        jsonIn_FindNullNodeInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection
+    )
+    {
+        NODE_DATA       *pNode;
+        
+        pNode = jsonIn_FindNodeInHash(this, pSection, "null");
+        if (OBJ_NIL == pNode) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    
+    ASTR_DATA *     jsonIn_FindStringNodeInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection
+    )
+    {
+        NODE_DATA       *pNode;
+        ASTR_DATA       *pAStr = OBJ_NIL;
+        
+        pNode = jsonIn_FindNodeInHash(this, pSection, "string");
+        if (OBJ_NIL == pNode) {
+            return OBJ_NIL;
+        }
+        pAStr = node_getData(pNode);
+        
+        return pAStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SRCERROR_DATA *   srcError_Init(
-        SRCERROR_DATA       *this
+    JSONIN_DATA *   jsonIn_Init(
+        JSONIN_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SRCERROR_DATA);
+        uint32_t        cbSize = sizeof(JSONIN_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -637,34 +775,34 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SRCERROR);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_JSONIN);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCERROR);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_JSONIN);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcError_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&jsonIn_Vtbl);
         
-        srcError_setLastError(this, ERESULT_GENERAL_FAILURE);
+        jsonIn_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pList = objList_New( );
 
     #ifdef NDEBUG
     #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "srcError::offsetof(eRc) = %lu\n", offsetof(SRCERROR_DATA,eRc));
-        //fprintf(stderr, "srcError::sizeof(SRCERROR_DATA) = %lu\n", sizeof(SRCERROR_DATA));
+        //fprintf(stderr, "jsonIn::offsetof(eRc) = %lu\n", offsetof(JSONIN_DATA,eRc));
+        //fprintf(stderr, "jsonIn::sizeof(JSONIN_DATA) = %lu\n", sizeof(JSONIN_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(SRCERROR_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(JSONIN_DATA));
     #endif
 
         return this;
@@ -676,28 +814,96 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         srcError_IsEnabled(
-        SRCERROR_DATA		*this
+    ERESULT         jsonIn_IsEnabled(
+        JSONIN_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            srcError_setLastError(this, ERESULT_SUCCESS_TRUE);
+            jsonIn_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        srcError_setLastError(this, ERESULT_SUCCESS_FALSE);
+        jsonIn_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       P a r s e
+    //---------------------------------------------------------------
+    
+    ERESULT         jsonIn_ParseAStr(
+        JSONIN_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        HJSON_DATA      *pParser;
+        NODE_DATA       *pNode;
+        NODEHASH_DATA   *pHash;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (obj_Trace(this)) {
+            fprintf(stderr, "jsonIn_ParseAStr: string=%s\n", AStr_getData(pStr));
+        }
+#endif
+        
+        pParser = hjson_NewAStr(pStr, 4);
+        if (OBJ_NIL == pParser) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return ERESULT_OUT_OF_MEMORY;
+        }
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            obj_TraceSet(pParser, true);
+        }
+#endif
+
+        pNode = hjson_ParseFile(pParser);
+        if (OBJ_NIL == pNode) {
+            obj_Release(pParser);
+            this->eRc = ERESULT_PARSE_ERROR;
+            return ERESULT_PARSE_ERROR;
+        }
+
+        pHash = node_getData(pNode);
+        if (OBJ_NIL == pHash) {
+            this->eRc = ERESULT_DATA_MISSING;
+            return ERESULT_DATA_MISSING;
+        }
+        jsonIn_setHash(this, pHash);
+
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
+        
+        // Return to caller.
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     
@@ -713,14 +919,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = srcError_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = jsonIn_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "srcError", prefix,
+                        the object name, "jsonIn", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -728,13 +934,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          srcError_QueryInfo(
+    void *          jsonIn_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SRCERROR_DATA     *this = objId;
+        JSONIN_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -743,13 +949,17 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         
         switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)jsonIn_Class();
+                break;
                 
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
@@ -760,22 +970,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return srcError_Disable;
+                            return jsonIn_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return srcError_Enable;
+                            return jsonIn_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return srcError_ToDebugString;
+                            return jsonIn_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return srcError_ToJSON;
+                            return jsonIn_ToJSON;
                         }
                         break;
                         
@@ -785,9 +995,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == srcError_ToDebugString)
+                if (pData == jsonIn_ToDebugString)
                     return "ToDebugString";
-                if (pData == srcError_ToJSON)
+                if (pData == jsonIn_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -801,6 +1011,74 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     S u b  O b j e c t
+    //---------------------------------------------------------------
+    
+    bool            jsonIn_SubobjectEnd(
+        JSONIN_DATA     *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (objList_getSize(this->pList) > 0) {
+            this->pHash = objList_Tail(this->pList);
+            objList_DeleteTail(this->pList);
+            fRc = true;
+        }
+        
+        return fRc;
+    }
+    
+    
+    NODEHASH_DATA * jsonIn_SubobjectInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection
+    )
+    {
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(this->pHash, pSection);
+        if (OBJ_NIL == pNode) {
+            return OBJ_NIL;
+        }
+        pNode = node_getData(pNode);
+        if (OBJ_NIL == pNode) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pNode);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
+            return OBJ_NIL;
+        }
+        
+        objList_Add2Tail(this->pList, this->pHash);
+        this->pHash = node_getData(pNode);
+        
+        return this->pHash;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -808,62 +1086,58 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = srcError_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = jsonIn_ToDebugString(this,4);
      @endcode 
-     @param     this    SRCERROR object pointer
+     @param     this    JSONIN object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcError_ToDebugString(
-        SRCERROR_DATA      *this,
+    ASTR_DATA *     jsonIn_ToDebugString(
+        JSONIN_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = srcError_Vtbl.iVtbl.pInfo;
+        pInfo = jsonIn_Vtbl.iVtbl.pInfo;
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        eRc = AStr_AppendPrint(
+        eRc =   AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s)\n",
                     this,
-                    pInfo->pClassName,
-                    srcError_getSize(this)
-            );
+                    pInfo->pClassName
+                );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
+        if (this->pHash) {
+            if (((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString(
+                                                    this->pHash,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
             }
         }
-#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -875,10 +1149,42 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        srcError_setLastError(this, ERESULT_SUCCESS);
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
+    
+    
+    ASTR_DATA *     jsonIn_ToJSON(
+        JSONIN_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    "{\"objectType\":\"%s\"",
+                    pInfo->pClassName
+                );
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
     
     
     
@@ -888,15 +1194,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            srcError_Validate(
-        SRCERROR_DATA      *this
+    bool            jsonIn_Validate(
+        JSONIN_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SRCERROR) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_JSONIN) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -912,7 +1218,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SRCERROR_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(JSONIN_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

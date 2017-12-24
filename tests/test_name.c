@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <name_internal.h>
 
@@ -50,7 +51,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
+    szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -94,7 +95,7 @@ int         test_name_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -106,7 +107,6 @@ int         test_name_UTF8(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     const
     char        *pChrs = NULL;
@@ -130,7 +130,7 @@ int         test_name_UTF8(
         pName1 = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -142,7 +142,6 @@ int         test_name_UTF8Con(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     const
     char        *pChrs = NULL;
@@ -166,7 +165,7 @@ int         test_name_UTF8Con(
         pName1 = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -178,7 +177,6 @@ int         test_name_Int(
 )
 {
     NAME_DATA	*pName1 = OBJ_NIL;
-    //WSTR_DATA   *pWStr1 = OBJ_NIL;
     ASTR_DATA   *pAStr1 = OBJ_NIL;
     
     
@@ -197,125 +195,139 @@ int         test_name_Int(
         pName1 = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_name_Obj(
+int         test_name_JSON01_UTF8(
     const
     char        *pTestName
 )
 {
+    ERESULT     eRc;
     NAME_DATA	*pName1 = OBJ_NIL;
+    NAME_DATA   *pName2 = OBJ_NIL;
+    ASTR_DATA   *pJSON = OBJ_NIL;
+    static
     const
-    char        *pStr = NULL;
-    //WSTR_DATA   *pWStr1 = OBJ_NIL;
-    //ASTR_DATA   *pAStr1 = OBJ_NIL;
-    
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    //TODO: pName1 = name_NewObj( test_name_Ptr );
-    XCTAssertFalse( (OBJ_NIL == pName1) );
-    if (pName1) {
-        
-        pStr = name_ToUTF8(pName1);
-        XCTAssertTrue( (pStr) );
-        fprintf(stderr, "ptr = %s\n", pStr);
-        mem_Free((void *)pStr);
-        
-        obj_Release(pName1);
-        pName1 = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-int         test_name_ToJSON_UTF8(
-    const
-    char        *pTestName
-)
-{
-    NAME_DATA	*pName1 = OBJ_NIL;
-    //WSTR_DATA   *pWStr1 = OBJ_NIL;
-    ASTR_DATA   *pAStr1 = OBJ_NIL;
-    const
-    char        *pChrs = NULL;
+    char        *pJSON01 =  "{\"objectType\":\"name\", "
+                                "\"type\":2 /*NAME_TYPE_UTF8*/, "
+                                "\"data\":{"
+                                    "\"objectType\":\"utf8\", "
+                                    "\"crc\":891568578, "
+                                    "\"len\":3, "
+                                    "\"data\":\"abc\" "
+                                "}\n"
+                            "}\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    
     pName1 = name_NewUTF8( "abc" );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
 
-        pAStr1 = name_getStrA(pName1);
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
-        obj_Release(pAStr1);
-        pAStr1 = OBJ_NIL;
+        pJSON = name_ToJSON(pName1);
+        XCTAssertFalse( (OBJ_NIL == pJSON) );
+        fprintf(stderr, "\tjSON=\"%s\"\n", AStr_getData(pJSON));
+        eRc = AStr_CompareA(pJSON, pJSON01);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
 
-        pChrs = name_getUTF8(pName1);
-        XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
-        mem_Free((void *)pChrs);
-        pChrs = NULL;
+        pName2 = name_NewFromJSONString(pJSON);
+        eRc = name_CompareA(pName2, "abc");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pName2);
+        pName2 = OBJ_NIL;
+        
+        obj_Release(pJSON);
+        pJSON = OBJ_NIL;
 
         obj_Release(pName1);
         pName1 = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_name_ToJSON_UTF8Con(
+int         test_name_JSON01_UTF8Con(
     const
     char        *pTestName
 )
 {
+    ERESULT     eRc;
     NAME_DATA	*pName1 = OBJ_NIL;
-    W32STR_DATA *pWStr1 = OBJ_NIL;
-    ASTR_DATA   *pAStr1 = OBJ_NIL;
+    NAME_DATA   *pName2 = OBJ_NIL;
+    ASTR_DATA   *pJSON = OBJ_NIL;
+    static
     const
-    char        *pChrs = NULL;
-    
+    char        *pJSON01 =  "{\"objectType\":\"name\", "
+                                "\"type\":2 /*NAME_TYPE_UTF8*/, "
+                                "\"data\":{"
+                                    "\"objectType\":\"utf8\", "
+                                    "\"crc\":891568578, "
+                                    "\"len\":3, "
+                                    "\"data\":\"abc\" "
+                                "}\n"
+                            "}\n";
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pName1 = name_NewUTF8Con( "abc" );
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
         
-        pAStr1 = name_getStrA(pName1);
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
-        obj_Release(pAStr1);
-        pAStr1 = OBJ_NIL;
+        pJSON = name_ToJSON(pName1);
+        XCTAssertFalse( (OBJ_NIL == pJSON) );
+        fprintf(stderr, "\tjSON=\"%s\"\n", AStr_getData(pJSON));
+        eRc = AStr_CompareA(pJSON, pJSON01);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
-        pChrs = name_getUTF8(pName1);
-        XCTAssertTrue( (0 == str_Compare("abc", pChrs)) );
-        mem_Free((void *)pChrs);
-        pChrs = NULL;
+        pName2 = name_NewFromJSONString(pJSON);
+        eRc = name_CompareA(pName2, "abc");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        
+        obj_Release(pName2);
+        pName2 = OBJ_NIL;
+        
+        obj_Release(pJSON);
+        pJSON = OBJ_NIL;
         
         obj_Release(pName1);
         pName1 = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_name_ToJSON_Int(
+int         test_name_JSON01_Int(
     const
     char        *pTestName
 )
 {
+    ERESULT     eRc;
     NAME_DATA	*pName1 = OBJ_NIL;
-    W32STR_DATA *pWStr1 = OBJ_NIL;
-    ASTR_DATA   *pAStr1 = OBJ_NIL;
-    
+    NAME_DATA   *pName2 = OBJ_NIL;
+    ASTR_DATA   *pJSON = OBJ_NIL;
+    ASTR_DATA   *pAStr = OBJ_NIL;
+    static
+    const
+    char        *pJSON01 =  "{\"objectType\":\"name\", "
+                                "\"type\":1 /*NAME_TYPE_INTEGER*/, "
+                                "\"data\":{ "
+                                    "\"objectType\":\"dec\", "
+                                    "\"len\":8, "
+                                    "\"crc\":333216031, "
+                                    "\"data\":123456 "
+                                "}\n"
+                            "}\n";
+
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -323,66 +335,34 @@ int         test_name_ToJSON_Int(
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
         
-        pAStr1 = name_getStrA(pName1);
+        pAStr = name_getStrA(pName1);
         fprintf(stderr, "Need = \"0000000000000123456\"\n");
-        fprintf(stderr, "Got  = \"%s\"\n", AStr_getData(pAStr1));
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "0000000000000123456")) );
-        obj_Release(pAStr1);
-        pAStr1 = OBJ_NIL;
+        fprintf(stderr, "Got  = \"%s\"\n", AStr_getData(pAStr));
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr, "0000000000000123456")) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+        
+        pJSON = name_ToJSON(pName1);
+        XCTAssertFalse( (OBJ_NIL == pJSON) );
+        fprintf(stderr, "\tjSON=\"%s\"\n", AStr_getData(pJSON));
+        eRc = AStr_CompareA(pJSON, pJSON01);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        
+        pName2 = name_NewFromJSONString(pJSON);
+        eRc = name_CompareA(pName2, "123456");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        
+        obj_Release(pName2);
+        pName2 = OBJ_NIL;
+        
+        obj_Release(pJSON);
+        pJSON = OBJ_NIL;
         
         obj_Release(pName1);
         pName1 = OBJ_NIL;
     }
     
-    pName1 = name_NewInt( -123456 );
-    XCTAssertFalse( (OBJ_NIL == pName1) );
-    if (pName1) {
-        
-        pAStr1 = name_getStrA(pName1);
-        fprintf(stderr, "Need = \"-0000000000000123456\"\n");
-        fprintf(stderr, "Got  = \"%s\"\n", AStr_getData(pAStr1));
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "-0000000000000123456")) );
-        obj_Release(pAStr1);
-        pAStr1 = OBJ_NIL;
-        
-        obj_Release(pName1);
-        pName1 = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-int         test_name_ToJSON_Obj(
-    const
-    char        *pTestName
-)
-{
-    NAME_DATA	*pName1 = OBJ_NIL;
-    const
-    char        *pStr = NULL;
-    W32STR_DATA *pWStr1 = OBJ_NIL;
-    ASTR_DATA   *pAStr1 = OBJ_NIL;
-    
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    //TODO: pName1 = name_NewObj( test_name_Ptr );
-    XCTAssertFalse( (OBJ_NIL == pName1) );
-    if (pName1) {
-        
-        pStr = name_ToUTF8(pName1);
-        XCTAssertTrue( (pStr) );
-        fprintf(stderr, "ptr = %s\n", pStr);
-        mem_Free((void *)pStr);
-        pStr = NULL;
-        
-        obj_Release(pName1);
-        pName1 = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -390,11 +370,9 @@ int         test_name_ToJSON_Obj(
 
 
 TINYTEST_START_SUITE(test_name);
-  //TINYTEST_ADD_TEST(test_name_ToJSON_Obj,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_name_ToJSON_Int,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_name_ToJSON_UTF8Con,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_name_ToJSON_UTF8,setUp,tearDown);
-  //TINYTEST_ADD_TEST(test_name_Obj,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_JSON01_Int,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_JSON01_UTF8Con,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_JSON01_UTF8,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_Int,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_UTF8Con,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_UTF8,setUp,tearDown);

@@ -69,7 +69,9 @@ struct number_data_s	{
         uint32_t        u32;                // uint32
         uint64_t		u64;                // uint64
 //        uint128_t		u128;               // uint128
+#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         double          flt;
+#endif
     };
 
 };

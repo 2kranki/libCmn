@@ -324,8 +324,10 @@ extern "C" {
     {
         int             len = 0;
         
-        while (*pSrc++) {
-            ++len;
+        if (pSrc) {
+            while (*pSrc++) {
+                ++len;
+            }
         }
         
         return len;
@@ -383,6 +385,83 @@ extern "C" {
         }
         
         return len;
+    }
+    
+    
+    
+    W32CHR_T        utf8_ChrConToW32_Scan(
+        const
+        char            **ppSrc
+    )
+    {
+        char            wrk;
+        W32CHR_T        ch = 0;
+
+        if (**ppSrc == '\0')
+            return -1;
+        
+        // Look for escaped sequence.
+        if (**ppSrc == '\\') {
+            wrk = *(*ppSrc + 1);
+            switch (wrk) {
+                case '\\':
+                    *ppSrc += 2;
+                    return '\\';
+                    break;
+                case '\"':
+                    *ppSrc += 2;
+                    return '\"';
+                    break;
+                case 'f':
+                    *ppSrc += 2;
+                    return '\f';
+                    break;
+                case 'n':
+                    *ppSrc += 2;
+                    return '\n';
+                    break;
+                case 'r':
+                    *ppSrc += 2;
+                    return '\r';
+                    break;
+                case 't':
+                    *ppSrc += 2;
+                    return '\t';
+                    break;
+                case 'x':
+                    ch  = hex_DigitToIntA(*(*ppSrc + 2)) << 4;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 3));
+                    *ppSrc += 4;
+                    return ch;
+                    break;
+                case 'u':
+                    ch  = hex_DigitToIntA(*(*ppSrc + 2)) << 12;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 3)) << 8;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 4)) << 4;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 5));
+                    *ppSrc += 6;
+                    return ch;
+                    break;
+                case 'U':
+                    ch  = hex_DigitToIntA(*(*ppSrc + 2)) << 28;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 3)) << 24;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 4)) << 20;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 5)) << 16;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 6)) << 12;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 7)) <<  8;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 8)) <<  4;
+                    ch |= hex_DigitToIntA(*(*ppSrc + 9));
+                    *ppSrc += 10;
+                    return ch;
+                    break;
+                default:
+                    return -1;
+            }
+        }
+        
+        ch = **ppSrc;
+        *ppSrc += 1;
+        return ch;
     }
     
     
@@ -656,7 +735,7 @@ extern "C" {
                 case 13:
                     if (pDest) {
                         *pDest++ = '\\';
-                        *pDest++ = 'f';
+                        *pDest++ = 'n';
                         *pDest = '\0';
                     }
                     return 2;

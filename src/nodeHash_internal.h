@@ -80,6 +80,7 @@ struct nodeHash_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
+    ERESULT         eRc;
     uint32_t        size;
     uint32_t        unique;
 
@@ -99,6 +100,12 @@ struct nodeHash_data_s	{
 
 
     // Internal Functions
+    bool            nodeHash_setLastError(
+        NODEHASH_DATA   *this,
+        ERESULT         value
+    );
+    
+    
     void            nodeHash_Dealloc(
         OBJ_ID          objId
     );

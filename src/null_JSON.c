@@ -45,10 +45,11 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    "hjson.h"
-#include    "node.h"
-#include    "nodeHash.h"
-#include    "utf8.h"
+#include    <dec.h>
+#include    <jsonIn_internal.h>
+#include    <node.h>
+#include    <nodeHash.h>
+#include    <utf8.h>
 
 
 
@@ -65,7 +66,48 @@ extern "C" {
     /****************************************************************
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
+
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new null object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    NULL_DATA *     null_ParseObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        NULL_DATA       *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        
+        pInfo = obj_getInfo(null_Class());
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+        
+        // Create the object since "objectType" checked out.
+        pObject = null_New();
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+        // Return to caller.
+    exit00:
+        if (pParser) {
+            obj_Release(pParser);
+            pParser = OBJ_NIL;
+        }
+        return pObject;
+    }
     
+    
+    
+
     
     
     /****************************************************************
@@ -78,122 +120,62 @@ extern "C" {
     //===============================================================
     
 
-    NULL_DATA *     null_NewFromJSONString(
-        ASTR_DATA       *pString
+    NULL_DATA *     null_NewFromHash(
+        NODEHASH_DATA   *pHash
     )
     {
-        HJSON_DATA      *pParser;
-        NODE_DATA       *pFileNode = OBJ_NIL;
-        NODE_DATA       *pNode;
-        NODEHASH_DATA   *pHash;
-        ERESULT         eRc;
-        uint16_t        fileIndex = 0;
-        int32_t         offset = 0;
-        uint32_t        lineNo = 0;
-        uint16_t        colNo = 0;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        NAME_DATA       *pName = OBJ_NIL;
+        JSONIN_DATA     *pParser;
         NULL_DATA       *pObject = OBJ_NIL;
-        PATH_DATA       *pPath = path_NewA("?");
+        const
+        OBJ_INFO        *pInfo;
         
-        pParser = hjson_NewAStr(pString, 4);
+        pInfo = obj_getInfo(null_Class());
+        
+        pParser = jsonIn_New();
         if (OBJ_NIL == pParser) {
-            goto exit00;
+            return OBJ_NIL;
         }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pObject = null_Alloc();
-        pObject = null_Init(pObject);
-        if (OBJ_NIL == pObject) {
-            goto exit00;
-        }
-        //fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-
-#ifdef XYZZY
-        eRc = nodeHash_FindA(pHash, "FileIndex", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                fileIndex = AStr_ToInt64(pStr) & 0xFFFFFFFF;
-            }
-            else {
-                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
+        jsonIn_setHash(pParser, pHash);
         
-        eRc = nodeHash_FindA(pHash, "Offset", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                offset = AStr_ToInt64(pStr) & 0xFFFFFFFF;
-            }
-            else {
-                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
+        pObject = null_ParseObject(pParser);
         
-        eRc = nodeHash_FindA(pHash, "LineNo", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                lineNo = AStr_ToInt64(pStr) & 0xFFFFFFFF;
-            }
-            else {
-                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        
-        eRc = nodeHash_FindA(pHash, "ColNo", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                colNo = AStr_ToInt64(pStr) & 0xFFFF;
-            }
-            else {
-                fprintf(stderr, "ERROR - colNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-#endif
-              
         // Return to caller.
-    exit00:
-        if (pFileNode) {
-            obj_Release(pFileNode);
-            pFileNode = OBJ_NIL;
-        }
         if (pParser) {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
-        if (pPath) {
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
+        return pObject;
+    }
+    
+    
+    
+    NULL_DATA *     null_NewFromJSONString(
+        ASTR_DATA       *pString
+    )
+    {
+        ERESULT         eRc;
+        JSONIN_DATA     *pParser;
+        NULL_DATA       *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = obj_getInfo(null_Class());
+
+        pParser = jsonIn_New();
+        if (OBJ_NIL == pParser) {
+            return OBJ_NIL;
+        }
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
+            return OBJ_NIL;
+        }
+        
+        pObject = null_ParseObject(pParser);
+        
+        // Return to caller.
+        if (pParser) {
+            obj_Release(pParser);
+            pParser = OBJ_NIL;
         }
         return pObject;
     }
@@ -253,7 +235,7 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        AStr_AppendPrint(pStr, "{ \"objectType\":\"%s\"}\n", pInfo->pClassName);
+        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"}\n", pInfo->pClassName);
         
         //BREAK_TRUE(AStr_getLength(pStr) > 2048);
         

@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcLoc_internal.h
- *	Generated 01/01/2016 08:01:11
+ * File:   jsonIn_internal.h
+ *	Generated 12/21/2017 05:41:06
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,54 +39,96 @@
 
 
 
-#ifndef SRCLOC_INTERNAL_H
-#define	SRCLOC_INTERNAL_H
+#include    <jsonIn.h>
+#include    <hjson.h>
+#include    <objList.h>
 
 
-#include    "srcLoc.h"
+#ifndef JSONIN_INTERNAL_H
+#define	JSONIN_INTERNAL_H
+
+
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
-    
-#pragma pack(push, 1)
-struct srcLoc_data_s	{
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+ #pragma pack(push, 1)
+struct jsonIn_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-#define SRCLOC_FLAG_ALLOC       OBJ_FLAG_USER1  // We allocated token data
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    SRCLOC          *pData;
-    // NOTE -- Do NOT declare any variables here, put them above "data".
+    ERESULT         eRc;
+    NODEHASH_DATA   *pHash;         // Reference only
+    OBJLIST_DATA    *pList;
+
 };
 #pragma pack(pop)
 
     extern
     const
-    OBJ_IUNKNOWN    srcLoc_Vtbl;
+    struct jsonIn_class_data_s  jsonIn_ClassObj;
+
+    extern
+    const
+    JSONIN_VTBL         jsonIn_Vtbl;
 
 
 
-    // Internal Functions
-    void            srcLoc_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    bool            jsonIn_setHash(
+        JSONIN_DATA     *this,
+        NODEHASH_DATA   *pValue
+    );
+    
+    
+    bool            jsonIn_setLastError(
+        JSONIN_DATA     *this,
+        ERESULT         value
+    );
+
+
+    OBJ_IUNKNOWN *  jsonIn_getSuperVtbl(
+        JSONIN_DATA     *this
+    );
+
+
+    void            jsonIn_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          srcLoc_QueryInfo(
+    void *          jsonIn_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     jsonIn_ToJSON(
+        JSONIN_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			srcLoc_Validate(
-        SRCLOC_DATA       *this
+    bool			jsonIn_Validate(
+        JSONIN_DATA       *this
     );
 #endif
 
@@ -95,5 +138,5 @@ struct srcLoc_data_s	{
 }
 #endif
 
-#endif	/* SRCLOC_INTERNAL_H */
+#endif	/* JSONIN_INTERNAL_H */
 

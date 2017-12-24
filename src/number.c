@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <number_internal.h>
+#include <dec.h>
 #include <stdio.h>
 
 
@@ -74,15 +75,15 @@ extern "C" {
     NUMBER_DATA *     number_Alloc(
     )
     {
-        NUMBER_DATA       *cbp;
+        NUMBER_DATA     *this;
         uint32_t        cbSize = sizeof(NUMBER_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -100,6 +101,20 @@ extern "C" {
     }
 
 
+    NUMBER_DATA *   number_NewInt16(
+        int16_t         value
+    )
+    {
+        NUMBER_DATA     *this;
+        
+        this = number_Alloc( );
+        if (this) {
+            this = number_InitI16(this, value);
+        }
+        return this;
+    }
+    
+    
     NUMBER_DATA *   number_NewInt32(
         int32_t         value
     )
@@ -238,6 +253,75 @@ extern "C" {
         }
         
         // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    ERESULT         number_CompareA(
+        NUMBER_DATA     *this,
+        const
+        char            *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int64_t         integer;
+        
+#ifdef NDEBUG
+#else
+        if( !number_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pOther ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        integer = dec_getInt64A(pOther);
+        switch (this->type) {
+            case NUMBER_TYPE_INT16:          // int16_t
+                i = this->i16 - (int16_t)integer;
+                break;
+                
+            case NUMBER_TYPE_INT32:          // int32_t
+                i = this->i32 - (int32_t)integer;
+                break;
+                
+            case NUMBER_TYPE_INT64:          // int64_t
+                i = (int)(this->i64 - integer);
+                break;
+                
+                //case NUMBER_TYPE_INT128:         // int128_t
+            case NUMBER_TYPE_UINT16:         // uint16_t
+                i = this->u16 - (uint16_t)integer;
+                break;
+                
+            case NUMBER_TYPE_UINT32:         // uint32_t
+                i = this->u32 - (uint32_t)integer;
+                break;
+                
+            case NUMBER_TYPE_UINT64:         // uint64_t
+                i = (int)(this->u64 - integer);
+                break;
+                
+            default:
+                break;
+        }
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
         return eRc;
     }
     
@@ -728,7 +812,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = NUMBER_TYPE_INT32;
+        this->type = NUMBER_TYPE_INT16;
         this->i16 = i16;
         
 #ifdef NDEBUG
@@ -827,7 +911,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = NUMBER_TYPE_UINT32;
+        this->type = NUMBER_TYPE_UINT16;
         this->u16 = value;
         
 #ifdef NDEBUG

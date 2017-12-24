@@ -642,8 +642,8 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
@@ -692,8 +692,8 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
@@ -777,14 +777,14 @@ extern "C" {
         pOffset = AStr_New();
         BREAK_NULL(pOffset);
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
             obj_Release(pOffset);
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
-        this->eRc = nodeHash_FindA(this->pHash, "ClassNameUC", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
+        if (OBJ_NIL == pNode) {
             obj_Release(pOffset);
             return this->eRc;
         }
@@ -1212,14 +1212,14 @@ extern "C" {
 #endif
         pOffset = AStr_New();
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
             obj_Release(pOffset);
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
-        this->eRc = nodeHash_FindA(this->pHash, "ClassNameUC", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
+        if (OBJ_NIL == pNode) {
             obj_Release(pOffset);
             return this->eRc;
         }
@@ -1418,8 +1418,8 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
@@ -1468,8 +1468,8 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
@@ -1540,9 +1540,9 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        this->eRc = nodeHash_FindA(this->pHash, "ClassName", &pNode);
-        if (ERESULT_FAILED(this->eRc)) {
-            return this->eRc;
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
+            return ERESULT_DATA_NOT_FOUND;
         }
 
         if (OBJ_NIL == *ppStr) {

@@ -112,6 +112,17 @@ extern "C" {
     );
     
     
+    NULL_DATA *     null_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+    
+    NULL_DATA *     null_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+    
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -140,6 +151,19 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = null_ToJSON(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+     JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+     ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     null_ToJSON(
         NULL_DATA       *this
     );

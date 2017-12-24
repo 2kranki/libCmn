@@ -162,8 +162,8 @@ int         test_hjson01(
             fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
             XCTAssertTrue( (6 == nodeHash_getSize(pHash)) );
             
-            eRc = nodeHash_FindA(pHash, "one", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "one");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
@@ -172,8 +172,8 @@ int         test_hjson01(
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))) );
             
-            eRc = nodeHash_FindA(pHash, "two", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "two");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("string", pStrA)) );
@@ -182,8 +182,8 @@ int         test_hjson01(
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))) );
             
-            eRc = nodeHash_FindA(pHash, "three", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "three");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("array", pStrA)) );
@@ -205,24 +205,24 @@ int         test_hjson01(
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))) );
             
-            eRc = nodeHash_FindA(pHash, "four", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "four");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("null", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
             
-            eRc = nodeHash_FindA(pHash, "five", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "five");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("true", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
             
-            eRc = nodeHash_FindA(pHash, "six", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "six");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("false", pStrA)) );
@@ -281,8 +281,8 @@ int         test_hjson02(
             fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
             XCTAssertTrue( (1 == nodeHash_getSize(pHash)) );
             
-            eRc = nodeHash_FindA(pHash, "one", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "one");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
@@ -311,7 +311,6 @@ int         test_hjson03(
     char        *pTestName
 )
 {
-    ERESULT         eRc;
     HJSON_DATA      *pHJSON = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODEHASH_DATA   *pHash;
@@ -343,8 +342,8 @@ int         test_hjson03(
             fprintf(stderr, "hash size = %d\n", nodeHash_getSize(pHash));
             XCTAssertTrue( (1 == nodeHash_getSize(pHash)) );
             
-            eRc = nodeHash_FindA(pHash, "one", &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeHash_FindA(pHash, "one");
+            XCTAssertTrue( (pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("integer", pStrA)) );

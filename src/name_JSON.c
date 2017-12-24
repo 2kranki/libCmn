@@ -43,13 +43,15 @@
 
 /* Header File Inclusion */
 #include    <name_internal.h>
+#include    <AStr_internal.h>
 #include    <token_internal.h>
+#include    <utf8_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <dec.h>
+#include    <dec_internal.h>
 #include    <hex.h>
-#include    <hjson.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -70,6 +72,87 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    NAME_DATA *     name_ParseObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        NAME_DATA       *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        uint32_t        type = 0;
+        ASTR_DATA       *pWrk;
+        OBJ_ID          pObj;
+        uint8_t         *pUtf8;
+        int64_t         integer;
+        
+        pInfo = obj_getInfo(name_Class());
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+        
+        type = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
+        
+        switch (type) {
+
+            case NAME_TYPE_ASTR:
+                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                pWrk = AStr_ParseObject(pParser);
+                pObject = name_NewAStr(pWrk);
+                obj_Release(pWrk);
+                jsonIn_SubobjectEnd(pParser);
+                if (OBJ_NIL == pObject) {
+                    goto exit00;
+                }
+                break;
+                
+            case NAME_TYPE_INTEGER:
+                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                integer = dec_ParseObject(pParser);
+                pObject = name_NewInt(integer);
+                jsonIn_SubobjectEnd(pParser);
+                if (OBJ_NIL == pObject) {
+                    goto exit00;
+                }
+                break;
+
+            case NAME_TYPE_UTF8:
+                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                pUtf8 = utf8_ParseObject(pParser, NULL);
+                jsonIn_SubobjectEnd(pParser);
+                if (pUtf8) {
+                    pObject = name_Alloc();
+                    pObject = name_Init(pObject);
+                    if (pObject) {
+                        pObject->type = NAME_TYPE_UTF8;
+                        pObject->pChrs = (void *)pUtf8;
+                        pUtf8 = NULL;
+                    }
+                }
+                
+                break;
+
+            default:
+                break;
+        }
+        
+        // Return to caller.
+    exit00:
+        return pObject;
+    }
+    
+    
+    
+
     
     
     /****************************************************************
@@ -86,334 +169,25 @@ extern "C" {
         ASTR_DATA       *pString
     )
     {
-        HJSON_DATA      *pParser;
-        NODE_DATA       *pFileNode = OBJ_NIL;
-        NODE_DATA       *pNode;
-        NODEHASH_DATA   *pHash;
+        JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        const
-        char            *pFileName = "";
-        uint32_t        type = 0;
-        uint16_t        colNo = 0;
-        int32_t         cls = 0;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pStr2 = OBJ_NIL;
-        ASTR_DATA       *pType = OBJ_NIL;
-        NAME_DATA       *pName = OBJ_NIL;
-        NAME_DATA       *pNameOut = OBJ_NIL;
-        PATH_DATA       *pPath = path_NewA("?");
-        const
-        OBJ_INFO        *pInfo;
+        NAME_DATA       *pObject = OBJ_NIL;
 
-        pInfo = name_Vtbl.iVtbl.pInfo;
-        pParser = hjson_NewAStr(pString, 4);
-        if (OBJ_NIL == pParser) {
-            goto exit00;
-        }
-        pFileNode = hjson_ParseFile(pParser);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-        pHash = node_getData(pFileNode);
-        if (OBJ_NIL == pFileNode) {
-            goto exit00;
-        }
-#ifdef NDEBUG
-#else
-#ifdef TRACE_FUNCTIONS
-        {
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-        }
-#endif
-#endif
-
-        eRc = nodeHash_FindA(pHash, "objectType", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
-                pStr = node_getData(pNode);
-                if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
-                }
-                else {
-                    fprintf(stderr,
-                            "ERROR - objectType is \"%s\", but need \"%s\"!\n",
-                            AStr_getData(pStr),
-                            pInfo->pClassName
-                            );
-#ifdef TRACE_FUNCTIONS
-                    pStr2 = nodeHash_ToDebugString(pHash, 0);
-                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                    DEBUG_BREAK();
-#endif
-                    eRc = ERESULT_GENERAL_FAILURE;
-                    goto exit00;
-                }
-                
-            }
-            else {
-                fprintf(stderr,
-                        "ERROR - objectType needs to be a \"string\"!\n"
-                        );
-#ifdef TRACE_FUNCTIONS
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-#endif
-                eRc = ERESULT_GENERAL_FAILURE;
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - objectType is missing!\n");
-#ifdef TRACE_FUNCTIONS
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-            DEBUG_BREAK();
-#endif
-            eRc = ERESULT_GENERAL_FAILURE;
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
+        if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
         
-        eRc = nodeHash_FindA(pHash, "type", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                type = (uint32_t)dec_getInt64A(AStr_getData(pStr));
-                if (type == 0) {
-                    fprintf(stderr, "ERROR - type must be greater than zero!\n");
-                    pStr2 = nodeHash_ToDebugString(pHash, 0);
-                    fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                    DEBUG_BREAK();
-                    goto exit00;
-                }
-            }
-            else {
-                fprintf(stderr, "ERROR - type should have a integer!\n");
-                pStr2 = nodeHash_ToDebugString(pHash, 0);
-                fprintf(stderr, "%s\n", AStr_getData(pStr2));
-                obj_Release(pStr2);
-                pStr2 = OBJ_NIL;
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - length is missing!\n");
-            pStr2 = nodeHash_ToDebugString(pHash, 0);
-            fprintf(stderr, "%s\n", AStr_getData(pStr2));
-            obj_Release(pStr2);
-            pStr2 = OBJ_NIL;
-            DEBUG_BREAK();
-            goto exit00;
-        }
-        
-#ifdef XYZZY
-        eRc = nodeHash_FindA(pHash, "fileName", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
-                pStr = node_getData(pNode);
-                pFileName = AStr_CStringA(pStr,NULL);
-            }
-            else {
-                fprintf(stderr, "ERROR - fileName should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        
-        eRc = nodeHash_FindA(pHash, "lineNo", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                lineNo = AStr_ToInt64(pStr) & 0xFFFFFFFF;
-            }
-            else {
-                fprintf(stderr, "ERROR - lineNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        
-        eRc = nodeHash_FindA(pHash, "colNo", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                colNo = AStr_ToInt64(pStr) & 0xFFFF;
-            }
-            else {
-                fprintf(stderr, "ERROR - colNo should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        
-        eRc = nodeHash_FindA(pHash, "cls", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                cls = (int32_t)AStr_ToInt64(pStr);
-            }
-            else {
-                fprintf(stderr, "ERROR - cls should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        
-        eRc = nodeHash_FindA(pHash, "type", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
-                pType = node_getData(pNode);
-            }
-            else {
-                fprintf(stderr, "ERROR - type should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        if (OBJ_NIL == pType) {
-            mem_Free((void *)pFileName);
-            obj_Release(pFileNode);
-            obj_Release(pParser);
-            return OBJ_NIL;
-        }
-        pStr = OBJ_NIL;
-        eRc = nodeHash_FindA(pHash, "data", &pNode);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
-        }
-        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "CHAR")) {
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                pToken =    token_NewCharW(
-                                           pFileName,
-                                           lineNo,
-                                           colNo,
-                                           cls,
-                                           (int32_t)AStr_ToInt64(pStr)
-                                           );
-            }
-            else {
-                fprintf(stderr, "ERROR - CHAR should have a integer!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "NUMBER")) {
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
-                pToken =    token_NewInteger(
-                                             pFileName,
-                                             lineNo,
-                                             colNo,
-                                             cls,
-                                             AStr_ToInt64(pStr)
-                                             );
-            }
-            //TODO: Add float support!
-            else {
-                fprintf(stderr, "ERROR - NUMBER should have a integer or float!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "STRING")) {
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
-                pStr = node_getData(pNode);
-                WSTR_DATA   *pWStr = AStr_ToWStr(pStr);
-                pToken =    token_NewStringW(
-                                             pFileName,
-                                             lineNo,
-                                             colNo,
-                                             cls,
-                                             pWStr
-                                             );
-                obj_Release(pWStr);
-           }
-            else {
-                fprintf(stderr, "ERROR - STRING should have a string!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pType, "STRTOKEN")) {
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "number")) {
-                pStr = node_getData(pNode);
-                pToken =    token_NewStrToken(
-                                              pFileName,
-                                              lineNo,
-                                              colNo,
-                                              cls,
-                                              (uint32_t)AStr_ToInt64(pStr)
-                                              );
-            }
-            else {
-                fprintf(stderr, "ERROR - STRTOKEN should have a number!\n");
-                fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-                DEBUG_BREAK();
-                goto exit00;
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - Token Type is not implemented!\n");
-            fprintf(stderr, "%s\n", AStr_getData(nodeHash_ToDebugString(pHash, 0)));
-            DEBUG_BREAK();
-            goto exit00;
-        }
-#endif
+        pObject = name_ParseObject(pParser);
         
         // Return to caller.
     exit00:
-        if (pFileName) {
-            mem_Free((void *)pFileName);
-            pFileName = NULL;
-        }
-        if (pFileNode) {
-            obj_Release(pFileNode);
-            pFileNode = OBJ_NIL;
-        }
         if (pParser) {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
-        if (pPath) {
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        return pNameOut;
+        return pObject;
     }
     
     
@@ -465,7 +239,7 @@ extern "C" {
         }
         AStr_AppendA(pStr, "{\"objectType\":\"");
         AStr_AppendA(pStr, pInfo->pClassName);
-        AStr_AppendA(pStr, "\", \"data\":\"");
+        AStr_AppendA(pStr, "\", ");
         //FIXME: AStr_Append(pStr, pWrkStr);
         
         switch (this->type) {
@@ -481,10 +255,15 @@ extern "C" {
             case NAME_TYPE_INTEGER:
                 AStr_AppendPrint(
                              pStr,
-                             "\"type\":%u /*NAME_TYPE_INTEGER*/, \"data\":%llu ",
-                             NAME_TYPE_INTEGER,
-                             this->integer
+                             "\"type\":%u /*NAME_TYPE_INTEGER*/, \"data\":",
+                             NAME_TYPE_INTEGER
                  );
+                pWrkStr = dec_UInt64ToJSON(this->integer);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                    pWrkStr = OBJ_NIL;
+                }
                 break;
                 
             case NAME_TYPE_ASTR:
@@ -497,8 +276,9 @@ extern "C" {
                 pWrkStr = AStr_ToJSON(this->pObj);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                    pWrkStr = OBJ_NIL;
                 }
-                AStr_AppendA(pStr, " ");
                 break;
                 
             case NAME_TYPE_UTF8:
@@ -511,12 +291,15 @@ extern "C" {
                 pWrkStr = utf8_DataToJSON(this->pChrs);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                    pWrkStr = OBJ_NIL;
                 }
-                AStr_AppendA(pStr, " ");
                 break;
                 
         }
-        AStr_AppendA(pStr, "}\n");
+
+        if (pStr)
+            AStr_AppendA(pStr, "}\n");
         //BREAK_TRUE(AStr_getLength(pStr) > 2048);
         
         return pStr;
