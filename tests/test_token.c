@@ -81,16 +81,17 @@ int         test_token_OpenClose(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
+    SRCLOC      loc = {1,2,3,4};
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = token_NewInteger(1, 10, 52, 22, 11, 64);
+    pObj = token_NewInteger(&loc, 11, 64);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         XCTAssertTrue( ( 1 == token_getFileIndex(pObj)) );
-        XCTAssertTrue( (10 == token_getOffset(pObj)) );
-        XCTAssertTrue( (52 == token_getLineNo(pObj)) );
-        XCTAssertTrue( (22 == token_getColNo(pObj)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pObj)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pObj)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
         XCTAssertTrue( (64 == token_getInteger(pObj)) );
 
@@ -98,56 +99,67 @@ int         test_token_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-#ifdef XYZZY
 int         test_token_JSON01(
     const
     char        *pTestName
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
+    SRCLOC      loc = {1,2,3,4};
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con =    "{\"objectType\":\"token\","
-                                "\"FileIndex\":1,"
-                                "\"Offset\":10,"
-                                "\"LineNo\":52,"
-                                "\"ColNo\":22,"
-                                "\"Class\":11,"
-                                "\"Type\":\"NUMBER\","
-                                "\"Data\":64}\n";
+    char        *pJSON_Con =    "{\"objectType\":\"token\", "
+                                    "\"class\":11, "
+                                    "\"loc\":{ "
+                                        "\"objectType\":\"srcLoc\", "
+                                        "\"fileIndex\":1, "
+                                        "\"offset\":4, "
+                                        "\"lineNo\":3, "
+                                        "\"colNo\":2 "
+                                    "}\n, "
+                                    "\"misc\":0, "
+                                    "\"type\":2 /*TOKEN_TYPE_INTEGER*/, "
+                                    "\"data\":{ "
+                                        "\"objectType\":\"dec\", "
+                                        "\"len\":8, "
+                                        "\"crc\":1287593348, "
+                                        "\"data\":64 "
+                                    "}\n"
+                                "}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = token_NewInteger(1, 10, 52, 22, 11, 64);
+    pObj = token_NewInteger(&loc, 11, 64);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        XCTAssertTrue( (1 == token_getFileIndex(pObj)) );
-        XCTAssertTrue( (10 == token_getOffset(pObj)) );
-        XCTAssertTrue( (52 == token_getLineNo(pObj)) );
-        XCTAssertTrue( (22 == token_getColNo(pObj)) );
+        XCTAssertTrue( ( 1 == token_getFileIndex(pObj)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pObj)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pObj)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
         XCTAssertTrue( (64 == token_getInteger(pObj)) );
         
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        //fprintf(stderr, "%s\n", AStr_getData(pStr));
+        fprintf(stderr, "%s\n", AStr_getData(pStr));
         eRc = AStr_CompareA(pStr, pJSON_Con);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         if (pToken) {
-            XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pToken))) );
-            XCTAssertTrue( (52 == token_getLineNo(pToken)) );
-            XCTAssertTrue( (22 == token_getColNo(pToken)) );
+            XCTAssertTrue( ( 1 == token_getFileIndex(pToken)) );
+            XCTAssertTrue( ( 4 == token_getOffset(pToken)) );
+            XCTAssertTrue( ( 3 == token_getLineNo(pToken)) );
+            XCTAssertTrue( ( 2 == token_getColNo(pToken)) );
             XCTAssertTrue( (11 == token_getClass(pToken)) );
             XCTAssertTrue( (64 == token_getInteger(pToken)) );
 
@@ -171,7 +183,7 @@ int         test_token_JSON01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -183,29 +195,41 @@ int         test_token_JSON02(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
+    SRCLOC      loc = {1,2,3,4};
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con =    "{\"objectType\":\"token\","
-                                "\"FileIndex\":2,"
-                                "\"Offset\":12,"
-                                "\"LineNo\":52,"
-                                "\"ColNo\":22,"
-                                "\"Class\":11,"
-                                "\"Type\":\"CHAR\","
-                                "\"Data\":90}\n";
+    char        *pJSON_Con =    "{\"objectType\":\"token\", "
+                                    "\"class\":11, "
+                                    "\"loc\":{ "
+                                        "\"objectType\":\"srcLoc\", "
+                                        "\"fileIndex\":1, "
+                                        "\"offset\":4, "
+                                        "\"lineNo\":3, "
+                                        "\"colNo\":2 "
+                                    "}\n, "
+                                    "\"misc\":0, "
+                                    "\"type\":4 /*TOKEN_TYPE_W32CHAR*/, "
+                                    "\"data\":{ "
+                                        "\"objectType\":\"dec\", "
+                                        "\"len\":8, "
+                                        "\"crc\":2713989223, "
+                                        "\"data\":90 "
+                                    "}\n"
+                                "}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = token_InitCharW32(pObj, 2, 12, 52, 22, 11, 'Z');
+    pObj = token_InitCharW32(pObj, &loc, 11, 'Z');
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pObj))) );
-        XCTAssertTrue( (52 == token_getLineNo(pObj)) );
-        XCTAssertTrue( (22 == token_getColNo(pObj)) );
+        XCTAssertTrue( ( 1 == token_getFileIndex(pObj)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pObj)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pObj)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
         XCTAssertTrue( ('Z' == token_getChrW32(pObj)) );
         
@@ -217,11 +241,12 @@ int         test_token_JSON02(
         
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pToken))) );
-        XCTAssertTrue( (52 == token_getLineNo(pToken)) );
-        XCTAssertTrue( (22 == token_getColNo(pToken)) );
+        XCTAssertTrue( ( 1 == token_getFileIndex(pToken)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pToken)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pToken)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
-        XCTAssertTrue( ('Z' == token_getChrW32(pObj)) );
+        XCTAssertTrue( ('Z' == token_getChrW32(pToken)) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
@@ -239,7 +264,7 @@ int         test_token_JSON02(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -251,35 +276,50 @@ int         test_token_JSON03(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
+    SRCLOC      loc = {1,2,3,4};
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con =    "{\"objectType\":\"token\","
-                                "\"FileName\":\"abc\","
-                                "\"LineNo\":52,"
-                                "\"ColNo\":22,"
-                                "\"Class\":11,"
-                                "\"Type\":\"STRING\","
-                                "\"Data\":\"12345\"}\n";
+    char        *pJSON_Con =    "{\"objectType\":\"token\", "
+                                    "\"class\":11, "
+                                    "\"loc\":{ "
+                                        "\"objectType\":\"srcLoc\", "
+                                        "\"fileIndex\":1, "
+                                        "\"offset\":4, "
+                                        "\"lineNo\":3, "
+                                        "\"colNo\":2 "
+                                    "}\n, "
+                                    "\"misc\":0, "
+                                    "\"type\":3 /*TOKEN_TYPE_STRTOKEN*/, "
+                                    "\"data\":{ "
+                                        "\"objectType\":\"utf8\", "
+                                        "\"len\":5, "
+                                        "\"crc\":3421846044, "
+                                        "\"data\":\"12345\" "
+                                    "}\n"
+                                "}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
-    WSTR_DATA   *pStrW;
+    ASTR_DATA   *pAStr;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = token_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = token_InitStrW(pObj, "abc", 52, 22, 11, L"12345");
+
+    pObj = token_NewStrA(&loc, 11, "12345");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pObj))) );
-        XCTAssertTrue( (52 == token_getLineNo(pObj)) );
-        XCTAssertTrue( (22 == token_getColNo(pObj)) );
+        XCTAssertTrue( ( 1 == token_getFileIndex(pObj)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pObj)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pObj)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
-        pStrW = token_getStringW(pObj);
-        XCTAssertFalse( (OBJ_NIL == pStrW) );
-        XCTAssertTrue( (OBJ_IDENT_WSTR == obj_getType(pStrW)) );
-        eRc = WStr_CompareW32(pStrW,L"12345");
+        
+        pAStr = token_getTextA(pObj);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
+        eRc = AStr_CompareA(pAStr, "12345");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
         
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
@@ -289,15 +329,23 @@ int         test_token_JSON03(
         
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pToken))) );
-        XCTAssertTrue( (52 == token_getLineNo(pToken)) );
-        XCTAssertTrue( (22 == token_getColNo(pToken)) );
+
+        XCTAssertTrue( ( 1 == token_getFileIndex(pToken)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pToken)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pToken)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
-        eRc = WStr_CompareA(token_getStringW(pObj), "12345");
+        
+        pAStr = token_getTextA(pToken);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
+        eRc = AStr_CompareA(pAStr, "12345");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        
+
         pStr = token_ToJSON(pToken);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         //fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
@@ -312,7 +360,7 @@ int         test_token_JSON03(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -324,36 +372,50 @@ int         test_token_JSON04(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
+    SRCLOC      loc = {1,2,3,4};
     ASTR_DATA   *pStr;
     const
-    char        *pJSON_Con =    "{\"objectType\":\"token\","
-                                "\"FileName\":\"\","
-                                "\"LineNo\":52,"
-                                "\"ColNo\":22,"
-                                "\"Class\":11,"
-                                "\"Type\":\"STRING\","
-                                "\"Data\":\"12345\"}\n";
+    char        *pJSON_Con =    "{\"objectType\":\"token\", "
+                                    "\"class\":11, "
+                                    "\"loc\":{ "
+                                        "\"objectType\":\"srcLoc\", "
+                                        "\"fileIndex\":1, "
+                                        "\"offset\":4, "
+                                        "\"lineNo\":3, "
+                                        "\"colNo\":2 "
+                                    "}\n, "
+                                    "\"misc\":0, "
+                                    "\"type\":3 /*TOKEN_TYPE_STRTOKEN*/, "
+                                    "\"data\":{ "
+                                        "\"objectType\":\"utf8\", "
+                                        "\"len\":4, "
+                                        "\"crc\":65385508, "
+                                        "\"data\":\"\\n  \\n\" "
+                                    "}\n"
+                                "}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
-    WSTR_DATA   *pStrW;
+    ASTR_DATA   *pAStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = token_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = token_InitStrA(pObj, "", 52, 22, 11, "12345");
+
+    pObj = token_NewStrA(&loc, 11, "\n  \n");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        //fprintf(stderr, "\tFileName = %s\n", token_getFileName(pObj));
-        XCTAssertTrue( (0 == strcmp("", token_getFileName(pObj))) );
-        XCTAssertTrue( (52 == token_getLineNo(pObj)) );
-        XCTAssertTrue( (22 == token_getColNo(pObj)) );
+        XCTAssertTrue( ( 1 == token_getFileIndex(pObj)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pObj)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pObj)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
-        pStrW = token_getStringW(pObj);
-        XCTAssertFalse( (OBJ_NIL == pStrW) );
-        XCTAssertTrue( (OBJ_IDENT_WSTR == obj_getType(pStrW)) );
-        eRc = WStr_CompareW32(pStrW,L"12345");
+        
+        pAStr = token_getTextA(pObj);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
+        eRc = AStr_CompareA(pAStr, "\n  \n");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
         
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
@@ -363,12 +425,20 @@ int         test_token_JSON04(
         
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
-        XCTAssertTrue( (0 == strcmp("", token_getFileName(pToken))) );
-        XCTAssertTrue( (52 == token_getLineNo(pToken)) );
-        XCTAssertTrue( (22 == token_getColNo(pToken)) );
+        
+        XCTAssertTrue( ( 1 == token_getFileIndex(pToken)) );
+        XCTAssertTrue( ( 4 == token_getOffset(pToken)) );
+        XCTAssertTrue( ( 3 == token_getLineNo(pToken)) );
+        XCTAssertTrue( ( 2 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
-        eRc = WStr_CompareA(token_getStringW(pObj), "12345");
+        
+        pAStr = token_getTextA(pToken);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
+        eRc = AStr_CompareA(pAStr, "\n  \n");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
@@ -386,80 +456,19 @@ int         test_token_JSON04(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
-
-
-
-int         test_token_FROM_JSON01(
-    const
-    char        *pTestName
-)
-{
-    TOKEN_DATA	*pObj = OBJ_NIL;
-    ASTR_DATA   *pStr;
-    const
-    char        *pJSON_Con =    "{\"objectType\":\"token\","
-                                "\"FileName\":\"abc\","
-                                "\"LineNo\":52,"
-                                "\"ColNo\":22,"
-                                "\"Class\":11,"
-                                "\"Type\":\"STRING\","
-                                "\"Data\":\"\n  \n\"}\n";
-    ERESULT     eRc;
-    TOKEN_DATA  *pToken;
-    WSTR_DATA   *pStrW = OBJ_NIL;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pToken = token_NewFromJSONStringA(pJSON_Con);
-    XCTAssertFalse( (OBJ_NIL == pToken) );
-    XCTAssertTrue( (0 == strcmp("abc", token_getFileName(pToken))) );
-    XCTAssertTrue( (52 == token_getLineNo(pToken)) );
-    XCTAssertTrue( (22 == token_getColNo(pToken)) );
-    XCTAssertTrue( (11 == token_getClass(pToken)) );
-    pStrW = token_getStringW(pToken);
-    XCTAssertFalse( (OBJ_NIL == pStrW) );
-    if (pStrW) {
-        fprintf(stderr, "\tdata = \"%ls\"\n", WStr_getData(pStrW));
-        eRc = WStr_CompareA(pStrW, "\\n  \\n");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-    }
-    else {
-        
-    }
-
-    pStr = token_ToJSON(pToken);
-    XCTAssertFalse( (OBJ_NIL == pStr) );
-    fprintf(stderr, "\tJSONCon = \"%s\"\n", pJSON_Con);
-    fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
-    eRc = AStr_CompareA(pStr, pJSON_Con);
-    //XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-    // ^ needs to be fixed, how? data "\n  \n" == "\\n  \\n" <-- after conversion
-
-    obj_Release(pToken);
-    pToken = OBJ_NIL;
-    obj_Release(pStr);
-    pStr = OBJ_NIL;
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-#endif
 
 
 
 
 TINYTEST_START_SUITE(test_token);
-#ifdef XYZZY
-  TINYTEST_ADD_TEST(test_token_FROM_JSON01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_JSON04,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_JSON03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_JSON02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_token_JSON01,setUp,tearDown);
-#endif
-  TINYTEST_ADD_TEST(test_token_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_token_JSON04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_token_JSON03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_token_JSON02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_token_JSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_token_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_token);

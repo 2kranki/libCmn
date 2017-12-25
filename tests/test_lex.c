@@ -478,7 +478,8 @@ int         test_lex_Strings01(
     ASTR_DATA       *pStr;
     int32_t         cls;
     TOKEN_DATA      *pWork = OBJ_NIL;
-    
+    SRCLOC          src = {1,2,3,4};
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = lex_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -486,19 +487,19 @@ int         test_lex_Strings01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pWork = token_NewCharW32(1, 0, 1, 1, 'd', 'd');
+        pWork = token_NewCharW32(&src, 'd', 'd');
         eRc = lex_ParseTokenSetup(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pWork);
         pWork = OBJ_NIL;
         
-        pWork = token_NewCharW32(1, 0, 1, 1, 'e', 'e');
+        pWork = token_NewCharW32(&src, 'e', 'e');
         eRc = lex_ParseTokenAppendString(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pWork);
         pWork = OBJ_NIL;
         
-        pWork = token_NewCharW32(1, 0, 1, 1, 'f', 'f');
+        pWork = token_NewCharW32(&src, 'f', 'f');
         eRc = lex_ParseTokenAppendString(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pWork);
@@ -535,7 +536,8 @@ int         test_lex_Strings02(
     ASTR_DATA       *pStr;
     int32_t         cls;
     TOKEN_DATA      *pWork = OBJ_NIL;
-    
+    SRCLOC          src = {1,2,3,4};
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = lex_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -543,7 +545,7 @@ int         test_lex_Strings02(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pWork = token_NewStrA(1, 0, 1, 1, 510, "\n  \n");
+        pWork = token_NewStrA(&src, 510, "\n  \n");
         XCTAssertFalse( (OBJ_NIL == pWork) );
 
         eRc = lex_ParseTokenSetup(pObj, pWork);
@@ -587,6 +589,7 @@ int         test_lex_Strings03(
     ASTR_DATA       *pStr;
     int32_t         cls;
     TOKEN_DATA      *pWork = OBJ_NIL;
+    SRCLOC          src = {1,2,3,4};
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = lex_Alloc( );
@@ -595,7 +598,7 @@ int         test_lex_Strings03(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pWork = token_NewStrA(1, 0, 1, 1, 510, "@interface");
+        pWork = token_NewStrA(&src, 510, "@interface");
         XCTAssertFalse( (OBJ_NIL == pWork) );
 
         eRc = lex_ParseTokenSetup(pObj, pWork);
@@ -619,7 +622,7 @@ int         test_lex_Strings03(
         XCTAssertTrue( (512 == cls) );
 
         
-        pWork = token_NewStrA(1, 0, 1, 1, 510, "@end");
+        pWork = token_NewStrA(&src, 510, "@end");
         
         eRc = lex_ParseTokenSetup(pObj, pWork);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );

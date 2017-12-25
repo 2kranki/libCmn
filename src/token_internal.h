@@ -61,13 +61,11 @@ extern "C" {
     typedef struct token_s    {
         SRCLOC          src;
         uint16_t        len;                // Character/Token Length (Optional)
-        uint16_t        misc;
-        uint16_t        offset;             // offset into token string (Optional)
         uint16_t        type;               // Type in union below
-        int32_t         cls;                // Character/Token Class (Optional)
-        uint32_t        rsvd32;
+        int16_t         cls;                // Character/Token Class (Optional)
+        uint16_t        misc;
         union {
-            double          floatingPoint;
+            double          flt;
             int64_t         integer;            // Integer
             uint32_t        strToken;           // String Index Token
             W32CHR_T        w32chr[2];          // Unicode Character followed by NUL
@@ -104,10 +102,7 @@ struct token_data_s	{
 
     TOKEN_DATA *     token_InitFnLCC(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls
     );
     

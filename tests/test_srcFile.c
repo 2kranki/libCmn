@@ -123,7 +123,7 @@ int         test_srcFile_OpenClose(
     obj_Release(pPath);
     pPath = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -192,7 +192,7 @@ int         test_srcFile_Buffer01(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -242,7 +242,7 @@ int         test_srcFile_File(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -433,7 +433,7 @@ int         test_srcFile_Test02(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -671,7 +671,7 @@ int         test_srcFile_Test03(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 

@@ -103,8 +103,8 @@ extern "C" {
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
-     @return    a new null object if successful, otherwise, OBJ_NIL
-     @warning   Returned null object must be released.
+     @return    a new UTF-8 String if successful, otherwise, NULL
+     @warning   Returned UTF-8 string must be freed using mem_Free().
      */
     uint8_t *       utf8_ParseObject(
         JSONIN_DATA     *pParser,
@@ -281,17 +281,18 @@ extern "C" {
         if (OBJ_NIL == pStr) {
             return pStr;
         }
-        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"", pInfo->pClassName);
+        AStr_AppendPrint(pStr, "{ \"objectType\":\"%s\"", pInfo->pClassName);
         
         len = utf8_StrLenChars(pData);
         pCrc = crc_New(CRC_TYPE_IEEE_32);
         crc = crc_AccumBlock(pCrc, len, (void *)pData);
         obj_Release(pCrc);
         pCrc = OBJ_NIL;
-        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
         len = (uint32_t)utf8_StrLenA(pData);
         AStr_AppendPrint(pStr, ", \"len\":%u", len);
+        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
+
         if (len) {
             AStr_AppendA(pStr, ", \"data\":\"");
             pChr = pData;

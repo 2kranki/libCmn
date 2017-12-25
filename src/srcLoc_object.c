@@ -64,11 +64,6 @@ OBJ_INFO        srcLoc_Info;            // Forward Reference
 
 
 
-OBJ_ID          srcLoc_Class(
-    void
-);
-
-
 
 static
 bool            srcLoc_ClassIsKindOf(

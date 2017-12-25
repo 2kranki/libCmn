@@ -129,21 +129,20 @@ extern "C" {
     );
     
     
+    OBJ_ID          token_Class(
+        void
+    );
+    
+    
     TOKEN_DATA *     token_NewCharW32(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         W32CHR_T        chr
     );
     
     
     TOKEN_DATA *    token_NewInteger(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         int64_t         integer
     );
@@ -160,20 +159,14 @@ extern "C" {
     
    
     TOKEN_DATA *     token_NewFromW32STR(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         W32STR_DATA     *pString
     );
     
     
     TOKEN_DATA *     token_NewStrA(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         char            *pStr
@@ -181,10 +174,7 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewStrW32(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        *pStr
@@ -195,19 +185,13 @@ extern "C" {
      Create a new token object with the given parameter of a String Token Number.
      Normally, String Token Numbers are indexes into an szTbl object that will 
      return the string.
-     @param     fileIndex   index to a file path held in an array (relative to 1) (optional)
-     @param     offset      file offset of first character
-     @param     lineNo      Line Number for the start of the token
-     @param     colNo       Column Number for the start of the token
+     @param     pLoc        pointer to a source location
      @param     cls         Token class (see PPLEX.H for examples)
      @param     token       Token String Number (probably returned by szTbl)
      @return    If successful, a TOKEN_DATA pointer otherwise OBJ_NIL
      */
     TOKEN_DATA *     token_NewStrToken(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         uint32_t        token
     );
@@ -421,20 +405,14 @@ extern "C" {
 
     TOKEN_DATA *     token_InitCharW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         W32CHR_T        chr
     );
     
     TOKEN_DATA *    token_InitInteger(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         int64_t         integer
     );
@@ -442,51 +420,36 @@ extern "C" {
 #ifdef XYZZY
     TOKEN_DATA *     token_InitObj(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         OBJ_DATA        *pObj
     );
     
     TOKEN_DATA *     token_InitStringA(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         ASTR_DATA       *pString
     );
     
-    TOKEN_DATA *     token_InitStringW(
+    TOKEN_DATA *     token_InitW32Str(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
-        WSTR_DATA       *pString
+        W32STR_DATA     *pString
     );
     
     TOKEN_DATA *     token_InitStrA(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         char            *pStr
     );
     
-    TOKEN_DATA *     token_InitStrW(
+    TOKEN_DATA *     token_InitStrW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        *pStr
@@ -507,10 +470,7 @@ extern "C" {
      */
     TOKEN_DATA *    token_InitStrToken(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         uint32_t        token
@@ -520,10 +480,7 @@ extern "C" {
 
     ERESULT     token_SetupCharW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        chr
@@ -538,26 +495,18 @@ extern "C" {
      ERESULT      eRc = token_SetFnLCC(this,"zyzzy",256,16,CLASS_TERMINAL);
      @endcode
      @param     this    TOKEN_DATA object pointer
-     @param     fileIndex   index to a file path held in an array (relative to 1) (optional)
-     @param     offset      file offset of first character
      @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_* error code
      */
     ERESULT         token_SetupFnLCC(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls
     );
     
     
-    ERESULT     token_SetupStrW(
+    ERESULT     token_SetupStrW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        *pStr

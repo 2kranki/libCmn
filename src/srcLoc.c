@@ -112,6 +112,23 @@ extern "C" {
     }
 
 
+    SRCLOC_DATA *     srcLoc_NewSrcLoc(
+        SRCLOC          *pSrc
+    )
+    {
+        SRCLOC_DATA     *this;
+        
+        this = srcLoc_Alloc( );
+        if (this) {
+            this = srcLoc_Init(this);
+            if (this && pSrc) {
+                memmove(this->pData, pSrc, sizeof(SRCLOC));
+            }
+        }
+        return this;
+    }
+    
+    
 
     
 
@@ -267,6 +284,44 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          S r c
+    //---------------------------------------------------------------
+    
+    SRCLOC *        srcLoc_getSrc(
+        SRCLOC_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate( this ) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pData;
+    }
+    
+    
+    bool            srcLoc_setSrc(
+        SRCLOC_DATA     *this,
+        SRCLOC          *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !srcLoc_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->pData = pValue;
+        return true;
+    }
+    
+    
+    
 
     
 
@@ -370,7 +425,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     SRCLOC_DATA *   srcLoc_Init(
-        SRCLOC_DATA       *this
+        SRCLOC_DATA     *this
     )
     {
         uint32_t        cbSize;

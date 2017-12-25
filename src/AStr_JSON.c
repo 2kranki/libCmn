@@ -253,16 +253,16 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{\"objectType\":\"%s\"",
+                     "{ \"objectType\":\"%s\"",
                      pInfo->pClassName
                      );
         AStr_AppendA(pStr, str);
         
+        len = (uint32_t)utf8_StrLenA(pData);
+        AStr_AppendPrint(pStr, ", \"len\":%u", len);
         crc = AStr_getCrcIEEE(this);
         AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
         
-        len = (uint32_t)utf8_StrLenA(pData);
-        AStr_AppendPrint(pStr, ", \"len\":%u", len);
         if (len) {
             AStr_AppendA(pStr, ", \"data\":\"");
             pWrk = AStr_ToChrCon(this);

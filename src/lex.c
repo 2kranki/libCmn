@@ -1147,10 +1147,7 @@ extern "C" {
         obj_setSize(&this->token, sizeof(TOKEN_DATA));
         pToken =    token_InitCharW32(
                         &this->token,
-                        0,
-                        0,
-                        0,
-                        0,
+                        NULL,
                         -1,
                         -1
                     );
@@ -1613,7 +1610,7 @@ extern "C" {
         if (!obj_IsFlag(this, LEX_INIT_DONE)) {
             for (i=0; i<this->sizeOutputs; ++i) {
                 pToken = &this->pOutputs[i];
-                token_InitCharW32(pToken, 0, 0, 1, 1, 0, 0);
+                token_InitCharW32(pToken, NULL, 0, 0);
             }
             for (i=0; i<this->sizeOutputs; ++i) {
                 lex_TokenNext(this);
@@ -1686,7 +1683,7 @@ extern "C" {
         if (!obj_IsFlag(this, LEX_INIT_DONE)) {
             for (idx=0; idx<this->sizeOutputs; ++idx) {
                 pToken = &this->pOutputs[idx];
-                token_InitCharW32(pToken, 0, 0, 1, 1, LEX_CLASS_EOF, 0);
+                token_InitCharW32(pToken, NULL, LEX_CLASS_EOF, 0);
             }
             for (idx=0; idx<this->sizeOutputs; ++idx) {
                 lex_TokenNext(this);

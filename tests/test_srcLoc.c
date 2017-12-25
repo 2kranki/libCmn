@@ -28,15 +28,6 @@
 #include    <szTbl.h>
 
 
-static
-const
-char        *pJsonA =   "{ "
-                        "\"objectType\":\"srcLoc\", "
-                        "\"FileIndex\":1, "
-                        "\"Offset\":20, "
-                        "\"LineNo\":3, "
-                         "\"ColNo\":4 "
-                         "}\n";
 
 
 
@@ -94,7 +85,16 @@ int         test_srcLoc_OpenClose(
     SRCLOC_DATA	    *pObj = OBJ_NIL;
     ASTR_DATA       *pAStr = OBJ_NIL;
     SRCLOC_DATA	    *pObj2 = OBJ_NIL;
-   
+    static
+    const
+    char            *pJsonA =   "{ "
+                                    "\"objectType\":\"srcLoc\", "
+                                    "\"fileIndex\":1, "
+                                    "\"offset\":20, "
+                                    "\"lineNo\":3, "
+                                    "\"colNo\":4 "
+                                "}\n";
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = srcLoc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -107,7 +107,6 @@ int         test_srcLoc_OpenClose(
         TINYTEST_TRUE( (3 == srcLoc_getLineNo(pObj)) );
         TINYTEST_TRUE( (4 == srcLoc_getColNo(pObj)) );
 
-#ifdef XYZZY
         pAStr = srcLoc_ToJSON(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));
@@ -117,9 +116,14 @@ int         test_srcLoc_OpenClose(
 
         pObj2 = srcLoc_NewFromJSONStringA(pJsonA);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+
+        TINYTEST_TRUE( (1 == srcLoc_getFileIndex(pObj2)) );
+        TINYTEST_TRUE( (20 == srcLoc_getOffset(pObj2)) );
+        TINYTEST_TRUE( (3 == srcLoc_getLineNo(pObj2)) );
+        TINYTEST_TRUE( (4 == srcLoc_getColNo(pObj2)) );
+        
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-#endif
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

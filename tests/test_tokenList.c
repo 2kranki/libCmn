@@ -159,6 +159,7 @@ int         test_tokenList_AddHead01(
     uint32_t        cnt;
     ERESULT         eRc;
     int32_t         chr = '0';
+    SRCLOC          src = {1,2,3,4};
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -169,7 +170,7 @@ int         test_tokenList_AddHead01(
     if (pList) {
         
         for (i=0; i<10; ++i) {
-            pToken = token_NewCharW32(1, 0, 1, 1, ascii_toLexicalClassW32(chr+i), (chr+i));
+            pToken = token_NewCharW32(&src, ascii_toLexicalClassW32(chr+i), (chr+i));
             eRc = tokenList_Add2Head(pList, pToken);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = tokenList_getSize(pList);
@@ -204,7 +205,8 @@ int         test_tokenList_AddTail01(
     uint32_t        cnt;
     ERESULT         eRc;
     int32_t         chr = '0';
-    
+    SRCLOC          src = {1,2,3,4};
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pList = tokenList_Alloc( );
@@ -214,7 +216,7 @@ int         test_tokenList_AddTail01(
     if (pList) {
         
         for (i=0; i<10; ++i) {
-            pToken = token_NewCharW32(1, 0, 1, 1, ascii_toLexicalClassW32(chr+i), (chr+i));
+            pToken = token_NewCharW32(&src, ascii_toLexicalClassW32(chr+i), (chr+i));
             eRc = tokenList_Add2Tail(pList, pToken);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = tokenList_getSize(pList);

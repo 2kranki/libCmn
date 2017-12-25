@@ -64,11 +64,6 @@ OBJ_INFO        token_Info;            // Forward Reference
 
 
 
-OBJ_ID          token_Class(
-    void
-);
-
-
 
 static
 bool            token_ClassIsKindOf(

@@ -104,11 +104,21 @@ extern "C" {
     );
     
     
+    OBJ_ID          srcLoc_Class(
+        void
+    );
+    
+    
     SRCLOC_DATA *     srcLoc_NewFLC(
         uint16_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
+    );
+    
+    
+    SRCLOC_DATA *     srcLoc_NewSrcLoc(
+        SRCLOC          *pSrc
     );
     
     
@@ -169,6 +179,11 @@ extern "C" {
     );
     
 
+    SRCLOC *        srcLoc_getSrc(
+        SRCLOC_DATA     *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------

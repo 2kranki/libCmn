@@ -242,12 +242,12 @@ int         test_utf8_JSON01(
     ASTR_DATA	*pAStr = OBJ_NIL;
     static
     const
-    char        *pJson2 = "{\"objectType\":\"utf8\", \"crc\":0, \"len\":0, \"data\":null }\n";
+    char        *pJson2 = "{ \"objectType\":\"utf8\", \"len\":0, \"crc\":0, \"data\":null }\n";
     static
     const
-    char        *pJson3 = "{\"objectType\":\"utf8\", "
-                            "\"crc\":891568578, "
+    char        *pJson3 = "{ \"objectType\":\"utf8\", "
                             "\"len\":3, "
+                            "\"crc\":891568578, "
                             "\"data\":\"abc\" "
                             "}\n";
 
@@ -288,9 +288,9 @@ int         test_utf8_JSON02(
     ASTR_DATA    *pAStr = OBJ_NIL;
     static
     const
-    char        *pJson1 = "{\"objectType\":\"utf8\", "
-                            "\"crc\":891568578, "
+    char        *pJson1 = "{ \"objectType\":\"utf8\", "
                             "\"len\":3, "
+                            "\"crc\":891568578, "
                             "\"data\":\"abc\" "
                             "}\n";
     uint32_t    len = 0;

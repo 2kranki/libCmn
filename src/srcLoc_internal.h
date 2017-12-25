@@ -42,7 +42,10 @@
 #define	SRCLOC_INTERNAL_H
 
 
-#include    "srcLoc.h"
+#include    <srcLoc.h>
+#include    <jsonIn.h>
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -70,11 +73,22 @@ struct srcLoc_data_s	{
 
 
     // Internal Functions
+    bool            srcLoc_setSrc(
+        SRCLOC_DATA     *this,
+        SRCLOC          *pValue
+    );
+    
+    
     void            srcLoc_Dealloc(
         OBJ_ID          objId
     );
 
 
+    SRCLOC_DATA *   srcLoc_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
+    
     void *          srcLoc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

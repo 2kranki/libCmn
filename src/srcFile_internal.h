@@ -42,11 +42,12 @@
 #define	SRCFILE_INTERNAL_H
 
 
-#include    "srcFile.h"
+#include    <srcFile.h>
+#include    <srcLoc.h>
+#include    <objArray.h>
+#include    <token_internal.h>
+#include    <tokenList.h>
 #include    <stdio.h>
-#include    "objArray.h"
-#include    "token_internal.h"
-#include    "tokenList.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -80,13 +81,10 @@ struct srcFile_data_s	{
 #define FLG_OPN         0x1000                  /* File is open and useable. */
 #define FLG_TAB         0x0800                  /* Expand Horizontal Tabs. */
 #define FLG_FILE        0x0400                  /* FILE file was provided */
-    uint32_t        lineNo;             /* Current Line Number */
-    size_t          fileOffset;
-    uint16_t        colNo;              /* Current Column Number */
     uint8_t         fStripCR;
     uint8_t         fBackTrack;
     uint16_t        tabSize;            /* Tab Spacing Size */
-    uint16_t        fileIndex;
+    SRCLOC          loc;
     TOKEN_DATA      curchr;             /*  Current Character */
 
     // Input Routines

@@ -58,9 +58,6 @@ extern "C" {
 #endif
     
 
-    static
-    const
-    W32CHR_T        zero = 0;
 
 
  
@@ -102,10 +99,7 @@ extern "C" {
 
 
     TOKEN_DATA *     token_NewCharW32(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         W32CHR_T        chr
     )
@@ -116,7 +110,7 @@ extern "C" {
         
         this = token_Alloc( );
         if (this) {
-            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            this = token_InitFnLCC(this, pLoc, cls);
             if (this) {
                 this->data.w32chr[0] = chr;
                 this->data.w32chr[1] = 0;
@@ -130,10 +124,7 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewInteger(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         int64_t         num
     )
@@ -144,7 +135,7 @@ extern "C" {
         
         this = token_Alloc( );
         if (this) {
-            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            this = token_InitFnLCC(this, pLoc, cls);
             if (this) {
                 this->data.integer = num;
                 this->data.type = TOKEN_TYPE_INTEGER;
@@ -157,10 +148,7 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewFromW32STR(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         W32STR_DATA     *pString
     )
@@ -172,7 +160,7 @@ extern "C" {
         
         this = token_Alloc( );
         if (this) {
-            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            this = token_InitFnLCC(this, pLoc, cls);
             if (this) {
                 token = szTbl_StringW32ToToken(szTbl_Shared(), W32Str_getData(pString));
                 this->data.strToken = token;
@@ -186,10 +174,7 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewStrA(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         char            *pStr
@@ -204,7 +189,7 @@ extern "C" {
         strlen = utf8_StrLenChars(pStr);
         this = token_Alloc( );
         if (this) {
-            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            this = token_InitFnLCC(this, pLoc, cls);
             if (OBJ_NIL == this) {
                 return OBJ_NIL;
             }
@@ -221,10 +206,7 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewStrW32(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        *pStr
@@ -237,7 +219,7 @@ extern "C" {
         
         this = token_Alloc( );
         if (this) {
-            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            this = token_InitFnLCC(this, pLoc, cls);
             if (this) {
                 token = szTbl_StringW32ToToken(szTbl_Shared(), pStr);
                 this->data.strToken = token;
@@ -252,10 +234,7 @@ extern "C" {
     
     
     TOKEN_DATA *     token_NewStrToken(
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         uint32_t        token
     )
@@ -266,7 +245,7 @@ extern "C" {
         
         this = token_Alloc( );
         if (this) {
-            this = token_InitFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+            this = token_InitFnLCC(this, pLoc, cls);
             if (this) {
                 this->data.strToken = token;
                 this->data.type = TOKEN_TYPE_STRTOKEN;
@@ -567,6 +546,8 @@ extern "C" {
         return &this->data.src;
     }
     
+
+    
     uint16_t        token_getMisc(
         TOKEN_DATA      *this
     )
@@ -735,7 +716,10 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                pAStr = AStr_NewA(szTbl_TokenToString(szTbl_Shared(), this->data.strToken));
+                pStr = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
+                if (pStr) {
+                    pAStr = AStr_NewA(pStr);
+                }
                 break;
                 
             default:
@@ -846,14 +830,14 @@ extern "C" {
         pOther->data.cls = this->data.cls;
         pOther->data.type = this->data.type;
         pOther->data.len = this->data.len;
-        pOther->data.offset = this->data.offset;
+        pOther->data.misc = this->data.misc;
         switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
                 break;
                 
             case TOKEN_TYPE_FLOAT:
-                pOther->data.floatingPoint = this->data.floatingPoint;
+                pOther->data.flt = this->data.flt;
                 break;
                 
             case TOKEN_TYPE_INTEGER:
@@ -889,7 +873,7 @@ extern "C" {
         TOKEN_DATA       *pOther
     )
     {
-        int             i = 0;
+        //int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
 #ifdef NDEBUG
@@ -908,7 +892,7 @@ extern "C" {
             switch (this->data.type) {
                     
             case TOKEN_TYPE_FLOAT:
-                if (this->data.floatingPoint == pOther->data.floatingPoint)
+                if (this->data.flt == pOther->data.flt)
                     ;
                 else {
                     eRc = ERESULT_SUCCESS_UNEQUAL;
@@ -1058,10 +1042,7 @@ extern "C" {
      
     TOKEN_DATA *     token_InitFnLCC(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls
     )
     {
@@ -1075,10 +1056,10 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        token_setFileIndex(this, fileIndex);
-        token_setOffset(this, offset);
-        token_setLineNo(this, lineNo);
-        token_setColNo(this, colNo);
+        if (pLoc)
+            this->data.src = *pLoc;
+        else
+            memset(&this->data.src, 0, sizeof(SRCLOC));
         this->data.cls = cls;
         
         return this;
@@ -1087,10 +1068,7 @@ extern "C" {
 
     TOKEN_DATA *     token_InitCharW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         W32CHR_T        chr
     )
@@ -1100,7 +1078,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, pLoc, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1113,10 +1091,7 @@ extern "C" {
     
     TOKEN_DATA *     token_InitInteger(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         int64_t         integer
     )
@@ -1126,7 +1101,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, pLoc, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1141,10 +1116,7 @@ extern "C" {
 #ifdef XYZZY
     TOKEN_DATA *     token_InitObj(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int32_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         OBJ_DATA        *pObj
     )
@@ -1154,7 +1126,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, pLoc, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1168,10 +1140,7 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStringW(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int32_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         WSTR_DATA       *pString
     )
@@ -1181,7 +1150,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, pLoc, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1194,10 +1163,7 @@ extern "C" {
     
     TOKEN_DATA *     token_InitStrA(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int32_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         char            *pStr
@@ -1214,7 +1180,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, pLoc, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1232,12 +1198,9 @@ extern "C" {
     
     
     
-    TOKEN_DATA *     token_InitStrW(
+    TOKEN_DATA *     token_InitStrW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int32_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        *pStr
@@ -1254,7 +1217,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        eRc = token_SetupStrW(this, pFileName, lineNo, colNo, cls, pStr);
+        eRc = token_SetupStrW(this, pLoc, cls, pStr);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1266,13 +1229,9 @@ extern "C" {
 #endif
     
     
-#ifdef XYZZY
     TOKEN_DATA *     token_InitStrToken(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int32_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         uint32_t        token
@@ -1283,17 +1242,16 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        this = token_InitFnLCC( this, pLoc, cls );
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        this->pData->strToken = token;
-        this->pData->type = TOKEN_TYPE_STRTOKEN;
+        this->data.strToken = token;
+        this->data.type = TOKEN_TYPE_STRTOKEN;
         
         return this;
     }
-#endif
     
     
     
@@ -1362,10 +1320,7 @@ extern "C" {
     
     ERESULT     token_SetupCharW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        chr
@@ -1382,7 +1337,7 @@ extern "C" {
         }
 #endif
 
-        eRc = token_SetupFnLCC(this, fileIndex, offset, lineNo, colNo, cls);
+        eRc = token_SetupFnLCC(this, pLoc, cls);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1396,10 +1351,7 @@ extern "C" {
     
     ERESULT         token_SetupFnLCC(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls
     )
     {
@@ -1413,10 +1365,10 @@ extern "C" {
         }
 #endif
 
-        token_setFileIndex(this, fileIndex);
-        token_setOffset(this, offset);
-        token_setLineNo(this, lineNo);
-        token_setColNo(this, colNo);
+        if (pLoc)
+            this->data.src = *pLoc;
+        else
+            memset(&this->data.src, 0, sizeof(SRCLOC));
         this->data.cls = cls;
         
         return ERESULT_SUCCESS;
@@ -1426,10 +1378,7 @@ extern "C" {
     
     ERESULT     token_SetupStrW32(
         TOKEN_DATA      *this,
-        uint16_t        fileIndex,
-        int64_t         offset,
-        uint32_t        lineNo,
-        uint16_t        colNo,
+        SRCLOC          *pLoc,
         int32_t         cls,
         const
         W32CHR_T        *pStr
@@ -1450,7 +1399,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-        eRc = token_SetupFnLCC( this, fileIndex, offset, lineNo, colNo, cls );
+        eRc = token_SetupFnLCC( this, pLoc, cls );
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1546,8 +1495,6 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         
@@ -1566,19 +1513,16 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(token) fileIndex=%2d offset=%4lld line=%2d col=%d cls=%4d ",
-                     this,
-                     token_getFileIndex(this),
-                     token_getOffset(this),
-                     token_getLineNo(this),
-                     token_getColNo(this),
-                     this->data.cls
-                     );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(
+                         pStr,
+                         "{%p(token) fileIndex=%2d offset=%4lld line=%2d col=%d cls=%4d ",
+                         this,
+                         token_getFileIndex(this),
+                         token_getOffset(this),
+                         token_getLineNo(this),
+                         token_getColNo(this),
+                         this->data.cls
+        );
         
         switch (this->data.type) {
                 
@@ -1587,35 +1531,21 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_W32CHAR:
-                j = snprintf(
-                            str,
-                            sizeof(str),
-                            "type=CHAR char=(0x%X)%c ",
-                            this->data.w32chr[0],
-                            (((this->data.w32chr[0] >= ' ') && (this->data.w32chr[0] < 0x7F))
-                                ? this->data.w32chr[0] : ' ')
-                    );
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(
+                        pStr,
+                        "type=CHAR char=(0x%X)%c ",
+                        this->data.w32chr[0],
+                        (((this->data.w32chr[0] >= ' ') && (this->data.w32chr[0] < 0x7F))
+                                  ? this->data.w32chr[0] : ' ')
+                );
                 break;
                 
             case TOKEN_TYPE_INTEGER:
-                j = snprintf(
-                            str,
-                            sizeof(str),
-                            "type=INTEGER integer=%lld ",
-                            this->data.integer
-                            );
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(pStr, "type=INTEGER integer=%lld ", this->data.integer);
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                j = snprintf(
-                             str,
-                             sizeof(str),
-                             "type=STRTOKEN token=%d ",
-                             this->data.strToken
-                             );
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(pStr, "type=STRTOKEN token=%d ", this->data.strToken);
                 break;
                 
             default:
@@ -1624,11 +1554,13 @@ extern "C" {
                 break;
                 
         }
-        AStr_AppendA(pStr, "\n");
+        if (pStr)
+            AStr_AppendA(pStr, "\n");
 
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), " %p(token)}\n", this );
-        AStr_AppendA(pStr, str);
+        if (pStr) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+            AStr_AppendPrint(pStr, " %p(token)}\n", this);
+        }
         
         return pStr;
     }

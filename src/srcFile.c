@@ -120,8 +120,8 @@ extern "C" {
 #endif
         
         chrs[0] = 0;
-        ++this->fileOffset;
-        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->fileOffset);
+        ++this->loc.offset;
+        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->loc.offset);
         if (0 == chrs[0]) {
             *pChar = EOF;
             return ERESULT_EOF_ERROR;
@@ -131,8 +131,8 @@ extern "C" {
             --len;
             chr = 1;
             while (len--) {
-                ++this->fileOffset;
-                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->fileOffset);
+                ++this->loc.offset;
+                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->loc.offset);
                 if (0 == chrs[0]) {
                     *pChar = EOF;
                     return ERESULT_EOF_ERROR;
@@ -141,7 +141,7 @@ extern "C" {
             len = utf8_Utf8ToW32(chrs, &chr);
         }
         if( chr == ASCII_CPM_EOF ) {
-            this->fileOffset = u8Array_getSize(this->pU8Array);
+            this->loc.offset = u8Array_getSize(this->pU8Array);
             chr = EOF;
         }
         *pChar = chr;
@@ -191,9 +191,9 @@ extern "C" {
                 break;
                 
             case OBJ_IDENT_ASTR:
-                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->fileOffset++ );
+                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->loc.offset++ );
                 if( chr == ASCII_CPM_EOF ) {
-                    this->fileOffset = AStr_getLength(this->pAStr);
+                    this->loc.offset = AStr_getLength(this->pAStr);
                     chr = EOF;
                 }
                 break;
@@ -206,9 +206,9 @@ extern "C" {
                 break;
                 
             case OBJ_IDENT_W32STR:
-                chr = W32Str_CharGetW32(this->pW32Str, (uint32_t)this->fileOffset++ );
+                chr = W32Str_CharGetW32(this->pW32Str, (uint32_t)this->loc.offset++ );
                 if( chr == ASCII_CPM_EOF ) {
-                    this->fileOffset = W32Str_getLength(this->pW32Str);
+                    this->loc.offset = W32Str_getLength(this->pW32Str);
                     chr = EOF;
                 }
                 break;
@@ -417,7 +417,7 @@ extern "C" {
         }
 #endif
         
-        return this->fileIndex;
+        return this->loc.fileIndex;
     }
     
     bool            srcFile_setFileIndex(
@@ -431,7 +431,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        this->fileIndex = value;
+        this->loc.fileIndex = value;
         return true;
     }
     
@@ -604,7 +604,7 @@ extern "C" {
     )
     {
         TOKEN_DATA      *pToken;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -618,7 +618,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFile_Vtbl);
 
-        this->fileIndex = fileIndex;
+        this->loc.fileIndex = fileIndex;
         obj_setSize( &this->curchr, sizeof(TOKEN_DATA) );
         pToken = token_Init(&this->curchr);
         if (OBJ_NIL == pToken) {
@@ -639,8 +639,8 @@ extern "C" {
                                             path_getData(this->pPath)
                               );
         }
-        this->lineNo  = 1;
-        this->colNo   = 0;
+        this->loc.lineNo  = 1;
+        this->loc.colNo   = 0;
         this->tabSize = tabSize;
         
         this->sizeInputs = 4;
@@ -658,7 +658,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->lineNo);
+        BREAK_NOT_BOUNDARY4(&this->loc.lineNo);
         BREAK_NOT_BOUNDARY4(sizeof(SRCFILE_DATA));
     #endif
 
@@ -701,7 +701,7 @@ extern "C" {
         this->pAStr = pStr;
         this->flags &= ~FLG_EOF;
         this->flags |= FLG_OPN;
-        this->fileOffset = 1;
+        this->loc.offset = 1;
         
         srcFile_InputAdvance(this, this->sizeInputs);
         
@@ -881,7 +881,7 @@ extern "C" {
         cbp->pW32Str = pWStr;
         cbp->flags &= ~FLG_EOF;
         cbp->flags |= FLG_OPN;
-        cbp->fileOffset = 1;
+        cbp->loc.offset = 1;
         
         srcFile_InputAdvance(cbp, cbp->sizeInputs);
         
@@ -981,37 +981,37 @@ extern "C" {
             switch (chr) {
                     
                 case '\b':
-                    if (this->colNo) {
-                        --this->colNo;
+                    if (this->loc.colNo) {
+                        --this->loc.colNo;
                     }
                     break;
                     
                 case '\f':
                 case '\n':
-                    ++this->lineNo;
-                    this->colNo = 0;
+                    ++this->loc.lineNo;
+                    this->loc.colNo = 0;
                     break;
                     
                 case '\r':
-                    this->colNo = 0;
+                    this->loc.colNo = 0;
                     break;
                     
                 case '\t':
                     if( this->tabSize ) {
                         chr = ' ';
-                        if( ((this->colNo-1) % this->tabSize) )
-                            this->colNo += ((this->colNo-1) % this->tabSize);
+                        if( ((this->loc.colNo-1) % this->tabSize) )
+                            this->loc.colNo += ((this->loc.colNo-1) % this->tabSize);
                         else
-                            this->colNo += this->tabSize;
+                            this->loc.colNo += this->tabSize;
                     }
                     else {
-                        ++this->colNo;
+                        ++this->loc.colNo;
                     }
                     break;
                     
                 default:
                     if (chr) {
-                        ++this->colNo;
+                        ++this->loc.colNo;
                     }
                     break;
             }
@@ -1028,10 +1028,7 @@ extern "C" {
         obj_FlagOff(pToken, OBJ_FLAG_INIT);
         token_InitCharW32(
                     pToken,
-                    this->fileIndex,
-                    this->fileOffset,
-                    this->lineNo,
-                    this->colNo,
+                    &this->loc,
                     cls,
                     chr
         );

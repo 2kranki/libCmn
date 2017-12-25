@@ -214,10 +214,10 @@ int         test_name_JSON01_UTF8(
     const
     char        *pJSON01 =  "{\"objectType\":\"name\", "
                                 "\"type\":2 /*NAME_TYPE_UTF8*/, "
-                                "\"data\":{"
+                                "\"data\":{ "
                                     "\"objectType\":\"utf8\", "
-                                    "\"crc\":891568578, "
                                     "\"len\":3, "
+                                    "\"crc\":891568578, "
                                     "\"data\":\"abc\" "
                                 "}\n"
                             "}\n";
@@ -267,10 +267,10 @@ int         test_name_JSON01_UTF8Con(
     const
     char        *pJSON01 =  "{\"objectType\":\"name\", "
                                 "\"type\":2 /*NAME_TYPE_UTF8*/, "
-                                "\"data\":{"
+                                "\"data\":{ "
                                     "\"objectType\":\"utf8\", "
-                                    "\"crc\":891568578, "
                                     "\"len\":3, "
+                                    "\"crc\":891568578, "
                                     "\"data\":\"abc\" "
                                 "}\n"
                             "}\n";
