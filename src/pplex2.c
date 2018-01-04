@@ -116,9 +116,9 @@ extern "C" {
         }
 #endif
         
-        pBuffer = W32Str_New();
+        pBuffer = W32Str_New( );
         if (OBJ_NIL == pBuffer) {
-            srcErrors_AddFatal(
+            srcErrors_AddFatalA(
                             OBJ_NIL,
                             NULL,
                             "ll1aux_SaveCopyText: failed to create SBUF!"
@@ -133,7 +133,7 @@ extern "C" {
             pNxtChr = lex_InputLookAhead((LEX_DATA *)this, 1);
             curchr = token_getChrW32(pNxtChr);
             if ( curchr == -1 ) {
-                srcErrors_AddFatal(
+                srcErrors_AddFatalA(
                                    OBJ_NIL,
                                    NULL,
                                    "ll1aux_SaveCopyText: premature EOF!"
@@ -606,7 +606,7 @@ extern "C" {
                         break;
                     }
                     else {
-                        srcErrors_AddFatalFromToken(
+                        srcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pInput,
                                 "Malformed String constant"

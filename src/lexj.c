@@ -1058,7 +1058,7 @@ extern "C" {
                         break;
                     }
                     else {
-                        srcErrors_AddFatalFromToken(
+                        srcErrors_AddFatalFromTokenA(
                                     OBJ_NIL,
                                     pInput,
                                     "Malformed String Constant"
@@ -1144,7 +1144,7 @@ extern "C" {
                                 }
                             }
                             if (cls == -1) {
-                                srcErrors_AddFatalFromToken(
+                                srcErrors_AddFatalFromTokenA(
                                     OBJ_NIL,
                                     pInput,
                                     "Unexpected EOF within a Comment"

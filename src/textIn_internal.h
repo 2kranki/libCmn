@@ -42,6 +42,7 @@
 #include    <textIn.h>
 #include    <srcLoc_internal.h>
 #include    <ascii.h>
+#include    <sidx.h>
 #include    <u8Array.h>
 #include    <W32Str.h>
 
@@ -114,6 +115,9 @@ struct textIn_data_s	{
     uint8_t         *pBuffer;
     uint16_t        filenameIndex;
     uint16_t        rsvd16;
+#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    SIDX_DATA       *pSidx;
+#endif
 
 };
 #pragma pack(pop)

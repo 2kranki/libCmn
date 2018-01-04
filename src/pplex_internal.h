@@ -72,6 +72,11 @@ struct pplex_data_s	{
     uint8_t         fReturnWS;
     uint8_t         fReturnNL;
     uint8_t         rsvd8[2];
+    PPLEX_KWDTBL_ENTRY
+                    *pAuxKwds;
+    uint32_t        cAuxKwds;
+    bool            (*pKwdUserExit)(void *, TOKEN_DATA *);
+    void            *pKwdUserObject;
 
 };
 #pragma pack(pop)

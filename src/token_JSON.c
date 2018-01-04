@@ -180,7 +180,6 @@ extern "C" {
     )
     {
         JSONIN_DATA     *pParser;
-        NODE_DATA       *pFileNode = OBJ_NIL;
         ERESULT         eRc;
         TOKEN_DATA      *pToken = OBJ_NIL;
         

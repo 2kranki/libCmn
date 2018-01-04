@@ -158,19 +158,60 @@ extern "C" {
      Execute the Fatal Error Exit if available.
      @param     this    SRCERRORS object pointer (if OBJ_NIL,
                         srcErrors_Shared() is used.)
+     @param     severity error severity as defined in enum srcError_Severity
+     @param     pLocation Location of first character where error occurred (optional)
+     @param     pErrorString  A character string describing the error without
+                        the source location
+     @return    If successful, true; otherwise, false and an ERESULT_*
+                error will be set in Last Error.
+     */
+    bool        srcErrors_AddErrorA(
+        SRCERRORS_DATA  *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        ...
+    );
+    
+    
+    /*!
+     Create a new fatal error and add it to the internal collection.
+     Execute the Fatal Error Exit if available.
+     @param     this    SRCERRORS object pointer (if OBJ_NIL,
+                        srcErrors_Shared() is used.)
      @param     pLocation Location of first character where error occurred (optional)
      @param     pErrorString  A character string describing the error without
                             the source location
      @return    If successful, true; otherwise, false and an ERESULT_*
      error will be set in Last Error.
      */
-    bool        srcErrors_AddFatal(
+    bool        srcErrors_AddFatalA(
         SRCERRORS_DATA  *this,
         const
         SRCLOC          *pLocation,
         const
         char            *pErrorString,
         ...
+    );
+    
+    
+    /*!
+     Create a new fatal error and add it to the internal collection.
+     Execute the Fatal Error Exit if available.
+     @param     this    SRCERRORS object pointer (if OBJ_NIL,
+     srcErrors_Shared() is used.)
+     @param     pToken  Pointer to a token object
+     @param     pExpected  A character string describing the expected tokens
+     @return    If successful, true; otherwise, false and an ERESULT_*
+     error will be set in Last Error.
+     */
+    bool        srcErrors_AddFatalExpectingA(
+        SRCERRORS_DATA  *this,
+        TOKEN_DATA      *pToken,
+        const
+        char            *pExpected
     );
     
     
@@ -185,7 +226,7 @@ extern "C" {
      @return    If successful, true; otherwise, false and an ERESULT_*
                 error will be set in Last Error.
      */
-    bool        srcErrors_AddFatalFromToken(
+    bool        srcErrors_AddFatalFromTokenA(
         SRCERRORS_DATA  *this,
         TOKEN_DATA      *pToken,
         const

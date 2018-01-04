@@ -41,10 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <genObj_internal.h>
-#include    <ascii.h>
-#include    <str.h>
-#include    <utf8.h>
+#include        <genObj_internal.h>
+#include        <ascii.h>
+#include        <dateTime.h>
+#include        <str.h>
+#include        <utf8.h>
 
 
 
@@ -61,16 +62,16 @@ extern "C" {
     } GETTER;
     
     GETTER          getters[] = {
-        {"int", "iRet"},
-        {"int8_t", "iRet"},
-        {"int16_t", "iRet"},
-        {"int32_t", "iRet"},
-        {"int64_t", "iRet"},
-        {"uint8_t", "iRet"},
-        {"uint16_t", "iRet"},
-        {"uint32_t", "iRet"},
-        {"uint64_t", "iRet"},
-        {"uint64_t", "iRet"},
+        {"int",         "iRet"},
+        {"int8_t",      "iRet"},
+        {"int16_t",     "iRet"},
+        {"int32_t",     "iRet"},
+        {"int64_t",     "iRet"},
+        {"uint8_t",     "iRet"},
+        {"uint16_t",    "iRet"},
+        {"uint32_t",    "iRet"},
+        {"uint64_t",    "iRet"},
+        {"uint64_t",    "iRet"},
     };
 
  
@@ -483,7 +484,7 @@ extern "C" {
     )
     {
         GENOBJ_DATA     *pOther = OBJ_NIL;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -547,6 +548,10 @@ extern "C" {
             obj_Release(this->pHash);
             this->pHash = OBJ_NIL;
         }
+        if (this->pDateTime) {
+            obj_Release(this->pDateTime);
+            this->pDateTime = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -555,64 +560,6 @@ extern "C" {
         this = OBJ_NIL;
 
         // Return to caller.
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      D i s a b l e
-    //---------------------------------------------------------------
-
-    ERESULT         genObj_Disable(
-        GENOBJ_DATA		*this
-    )
-    {
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-
-        // Put code here...
-
-        obj_Disable(this);
-        
-        // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          E n a b l e
-    //---------------------------------------------------------------
-
-    ERESULT         genObj_Enable(
-        GENOBJ_DATA		*this
-    )
-    {
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-        
-        obj_Enable(this);
-
-        // Put code here...
-        
-        // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
     }
 
 
@@ -1110,6 +1057,229 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //               G e n e r a t e  H e a d i n g
+    //---------------------------------------------------------------
+    
+    ERESULT         genObj_GenHeading(
+        GENOBJ_DATA     *this,
+        ASTR_DATA       **ppStr             // (in/out)
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        const
+        char            *pClassName;
+        const
+        char            *pClassNameUC;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == ppStr) {
+            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
+            return this->eRc;
+        }
+        pClassName = AStr_getData(node_getData(pNode));
+        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
+        if (OBJ_NIL == pNode) {
+            return this->eRc;
+        }
+        pClassNameUC = AStr_getData(node_getData(pNode));
+
+        if (OBJ_NIL == *ppStr) {
+            *ppStr = AStr_New();
+        }
+        AStr_AppendA(*ppStr, "// vi:nu:et:sts=4 ts=4 sw=4\n");
+        genObj_GenHeading(this, OBJ_NIL);
+        AStr_AppendA(*ppStr, "/*\n");
+        AStr_AppendA(*ppStr, " * Program:\n");
+        AStr_AppendPrint(*ppStr, " *\t\t%s (%s)\n", pClassName, pClassNameUC);
+        AStr_AppendA(*ppStr, " * Purpose:\n");
+        AStr_AppendA(*ppStr, " *\t\tThis object does something cool!\n");
+        AStr_AppendA(*ppStr, " * Remarks:\n");
+        AStr_AppendA(*ppStr, " *\t1.\tNone\n");
+        AStr_AppendA(*ppStr, " * History:\n");
+        if (this->pDateTime) {
+            AStr_AppendPrint(*ppStr, " *\t%s\tGenerated.\n", AStr_getData(this->pDateTime));
+        }
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " *\n");
+        AStr_AppendA(*ppStr, " */\n");
+        AStr_AppendA(*ppStr, "\n\n\n");
+        AStr_AppendA(*ppStr, "\n\n\n");
+        
+        // Return to caller.
+        genObj_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //         G e n e r a t e  I n t e r n a l  H e a d e r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genObj_GenInternalHeader(
+        GENOBJ_DATA     *this,
+        const
+        char            *pIncludes
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        NODE_DATA       *pNode = OBJ_NIL;
+        const
+        char            *pClassName;
+        const
+        char            *pClassNameUC;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(this->pHash, "ClassName");
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+        pClassName = AStr_getData(node_getData(pNode));
+        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+        pClassNameUC = AStr_getData(node_getData(pNode));
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        eRc = genObj_GenHeading(this, &pStr);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pStr);
+            DEBUG_BREAK();
+            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+        
+        eRc = genObj_GenLicense(this, &pStr);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pStr);
+            DEBUG_BREAK();
+            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+        
+        AStr_AppendA(pStr, "/* Header File Inclusion */\n");
+        AStr_AppendPrint(pStr, "#include <%s.h>\n", pClassName);
+        AStr_AppendPrint(pStr, "#include <ascii.h>\n");
+        AStr_AppendPrint(pStr, "#include <utf8.h>\n");
+        if (pIncludes) {
+            AStr_AppendA(pStr, pIncludes);
+        }
+        AStr_AppendA(pStr, "\n\n\n");
+        AStr_AppendA(pStr, "#ifdef    __cplusplus\n");
+        AStr_AppendA(pStr, "extern \"C\" {\n");
+        AStr_AppendA(pStr, "#endif\n");
+        AStr_AppendA(pStr, "\n\n\n");
+        eRc = genObj_GenSection(this, &pStr, "Object Data Description", false);
+        AStr_AppendA(pStr, "#pragma pack(push, 1)\n");
+        AStr_AppendPrint(pStr, "struct %s_data_s\t{\n", pClassName);
+        AStr_AppendA(pStr, "/* Warning - OBJ_DATA must be first in this object!\n");
+        AStr_AppendA(pStr, " */\n");
+        AStr_AppendA(pStr, "\tOBJ_DATA\t\tsuper;\n");
+        AStr_AppendA(pStr, "\tOBJ_IUNKNOWN\t*pSuperVtbl;\t// Needed for Inheritance\n\n");
+        AStr_AppendA(pStr, "\t// Common Data\n");
+        AStr_AppendA(pStr, "\tERESULT\t\teRc;\n");
+        AStr_AppendA(pStr, "\tuint16_t\t\tsize;\t\t// maximum number of elements\n");
+        AStr_AppendA(pStr, "\tuint16_t\t\treserved;\n");
+        AStr_AppendA(pStr, "\tASTR_DATA\t\t*pStr;\n\n");
+        AStr_AppendA(pStr, "\tvolatile\n");
+        AStr_AppendA(pStr, "\tint32_t\t\tnumRead;\n");
+        AStr_AppendA(pStr, "\t// WARNING - 'elems' must be last element of this structure!\n");
+        AStr_AppendA(pStr, "\tuint32_t\t\telems[0];\n\n");
+        AStr_AppendA(pStr, "};\n");
+        AStr_AppendA(pStr, "#pragma pack(pop)\n\n");
+        AStr_AppendA(pStr, "\textern\n");
+        AStr_AppendA(pStr, "\tconst\n");
+        AStr_AppendPrint(
+                         pStr,
+                         "\tstruct %s_class_data_s  %s_ClassObj;\n\n",
+                         pClassName,
+                         pClassName
+        );
+        AStr_AppendA(pStr, "\textern\n");
+        AStr_AppendA(pStr, "\tconst\n");
+        AStr_AppendPrint(
+                         pStr,
+                         "\t%s_VTBL\t\t%s_Vtbl;\n\n",
+                         pClassNameUC,
+                         pClassName
+                         );
+        AStr_AppendA(pStr, "\n\n\n");
+        eRc = genObj_GenSection(this, &pStr, "Internal Method Forward Definitions", false);
+        AStr_AppendPrint(pStr, "\tbool\t\t%s_setLastError(\n", pClassName);
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", pClassNameUC);
+        AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
+        AStr_AppendA(pStr, "\t);\n\n\n");
+        AStr_AppendPrint(pStr, "\tOBJ_IUNKNOWN *\t%s_getSuperVtbl(\n", pClassName);
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", pClassNameUC);
+        AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
+        AStr_AppendA(pStr, "\t);\n\n\n");
+        AStr_AppendPrint(pStr, "\tvoid\t\t%s_Dealloc(\n", pClassName);
+        AStr_AppendA(pStr, "\t\tOBJ_ID\t\tobjId\n");
+        AStr_AppendA(pStr, "\t);\n\n\n");
+        AStr_AppendPrint(pStr, "\tvoid *\t\t%s_QueryInfo(\n", pClassName);
+        AStr_AppendA(pStr, "\t\tOBJ_ID\t\tobjId,\n");
+        AStr_AppendA(pStr, "\t\tuint32_t\t\ttype,\n");
+        AStr_AppendA(pStr, "\t\void\t\t*pData\n");
+        AStr_AppendA(pStr, "\t);\n\n\n");
+        AStr_AppendPrint(pStr, "\tASTR_DATA *\t%s_ToJSON(\n", pClassName);
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", pClassNameUC);
+        AStr_AppendA(pStr, "\t);\n\n\n");
+        AStr_AppendA(pStr, "#ifdef NDEBUG\n");
+        AStr_AppendA(pStr, "#else\n");
+        AStr_AppendPrint(pStr, "\tbool\t\t%s_Validate(\n", pClassName);
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", pClassNameUC);
+        AStr_AppendA(pStr, "\t);\n");
+        AStr_AppendA(pStr, "#endif\n");
+        AStr_AppendA(pStr, "\n\n\n");
+        AStr_AppendA(pStr, "#ifdef\t__cplusplus\n");
+        AStr_AppendA(pStr, "}\n");
+        AStr_AppendA(pStr, "#endif\n\n\n");
+        AStr_AppendPrint(pStr, "#endif\t/* %s_INTERNAL_H */\n\n\n", pClassNameUC);
+        AStr_AppendA(pStr, "\n\n\n");
+        
+        // Return to caller.
+        genObj_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //               G e n e r a t e  L i c e n s e
     //---------------------------------------------------------------
     
@@ -1455,7 +1625,9 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         const
         char            *pClassName;
-        
+        const
+        char            *pClassNameUC;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1473,7 +1645,12 @@ extern "C" {
             return this->eRc;
         }
         pClassName = AStr_getData(node_getData(pNode));
-        
+        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
+        if (OBJ_NIL == pNode) {
+            return this->eRc;
+        }
+        pClassNameUC = AStr_getData(node_getData(pNode));
+
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
         }
@@ -1498,10 +1675,12 @@ extern "C" {
             AStr_AppendA(*ppStr, pIncludes);
         }
         AStr_AppendA(*ppStr, "\n\n\n");
+        AStr_AppendPrint(*ppStr, "#ifndef %s_INTERNAL_H\n", pClassNameUC);
+        AStr_AppendPrint(*ppStr, "#define %s_INTERNAL_H\n", pClassNameUC);
+        AStr_AppendA(*ppStr, "\n\n\n");
         AStr_AppendA(*ppStr, "#ifdef    __cplusplus\n");
         AStr_AppendA(*ppStr, "extern \"C\" {\n");
         AStr_AppendA(*ppStr, "#endif\n");
-        AStr_AppendA(*ppStr, "\n\n\n");
         AStr_AppendA(*ppStr, "\n\n\n");
         
         // Return to caller.
@@ -1519,14 +1698,15 @@ extern "C" {
         GENOBJ_DATA     *this,
         ASTR_DATA       **ppStr,            // (in/out)
         const
-        char            *pSection
+        char            *pDescription,
+        bool            fSection
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
         ASTR_DATA       *pWrk;
         uint32_t        i;
+        const
+        char            *pSep = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1544,6 +1724,13 @@ extern "C" {
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
+        if (fSection) {
+            pSep = "//===============================================================\n";
+        }
+        else {
+            pSep = "//---------------------------------------------------------------\n";
+
+        }
 
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
@@ -1552,7 +1739,7 @@ extern "C" {
                      *ppStr,
                      "//===============================================================\n"
                      );
-        pWrk = AStr_NewA(pSection);
+        pWrk = AStr_NewA(pDescription);
         BREAK_NULL(pWrk);
         i = 40 - AStr_getLength(pWrk);
         if (i > 1) {
@@ -1586,6 +1773,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(GENOBJ_DATA);
+        DATETIME_DATA   *pDateTime = OBJ_NIL;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1614,7 +1802,18 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genObj_Vtbl);
         
         genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->pHash = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+        this->pHash = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        if (OBJ_NIL == this->pHash) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        pDateTime = dateTime_NewCurrent();
+        if (pDateTime) {
+            this->pDateTime = dateTime_ToString(pDateTime);
+        }
+        obj_Release(pDateTime);
+        pDateTime = OBJ_NIL;
 
     #ifdef NDEBUG
     #else
@@ -1722,18 +1921,6 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
-                    case 'D':
-                        if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return genObj_Disable;
-                        }
-                        break;
-
-                    case 'E':
-                        if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return genObj_Enable;
-                        }
-                        break;
-
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return genObj_ToDebugString;
@@ -1786,7 +1973,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
         ASTR_DATA       *pStr;
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
@@ -1850,7 +2036,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
@@ -1891,7 +2076,7 @@ extern "C" {
         char            *pValue
     )
     {
-        char            *pValueNew;
+       // char            *pValueNew;
         
         // Do initialization.
 #ifdef NDEBUG

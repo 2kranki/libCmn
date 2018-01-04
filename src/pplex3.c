@@ -59,18 +59,12 @@ extern "C" {
     
     /*          * * * Key Word Table * * *
      */
-    typedef struct kwd_entry_s {
-        int32_t     value;					/* Lexical Scan Value */
-        uint16_t	flags;					/* Flags */
-        const
-        char        *pKwd;					/* Key Word */
-    } KWD_ENTRY;
     
 
     // A binary search is performed on this table. So, it must
     // be kept sorted by key word.
     static
-    KWD_ENTRY   kwdTbl_C[] = {
+    PPLEX_KWDTBL_ENTRY   kwdTbl_C[] = {
         // Upper case keywords would go here!
         { PPLEX_KWD_ASM,            PPLEX_LANG_MSC,	    "_asm" },
         { PPLEX_KWD_CDECL,          PPLEX_LANG_MSC,	    "_cdecl" },
@@ -141,28 +135,28 @@ extern "C" {
     };
     
     static
-    int         cKwdTbl_C = sizeof(kwdTbl_C)/sizeof(KWD_ENTRY);
+    int         cKwdTbl_C = sizeof(kwdTbl_C)/sizeof(PPLEX_KWDTBL_ENTRY);
 
     
     
     // A binary search is performed on this table. So, it must
     // be kept sorted by key word.
     static
-    KWD_ENTRY   kwdTbl_LL1[] = {
+    PPLEX_KWDTBL_ENTRY   kwdTbl_LL1[] = {
         // Upper case keywords would go here!
         { PPLEX_KWD_GOAL,           PPLEX_LANG_LL1,		"%goal" },
         { PPLEX_KWD_TERM,           PPLEX_LANG_LL1,		"%term" }
     };
     
     static
-    int         cKwdTbl_LL1 = sizeof(kwdTbl_LL1)/sizeof(KWD_ENTRY);
+    int         cKwdTbl_LL1 = sizeof(kwdTbl_LL1)/sizeof(PPLEX_KWDTBL_ENTRY);
     
     
     
     // NOTE --  This table must be kept in alphabetical order by keyword
     //          for the searches to work properly.
     static
-    KWD_ENTRY   kwdTbl_ObjC[] = {
+    PPLEX_KWDTBL_ENTRY   kwdTbl_ObjC[] = {
         { PPLEX_KWD_AT_AUTO,            PPLEX_LANG_OBJC,    "@autoreleasepool" },
         { PPLEX_KWD_AT_CATCH,           PPLEX_LANG_OBJC,	"@catch" },
         { PPLEX_KWD_AT_CLASS,           PPLEX_LANG_OBJC,	"@class" },
@@ -187,7 +181,7 @@ extern "C" {
     };
     
     static
-    int         cKwdTbl_ObjC = sizeof(kwdTbl_ObjC)/sizeof(KWD_ENTRY);
+    int         cKwdTbl_ObjC = sizeof(kwdTbl_ObjC)/sizeof(PPLEX_KWDTBL_ENTRY);
     
     
     
@@ -204,14 +198,16 @@ extern "C" {
     // Perform a binary search on the keyword table. (Keyword table
     // must be kept sorted!)
     static
-    KWD_ENTRY *     kwSearch(
+    PPLEX_KWDTBL_ENTRY * kwSearch(
         const
         char            *pName,
-        KWD_ENTRY       *pTable,
+        PPLEX_KWDTBL_ENTRY
+                        *pTable,
         uint32_t        cTable
     )
     {
-        KWD_ENTRY       *pEntry;
+        PPLEX_KWDTBL_ENTRY
+                        *pEntry;
         int             iRc;
         uint32_t        high = cTable - 1;
         uint32_t        low = 0;
@@ -293,6 +289,30 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    bool            pplex3_setAuxKwdTable(
+        PPLEX3_DATA      *this,
+        PPLEX_KWDTBL_ENTRY
+                        *pAuxKwds,
+        uint32_t        cAuxKwds
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !pplex3_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pAuxKwds = pAuxKwds;
+        this->cAuxKwds = cAuxKwds;
+        
+        return true;
+    }
+    
+    
+    
     bool            pplex3_setKwdSelection(
         PPLEX3_DATA     *this,
         uint16_t        value
@@ -358,7 +378,8 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         uint32_t        iMax  = cKwdTbl_ObjC;
-        KWD_ENTRY       *pEntry;
+        PPLEX_KWDTBL_ENTRY
+                        *pEntry;
         ASTR_DATA       *pAStr = OBJ_NIL;
         
 #ifdef NDEBUG
@@ -397,7 +418,8 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         uint32_t        iMax  = cKwdTbl_C;
-        KWD_ENTRY       *pEntry;
+        PPLEX_KWDTBL_ENTRY
+                        *pEntry;
         ASTR_DATA       *pAStr = OBJ_NIL;
         
 #ifdef NDEBUG
@@ -547,7 +569,8 @@ extern "C" {
         //uint16_t        numDigits;
         int32_t         cls;
         //int32_t         chr;
-        KWD_ENTRY       *pKWD;
+        PPLEX_KWDTBL_ENTRY
+                        *pKWD;
         bool            fMore = true;
         bool            fExternal;
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -581,14 +604,32 @@ extern "C" {
                     
                 case PPLEX_IDENTIFIER:
                     if (this->pUserExit) {
-                        fExternal = this->pUserExit(this->pUserObject,
-                                                    lex_getToken((LEX_DATA *)this));
+                        fExternal = this->pUserExit(
+                                                this->pUserObject,
+                                                lex_getToken((LEX_DATA *)this)
+                                    );
                         if (fExternal) {
+                            lex_InputAdvance((LEX_DATA *)this, 1);
                             fMore = false;
+                            obj_Release(pStr);
                             break;
                         }
                     }
                     pStr = token_getTextA(pInput);
+                    if (this->pAuxKwds) {
+                        pKWD =  kwSearch(
+                                        AStr_getData(pStr),
+                                        this->pAuxKwds,
+                                        this->cAuxKwds
+                                );
+                        if (pKWD) {
+                            token_setClass(lex_getToken((LEX_DATA *)this), pKWD->value);
+                            lex_InputAdvance((LEX_DATA *)this, 1);
+                            fMore = false;
+                            obj_Release(pStr);
+                            break;
+                        }
+                    }
                     if ('@' == AStr_CharGetW32(pStr, 1)) {
                         pKWD = kwSearch(
                                     AStr_getData(pStr),

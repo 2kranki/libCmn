@@ -239,9 +239,11 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pValue = number_NewFromJSONString(pStr);
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
+            if (pStr) {
+                pValue = number_NewFromJSONString(pStr);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
         }
         
         // Return to caller.

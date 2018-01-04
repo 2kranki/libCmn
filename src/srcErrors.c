@@ -208,6 +208,10 @@ extern "C" {
         OBJ_ID          pFatalExitObject
     )
     {
+        
+        if (OBJ_NIL == this){
+            this = srcErrors_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !srcErrors_Validate(this) ) {
@@ -367,10 +371,79 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      A d d  F a t a l
+    //                              A d d
     //---------------------------------------------------------------
     
-    bool        srcErrors_AddFatal(
+    bool        srcErrors_AddErrorA(
+        SRCERRORS_DATA  *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        ...
+    )
+    {
+        SRCERROR_DATA   *pError = OBJ_NIL;
+        char            str[512];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStr = NULL;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        va_start( arg_ptr, pErrorString );
+        str[0] = '\0';
+        size = vsnprintf( str, sizeof(str), pErrorString, arg_ptr );
+        va_end( arg_ptr );
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            va_start( arg_ptr, pErrorString );
+            size = vsnprintf( pStr, size, pErrorString, arg_ptr );
+            va_end( arg_ptr );
+            pError = srcError_New(severity, pLocation, pStr);
+            mem_Free( pStr );
+            pStr = NULL;
+        }
+        else {
+            pError = srcError_New(severity, pLocation, pStr);
+        }
+        if (OBJ_NIL == pError) {
+            srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return false;
+        }
+        this->eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        obj_Release(pError);
+        pError = OBJ_NIL;
+        if (ERESULT_FAILED(this->eRc)) {
+            return false;
+        }
+        
+        if ((severity == SRCERROR_SEVERITY_FATAL) && this->pFatalExit) {
+            this->pFatalExit(this->pFatalExitObject, this);
+        }
+        
+        // Return to caller.
+        srcErrors_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    bool        srcErrors_AddFatalA(
         SRCERRORS_DATA  *this,
         const
         SRCLOC          *pLocation,
@@ -380,7 +453,7 @@ extern "C" {
     )
     {
         SRCERROR_DATA   *pError = OBJ_NIL;
-        char            str[384];
+        char            str[512];
         int             size;
         va_list         arg_ptr;
         char            *pStr = NULL;
@@ -428,13 +501,77 @@ extern "C" {
             return false;
         }
         
+        if (this->pFatalExit) {
+            this->pFatalExit(this->pFatalExitObject, this);
+        }
+        
         // Return to caller.
         srcErrors_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
-    bool        srcErrors_AddFatalFromToken(
+    bool        srcErrors_AddFatalExpectingA(
+        SRCERRORS_DATA  *this,
+        TOKEN_DATA      *pToken,
+        const
+        char            *pExpected
+    )
+    {
+        SRCERROR_DATA   *pError = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        ASTR_DATA       *pTmp = OBJ_NIL;
+
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        pWrk = AStr_New();
+        if (OBJ_NIL == pWrk) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        pTmp = token_getTextA(pToken);
+        AStr_AppendPrint(
+                pWrk,
+                "Expecting: %s but found: %s\n",
+                pExpected,
+                AStr_getData(pTmp)
+        );
+        obj_Release(pTmp);
+        
+        pError = srcError_NewFatalFromToken(pToken, pWrk);
+        obj_Release(pWrk);
+        if (OBJ_NIL == pError) {
+            srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return false;
+        }
+        
+        this->eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        obj_Release(pError);
+        pError = OBJ_NIL;
+        if (ERESULT_FAILED(this->eRc)) {
+            return false;
+        }
+        
+        if (this->pFatalExit) {
+            this->pFatalExit(this->pFatalExitObject, this);
+        }
+        
+        // Return to caller.
+        srcErrors_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    bool        srcErrors_AddFatalFromTokenA(
         SRCERRORS_DATA  *this,
         TOKEN_DATA      *pToken,
         const
@@ -443,7 +580,7 @@ extern "C" {
     )
     {
         SRCERROR_DATA   *pError = OBJ_NIL;
-        char            str[384];
+        char            str[512];
         int             size;
         va_list         arg_ptr;
         char            *pStr = NULL;
@@ -473,12 +610,12 @@ extern "C" {
             va_start( arg_ptr, pErrorString );
             size = vsnprintf( pStr, size, pErrorString, arg_ptr );
             va_end( arg_ptr );
-            pError = srcError_NewFatalFromToken(pToken, pStr);
+            pError = srcError_NewFatalFromTokenA(pToken, pStr);
             mem_Free( pStr );
             pStr = NULL;
         }
         else {
-            pError = srcError_NewFatalFromToken(pToken, pStr);
+            pError = srcError_NewFatalFromTokenA(pToken, pStr);
         }
         if (OBJ_NIL == pError) {
             srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
@@ -489,6 +626,10 @@ extern "C" {
         pError = OBJ_NIL;
         if (ERESULT_FAILED(this->eRc)) {
             return false;
+        }
+        
+        if (this->pFatalExit) {
+            this->pFatalExit(this->pFatalExitObject, this);
         }
         
         // Return to caller.
@@ -890,7 +1031,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
@@ -957,7 +1098,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;

@@ -666,6 +666,11 @@ extern "C" {
             this->pWStr = OBJ_NIL;
         }
         
+        if (this->pSidx) {
+            obj_Release(this->pSidx);
+            this->pSidx = OBJ_NIL;
+        }
+        
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -746,7 +751,6 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(TEXTIN_DATA);
-        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -787,6 +791,9 @@ extern "C" {
         this->colNo   = 0;
         this->tabSize = tabSize;
         this->state = TEXTIN_STATE_NORMAL;
+#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        this->pSidx = sidx_New(3072);
+#endif
 
     #ifdef NDEBUG
     #else
@@ -1123,6 +1130,9 @@ extern "C" {
                         case '\n':
                             ++this->lineNo;
                             this->colNo = 0;
+#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+                            sidx_AddIndex(this->pSidx, this->lineNo, this->fileOffset);
+#endif
                             break;
                             
                         case '\r':
@@ -1294,7 +1304,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
@@ -1358,7 +1368,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;

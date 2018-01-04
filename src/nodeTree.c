@@ -1553,7 +1553,7 @@ extern "C" {
         char            *pName
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODE_DATA       *pProperty = OBJ_NIL;
         
         // Do initialization.

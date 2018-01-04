@@ -63,6 +63,9 @@ struct pplex3_data_s	{
     bool            (*pUserExit)(void *, TOKEN_DATA *);
     void            *pUserObject;
     
+    PPLEX_KWDTBL_ENTRY
+                    *pAuxKwds;
+    uint32_t        cAuxKwds;
 };
 #pragma pack(pop)
 

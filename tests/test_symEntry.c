@@ -74,9 +74,10 @@ int         test_symEntry_OpenClose(
     NAME_DATA	    *pName = OBJ_NIL;
    
     pName = name_NewUTF8Con("test");
+
     pObj = symEntry_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = symEntry_Init( pObj, pName );
+    pObj = symEntry_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -86,6 +87,16 @@ int         test_symEntry_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    pObj = symEntry_New(pName, OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        // Test something.
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
     obj_Release(pName);
     pName = OBJ_NIL;
 

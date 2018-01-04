@@ -152,13 +152,13 @@ extern "C" {
     );
     
     
-    ERESULT_DATA *  parser_getErrors(
+    SRCERRORS_DATA * parser_getErrors(
         PARSER_DATA     *this
     );
     
     bool            parser_setErrors(
         PARSER_DATA     *this,
-        ERESULT_DATA    *pValue
+        SRCERRORS_DATA  *pValue
     );
     
     
@@ -193,62 +193,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    
-    // NOTE - The error methods are simply a pass-thru to the compiler
-    //          object.
-    
-    void            parser_Error(
-        PARSER_DATA   *this,
-        const
-        char            *pFileName,
-        uint32_t		linnum,
-        uint16_t		colnum,
-        const
-        char			*fmt,
-        ...
-    );
-    
-    void            parser_ErrorArg(
-        PARSER_DATA   *this,
-        const
-        char            *pFileName,
-        uint32_t		linnum,
-        uint16_t		colnum,
-        const
-        char			*fmt,
-        va_list 		argsp
-    );
-    
-    
-    void            parser_ErrorFatal(
-        PARSER_DATA   *this,
-        const
-        char			*fmt,
-        ...
-    );
-    
-    void            parser_ErrorFatalArg(
-        PARSER_DATA   *this,
-        const
-        char			*fmt,
-        va_list 		argsp
-    );
-    
-    
-    void            parser_ErrorFatalExpecting(
-        PARSER_DATA     *this,
-        const
-        char			*pExpecting,
-        TOKEN_DATA      *pToken
-    );
-    
-    
-    void            parser_Expected(
-        PARSER_DATA     *this,
-        uint16_t        lookingFor,
-        uint16_t        found
-    );
-    
     
     PARSER_DATA *   parser_Init(
         PARSER_DATA     *this,
@@ -316,14 +260,6 @@ extern "C" {
     
     NODE_DATA *     parser_SemTop(
         PARSER_DATA     *this
-    );
-    
-    
-    void            parser_TraceToken(
-        PARSER_DATA     *this,
-        const
-        char            *pDesc,
-        TOKEN_DATA      *pToken
     );
     
     

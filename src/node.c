@@ -373,6 +373,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          E x t r a
+    //---------------------------------------------------------------
+    
     OBJ_ID          node_getExtra(
         NODE_DATA       *this
     )
@@ -413,6 +417,40 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getHash(
+        NODE_DATA       *this
+    )
+    {
+        uint32_t        hash = 0;
+        ERESULT         eRc = ERESULT_KEY_NOT_FOUND;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return hash;
+        }
+#endif
+        
+        if (this->pName) {
+            hash = name_getHash(this->pName);
+            eRc = ERESULT_SUCCESS;
+        }
+        
+        this->eRc = eRc;
+        return hash;
+    }
+    
+    
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
     
     uint32_t        node_getIndex(
         NODE_DATA       *this
@@ -1033,8 +1071,10 @@ extern "C" {
         node_setOther(this, OBJ_NIL);
 
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
-        obj_Dealloc(this);
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }

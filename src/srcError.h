@@ -124,6 +124,12 @@ extern "C" {
     
     SRCERROR_DATA * srcError_NewFatalFromToken(
         TOKEN_DATA      *pToken,
+        ASTR_DATA       *pErrorString
+    );
+    
+    
+    SRCERROR_DATA * srcError_NewFatalFromTokenA(
+        TOKEN_DATA      *pToken,
         const
         char            *pErrorString
     );

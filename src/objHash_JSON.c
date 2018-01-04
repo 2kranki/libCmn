@@ -117,19 +117,22 @@ extern "C" {
         W32STR_DATA     **ppData
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
+#ifdef XYZZY
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
         NODEARRAY_DATA  *pArray;
-        ERESULT         eRc = ERESULT_SUCCESS;
         const
         OBJ_INFO        *pInfo = objHash_Vtbl.iVtbl.pInfo;
         uint32_t        i = 0;
+#endif
         ASTR_DATA       *pStr = OBJ_NIL;
 #ifdef TRACE_FUNCTIONS
         ASTR_DATA       *pStr2 = OBJ_NIL;
 #endif
+#ifdef XYZZY
         NAME_DATA       *pName = OBJ_NIL;
         CRC_DATA        *pCrc = OBJ_NIL;
         uint32_t        crc;
@@ -139,7 +142,8 @@ extern "C" {
         //char            *pChrOut;
         int32_t         chrW;
         W32STR_DATA     *pStrOut = OBJ_NIL;
-        
+#endif
+
         pParser = jsonIn_New();
         eRc = jsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
@@ -375,6 +379,7 @@ extern "C" {
             obj_Release(pParser);
             pParser = OBJ_NIL;
         }
+#ifdef XYZZY
         if (ppData) {
             *ppData = pStrOut;
         }
@@ -382,6 +387,7 @@ extern "C" {
             obj_Release(pStrOut);
             pStrOut = NULL;
         }
+#endif
         return eRc;
     }
     
@@ -421,6 +427,7 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         ASTR_DATA       *pWrk;
+#ifdef XYZZY
         const
         char            *pChr;
         char            chrs[32];
@@ -430,6 +437,7 @@ extern "C" {
         uint32_t        len;
         const
         char            *pData;
+#endif
         LISTDL_DATA     *pNodeList;
         OBJHASH_NODE    *pNode;
         void *          (*pQueryInfo)(

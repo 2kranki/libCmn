@@ -111,8 +111,12 @@ extern "C" {
             this = srcError_Init(this);
             if (this) {
                 srcError_setSeverity(this, severity);
-                srcError_setLocation(this, pLoc);
-                this->pErrorStr = AStr_NewA(pErrorString);
+                if (pLoc) {
+                    srcError_setLocation(this, pLoc);
+                }
+                if (pErrorString) {
+                    this->pErrorStr = AStr_NewA(pErrorString);
+                }
             }
         } 
         return this;
@@ -121,6 +125,31 @@ extern "C" {
 
 
     SRCERROR_DATA * srcError_NewFatalFromToken(
+        TOKEN_DATA      *pToken,
+        ASTR_DATA       *pErrorString
+    )
+    {
+        SRCERROR_DATA   *this;
+        
+        this = srcError_Alloc( );
+        if (this) {
+            this = srcError_Init(this);
+            if (this) {
+                srcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
+                if (pToken) {
+                    srcError_setLocation(this, token_getLoc(pToken));
+                }
+                if (pErrorString) {
+                    this->pErrorStr = AStr_Copy(pErrorString);
+                }
+            }
+        }
+        return this;
+    }
+    
+    
+    
+    SRCERROR_DATA * srcError_NewFatalFromTokenA(
         TOKEN_DATA      *pToken,
         const
         char            *pErrorString
@@ -133,7 +162,9 @@ extern "C" {
             this = srcError_Init(this);
             if (this) {
                 srcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
-                srcError_setLocation(this, token_getLoc(pToken));
+                if (pToken) {
+                    srcError_setLocation(this, token_getLoc(pToken));
+                }
                 this->pErrorStr = AStr_NewA(pErrorString);
             }
         }
@@ -484,7 +515,7 @@ extern "C" {
     )
     {
         SRCERROR_DATA       *pOther = OBJ_NIL;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG

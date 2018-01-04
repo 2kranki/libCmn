@@ -67,15 +67,14 @@ struct symEntry_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;		/* maximum number of elements           */
+    uint16_t        size;
     uint16_t        flags16;
-    NAME_DATA       *pName;
     int32_t         type;
     uint16_t        misc16ua;
     uint16_t        misc16ub;
     uint32_t        misc32ua;
     uint32_t        misc32ub;
-    OBJ_ID          pObject;
+    uint32_t        misc32uc;
 
 };
 #pragma pack(pop)
@@ -90,17 +89,23 @@ struct symEntry_data_s	{
 
 
     // Internal Functions
-    void            symEntry_Dealloc(
-        OBJ_ID          objId
-    );
-
-
     bool            symEntry_setLastError(
-        SYMENTRY_DATA     *this,
+        SYMENTRY_DATA   *this,
         ERESULT         value
     );
 
 
+    bool            symEntry_setName(
+        SYMENTRY_DATA   *this,
+        NAME_DATA       *pValue
+    );
+    
+    
+    void            symEntry_Dealloc(
+        OBJ_ID          objId
+    );
+    
+    
     void *          symEntry_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

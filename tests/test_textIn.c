@@ -109,7 +109,7 @@ int             test_textIn_Input01(
     TEXTIN_DATA     *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     W32CHR_T        chr = 0;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -160,7 +160,7 @@ int             test_textIn_Input02(
     TEXTIN_DATA     *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     W32CHR_T        chr = 0;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     

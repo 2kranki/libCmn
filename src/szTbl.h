@@ -167,7 +167,8 @@ extern "C" {
      @param     pStr    Pointer to a NUL-terminated UTF-8 Character String
      @return    If successful, the token for the string in the string table
                 and Last Error is ERESULT_SUCCESS. If unsuccessful, an ap-
-                propriate ERESULT_* error is put in Last Errorreturned and *pToken contains 0.
+                propriate ERESULT_* error is put in Last Errorreturned and
+                *pToken contains 0.
      */
     uint32_t         szTbl_StringToToken(
         SZTBL_DATA      *this,
@@ -180,6 +181,12 @@ extern "C" {
         SZTBL_DATA      *this,
         const
         W32CHR_T        *pStr          // [in]
+    );
+    
+    
+    uint32_t        szTbl_TokenToHash(
+        SZTBL_DATA      *this,
+        uint32_t        token           // [in]
     );
     
     

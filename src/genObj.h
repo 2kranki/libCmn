@@ -161,6 +161,22 @@ extern "C" {
     );
     
     
+    /*!
+     Generate the Internal Object Header.
+     @param     this    GENOBJ object pointer
+     @param     pIncludes Pointer to a UTF-8 Character String representing the
+                        additional includes that might be needed in the hearder
+     @return    If successful, an ASTR_DATA object which contains the internal
+                header. Otherwise, OBJ_NIL and an ERESULT_* error code is set
+                in Last Error.
+     */
+    ASTR_DATA *     genObj_GenInternalHeader(
+        GENOBJ_DATA     *this,
+        const
+        char            *pIncludes
+    );
+    
+    
     GENOBJ_DATA *   genObj_Init(
         GENOBJ_DATA     *this
     );

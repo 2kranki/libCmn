@@ -88,7 +88,7 @@ extern "C" {
         JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
         //NODE_DATA       *pNode;
-        NODEHASH_DATA   *pHash;
+        //NODEHASH_DATA   *pHash;
         ERESULT         eRc;
         const
         char            *pFileName = "";

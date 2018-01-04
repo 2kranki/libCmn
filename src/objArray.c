@@ -251,10 +251,10 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        uint32_t        i;
-        OBJ_DATA        *pItem;
-        OBJ_IUNKNOWN    *pVtbl;
-        ARRAY_ENTRY     *pEntry = NULL;
+        //uint32_t        i;
+        //OBJ_DATA        *pItem;
+        //OBJ_IUNKNOWN    *pVtbl;
+        //ARRAY_ENTRY     *pEntry = NULL;
 
         // Do initialization.
 #ifdef NDEBUG

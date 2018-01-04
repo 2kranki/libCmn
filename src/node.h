@@ -235,6 +235,11 @@ extern "C" {
     );
     
     
+    uint32_t        node_getHash(
+        NODE_DATA       *this
+    );
+    
+    
     uint32_t        node_getIndex(
         NODE_DATA       *this
     );

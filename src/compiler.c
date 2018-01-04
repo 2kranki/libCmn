@@ -1293,7 +1293,6 @@ extern "C" {
         uint32_t            num
     )
     {
-        ERESULT             eRc;
         const
         char                *pszStr;
         
@@ -1323,7 +1322,6 @@ extern "C" {
         char            *pName
     )
     {
-        ERESULT         eRc;
         NODE_DATA       *pProperty = OBJ_NIL;
         
         // Do initialization.

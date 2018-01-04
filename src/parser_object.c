@@ -86,7 +86,7 @@ bool            parser_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		parser_ClassWhoAmI(
     void
 )
 {
@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     parser_Class,
-    obj_ClassWhoAmI
+    parser_ClassWhoAmI
 };
 
 

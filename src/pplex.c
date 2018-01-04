@@ -54,17 +54,12 @@ extern "C" {
 
     /*          * * * Key Word Table * * *
      */
-    typedef struct kwd_entry_s {
-        int32_t     value;					/* Lexical Scan Value */
-        uint16_t	flags;					/* Flags */
-        char        *kwd;					/* Key Word */
-    } KWD_ENTRY;
     
     
     // A binary search is performed on this table. So, it must
     // be kept sorted by key word.
     static
-    KWD_ENTRY   kwdTbl[] = {
+    PPLEX_KWDTBL_ENTRY   kwdTbl[] = {
         // Upper case keywords would go here!
         { PPLEX_KWD_ASM,            PPLEX_LANG_MSC,	    "_asm" },
         { PPLEX_KWD_CDECL,          PPLEX_LANG_MSC,	    "_cdecl" },
@@ -134,7 +129,7 @@ extern "C" {
     };
     
     static
-    int         cKwdTbl = sizeof(kwdTbl)/sizeof(KWD_ENTRY);
+    int         cKwdTbl = sizeof(kwdTbl)/sizeof(PPLEX_KWDTBL_ENTRY);
     
     
    
@@ -333,7 +328,7 @@ extern "C" {
     };
     
     static
-    int         cXlateTbl = sizeof(xlateTbl)/sizeof(KWD_ENTRY);
+    int         cXlateTbl = sizeof(xlateTbl)/sizeof(XLATE_ENTRY);
     
 
 
@@ -399,12 +394,13 @@ extern "C" {
     {
         uint32_t        i;
         uint32_t        iMax;
-        KWD_ENTRY       *pEntry;
+        PPLEX_KWDTBL_ENTRY
+                        *pEntry;
         
         iMax = cKwdTbl;
         for (i=0; i<iMax; ++i) {
             pEntry = &kwdTbl[i];
-            if (0 == strcmp(pEntry->kwd, pValue)) {
+            if (0 == strcmp(pEntry->pKwd, pValue)) {
                 return pEntry->value;
             };
         }
@@ -457,6 +453,40 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    /*! Any table supplied must be sorted in ascending sequence by
+     *  keyword.
+     */
+    bool            pplex_setAuxKwdTable(
+        PPLEX_DATA      *this,
+        PPLEX_KWDTBL_ENTRY
+                        *pAuxKwds,
+        uint32_t        cAuxKwds
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !pplex_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pAuxKwds = pAuxKwds;
+        this->cAuxKwds = cAuxKwds;
+        if (this->pLex3) {
+            pplex3_setAuxKwdTable(
+                                  (PPLEX3_DATA *)this->pLex3,
+                                  this->pAuxKwds,
+                                  this->cAuxKwds
+            );
+        }
+        
+        return true;
+    }
+    
+    
+    
     OBJARRAY_DATA * pplex_getArray(
         PPLEX_DATA     *this
     )
@@ -753,7 +783,7 @@ extern "C" {
         OBJ_ID          pUserObj
     )
     {
-        bool            fRc = false;
+
 #ifdef NDEBUG
 #else
         if( !pplex_Validate(this) ) {
@@ -762,11 +792,17 @@ extern "C" {
         }
 #endif
         
+        this->pKwdUserExit = pUserExit;
+        this->pKwdUserObject = pUserObj;
         if (this->pLex3) {
-            fRc = pplex3_setParseFunction((PPLEX3_DATA *)this->pLex3, pUserExit, pUserObj);
+            pplex3_setParseFunction(
+                                    (PPLEX3_DATA *)this->pLex3,
+                                    this->pKwdUserExit,
+                                    this->pKwdUserObject
+            );
         }
         
-        return fRc;
+        return true;
     }
     
     
@@ -829,6 +865,16 @@ extern "C" {
                 return ERESULT_FAILURE;
             }
             pplex3_setKwdSelection((PPLEX3_DATA *)this->pLex3, this->lang);
+            pplex3_setAuxKwdTable(
+                            (PPLEX3_DATA *)this->pLex3,
+                            this->pAuxKwds,
+                            this->cAuxKwds
+            );
+            pplex3_setParseFunction(
+                            (PPLEX3_DATA *)this->pLex3,
+                            this->pKwdUserExit,
+                            this->pKwdUserObject
+            );
         }
         
         if (obj_Trace(this)) {

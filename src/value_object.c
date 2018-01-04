@@ -38,16 +38,16 @@
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
 struct value_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-    //uint32_t        misc;
+    OBJ_ID          pObjCatalog;
 };
 typedef struct value_class_data_s VALUE_CLASS_DATA;
 
@@ -61,19 +61,22 @@ typedef struct value_class_data_s VALUE_CLASS_DATA;
 
 
 static
+void *          valueClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+static
 const
 OBJ_INFO        value_Info;            // Forward Reference
 
 
 
-OBJ_ID          value_Class(
-    void
-);
-
-
 
 static
-bool            value_ClassIsKindOf(
+bool            valueClass_ClassIsKindOf(
     uint16_t		classID
 )
 {
@@ -88,7 +91,7 @@ bool            value_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		valueClass_ClassWhoAmI(
     void
 )
 {
@@ -100,12 +103,13 @@ static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
 	&value_Info,
-    value_ClassIsKindOf,
+    valueClass_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
-    NULL,
+    NULL,               // Dealloc
     value_Class,
-    obj_ClassWhoAmI
+    valueClass_ClassWhoAmI,
+    (P_OBJ_QUERYINFO)valueClass_QueryInfo
 };
 
 
@@ -121,6 +125,81 @@ VALUE_CLASS_DATA  value_ClassObj = {
 };
 
 
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          valueClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    VALUE_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+                    
+                case 'O':
+                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
+                        return &this->pObjCatalog;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'T':
+                    if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                        return value_ToDebugString;
+                    }
+#ifdef XYZZY
+                    if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        return value_ToJSON;
+                    }
+#endif
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
 
 static
 bool            value_IsKindOf(
@@ -194,7 +273,7 @@ static
 const
 OBJ_INFO        value_Info = {
     "value",
-    "Value",
+    "Primitive Value",
     (OBJ_DATA *)&value_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&value_Vtbl

@@ -98,14 +98,23 @@ extern "C" {
 
 
     SYMENTRY_DATA *     symEntry_New(
-        NAME_DATA           *pName
+        NAME_DATA           *pName,
+        OBJ_ID              pData
     )
     {
         SYMENTRY_DATA       *this;
         
         this = symEntry_Alloc( );
         if (this) {
-            this = symEntry_Init(this, pName);
+            this = symEntry_Init(this);
+            if (this) {
+                if (pName) {
+                    symEntry_setName(this, pName);
+                }
+                if (pData) {
+                    symEntry_setData(this, pData);
+                }
+            }
         } 
         return this;
     }
@@ -118,6 +127,50 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          D a t a
+    //---------------------------------------------------------------
+    
+    OBJ_ID          symEntry_getData(
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        symEntry_setLastError(this, ERESULT_SUCCESS);
+        return node_getData((NODE_DATA *)this);
+    }
+    
+    
+    bool            symEntry_setData(
+        SYMENTRY_DATA   *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        node_setData((NODE_DATA *)this, pValue);
+        
+        symEntry_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
     uint16_t        symEntry_getFlags16(
         SYMENTRY_DATA   *this
     )
@@ -156,6 +209,29 @@ extern "C" {
         return true;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+    
+    uint32_t        symEntry_getHash(
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        symEntry_setLastError(this, ERESULT_SUCCESS);
+        return node_getHash((NODE_DATA *)this);
+    }
     
     
     ERESULT         symEntry_getLastError(
@@ -376,7 +452,7 @@ extern "C" {
 #endif
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->pName;
+        return node_getName((NODE_DATA *)this);
     }
     
     
@@ -393,59 +469,7 @@ extern "C" {
         }
 #endif
 
-        obj_Retain(pValue);
-        if (this->pName) {
-            obj_Release(this->pName);
-        }
-        this->pName = pValue;
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          O b j e c t
-    //---------------------------------------------------------------
-    
-    OBJ_ID          symEntry_getObject(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->pObject;
-    }
-    
-    
-    bool            symEntry_setObject(
-        SYMENTRY_DATA   *this,
-        OBJ_ID          pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pObject) {
-            obj_Release(this->pObject);
-        }
-        this->pObject = pValue;
+        node_setName((NODE_DATA *)this, pValue);
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -622,7 +646,7 @@ extern "C" {
         }
 #endif
         
-        pOther = symEntry_New(this->pName);
+        pOther = symEntry_New(symEntry_getName(this), symEntry_getData(this));
         if (pOther) {
             eRc = symEntry_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -747,8 +771,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     SYMENTRY_DATA *   symEntry_Init(
-        SYMENTRY_DATA   *this,
-        NAME_DATA       *pName
+        SYMENTRY_DATA   *this
     )
     {
         uint32_t        cbSize = sizeof(SYMENTRY_DATA);
@@ -780,7 +803,6 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&symEntry_Vtbl);
         
         symEntry_setLastError(this, ERESULT_GENERAL_FAILURE);
-        symEntry_setName(this, pName);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 

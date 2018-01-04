@@ -72,6 +72,8 @@ struct genObj_data_s	{
     // Common Data
     ERESULT         eRc;
     NODEHASH_DATA   *pHash;
+    ASTR_DATA       *pDateTime;
+    
 };
 #pragma pack(pop)
 
@@ -132,6 +134,12 @@ struct genObj_data_s	{
     );
     
     
+    ERESULT         genObj_GenHeading(
+        GENOBJ_DATA     *this,
+        ASTR_DATA       **ppStr             // (in/out)
+    );
+    
+    
     ERESULT         genObj_GenLicense(
         GENOBJ_DATA     *this,
         ASTR_DATA       **ppStr             // (in/out)
@@ -172,7 +180,8 @@ struct genObj_data_s	{
         GENOBJ_DATA     *this,
         ASTR_DATA       **ppStr,            // (in/out)
         const
-        char            *pSection
+        char            *pDescription,
+        bool            fSection
     );
     
     

@@ -149,6 +149,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        name_getHash(
+        NAME_DATA       *this
+    );
+    
+    
     /*!
      Get the name value as an integer if it was defined as an int.
      @return    If successful, the integer value an AStr object which must be released,

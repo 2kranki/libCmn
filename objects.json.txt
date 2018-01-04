@@ -191,6 +191,7 @@
     "programs": {
         "genGetterSetter.c":null,
         "genMake.c":null
+        "lexFileToJSON.c":null
     },
     "tests":
     {

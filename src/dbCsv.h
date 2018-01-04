@@ -208,7 +208,7 @@ extern "C" {
         uint16_t        tabSize                 // Tab Spacing if any
     );
     
-    DBCSV_DATA *    dbCsv_InitWStr(
+    DBCSV_DATA *    dbCsv_InitW32Str(
         DBCSV_DATA      *this,
         W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,

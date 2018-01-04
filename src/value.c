@@ -187,7 +187,7 @@ extern "C" {
 
     VALUE_DATA *    value_NewData(
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
     )
     {
         VALUE_DATA      *this;
@@ -202,7 +202,7 @@ extern "C" {
     
     VALUE_DATA *    value_NewDataFree(
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
     )
     {
         VALUE_DATA      *this;
@@ -1065,7 +1065,7 @@ extern "C" {
     VALUE_DATA *    value_InitData(
         VALUE_DATA      *this,
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
     )
     {
         
@@ -1090,7 +1090,7 @@ extern "C" {
     VALUE_DATA *    value_InitDataFree(
         VALUE_DATA      *this,
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
     )
     {
         
@@ -1112,7 +1112,30 @@ extern "C" {
     }
     
     
-    VALUE_DATA *    value_InitI16(
+    VALUE_DATA *    value_InitI8(
+        VALUE_DATA      *this,
+        int8_t          value
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this = value_Init( this );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        this->type = VALUE_TYPE_INT8;
+        this->value.i8 = value;
+        
+        return this;
+    }
+    
+    
+   VALUE_DATA *    value_InitI16(
         VALUE_DATA      *this,
         int16_t         i16
     )
@@ -1128,7 +1151,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = VALUE_TYPE_INT32;
+        this->type = VALUE_TYPE_INT16;
         this->value.i16 = i16;
         
         return this;
@@ -1204,6 +1227,29 @@ extern "C" {
     }
     
     
+    VALUE_DATA *    value_InitU8(
+        VALUE_DATA      *this,
+        uint8_t         value
+    )
+    {
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        this = value_Init( this );
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        this->type = VALUE_TYPE_UINT8;
+        this->value.u8 = value;
+        
+        return this;
+    }
+    
+    
     VALUE_DATA *    value_InitU16(
         VALUE_DATA      *this,
         uint16_t        value
@@ -1220,7 +1266,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->type = VALUE_TYPE_UINT32;
+        this->type = VALUE_TYPE_UINT16;
         this->value.u16 = value;
         
         return this;

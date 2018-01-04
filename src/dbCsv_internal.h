@@ -137,6 +137,13 @@ struct dbCsv_data_s	{
         DBCSV_DATA      *cbp
     );
     
+    bool            dbCsv_ParseWS(
+        DBCSV_DATA      *cbp
+    );
+    
+    
+    
+    
 #ifdef NDEBUG
 #else
     bool			dbCsv_Validate(

@@ -38,6 +38,7 @@
 
 
 #include    <hex.h>
+#include    <jsonIn.h>
 
 
 #ifndef HEX_INTERNAL_H
@@ -83,6 +84,18 @@ struct hex_data_s	{
         OBJ_ID          objId
     );
 
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new null object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    uint8_t *       hex_ParseObject(
+        JSONIN_DATA     *pParser,
+        uint32_t        *pLength
+    );
+    
     
     uint32_t        hex_putBytes16Obj(
         HEX_DATA        *this,

@@ -40,6 +40,7 @@
 
 
 #include    <value.h>
+#include    <jsonIn.h>
 
 
 #ifndef VALUE_INTERNAL_H
@@ -70,19 +71,21 @@ struct value_data_s	{
     uint16_t        type;           // Value Type (see VALUE_TYPE)
     uint16_t        reserved;
     union {
-        int16_t         i16;                // int16
-        int32_t         i32;                // int32
-        int64_t			i64;                // int64
-        //        int128_t		i128;               // int128
-        uint16_t        u16;                // uint16
-        uint32_t        u32;                // uint32
-        uint64_t		u64;                // uint64
-        //        uint128_t		u128;               // uint128
+        int8_t          i8;
+        int16_t         i16;
+        int32_t         i32;
+        int64_t			i64;
+        //        int128_t		i128;
+        uint8_t         u8;
+        uint16_t        u16;
+        uint32_t        u32;
+        uint64_t		u64;
+        //        uint128_t		u128;
         double          flt;
         OBJ_ID          pObject;
         struct {
             uint32_t        length;
-            void            *pData;
+            uint8_t         *pData;
         } data;
     } value;
 
@@ -114,6 +117,17 @@ struct value_data_s	{
     );
 
 
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    VALUE_DATA *    value_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
+    
     void *          value_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

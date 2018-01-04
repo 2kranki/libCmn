@@ -98,7 +98,7 @@ extern "C" {
         
         pArray = nodeArray_New( );
         if (pArray == OBJ_NIL) {
-            srcErrors_AddFatalFromToken(OBJ_NIL, pToken, "Out of Memory");
+            srcErrors_AddFatalFromTokenA(OBJ_NIL, pToken, "Out of Memory");
             return pNode;
         }
         
@@ -145,7 +145,7 @@ extern "C" {
         else {
             ASTR_DATA           *pStr;
             pStr = token_ToDataString(pToken);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                         OBJ_NIL,
                         pToken,
                         "Expecting ']', but found %s",
@@ -158,7 +158,7 @@ extern "C" {
         pNode = node_NewWithUTF8Con("array", pArray);
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
-            //FIXME: Error Fatal
+            srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
             return pNode;
         }
         
@@ -277,7 +277,7 @@ extern "C" {
         else {
             ASTR_DATA           *pStr;
             pStr = token_ToDataString(pToken);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting '}', but found %s",
@@ -396,7 +396,7 @@ extern "C" {
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting a \"name\", but found %s",
@@ -553,7 +553,7 @@ extern "C" {
             TRC_OBJ(this, "\tfound :\n");
         }
         else {
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting ':'"
@@ -564,7 +564,7 @@ extern "C" {
         
         pData = hjson_ParseValue(this);
         if (pData == OBJ_NIL) {
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting \"value\""

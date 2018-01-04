@@ -1,21 +1,23 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Value  (value) Header
+//                      Value (value) Header
 //****************************************************************
 /*
  * Program
  *			Value (value)
  * Purpose
  *			This object provides a way to create an object from
- *          the most common forms of data including just raw 
- *          memory.
+ *          most primitive data including just raw memory.
+ *          Since this is primitive data, it can be converted
+ *          to/from JSON and ported across systems.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal value. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      If you are storing raw memory and that object is to be
+ *          saved to JSON. It should not contain any pointers since
+ *          those will probably be meaningless when the data is
+ *          restored.  Also, you may be faced with little-endian
+ *          vs big-endian systems if you are not careful.
  *
  * History
  *	08/26/2017 Generated
@@ -88,13 +90,15 @@ extern "C" {
         VALUE_TYPE_UNKNOWN=0,
         VALUE_TYPE_FLOAT,           // 32-bit Float
         VALUE_TYPE_DOUBLE,          // 64-bit Float
+        VALUE_TYPE_INT8,            // int8_t
         VALUE_TYPE_INT16,           // int16_t
         VALUE_TYPE_INT32,           // int32_t
         VALUE_TYPE_INT64,           // int64_t
+        VALUE_TYPE_UINT8,           // int8_t
         VALUE_TYPE_UINT16,          // int16_t
         VALUE_TYPE_UINT32,          // int32_t
         VALUE_TYPE_UINT64,          // int64_t
-        VALUE_TYPE_OBJECT,          // Any object
+        VALUE_TYPE_OBJECT,          // Any object that supports "ToJSON" method
         VALUE_TYPE_DATA,            // Any data (pointer and length) (pointer and length
         //                          // must be valid for life of object)
         VALUE_TYPE_DATA_FREE,       // Any data (pointer and length) which will be freed
@@ -125,18 +129,27 @@ extern "C" {
     );
     
     
+    OBJ_ID          value_Class(
+        void
+    );
+    
+    
     VALUE_DATA *     value_New(
         void
     );
     
     VALUE_DATA *    value_NewData(
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
     );
     
     VALUE_DATA *    value_NewDataFree(
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
+    );
+    
+    VALUE_DATA *    value_NewI8(
+        int8_t          value
     );
     
     VALUE_DATA *    value_NewI16(
@@ -153,6 +166,10 @@ extern "C" {
     
     VALUE_DATA *    value_NewObject(
         OBJ_DATA        *pValue
+    );
+    
+    VALUE_DATA *    value_NewU8(
+        uint8_t         value
     );
     
     VALUE_DATA *    value_NewU16(
@@ -277,13 +294,18 @@ extern "C" {
     VALUE_DATA *    value_InitData(
         VALUE_DATA      *this,
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
     );
     
     VALUE_DATA *    value_InitDataFree(
         VALUE_DATA      *this,
         int32_t         length,
-        void            *pData
+        uint8_t         *pData
+    );
+    
+    VALUE_DATA *    value_InitI8(
+        VALUE_DATA      *this,
+        int8_t          value
     );
     
     VALUE_DATA *    value_InitI16(
@@ -304,6 +326,11 @@ extern "C" {
     VALUE_DATA *    value_InitObject(
         VALUE_DATA      *this,
         OBJ_DATA        *pValue
+    );
+    
+    VALUE_DATA *    value_InitU8(
+        VALUE_DATA      *this,
+        uint8_t         value
     );
     
     VALUE_DATA *    value_InitU16(

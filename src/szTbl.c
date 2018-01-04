@@ -624,8 +624,35 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                T o k e n  T o  S t r i n g
+    //                      T o k e n  T o
     //---------------------------------------------------------------
+    
+    uint32_t        szTbl_TokenToHash(
+        SZTBL_DATA      *this,
+        uint32_t        token           // [in]
+    )
+    {
+        SZTBL_NODE      *pNode;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !szTbl_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        pNode = (SZTBL_NODE *)ptrArray_GetData(this->pPtrArray, token);
+        if (NULL == pNode) {
+            this->eRc = ERESULT_DATA_NOT_FOUND;
+        }
+        
+        // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
+        return pNode->hash;
+    }
+    
     
     const
     char *           szTbl_TokenToString(

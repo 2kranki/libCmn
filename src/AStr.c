@@ -637,7 +637,7 @@ extern "C" {
         W32CHR_T        *pStr
     )
     {
-        ERESULT         eRc = ERESULT_DATA_MISSING;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        lenChars;
         char            *pStr8;
         
@@ -716,7 +716,7 @@ extern "C" {
     {
         char            *pData;
         uint32_t        offset;
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        ERESULT         eRc = ERESULT_SUCCESS;
         int32_t         len;
         char            data[8];
         

@@ -323,11 +323,11 @@ extern "C" {
     {
         int             len;
         int             lenName;
-        int             i;
+        //int             i;
         W32CHR_T        cw;
         W32CHR_T        mcw;
         W32CHR_T        mcwn;
-        W32CHR_T        ncw;
+       // W32CHR_T        ncw;
         int             flag;
         bool            fRc;
         

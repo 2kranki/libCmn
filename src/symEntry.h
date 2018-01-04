@@ -103,7 +103,8 @@ extern "C" {
     
     
     SYMENTRY_DATA *     symEntry_New(
-        NAME_DATA           *pName
+        NAME_DATA           *pName,
+        OBJ_ID              pData
     );
     
     
@@ -112,6 +113,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    OBJ_ID          symEntry_getData(
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setData(
+        SYMENTRY_DATA   *this,
+        OBJ_ID          pValue
+    );
+    
+
     uint16_t        symEntry_getFlags16(
         SYMENTRY_DATA	*this
     );
@@ -119,6 +130,11 @@ extern "C" {
     bool            symEntry_setFlags16(
         SYMENTRY_DATA	*this,
         uint16_t        value
+    );
+    
+    
+    uint32_t        symEntry_getHash(
+        SYMENTRY_DATA    *this
     );
     
     
@@ -199,8 +215,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     SYMENTRY_DATA *   symEntry_Init(
-        SYMENTRY_DATA   *this,
-        NAME_DATA       *pName
+        SYMENTRY_DATA   *this
     );
 
 

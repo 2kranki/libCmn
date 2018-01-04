@@ -214,6 +214,8 @@ extern	"C" {
     typedef enum obj_QueryInfoType_e {
         OBJ_QUERYINFO_TYPE_UNKNOWN=0,
         OBJ_QUERYINFO_TYPE_CLASS_OBJECT,    // Return class object
+        OBJ_QUERYINFO_TYPE_DATA_PTR,        // If the given string matches a data name,
+        //                                  // return a pointer to the data
         OBJ_QUERYINFO_TYPE_INFO,            // Return class info structure
         OBJ_QUERYINFO_TYPE_METHOD,          // Search for a Method by using the string
         //                                  // which is the method name without object prefix

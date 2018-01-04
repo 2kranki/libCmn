@@ -61,14 +61,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+#ifdef XYZZY
     static
     void            appl_scan_body(
         void            *pData
     )
     {
-        APPL_DATA  *this = pData;
+        //APPL_DATA  *this = pData;
         
     }
+#endif
 
 
 
@@ -1073,7 +1075,7 @@ extern "C" {
         char            *pName
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODE_DATA       *pProperty = OBJ_NIL;
         
         // Do initialization.

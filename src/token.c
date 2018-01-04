@@ -1430,7 +1430,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         char            *pString;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;

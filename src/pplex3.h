@@ -111,12 +111,35 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! Add a keyword table that takes precedence over the other internal
+     *  tables by being searched first. If the keyword is found, then the
+     *  token class is taken from the table.  If it is not found, then the
+     *  the internal tables are searched normally.
+     */
+    bool            pplex3_setAuxKwdTable(
+        PPLEX3_DATA     *this,
+        PPLEX_KWDTBL_ENTRY
+                        *pAuxKwds,
+        uint32_t        cAuxKwds
+    );
+    
+    
     bool            pplex3_setKwdSelection(
         PPLEX3_DATA     *this,
         uint16_t        value
     );
 
     
+    /*! Add a user exit that takes precedence over the all the keyword
+     *  table searches.  The user exit should set the token class if
+     *  it needs to.
+     other internal
+     *  @return     non-zero if it handled the token passed to it. The
+     *              lexical status will be updated as if the token was
+     *              found in a keyword table except the token is not
+     *              changed.  zero indicates to perform the keyword
+     *              table as normal.
+     */
     bool            pplex3_setParseFunction(
         PPLEX3_DATA     *this,
         bool            (*pUserExit)(OBJ_ID, TOKEN_DATA *),

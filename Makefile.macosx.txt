@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (12/21/2017 21:30:35.000)
+# (12/25/2017 23:35:30.000)
 
 
 LIBNAM=libCmn
@@ -1709,6 +1709,13 @@ PROGS += genMake
 
 genMake:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genMake $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genMake/genMake.c 
+	echo $(OBJDIR)/$(@F)
+
+
+PROGS += lexFileToJSON
+
+lexFileToJSON:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/lexFileToJSON $(LIBPATH) -o $(OBJDIR)/$(@F) programs/lexFileToJSON/lexFileToJSON.c 
 	echo $(OBJDIR)/$(@F)
 
 

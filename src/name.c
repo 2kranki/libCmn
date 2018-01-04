@@ -178,7 +178,7 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                          I n t
     //---------------------------------------------------------------
     
     int64_t         name_getInt(
@@ -215,6 +215,35 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+    
+    uint32_t        name_getHash(
+        NAME_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !name_Validate( this ) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        name_setLastError(this, eRc);
+        return this->hash;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
     
     ERESULT         name_getLastError(
         NAME_DATA     *this
@@ -254,6 +283,10 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
     
     ASTR_DATA *     name_getStrA(
         NAME_DATA       *this
@@ -324,6 +357,10 @@ extern "C" {
         return true;
     }
     
+    
+    //---------------------------------------------------------------
+    //                              U t f 8
+    //---------------------------------------------------------------
     
     char *          name_getUTF8(
         NAME_DATA       *this
@@ -656,8 +693,10 @@ extern "C" {
         name_ReleaseDataIfObj(this);
 
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
-        obj_Dealloc(this);
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -673,7 +712,7 @@ extern "C" {
     )
     {
         NAME_DATA       *pOther;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;

@@ -193,40 +193,40 @@ extern "C" {
     
     
     
-    ERESULT_DATA *  parser_getErrors(
-        PARSER_DATA     *cbp
+    SRCERRORS_DATA * parser_getErrors(
+        PARSER_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if( !parser_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pErrors;
+        return this->pErrors;
     }
     
     
     bool            parser_setErrors(
-        PARSER_DATA     *cbp,
-        ERESULT_DATA    *pValue
+        PARSER_DATA     *this,
+        SRCERRORS_DATA  *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if( !parser_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pErrors) {
-            obj_Release(cbp->pErrors);
+        if (this->pErrors) {
+            obj_Release(this->pErrors);
         }
-        cbp->pErrors = pValue;
+        this->pErrors = pValue;
         
         return true;
     }
@@ -461,45 +461,6 @@ extern "C" {
     // All error methods are simply a pass-thru back to compiler.
     
     //---------------------------------------------------------------
-    //                    E x p e c t e d
-    //---------------------------------------------------------------
-    
-    void            parser_Expected(
-        PARSER_DATA     *this,
-        uint16_t        lookingFor,
-        uint16_t        found
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !parser_Validate(this) ) {
-            DEBUG_BREAK();
-            return;
-        }
-#endif
-        
-        if (this->pCompiler) {
-            //FIXME: Add proper error
-            DEBUG_BREAK();
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            compiler_ErrorFatal( this->pCompiler, "");
-#endif
-        }
-        
-        // Return to caller.
-        return;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
     
@@ -534,7 +495,7 @@ extern "C" {
             token_Init(pToken);
         }
         
-        this->pErrors = eResult_Shared();
+        //FIXME: this->pErrors = eResult_Shared();
         
 #ifdef NDEBUG
 #else
@@ -863,7 +824,7 @@ extern "C" {
         char            *pName
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODE_DATA       *pProperty = OBJ_NIL;
         
         // Do initialization.
@@ -1180,36 +1141,6 @@ extern "C" {
         // Return to caller.
         return pItem;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  T r a c e  T o k e n
-    //---------------------------------------------------------------
-#ifdef XYZZY
-    void            parser_TraceToken(
-        PARSER_DATA     *this,
-        const
-        char            *pDesc,
-        TOKEN_DATA      *pToken
-    )
-    {
-        char            *pStr = NULL;
-        
-        if( obj_Trace(this) ) {
-            pStr = token_ToStringA(pToken);
-            TRC_OBJ(this,
-                    "%s: %s=%d\n",
-                    pDesc,
-                    token_getClass(pToken)
-            );
-            mem_Free(pStr);
-            pStr = NULL;
-        }
-        
-        // Return to caller.
-    }
-#endif
     
     
     

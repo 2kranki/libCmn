@@ -863,7 +863,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatal(
+                            srcErrors_AddFatalA(
                                     OBJ_NIL,
                                     &pInput->data.src,
                                     "Malformed Unicode Escape Sequence - \\xHH"

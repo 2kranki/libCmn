@@ -64,6 +64,13 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    static
+    void            errorExit(
+    )
+    {
+        exit(4);
+    }
+    
     
     
     bool            dbCsv_ParseComment(
@@ -196,7 +203,7 @@ extern "C" {
             return pStr;
         }
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        srcErrors_AddFatalFromToken(
+        srcErrors_AddFatalFromTokenA(
             OBJ_NIL,
             pToken,
             "Missing Field data"
@@ -241,7 +248,7 @@ extern "C" {
         if (pRecord == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Out of Memory"
@@ -253,7 +260,7 @@ extern "C" {
         if (ERESULT_HAS_FAILED(eRc)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Could not save field to record"
@@ -270,7 +277,7 @@ extern "C" {
             if (pStr == OBJ_NIL) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                srcErrors_AddFatalFromToken(
+                srcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
                     "Malformed Record at field %d",
@@ -283,7 +290,7 @@ extern "C" {
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                srcErrors_AddFatalFromToken(
+                srcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
                     "Could not save field to record"
@@ -296,7 +303,7 @@ extern "C" {
         if (!dbCsv_ParseCRLF(this)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pToken,
                                 "Expected line end, but found %lc",
@@ -326,24 +333,25 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        pRecord = dbCsv_ParseRecord(this);
-        if (pRecord == OBJ_NIL) {
-            return OBJ_NIL;
-        }
-        ++recordNo;
         
         pRecords = objArray_New();
         if (pRecords == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Out of Memory"
             );
             return OBJ_NIL;
         }
-        
+
+#ifdef xyzzy
+        pRecord = dbCsv_ParseRecord(this);
+        if (pRecord == OBJ_NIL) {
+            return OBJ_NIL;
+        }
+        ++recordNo;
         fRc = true;
         if (this->pRecordProcess) {
             fRc = this->pRecordProcess(this->pRecordData, pRecord);
@@ -353,7 +361,7 @@ extern "C" {
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                srcErrors_AddFatalFromToken(
+                srcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
                     "Could not save record"
@@ -362,11 +370,15 @@ extern "C" {
         }
         obj_Release(pRecord);
         pRecord = OBJ_NIL;
+#endif
         
         for (;;) {
             if (dbCsv_ParseEOF(this)) {
                 break;
             }
+            while (dbCsv_ParseComment(this) || dbCsv_ParseWS(this)) {
+            }
+            
             pRecord = dbCsv_ParseRecord(this);
             if (pRecord == OBJ_NIL) {
                 break;
@@ -381,7 +393,7 @@ extern "C" {
                 if (ERESULT_HAS_FAILED(eRc)) {
                     TOKEN_DATA      *pToken;
                     pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                    srcErrors_AddFatalFromToken(
+                    srcErrors_AddFatalFromTokenA(
                                         OBJ_NIL,
                                         pToken,
                                         "Could not save record"
@@ -398,7 +410,7 @@ extern "C" {
         if (!dbCsv_ParseEOF(this)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromToken(
+            srcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pToken,
                                 "Malformed file, missing EOF at record %d",
@@ -425,7 +437,8 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        
+
+        dbCsv_ParseWS(this);
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
         chr = token_getChrW32(pToken);
         if (chr == this->fieldSeparator) {
@@ -455,7 +468,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+        dbCsv_ParseWS(this);
+
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
         chr = token_getChrW32(pToken);
         if (chr == '"') {
@@ -502,7 +516,7 @@ extern "C" {
                 }
             }
             else {
-                srcErrors_AddFatalFromToken(
+                srcErrors_AddFatalFromTokenA(
                             OBJ_NIL,
                             pToken,
                             "Invalid characters in escaped text"
@@ -585,6 +599,37 @@ extern "C" {
         srcFile_InputAdvance(this->pSrc, 1);
         
         return true;
+    }
+    
+    
+
+    // Parse White-space
+    bool            dbCsv_ParseWS(
+        DBCSV_DATA      *this
+    )
+    {
+        TOKEN_DATA      *pToken;
+        W32CHR_T        chr;
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dbCsv_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        chr = token_getChrW32(pToken);
+        while ((chr == ' ') || (chr == '\f') || (chr == '\r') || (chr == '\t')) {
+            srcFile_InputAdvance(this->pSrc, 1);
+            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            chr = token_getChrW32(pToken);
+            fRc = true;
+        }
+        
+        return fRc;
     }
     
     
@@ -775,7 +820,7 @@ extern "C" {
     //--------------------------------------------------------------
     
     ERESULT         dbCsv_AppendCharW32ToString(
-        DBCSV_DATA      *cbp,
+        DBCSV_DATA      *this,
         W32CHR_T        chr
     )
     {
@@ -783,15 +828,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !dbCsv_Validate( cbp ) ) {
+        if( !dbCsv_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
 #endif
         
-        if ((cbp->lenFld + 1) < cbp->sizeFld) {
-            cbp->pFld[cbp->lenFld++] = chr;
-            cbp->pFld[cbp->lenFld] = '\0';
+        if ((this->lenFld + 1) < this->sizeFld) {
+            this->pFld[this->lenFld++] = chr;
+            this->pFld[this->lenFld] = '\0';
         }
         else
             return ERESULT_DATA_TOO_BIG;
@@ -903,7 +948,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&dbCsv_Vtbl);
         
         this->sizeFld = DBCSV_FIELD_MAX;
-        this->pFld = mem_Calloc(this->sizeFld, sizeof(int32_t));
+        this->pFld = mem_Calloc(this->sizeFld, sizeof(W32CHR_T));
         if (this->pFld == NULL) {
             this->sizeFld = 0;
             DEBUG_BREAK();
@@ -990,7 +1035,7 @@ extern "C" {
     }
     
     
-    DBCSV_DATA *    dbCsv_InitWStr(
+    DBCSV_DATA *    dbCsv_InitW32Str(
         DBCSV_DATA      *this,
         W32STR_DATA     *pWStr,         // Buffer of file data
         PATH_DATA       *pPath,
@@ -1029,26 +1074,32 @@ extern "C" {
     //---------------------------------------------------------------
     
     OBJARRAY_DATA * dbCsv_ParseFile(
-        DBCSV_DATA		*cbp
+        DBCSV_DATA		*this
     )
     {
         OBJARRAY_DATA   *pRecords = OBJ_NIL;
+        void            *pExit = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !dbCsv_Validate( cbp ) ) {
+        if( !dbCsv_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pRecords = dbCsv_ParseRecords(cbp);
+        //pExit = srcErrors_getExit(OBJ_NIL);
+        srcErrors_setFatalExit(OBJ_NIL, errorExit, OBJ_NIL);
+        
+        pRecords = dbCsv_ParseRecords(this);
         if (pRecords == OBJ_NIL) {
             DEBUG_BREAK();
             return pRecords;
         }
         
+        srcErrors_setFatalExit(OBJ_NIL, errorExit, pExit);
+
         // Return to caller.
         return pRecords;
     }
@@ -1060,7 +1111,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ASTR_DATA *     dbCsv_ToDebugString(
-        DBCSV_DATA      *cbp,
+        DBCSV_DATA      *this,
         int             indent
     )
     {
@@ -1071,7 +1122,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
@@ -1084,15 +1135,15 @@ extern "C" {
                      str,
                      sizeof(str),
                      "{%p(dbCsv) ",
-                     cbp
+                     this
             );
         AStr_AppendA(pStr, str);
 
-#ifdef  XYZZY        
-        if (cbp->pData) {
-            if (((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(cbp->pData))->pVtbl->toDebugString(
-                                                    cbp->pData,
+#ifdef  XYZZY
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
@@ -1101,7 +1152,7 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", cbp );
+        j = snprintf( str, sizeof(str), " %p}\n", this );
         AStr_AppendA(pStr, str);
         
         return pStr;

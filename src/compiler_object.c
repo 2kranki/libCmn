@@ -86,7 +86,7 @@ bool            compiler_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		compiler_ClassWhoAmI(
     void
 )
 {
@@ -103,7 +103,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     compiler_Class,
-    obj_ClassWhoAmI
+    compiler_ClassWhoAmI
 };
 
 

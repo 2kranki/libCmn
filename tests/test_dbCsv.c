@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <dbCsv_internal.h>
+#include    <srcErrors.h>
 #include    <szTbl.h>
 
 
@@ -70,7 +71,9 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    srcErrors_SharedReset();
+    szTbl_SharedReset();
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -137,7 +140,7 @@ int         test_dbCsv_Input01(
 
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pStr = AStr_NewA(pTestInput01);
+    pStr = AStr_NewA("  a,   10,   \"def\"  \n");
     XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
@@ -149,6 +152,10 @@ int         test_dbCsv_Input01(
         pRecords = dbCsv_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
+            pField = objArray_ToDebugString(pRecords, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pField));
+            obj_Release(pField);
+            pField = OBJ_NIL;
             iMax = objArray_getSize(pRecords);
             for (i=1; i<=iMax; ++i) {
                 pRecord = objArray_Get(pRecords,i);
@@ -207,7 +214,6 @@ int         test_dbCsv_Input01(
     pPath = OBJ_NIL;
     obj_Release(pStr);
     pStr = OBJ_NIL;
-    szTbl_SharedReset();
 
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
@@ -361,13 +367,85 @@ int         test_dbCsv_Input02(
 
 
 
+int         test_dbCsv_Input03(
+    const
+    char        *pTestName
+)
+{
+    DBCSV_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    uint32_t        i;
+    uint32_t        iMax;
+    uint32_t        j;
+    uint32_t        jMax;
+    OBJARRAY_DATA   *pRecord;
+    OBJARRAY_DATA   *pRecords;
+    ASTR_DATA       *pField;
+    
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pPath = path_NewA("/Users/bob/Support/testFiles/csv_e360_opcodes.txt");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    
+    pObj = dbCsv_NewFromPath(pPath, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pRecords = dbCsv_ParseFile(pObj);
+        XCTAssertFalse( (OBJ_NIL == pRecords) );
+        if (pRecords) {
+            iMax = objArray_getSize(pRecords);
+            for (i=1; i<=iMax; ++i) {
+                pRecord = objArray_Get(pRecords,i);
+                XCTAssertFalse( (OBJ_NIL == pRecord) );
+                if (pRecord) {
+                    jMax = objArray_getSize(pRecord);
+                    for (j=1; j<=jMax; ++j) {
+                        pField = objArray_Get(pRecord,j);
+                        XCTAssertFalse( (OBJ_NIL == pField) );
+                        if (pField) {
+                            fprintf(
+                                    stderr,
+                                    "line %d, field %d, %s\n",
+                                    i,
+                                    j,
+                                    AStr_getData(pField)
+                                    );
+                        }
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        obj_Release(pRecords);
+        pRecords = OBJ_NIL;
+    }
+    obj_Release(pObj);
+    pObj = OBJ_NIL;
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    szTbl_SharedReset();
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 
 
 TINYTEST_START_SUITE(test_dbCsv);
-  TINYTEST_ADD_TEST(test_dbCsv_OpenClose,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_dbCsv_Input01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_dbCsv_Input02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbCsv_Input03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbCsv_Input02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbCsv_Input01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbCsv_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_dbCsv);

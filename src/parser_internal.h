@@ -40,6 +40,7 @@
 
 #include    <parser.h>
 #include    <objArray.h>
+#include    <srcErrors.h>
 
 
 #ifndef PARSER_INTERNAL_H
@@ -62,7 +63,7 @@ extern "C" {
 
         // Common Data
         COMPILER_DATA   *pCompiler;
-        ERESULT_DATA    *pErrors;
+        SRCERRORS_DATA  *pErrors;
         OBJ_ID          pAux1;
         OBJ_ID          pAux2;
         NODEHASH_DATA   *pProperties;

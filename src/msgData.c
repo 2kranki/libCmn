@@ -447,7 +447,7 @@ extern "C" {
     )
     {
         MSGDATA_DATA    *pOther = OBJ_NIL;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
