@@ -145,6 +145,7 @@ extern "C" {
                 break;
                 
             default:
+                DEBUG_BREAK();
                 break;
         }
         
@@ -234,6 +235,7 @@ extern "C" {
         char            *pConStr;
         ASTR_DATA       *pWrkStr;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
+        W32CHR_T        w32;
 
 #ifdef NDEBUG
 #else
@@ -273,13 +275,15 @@ extern "C" {
                 );
                 break;
                 
+            case TOKEN_TYPE_CHAR:
             case TOKEN_TYPE_W32CHAR:
+                w32 = token_getChrW32(this);
                 AStr_AppendPrint(
                                  pStr,
                                  "\"type\":%d /*TOKEN_TYPE_W32CHAR*/, \"data\":",
                                  TOKEN_TYPE_W32CHAR
                 );
-                pWrkStr = dec_UInt64ToJSON(this->data.w32chr[0]);
+                pWrkStr = dec_UInt64ToJSON(w32);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);

@@ -299,6 +299,47 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     G e t  H e x
+    //---------------------------------------------------------------
+    
+    int64_t         hex_getInt64A(
+        const
+        char            *pData
+    )
+    {
+        int64_t         amt = 0;
+        char            chr;
+        
+        // Do initialization.
+        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'x'))) {
+            pData += 2;
+        }
+        else {
+            return -1;
+        }
+
+        for( ;; ) {
+            chr = *pData;
+            if( (chr >= 'A') && (chr <= 'F') )
+                chr = chr - 'A' + 10;
+            else if( (chr >= 'a') && (chr <= 'f') )
+                chr = chr - 'a' + 10;
+            else if( (chr >= '0') && (chr <= '9') )
+                chr = chr - '0';
+            else
+                break;
+            amt <<= 4;
+            amt += chr;
+            ++pData;
+        }
+        
+        // Return to caller.
+        return amt;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     S c a n  H e x
     //---------------------------------------------------------------
     

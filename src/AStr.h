@@ -266,6 +266,13 @@ extern "C" {
     );
     
     
+    ERESULT         AStr_AppendHex8(
+        ASTR_DATA       *this,
+        const
+        uint8_t         num
+    );
+    
+    
     ERESULT         AStr_AppendHex16(
         ASTR_DATA		*this,
         const
@@ -554,7 +561,7 @@ extern "C" {
     
     
     /*!
-     Create a JSON string that describes this object.
+     Convert the contents of this string to an integer if possible.
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.

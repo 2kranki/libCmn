@@ -743,7 +743,7 @@ int         test_lexj_Number08(
         pToken = lexj_TokenLookAhead(pLexJ, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         XCTAssertTrue( (LEXJ_SEP_PLUS == token_getClass(pToken)) );
-        pAStr = token_getTextA(pToken);
+        pAStr = token_getTextAStr(pToken);
         XCTAssertTrue( (0 == strcmp("+", AStr_getData(pAStr))) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;

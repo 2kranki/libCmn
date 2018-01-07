@@ -55,7 +55,111 @@
 extern "C" {
 #endif
 
+    
+    typedef enum sym_primitive_e {
+        SYM_PRIMITIVE_UNDEFINED=0,
+        SYM_PRIMITIVE_INT8,
+        SYM_PRIMITIVE_UINT8,
+        SYM_PRIMITIVE_INT16,
+        SYM_PRIMITIVE_UINT16,
+        SYM_PRIMITIVE_INT32,
+        SYM_PRIMITIVE_UINT32,
+        SYM_PRIMITIVE_INT64,
+        SYM_PRIMITIVE_UINT64,
+        SYM_PRIMITIVE_INT128,
+        SYM_PRIMITIVE_UINT128,
+        SYM_PRIMITIVE_INT256,
+        SYM_PRIMITIVE_UINT256,
+        SYM_PRIMITIVE_CHAR,
+        SYM_PRIMITIVE_CHAR_SIGNED,
+        SYM_PRIMITIVE_CHAR_UNSIGNED,
+        SYM_PRIMITIVE_FUNCTION,
+        SYM_PRIMITIVE_INT,
+        SYM_PRIMITIVE_INT_SIGNED,
+        SYM_PRIMITIVE_INT_UNSIGNED,
+        SYM_PRIMITIVE_SHORT,
+        SYM_PRIMITIVE_SHORT_SIGNED,       // ????
+        SYM_PRIMITIVE_SHORT_UNSIGNED,
+        SYM_PRIMITIVE_LONG,
+        SYM_PRIMITIVE_LONG_SIGNED,       // ????
+        SYM_PRIMITIVE_LONG_UNSIGNED,
+        SYM_PRIMITIVE_LONGLONG,
+        SYM_PRIMITIVE_LONGLONG_SIGNED,       // ????
+        SYM_PRIMITIVE_LONGLONG_UNSIGNED,
+        SYM_PRIMITIVE_STRUCT,
+        SYM_PRIMITIVE_UNION,
+        SYM_PRIMITIVE_VOID,
+    } SYM_PRIMITIVE;
+    
+    
+    typedef enum sym_storage_e {
+        SYM_STORAGE_UNDEFINED=0,
+        SYM_STORAGE_AUTO,           // Auto allocated local identifiers
+        SYM_STORAGE_EXTERN,
+        SYM_STORAGE_LOCAL,
+        SYM_STORAGE_MEMBER,                 // ???
+        SYM_STORAGE_PUBLIC,
+        SYM_STORAGE_SPROTO,                 // ???
+        SYM_STORAGE_STATIC,         // static identifiers in global context
+        SYM_STORAGE_STATIC_LOCAL,   // static identifiers in local context
+        SYM_STORAGE_STRUCT,
+    } SYM_STORAGE;
+    
+    
+    typedef enum sym_type_e {
+        SYM_TYPE_UNDEFINED=0,
+        SYM_TYPE_ARRAY,
+        SYM_TYPE_CONSTANT,
+        SYM_TYPE_FUNCTION,
+        SYM_TYPE_MACRO,
+        SYM_TYPE_STRUCT,
+        SYM_TYPE_UNION,
+        SYM_TYPE_VARIABLE,
+    } SYM_TYPE;
+    
 
+    typedef struct sym_entry_s {
+        //ASTR_DATA       *pName;
+        uint32_t        token;              // szTbl Token
+        uint32_t        idxNext;            // Index Chain
+        uint32_t        idxPrev;
+        uint32_t        idxParent;
+        uint32_t        idxSibHead;         // Sibling Chain
+        uint32_t        idxSibTail;
+        uint16_t        size;
+        uint16_t        flags16;
+        int32_t         class;              // User Defined
+        int32_t         type;               // See SYM_TYPE
+        uint16_t        prim;               // See SYM_PRIMITIVE;
+        uint16_t        ptr;                // Pointer level
+        union {
+            uint32_t        misc[4];            // Set Overall Size.
+            struct {
+                uint32_t        value;
+            } constantType;
+            struct {
+                uint32_t        offset;
+            } fieldType;
+            struct {
+                uint32_t        addr;
+            } functionType;
+            struct {
+                uint32_t        idxKeyHead;         // Keyword Parameters Chain
+                uint32_t        idxKeyTail;
+                uint32_t        idxPosHead;         // Positional Parameters Chain
+                uint32_t        idxPosTail;
+            } macroType;
+            struct {
+                uint32_t        addr;
+                uint16_t        baseType;
+                uint16_t        storageClass;
+            } variableType;
+        };
+    } SYM_ENTRY;
+    
+    
+    
+    
 
 
 #pragma pack(push, 1)

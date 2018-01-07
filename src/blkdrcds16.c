@@ -642,6 +642,115 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+     // Return a method pointer for a string or NULL if not found.
+     void        *pMethod = $P_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
+                        character string which represents the method name without
+                        the object name, "$P", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          blkdrcds16_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        BLKDRCDS16_DATA *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !blkdrcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)blkdrcds16_Class();
+                break;
+                
+#ifdef XYZZY
+                // Query for an address to specific data within the object.
+                // This should be used very sparingly since it breaks the
+                // object's encapsulation.
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+                        
+                    case 'S':
+                        if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                            return &this->pSuperVtbl;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+#endif
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'D':
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return blkdrcds16_Disable;
+                        }
+                        break;
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return blkdrcds16_ToDebugString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == blkdrcds16_ToDebugString)
+                    return "ToDebugString";
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       R e c o r d  A d d
     //---------------------------------------------------------------
     

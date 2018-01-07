@@ -42,8 +42,9 @@
 #define	SZHASH_INTERNAL_H
 
 
-#include    "szHash.h"
-#include    "listdl.h"
+#include    <szHash.h>
+#include    <listdl.h>
+#include    <ptrArray.h>
 
 
 
@@ -97,6 +98,7 @@ struct szHash_data_s	{
     uint16_t        cBlock;         // Number of Nodes per Block
     uint16_t        cHash;
     LISTDL_DATA     *pHash;         // Main Hash Table
+    //PTRARRAY_DATA   *pPtrArray;
 
 };
 #pragma pack(pop)

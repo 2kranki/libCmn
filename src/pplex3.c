@@ -615,7 +615,7 @@ extern "C" {
                             break;
                         }
                     }
-                    pStr = token_getTextA(pInput);
+                    pStr = token_getTextAStr(pInput);
                     if (this->pAuxKwds) {
                         pKWD =  kwSearch(
                                         AStr_getData(pStr),

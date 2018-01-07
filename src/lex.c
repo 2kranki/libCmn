@@ -1795,6 +1795,7 @@ extern "C" {
         
         type = token_getType(pToken);
         switch (type) {
+            case TOKEN_TYPE_CHAR:
             case TOKEN_TYPE_W32CHAR:
                 chr = token_getChrW32(pToken);
                 if (chr == '\n') {

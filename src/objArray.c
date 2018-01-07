@@ -964,7 +964,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        OBJ_ID          *ppObj;
+        ARRAY_ENTRY     *pEntry;
         OBJ_ID          pObj1 = OBJ_NIL;
         OBJ_ID          pObj2;
         uint32_t        i;
@@ -998,9 +998,9 @@ extern "C" {
         }
         
         if (NULL == pCompare) {
-            ppObj = array_Ptr(this->pArray, 1);
-            if (ppObj) {
-                pObj1 = *ppObj;
+            pEntry = array_Ptr(this->pArray, 1);
+            if (pEntry) {
+                pObj1 = pEntry->pObj;
             }
             if (OBJ_NIL == pObj1) {
                 return ERESULT_INVALID_OBJECT;
@@ -1016,15 +1016,15 @@ extern "C" {
         for (i=1; i<array_getSize(this->pArray); ++i) {
             j = i;
             while (j > 0) {
-                ppObj = array_Ptr(this->pArray, j);
-                pObj1 = *ppObj;
-                ++ppObj;
-                pObj2 = *ppObj;
+                pEntry = array_Ptr(this->pArray, j);
+                pObj1 = pEntry->pObj;
+                ++pEntry;
+                pObj2 = pEntry->pObj;
                 eRc = (*pCompare)(pObj1, pObj2);
                 if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                    *ppObj = pObj1;
-                    --ppObj;
-                    *ppObj = pObj2;
+                    pEntry->pObj = pObj1;
+                    --pEntry;
+                    pEntry->pObj = pObj2;
                     --j;
                 }
                 else

@@ -124,7 +124,7 @@ int         test_token_JSON01(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":2 /*TOKEN_TYPE_INTEGER*/, "
+                                    "\"type\":3 /*TOKEN_TYPE_INTEGER*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"dec\", "
                                         "\"len\":8, "
@@ -208,7 +208,7 @@ int         test_token_JSON02(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":4 /*TOKEN_TYPE_W32CHAR*/, "
+                                    "\"type\":5 /*TOKEN_TYPE_W32CHAR*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"dec\", "
                                         "\"len\":8, "
@@ -289,7 +289,7 @@ int         test_token_JSON03(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":3 /*TOKEN_TYPE_STRTOKEN*/, "
+                                    "\"type\":4 /*TOKEN_TYPE_STRTOKEN*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"utf8\", "
                                         "\"len\":5, "
@@ -313,7 +313,7 @@ int         test_token_JSON03(
         XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
         
-        pAStr = token_getTextA(pObj);
+        pAStr = token_getTextAStr(pObj);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
         eRc = AStr_CompareA(pAStr, "12345");
@@ -336,7 +336,7 @@ int         test_token_JSON03(
         XCTAssertTrue( ( 2 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
         
-        pAStr = token_getTextA(pToken);
+        pAStr = token_getTextAStr(pToken);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
         eRc = AStr_CompareA(pAStr, "12345");
@@ -385,7 +385,7 @@ int         test_token_JSON04(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":3 /*TOKEN_TYPE_STRTOKEN*/, "
+                                    "\"type\":4 /*TOKEN_TYPE_STRTOKEN*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"utf8\", "
                                         "\"len\":4, "
@@ -409,7 +409,7 @@ int         test_token_JSON04(
         XCTAssertTrue( ( 2 == token_getColNo(pObj)) );
         XCTAssertTrue( (11 == token_getClass(pObj)) );
         
-        pAStr = token_getTextA(pObj);
+        pAStr = token_getTextAStr(pObj);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
         eRc = AStr_CompareA(pAStr, "\n  \n");
@@ -432,7 +432,7 @@ int         test_token_JSON04(
         XCTAssertTrue( ( 2 == token_getColNo(pToken)) );
         XCTAssertTrue( (11 == token_getClass(pToken)) );
         
-        pAStr = token_getTextA(pToken);
+        pAStr = token_getTextAStr(pToken);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         XCTAssertTrue( (OBJ_IDENT_ASTR == obj_getType(pAStr)) );
         eRc = AStr_CompareA(pAStr, "\n  \n");

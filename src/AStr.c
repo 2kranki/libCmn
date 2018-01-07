@@ -852,6 +852,39 @@ extern "C" {
     //                    A p p e n d  H e x
     //---------------------------------------------------------------
     
+    ERESULT         AStr_AppendHex8(
+        ASTR_DATA        *this,
+        const
+        uint8_t         num
+    )
+    {
+        ERESULT         eRc;
+        HEX_DATA        *pHex;
+        uint32_t        chrsLen = 32;
+        char            chrs[33];
+        char            *pChrs = chrs;
+        uint32_t        len;
+        
+        pHex = hex_New();
+        if (pHex == OBJ_NIL) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        len = hex_putU8A(pHex, num, &chrsLen, &pChrs);
+        if (len) {
+            chrs[len] = '\0';
+            eRc = AStr_AppendA(this, chrs);
+        }
+        else {
+            obj_Release(pHex);
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        obj_Release(pHex);
+        return eRc;
+    }
+    
+    
     ERESULT         AStr_AppendHex16(
         ASTR_DATA		*this,
         const
@@ -2393,8 +2426,13 @@ extern "C" {
 #endif
 
         pData  = array_Ptr(this->pData, 1);
-        num = dec_getInt64A(pData);
-        
+        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'x'))) {
+            num = hex_getInt64A(pData);
+        }
+        else {
+            num = dec_getInt64A(pData);
+        }
+
         // Return to caller.
         return num;
     }
@@ -2422,7 +2460,12 @@ extern "C" {
 #endif
         
         pData  = array_Ptr(this->pData, 1);
-        num = (uint64_t)dec_getInt64A(pData);
+        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'x'))) {
+            num = (uint64_t)hex_getInt64A(pData);
+        }
+        else {
+            num = (uint64_t)dec_getInt64A(pData);
+        }
         
         // Return to caller.
         return num;

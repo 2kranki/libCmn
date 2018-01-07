@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (12/25/2017 23:35:30.000)
+# ( 1/ 5/2018 23:52:03.000)
 
 
 LIBNAM=libCmn
@@ -1614,12 +1614,6 @@ $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c
 
 
 OBJS += $(OBJDIR)/shellSortPtrs.o
-$(OBJDIR)/srcError_JSON.o: $(SRCDIR)/srcError_JSON.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/srcError_JSON.o
 $(OBJDIR)/srcLoc_JSON.o: $(SRCDIR)/srcLoc_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 

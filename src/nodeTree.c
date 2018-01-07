@@ -71,10 +71,6 @@ extern "C" {
     static
     NODE_DATA       openNode  = {{0}};      // Open Node - '('
 
-    static
-    NODE_DATA       *pCloseNode = OBJ_NIL;  // Close Node - ')'
-    static
-    NODE_DATA       *pOpenNode  = OBJ_NIL;  // Open Node - '('
 
  
     /****************************************************************

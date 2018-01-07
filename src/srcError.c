@@ -805,9 +805,6 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return srcError_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return srcError_ToJSON;
-                        }
                         break;
                         
                     default:
@@ -818,8 +815,6 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == srcError_ToDebugString)
                     return "ToDebugString";
-                if (pData == srcError_ToJSON)
-                    return "ToJSON";
                 break;
                 
             default:

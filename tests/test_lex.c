@@ -508,7 +508,7 @@ int         test_lex_Strings01(
         eRc = lex_ParseTokenFinalize(pObj,'a',true);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         pToken = lex_getToken(pObj);
-        pStr = token_getTextA(pToken);
+        pStr = token_getTextAStr(pToken);
         eRc = AStr_CompareA(pStr, "def");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         obj_Release(pStr);
@@ -556,7 +556,7 @@ int         test_lex_Strings02(
         eRc = lex_ParseTokenFinalize(pObj, 512, true);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         pToken = lex_getToken(pObj);
-        pStr = token_getTextA(pToken);
+        pStr = token_getTextAStr(pToken);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pStr) {
             fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStr));
@@ -609,7 +609,7 @@ int         test_lex_Strings03(
         eRc = lex_ParseTokenFinalize(pObj, 512, true);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         pToken = lex_getToken(pObj);
-        pStr = token_getTextA(pToken);
+        pStr = token_getTextAStr(pToken);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pStr) {
             fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStr));
@@ -632,7 +632,7 @@ int         test_lex_Strings03(
         eRc = lex_ParseTokenFinalize(pObj, 512, true);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         pToken = lex_getToken(pObj);
-        pStr = token_getTextA(pToken);
+        pStr = token_getTextAStr(pToken);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pStr) {
             fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStr));

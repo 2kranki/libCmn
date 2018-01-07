@@ -155,6 +155,18 @@ extern "C" {
     
     
     /*!
+     Try to convert the string to a signed 64-bit number with format of
+     "0[xX][0..9a..fA..F]*". Overflow is not detected in the scan.
+     @return:
+            if successful, the scanned number. Otherwise, -1 is returned.
+     */
+    int64_t         hex_getInt64A(
+        const
+        char            *pData
+    );
+    
+    
+    /*!
      Try to convert the string to a unsigned 32-bit number with format of 
      "[+ | -][0..9a..fA..F]*". Overflow is not detected in the scan.
      @return:

@@ -170,7 +170,7 @@
         "scanstring.c",
         "scanwhite.c",
         "shellSortPtrs.c",
-        "srcError_JSON.c",
+        #"srcError_JSON.c",
         "srcLoc_JSON.c",
         "str.c",
         "token_JSON.c",

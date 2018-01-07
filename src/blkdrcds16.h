@@ -127,6 +127,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          blkdrcds16_Class(
+        void
+    );
+    
+    
     BLKDRCDS16_DATA * blkdrcds16_New(
         void
     );

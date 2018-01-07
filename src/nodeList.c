@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include "nodeList_internal.h"
 #include "nodeArray.h"
+#include "enum_internal.h"
 #include "utf8.h"
 
 
@@ -62,30 +63,30 @@ extern "C" {
 
     static
     bool            nodeList_AddBlock(
-        NODELIST_DATA   *cbp
+        NODELIST_DATA   *this
     )
     {
         NODELIST_BLOCK  *pBlock;
         uint32_t        i;
         
         // Do initialization.
-        if ( 0 == listdl_Count(&cbp->freeList) )
+        if ( 0 == listdl_Count(&this->freeList) )
             ;
         else {
             return true;
         }
         
         // Get a new block.
-        i = sizeof(NODELIST_BLOCK) + (cbp->cBlock * sizeof(NODELIST_NODE));
+        i = sizeof(NODELIST_BLOCK) + (this->cBlock * sizeof(NODELIST_NODE));
         pBlock = (NODELIST_BLOCK *)mem_Malloc( i );
         if( NULL == pBlock ) {
             return false;
         }
-        listdl_Add2Tail(&cbp->blocks, pBlock);
+        listdl_Add2Tail(&this->blocks, pBlock);
         
         // Now chain the entries to the Free chain.
-        for (i=0; i<cbp->cBlock; ++i) {
-            listdl_Add2Tail(&cbp->freeList, &pBlock->node[i]);
+        for (i=0; i<this->cBlock; ++i) {
+            listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
         }
         
         // Return to caller.
@@ -96,7 +97,7 @@ extern "C" {
     
     static
     NODELIST_NODE * nodeList_FindNode(
-        NODELIST_DATA   *cbp,
+        NODELIST_DATA   *this,
         const
         char            *pKey
     )
@@ -106,7 +107,7 @@ extern "C" {
         const
         char            *pName;
         
-        pNode = listdl_Head(&cbp->list);
+        pNode = listdl_Head(&this->list);
         while ( pNode ) {
             pName = node_getNameUTF8(pNode->pNode);
             iRc = utf8_StrCmp(pKey,pName);
@@ -114,7 +115,7 @@ extern "C" {
             if (0 == iRc) {
                 return pNode;
             }
-            pNode = listdl_Next(&cbp->list, pNode);
+            pNode = listdl_Next(&this->list, pNode);
         }
         
         // Return to caller.
@@ -505,6 +506,42 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        E n u m
+    //---------------------------------------------------------------
+    
+    ENUM_DATA *     nodeList_Enum(
+        NODELIST_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        ENUM_DATA       *pEnum = OBJ_NIL;
+        //uint32_t        size;
+        //uint32_t        index;
+        //NODE_DATA       *pNode;
+        NODELIST_NODE   *pEntry = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEnum = enum_New();
+        pEntry = listdl_Head(&this->list);
+        while ( pEntry ) {
+            eRc = enum_Append(pEnum, pEntry->pNode, NULL);
+            pEntry = listdl_Next(&this->list, pEntry);
+        }
+        
+        // Return to caller.
+        return pEnum;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
 
@@ -552,7 +589,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeList_ForEach(
-        NODELIST_DATA	*cbp,
+        NODELIST_DATA	*this,
         P_VOIDEXIT2_BE  pScan,
         OBJ_ID          pObj            // Used as first parameter of scan method
     )
@@ -563,7 +600,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -573,13 +610,13 @@ extern "C" {
         }
 #endif
         
-        pEntry = listdl_Head(&cbp->list);
+        pEntry = listdl_Head(&this->list);
         while ( pEntry ) {
             eRc = pScan(pObj,pEntry->pNode);
             if (ERESULT_HAS_FAILED(eRc)) {
                 break;
             }
-            pEntry = listdl_Next(&cbp->list, pEntry);
+            pEntry = listdl_Next(&this->list, pEntry);
         }
         
         // Return to caller.

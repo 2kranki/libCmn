@@ -93,6 +93,7 @@ extern "C" {
     
     typedef enum token_type_e {
         TOKEN_TYPE_UNKNOWN=0,
+        TOKEN_TYPE_CHAR,            // A single Unicode character in ASCII
         TOKEN_TYPE_FLOAT,           // double
         TOKEN_TYPE_INTEGER,         // int64_t
         TOKEN_TYPE_STRTOKEN,        // String Token for szTbl
@@ -327,12 +328,23 @@ extern "C" {
     
     
     /*!
+     Get the token's data as a constant character string.
+     @return    If successful, an AStr object which must be released,
+                otherwise NULL.
+     */
+    const
+    char *          token_getTextA(
+        TOKEN_DATA      *this
+    );
+    
+    
+    /*!
      Get the token's data as an AStr object.
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     token_getTextA(
+    ASTR_DATA *     token_getTextAStr(
         TOKEN_DATA      *this
     );
 

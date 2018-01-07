@@ -124,11 +124,20 @@ struct blkdrcds16_data_s	{
         OBJ_ID          objId
     );
 
+    
     uint16_t		blkdrcds16_CalcNewRecordOffset(
         BLKDRCDS16_DATA *this,
         uint16_t        recordSize,
         uint16_t        *pActualSize
     );
+
+    
+    void *          blkdrcds16_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
     
     bool            blkdrcds16_setLastError(
         BLKDRCDS16_DATA     *this,

@@ -206,7 +206,7 @@ extern "C" {
      @code
      ASTR_DATA      *pDesc = szHash_EnumKeys(this, &pEnum);
      @endcode
-     @param     this    SZTBL_DATA object pointer
+     @param     this    object pointer
      @param     ppEnum  pointer to an Enumeration Object Pointer
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.

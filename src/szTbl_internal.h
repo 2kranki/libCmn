@@ -42,9 +42,11 @@
 #define	SZTBL_INTERNAL_H
 
 
-#include    "szTbl.h"
-#include    "szHash_internal.h"
-#include    "ptrArray.h"
+#include    <szTbl.h>
+#include    <szHash_internal.h>
+#include    <ptrArray.h>
+
+
 
 #ifdef	__cplusplus
 extern "C" {

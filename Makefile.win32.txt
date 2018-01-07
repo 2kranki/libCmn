@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# (12/25/2017 23:35:28.000)
+# ( 1/ 5/2018 23:52:01.000)
 
 
 LIBNAM=libCmn
@@ -172,7 +172,6 @@ OBJS = $(OBJS) $(OBJDIR)\scanhex32.obj
 OBJS = $(OBJS) $(OBJDIR)\scanstring.obj
 OBJS = $(OBJS) $(OBJDIR)\scanwhite.obj
 OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
-OBJS = $(OBJS) $(OBJDIR)\srcError_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLoc_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\token_JSON.obj

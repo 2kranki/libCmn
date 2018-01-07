@@ -54,6 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <node.h>
+#include        <enum.h>
 
 
 #ifndef         NODELIST_H
@@ -172,6 +173,16 @@ extern "C" {
     
     ERESULT         nodeList_DeleteTail(
         NODELIST_DATA	*this
+    );
+    
+    
+    /*! Create an enumerator for the list.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+     OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    ENUM_DATA *     nodeList_Enum(
+        NODELIST_DATA  *this
     );
     
     

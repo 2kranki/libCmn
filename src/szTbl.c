@@ -41,9 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "szTbl_internal.h"
-#include    "str.h"
-#include    "utf8.h"
+#include        <szTbl_internal.h>
+#include        <str.h>
+#include        <utf8.h>
 
 
 

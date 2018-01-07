@@ -538,7 +538,7 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        pTmp = token_getTextA(pToken);
+        pTmp = token_getTextAStr(pToken);
         AStr_AppendPrint(
                 pWrk,
                 "Expecting: %s but found: %s\n",

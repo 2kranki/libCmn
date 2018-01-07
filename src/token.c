@@ -51,6 +51,10 @@
 #include    <utf8.h>
 
 
+//#define TOKEN_STORE_W32 1         // Store single W32CHR_T as unicode
+//                                  // otherwise store as ASCII
+// W-A-R-N-I-N-G -- Setting this breaks most of Lex, pplex, etc
+
 
 
 #ifdef	__cplusplus
@@ -112,9 +116,7 @@ extern "C" {
         if (this) {
             this = token_InitFnLCC(this, pLoc, cls);
             if (this) {
-                this->data.w32chr[0] = chr;
-                this->data.w32chr[1] = 0;
-                this->data.type = TOKEN_TYPE_W32CHAR;
+                token_setChrW32(this, chr);
             }
         }
         
@@ -279,6 +281,9 @@ extern "C" {
         }
 #endif
         
+        if (TOKEN_TYPE_CHAR == this->data.type) {
+            utf8_Utf8ToW32(this->data.chr, &chr);
+        }
         if (TOKEN_TYPE_W32CHAR == this->data.type) {
             chr = this->data.w32chr[0];
         }
@@ -298,10 +303,15 @@ extern "C" {
             return false;
         }
 #endif
-        
+      
+#ifdef TOKEN_STORE_W32
         this->data.w32chr[0] = value;
         this->data.w32chr[1] = 0;
         this->data.type = TOKEN_TYPE_W32CHAR;
+#else
+        utf8_W32ToUtf8(value, this->data.chr);
+        this->data.type = TOKEN_TYPE_CHAR;
+#endif
 
         return true;
     }
@@ -691,8 +701,43 @@ extern "C" {
     }
     
     
+    const
+    char *          token_getTextA(
+        TOKEN_DATA      *this
+    )
+    {
+        const
+        char            *pStr = NULL;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !token_Validate( this ) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (this->data.type) {
+                
+            case TOKEN_TYPE_CHAR:
+                pStr = this->data.chr;
+                break;
+                
+            case TOKEN_TYPE_STRTOKEN:
+                pStr = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
+                break;
+                
+            default:
+                break;
+        }
+        
+        return pStr;
+    }
     
-    ASTR_DATA *     token_getTextA(
+    
+    
+    ASTR_DATA *     token_getTextAStr(
         TOKEN_DATA      *this
     )
     {
@@ -710,6 +755,10 @@ extern "C" {
 #endif
         
         switch (this->data.type) {
+                
+            case TOKEN_TYPE_CHAR:
+                pAStr = AStr_NewA(this->data.chr);
+                break;
                 
             case TOKEN_TYPE_W32CHAR:
                 pAStr = AStr_NewW32(this->data.w32chr);
@@ -809,8 +858,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         token_Assign(
-        TOKEN_DATA       *this,
-        TOKEN_DATA       *pOther
+        TOKEN_DATA      *this,
+        TOKEN_DATA      *pOther
     )
     {
         
@@ -834,6 +883,10 @@ extern "C" {
         switch (this->data.type) {
                 
             case TOKEN_TYPE_UNKNOWN:
+                break;
+                
+            case TOKEN_TYPE_CHAR:
+                memmove(pOther->data.chr, this->data.chr, sizeof(this->data.chr));
                 break;
                 
             case TOKEN_TYPE_FLOAT:
@@ -873,7 +926,7 @@ extern "C" {
         TOKEN_DATA       *pOther
     )
     {
-        //int             i = 0;
+        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
 #ifdef NDEBUG
@@ -890,6 +943,15 @@ extern "C" {
         
         if (this->data.type == pOther->data.type) {
             switch (this->data.type) {
+                    
+            case TOKEN_TYPE_CHAR:
+                i = strcmp(this->data.chr, pOther->data.chr);
+                if (i == 0)
+                    ;
+                else {
+                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                }
+                break;
                     
             case TOKEN_TYPE_FLOAT:
                 if (this->data.flt == pOther->data.flt)
@@ -1113,122 +1175,6 @@ extern "C" {
     }
     
     
-#ifdef XYZZY
-    TOKEN_DATA *     token_InitObj(
-        TOKEN_DATA      *this,
-        SRCLOC          *pLoc,
-        int32_t         cls,
-        OBJ_DATA        *pObj
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = token_InitFnLCC( this, pLoc, cls );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        token_setObj(this, pObj);
-        
-        return this;
-    }
-    
-    
-    
-    TOKEN_DATA *     token_InitStringW(
-        TOKEN_DATA      *this,
-        SRCLOC          *pLoc,
-        int32_t         cls,
-        WSTR_DATA       *pString
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = token_InitFnLCC( this, pLoc, cls );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        token_setStringW(this, (OBJ_ID)pString);
-        
-        return this;
-    }
-    
-    
-    TOKEN_DATA *     token_InitStrA(
-        TOKEN_DATA      *this,
-        SRCLOC          *pLoc,
-        int32_t         cls,
-        const
-        char            *pStr
-    )
-    {
-        uint32_t        strlen = 0;
-        WSTR_DATA       *pString;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        if (NULL == pStr) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this = token_InitFnLCC( this, pLoc, cls );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        strlen = utf8_StrLenChars(pStr);
-        if (strlen > obj_getMisc1(this)) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        //FIXME: memmove(this->pData->str, pStr, (strlen + 1));
-        this->pData->type = TOKEN_TYPE_UTF8STR;
-        
-        return this;
-    }
-    
-    
-    
-    TOKEN_DATA *     token_InitStrW32(
-        TOKEN_DATA      *this,
-        SRCLOC          *pLoc,
-        int32_t         cls,
-        const
-        W32CHR_T        *pStr
-    )
-    {
-        ERESULT         eRc;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = token_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        eRc = token_SetupStrW(this, pLoc, cls, pStr);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-
-        return this;
-    }
-#endif
-    
-    
     TOKEN_DATA *     token_InitStrToken(
         TOKEN_DATA      *this,
         SRCLOC          *pLoc,
@@ -1448,7 +1394,11 @@ extern "C" {
         
         switch (this->data.type) {
                 
-            case TOKEN_TYPE_W32CHAR:
+            case TOKEN_TYPE_CHAR:
+                AStr_AppendA(pStr, this->data.chr);
+                break;
+                
+           case TOKEN_TYPE_W32CHAR:
                 if (ascii_isPrintableW32(this->data.w32chr[0])) {
                     str[0] = this->data.w32chr[0];
                     str[1] = '\0';
@@ -1497,6 +1447,7 @@ extern "C" {
     {
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
+        W32CHR_T        w32;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1530,10 +1481,20 @@ extern "C" {
                 AStr_AppendA(pStr, "type=UNKNOWN ");
                 break;
                 
+            case TOKEN_TYPE_CHAR:
+                utf8_Utf8ToW32(this->data.chr, &w32);
+                AStr_AppendPrint(
+                                 pStr,
+                                 "type=CHAR char=(0x%X)%c ",
+                                 w32,
+                                 (((w32 >= ' ') && (w32 < 0x7F)) ? w32 : ' ')
+                );
+                break;
+                
             case TOKEN_TYPE_W32CHAR:
                 AStr_AppendPrint(
                         pStr,
-                        "type=CHAR char=(0x%X)%c ",
+                        "type=W32CHAR char=(0x%X)%c ",
                         this->data.w32chr[0],
                         (((this->data.w32chr[0] >= ' ') && (this->data.w32chr[0] < 0x7F))
                                   ? this->data.w32chr[0] : ' ')

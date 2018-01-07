@@ -454,7 +454,7 @@ extern "C" {
         //fprintf(stderr, "\tLEX_SEP_MINUS = %d\n", LEXJ_SEP_MINUS);
 #endif
         if( (tokenClass == LEXJ_SEP_MINUS) || (tokenClass == LEXJ_SEP_PLUS) ) {
-            pSign = token_getTextA(pToken);
+            pSign = token_getTextAStr(pToken);
             sign = *AStr_getData(pSign);
             obj_Release(pSign);
             pSign = OBJ_NIL;

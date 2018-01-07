@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'blkdrcds16'
-//	Generated 03/10/2017 19:43:23
+//	Generated 01/05/2018 21:06:26
 
 
 /*
@@ -33,15 +33,16 @@
 
 
 
+//#define   BLKDRCDS16_IS_SINGLETON     1
 
 #define			BLKDRCDS16_OBJECT_C	    1
-#include        "blkdrcds16_internal.h"
+#include        <blkdrcds16_internal.h>
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
 struct blkdrcds16_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
@@ -49,6 +50,7 @@ struct blkdrcds16_class_data_s	{
     
     // Common Data
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
 typedef struct blkdrcds16_class_data_s BLKDRCDS16_CLASS_DATA;
 
@@ -62,19 +64,22 @@ typedef struct blkdrcds16_class_data_s BLKDRCDS16_CLASS_DATA;
 
 
 static
+void *          blkdrcds16Class_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+static
 const
 OBJ_INFO        blkdrcds16_Info;            // Forward Reference
 
 
 
-OBJ_ID          blkdrcds16_Class(
-    void
-);
-
-
 
 static
-bool            blkdrcds16_ClassIsKindOf(
+bool            blkdrcds16Class_IsKindOf(
     uint16_t		classID
 )
 {
@@ -89,7 +94,7 @@ bool            blkdrcds16_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		blkdrcds16Class_WhoAmI(
     void
 )
 {
@@ -101,12 +106,13 @@ static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
 	&blkdrcds16_Info,
-    blkdrcds16_ClassIsKindOf,
+    blkdrcds16Class_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
     blkdrcds16_Class,
-    obj_ClassWhoAmI
+    blkdrcds16Class_WhoAmI,
+    (P_OBJ_QUERYINFO)blkdrcds16Class_QueryInfo
 };
 
 
@@ -122,6 +128,85 @@ BLKDRCDS16_CLASS_DATA  blkdrcds16_ClassObj = {
 };
 
 
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          blkdrcds16Class_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    BLKDRCDS16_CLASS_DATA *this = objId;
+    //const
+    //char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'O':
+                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
+                        return &this->pObjCatalog;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+#ifdef XYZZY
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return blkdrcds16Class_WhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
 
 static
 bool            blkdrcds16_IsKindOf(
@@ -167,19 +252,23 @@ BLKDRCDS16_VTBL     blkdrcds16_Vtbl = {
     {
         &blkdrcds16_Info,
         blkdrcds16_IsKindOf,
+#ifdef  BLKDRCDS16_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
+#endif
         blkdrcds16_Dealloc,
         blkdrcds16_Class,
         blkdrcds16_WhoAmI,
-        NULL,
+        (P_OBJ_QUERYINFO)blkdrcds16_QueryInfo,
         (P_OBJ_TOSTRING)blkdrcds16_ToDebugString,
         NULL,			// blkdrcds16_Enable,
         NULL,			// blkdrcds16_Disable,
         NULL,			// (P_OBJ_ASSIGN)blkdrcds16_Assign,
         NULL,			// (P_OBJ_COMPARE)blkdrcds16_Compare,
         NULL, 			// (P_OBJ_PTR)blkdrcds16_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)blkdrcds16_Hash,
     },
     // Put other object method names below this.
@@ -195,7 +284,7 @@ static
 const
 OBJ_INFO        blkdrcds16_Info = {
     "blkdrcds16",
-    "16-Bit Block of Variable Length Records (blkdrcds16)",
+    "Block of Variable Length Records w/16 bit offsets",
     (OBJ_DATA *)&blkdrcds16_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&blkdrcds16_Vtbl

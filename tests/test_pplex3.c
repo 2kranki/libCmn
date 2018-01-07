@@ -383,7 +383,7 @@ int         test_pplex3_Input02(
                 pStr = OBJ_NIL;
             }
             XCTAssertTrue( (PPLEX_SEP_NL == token_getClass(pToken)) );
-            pStr = token_getTextA(pToken);
+            pStr = token_getTextAStr(pToken);
             fprintf(stderr, "\tSEP_NL=\"%s\"\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
