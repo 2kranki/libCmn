@@ -200,11 +200,20 @@ int         test_fileio_Create01(
         eRc = fileio_Create(pObj, pPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        eRc = fileio_Write(pObj, (strlen(path_getData(pPath))+1), path_getData(pPath));
+        eRc =   fileio_Write(
+                           pObj,
+                           (uint32_t)(strlen(path_getData(pPath))+1),
+                           path_getData(pPath)
+                );
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         fileSize = fileio_Size(pObj);
-        fprintf(stderr, "\tSize = %ld  fileio_Size=%ld\n", (strlen(path_getData(pPath))+1), fileSize);
+        fprintf(
+                stderr,
+                "\tSize = %ld  fileio_Size=%lld\n",
+                (strlen(path_getData(pPath))+1),
+                fileSize
+        );
         TINYTEST_TRUE( ((strlen(path_getData(pPath))+1) == fileSize) );
         
         eRc = fileio_Close(pObj, true);

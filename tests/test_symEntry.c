@@ -87,7 +87,7 @@ int         test_symEntry_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    pObj = symEntry_New(pName, OBJ_NIL);
+    pObj = symEntry_NewA("test", 24);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         

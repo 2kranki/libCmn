@@ -707,7 +707,7 @@ extern "C" {
         
         symEntry_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pEntry = mem_Calloc(1, sizeof(SYM_ENTRY));
 
     #ifdef NDEBUG
     #else

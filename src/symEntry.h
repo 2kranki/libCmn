@@ -107,7 +107,14 @@ extern "C" {
         OBJ_ID              pData
     );
     
+    SYMENTRY_DATA *     symEntry_NewA(
+        const
+        char                *pName,
+        int32_t             class
+    );
     
+    
+
     SYMENTRY_DATA *     symEntry_NewWithUTF8(
         const
         char                *pName,
