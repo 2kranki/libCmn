@@ -41,6 +41,7 @@
  */
  
 
+
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -128,28 +129,20 @@ extern	"C" {
     );
     
     
+    OBJ_ID          rrds32_Class(
+        void
+    );
     
+    
+    RRDS32_DATA *   rrds32_New(
+        void
+    );
+    
+    
+
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
-    
-    /* getBlkNum() returns the current number of records in the
-     * the dataset.
-     * Returns:
-     *	RRDS_OK			=	Successful Completion
-     *	RRDS_ERROR_BADCB	=	Invalid RRDS_CB Pointer
-     */
-    uint32_t         rrds32_getBlkNum(
-        RRDS32_DATA 	*this
-    );
-    
-    
-    /* GetRecordSize() returns the record size.
-     */
-    uint16_t        rrds32_getRecordSize(
-        RRDS32_DATA 	*this
-    );
-    
     
     /* GetFillChar() returns the current Fill Character.
      */
@@ -164,6 +157,24 @@ extern	"C" {
     
     
     ERESULT         rrds32_getLastError(
+        RRDS32_DATA     *this
+    );
+    
+    
+    /* getRecordNum() returns the current number of records in the
+     * the dataset.
+     * Returns:
+     *    RRDS_OK            =    Successful Completion
+     *    RRDS_ERROR_BADCB    =    Invalid RRDS_CB Pointer
+     */
+    uint32_t         rrds32_getRecordNum(
+        RRDS32_DATA     *this
+    );
+    
+    
+    /* GetRecordSize() returns the record size.
+     */
+    uint16_t        rrds32_getRecordSize(
         RRDS32_DATA     *this
     );
     
@@ -189,48 +200,15 @@ extern	"C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
     
-    /* BlockRead() reads a Block from the File if it exists to the 
-     * address specified.
-     * Returns:
-     *	RRDS_OK			=	Successful Completion
-     *	RRDS_ERROR_BADCB	=	Invalid RRDS_CB Pointer
-     *	RRDS_ERROR_NOMEM	=	Out of Memory in File Extend
-     *	RRDS_ERROR_PAGE	=	Bad Block Number
-     *	RRDS_ERROR_READ	=	Disk Read Error
-     *	RRDS_ERROR_SEEK	=	Disk Seek Error
-     *	RRDS_ERROR_WRITE	=	Disk Write Error in File Extend
-     */
-    ERESULT         rrds32_BlockRead(
-        RRDS32_DATA 	*this,
-        uint32_t        recordNum,
-        uint8_t         *pData
-    );
-
-
-    /* BlockWrite() writes a Block to the File from the address specified.
-     * Returns:
-     *	RRDS_OK			=	Successful Completion
-     *	RRDS_ERROR_BADCB	=	Invalid RRDS_CB Pointer
-     *	RRDS_ERROR_NOMEM	=	Out of Memory in File Extend
-     *	RRDS_ERROR_PAGE	=	Bad Block Number
-     *	RRDS_ERROR_SEEK	=	Disk Seek Error
-     *	RRDS_ERROR_WRITE	=	Disk Write Error in File Extend
-     */
-    ERESULT         rrds32_BlockWrite(
-        RRDS32_DATA 	*this,
-        uint32_t		recordNum,
-        uint8_t			*pData	/* Data Ptr (if NULL, a FillChar
-                                 *	record is written)
-                                 */
-    );
-
-
-    /* Close() closes a file keeping it and frees the areas
-     * associated with the file instance.
-     * Returns NULL on succesful completion.
+    /*! Close the file and free the areas associated with reading and
+     writing to the file instance.
+     @param     fDelete     If true, delete the file after closing it.
+     @Return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*
+                error.
       */
     ERESULT         rrds32_Close(
-        RRDS32_DATA     *this
+        RRDS32_DATA     *this,
+        bool            fDelete
     );
 
 
@@ -241,31 +219,15 @@ extern	"C" {
      */
     ERESULT         rrds32_Create(
         RRDS32_DATA     *this,
-        const
-        char            *pFilePath,
-        uint16_t        recordSize,     // Must be on 4-byte boundary
-        uint16_t        headerSize      // Must be on 4-byte boundary
-    );
-
-
-    /* Destroy() closes a file deleting it and frees the areas
-     * associated with the file instance.
-     * Returns:
-     *	RRDS_OK			=	Successful Completion
-     *	RRDS_ERROR_BADCB	=	Invalid RRDS_CB Pointer
-     *	RRDS_ERROR_CLOSE	=	Disk File Close Error
-     *	RRDS_ERROR_NOMEM	=	No Memory Available
-     *	RRDS_ERROR_SEEK	=	Disk Seek Error
-     *	RRDS_ERROR_WRITE	=	Disk Write Error in File Extend
-     */
-    ERESULT         rrds32_Destroy(
-        RRDS32_DATA     *this
+        PATH_DATA       *pPath,
+        uint16_t        cLRU,           // Number of LRU Buffers
+        uint16_t        recordSize,
+        uint16_t        headerSize
     );
 
 
     RRDS32_DATA *	rrds32_Init(
-        RRDS32_DATA     *this,
-        uint16_t        cLRU            // Number of LRU Buffers
+        RRDS32_DATA     *this
     );
     
     
@@ -278,12 +240,45 @@ extern	"C" {
      */
     ERESULT         rrds32_Open(
         RRDS32_DATA     *this,
-        const
-        char            *pFilePath
+        PATH_DATA       *pPath,
+        uint16_t        cLRU            // Number of LRU Buffers
     );
 
 
-
+    /* RecordRead() reads a Block from the File if it exists to the
+     * address specified.
+     * Returns:
+     *    RRDS_OK            =    Successful Completion
+     *    RRDS_ERROR_BADCB    =    Invalid RRDS_CB Pointer
+     *    RRDS_ERROR_NOMEM    =    Out of Memory in File Extend
+     *    RRDS_ERROR_PAGE    =    Bad Block Number
+     *    RRDS_ERROR_READ    =    Disk Read Error
+     *    RRDS_ERROR_SEEK    =    Disk Seek Error
+     *    RRDS_ERROR_WRITE    =    Disk Write Error in File Extend
+     */
+    ERESULT         rrds32_RecordRead(
+        RRDS32_DATA     *this,
+        uint32_t        recordNum,
+        uint8_t         *pData
+    );
+    
+    
+    /* RecordWrite() writes a Block to the File from the address specified.
+     * Returns:
+     *    RRDS_OK            =    Successful Completion
+     *    RRDS_ERROR_BADCB    =    Invalid RRDS_CB Pointer
+     *    RRDS_ERROR_NOMEM    =    Out of Memory in File Extend
+     *    RRDS_ERROR_PAGE    =    Bad Block Number
+     *    RRDS_ERROR_SEEK    =    Disk Seek Error
+     *    RRDS_ERROR_WRITE    =    Disk Write Error in File Extend
+     */
+    ERESULT         rrds32_RecordWrite(
+        RRDS32_DATA     *this,
+        uint32_t        recordNum,
+        uint8_t         *pData    // Data Ptr (if NULL, a FillChar record is written)
+    );
+    
+    
     /*!
      Create a string that describes this object and the
      objects within it.

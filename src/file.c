@@ -109,41 +109,30 @@ extern "C" {
     //                       F i l e  S i z e A
     //---------------------------------------------------------------
     
-    ERESULT         file_SizeA(
+    int64_t         file_SizeA(
         const
-        char            *pPath,
-        int64_t         *pFileSize
+        char            *pPath
     )
     {
 #if defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
-        ERESULT         eRc;
-        
+        int64_t         fileSize = -1;
+
         if (pPath) {
 #if defined(__MACOSX_ENV__)
             iRc = stat(pPath, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                    if (pFileSize) {
-                        *pFileSize = statBuffer.st_size;
-                    }
-                    eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                    fileSize = statBuffer.st_size;
                 }
-                else
-                    eRc = ERESULT_FAILURE_FALSE;
             }
-            else
 #endif
-                eRc = ERESULT_PATH_NOT_FOUND;
-        }
-        else {
-            eRc = ERESULT_DATA_ERROR;
         }
         
         // Return to caller.
-        return eRc;
+        return fileSize;
     }
     
     
@@ -159,15 +148,14 @@ extern "C" {
         U8ARRAY_DATA    **ppArray
     )
     {
-        ERESULT         eRc;
         U8ARRAY_DATA    *pArray;
         int64_t         size = 0;
         int             chr;
         FILE            *pFile;
         
-        eRc = file_SizeA( pPath, &size );
-        if (ERESULT_HAS_FAILED(eRc)) {
-            return eRc;
+        size = file_SizeA(pPath);
+        if (-1 == size) {
+            return ERESULT_DATA_NOT_FOUND;
         }
         if (0 == size) {
             return ERESULT_DATA_NOT_FOUND;
@@ -191,7 +179,7 @@ extern "C" {
         if (ppArray) {
             *ppArray = pArray;
         }
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -216,9 +204,9 @@ extern "C" {
         if (ppBuffer) {
             *ppBuffer = pBuffer;
         }
-        eRc = file_SizeA( pPath, &size );
-        if (ERESULT_HAS_FAILED(eRc)) {
-            return eRc;
+        size = file_SizeA(pPath);
+        if (-1 == size) {
+            return ERESULT_DATA_NOT_FOUND;
         }
         if (0 == size) {
             return ERESULT_DATA_NOT_FOUND;
@@ -243,7 +231,7 @@ extern "C" {
         if (ppBuffer) {
             *ppBuffer = pBuffer;
         }
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -270,7 +258,7 @@ extern "C" {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
                     iRc = utimes(pPath, NULL);
                     if (0 == iRc) {
-                        eRc = ERESULT_SUCCESSFUL_COMPLETION;
+                        eRc = ERESULT_SUCCESS;
                     }
                 }
                 else

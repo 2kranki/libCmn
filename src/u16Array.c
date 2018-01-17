@@ -206,7 +206,6 @@ extern "C" {
         PATH_DATA       *pPath
     )
     {
-        ERESULT         eRc;
         int64_t         size = 0;
         int             chr;
         FILE            *pFile;
@@ -221,9 +220,9 @@ extern "C" {
         }
 #endif
         
-        eRc = file_SizeA( path_getData(pPath), &size );
-        if (ERESULT_HAS_FAILED(eRc)) {
-            return eRc;
+        size = file_SizeA(path_getData(pPath));
+        if (-1 == size) {
+            return ERESULT_DATA_NOT_FOUND;
         }
         if (0 == size) {
             return ERESULT_DATA_NOT_FOUND;
@@ -260,7 +259,7 @@ extern "C" {
         pFile = NULL;
         
         // Return to caller.
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     

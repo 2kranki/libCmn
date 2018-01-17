@@ -231,6 +231,23 @@ extern "C" {
     );
     
     /*!
+     Create a string that has the date formatted as MM/DD/YYYY_HH:MM:SS.III which
+     can then be used in a file path.
+     Example:
+     @code
+     ASTR_DATA      *pDesc = dateTime_ToDebugString(pObj,4);
+     @endcode
+     @param     this    DateTime object pointer
+     @return    If successful, an AStr object which must be released containing the
+     string, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    dateTime_ToFileString(
+        DATETIME_DATA   *this
+    );
+    
+    
+    /*!
      Create a string that has the date formatted as MM/DD/YYYY HH:MM:SS.III.
      Example:
      @code

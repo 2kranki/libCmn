@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "fileio_internal.h"
+#include    <fileio_internal.h>
+#include    <fcntl.h>
 
 
 
@@ -58,16 +59,143 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
+    /* Local function declarations
+     */
     static
-    void            fileio_task_body(
-        void            *pData
+    bool            fileio_FileDelete(
+        const
+        char            *pFileName
+    );
+    
+    
+    static
+    bool            fileio_FileExtend(
+        FILEIO_DATA      *this,
+        uint32_t         Block           /* Block to extend to */
+    );
+
+    
+    
+    
+    
+    
+    //----------------------------------------------------------------
+    //           fileio_FileCreate - Create and Open a File
+    //----------------------------------------------------------------
+    /* Purpose
+     *      This function creates a new file over-writing an existing
+     *      one if present.
+     * Returns
+     *          RRDS_OK          =   Successful Completion
+     *          RRDS_ERROR_OPEN  =   Disk File Open Error
+     */
+    static
+    int             fileio_FileCreate(
+        const
+        char            *pFilePath
     )
     {
-        //FILEIO_DATA  *this = pData;
+        int             fileHandle;
         
+        //  Open the File.
+        fileHandle = open(pFilePath, (O_CREAT | O_TRUNC | O_RDWR), 0644);
+        if(-1 == fileHandle) {
+            return -1;
+        }
+        
+        // Return to Caller.
+        return fileHandle;
     }
+    
+    
+    
+    //----------------------------------------------------------------
+    //               fileio_FileDelete - Delete a File
+    //----------------------------------------------------------------
+    /* Purpose
+     *          This function deletes a File.
+     * Returns
+     *          RRDS_OK              =   Successful Completion
+     *          RRDS_ERROR_DELETE    =   Disk File Deletion Error
+     */
+    static
+    bool            fileio_FileDelete(
+        const
+        char            *pFileName
+    )
+    {
+        int             iRc;
+        
+        //  Delete the File.
+        iRc = unlink(pFileName);
+        if(iRc == 0)
+            ;
+        else
+            return false;
+        
+        // Return to Caller.
+        return true;
+    }
+    
+    
+    
+    //----------------------------------------------------------------
+    //      fileio_FileExtend - Extend the File with Zeroed Records
+    //----------------------------------------------------------------
+    /* Purpose
+     *          This function writes zero-filled records into the File.
+     * Returns
+     *          RRDS_OK          =   Successful Completion
+     *          RRDS_ERROR_NOMEM =   Memory Allocation Error
+     *          RRDS_ERROR_SEEK  =   Disk Seek Error
+     *          RRDS_ERROR_WRITE =   Disk Write Error
+     */
+    static
+    bool            fileio_FileExtend(
+        FILEIO_DATA     *this,
+        uint32_t        recordNum           /* Record to extend to */
+    )
+    {
+#ifdef  XYZZY
+        uint32_t        curRec;
+        size_t          fileOffset;
+        char            *pFillData;
+        bool            fRc;
+        
+        // Fill the File until Block number of records exist.
+        if( recordNum > this->recordNum ) {
+            
+            pFillData = (char *)mem_Malloc(this->recordSize);
+            if( NULL == pFillData ) {
+                return false;
+            }
+            memset(pFillData, this->header.data.fillChar, this->recordSize);
+            
+            for( curRec=this->recordNum+1; curRec<=recordNum; ++curRec ) {
+                fileOffset = rrds32_RecordOffset(this, curRec);
+                fRc = rrds32_FileWrite( this->fileHandle,
+                                       fileOffset,
+                                       this->recordSize,
+                                       pFillData
+                                       );
+                if( !fRc ) {
+                    mem_Free(pFillData);
+                    return false;
+                }
+            }
+            mem_Free(pFillData);
+            pFillData = NULL;
+            this->recordNum = recordNum;
+        }
 #endif
+        
+        // Return to Caller.
+        return true;
+    }
+    
+    
+    
+    
 
 
 
@@ -97,28 +225,111 @@ extern "C" {
 
 
     FILEIO_DATA *   fileio_New(
-        uint32_t        headerSize,
         PATH_DATA       *pPath
     )
     {
-        FILEIO_DATA       *this;
+        FILEIO_DATA     *this;
         
         this = fileio_Alloc( );
         if (this) {
-            this = fileio_Init(this,headerSize,pPath);
+            this = fileio_Init(this);
         } 
         return this;
     }
 
 
 
+    ERESULT         fileio_CreateFile(
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        FILEIO_DATA     *pObj = OBJ_NIL;
+        
+        pObj = fileio_New(pPath);
+        if (pObj) {
+            eRc = fileio_Create(pObj, pPath);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+            eRc = fileio_Close(pObj, false);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+        
+        return eRc;
+    }
     
+    
+    
+
     
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
+    bool            fileio_getAppend(
+        FILEIO_DATA     *this
+    )
+    {
+        int             fileFlags;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        if (!fileio_IsOpen(this)) {
+            return false;
+        }
+        
+        fileFlags = fcntl(this->fileHandle, F_GETFL, 0);
+        if (fileFlags & O_APPEND) {
+            return true;
+        }
+        
+        //return this->priority;
+        return false;
+    }
+    
+    bool            fileio_setAppend(
+        FILEIO_DATA     *this,
+        bool            fValue
+    )
+    {
+        int             fileFlags;
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (!fileio_IsOpen(this)) {
+            return false;
+        }
+        
+        fileFlags = fcntl(this->fileHandle, F_GETFL, 0);
+        if (fValue)
+            fileFlags |= O_APPEND;
+        else
+            fileFlags &= ~O_APPEND;
+        if (fcntl(this->fileHandle, F_SETFL, fileFlags) < 0) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    
     ERESULT         fileio_getLastError(
         FILEIO_DATA     *this
     )
@@ -188,11 +399,16 @@ extern "C" {
             return false;
         }
 #endif
-        obj_Retain(pValue);
+        //obj_Retain(pValue);
         if (this->pPath) {
             obj_Release(this->pPath);
         }
-        this->pPath = pValue;
+        if (pValue) {
+            this->pPath = path_Copy(pValue);
+        }
+        else {
+            this->pPath = OBJ_NIL;
+        }
         
         return true;
     }
@@ -304,6 +520,7 @@ extern "C" {
         }
 
         // Copy other data from this object to other.
+#ifdef XYZZY
         pOther->headerSize = this->headerSize;
         if (this->headerSize && this->pHeader) {
             pOther->pHeader = mem_Malloc(this->headerSize);
@@ -311,12 +528,54 @@ extern "C" {
                 memmove(pOther->pHeader, this->pHeader, this->headerSize);
             }
         }
+#endif
         
         //FIXME: Implement the assignment.        
         eRc = ERESULT_NOT_IMPLEMENTED;
 
         // Return to caller.
         return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          C l o s e
+    //---------------------------------------------------------------
+    
+    ERESULT     fileio_Close(
+        FILEIO_DATA *this,
+        bool        fDelete
+    )
+    {
+        int         iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        //  Close the File.
+        this->fileHandle = close(this->fileHandle);
+        if (this->fileHandle == -1) {
+            fileio_setLastError(this, ERESULT_CLOSE_ERROR);
+            return ERESULT_CLOSE_ERROR;
+        }
+        obj_FlagSet(this, FILEIO_FILE_OPEN, false);
+        
+        if (fDelete) {
+            iRc = unlink(path_getData(this->pPath));
+        }
+        
+        fileio_setPath(this, OBJ_NIL);
+
+        // Return to caller.
+        fileio_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     
@@ -341,7 +600,7 @@ extern "C" {
         }
 #endif
         
-        pOther = fileio_New(this->headerSize,this->pPath);
+        pOther = fileio_New(this->pPath);
         if (pOther) {
             eRc = fileio_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -353,6 +612,66 @@ extern "C" {
         // Return to caller.
         //obj_Release(pOther);
         return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          C r e a t e
+    //---------------------------------------------------------------
+    
+    ERESULT         fileio_Create(
+        FILEIO_DATA     *this,
+        PATH_DATA       *pPath
+    )
+    {
+        int             fileHandle;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (pPath == OBJ_NIL) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (this->pPath) {
+            obj_Release(this->pPath);
+        }
+        this->pPath = path_Copy(pPath);
+
+        //  Open the File.
+#if defined(__MACOSX_ENV__)
+        fileHandle =    open(
+                             path_getData(this->pPath),
+                             (O_CREAT | O_TRUNC | O_RDWR),
+                             (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+                        );
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        DEBUG_BREAK();
+        //FIXME: This needs to be updated and tested.
+        fileHandle =    open(
+                             path_getData(this->pPath),
+                             (O_APPEND | O_RDWR),
+                             (S_IREAD | S_IWRITE)
+                             );
+#endif
+        if (fileHandle == -1) {
+            fileio_setLastError(this, ERESULT_OPEN_ERROR);
+            return ERESULT_OPEN_ERROR;
+        }
+        this->fileHandle = fileHandle;
+        obj_FlagSet(this, FILEIO_FILE_OPEN, true);
+        
+        // Return to caller.
+        fileio_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     
@@ -378,47 +697,20 @@ extern "C" {
             return;
         }
 #endif
+        
+        if (obj_Flag(this, FILEIO_FILE_OPEN)) {
+            fileio_Close(this, false);
+        }
 
-        fileio_setPath(this,OBJ_NIL);
+        fileio_setPath(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          C l o s e
-    //---------------------------------------------------------------
-
-    bool            fileio_Close(
-        FILEIO_DATA		*this
-    )
-    {
-        bool            fRc = false;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !fileio_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-    #endif
-
-#ifdef XYZZY
-        if (this->fOpen) {
-            fileio_writeHeader(this);
-            fileio_CloseInternal(this);
-            fRc = true;
-        }
-#endif
-
-        // Return to caller.
-        return fRc;
     }
 
 
@@ -456,19 +748,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     FILEIO_DATA *   fileio_Init(
-        FILEIO_DATA     *this,
-        uint32_t        headerSize,
-        PATH_DATA       *pPath
+        FILEIO_DATA     *this
     )
     {
         uint32_t        cbSize = sizeof(FILEIO_DATA);
         
         if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        if (pPath == OBJ_NIL) {
-            //DEBUG_BREAK();
-            obj_Release(this);
             return OBJ_NIL;
         }
         
@@ -493,9 +778,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&fileio_Vtbl);
         
-        fileio_setPath(this, pPath);
-        this->headerSize = headerSize;
-
     #ifdef NDEBUG
     #else
         if( !fileio_Validate(this) ) {
@@ -512,10 +794,10 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                       I s O p e n
     //---------------------------------------------------------------
     
-    bool            fileio_IsEnabled(
+    bool            fileio_IsOpen(
         FILEIO_DATA		*this
     )
     {
@@ -529,12 +811,319 @@ extern "C" {
         }
 #endif
         
-        if (obj_IsEnabled(this))
+        if (obj_Flag(this, FILEIO_FILE_OPEN))
             return true;
         
         // Return to caller.
         return false;
     }
+    
+    
+    
+    //----------------------------------------------------------------
+    //                          O p e n
+    //----------------------------------------------------------------
+    
+    ERESULT         fileio_Open(
+        FILEIO_DATA     *this,
+        PATH_DATA       *pPath
+    )
+    {
+        int             fileHandle;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (pPath == OBJ_NIL) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (this->pPath) {
+            obj_Release(this->pPath);
+        }
+        this->pPath = path_Copy(pPath);
+        
+        //  Open the File.
+#if defined(__MACOSX_ENV__)
+        fileHandle =    open(
+                             path_getData(this->pPath),
+                             (O_RDWR),
+                             (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+                             );
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        fileHandle =    open(
+                             path_getData(this->pPath),
+                             (O_APPEND | O_RDWR),
+                             (S_IREAD | S_IWRITE)
+                             );
+#endif
+        if(-1 == fileHandle) {
+            fileio_setLastError(this, ERESULT_OPEN_ERROR);
+            return ERESULT_OPEN_ERROR;
+        }
+        this->fileHandle = fileHandle;
+        obj_FlagSet(this, FILEIO_FILE_OPEN, true);
+        
+        // Return to Caller.
+        fileio_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          fileio_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        FILEIO_DATA     *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+#ifdef XYZZY
+                    case 'D':
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return fileio_Disable;
+                        }
+                        break;
+                        
+                    case 'E':
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return fileio_Enable;
+                        }
+                        break;
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return fileio_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return fileio_ToJSON;
+                        }
+                        break;
+#endif
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //----------------------------------------------------------------
+    //                          R e a d
+    //----------------------------------------------------------------
+
+    ERESULT         fileio_Read(
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        void            *pBuffer
+    )
+    {
+        size_t          bytes_read;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        // Read in the area.
+        bytes_read = read(this->fileHandle, pBuffer, cBuffer);
+        if (-1 == bytes_read) {
+            fileio_setLastError(this, ERESULT_READ_ERROR);
+            return ERESULT_READ_ERROR;
+        }
+        if(bytes_read == cBuffer)
+            ;
+        else {
+            fileio_setLastError(this, ERESULT_SUCCESS_PARTIAL_DATA);
+            return ERESULT_SUCCESS_PARTIAL_DATA;
+        }
+        
+        // Return to Caller.
+        fileio_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //----------------------------------------------------------------
+    //                          S e e k
+    //----------------------------------------------------------------
+    
+    off_t           fileio_Seek(
+        FILEIO_DATA     *this,
+        off_t           offset
+    )
+    {
+        off_t           fileOffset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+        
+        //  Position within the File.
+        fileOffset = lseek(this->fileHandle, offset, SEEK_SET);
+        if(fileOffset == -1) {
+            fileio_setLastError(this, ERESULT_SEEK_ERROR);
+        }
+        else {
+            fileio_setLastError(this, ERESULT_SUCCESS);
+        }
+        
+        // Return to Caller.
+        return fileOffset;
+    }
+    
+    
+    off_t           fileio_SeekCur(
+        FILEIO_DATA     *this,
+        off_t           offset
+    )
+    {
+        off_t           fileOffset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+        
+        //  Position within the File.
+        fileOffset = lseek(this->fileHandle, offset, SEEK_CUR);
+        if(fileOffset == -1) {
+            fileio_setLastError(this, ERESULT_SEEK_ERROR);
+        }
+        else {
+            fileio_setLastError(this, ERESULT_SUCCESS);
+        }
+        
+        // Return to Caller.
+        return fileOffset;
+    }
+    
+    
+    off_t           fileio_SeekEnd(
+        FILEIO_DATA     *this,
+        off_t           offset
+    )
+    {
+        off_t           fileOffset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+        
+        //  Position within the File.
+        fileOffset = lseek(this->fileHandle, offset, SEEK_END);
+        if(fileOffset == -1) {
+            fileio_setLastError(this, ERESULT_SEEK_ERROR);
+        }
+        else {
+            fileio_setLastError(this, ERESULT_SUCCESS);
+        }
+        
+        // Return to Caller.
+        return fileOffset;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+    
+    int64_t         fileio_Size(
+        FILEIO_DATA     *this
+    )
+    {
+#if defined(__MACOSX_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+        int64_t         fileSize = -1;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return -1;
+        }
+        if (!obj_Flag(this, FILEIO_FILE_OPEN)) {
+            return -1;
+        }
+#endif
+        
+#if defined(__MACOSX_ENV__)
+        iRc = fstat(this->fileHandle, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
+                fileSize = statBuffer.st_size;
+            }
+        }
+#endif
+        
+        // Return to caller.
+        return fileSize;
+    }
+    
     
     
     
@@ -616,7 +1205,55 @@ extern "C" {
 
 
     
+    //----------------------------------------------------------------
+    //              Write a Memory Area to the File
+    //----------------------------------------------------------------
+    /* Purpose
+     *          This function writes a Memory Area to the File.
+     * Returns
+     *          ERESULT_SUCCESS     =   Successful Completion
+     *          ERESULT_SEEK_ERROR  =   Disk Seek Error
+     *          ERESULT_WRITE_ERROR =   Disk Write Error
+     */
+    ERESULT         fileio_Write(
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        const
+        void            *pBuffer
+    )
+    {
+        size_t          bytes_written;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !fileio_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Write the data.
+        bytes_written = write(this->fileHandle, pBuffer, cBuffer);
+        if (bytes_written == -1) {
+            fileio_setLastError(this, ERESULT_WRITE_ERROR);
+            return ERESULT_WRITE_ERROR;
+        }
+        if(bytes_written == cBuffer)
+            ;
+        else {
+            fileio_setLastError(this, ERESULT_WRITE_ERROR);
+            return ERESULT_WRITE_ERROR;
+        }
+        
+        // Return to Caller.
+        fileio_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
     
+    
+    
+
     
 #ifdef	__cplusplus
 }

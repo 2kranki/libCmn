@@ -4,7 +4,7 @@
 //  Created by bob on 3/20/16.
 //
 
-#include    "cmn.h"
+#include    "cmn_defs.h"
 #include    "pplex.h"
 #include    "pplex2.h"
 #include    <stdint.h>
@@ -16,6 +16,7 @@ const
 char        *pProgramPath = NULL;
 int         fDebug = 0;             // -d or --debug or --no-debug
 int         srcFlag = 0;
+int         fNL = 0;
 
 int         cOptions = 0;
 const
@@ -24,8 +25,8 @@ char        **ppOptions = NULL;
 
 
 void        usage(
-                  char        *pMsg
-                  )
+    char        *pMsg
+)
 {
     static
     const
@@ -41,16 +42,16 @@ void        usage(
     );
     fprintf( stderr, "\t-d,--[no-]debug  Set debug mode\n");
     fprintf( stderr, "\t-s,--src         Generate JSONs from Source File\n");
-    fprintf( stderr, "\t-n               Set the nFlag\n");
+    fprintf( stderr, "\t--nl             Exclude NL tokens\n");
 }
 
 
 
 int         parseArgs(
-                      int         argc,
-                      const
-                      char        *argv[]
-                      )
+    int         argc,
+    const
+    char        *argv[]
+)
 {
     int         wrkArgC = argc;
     const
@@ -77,6 +78,9 @@ int         parseArgs(
         }
         else if (0 == strcmp(*ppWrkArgV, "--src")) {
             ++srcFlag;
+        }
+        else if (0 == strcmp(*ppWrkArgV, "--nl")) {
+            ++fNL;
         }
         else if (0 == strcmp(*ppWrkArgV, "--")) {
             --wrkArgC;
@@ -117,15 +121,18 @@ void        display_output(
     ASTR_DATA   *pData
 )
 {
-    WSTR_DATA       *pWStr;
+    ASTR_DATA   *pAStr;
+    ASTR_DATA   *pAStr2;
     
-    pWStr = AStr_ToWStr(pData);
-    if (pWStr) {
-        WStr_Trim(pWStr);
-        WStr_EscapeForC(pWStr);
-        fprintf(stdout, "\"%ls\",\n", WStr_getData(pWStr));
-        obj_Release(pWStr);
-        pWStr = OBJ_NIL;
+    pAStr = AStr_Copy(pData);
+    if (pAStr) {
+        AStr_Trim(pAStr);
+        pAStr2 = AStr_ToChrCon(pAStr);
+        fprintf(stdout, "\"%s\",\n", AStr_getData(pAStr2));
+        obj_Release(pAStr2);
+        pAStr2 = OBJ_NIL;
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
     }
     
     
@@ -143,17 +150,20 @@ int         main(
     PPLEX2_DATA     *pLex = OBJ_NIL;
     SRCFILE_DATA    *pSrc = OBJ_NIL;
     PATH_DATA       *pGmrFile = OBJ_NIL;
-    BOOL            fRc;
+    bool            fRc;
     TOKEN_DATA      *pToken;
     ASTR_DATA       *pJSON = OBJ_NIL;
+    int             i;
     
     parseArgs(argc, argv);
     
-    if (cOptions > 1) {
+    if (cOptions > 0) {
+        for (i=0; i<cOptions; ++i) {
+            fprintf(stderr, "\toption = \"%s\"\n", ppOptions[i]);
+        }
         pGmrFile = path_NewA(ppOptions[0]);
         if (pGmrFile) {
-            pSrc = srcFile_Alloc();
-            pSrc = srcFile_InitFile(pSrc, pGmrFile, 4, true, false);
+            pSrc = srcFile_NewFromPath(pGmrFile, 1, 4, true, fNL);
             if (pSrc) {
                 srcFile_setStripCR(pSrc, true);
                 if (srcFlag) {
@@ -172,7 +182,7 @@ int         main(
                 }
                 else {
                     pLex = pplex2_New(2);
-                    fRc = pplex2_setKwdSelection(pLex,PPLEX_KWDS_LL1);
+                    fRc = pplex2_setKwdSelection(pLex, PPLEX_LANG_LL1);
                     BREAK_FALSE(fRc);
                     fRc =   lex_setSourceFunction(
                                                   (LEX_DATA *)pLex,

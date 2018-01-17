@@ -7,17 +7,17 @@
  * Program
  *			Block of Variable-sized Records (blkdrcds16)
  * Purpose
- *				These subroutines provide a general purpose set of
- *				routines to build and manipulate a block of variable
- *				length data records. The block size is restricted to
- *              32,768.
+ *			These subroutines provide a general purpose set of
+ *			routines to build and manipulate a block of variable
+ *			length data records. The block size is restricted to
+ *          32,768.
  *
- *              All offsets within the block are numeric. No addresses
- *              are maintained in the block. So, it can be safely
- *              written to disk if needed.
+ *          All offsets within the block are numeric. No addresses
+ *          are maintained in the block. So, it can be safely
+ *          written to disk if needed.
  *
- *              The block header can contain an area reserved for
- *              any use. Just specify the amount at open time.
+ *          The block header can contain an area reserved for
+ *          any use. Just specify the amount at open time.
  *
  * Remarks
  *	1.			Records are numbered starting with 1.  If

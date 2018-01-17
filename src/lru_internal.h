@@ -51,7 +51,7 @@ extern "C" {
 #endif
 
     
-#define NUM_HASH_LIST   23          /* Should be a xx number */
+#define NUM_HASH_LIST   23          /* Should be a prime number */
 
 
 #pragma pack(push, 1)

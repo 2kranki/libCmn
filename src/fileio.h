@@ -108,15 +108,41 @@ extern "C" {
     
     
     FILEIO_DATA *   fileio_New(
-        uint32_t        headerSize,
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Create a new file of zero bytes in length.
+     @param     pPath   Path file name to be created
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_CreateFile(
         PATH_DATA       *pPath
     );
     
     
 
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*!
+     The Append Atrribute defaults to false and data is always
+     written to point of the last seek. By setting the Append
+     Attribute to true, you force all further writes while it
+     is in effect to be at the end of the file.
+     */
+    bool            fileio_getAppend(
+        FILEIO_DATA     *this
+    );
+    
+    bool            fileio_setAppend(
+        FILEIO_DATA     *this,
+        bool            fValue
+    );
+    
 
     ERESULT         fileio_getLastError(
         FILEIO_DATA     *this
@@ -139,23 +165,94 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool            fileio_Close(
-        FILEIO_DATA		*this
+    /*!
+     Close an open file from reading/writing.
+     @param     this    object pointer
+     @param     fDelete If true, delete the file after closing it.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_Close(
+        FILEIO_DATA     *this,
+        bool            fDelete
     );
 
 
-    FILEIO_DATA *   fileio_Init(
+    /*!
+     Create a new file for reading/writing.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_Create(
         FILEIO_DATA     *this,
-        uint32_t        headerSize,
         PATH_DATA       *pPath
     );
+    
+    
+    FILEIO_DATA *   fileio_Init(
+        FILEIO_DATA     *this
+    );
 
 
-    bool            fileio_Open(
-        FILEIO_DATA		*this
+    bool            fileio_IsOpen(
+        FILEIO_DATA        *this
+    );
+    
+    
+    /*!
+     Open an existing file for reading/writing.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_Open(
+        FILEIO_DATA		*this,
+        PATH_DATA       *pPath
     );
     
  
+    /*!
+     Read a block of data from a specific location in a file.
+     @param     this    object pointer
+     @param     cBuffer Data block size
+     @param     pBuffer Data block pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_Read(
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        void            *pBuffer
+    );
+    
+    
+    /*!
+     Read a block of data from a specific location in a file.
+     @param     this    object pointer
+     @param     offset  File Offset where the next data read/write is to occur
+     @return    If successful, offset within file; otherwise -1 and an ERESULT_*
+                error is set in Last Error.
+     */
+    off_t           fileio_Seek(
+        FILEIO_DATA     *this,
+        off_t           offset
+    );
+    
+    
+    off_t           fileio_SeekCur(
+        FILEIO_DATA     *this,
+        off_t           offset
+    );
+    
+    
+    off_t           fileio_SeekEnd(
+        FILEIO_DATA     *this,
+        off_t           offset
+    );
+    
+    
+    int64_t         fileio_Size(
+        FILEIO_DATA     *this
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -168,9 +265,24 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    fileio_ToDebugString(
+    ASTR_DATA *     fileio_ToDebugString(
         FILEIO_DATA     *this,
         int             indent
+    );
+    
+    
+    /*!
+     Write a block of data to a specific location in a file.
+     @param     this    object pointer
+     @param     cBuffer Data block size
+     @param     pBuffer Data block pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_Write(
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        const
+        void            *pBuffer
     );
     
     

@@ -1,26 +1,35 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          LRU Console Transmit Task (lru) Header
+//          Least Recently Used Buffering (lru) Header
 //****************************************************************
 /*
  * Program
- *			Separate lru (lru)
+ *			Least Recently Used Buffering (lru)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate lru to run things without complications
- *          of interfering with the main lru. A lru may be 
- *          called a lru on other O/S's.
+ *          Least Recently Used Buffering.
+ *
+ *          These routines intercept the normal read/write process.
+ *          First, the using object must give this object the physical
+ *          read and/or write routines. Second, it must then call
+ *          the routines provides by this object which will utilize
+ *          the LRU buffering only calling the physical routines
+ *          when physical reads or writes must be performed.
+ *
+ *          The logical sector number is simply used to distinguish
+ *          the buffers by hashing it and otherwise is simply passed
+ *          on as is to the physical read/write routines.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal lru. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      Writing to the file is a write-through and written sectors
+ *          are added to the LRU.  Therefore, the LRU mechanism doesn't
+ *          need to be flushed at file close.
  *
  * History
  *	10/21/2016 Generated
  */
+
 
 
 /*
@@ -83,13 +92,13 @@ extern "C" {
         // Methods:
         ERESULT         (*pRead)(
             LRU_DATA        *this,
-            uint32_t        lsn,
-            uint8_t         *pBuffer
+            uint32_t        lsn,        // Logical Sector Number
+            uint8_t         *pBuffer    // Address of Buffer to read into
         );
         ERESULT         (*pWrite)(
             LRU_DATA        *this,
-            uint32_t        lsn,
-            uint8_t         *pBuffer
+            uint32_t        lsn,        // Logical Sector Number
+            uint8_t         *pBuffer    // Address of Buffer to write from
         );
     } LRU_VTBL;
 
@@ -115,6 +124,14 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new LRU object which will need to have sector read and
+     write routines added before it can actually be used.
+     @param     sectorSize  Size of Sector to be read/written
+     @param     cacheSize   Number of Sector Buffers to use. Prime
+                            numbers work the best for this.
+     @return    If successful, a new LRU object; otherwise, OBJ_NIL.
+     */
     LRU_DATA *     lru_New(
         uint32_t        sectorSize,
         uint32_t        cacheSize

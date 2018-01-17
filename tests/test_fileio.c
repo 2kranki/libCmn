@@ -23,6 +23,8 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <dateTime.h>
+#include    <file.h>
 #include    <trace.h>
 #include    <fileio_internal.h>
 
@@ -76,7 +78,7 @@ int         tearDown(
 
 int         test_fileio_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     FILEIO_DATA	*pObj = OBJ_NIL;
@@ -85,8 +87,8 @@ int         test_fileio_OpenClose(
     
     pObj = fileio_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = fileio_Init( pObj, 0, OBJ_NIL );
-    TINYTEST_TRUE( (OBJ_NIL == pObj) );
+    pObj = fileio_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         // Test something.
@@ -101,9 +103,137 @@ int         test_fileio_OpenClose(
 
 
 
+int         test_fileio_Read01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    FILEIO_DATA     *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    const
+    char            *pPathA = "/Users/bob/Support/testFiles/test_objects.json.txt";
+    int64_t         fileSize = 0;
+    uint8_t         *pBuffer = NULL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+
+    pObj = fileio_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = fileio_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = fileio_Open(pObj, pPath);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        fileSize = file_SizeA(pPathA);
+        TINYTEST_FALSE( (-1 == fileSize) );
+
+        if (fileSize) {
+            pBuffer = mem_Malloc(fileSize);
+            TINYTEST_FALSE( (NULL == pBuffer) );
+            eRc = fileio_Read(pObj, fileSize, pBuffer);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            mem_Free(pBuffer);
+            pBuffer = NULL;
+        }
+
+        eRc = fileio_Close(pObj, false);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_fileio_Create01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    FILEIO_DATA     *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    const
+    char            *pPathA = "/tmp/testFile.temp.";
+    int64_t         fileSize = 0;
+    //uint8_t         *pBuffer = NULL;
+    DATETIME_DATA   *pTime = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pTime = dateTime_NewCurrent();
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    pStr = dateTime_ToFileString(pTime);
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    path_AppendAStr(pPath, pStr);
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    path_AppendA(pPath, ".txt");
+    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
+
+    pObj = fileio_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = fileio_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = fileio_Open(pObj, pPath);
+        TINYTEST_TRUE( (ERESULT_FAILED(eRc)) );
+        
+        eRc = fileio_Create(pObj, pPath);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        eRc = fileio_Write(pObj, (strlen(path_getData(pPath))+1), path_getData(pPath));
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        fileSize = fileio_Size(pObj);
+        fprintf(stderr, "\tSize = %ld  fileio_Size=%ld\n", (strlen(path_getData(pPath))+1), fileSize);
+        TINYTEST_TRUE( ((strlen(path_getData(pPath))+1) == fileSize) );
+        
+        eRc = fileio_Close(pObj, true);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        fileSize = file_SizeA(path_getData(pPath));
+        TINYTEST_TRUE( (-1 == fileSize) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
+    obj_Release(pTime);
+    pTime = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_fileio);
-  TINYTEST_ADD_TEST(test_fileio_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_fileio_Create01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_fileio_Read01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_fileio_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_fileio);

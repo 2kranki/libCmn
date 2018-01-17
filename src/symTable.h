@@ -56,6 +56,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <objEnum.h>
 
 
 #ifndef         SYMTABLE_H
@@ -86,6 +87,22 @@ extern "C" {
 
 
 
+    // Prime numbers for hash table sizes within 16 bits
+    // (Maximum size is 65535)
+    typedef enum symTable_table_size_e {
+        SYMTABLE_HASH_SIZE_XXXXXSMALL = 5,
+        SYMTABLE_HASH_SIZE_XXXXSMALL = 17,
+        SYMTABLE_HASH_SIZE_XXXSMALL = 31,
+        SYMTABLE_HASH_SIZE_XXSMALL = 61,
+        SYMTABLE_HASH_SIZE_XSMALL = 127,
+        SYMTABLE_HASH_SIZE_SMALL = 257,
+        SYMTABLE_HASH_SIZE_MEDIUM = 2053,
+        SYMTABLE_HASH_SIZE_LARGE  = 4099,
+        SYMTABLE_HASH_SIZE_XLARGE = 16411
+    } SYMTABLE_HASH_SIZE;
+    
+    
+    
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
     ****************************************************************/
@@ -101,7 +118,7 @@ extern "C" {
     
     
     SYMTABLE_DATA *     symTable_New(
-        void
+        uint16_t        cHash       // [in] Hash Table Size
     );
     
     
@@ -111,33 +128,81 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT     symTable_getLastError(
-        SYMTABLE_DATA		*this
+        SYMTABLE_DATA   *this
     );
 
 
+    uint32_t        symTable_getSize(
+        SYMTABLE_DATA   *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     symTable_Disable(
-        SYMTABLE_DATA		*this
+    /*! Create a new node and adds it to the hash table if the
+        supplied key does not exist in the table.
+    @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+    */
+    ERESULT         symTable_Add(
+        SYMTABLE_DATA    *this,
+        OBJ_ID           pObject
+    );
+    
+    
+    /*! Delete the first entry found matching the given object
+        from the hash and returns it.
+     @return    return the object deleted from the hash if successful.
+                Otherwise, return OBJ_NIL and set an ERESULT_* error.
+     */
+    OBJ_ID          symTable_Delete(
+        SYMTABLE_DATA   *this,
+        OBJ_ID          pObject
+    );
+    
+    
+    /*! Delete all entries found in the hash.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         symTable_DeleteAll(
+        SYMTABLE_DATA   *this
+    );
+    
+    
+    /*! Create an enumerator for the Hash in ascending order
+        if the object contains a compare() method.
+     @param     this    DIR_DATA object pointer
+     @return    If successful, an Enumerator object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned objEnum object.
+     */
+    OBJENUM_DATA *  symTable_Enum(
+        SYMTABLE_DATA   *this
+    );
+    
+    
+    /* Find() returns the data associated with the given object if
+     * found, otherwise OBJ_NIL is returned.
+     */
+    OBJ_ID          symTable_Find(
+        SYMTABLE_DATA   *this,
+        OBJ_ID          pObject
+    );
+    
+    
+    SYMTABLE_DATA * symTable_Init(
+        SYMTABLE_DATA   *this,
+        uint16_t        cHash       // [in] Hash Table Size
     );
 
 
-    ERESULT     symTable_Enable(
-        SYMTABLE_DATA		*this
-    );
-
-   
-    SYMTABLE_DATA *   symTable_Init(
-        SYMTABLE_DATA     *this
-    );
-
-
-    ERESULT     symTable_IsEnabled(
-        SYMTABLE_DATA		*this
+    ERESULT         symTable_IsEnabled(
+        SYMTABLE_DATA	*this
     );
     
  

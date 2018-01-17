@@ -90,10 +90,9 @@ extern "C" {
     );
     
     
-    ERESULT         file_SizeA(
+    int64_t         file_SizeA(
         const
-        char            *pPath,
-        int64_t         *pFileSize
+        char            *pPath
     );
     
     

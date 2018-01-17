@@ -320,8 +320,63 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                 A p p e n d  D i r
+    //                          A p p e n d
     //---------------------------------------------------------------
+    
+    ERESULT         path_AppendA(
+        PATH_DATA       *this,
+        const
+        char            *pStr
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = AStr_AppendA((ASTR_DATA *)this, pStr);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         path_AppendAStr(
+        PATH_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = AStr_Append((ASTR_DATA *)this, pStr);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
     
     ERESULT         path_AppendDir(
         PATH_DATA		*this,
@@ -929,7 +984,8 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int64_t         size;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -942,7 +998,12 @@ extern "C" {
         
         pStr = (char *)AStr_getData((ASTR_DATA *)this);
         if (pStr) {
-            eRc = file_SizeA(pStr, pFileSize);
+            size = file_SizeA(pStr);
+            if (-1 == size) {
+                eRc = ERESULT_DATA_NOT_FOUND;
+            }
+            if (pFileSize)
+                *pFileSize = size;
         }
         else
             eRc = ERESULT_DATA_ERROR;

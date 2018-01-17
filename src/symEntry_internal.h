@@ -4,7 +4,8 @@
  *	Generated 03/27/2017 21:41:19
  *
  * Notes:
- *  --	N/A
+ *  --	IMPORTANT -- SYM_Entry must be cacheable. So, it must use indexes
+ *          only, NEVER use direct pointers.
  *
  */
 
@@ -119,17 +120,21 @@ extern "C" {
     
 
     typedef struct sym_entry_s {
-        //ASTR_DATA       *pName;
-        uint32_t        token;              // szTbl Token
-        uint32_t        idxNext;            // Index Chain
-        uint32_t        idxPrev;
+        //ASTR_DATA       *pName;           // Use Token instead.
+        uint32_t        token;              // szTbl Token for String Identifier
+        int32_t         class;              // User Defined
+        int32_t         type;               // See SYM_TYPE
+        uint32_t        idxHashNext;        // Hash Index Chain
+        uint32_t        idxHashPrev;
+        uint32_t        idxScopeNext;
+        uint32_t        idxScopePrev;
         uint32_t        idxParent;
+        uint32_t        idxChildHead;       // Child Chain
+        uint32_t        idxChildTail;
         uint32_t        idxSibHead;         // Sibling Chain
         uint32_t        idxSibTail;
         uint16_t        size;
         uint16_t        flags16;
-        int32_t         class;              // User Defined
-        int32_t         type;               // See SYM_TYPE
         uint16_t        prim;               // See SYM_PRIMITIVE;
         uint16_t        ptr;                // Pointer level
         union {
@@ -166,19 +171,12 @@ extern "C" {
 struct symEntry_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;
-    uint16_t        flags16;
-    int32_t         type;
-    uint16_t        misc16ua;
-    uint16_t        misc16ub;
-    uint32_t        misc32ua;
-    uint32_t        misc32ub;
-    uint32_t        misc32uc;
+    SYM_ENTRY       *pEntry;
 
 };
 #pragma pack(pop)
@@ -201,7 +199,8 @@ struct symEntry_data_s	{
 
     bool            symEntry_setName(
         SYMENTRY_DATA   *this,
-        NAME_DATA       *pValue
+        const
+        char            *pValue
     );
     
     

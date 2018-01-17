@@ -1408,26 +1408,28 @@ extern "C" {
     
     
     
-    ASTR_DATA *     dateTime_ToString(
+    ASTR_DATA *     dateTime_ToFileString(
         DATETIME_DATA      *this
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
         ERESULT         eRc;
         int16_t         year;
         int16_t         month;
         int16_t         day;
-        int16_t     	hours;
-        int16_t     	mins;
-        int16_t     	secs;
-        int16_t			milli;
+        int16_t         hours;
+        int16_t         mins;
+        int16_t         secs;
+        int16_t            milli;
         
-        if (OBJ_NIL == this) {
+#ifdef NDEBUG
+#else
+        if( !dateTime_Validate(this) ) {
+            DEBUG_BREAK();
             return OBJ_NIL;
         }
-        
+#endif
+
         eRc =   dateTime_FromUInt64(
                                     this->time,
                                     &year,
@@ -1439,10 +1441,58 @@ extern "C" {
                                     &milli
                                     );
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
+        AStr_AppendPrint(
+                         pStr,
+                         "%04d.%02d.%02d_%02d.%02d.%02d.%03d",
+                         year,
+                         month,
+                         day,
+                         hours,
+                         mins,
+                         secs,
+                         milli
+                         );
+        
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     dateTime_ToString(
+        DATETIME_DATA      *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        ERESULT         eRc;
+        int16_t         year;
+        int16_t         month;
+        int16_t         day;
+        int16_t     	hours;
+        int16_t     	mins;
+        int16_t     	secs;
+        int16_t			milli;
+        
+#ifdef NDEBUG
+#else
+        if( !dateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        eRc =   dateTime_FromUInt64(
+                                    this->time,
+                                    &year,
+                                    &month,
+                                    &day,
+                                    &hours,
+                                    &mins,
+                                    &secs,
+                                    &milli
+                                    );
+        pStr = AStr_New();
+        AStr_AppendPrint(
+                     pStr,
                      "%2d/%2d/%04d %2d:%02d:%02d.%03d",
                      month,
                      day,
@@ -1451,8 +1501,7 @@ extern "C" {
                      mins,
                      secs,
                      milli
-                     );
-        AStr_AppendA(pStr, str);
+        );
         
         return pStr;
     }

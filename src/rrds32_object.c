@@ -65,11 +65,6 @@ OBJ_INFO        rrds32_Info;            // Forward Reference
 
 
 
-OBJ_ID          rrds32_Class(
-    void
-);
-
-
 
 static
 bool            rrds32_ClassIsKindOf(
@@ -184,8 +179,8 @@ RRDS32_VTBL     rrds32_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    rrds32_BlockRead,
-    rrds32_BlockWrite
+    rrds32_RecordRead,
+    rrds32_RecordWrite
 };
 
 

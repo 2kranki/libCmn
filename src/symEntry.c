@@ -97,9 +97,10 @@ extern "C" {
 
 
 
-    SYMENTRY_DATA *     symEntry_New(
-        NAME_DATA           *pName,
-        OBJ_ID              pData
+    SYMENTRY_DATA *     symEntry_NewA(
+        const
+        char                *pName,
+        int32_t             class
     )
     {
         SYMENTRY_DATA       *this;
@@ -111,9 +112,7 @@ extern "C" {
                 if (pName) {
                     symEntry_setName(this, pName);
                 }
-                if (pData) {
-                    symEntry_setData(this, pData);
-                }
+                symEntry_setClass(this, class);
             }
         } 
         return this;
@@ -128,10 +127,10 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          D a t a
+    //                          C l a s s
     //---------------------------------------------------------------
     
-    OBJ_ID          symEntry_getData(
+    int32_t         symEntry_getClass(
         SYMENTRY_DATA   *this
     )
     {
@@ -141,18 +140,22 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return -1;
         }
 #endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
+        }
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return node_getData((NODE_DATA *)this);
+        return this->pEntry->class;
     }
     
     
-    bool            symEntry_setData(
+    bool            symEntry_setClass(
         SYMENTRY_DATA   *this,
-        OBJ_ID          pValue
+        int32_t         value
     )
     {
 #ifdef NDEBUG
@@ -162,48 +165,13 @@ extern "C" {
             return false;
         }
 #endif
-        
-        node_setData((NODE_DATA *)this, pValue);
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    uint16_t        symEntry_getFlags16(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
+        if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            return 0;
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
         }
-#endif
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->flags16;
-    }
-    
-    
-    bool            symEntry_setFlags16(
-        SYMENTRY_DATA   *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->flags16 = value;
+        this->pEntry->class = value;
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -219,18 +187,26 @@ extern "C" {
         SYMENTRY_DATA   *this
     )
     {
+        uint32_t        hash = 0;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return -1;
         }
 #endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
+        }
         
+        hash = szTbl_TokenToHash(OBJ_NIL, this->pEntry->token);
+
         symEntry_setLastError(this, ERESULT_SUCCESS);
-        return node_getHash((NODE_DATA *)this);
+        return hash;
     }
     
     
@@ -273,194 +249,46 @@ extern "C" {
     
     
 
-    uint16_t        symEntry_getMisc16ua(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->misc16ua;
-    }
-    
-    
-    bool            symEntry_setMisc16ua(
-        SYMENTRY_DATA   *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->misc16ua = value;
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    uint16_t        symEntry_getMisc16ub(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->misc16ub;
-    }
-    
-    
-    bool            symEntry_setMisc16ub(
-        SYMENTRY_DATA   *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->misc16ub = value;
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    uint32_t        symEntry_getMisc32ua(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->misc32ua;
-    }
-    
-    
-    bool            symEntry_setMisc32ua(
-        SYMENTRY_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->misc32ua = value;
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    uint32_t        symEntry_getMisc32ub(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->misc32ub;
-    }
-    
-    
-    bool            symEntry_setMisc32ub(
-        SYMENTRY_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->misc32ub = value;
-        
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------
     
-    NAME_DATA *     symEntry_getName(
+    const
+    char *          symEntry_getName(
         SYMENTRY_DATA   *this
     )
     {
+        const
+        char            *pStr = NULL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return NULL;
         }
 #endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return NULL;
+        }
+
+        pStr = szTbl_TokenToString(OBJ_NIL, this->pEntry->token);
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
-        return node_getName((NODE_DATA *)this);
+        return pStr;
     }
     
     
     bool            symEntry_setName(
         SYMENTRY_DATA   *this,
-        NAME_DATA       *pValue
+        const
+        char            *pValue
     )
     {
+        uint32_t        token;
 #ifdef NDEBUG
 #else
         if( !symEntry_Validate(this) ) {
@@ -468,8 +296,14 @@ extern "C" {
             return false;
         }
 #endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return NULL;
+        }
 
-        node_setName((NODE_DATA *)this, pValue);
+        token = szTbl_StringToToken(OBJ_NIL, pValue);
+        this->pEntry->token = token;
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -495,6 +329,63 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          T o k e n
+    //---------------------------------------------------------------
+    
+    uint32_t        symEntry_getToken(
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
+        }
+        
+        return this->pEntry->token;
+    }
+    
+    
+    bool            symEntry_setToken(
+        SYMENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
+        }
+        
+        this->pEntry->token = value;
+        
+        symEntry_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          T y p e
+    //---------------------------------------------------------------
+    
     int32_t         symEntry_getType(
         SYMENTRY_DATA   *this
     )
@@ -505,14 +396,18 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return -1;
         }
 #endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
+        }
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return this->type;
+        return this->pEntry->type;
     }
-
+    
     
     bool            symEntry_setType(
         SYMENTRY_DATA   *this,
@@ -526,8 +421,13 @@ extern "C" {
             return false;
         }
 #endif
+        if (NULL == this->pEntry) {
+            DEBUG_BREAK();
+            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            return -1;
+        }
         
-        this->type = value;
+        this->pEntry->type = value;
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -646,7 +546,7 @@ extern "C" {
         }
 #endif
         
-        pOther = symEntry_New(symEntry_getName(this), symEntry_getData(this));
+        //FIXME: pOther = symEntry_New(symEntry_getName(this), symEntry_getData(this));
         if (pOther) {
             eRc = symEntry_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -691,7 +591,10 @@ extern "C" {
         }
 #endif
 
-        symEntry_setName(this, OBJ_NIL);
+        if (this->pEntry) {
+            mem_Free(this->pEntry);
+            this->pEntry = NULL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super object which we
@@ -790,8 +693,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)node_Init((NODE_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMENTRY);
+        //this = (OBJ_ID)node_Init((NODE_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMENTRY);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);

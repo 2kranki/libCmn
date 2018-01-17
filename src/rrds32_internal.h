@@ -38,8 +38,8 @@
 
 #include    <rrds32.h>
 #include    <AStr.h>
-#include    <hash32_internal.h>
-#include    <lru_internal.h>
+#include    <fileio.h>
+#include    <lru.h>
 #include    <listdl.h>
 
 
@@ -54,30 +54,7 @@ extern "C" {
 #endif
     
 
-    //                      LRU Buffer Header
-    /* This control block resides at the beginning of each buffer element
-     * to provide the overhead fields needed.  Each element is maintained
-     * on two lists.  The first is the Hash Chain list which offers quick
-     * access to each active element based on their index number.  The
-     * second is an LRU list which maintains all active elements ordered
-     * by last access.  That is, the most recent accessed will be at the
-     * top of the list.
-     */
-    typedef struct lru_entry_s {
-        LISTDL_NODE     lru;                /* LRU chain */
-        //LISTDL_NODE     hash;               /* HASH chain */
-        uint32_t        key;                // Buffer Number
-        uint16_t        flags;              /* Flags */
-#define     LRU_DIRTY   0x8000                  // Buffer has been altered
-#define     LRU_FIX     0x4000                  // Buffer is fixed in memory
-                                                // and not on the LRU Chain
-        uint16_t        rsvd;
-        uint8_t         *pBuffer;
-    } LRU_ENTRY;
-    
-    
-    
-#define RRDS32_HEADER_SIZE 1024
+#define RRDS32_HEADER_SIZE 4096
     
     
     /*                      File Header
@@ -92,25 +69,18 @@ extern "C" {
     
 #pragma pack(push, 1)
     struct rrds32_header_s {
-        union {
-            struct {
-                uint16_t        cbSize;
-                uint16_t        cbFlags;
-                uint32_t        cbIdent;        /* Identifier - rrdsh */
-#define RRDS32_HEADER_IDENTIFIER (('f' << 24)+('b' << 16)+('r'<<8)+'h')
-                
-                /* General Variables
-                 */
-                uint32_t        recordNum;      /* Number of Records in the file */
-                uint16_t        recordSize;
-                char            fillChar;       /* New Block Fill Character */
-                char            rsvd;
-                uint8_t         userData[0];
-            } data;
-            struct {
-                uint8_t         bytes[RRDS32_HEADER_SIZE];
-            };
-        };
+        uint16_t        cbSize;
+        uint16_t        cbFlags;
+        uint32_t        cbIdent;        /* Identifier - rrds */
+        #define RRDS32_HEADER_IDENTIFIER (('r' << 24)+('r' << 16)+('d'<<8)+'d')
+
+        /* General Variables
+        */
+        uint32_t        recordNum;      /* Number of Records in the file */
+        uint16_t        recordSize;
+        char            fillChar;       /* New Block Fill Character */
+        char            rsvd;
+        uint8_t         userData[0];
     };
 #pragma pack(pop)
     
@@ -126,21 +96,12 @@ struct rrds32_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    int             fileHandle;
-    char            *pFilePath;
-    uint32_t         size;           // Maximum Number of Entries
-    LISTDL_DATA     lruFree;        // LRU Free Chain (contains unused buffers)
-    LISTDL_DATA     lru;            // LRU Chain (contains active buffers)
-    HASH32_DATA     *pHash;         // HASH32 Chain (contains All buffers)
-    uint16_t        cLru;           // Number of entries used in the LRU Table
-    uint16_t        cBuffers;
-    uint8_t         *pBuffers;
-	uint32_t        recordNum;      // Number of Records in the Dataset
-	uint16_t        recordSize;     // Block Size
-	uint16_t        hearderSize;    // Header Length
-    RRDS32_HEADER   header;
-    LRU_ENTRY       *pLruTable;     // cBuffer number of Entries
     ERESULT         eRc;
+    FILEIO_DATA     *pIO;
+    LRU_DATA        *pLRU;
+    uint32_t        size;           // Maximum Number of Entries
+	uint32_t        headerSize;    // Header Length
+    RRDS32_HEADER   *pHeader;
 
 };
 #pragma pack(pop)
@@ -155,17 +116,32 @@ struct rrds32_data_s	{
     
     
     // Internal Functions
-#ifdef RMW_DEBUG
-    bool			rrds32_Validate(
-        RRDS32_DATA     *this
+    bool            rrds32_setLastError(
+        RRDS32_DATA     *this,
+        ERESULT         value
     );
-#endif
-
+    
+    
     void            rrds_Dealloc(
         OBJ_ID          objId
     );
 
 
+    void *          rrds32_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
+#ifdef NDEBUG
+#else
+    bool            rrds32_Validate(
+        RRDS32_DATA     *this
+    );
+#endif
+    
+    
 #ifdef	__cplusplus
 }
 #endif

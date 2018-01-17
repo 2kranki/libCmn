@@ -23,7 +23,9 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <dateTime.h>
 #include    <dec.h>
+#include    <file.h>
 #include    <rrds32_internal.h>
 
 
@@ -84,7 +86,7 @@ int         test_rrds32_OpenClose(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = rrds32_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = rrds32_Init( pObj, 0 );
+    pObj = rrds32_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -108,21 +110,40 @@ int         test_rrds32_NoBuffers(
 	RRDS32_DATA		*cbp;
     uint32_t        i;
     //bool            fRc;
-	char			*pPath     = "/tmp/test.rrds";
-    char            block[12]  = "            ";
-    char            block2[12] = "            ";
+    const
+	char			*pPathA    = "/tmp/test.rrds.";
+    //                            123456789012
+    char            block[13]  = "            ";
+    char            block2[13] = "            ";
     uint32_t        numRcds = 512;
     uint32_t        cBlock;
     char            *pBlock;
     ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    DATETIME_DATA   *pTime = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pTime = dateTime_NewCurrent();
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    pStr = dateTime_ToFileString(pTime);
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    path_AppendAStr(pPath, pStr);
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    path_AppendA(pPath, ".txt");
+    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
+
     cbp = rrds32_Alloc();
     XCTAssertFalse( (NULL == cbp));
-    cbp = rrds32_Init(cbp, 0);
+    cbp = rrds32_Init(cbp);
     XCTAssertFalse( (NULL == cbp));
 
-	eRc = rrds32_Create(cbp, pPath, 12, 0);
+	eRc = rrds32_Create(cbp, pPath, 0, 12, 0);
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
     XCTAssertTrue( (12 == rrds32_getRecordSize(cbp)));
     
@@ -131,19 +152,19 @@ int         test_rrds32_NoBuffers(
             cBlock = 12;
             pBlock = block;
             dec_putInt32A( i, &cBlock, &pBlock );
-            eRc = rrds32_BlockWrite(cbp, i+1, (uint8_t *)block);
+            eRc = rrds32_RecordWrite(cbp, i+1, (uint8_t *)block);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-            eRc = rrds32_BlockRead(cbp, i+1, (uint8_t *)block2);
+            eRc = rrds32_RecordRead(cbp, i+1, (uint8_t *)block2);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
         }
         
-        eRc = rrds32_Close( cbp );
+        eRc = rrds32_Close(cbp, false);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
     }
     
-	eRc = rrds32_Open( cbp, pPath );
+	eRc = rrds32_Open(cbp, pPath, 0);
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
     XCTAssertTrue( (12 == rrds32_getRecordSize(cbp)) );
     XCTAssertTrue( ('\0' == rrds32_getFillChar(cbp)) );
@@ -152,19 +173,119 @@ int         test_rrds32_NoBuffers(
         cBlock = 12;
         pBlock = block;
         dec_putInt32A( i, &cBlock, &pBlock );
-        //fRc = rrds_BlockWrite(cbp, i+1, block);
+        //eRc = rrds_RecordWrite(cbp, i+1, block);
         //STAssertTrue( (fRc), @"rrds_BlockWrite failed!" );
-        eRc = rrds32_BlockRead(cbp, i+1, (uint8_t *)block2);
+        eRc = rrds32_RecordRead(cbp, i+1, (uint8_t *)block2);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
     }
     
-	eRc = rrds32_Destroy( cbp );
+	eRc = rrds32_Close(cbp, true);
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
 
     obj_Release(cbp);
     cbp = OBJ_NIL;
 
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
+    obj_Release(pTime);
+    pTime = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_rrds32_3Buffers(
+    const
+    char        *pTestName
+)
+{
+    RRDS32_DATA        *pObj = OBJ_NIL;
+    uint32_t        i;
+    //bool            fRc;
+    char            *pPathA    = "/tmp/test.rrds.";
+    char            block[12]  = "            ";
+    char            block2[12] = "            ";
+    uint32_t        numRcds = 512;
+    uint32_t        cBlock;
+    char            *pBlock;
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    DATETIME_DATA   *pTime = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pTime = dateTime_NewCurrent();
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    pStr = dateTime_ToFileString(pTime);
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    path_AppendAStr(pPath, pStr);
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    path_AppendA(pPath, ".txt");
+    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
+    
+    pObj = rrds32_Alloc();
+    XCTAssertFalse( (NULL == pObj));
+    pObj = rrds32_Init(pObj);
+    XCTAssertFalse( (NULL == pObj));
+    
+    eRc = rrds32_Create(pObj, pPath, 3, 12, 0);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (12 == rrds32_getRecordSize(pObj)));
+    
+    if (!ERESULT_FAILED(eRc)) {
+        for (i=0; i<numRcds; ++i) {
+            cBlock = 12;
+            pBlock = block;
+            dec_putInt32A( i, &cBlock, &pBlock );
+            eRc = rrds32_RecordWrite(pObj, i+1, (uint8_t *)block);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            eRc = rrds32_RecordRead(pObj, i+1, (uint8_t *)block2);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
+        }
+        
+        eRc = rrds32_Close(pObj, false);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+    }
+    
+    eRc = rrds32_Open(pObj, pPath, 3);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (12 == rrds32_getRecordSize(pObj)) );
+    XCTAssertTrue( ('\0' == rrds32_getFillChar(pObj)) );
+    
+    for (i=0; i<numRcds; ++i) {
+        cBlock = 12;
+        pBlock = block;
+        dec_putInt32A( i, &cBlock, &pBlock );
+        //eRc = rrds32_RecordWrite(pObj, i+1, (uint8_t *)block);
+        //XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = rrds32_RecordRead(pObj, i+1, (uint8_t *)block2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
+    }
+    
+    eRc = rrds32_Close(pObj, true);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    
+    obj_Release(pObj);
+    pObj = OBJ_NIL;
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
+    obj_Release(pTime);
+    pTime = OBJ_NIL;
+    
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -173,8 +294,9 @@ int         test_rrds32_NoBuffers(
 
 
 TINYTEST_START_SUITE(test_rrds32);
-  TINYTEST_ADD_TEST(test_rrds32_NoBuffers,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_rrds32_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_rrds32_3Buffers,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_rrds32_NoBuffers,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_rrds32_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_rrds32);

@@ -58,6 +58,33 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    //----------------------------------------------------------------
+    //      uint32_hash - calculate a hash for a 32 bit number
+    //----------------------------------------------------------------
+    
+    // See http://burtleburtle.net/bob/hash/
+    // A Public Domain Hash Function
+    // Thomas Wang's integer hash using multiplication that's faster than
+    // any of mine on my Core 2 duo using gcc -O3, and it passes my favorite sanity
+    // tests well. I've had reports it doesn't do well with integer sequences with
+    // a multiple of 34.
+    static
+    uint32_t        uint32_hash(
+        uint32_t        a
+    )
+    {
+        
+        a = (a ^ 61) ^ (a >> 16);
+        a = a + (a << 3);
+        a = a ^ (a >> 4);
+        a = a * 0x27d4eb2d;
+        a = a ^ (a >> 15);
+        
+        return a;
+    }
+    
+    
+    
     /*!
      *  Search the lsn hash table for the sector. 
      *  @return     If found, move it to the head of the LRU list 
@@ -133,6 +160,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //----------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //----------------------------------------------------------------
+    
     ERESULT         lru_getLastError(
         LRU_DATA        *this
     )

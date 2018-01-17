@@ -384,6 +384,9 @@ extern "C" {
         char            *pStrRet = NULL;
         
         // Do initialization.
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
@@ -471,6 +474,9 @@ extern "C" {
         uint32_t        token;
         
         // Do initialization.
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
@@ -555,6 +561,9 @@ extern "C" {
         uint32_t        token;
 
         // Do initialization.
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
@@ -635,6 +644,9 @@ extern "C" {
         SZTBL_NODE      *pNode;
         
         // Do initialization.
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
@@ -663,6 +675,9 @@ extern "C" {
         SZTBL_NODE      *pNode;
         
         // Do initialization.
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate(this) ) {
@@ -700,9 +715,9 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this) {
-            return OBJ_NIL;
+            this = szTbl_Shared();
         }
-        
+
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
@@ -750,6 +765,9 @@ extern "C" {
         OBJ_INFO        *pInfo;
         SZTBL_NODE      *pNode;
         
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
 #ifdef NDEBUG
 #else
         if( !szTbl_Validate( this ) ) {

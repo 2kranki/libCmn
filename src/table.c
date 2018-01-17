@@ -424,7 +424,9 @@ extern	"C" {
 
         // Free the main control block.
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.

@@ -90,6 +90,7 @@ extern "C" {
         /* Codes greater than zero denote successful
          * completion and are user assignable.
          */
+        ERESULT_SUCCESS_PARTIAL_DATA        = 7,
         ERESULT_SUCCESS_DATA_EXISTS         = 6,
         ERESULT_SUCCESS_DATA_CHANGED        = 5,
         ERESULT_SUCCESS_UNEQUAL             = 4,    // Returned if we can not determine
@@ -111,6 +112,7 @@ extern "C" {
         ERESULT_NOT_IMPLEMENTED             = -6,
         ERESULT_NOT_SUPPORTED               = -7,
         ERESULT_UNKNOWN                     = -8,
+        ERESULT_OBJECT_CREATION             = -9,
 
         ERESULT_INSUFFICIENT_MEMORY         = -16,
         ERESULT_OUT_OF_MEMORY               = -16,

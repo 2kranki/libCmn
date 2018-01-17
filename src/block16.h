@@ -10,7 +10,7 @@
  *			This object provides the means of manipulating a data
  *          block that consists of a fixed size header and a fixed
  *          size data area whose combined sizes must fit in a
- *          uint32_t.
+ *          uint16_t.
  *
  * Remarks
  *	1.      None

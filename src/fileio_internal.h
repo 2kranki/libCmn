@@ -38,6 +38,9 @@
 
 
 #include    <fileio.h>
+#include    <lru.h>
+
+
 
 
 #ifndef FILEIO_INTERNAL_H
@@ -58,12 +61,13 @@ struct fileio_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+#define FILEIO_FILE_OPEN    OBJ_FLAG_USER1
 
     // Common Data
     ERESULT         eRc;
     PATH_DATA       *pPath;
-    uint32_t        headerSize;
-    uint8_t         *pHeader;
+    int             fileHandle;
+    LRU_DATA        *pLRU;
 
 };
 #pragma pack(pop)
@@ -78,15 +82,23 @@ struct fileio_data_s	{
 
 
     // Internal Functions
-    void            fileio_Dealloc(
-        OBJ_ID          objId
-    );
     bool            fileio_setLastError(
         FILEIO_DATA     *this,
         ERESULT         value
     );
+    
+    
+    void            fileio_Dealloc(
+        OBJ_ID          objId
+    );
 
-
+    
+    void *          fileio_QueryInfo(
+         OBJ_ID          objId,
+         uint32_t        type,
+         void            *pData
+    );
+    
 
 #ifdef NDEBUG
 #else

@@ -154,6 +154,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    // AppendAStr() just appends the string without and further
+    // changes.
+    ERESULT         path_AppendA(
+        PATH_DATA       *this,
+        const
+        char            *pStr
+    );
+    
+    
+    // AppendAStr() just appends the string without and further
+    // changes.
+    ERESULT         path_AppendAStr(
+        PATH_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+    
+    
     // AppendExt() first appends a '.' if needed. Then it appends the
     // Extension which could also be a directory component if needed.
     ERESULT         path_AppendExtA(

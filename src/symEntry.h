@@ -108,21 +108,29 @@ extern "C" {
     );
     
     
+    SYMENTRY_DATA *     symEntry_NewWithUTF8(
+        const
+        char                *pName,
+        OBJ_ID              pData
+    );
+    
+    
 
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJ_ID          symEntry_getData(
+    int32_t         symEntry_getClass(
         SYMENTRY_DATA   *this
     );
     
-    bool            symEntry_setData(
+    bool            symEntry_setClass(
         SYMENTRY_DATA   *this,
-        OBJ_ID          pValue
+        int32_t         value
     );
     
-
+    
     uint16_t        symEntry_getFlags16(
         SYMENTRY_DATA	*this
     );
@@ -133,17 +141,13 @@ extern "C" {
     );
     
     
-    uint32_t        symEntry_getHash(
-        SYMENTRY_DATA    *this
-    );
-    
-    
     ERESULT         symEntry_getLastError(
         SYMENTRY_DATA	*this
     );
 
 
-    NAME_DATA *     symEntry_getName(
+    const
+    char *          symEntry_getName(
         SYMENTRY_DATA   *this
     );
     
@@ -195,6 +199,11 @@ extern "C" {
     bool            symEntry_setObject(
         SYMENTRY_DATA   *this,
         OBJ_ID          pValue
+    );
+    
+    
+    uint32_t        symEntry_getToken(
+        SYMENTRY_DATA    *this
     );
     
     

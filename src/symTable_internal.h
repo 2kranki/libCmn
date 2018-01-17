@@ -40,6 +40,9 @@
 
 
 #include    <symTable.h>
+#include    <listdl.h>
+
+
 
 
 #ifndef SYMTABLE_INTERNAL_H
@@ -53,6 +56,26 @@ extern "C" {
 
 
 
+    //      Node Descriptor
+#pragma pack(push, 1)
+    typedef struct  objHash_node_s {
+        LISTDL_NODE     list;
+        uint32_t        hash;
+        uint32_t        unique;
+        OBJ_ID          pObject;
+    } SYMTABLE_NODE;
+#pragma pack(pop)
+    
+    
+    // Block Descriptor
+#pragma pack(push, 1)
+    typedef struct  objHash_block_s {
+        LISTDL_NODE     list;
+        SYMTABLE_NODE   node[0];
+    } SYMTABLE_BLOCK;
+#pragma pack(pop)
+    
+    
 
 #pragma pack(push, 1)
 struct symTable_data_s	{
@@ -63,14 +86,13 @@ struct symTable_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;		/* maximum number of elements           */
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    uint32_t        unique;
+    uint32_t        num;            // Current Number of Entries
+    LISTDL_DATA     freeList;       // Free Node Linked List
+    LISTDL_DATA     blocks;
+    uint16_t        cBlock;         // Number of Nodes per Block
+    uint16_t        cHash;
+    LISTDL_DATA     *pHash;         // Main Hash Table
 
 };
 #pragma pack(pop)
