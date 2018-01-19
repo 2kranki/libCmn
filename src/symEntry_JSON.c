@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   W32Str_JSON.c
+ * File:   symEntry_JSON.c
  *
- * Created on 10/13/2017 from AStr_JSON
+ * Created on 01/18/2018 from W32Str_JSON
  */
 
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <W32Str_internal.h>
+#include    <symEntry_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -70,7 +70,7 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            W32Str_Int64ToChrClean(
+    void            symEntry_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
     )
@@ -105,12 +105,12 @@ extern "C" {
      @return    a new null object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    W32STR_DATA *   W32Str_ParseObject(
+    SYMENTRY_DATA * symEntry_ParseObject(
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        W32STR_DATA     *pObject = OBJ_NIL;
+        SYMENTRY_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         uint32_t        crc = 0;
@@ -121,7 +121,7 @@ extern "C" {
         char            *pSrc;
         ASTR_DATA       *pWrk;
         
-        pInfo = obj_getInfo(W32Str_Class());
+        pInfo = obj_getInfo(symEntry_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -132,8 +132,9 @@ extern "C" {
         crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
         
         length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
-        
-        pObject = W32Str_New();
+
+#ifdef XYZZY
+        pObject = symEntry_New();
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
@@ -143,13 +144,14 @@ extern "C" {
             pSrc = AStr_getData(pWrk);
             for (i=0; i<length; ++i) {
                 ch = utf8_ChrConToW32_Scan(&pSrc);
-                W32Str_AppendW32(pObject, 1, &ch);
+                symEntry_AppendW32(pObject, 1, &ch);
             }
-            if (!(crc == W32Str_getCrcIEEE(pObject))) {
+            if (!(crc == symEntry_getCrcIEEE(pObject))) {
                 obj_Release(pObject);
                 pObject = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
     exit00:
@@ -175,13 +177,13 @@ extern "C" {
     //===============================================================
     
 
-    W32STR_DATA *   W32Str_NewFromJSONString(
+    SYMENTRY_DATA * symEntry_NewFromJSONString(
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc = ERESULT_SUCCESS;
-        W32STR_DATA     *pObject = OBJ_NIL;
+        SYMENTRY_DATA   *pObject = OBJ_NIL;
         
         pParser = jsonIn_New();
         eRc = jsonIn_ParseAStr(pParser, pString);
@@ -189,7 +191,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = W32Str_ParseObject(pParser);
+        pObject = symEntry_ParseObject(pParser);
         
         
         // Return to caller.
@@ -203,17 +205,17 @@ extern "C" {
     
     
 
-    W32STR_DATA *   W32Str_NewFromJSONStringA(
+    SYMENTRY_DATA * symEntry_NewFromJSONStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        W32STR_DATA     *pObject = OBJ_NIL;
+        SYMENTRY_DATA   *pObject = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pObject = W32Str_NewFromJSONString(pStr);
+            pObject = symEntry_NewFromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -224,12 +226,13 @@ extern "C" {
     
     
     
-    ASTR_DATA *     W32Str_ToJSON(
-        W32STR_DATA     *this
+    ASTR_DATA *     symEntry_ToJSON(
+        SYMENTRY_DATA   *this
     )
     {
-        char            str[16];
+        char            str[256];
         uint32_t        i;
+        int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
@@ -241,42 +244,50 @@ extern "C" {
         uint32_t        len;
         const
         char            *pData;
+        SYM_ENTRY       *pEntry = NULL;
 
 #ifdef NDEBUG
 #else
-        if( !W32Str_Validate(this) ) {
+        if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
-        pInfo = W32Str_Vtbl.iVtbl.pInfo;
-        pData  = array_Ptr((ARRAY_DATA *)this, 1);
+        pInfo = symEntry_Vtbl.iVtbl.pInfo;
+        //FIXME: pData  = array_Ptr((ARRAY_DATA *)this, 1);
 
         pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
-        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"", pInfo->pClassName);
-
-        crc = W32Str_getCrcIEEE(this);
-        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
         
-        len = array_getSize((ARRAY_DATA *)this) - 1;
-        AStr_AppendPrint(pStr, ", \"len\":%u", len);
-        if (len) {
-            AStr_AppendA(pStr, ", \"data\":\"");
-            pChr = pData;
-            for (i=0; i<(len-1); ++i) {
-                pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
-                chrW = *pChrW;
-                utf8_W32ToChrCon(*pChrW, str);
-                AStr_AppendA(pStr, str);
+        if (this->pEntry) {
+            pEntry = this->pEntry;
+            AStr_AppendPrint(pStr, ", \"nameToken\":%u", pEntry->nameToken);
+#ifdef XYZZY            
+            len = array_getSize((ARRAY_DATA *)this) - 1;
+            AStr_AppendPrint(pStr, ", \"len\":%u", len);
+            if (len) {
+                AStr_AppendA(pStr, ", \"data\":\"");
+                pChr = pData;
+                for (i=0; i<(len-1); ++i) {
+                    pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
+                    chrW = *pChrW;
+                    utf8_W32ToChrCon(*pChrW, str);
+                    AStr_AppendA(pStr, str);
+                }
+                AStr_AppendA(pStr, "\" ");
             }
-            AStr_AppendA(pStr, "\" ");
-        }
-        else {
-            AStr_AppendA(pStr, ", \"data\":null ");
+            else {
+                AStr_AppendA(pStr, ", \"data\":null ");
+            }
+#endif
         }
         
         AStr_AppendA(pStr, "}\n");

@@ -100,18 +100,23 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SZTBL_DATA *     szTbl_Alloc(
+    SZTBL_DATA *    szTbl_Alloc(
         void
     );
     
     
-    SZTBL_DATA *     szTbl_Shared(
+    OBJ_ID          szTbl_Class(
+        void
+    );
+
+
+    SZTBL_DATA *    szTbl_Shared(
         void
     );
     
     
     // Release the Shared String Table.
-    SZTBL_DATA *     szTbl_SharedReset(
+    SZTBL_DATA *    szTbl_SharedReset(
         void
     );
     
@@ -124,6 +129,11 @@ extern "C" {
 
     ERESULT         szTbl_getLastError(
         SZTBL_DATA      *this
+    );
+    
+    
+    uint32_t        szTbl_getSize(
+        SZTBL_DATA       *this
     );
     
     

@@ -173,6 +173,8 @@
         #"srcError_JSON.c",
         "srcLoc_JSON.c",
         "str.c",
+        "symEntry_JSON.c",
+        "szTbl_JSON.c",
         "token_JSON.c",
         "utf8_JSON.c",
         "value_JSON.c",

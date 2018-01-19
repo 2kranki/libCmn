@@ -120,10 +120,14 @@ extern "C" {
     
 
     typedef struct sym_entry_s {
-        //ASTR_DATA       *pName;           // Use Token instead.
-        uint32_t        token;              // szTbl Token for String Identifier
+        uint16_t        cbSize;             // Control Block Size in bytes
+        uint16_t        flags;
+        uint32_t        nameHash;
+        char            name[129];
+        uint32_t        nameToken;          // szTbl Token for String Identifier
         int32_t         class;              // User Defined
         int32_t         type;               // See SYM_TYPE
+        uint32_t        prim;               // See SYM_PRIMITIVE;
         uint32_t        idxHashNext;        // Hash Index Chain
         uint32_t        idxHashPrev;
         uint32_t        idxScopeNext;
@@ -133,10 +137,8 @@ extern "C" {
         uint32_t        idxChildTail;
         uint32_t        idxSibHead;         // Sibling Chain
         uint32_t        idxSibTail;
-        uint16_t        size;
-        uint16_t        flags16;
-        uint16_t        prim;               // See SYM_PRIMITIVE;
-        uint16_t        ptr;                // Pointer level
+        uint32_t        size;               // Data Size in Bytes
+        uint32_t        ptr;                // Pointer level
         union {
             uint32_t        misc[4];            // Set Overall Size.
             struct {

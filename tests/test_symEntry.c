@@ -54,7 +54,19 @@ int         tearDown(
     
     szTbl_SharedReset( );
     trace_SharedReset( ); 
-    mem_Dump( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+                );
+        exitCode = 4;
+        return 0;
+    }
+
     mem_Release( );
     
     return 1; 
@@ -67,12 +79,15 @@ int         tearDown(
 
 int         test_symEntry_OpenClose(
     const
-    char        *test_name
+    char        *pTestName
 )
 {
     SYMENTRY_DATA	*pObj = OBJ_NIL;
     NAME_DATA	    *pName = OBJ_NIL;
    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tSYM_ENTRY Size=%ld\n", sizeof(SYM_ENTRY));
+
     pName = name_NewUTF8Con("test");
 
     pObj = symEntry_Alloc( );
@@ -100,6 +115,7 @@ int         test_symEntry_OpenClose(
     obj_Release(pName);
     pName = OBJ_NIL;
 
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 

@@ -174,7 +174,7 @@ void            genMakeFile_initial(
                         pStr = node_getData(pNode);
                         fprintf(
                                 pResults->pOutput,
-                                "CFLAGS += -I%s%s/src -I%s%s/src/$(SYS)\n",
+                                "CFLAGS += -I../%s%s/src -I../%s%s/src/$(SYS)\n",
                                 pLibIncludePrefix,
                                 AStr_getData(pStr),
                                 pLibIncludePrefix,
@@ -1317,64 +1317,64 @@ int             genMakeFile(
     pPrimaryHash = node_getData(pResults->pNodes);
     BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
     if (pPrimaryHash) {
-        eRc = nodeHash_FindA(pPrimaryHash, "name", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "name");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pName = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pName, OBJ_IDENT_ASTR)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "lib_deps", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "lib_deps");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pLibDeps = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pLibDeps, OBJ_IDENT_NODEARRAY)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "objects", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "objects");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pObjects = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pObjects, OBJ_IDENT_NODEHASH)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "routines", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "routines");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pRoutines = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "programs", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "programs");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pPrograms = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEHASH)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "tests", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "tests");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pTests = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "macosx", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "macosx");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
             pMacosx = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pMacosx, OBJ_IDENT_NODEHASH)));
         }
-        eRc = nodeHash_FindA(pPrimaryHash, "win32", &pNode);
-        if (ERESULT_FAILED(eRc)) {
+        pNode = nodeHash_FindA(pPrimaryHash, "win32");
+        if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
@@ -1464,7 +1464,7 @@ int         parseArgs(
     }
 
     // Set up libPrefix default;
-    eRc = szHash_AddA(pHash, "libIncludePrefix", "../lib");
+    eRc = szHash_AddA(pHash, "libIncludePrefix", "lib");
     if (ERESULT_FAILED(eRc) ) {
         fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Hash\n");
         exit(EXIT_FAILURE);

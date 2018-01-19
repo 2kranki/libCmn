@@ -102,6 +102,11 @@ extern "C" {
     );
     
     
+    OBJ_ID              symEntry_Class(
+        void
+    );
+    
+    
     SYMENTRY_DATA *     symEntry_New(
         NAME_DATA           *pName,
         OBJ_ID              pData

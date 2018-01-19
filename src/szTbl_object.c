@@ -66,11 +66,6 @@ OBJ_INFO        szTbl_Info;            // Forward Reference
 
 
 
-OBJ_ID          szTbl_Class(
-    void
-);
-
-
 
 static
 bool            szTbl_ClassIsKindOf(

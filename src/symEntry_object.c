@@ -66,11 +66,6 @@ OBJ_INFO        symEntry_Info;            // Forward Reference
 
 
 
-OBJ_ID          symEntry_Class(
-    void
-);
-
-
 
 static
 bool            symEntry_ClassIsKindOf(
@@ -79,9 +74,6 @@ bool            symEntry_ClassIsKindOf(
 {
     if (OBJ_IDENT_SYMENTRY_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODE_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -132,9 +124,6 @@ bool            symEntry_IsKindOf(
 {
     if (OBJ_IDENT_SYMENTRY == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODE == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

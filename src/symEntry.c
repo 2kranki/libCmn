@@ -85,7 +85,7 @@ extern "C" {
     )
     {
         SYMENTRY_DATA       *this;
-        uint32_t        cbSize = sizeof(SYMENTRY_DATA);
+        uint32_t            cbSize = sizeof(SYMENTRY_DATA);
         
         // Do initialization.
         
@@ -203,7 +203,7 @@ extern "C" {
             return -1;
         }
         
-        hash = szTbl_TokenToHash(OBJ_NIL, this->pEntry->token);
+        hash = szTbl_TokenToHash(OBJ_NIL, this->pEntry->nameToken);
 
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return hash;
@@ -275,7 +275,7 @@ extern "C" {
             return NULL;
         }
 
-        pStr = szTbl_TokenToString(OBJ_NIL, this->pEntry->token);
+        pStr = szTbl_TokenToString(OBJ_NIL, this->pEntry->nameToken);
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return pStr;
@@ -303,7 +303,7 @@ extern "C" {
         }
 
         token = szTbl_StringToToken(OBJ_NIL, pValue);
-        this->pEntry->token = token;
+        this->pEntry->nameToken = token;
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -352,7 +352,7 @@ extern "C" {
             return -1;
         }
         
-        return this->pEntry->token;
+        return this->pEntry->nameToken;
     }
     
     
@@ -374,7 +374,7 @@ extern "C" {
             return -1;
         }
         
-        this->pEntry->token = value;
+        this->pEntry->nameToken = value;
         
         symEntry_setLastError(this, ERESULT_SUCCESS);
         return true;
