@@ -194,7 +194,7 @@ extern "C" {
         uint8_t         **ppBuffer
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         uint8_t         *pBuffer = NULL;
         int64_t         size;
         int             chr;

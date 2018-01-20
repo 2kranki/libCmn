@@ -285,13 +285,13 @@ extern "C" {
     );
     
     
-    uint16_t        token_getMisc(
+    int16_t         token_getMisc(
         TOKEN_DATA      *this
     );
     
     bool            token_setMisc(
         TOKEN_DATA      *this,
-        uint16_t        value
+        int16_t         value
     );
     
     

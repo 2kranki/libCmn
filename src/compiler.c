@@ -1178,14 +1178,17 @@ extern "C" {
         
         this->fTrace = true;
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if( !compiler_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
+#ifdef __APPLE__
+        fprintf(stderr, "compiler::sizeof(COMPILER_DATA) = %lu\n", sizeof(COMPILER_DATA));
+#endif
         BREAK_NOT_BOUNDARY4(sizeof(COMPILER_DATA));
-    #endif
+#endif
 
         return this;
     }

@@ -528,7 +528,7 @@ extern "C" {
     {
         SYMTABLE_DATA   *this = objId;
         SYMTABLE_BLOCK  *pBlock;
-        ERESULT         eRc;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {

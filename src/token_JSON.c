@@ -86,7 +86,7 @@ extern "C" {
         OBJ_INFO        *pInfo;
         uint32_t        cls = 0;
         uint32_t        type = 0;
-        uint16_t        misc = 0;
+        int16_t         misc = 0;
         OBJ_ID          pObj;
         uint8_t         *pUtf8;
         int64_t         integer;
@@ -108,7 +108,7 @@ extern "C" {
         }
 
         cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
-        misc = (uint16_t)jsonIn_FindIntegerNodeInHash(pParser, "misc");
+        misc = (int16_t)jsonIn_FindIntegerNodeInHash(pParser, "misc");
         type = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
 
         switch (type) {

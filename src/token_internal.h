@@ -63,7 +63,7 @@ extern "C" {
         uint16_t        len;                // Character/Token Length (Optional)
         uint16_t        type;               // Type in union below
         int16_t         cls;                // Character/Token Class (Optional)
-        uint16_t        misc;
+        int16_t         misc;
         union {
             double          flt;
             int64_t         integer;            // Integer

@@ -334,7 +334,7 @@ extern "C" {
         PATH_DATA       *pPath
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         int64_t         size = 0;
         int             chr;
         FILE            *pFile;

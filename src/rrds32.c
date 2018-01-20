@@ -1012,7 +1012,7 @@ ERESULT         rrds32_RecordRead(
 )
 {
     ERESULT         eRc;
-    size_t          fileOffset;
+    //size_t          fileOffset;
     
     // Do initialization.
 #ifdef NDEBUG

@@ -79,7 +79,8 @@ struct compiler_data_s	{
     OBJARRAY_DATA   *pQueue2;
     OBJARRAY_DATA   *pQueue3;
     NODEHASH_DATA   *pProperties;
-    bool            fTrace;
+    uint8_t         fTrace;
+    uint8_t         rsvd8;
     uint16_t        numErrors;
 
 };
