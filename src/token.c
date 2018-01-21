@@ -1506,7 +1506,11 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                AStr_AppendPrint(pStr, "type=STRTOKEN token=%d ", this->data.strToken);
+                AStr_AppendPrint(pStr,
+                                 "type=STRTOKEN token=%d (\"%s\")",
+                                 this->data.strToken,
+                                 szTbl_TokenToString(szTbl_Shared(), this->data.strToken)
+                );
                 break;
                 
             default:

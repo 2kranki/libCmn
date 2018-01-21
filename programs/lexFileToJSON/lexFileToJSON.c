@@ -22,6 +22,8 @@ int         cOptions = 0;
 const
 char        **ppOptions = NULL;
 
+int         lines = 1;
+
 
 
 void        usage(
@@ -42,7 +44,7 @@ void        usage(
     );
     fprintf( stderr, "\t-d,--[no-]debug  Set debug mode\n");
     fprintf( stderr, "\t-s,--src         Generate JSONs from Source File\n");
-    fprintf( stderr, "\t--nl             Exclude NL tokens\n");
+    fprintf( stderr, "\t-l,--nl          Exclude NL tokens\n");
 }
 
 
@@ -96,6 +98,9 @@ int         parseArgs(
                         ++fDebug;
                         break;
                     case 'l':
+                        ++fNL;
+                        break;
+                    case 's':
                         ++srcFlag;
                         break;
                     default:
@@ -128,11 +133,12 @@ void        display_output(
     if (pAStr) {
         AStr_Trim(pAStr);
         pAStr2 = AStr_ToChrCon(pAStr);
-        fprintf(stdout, "\"%s\",\n", AStr_getData(pAStr2));
+        fprintf(stdout, "/*%5d*/ \"%s\",\n", lines, AStr_getData(pAStr2));
         obj_Release(pAStr2);
         pAStr2 = OBJ_NIL;
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
+        ++lines;
     }
     
     
@@ -158,8 +164,11 @@ int         main(
     parseArgs(argc, argv);
     
     if (cOptions > 0) {
+        if (srcFlag) {
+            fprintf(stdout, "//\t--src\n");
+        }
         for (i=0; i<cOptions; ++i) {
-            fprintf(stderr, "\toption = \"%s\"\n", ppOptions[i]);
+            fprintf(stdout, "//\tfiles = \"%s\"\n", ppOptions[i]);
         }
         pGmrFile = path_NewA(ppOptions[0]);
         if (pGmrFile) {
@@ -182,6 +191,7 @@ int         main(
                 }
                 else {
                     pLex = pplex2_New(2);
+                    BREAK_NULL(pLex);
                     fRc = pplex2_setKwdSelection(pLex, PPLEX_LANG_LL1);
                     BREAK_FALSE(fRc);
                     fRc =   lex_setSourceFunction(

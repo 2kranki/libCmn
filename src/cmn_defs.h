@@ -258,6 +258,8 @@ extern "C" {
         OBJ_IDENT_HEX_CLASS,
         OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser
         OBJ_IDENT_HJSON_CLASS,
+        OBJ_IDENT_I32ARRAY,             // Array of int32_t
+        OBJ_IDENT_I32ARRAY_CLASS,
         OBJ_IDENT_JSONIN,               // Standardized JSON Input
         OBJ_IDENT_JSONIN_CLASS,
         OBJ_IDENT_JSONOUT,              // Standardized JSON Output

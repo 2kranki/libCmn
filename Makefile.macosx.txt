@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 1/18/2018 15:04:51.000)
+# ( 1/21/2018  4:57:41.000)
 
 
 LIBNAM=libCmn
@@ -632,6 +632,18 @@ $(OBJDIR)/hjson.o: $(SRCDIR)/hjson.c
 
 
 $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/i32Array.o $(OBJDIR)/i32Array_object.o
+
+
+$(OBJDIR)/i32Array.o: $(SRCDIR)/i32Array.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/i32Array_object.o: $(SRCDIR)/i32Array_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -2065,6 +2077,13 @@ TESTS += test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_hjson.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_i32Array
+
+test_i32Array:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_i32Array.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

@@ -216,7 +216,9 @@ int         test_nodeArray_Add02(
     uint32_t        cnt;
     ERESULT         eRc;
     uint32_t        idx;
-    
+    int32_t         cls;
+    I32ARRAY_DATA   *pClasses = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pArray = nodeArray_Alloc( );
@@ -227,6 +229,8 @@ int         test_nodeArray_Add02(
         
         for (i=0; i<10; ++i) {
             pNode = node_NewWithUTF8Con(strings[i], OBJ_NIL);
+            XCTAssertFalse( (OBJ_NIL == pNode) );
+            node_setClass(pNode, i+1);
             eRc = nodeArray_AppendNode(pArray, pNode, &idx);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeArray_getSize(pArray);
@@ -238,6 +242,15 @@ int         test_nodeArray_Add02(
             pNode = OBJ_NIL;
         }
         
+        pClasses = nodeArray_ToClassArray(pArray);
+        XCTAssertFalse( (OBJ_NIL == pClasses) );
+        for (i=0; i<10; ++i) {
+            cls = i32Array_Get(pClasses, i+1);
+            XCTAssertTrue( (cls == (i+1)) );
+        }
+        obj_Release(pClasses);
+        pClasses = OBJ_NIL;
+
         obj_Release(pArray);
         pArray = OBJ_NIL;
     }

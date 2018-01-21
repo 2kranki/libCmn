@@ -64,11 +64,6 @@ OBJ_INFO        u32Array_Info;            // Forward Reference
 
 
 
-OBJ_ID          u32Array_Class(
-    void
-);
-
-
 
 static
 bool            u32Array_ClassIsKindOf(

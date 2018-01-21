@@ -57,7 +57,9 @@
 
 #include        <cmn_defs.h>
 #include        <enum.h>
+#include        <i32Array.h>
 #include        <node.h>
+#include        <W32Str.h>
 
 
 #ifndef         NODEARRAY_H
@@ -269,6 +271,19 @@ extern "C" {
 
     ERESULT         nodeArray_SortAscending(
         NODEARRAY_DATA	*this
+    );
+    
+    
+    /*!
+     Create an new int32_t array of the classes from all nodes in this array.
+     The relative position of each class in the new array should coincide with
+     the relative position of the node in this array.
+     @return    If successful, an i32Array object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned i32Array object.
+     */
+    I32ARRAY_DATA * nodeArray_ToClassArray(
+        NODEARRAY_DATA  *this
     );
     
     

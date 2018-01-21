@@ -65,11 +65,6 @@ OBJ_INFO        pplex_Info;            // Forward Reference
 
 
 
-OBJ_ID          pplex_Class(
-    void
-);
-
-
 
 static
 bool            pplex_ClassIsKindOf(
@@ -116,7 +111,6 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
 const
 PPLEX_CLASS_DATA  pplex_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PPLEX_CLASS, 0, 1},
@@ -184,7 +178,7 @@ PPLEX_VTBL      pplex_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)pplex_Assign,
         NULL,			// (P_OBJ_COMPARE)pplex_Compare,
         NULL, 			// (P_OBJ_PTR)pplex_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
+        NULL,           // (P_OBJ_DEEPCOPY)pplex_DeepCopy,
         NULL 			// (P_OBJ_HASH)pplex_Hash
     },
 };
@@ -195,9 +189,10 @@ static
 const
 OBJ_INFO        pplex_Info = {
     "pplex",
-    "Preprocessor Lexical Analyzer/Parser",
+    "Preprocessor Lexical Analyzer/Scanner",
     (OBJ_DATA *)&pplex_ClassObj,
-    (OBJ_DATA *)&lex_ClassObj
+    (OBJ_DATA *)&lex_ClassObj,
+    (OBJ_IUNKNOWN *)&pplex_Vtbl
 };
 
 

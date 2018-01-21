@@ -17,7 +17,7 @@
  *          without any reserved words. ppLex3 adds reserved words
  *          for C and Objective-C. ppLex1 adds trigraph support.
  *          Each is written much like a Unix filter with input
- *          and output being well defined and changeable.
+ *          and output being well defined.
  *
  * Remarks
  *	1.      None.
@@ -350,6 +350,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          pplex_Class(
+        void
+    );
+
+
     char *          pplex_ClassToString(
         int32_t         value
     );
@@ -398,6 +403,9 @@ extern "C" {
     );
     
     
+    /*! If true, then NL tokens are passed to the user of this system.
+     Otherwise, the default is that NL tokens are skipped over.
+     */
     bool            pplex_getReturnNL(
         PPLEX_DATA      *this
     );
@@ -408,6 +416,10 @@ extern "C" {
     );
     
 
+    /*! If true, then White-Space tokens (which include comments) are passed
+     to the user of this system.  Otherwise, the default is that White-Space
+     tokens are skipped over.
+     */
     bool            pplex_getReturnWS(
         PPLEX_DATA      *this
     );
@@ -480,6 +492,21 @@ extern "C" {
     ERESULT         pplex_CreateSourceFromAStr(
         PPLEX_DATA      *this,
         ASTR_DATA       *pStr,
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Create a srcFile object from an AStr and set it up as the source
+     for input to the Lexers.
+     @param     this    PPLEX Object Pointer
+     @param     pPath   a Path Object Pointer to be used as input to
+                        the lexer chain
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         pplex_CreateSourceFromPath(
+        PPLEX_DATA      *this,
         PATH_DATA       *pPath
     );
     

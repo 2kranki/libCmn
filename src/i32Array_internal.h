@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   pplex_internal.h
- *	Generated 09/29/2015 11:29:54
+ * File:   i32Array_internal.h
+ *	Generated 01/20/2018 22:51:51
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,15 +38,14 @@
 
 
 
-#include    <pplex.h>
-#include    <lex_internal.h>
-#include    <pplex1.h>
-#include    <pplex2.h>
-#include    <pplex3.h>
+
+#include    <i32Array.h>
+#include    <array_internal.h>
 
 
-#ifndef PPLEX_INTERNAL_H
-#define	PPLEX_INTERNAL_H
+#ifndef I32ARRAY_INTERNAL_H
+#define	I32ARRAY_INTERNAL_H
+
 
 
 #ifdef	__cplusplus
@@ -53,61 +53,73 @@ extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct pplex_data_s	{
+struct i32Array_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    LEX_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-    // OBJ_FLAG_USER1-OBJ_FLAG_USER4 Reserved for Lex
-#define PPLEX_FLAG_DEBUG     OBJ_FLAG_USER5
+    ARRAY_DATA      super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+#define I32ARRAY_FLAG_BIGENDIAN OBJ_FLAG_USER1
 
     // Common Data
-    LEX_DATA        *pLex1;
-    LEX_DATA        *pLex2;
-    LEX_DATA        *pLex3;
-    SRCFILE_DATA    *pSrc;
-    uint16_t        lang;
-    uint16_t        k;
-    uint8_t         fReturnWS;
-    uint8_t         fReturnNL;
-    uint8_t         rsvd8[2];
-    PPLEX_KWDTBL_ENTRY
-                    *pAuxKwds;
-    uint32_t        cAuxKwds;
-    bool            (*pKwdUserExit)(void *, TOKEN_DATA *);
-    void            *pKwdUserObject;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct pplex_class_data_s  pplex_ClassObj;
+    struct i32Array_class_data_s  i32Array_ClassObj;
 
     extern
     const
-    PPLEX_VTBL      pplex_Vtbl;
+    I32ARRAY_VTBL         i32Array_Vtbl;
 
 
 
-    // Internal Functions
-    void            pplex_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            i32Array_setLastError(
+        I32ARRAY_DATA     *this,
+        ERESULT         value
+    );
+
+
+    OBJ_IUNKNOWN *  i32Array_getSuperVtbl(
+        I32ARRAY_DATA     *this
+    );
+
+
+    void            i32Array_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          pplex_QueryInfo(
+    void *          i32Array_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     i32Array_ToJSON(
+        I32ARRAY_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			pplex_Validate(
-        PPLEX_DATA       *cbp
+    bool			i32Array_Validate(
+        I32ARRAY_DATA       *this
     );
 #endif
 
@@ -117,5 +129,5 @@ struct pplex_data_s	{
 }
 #endif
 
-#endif	/* PPLEX_INTERNAL_H */
+#endif	/* I32ARRAY_INTERNAL_H */
 

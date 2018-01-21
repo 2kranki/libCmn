@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include <nodeArray_internal.h>
 #include <enum_internal.h>
+#include <i32Array.h>
 #include <utf8.h>
 
 
@@ -1003,6 +1004,44 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                    T o  C l a s s  A r r a y
+    //---------------------------------------------------------------
+    
+    I32ARRAY_DATA * nodeArray_ToClassArray(
+        NODEARRAY_DATA  *this
+    )
+    {
+        int             j;
+        I32ARRAY_DATA   *pArray = OBJ_NIL;
+        NODE_DATA       *pNode;
+        int32_t         chr;
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pArray = i32Array_New( );
+        
+        if (pArray && this->pArray) {
+            for (j=0; j<objArray_getSize(this->pArray); ++j) {
+                pNode = objArray_Get(this->pArray, j+1);
+                if (pNode) {
+                    chr = node_getClass(pNode);
+                }
+                else {
+                    chr = 0;
+                }
+                i32Array_AppendData(pArray, chr);
+            }
+        }
+        
+        
+        return pArray;
+    }
+    
+
     
     //---------------------------------------------------------------
     //                       T o  S t r i n g

@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 1/18/2018 15:04:49.000)
+# ( 1/21/2018  4:57:40.000)
 
 
 LIBNAM=libCmn
@@ -83,6 +83,7 @@ OBJS = $(OBJS) $(OBJDIR)\greg.obj $(OBJDIR)\greg_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hash32.obj $(OBJDIR)\hash32_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hex.obj $(OBJDIR)\hex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\hjson.obj $(OBJDIR)\hjson_object.obj
+OBJS = $(OBJS) $(OBJDIR)\i32Array.obj $(OBJDIR)\i32Array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\jsonIn.obj $(OBJDIR)\jsonIn_object.obj
 OBJS = $(OBJS) $(OBJDIR)\jsonOut.obj $(OBJDIR)\jsonOut_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
@@ -649,6 +650,14 @@ TESTS = $(TESTS) test_hjson
 
 test_hjson:
 	$(CC) $(CFLAGS) /Itests tests\test_hjson.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_i32Array
+
+test_i32Array:
+	$(CC) $(CFLAGS) /Itests tests\test_i32Array.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

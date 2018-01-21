@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   u32Array.c
- *	Generated 08/07/2015 09:47:23
+ * File:   i32Array.c
+ *	Generated 01/20/2018 22:51:51
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <u32Array_internal.h>
+#include <i32Array_internal.h>
 #include    <file.h>
 #include    <path_internal.h>
 #include    <stdio.h>
@@ -61,9 +61,17 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    
-    
-    
+#ifdef XYZZY
+    static
+    void            i32Array_task_body(
+        void            *pData
+    )
+    {
+        //I32ARRAY_DATA  *this = pData;
+        
+    }
+#endif
+
 
 
     /****************************************************************
@@ -75,64 +83,76 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    U32ARRAY_DATA * u32Array_Alloc(
+    I32ARRAY_DATA * i32Array_Alloc(
     )
     {
-        U32ARRAY_DATA   *this;
-        uint32_t        cbSize = sizeof(U32ARRAY_DATA);
+        I32ARRAY_DATA   *this;
+        uint32_t        cbSize = sizeof(I32ARRAY_DATA);
+        
+        // Do initialization.
         
         this = obj_Alloc( cbSize );
         
+        // Return to caller.
         return this;
     }
 
 
 
-    U32ARRAY_DATA * u32Array_New(
+    I32ARRAY_DATA *     i32Array_New(
     )
     {
-        U32ARRAY_DATA    *this;
+        I32ARRAY_DATA       *this;
         
-        this = u32Array_Alloc( );
-        this = u32Array_Init(this);
-        
+        this = i32Array_Alloc( );
+        if (this) {
+            this = i32Array_Init(this);
+        } 
         return this;
     }
-    
-    
-    
+
+
+
     
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
-    bool            u32Array_setBigEndian(
-        U32ARRAY_DATA   *this,
+    //---------------------------------------------------------------
+    //                      B i g  E n d i a n
+    //---------------------------------------------------------------
+    
+    bool            i32Array_setBigEndian(
+        I32ARRAY_DATA   *this,
         bool            value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        obj_FlagSet(this, U32ARRAY_FLAG_BIGENDIAN, value);
+        obj_FlagSet(this, I32ARRAY_FLAG_BIGENDIAN, value);
         
         return true;
     }
     
     
     
-    uint32_t *      u32Array_getData(
-        U32ARRAY_DATA   *this
+    //---------------------------------------------------------------
+    //                           D a t a
+    //---------------------------------------------------------------
+    
+    int32_t *       i32Array_getData(
+        I32ARRAY_DATA   *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -142,22 +162,50 @@ extern "C" {
     
     
     
-    uint32_t        u32Array_getSize(
-        U32ARRAY_DATA   *this
+    //---------------------------------------------------------------
+    //                           S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        i32Array_getSize(
+        I32ARRAY_DATA   *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         return array_getSize((ARRAY_DATA *)this);
     }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  i32Array_getSuperVtbl(
+        I32ARRAY_DATA     *this
+    )
+    {
 
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !i32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
 
-
+        
+        //i32Array_setLastError(this, ERESULT_SUCCESS);
+        return this->pSuperVtbl;
+    }
+    
+  
 
     
 
@@ -170,9 +218,9 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
     
-    ERESULT         u32Array_AppendData(
-        U32ARRAY_DATA	*this,
-        uint32_t        data
+    ERESULT         i32Array_AppendData(
+        I32ARRAY_DATA   *this,
+        int32_t         data
     )
     {
         ERESULT         eRc;
@@ -180,7 +228,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -202,20 +250,20 @@ extern "C" {
     }
     
     
-    ERESULT         u32Array_AppendFile(
-        U32ARRAY_DATA	*this,
+    ERESULT         i32Array_AppendFile(
+        I32ARRAY_DATA   *this,
         PATH_DATA       *pPath
     )
     {
         int64_t         size = 0;
         int             chr;
         FILE            *pFile;
-        uint32_t        data;
+        int32_t         data;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -238,7 +286,7 @@ extern "C" {
             if (feof(pFile)) {
                 break;
             }
-            if (obj_Flag(this, U32ARRAY_FLAG_BIGENDIAN)) {
+            if (obj_Flag(this, I32ARRAY_FLAG_BIGENDIAN)) {
                 data = (chr & 0xFF) << 24;
             }
             else {
@@ -248,7 +296,7 @@ extern "C" {
             if (feof(pFile)) {
                 break;
             }
-            if (obj_Flag(this, U32ARRAY_FLAG_BIGENDIAN)) {
+            if (obj_Flag(this, I32ARRAY_FLAG_BIGENDIAN)) {
                 data |= (chr & 0xFF) << 16;
             }
             else {
@@ -258,7 +306,7 @@ extern "C" {
             if (feof(pFile)) {
                 break;
             }
-            if (obj_Flag(this, U32ARRAY_FLAG_BIGENDIAN)) {
+            if (obj_Flag(this, I32ARRAY_FLAG_BIGENDIAN)) {
                 data = (chr & 0xFF) << 8;
             }
             else {
@@ -268,13 +316,13 @@ extern "C" {
             if (feof(pFile)) {
                 break;
             }
-            if (obj_Flag(this, U32ARRAY_FLAG_BIGENDIAN)) {
+            if (obj_Flag(this, I32ARRAY_FLAG_BIGENDIAN)) {
                 data = (chr & 0xFF);
             }
             else {
                 data |= (chr & 0xFF) << 24;
             }
-            u32Array_AppendData(this, data);
+            i32Array_AppendData(this, data);
         }
         fclose(pFile);
         pFile = NULL;
@@ -287,12 +335,25 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                         A s s i g n
+    //                       A s s i g n
     //---------------------------------------------------------------
     
-    ERESULT         u32Array_Assign(
-        U32ARRAY_DATA	*this,
-        U32ARRAY_DATA	*pOther
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before 
+     a copy of the object is performed.
+     Example:
+     @code 
+        ERESULT eRc = i32Array__Assign(this,pOther);
+     @endcode 
+     @param     this    I32ARRAY object pointer
+     @param     pOther  a pointer to another I32ARRAY object
+     @return    If successful, ERESULT_SUCCESS otherwise an 
+                ERESULT_* error 
+     */
+    ERESULT         i32Array_Assign(
+        I32ARRAY_DATA	*this,
+        I32ARRAY_DATA   *pOther
     )
     {
         ERESULT         eRc;
@@ -300,12 +361,16 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !i32Array_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         eRc = array_Assign((ARRAY_DATA *)this, (ARRAY_DATA *)pOther);
         if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
@@ -318,34 +383,46 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                         C o p y
+    //                          C o p y
     //---------------------------------------------------------------
     
-    U32ARRAY_DATA * u32Array_Copy(
-        U32ARRAY_DATA	*this
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        i32Array      *pCopy = i32Array_Copy(this);
+     @endcode 
+     @param     this    I32ARRAY object pointer
+     @return    If successful, a I32ARRAY object which must be released,
+                otherwise OBJ_NIL.
+     @warning  Remember to release the returned the I32ARRAY object.
+     */
+    I32ARRAY_DATA *     i32Array_Copy(
+        I32ARRAY_DATA       *this
     )
     {
-        U32ARRAY_DATA	*pOther;
+        I32ARRAY_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = u32Array_New();
+        pOther = i32Array_New( );
         if (pOther) {
-            eRc = u32Array_Assign(this, pOther);
+            eRc = i32Array_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
         
+        // Return to caller.
         return pOther;
     }
     
@@ -355,11 +432,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            u32Array_Dealloc(
+    void            i32Array_Dealloc(
         OBJ_ID          objId
     )
     {
-        U32ARRAY_DATA   *this = objId;
+        I32ARRAY_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -367,7 +444,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -388,19 +465,19 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    uint32_t         u32Array_Delete(
-        U32ARRAY_DATA	*this,
+    int32_t         i32Array_Delete(
+        I32ARRAY_DATA   *this,
         uint32_t        index
     )
     {
-        uint32_t        data = 0;
+        int32_t         data = 0;
         uint32_t        *pData;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -426,44 +503,44 @@ extern "C" {
     }
     
     
-    uint32_t         u32Array_DeleteFirst(
-        U32ARRAY_DATA	*this
+    int32_t         i32Array_DeleteFirst(
+        I32ARRAY_DATA   *this
     )
     {
-        uint32_t        data = 0;
+        int32_t         data = 0;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        data = u32Array_Delete(this, 1);
+        data = i32Array_Delete(this, 1);
         
         // Return to caller.
         return data;
     }
     
     
-    uint32_t         u32Array_DeleteLast(
-        U32ARRAY_DATA	*this
+    int32_t         i32Array_DeleteLast(
+        I32ARRAY_DATA   *this
     )
     {
-        uint32_t        data = 0;
+        int32_t         data = 0;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        data = u32Array_Delete(this, array_getSize((ARRAY_DATA *)this));
+        data = i32Array_Delete(this, array_getSize((ARRAY_DATA *)this));
         
         // Return to caller.
         return data;
@@ -475,17 +552,17 @@ extern "C" {
     //                         G e t
     //---------------------------------------------------------------
     
-    uint32_t         u32Array_Get(
-        U32ARRAY_DATA	*this,
+    int32_t         i32Array_Get(
+        I32ARRAY_DATA   *this,
         uint32_t        index
     )
     {
-        uint32_t        data;
+        int32_t         data;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -503,43 +580,43 @@ extern "C" {
     }
     
     
-    uint32_t        u32Array_GetFirst(
-        U32ARRAY_DATA	*this
+    int32_t         i32Array_GetFirst(
+        I32ARRAY_DATA   *this
     )
     {
-        uint32_t        data;
+        int32_t         data;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        data = u32Array_Get(this, 1);
+        data = i32Array_Get(this, 1);
         
         return data;
     }
     
     
-    uint32_t         u32Array_GetLast(
-        U32ARRAY_DATA	*this
+    int32_t         i32Array_GetLast(
+        I32ARRAY_DATA   *this
     )
     {
-        uint32_t        data;
+        int32_t         data;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        data = u32Array_Get(this, array_getSize((ARRAY_DATA *)this));
+        data = i32Array_Get(this, array_getSize((ARRAY_DATA *)this));
         
         return data;
     }
@@ -550,39 +627,51 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    U32ARRAY_DATA *   u32Array_Init(
-        U32ARRAY_DATA     *this
+    I32ARRAY_DATA *   i32Array_Init(
+        I32ARRAY_DATA       *this
     )
     {
-        uint16_t        cbSize;
+        uint32_t        cbSize = sizeof(I32ARRAY_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cbSize = obj_getSize(this);
-        this = (U32ARRAY_DATA *)array_Init((ARRAY_DATA *)this);
+        /* cbSize can be zero if Alloc() was not called and we are
+         * are passed the address of a zero'd area.
+         */
+        //cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
+        if (cbSize == 0) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+
+        this = (OBJ_ID)array_Init((ARRAY_DATA *)this);      // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_I32ARRAY);
         if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
             return OBJ_NIL;
         }
         array_setElemSize((ARRAY_DATA *)this, 4);
-        obj_setSize(this, cbSize);
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_U32ARRAY);
-        this->pSuperVtbl = obj_getVtbl(this);   // Needed for Inheritance
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&u32Array_Vtbl);
-
+        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_I32ARRAY);     // Needed for Inheritance
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&i32Array_Vtbl);
+        
     #ifdef NDEBUG
     #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
+            obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "u32Array::offsetof(eRc) = %lu\n", offsetof(U32ARRAY_DATA,eRc));
-        //fprintf(stderr, "u32Array::sizeof(U32ARRAY_DATA) = %lu\n", sizeof(U32ARRAY_DATA));
+        //fprintf(stderr, "i32Array::offsetof(eRc) = %lu\n", offsetof(I32ARRAY_DATA,eRc));
+        //fprintf(stderr, "i32Array::sizeof(I32ARRAY_DATA) = %lu\n", sizeof(I32ARRAY_DATA));
 #endif
-        //BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(U32ARRAY_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(I32ARRAY_DATA));
     #endif
 
         return this;
@@ -594,10 +683,10 @@ extern "C" {
     //                          I n s e r t
     //---------------------------------------------------------------
     
-    ERESULT         u32Array_InsertData(
-        U32ARRAY_DATA   *this,
+    ERESULT         i32Array_InsertData(
+        I32ARRAY_DATA   *this,
         uint32_t        index,
-        uint32_t        data
+        int32_t         data
     )
     {
         ERESULT         eRc;
@@ -605,7 +694,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -635,29 +724,29 @@ extern "C" {
      object information structure.
      Example:
      @code
-     // Return a method pointer for a string or NULL if not found.
-     void        *pMethod = array_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
-     @endcode
-     @param     objId   OBJTEST object pointer
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = i32Array_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-     for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
-     character string which represents the method name without
-     the object name, "array", prefix,
-     for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-     address of the method to be found.
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "i32Array", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
-     OBJ_QUERYINFO_TYPE_INFO: info pointer,
-     OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-     OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          u32Array_QueryInfo(
+    void *          i32Array_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        U32ARRAY_DATA   *this = objId;
+        I32ARRAY_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -666,7 +755,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -674,28 +763,55 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)i32Array_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
-                        
+                    
+#ifdef XYZZY
                     case 'D':
-                        if (str_Compare("Delete", (char *)pStr) == 0) {
-                            return u32Array_Delete;
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return i32Array_Disable;
                         }
                         break;
-                        
-                    case 'I':
-                        if (str_Compare("InsertData", (char *)pStr) == 0) {
-                            return u32Array_InsertData;
+
+                    case 'E':
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return i32Array_Enable;
                         }
                         break;
-                        
+#endif
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return u32Array_ToDebugString;
+                            return i32Array_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return i32Array_ToJSON;
                         }
                         break;
                         
@@ -705,8 +821,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == u32Array_ToDebugString)
+                if (pData == i32Array_ToDebugString)
                     return "ToDebugString";
+                if (pData == i32Array_ToJSON)
+                    return "ToJSON";
                 break;
                 
             default:
@@ -722,17 +840,17 @@ extern "C" {
     //                            S e t
     //---------------------------------------------------------------
     
-    ERESULT         u32Array_SetData(
-        U32ARRAY_DATA   *this,
+    ERESULT         i32Array_SetData(
+        I32ARRAY_DATA   *this,
         uint32_t        index,
-        uint32_t        data
+        int32_t         data
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -744,7 +862,7 @@ extern "C" {
         }
 #endif
         
-        *((uint32_t *)array_Ptr((ARRAY_DATA *)this, index)) = data;
+        *((int32_t *)array_Ptr((ARRAY_DATA *)this, index)) = data;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -756,49 +874,111 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     u32Array_ToDebugString(
-        U32ARRAY_DATA   *this,
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = i32Array_ToDebugString(this,4);
+     @endcode 
+     @param     this    I32ARRAY object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     i32Array_ToDebugString(
+        I32ARRAY_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
+        ERESULT         eRc;
         int             j;
         int             jMax;
         ASTR_DATA       *pStr;
-        uint32_t        *pData;
-        
-        if (OBJ_NIL == this) {
+#ifdef  XYZZY        
+        ASTR_DATA       *pWrkStr;
+#endif
+        const
+        OBJ_INFO        *pInfo;
+        int32_t         *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !i32Array_Validate(this) ) {
+            DEBUG_BREAK();
             return OBJ_NIL;
         }
-        
+#endif
+              
+        pInfo = i32Array_Vtbl.iVtbl.pInfo;
         pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(token) size=%d data=[",
-                     this,
-                     array_getSize((ARRAY_DATA *)this)
-                     );
-        AStr_AppendA(pStr, str);
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d ",
+                    this,
+                    pInfo->pClassName,
+                    i32Array_getSize(this)
+            );
 
         jMax = array_getSize((ARRAY_DATA *)this);
         pData = array_Ptr((ARRAY_DATA *)this, 1);
         if (jMax) {
             for (j=0; j<(jMax-1); ++j) {
-                snprintf( str, sizeof(str), "%d,", *pData++ );
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(pStr, "%d,", *pData++);
             }
-            snprintf( str, sizeof(str), "%d", *pData );
-            AStr_AppendA(pStr, str);
+            AStr_AppendPrint(pStr, "%d\n", *pData++);
         }
         
-        j = snprintf( str, sizeof(str), "] %p}\n", this );
-        AStr_AppendA(pStr, str);
+
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
+        //i32Array_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     i32Array_ToJSON(
+        I32ARRAY_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !i32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    "{\"objectType\":\"%s\"",
+                    pInfo->pClassName
+                );
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        //i32Array_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -810,22 +990,37 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            u32Array_Validate(
-        U32ARRAY_DATA   *this
+    bool            i32Array_Validate(
+        I32ARRAY_DATA      *this
     )
     {
-        if(this) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_U32ARRAY) )
+ 
+        // WARNING: We have established that we have a valid pointer
+        //          in 'this' yet.
+       if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_I32ARRAY) )
                 ;
-            else
+            else {
+                // 'this' is not our kind of data. We really don't
+                // know what that it is at this point. 
                 return false;
+            }
         }
-        else
+        else {
+            // 'this' is NULL.
             return false;
-        if( !(obj_getSize(this) >= sizeof(U32ARRAY_DATA)) )
+        }
+        // Now, we have validated that we have a valid pointer in
+        // 'this'.
+
+
+        if( !(obj_getSize(this) >= sizeof(I32ARRAY_DATA)) ) {
+            //this->eRc = ERESULT_INVALID_OBJECT;
             return false;
+        }
 
         // Return to caller.
+        //this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif
@@ -836,21 +1031,21 @@ extern "C" {
     //                  W r i t e  T o  F i l e
     //---------------------------------------------------------------
     
-    ERESULT         u32Array_WriteToFile(
-        U32ARRAY_DATA   *this,
+    ERESULT         i32Array_WriteToFile(
+        I32ARRAY_DATA   *this,
         PATH_DATA       *pPath
     )
     {
         FILE            *pFile;
         uint32_t        index = 0;
         uint32_t        size;
-        uint32_t        *pData;
-        uint32_t        data;
+        int32_t         *pData;
+        int32_t         data;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !u32Array_Validate(this) ) {
+        if( !i32Array_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -860,15 +1055,15 @@ extern "C" {
         }
 #endif
         
-        pData = (uint32_t *)array_getData((ARRAY_DATA *)this);
+        pData = (int32_t *)array_getData((ARRAY_DATA *)this);
         size = array_getSize((ARRAY_DATA *)this);
         pFile = fopen(path_getData(pPath), "w");
         if (NULL == pFile) {
             return ERESULT_OPEN_ERROR;
         }
-        while ( index < size ) {
-            data = pData[index++];
-            if (obj_Flag(this, U32ARRAY_FLAG_BIGENDIAN)) {
+        while ( size-- ) {
+            data = *pData++;
+            if (obj_Flag(this, I32ARRAY_FLAG_BIGENDIAN)) {
                 fputc(((data >> 24) & 0xFF), pFile);
                 fputc(((data >> 16) & 0xFF), pFile);
                 fputc(((data >> 8) & 0xFF), pFile);
@@ -890,7 +1085,7 @@ extern "C" {
     
     
     
-    
+
     
 #ifdef	__cplusplus
 }
