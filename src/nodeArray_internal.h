@@ -61,6 +61,7 @@ struct nodeArray_data_s	{
     // Common Data
     OBJARRAY_DATA   *pArray;
     int             (*pCompare)(NODE_DATA *,NODE_DATA *);
+    OBJ_ID          pOther;
 
 };
 #pragma pack(pop)

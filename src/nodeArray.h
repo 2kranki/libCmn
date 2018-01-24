@@ -63,7 +63,7 @@
 
 
 #ifndef         NODEARRAY_H
-#define         NODEARRAY_H 1
+#define         NODEARRAY_H     1
 
 
 
@@ -129,6 +129,16 @@ extern "C" {
     bool            nodeArray_setCompare(
         NODEARRAY_DATA  *this,
         int             (*pCompare)(NODE_DATA *,NODE_DATA *)
+    );
+    
+    
+    OBJ_ID          nodeArray_getOther(
+        NODEARRAY_DATA  *this
+    );
+    
+    bool            nodeArray_setOther(
+        NODEARRAY_DATA  *this,
+        OBJ_ID          pValue
     );
     
     

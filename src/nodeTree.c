@@ -62,14 +62,6 @@ extern "C" {
 #endif
     
 
-    static
-    NAME_DATA       closeName = {{0}};
-    static
-    NODE_DATA       closeNode = {{0}};      // Close Node - ')'
-    static
-    NAME_DATA       openName  = {{0}};
-    static
-    NODE_DATA       openNode  = {{0}};      // Open Node - '('
 
 
  
@@ -205,7 +197,7 @@ extern "C" {
             nodeArray_AppendNode(pArray, nodeEntry_getNode(pEntry), NULL);
             childIndex = nodeEntry_getChild(pEntry);
             if (childIndex) {
-                nodeArray_AppendNode(pArray, nodeTree_OpenNode(), NULL);
+                nodeArray_AppendNode(pArray, nodeTree_getOpenNode(this), NULL);
                 pChild = objArray_Get(this->pArray, childIndex);
                 if (pChild) {
                     nodeTree_UpDownNodePre(this, childIndex, pArray);
@@ -213,7 +205,7 @@ extern "C" {
                         return this->eRc;
                     }
                 }
-                nodeArray_AppendNode(pArray, nodeTree_CloseNode(), NULL);
+                nodeArray_AppendNode(pArray, nodeTree_getCloseNode(this), NULL);
             }
             childIndex = nodeEntry_getSibling(pEntry);
             if (childIndex) {
@@ -525,52 +517,6 @@ extern "C" {
     
     
     
-    NODE_DATA *     nodeTree_CloseNode(
-    )
-    {
-        NODE_DATA       *pNode;
-
-#ifdef XYZZY
-        if (OBJ_NIL == pCloseNode) {
-            pNode = node_NewUTF8Con(")");
-            if (pNode) {
-                node_setClass(pNode, NODE_CLASS_CLOSE);
-                pCloseNode = pNode;
-            }
-        }
-#endif
-        if (0 == obj_getSize(&closeNode)) {
-            name_InitUTF8Con(&closeName, ")");
-            pNode = node_InitWithName(&closeNode, &closeName, OBJ_NIL);
-            if (!(pNode == &closeNode)) {
-                DEBUG_BREAK();
-            }
-            node_setClass(&closeNode, NODE_CLASS_CLOSE);
-        }
-        
-        return &closeNode;
-    }
-    
-    
-    NODE_DATA *     nodeTree_OpenNode(
-    )
-    {
-        NODE_DATA       *pNode;
-        
-        if (0 == obj_getSize(&openNode)) {
-            name_InitUTF8Con(&openName, "(");
-            pNode = node_InitWithName(&openNode, &openName, OBJ_NIL);
-            if (!(pNode == &openNode)) {
-                DEBUG_BREAK();
-            }
-            node_setClass(&openNode, NODE_CLASS_OPEN);
-        }
-        
-        return &openNode;
-    }
-    
-    
-    
 
     
 
@@ -578,6 +524,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          A r r a y
+    //---------------------------------------------------------------
+    
     OBJARRAY_DATA * nodeTree_getArray(
         NODETREE_DATA   *this
     )
@@ -619,6 +569,41 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                    C l o s e  N o d e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeTree_getCloseNode(
+        NODETREE_DATA   *this
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pClose) {
+            pNode = node_NewWithUTF8ConAndClass(")", NODE_CLASS_CLOSE, OBJ_NIL);
+            if (pNode) {
+                this->pClose = pNode;
+            }
+        }
+
+        return this->pClose;
+    }
+    
+
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
     
     ERESULT         nodeTree_getLastError(
         NODETREE_DATA   *this
@@ -684,6 +669,37 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                    O p e n  N o d e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeTree_getOpenNode(
+        NODETREE_DATA   *this
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pOpen) {
+            pNode = node_NewWithUTF8ConAndClass("(", NODE_CLASS_OPEN, OBJ_NIL);
+            if (pNode) {
+                this->pOpen = pNode;
+            }
+        }
+        
+        return this->pOpen;
+    }
+    
+    
+    
+    
 
     
 
@@ -1070,6 +1086,15 @@ extern "C" {
 #endif
 
         nodeTree_setArray(this, OBJ_NIL);
+
+        if (this->pClose) {
+            obj_Release(this->pClose);
+            this->pClose = OBJ_NIL;
+        }
+        if (this->pOpen) {
+            obj_Release(this->pOpen);
+            this->pOpen = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         obj_Dealloc(this);
@@ -1790,7 +1815,6 @@ extern "C" {
     //                T o  L i n e a r i z a t i o n
     //---------------------------------------------------------------
     
-#ifdef XYZZY
     NODEARRAY_DATA * nodeTree_ToLinearizationPost(
         NODETREE_DATA	*this
     )
@@ -1808,15 +1832,15 @@ extern "C" {
         
         pArray = nodeArray_New();
         if (pArray) {
-            nodeArray_AppendNode(pArray, nodeTree_OpenNode(), NULL);
-            nodeTree_UpDownNodePost(this, this->pRootNode, pArray);
-            nodeArray_AppendNode(pArray, nodeTree_CloseNode(), NULL);
+            nodeArray_AppendNode(pArray, nodeTree_getOpenNode(this), NULL);
+            //FIXME: nodeTree_UpDownNodePost(this, 1, pArray);
+            nodeArray_AppendNode(pArray, nodeTree_getCloseNode(this), NULL);
+            nodeArray_setOther(pArray, this);
         }
         
         // Return to caller.
         return pArray;
     }
-#endif
     
     
     NODEARRAY_DATA * nodeTree_ToLinearizationPre(
@@ -1836,9 +1860,10 @@ extern "C" {
         
         pArray = nodeArray_New();
         if (pArray) {
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_OpenNode(), NULL);
+            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
             nodeTree_UpDownNodePre(this, 1, pArray);
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_CloseNode(), NULL);
+            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
+            nodeArray_setOther(pArray, this);
         }
         
         // Return to caller.

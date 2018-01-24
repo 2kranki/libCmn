@@ -271,7 +271,13 @@ extern "C" {
         this = nodeScan_Alloc( );
         if (this) {
             this = nodeScan_InitArray(this, pArray);
-        } 
+            if (this) {
+                this->pTree = nodeArray_getOther(pArray);
+                BREAK_NULL(this->pTree);
+                this->pClose = nodeTree_getCloseNode(this->pTree);
+                this->pOpen = nodeTree_getOpenNode(this->pTree);
+            }
+        }
         return this;
     }
 
@@ -294,6 +300,9 @@ extern "C" {
         this = nodeScan_Alloc( );
         if (this) {
             this = nodeScan_InitArray(this, pArray);
+            this->pTree = pTree;
+            this->pClose = nodeTree_getCloseNode(this->pTree);
+            this->pOpen = nodeTree_getOpenNode(this->pTree);
         }
         
         return this;
@@ -307,6 +316,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          A r r a y
+    //---------------------------------------------------------------
+    
     NODEARRAY_DATA * nodeScan_getArray(
         NODESCAN_DATA    *this
     )
@@ -349,6 +362,28 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                    C l o s e  N o d e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeScan_getCloseNode(
+        NODESCAN_DATA   *this
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->pClose;
+    }
+    
+    
+    
     uint32_t        nodeScan_getIndex(
         NODESCAN_DATA   *this
     )
@@ -383,6 +418,28 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                    O p e n  N o d e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeScan_getOpenNode(
+        NODESCAN_DATA   *this
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->pOpen;
+    }
+    
+    
+    
 
     
 

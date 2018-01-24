@@ -109,17 +109,7 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeTree_CloseNode(
-        void
-    );
-    
-    
     NODETREE_DATA * nodeTree_New(
-        void
-    );
-    
-    
-    NODE_DATA *     nodeTree_OpenNode(
         void
     );
     
@@ -130,7 +120,17 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    NODE_DATA *     nodeTree_getCloseNode(
+        NODETREE_DATA   *this
+    );
+    
+    
     ERESULT         nodeTree_getLastError(
+        NODETREE_DATA   *this
+    );
+    
+    
+    NODE_DATA *     nodeTree_getOpenNode(
         NODETREE_DATA   *this
     );
     
@@ -414,6 +414,8 @@ extern "C" {
      * node has children. A close node is added after all the children
      * are added. The tree is visited in pre-order mode. This can be used
      * to scan the tree as if it was an array looking for patterns.
+     * The other property of the node array contains a pointer to this
+     * tree.
      */
     NODEARRAY_DATA * nodeTree_ToLinearizationPre(
         NODETREE_DATA	*this

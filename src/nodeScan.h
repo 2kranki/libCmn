@@ -122,6 +122,11 @@ extern "C" {
     );
     
     
+    NODE_DATA *     nodeScan_getCloseNode(
+        NODESCAN_DATA   *this
+    );
+    
+    
     uint32_t        nodeScan_getIndex(
         NODESCAN_DATA   *this
     );
@@ -129,6 +134,11 @@ extern "C" {
     bool            nodeScan_setIndex(
         NODESCAN_DATA   *this,
         uint32_t        value
+    );
+    
+    
+    NODE_DATA *     nodeScan_getOpenNode(
+        NODESCAN_DATA   *this
     );
     
     

@@ -84,6 +84,9 @@ struct nodeScan_data_s	{
     uint32_t        rsvd32_1;
     NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
     //                          // up/down members.
+    NODETREE_DATA   *pTree;
+    NODE_DATA       *pClose;
+    NODE_DATA       *pOpen;
 
     // ScanF Input
     ASTR_DATA       *pScanInput;

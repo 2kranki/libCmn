@@ -41,10 +41,10 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <nodeArray_internal.h>
-#include <enum_internal.h>
-#include <i32Array.h>
-#include <utf8.h>
+#include    <nodeArray_internal.h>
+#include    <enum_internal.h>
+#include    <i32Array.h>
+#include    <utf8.h>
 
 
 
@@ -54,64 +54,6 @@ extern "C" {
     
 
 
-#ifdef XYZZY
-    typedef struct RE {
-        int     type;   /* CHAR, STAR, etc. */
-        char    ch;     /* the character itself */
-        char    *ccl;   /* for [...] instead */
-        int     nccl;   /* true if class is negated [^...] */
-    } RE;
-
-    /* match: search for regexp anywhere in text */
-    int         match(
-        char        *regexp,
-        char        *text
-                      )
-    {
-        if (regexp[0] == '^')
-            return matchhere(regexp+1, text);
-        do {    /* must look even if string is empty */
-            if (matchhere(regexp, text))
-                return 1;
-        } while (*text++ != '\0');
-        return 0;
-    }
-    
-    
-    /* matchhere: search for regexp at beginning of text */
-    int         matchhere(
-        char        *regexp,
-        char        *text
-                          )
-    {
-        if (regexp[0] == '\0')
-            return 1;
-        if (regexp[1] == '*')
-            return matchstar(regexp[0], regexp+2, text);
-        if ((regexp[0] == '$') && (regexp[1] == '\0'))
-            return (*text == '\0');
-        if ((*text != '\0') && ((regexp[0] == '.') || (regexp[0] == *text)))
-            return matchhere(regexp+1, text+1);
-        return 0;
-    }
-    
-    
-    /* matchstar: search for c*regexp at beginning of text */
-    int         matchstar(
-        int         c,
-        char        *regexp,
-        char        *text
-    )
-    {
-        do {    /* a * matches zero or more instances */
-            if (matchhere(regexp, text))
-                return 1;
-        } while (*text != '\0' && (*text++ == c || c == '.'));
-        return 0;
-    }
-#endif
-    
-    
     
     
     
@@ -120,66 +62,10 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    int         matchhere(
-        char        *regexp,
-        char        *text
-    );
-    int         matchstar(
-        int         c,
-        char        *regexp,
-        char        *text
-    );
 
     
-    /* match: search for regexp anywhere in text */
-    int         match(
-        char        *regexp,
-        char        *text
-    )
-    {
-        if (regexp[0] == '^')
-            return matchhere(regexp+1, text);
-        do {    /* must look even if string is empty */
-            if (matchhere(regexp, text))
-                return 1;
-        } while (*text++ != '\0');
-        return 0;
-    }
-
     
-    /* matchhere: search for regexp at beginning of text */
-    int         matchhere(
-        char        *regexp,
-        char        *text
-    )
-    {
-        if (regexp[0] == '\0')
-            return 1;
-        if (regexp[1] == '*')
-            return matchstar(regexp[0], regexp+2, text);
-        if ((regexp[0] == '$') && (regexp[1] == '\0'))
-            return *text == '\0';
-        if ((*text != '\0') && ((regexp[0] == '.') || (regexp[0] == *text)))
-            return matchhere(regexp+1, text+1);
-        return 0;
-    }
-
     
-    /* matchstar: search for c*regexp at beginning of text */
-    int         matchstar(
-        int         c,
-        char        *regexp,
-        char        *text
-    )
-    {
-        do {    /* a * matches zero or more instances */
-            if (matchhere(regexp, text))
-                return 1;
-        } while (*text != '\0' && (*text++ == c || c == '.'));
-        return 0;
-    }
-
-
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -267,6 +153,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          A r r a y
+    //---------------------------------------------------------------
+    
     OBJARRAY_DATA *  nodeArray_getArray(
         NODEARRAY_DATA  *this
     )
@@ -320,6 +210,50 @@ extern "C" {
 #endif
         
         this->pCompare = pCompare;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        O t h e r
+    //---------------------------------------------------------------
+    
+    OBJ_ID          nodeArray_getOther(
+        NODEARRAY_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pOther;
+    }
+    
+    
+    bool            nodeArray_setOther(
+        NODEARRAY_DATA  *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
         
         return true;
     }
@@ -548,6 +482,10 @@ extern "C" {
         if (this->pArray) {
             obj_Release(this->pArray);
             this->pArray = OBJ_NIL;
+        }
+        if (this->pOther) {
+            obj_Release(this->pOther);
+            this->pOther = OBJ_NIL;
         }
 
         obj_Dealloc(this);
