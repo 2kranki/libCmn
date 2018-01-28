@@ -80,6 +80,7 @@ struct nodeScan_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
+    ERESULT         eRc;
     uint32_t        index;
     uint32_t        rsvd32_1;
     NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with

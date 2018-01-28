@@ -419,6 +419,49 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeScan_getLastError(
+        NODESCAN_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            nodeScan_setLastError(
+        NODESCAN_DATA   *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                    O p e n  N o d e
     //---------------------------------------------------------------
     
@@ -721,7 +764,76 @@ extern "C" {
     }
     
     
+    uint32_t        nodeScan_MatchClassesRegex(
+        NODESCAN_DATA   *this,
+        int32_t         *pRegex,
+        uint32_t        index
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        uint32_t        regexSize = 0;
+        uint32_t        idx = 0;            // Current Index
+        uint32_t        idxStart = 0;
+        uint32_t        i;
+        uint32_t        j;
+        int32_t         *pIdxRegex;
+        int32_t         curRegex;
+        int32_t         stopRegex;
+        int32_t         curClass;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        if (NULL == pRegex) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+#endif
+        if (0 == index)
+            index = 1;
+        --index;
+        if (index < nodeArray_getSize(this->pArray))
+            ;
+        else {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+        
+        // Find the number of elements in the regex.
+        for (i=0,pIdxRegex=pRegex; *pIdxRegex; ++i,++pIdxRegex)
+            ;
+        regexSize = i;
+        
+        // Do the search.
+        pIdxRegex = pRegex;
+        while (*pIdxRegex) {
+            curRegex = *pIdxRegex;
+            if (curRegex == NODE_CLASS_KLEENE) {
+                stopRegex = *(pIdxRegex + 1);
+            }
+            else
+                stopRegex = curRegex;
+#ifdef XYZZY
+            pNode = nodeScan_MatchClass(this, *pSet);
+            if(pNode) {
+                return pNode;
+            }
+#endif
+            ++pIdxRegex;
+        }
+        
+        // Return to caller.
+        return index;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

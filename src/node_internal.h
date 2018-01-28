@@ -67,6 +67,7 @@ struct node_data_s	{
     // Common Data
     ERESULT         eRc;
     int32_t         cls;
+    int32_t         type;
     uint32_t        index;
     NAME_DATA       *pName;
     OBJ_ID          pData;

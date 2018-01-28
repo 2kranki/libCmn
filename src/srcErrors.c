@@ -62,16 +62,15 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            srcErrors_task_body(
-        void            *pData
+    void            srcErrors_DefaultFatalExit(
+        OBJ_ID          pObj,
+        SRCERRORS_DATA  *pData
     )
     {
-        //SRCERRORS_DATA  *this = pData;
-        
+        DEBUG_BREAK();
+        exit(99);
     }
-#endif
 
 
 
@@ -871,6 +870,7 @@ extern "C" {
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCERRORS);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcErrors_Vtbl);
+        this->pFatalExit = srcErrors_DefaultFatalExit;
         
         srcErrors_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pErrors = objArray_New( );

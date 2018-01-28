@@ -95,10 +95,15 @@ extern "C" {
     typedef struct nodeScan_data_s      NODESCAN_DATA;
     typedef struct nodeTree_data_s      NODETREE_DATA;
 
+    
     // Some predefined Node Classes
     typedef enum node_classes_e {
         NODE_CLASS_UNKNOWN=0,
-        NODE_CLASS_ROOT,
+        NODE_CLASS_ROOT=1,
+        NODE_CLASS_ANY,                 // Used for scanning and accepting any other class
+        //                              // accept any class other than unknown
+        NODE_CLASS_KLEENE,              // Used for scanning and accepting any other class
+        //                              // accept 0 or more classes
         NODE_CLASS_INTEGER,
         NODE_CLASS_STRING,
         NODE_CLASS_OPEN,                // Open/Down Node for Tree Linerization
@@ -106,6 +111,7 @@ extern "C" {
         NODE_CLASS_USER=1024            // First User defined class
     } NODE_CLASSES;
 
+    
     typedef struct node_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
@@ -295,6 +301,17 @@ extern "C" {
     
     NODEARRAY_DATA * node_getProperties(
         NODE_DATA       *this
+    );
+    
+    
+    // Type is user defined.
+    int32_t         node_getType(
+        NODE_DATA       *this
+    );
+    
+    bool            node_setType(
+        NODE_DATA       *this,
+        int32_t         value
     );
     
     

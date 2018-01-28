@@ -298,6 +298,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          C l a s s
+    //---------------------------------------------------------------
+    
     int32_t         node_getClass(
         NODE_DATA       *this
     )
@@ -331,6 +335,10 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                          D a t a
+    //---------------------------------------------------------------
     
     OBJ_ID          node_getData(
         NODE_DATA       *this
@@ -732,6 +740,44 @@ extern "C" {
         }
         this->pProperties = pValue;
         
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          T y p e
+    //---------------------------------------------------------------
+    
+    int32_t         node_getType(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->type;
+    }
+    
+    
+    bool            node_setType(
+        NODE_DATA       *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->type = value;
         return true;
     }
     

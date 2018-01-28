@@ -818,13 +818,17 @@ extern "C" {
                     cls = token_getClass(pInput);
                     if (cls == '\'') {
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
-                        lex_InputAdvance((LEX_DATA *)this, 2);
+                        lex_InputAdvance((LEX_DATA *)this, 1);
                         newCls = PPLEX_CONSTANT_CHAR;
                         fMore = false;
                         break;
                     }
                     else {
-                        //FIXME: Malformed Char Constant
+                        srcErrors_AddFatalFromTokenA(
+                                                     OBJ_NIL,
+                                                     pInput,
+                                                     "Malformed Character Constant"
+                                                     );
                     }
                     break;
                     
