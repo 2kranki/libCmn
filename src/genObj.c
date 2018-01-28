@@ -1351,12 +1351,12 @@ extern "C" {
         const
         char            *pName,
         const
-        char            *pReturns,
+        char            *pReturnType,       // Return Type
         const
         char            *pDataDefs,
         const
         char            *pBody,
-        bool            fStatic
+        bool            fStatic             // true == static procedure
     )
     {
         ASTR_DATA       *pOffset = OBJ_NIL;
@@ -1438,7 +1438,7 @@ extern "C" {
                          *ppStr,
                          "%s%s\t\t\t%s_%s(\n",
                          AStr_getData(pOffset),
-                         pReturns,
+                         pReturnType,
                          pClassName,
                          pName
                          );
@@ -1465,31 +1465,31 @@ extern "C" {
         }
         AStr_AppendPrint(*ppStr, "%s)\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "%s{\n", AStr_getData(pOffset));
-        if (0 == strcmp("int", pReturns)) {
+        if (0 == strcmp("int", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tint\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int8_t", pReturns)) {
+        else if (0 == strcmp("int8_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tint8_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int16_t", pReturns)) {
+        else if (0 == strcmp("int16_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tint16_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int32_t", pReturns)) {
+        else if (0 == strcmp("int32_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tint32_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int64_t", pReturns)) {
+        else if (0 == strcmp("int64_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tint64_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint8_t", pReturns)) {
+        else if (0 == strcmp("uint8_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tuint8_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint16_t", pReturns)) {
+        else if (0 == strcmp("uint16_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tuint16_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint32_t", pReturns)) {
+        else if (0 == strcmp("uint32_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tuint32_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint64_t", pReturns)) {
+        else if (0 == strcmp("uint64_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\tuint64_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
         if (pDataDefs) {
@@ -1515,37 +1515,37 @@ extern "C" {
         }
         AStr_AppendPrint(*ppStr, "\n");
         AStr_AppendPrint(*ppStr, "%s\t// Return to caller.\n", AStr_getData(pOffset));
-        if (0 == strcmp("void", pReturns)) {
+        if (0 == strcmp("void", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int", pReturns)) {
+        else if (0 == strcmp("int", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int8_t", pReturns)) {
+        else if (0 == strcmp("int8_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int16_t", pReturns)) {
+        else if (0 == strcmp("int16_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int32_t", pReturns)) {
+        else if (0 == strcmp("int32_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("int64_t", pReturns)) {
+        else if (0 == strcmp("int64_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint8_t", pReturns)) {
+        else if (0 == strcmp("uint8_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint16_t", pReturns)) {
+        else if (0 == strcmp("uint16_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint32_t", pReturns)) {
+        else if (0 == strcmp("uint32_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-        else if (0 == strcmp("uint64_t", pReturns)) {
+        else if (0 == strcmp("uint64_t", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn iRet;\n", AStr_getData(pOffset));
         }
-       else if (0 == strcmp("ERESULT", pReturns)) {
+       else if (0 == strcmp("ERESULT", pReturnType)) {
             AStr_AppendPrint(*ppStr, "%s\treturn this->eRc;\n", AStr_getData(pOffset));
         }
         else {

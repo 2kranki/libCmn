@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 1/21/2018  4:57:41.000)
+# ( 1/28/2018 16:33:31.000)
 
 
 LIBNAM=libCmn
@@ -584,6 +584,18 @@ $(OBJDIR)/fileio.o: $(SRCDIR)/fileio.c
 
 
 $(OBJDIR)/fileio_object.o: $(SRCDIR)/fileio_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/genObj.o $(OBJDIR)/genObj_object.o
+
+
+$(OBJDIR)/genObj.o: $(SRCDIR)/genObj.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/genObj_object.o: $(SRCDIR)/genObj_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -2049,6 +2061,13 @@ TESTS += test_fileio
 
 test_fileio:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_fileio.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_genObj
+
+test_genObj:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_genObj.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
