@@ -299,6 +299,47 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      C h i l d  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getChild(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->rightIndex;
+    }
+    
+    
+    bool            node_setChild(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          C l a s s
     //---------------------------------------------------------------
     
@@ -539,6 +580,92 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      L e f t  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getLeft(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->leftIndex;
+    }
+    
+    
+    bool            node_setLeft(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->leftIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   M i d d l e  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getMiddle(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->middleIndex;
+    }
+    
+    
+    bool            node_setMiddle(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->middleIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          M i s c
+    //---------------------------------------------------------------
+    
     uint16_t        node_getMisc(
         NODE_DATA       *this
     )
@@ -663,6 +790,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+    
     OBJ_ID          node_getOther(
         NODE_DATA       *this
     )
@@ -704,6 +835,51 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   P a r e n t  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getParent(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->parentIndex;
+    }
+    
+    
+    bool            node_setParent(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->parentIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      P r o p e r t i e s
+    //---------------------------------------------------------------
+    
     NODEARRAY_DATA * node_getProperties(
         NODE_DATA       *this
     )
@@ -739,6 +915,88 @@ extern "C" {
             obj_Release(this->pProperties);
         }
         this->pProperties = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      R i g h t  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getRight(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->rightIndex;
+    }
+    
+    
+    bool            node_setRight(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    S i b l i n g  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getSibling(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->leftIndex;
+    }
+    
+    
+    bool            node_setSibling(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->leftIndex = value;
         
         return true;
     }

@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 1/28/2018 16:33:29.000)
+# ( 1/29/2018 23:44:49.000)
 
 
 LIBNAM=libCmn
@@ -99,7 +99,6 @@ OBJS = $(OBJS) $(OBJDIR)\node.obj $(OBJDIR)\node_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeATree.obj $(OBJDIR)\nodeATree_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeArc.obj $(OBJDIR)\nodeArc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeArray.obj $(OBJDIR)\nodeArray_object.obj
-OBJS = $(OBJS) $(OBJDIR)\nodeEntry.obj $(OBJDIR)\nodeEntry_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeGraph.obj $(OBJDIR)\nodeGraph_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeHash.obj $(OBJDIR)\nodeHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\nodeList.obj $(OBJDIR)\nodeList_object.obj
@@ -795,14 +794,6 @@ TESTS = $(TESTS) test_nodeArray
 
 test_nodeArray:
 	$(CC) $(CFLAGS) /Itests tests\test_nodeArray.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
-	del *.obj
-	$(OBJDIR)\$(@F).exe
-
-
-TESTS = $(TESTS) test_nodeEntry
-
-test_nodeEntry:
-	$(CC) $(CFLAGS) /Itests tests\test_nodeEntry.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

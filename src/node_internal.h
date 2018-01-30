@@ -70,6 +70,10 @@ struct node_data_s	{
     int32_t         type;
     uint32_t        index;
     NAME_DATA       *pName;
+    uint32_t        leftIndex;
+    uint32_t        middleIndex;
+    uint32_t        parentIndex;
+    uint32_t        rightIndex;
     OBJ_ID          pData;
     OBJ_ID          pOther;
     NODEARRAY_DATA  *pProperties;

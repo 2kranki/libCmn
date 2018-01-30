@@ -26,7 +26,6 @@
 #include    <name.h>
 #include    <node.h>
 #include    <nodeArray.h>
-#include    <nodeEntry.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <nodeArray_internal.h>

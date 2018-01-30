@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 1/28/2018 16:33:31.000)
+# ( 1/29/2018 23:44:50.000)
 
 
 LIBNAM=libCmn
@@ -824,18 +824,6 @@ $(OBJDIR)/nodeArray.o: $(SRCDIR)/nodeArray.c
 
 
 $(OBJDIR)/nodeArray_object.o: $(SRCDIR)/nodeArray_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/nodeEntry.o $(OBJDIR)/nodeEntry_object.o
-
-
-$(OBJDIR)/nodeEntry.o: $(SRCDIR)/nodeEntry.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/nodeEntry_object.o: $(SRCDIR)/nodeEntry_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -2215,13 +2203,6 @@ TESTS += test_nodeArray
 
 test_nodeArray:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeArray.c 
-	$(OBJDIR)/$(@F) ./tests
-
-
-TESTS += test_nodeEntry
-
-test_nodeEntry:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeEntry.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
