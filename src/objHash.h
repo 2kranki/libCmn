@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          OBJHASH Console Transmit Task (objHash) Header
+//          Object Hash Table (objHash) Header
 //****************************************************************
 /*
  * Program
- *			Separate objHash (objHash)
+ *			Object Hash Table (objHash)
  * Purpose
  *			This object provides a standardized way of handling
  *          a Hash table for objects. The objects must support
@@ -14,11 +14,22 @@
  *          this table has no knowledge of a key and objects
  *          must always be suppied for searches, deletions, etc.
  *
+ *          The hash chains are manipulated like a push down
+ *          stack with the latest addition being the closest
+ *          to the head of the chain. So, if duplicate entries
+ *          are allowed (see objHash_setDuplicates()), the
+ *          lastest addition of that name will be the first
+ *          to be found.
+ *
  * Remarks
- *	1.      None
+ *	1.      The objects added to this table must support the
+ *          compare() and hash() methods. The compare() method
+ *          must be able to compare its object against any
+ *          other object in the table.
  *
  * History
- *	10/24/2015 Generated
+ *  01/31/2018  Added the ability to have duplicate symbols
+ *	10/24/2015  Generated
  */
 
 
@@ -127,6 +138,21 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            objHash_getDuplicates(
+        OBJHASH_DATA    *this
+    );
+    
+    bool            objHash_setDuplicates(
+        OBJHASH_DATA    *this,
+        bool            fValue
+    );
+    
+
+    ERESULT         objHash_getLastError(
+        OBJHASH_DATA    *this
+    );
+    
+    
     uint32_t        objHash_getSize(
         OBJHASH_DATA    *this
     );
@@ -142,7 +168,8 @@ extern "C" {
     // supplied key does not exist in the table.
     ERESULT         objHash_Add(
         OBJHASH_DATA    *this,
-        OBJ_ID			pObject
+        OBJ_ID          pObject,
+        uint32_t        *pIndex
     );
     
     
@@ -177,6 +204,16 @@ extern "C" {
     );
     
     
+    /*! Delete the object for the given index.
+     @return    If successful, the object deleted. Otherwise, return OBJ_NIL
+                and set an ERESULT_* error.
+     */
+    OBJ_ID          objHash_DeleteIndex(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    );
+    
+    
     /*! Create an enumerator for the Hash in ascending order
          if the object contains a compare() method.
      @param     this    DIR_DATA object pointer
@@ -195,6 +232,16 @@ extern "C" {
     OBJ_ID          objHash_Find(
         OBJHASH_DATA    *this,
         OBJ_ID          pObject
+    );
+    
+    
+    /*! Find the object for the given index.
+     @return    If successful, the object deleted. Otherwise, return OBJ_NIL
+                and set an ERESULT_* error.
+     */
+    OBJ_ID          objHash_FindIndex(
+        OBJHASH_DATA    *this,
+        uint32_t        index
     );
     
     

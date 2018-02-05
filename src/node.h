@@ -66,6 +66,7 @@
 #include        <cmn_defs.h>
 #include        <name.h>
 #include        <AStr.h>
+#include        <visitor.h>
 
 
 #ifndef         NODE_H
@@ -388,6 +389,20 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Accept a Visitor object's request by building the appropriate
+     method name, query visitor to get the actual method and last
+     call that method. The method name that is built is "Visit_node_"
+     and the type concatentated in hexadecimal (ie 8 hex chars).
+     @result    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         node_Accept(
+        NODE_DATA       *this,
+        VISITOR_DATA    *pVisitor
+    );
+    
+    
     /*!
      Compare this node to the other node.
      @result

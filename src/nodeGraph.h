@@ -130,6 +130,13 @@ extern "C" {
     );
 
 
+    NODEGRAPH_DATA * nodeGraph_NodeAdd(
+        NODEGRAPH_DATA  *this,
+        NODE_DATA       *pNode,             // [in] node pointer
+        uint32_t        *pIndex             // [out] returned node index
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

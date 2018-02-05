@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEARC Console Transmit Task (nodeArc) Header
+//          SYMATTR Console Transmit Task (symAttr) Header
 //****************************************************************
 /*
  * Program
- *			Separate nodeArc (nodeArc)
+ *			Separate symAttr (symAttr)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate nodeArc to run things without complications
- *          of interfering with the main nodeArc. A nodeArc may be 
- *          called a nodeArc on other O/S's.
+ *          a separate symAttr to run things without complications
+ *          of interfering with the main symAttr. A symAttr may be 
+ *          called a symAttr on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal nodeArc. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	07/14/2016 Generated
+ *	02/02/2018 Generated
  */
 
 
@@ -56,11 +53,11 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <node.h>
+#include        <visitor.h>
 
 
-#ifndef         NODEARC_H
-#define         NODEARC_H 1
+#ifndef         SYMATTR_H
+#define         SYMATTR_H
 
 
 
@@ -74,15 +71,16 @@ extern "C" {
     //****************************************************************
 
 
+    typedef struct symAttr_data_s	SYMATTR_DATA;    // Inherits from OBJ.
 
-    typedef struct nodeArc_vtbl_s	{
+    typedef struct symAttr_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeArc_object.c.
+        // method names to the vtbl definition in symAttr_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEARC_DATA *);
-    } NODEARC_VTBL;
+        //bool        (*pIsEnabled)(SYMATTR_DATA *);
+    } SYMATTR_VTBL;
 
 
 
@@ -99,14 +97,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to nodeArc object if successful, otherwise OBJ_NIL.
+     @return    pointer to symAttr object if successful, otherwise OBJ_NIL.
      */
-    NODEARC_DATA *  nodeArc_Alloc(
+    SYMATTR_DATA *     symAttr_Alloc(
         void
     );
     
     
-    NODEARC_DATA *  nodeArc_New(
+    OBJ_ID          symAttr_Class(
+        void
+    );
+    
+    
+    SYMATTR_DATA *     symAttr_New(
         void
     );
     
@@ -116,71 +119,61 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            nodeArc_getAdjacent(
-        NODEARC_DATA    *this
-    );
-    
-    bool            nodeArc_setAdjacent(
-        NODEARC_DATA    *this,
-        bool            fValue
-    );
-    
-    
-    NODE_DATA *     nodeArc_getInNode(
-        NODEARC_DATA    *this
+    ERESULT         symAttr_getLastError(
+        SYMATTR_DATA    *this
     );
 
-    bool            nodeArc_setInNode(
-        NODEARC_DATA    *this,
-        NODE_DATA       *pValue
+
+    int32_t         symAttr_getType(
+        SYMATTR_DATA    *this
     );
     
-    
-    NODE_DATA *     nodeArc_getOutNode(
-        NODEARC_DATA    *this
+    bool            symAttr_setType(
+        SYMATTR_DATA    *this,
+        int32_t         value
     );
     
-    bool            nodeArc_setOutNode(
-        NODEARC_DATA    *this,
-        NODE_DATA       *pValue
-    );
-    
-    
-    uint32_t        nodeArc_getWeight(
-        NODEARC_DATA    *this
-    );
-    
-    bool            nodeArc_setWeight(
-        NODEARC_DATA    *this,
-        uint32_t        value
-    );
-    
-    
-    
+
+
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODEARC_DATA *  nodeArc_Init(
-        NODEARC_DATA    *this
+    ERESULT     symAttr_Disable(
+        SYMATTR_DATA		*this
     );
 
 
+    ERESULT     symAttr_Enable(
+        SYMATTR_DATA		*this
+    );
+
+   
+    SYMATTR_DATA *   symAttr_Init(
+        SYMATTR_DATA     *this
+    );
+
+
+    ERESULT     symAttr_IsEnabled(
+        SYMATTR_DATA		*this
+    );
+    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = nodeArc_ToDebugString(pObj,4);
-     @endcode
-     @param     this    nodeArc object pointer
+     @code 
+        ASTR_DATA      *pDesc = symAttr_ToDebugString(this,4);
+     @endcode 
+     @param     this    SYMATTR object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeArc_ToDebugString(
-        NODEARC_DATA    *this,
+    ASTR_DATA *    symAttr_ToDebugString(
+        SYMATTR_DATA     *this,
         int             indent
     );
     
@@ -191,5 +184,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* NODEARC_H */
+#endif	/* SYMATTR_H */
 

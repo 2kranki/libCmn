@@ -192,6 +192,157 @@ NODETREE_DATA * createTestTree01(
 
 
 static
+NODETREE_DATA * createTestTree02(
+)
+{
+    NODETREE_DATA    *pTree = OBJ_NIL;
+    NODE_DATA       *pNodeA = OBJ_NIL;
+    NODE_DATA       *pNodeB = OBJ_NIL;
+    NODE_DATA       *pNodeC = OBJ_NIL;
+    NODE_DATA       *pNodeD = OBJ_NIL;
+    NODE_DATA       *pNodeE = OBJ_NIL;
+    NODE_DATA       *pNodeF = OBJ_NIL;
+    NODE_DATA       *pNodeG = OBJ_NIL;
+    NODE_DATA       *pNodeH = OBJ_NIL;
+    NODE_DATA       *pNodeI = OBJ_NIL;
+    uint32_t        i;
+    ERESULT         eRc;
+    
+    pTree = nodeTree_Alloc( );
+    if  (OBJ_NIL == pTree) {
+        return pTree;
+    }
+    pTree = nodeTree_Init( pTree );
+    if  (OBJ_NIL == pTree) {
+        return pTree;
+    }
+    
+    pNodeA = node_NewWithUTF8Con("A", OBJ_NIL);
+    if  (OBJ_NIL == pNodeA) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeB = node_NewWithUTF8Con("B", OBJ_NIL);
+    if  (OBJ_NIL == pNodeB) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeC = node_NewWithUTF8Con("C", OBJ_NIL);
+    if  (OBJ_NIL == pNodeC) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeD = node_NewWithUTF8Con("D", OBJ_NIL);
+    if  (OBJ_NIL == pNodeD) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeE = node_NewWithUTF8Con("E", OBJ_NIL);
+    if  (OBJ_NIL == pNodeE) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeF = node_NewWithUTF8Con("F", OBJ_NIL);
+    if  (OBJ_NIL == pNodeF) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeG = node_NewWithUTF8Con("G", OBJ_NIL);
+    if  (OBJ_NIL == pNodeG) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeH = node_NewWithUTF8Con("H", OBJ_NIL);
+    if  (OBJ_NIL == pNodeH) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    pNodeI = node_NewWithUTF8Con("I", OBJ_NIL);
+    if  (OBJ_NIL == pNodeI) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    
+    fprintf(stderr, "\n\nCreate the tree:\n");
+    fprintf(stderr, "Tree    Index  Sibling  Child  Parent\n");
+    fprintf(stderr, "A         1       0       2       0\n");
+    fprintf(stderr, "--B       2       3       5       1\n");
+    fprintf(stderr, "----C     5       6       0       2\n");
+    fprintf(stderr, "----D     6       0       0       2\n");
+    fprintf(stderr, "--E       3       4       7       1\n");
+    fprintf(stderr, "----F     7       8       9       3\n");
+    fprintf(stderr, "------G   9       0       0       7\n");
+    fprintf(stderr, "----H     8       0       0       3\n");
+    fprintf(stderr, "--I       4       0       0       1\n");
+    fprintf(stderr, "\n\n\n");
+    
+    i = nodeTree_ChildAdd(pTree, 0, pNodeA);
+    if  (i == 1)
+        ;
+    else {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeA), pNodeB, pNodeE, pNodeI, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeB), pNodeC, pNodeD, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeE), pNodeF, pNodeH, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeF), pNodeG, OBJ_NIL);
+    if  (ERESULT_FAILED(eRc)) {
+        obj_Release(pTree);
+        pTree = OBJ_NIL;
+        return pTree;
+    }
+    
+    obj_Release(pNodeI);
+    pNodeI = OBJ_NIL;
+    obj_Release(pNodeH);
+    pNodeH = OBJ_NIL;
+    obj_Release(pNodeG);
+    pNodeG = OBJ_NIL;
+    obj_Release(pNodeF);
+    pNodeF = OBJ_NIL;
+    obj_Release(pNodeE);
+    pNodeE = OBJ_NIL;
+    obj_Release(pNodeD);
+    pNodeD = OBJ_NIL;
+    obj_Release(pNodeC);
+    pNodeC = OBJ_NIL;
+    obj_Release(pNodeB);
+    pNodeB = OBJ_NIL;
+    obj_Release(pNodeA);
+    pNodeA = OBJ_NIL;
+    
+    return pTree;
+}
+
+
+
+static
 void            visitor(
     OBJ_ID          pObject,            // Object supplied below
     NODETREE_DATA   *pTree,             // Our Tree
@@ -515,7 +666,7 @@ int         test_nodeTree_UpDownDelete01(
             mem_Free((void *)pStrA);
             pStrA = NULL;
         }
-        fprintf(stderr, " (actual)\n");
+        fprintf(stderr, " (actual)\n\n");
         eRc = name_CompareA(node_getName(pNodes[0]),"A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         eRc = name_CompareA(node_getName(pNodes[1]),"B");

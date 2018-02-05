@@ -1050,6 +1050,64 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        A c c e p t
+    //---------------------------------------------------------------
+    
+    ERESULT         node_Accept(
+        NODE_DATA        *this,
+        VISITOR_DATA     *pVisitor
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ERESULT         (*pMethod)(VISITOR_DATA *this, NODE_DATA *pObj) = NULL;
+        const
+        OBJ_IUNKNOWN    *pVtbl;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !node_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( OBJ_NIL == pVisitor ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pStr = AStr_NewA("Visit_node_");
+        if (OBJ_NIL == pStr) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        AStr_AppendHex32(pStr, this->type);
+        
+        pVtbl = obj_getVtbl(pVisitor);
+        if (pVtbl && pVtbl->pQueryInfo) {
+            pMethod =   pVtbl->pQueryInfo(
+                                pVisitor,
+                                OBJ_QUERYINFO_TYPE_METHOD,
+                                (void *)AStr_getData(pStr)
+                        );
+        }
+        
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        if (NULL == pMethod) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_FUNCTION;
+        }
+        
+        eRc = pMethod(pVisitor, this);
+        
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          A s s i g n
     //---------------------------------------------------------------
     
@@ -1769,6 +1827,12 @@ extern "C" {
                 
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
+                        
+                    case 'A':
+                        if (str_Compare("Accept", (char *)pStr) == 0) {
+                            return node_Accept;
+                        }
+                        break;
                         
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {

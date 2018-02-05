@@ -400,6 +400,8 @@ extern "C" {
         OBJ_IDENT_SRCFILES_CLASS,
         OBJ_IDENT_SRCLOC,               // Source Location (File, Line, Col)
         OBJ_IDENT_SRCLOC_CLASS,
+        OBJ_IDENT_SYMATTR,              // Symbol Table Attributes
+        OBJ_IDENT_SYMATTR_CLASS,
         OBJ_IDENT_SYMENTRY,             // Symbol Table Entry
         OBJ_IDENT_SYMENTRY_CLASS,
         OBJ_IDENT_SYMTABLE,             // Symbol Table
@@ -460,6 +462,8 @@ extern "C" {
         OBJ_IDENT_UTF8FILE_CLASS,
         OBJ_IDENT_VALUE,                // Any type of value
         OBJ_IDENT_VALUE_CLASS,
+        OBJ_IDENT_VISITOR,              // Visitor Base Class
+        OBJ_IDENT_VISITOR_CLASS,
         OBJ_IDENT_WAV,                  // WAV File
         OBJ_IDENT_WAV_CLASS,
         OBJ_IDENT_W32STR,

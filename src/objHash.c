@@ -66,6 +66,12 @@ extern "C" {
     );
     
     static
+    OBJHASH_NODE *  objHash_FindUnique(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    );
+    
+    static
     uint16_t        objHash_IndexFromHash(
         OBJHASH_DATA    *this,
         uint32_t        hash
@@ -115,6 +121,67 @@ extern "C" {
     
     
     
+    OBJ_ID          objHash_DeleteNode(
+        OBJHASH_DATA    *this,
+        OBJHASH_NODE    *pNode
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        OBJ_ID          pReturn = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (NULL == pNode) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNodeList = objHash_NodeListFromHash(this, pNode->hash);
+        listdl_Delete(pNodeList, pNode);
+        pReturn = pNode->pObject;
+        pNode->pObject = OBJ_NIL;
+        listdl_Add2Head(&this->freeList, pNode);
+        
+        // We need to remove the entry from the appropriate scope level.
+        if (this->pScope) {
+            uint32_t            next = 0;
+            uint32_t            prev = 0;
+            OBJHASH_NODE        *pNodeScope;
+            
+            prev = pNode->scopeNext;
+            array_Get(this->pScope, pNode->scopeLvl, 1, &next);
+            if (next == pNode->unique) {
+                array_Put(this->pScope, pNode->scopeLvl, 1, &prev);
+            }
+            else {
+                for (;;) {
+                    pNodeScope = objHash_FindUnique(this, next);
+                    if (OBJ_NIL == pNodeScope) {
+                        DEBUG_BREAK();
+                        break;
+                    }
+                    if (pNode->unique == pNodeScope->scopeNext) {
+                        pNodeScope->scopeNext = prev;
+                        break;
+                    }
+                    prev = pNodeScope->unique;
+                    next = pNodeScope->scopeNext;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return pReturn;
+    }
+    
+    
+    
     static
     OBJHASH_NODE *  objHash_FindNode(
         OBJHASH_DATA    *this,
@@ -135,7 +202,7 @@ extern "C" {
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
             if (pNode->hash == hash) {
-                iRc = pVtbl->pCompare(pObject,pNode->pObject);
+                iRc = pVtbl->pCompare(pObject, pNode->pObject);
                 if (0 == iRc) {
                     return pNode;
                 }
@@ -144,6 +211,37 @@ extern "C" {
                 }
             }
             pNode = listdl_Next(pNodeList, pNode);
+        }
+        
+        // Return to caller.
+        return NULL;
+    }
+    
+    
+    
+    static
+    OBJHASH_NODE *  objHash_FindUnique(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        int             iRc;
+        uint32_t        hash;
+
+        // Do initialization.
+        
+        for (hash=0; hash<this->cHash; ++hash) {
+            pNodeList = &this->pHash[hash];
+            pNode = listdl_Head(pNodeList);
+            while ( pNode ) {
+                iRc = index - pNode->unique;
+                if (0 == iRc) {
+                    return pNode;
+                }
+                pNode = listdl_Next(pNodeList, pNode);
+            }
         }
         
         // Return to caller.
@@ -229,6 +327,54 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                   D u p l i c a t e s
+    //---------------------------------------------------------------
+    
+    bool            objHash_getDuplicates(
+        OBJHASH_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        this->eRc = ERESULT_SUCCESS;
+        return this->fDups ? true : false;
+    }
+    
+    
+    bool            objHash_setDuplicates(
+        OBJHASH_DATA    *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fDups = fValue ? 1 : 0;
+        
+        this->eRc = ERESULT_SUCCESS;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
     ERESULT         objHash_getLastError(
         OBJHASH_DATA    *this
     )
@@ -243,8 +389,31 @@ extern "C" {
         
         return this->eRc;
     }
+
+    
+    bool            objHash_setLastError(
+        OBJHASH_DATA    *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+
     
     
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
     
     uint32_t        objHash_getSize(
         OBJHASH_DATA    *this
@@ -252,7 +421,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !objHash_Validate( this ) ) {
+        if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -275,7 +444,8 @@ extern "C" {
     
     ERESULT         objHash_Add(
         OBJHASH_DATA    *this,
-        OBJ_ID			pObject
+        OBJ_ID			pObject,
+        uint32_t        *pIndex
     )
     {
         LISTDL_DATA     *pNodeList;
@@ -285,7 +455,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !objHash_Validate( this ) ) {
+        if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -294,12 +464,14 @@ extern "C" {
         }
 #endif
         pVtbl = obj_getVtbl(pObject);
-        
         hash = pVtbl->pHash(pObject);
-        pNode = objHash_Find(this, pObject);
-        if (pNode) {
-            //fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
-            return ERESULT_DATA_ALREADY_EXISTS;
+        
+        if (!this->fDups) {
+            pNode = objHash_Find(this, pObject);
+            if (pNode) {
+                //fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
+                return ERESULT_DATA_ALREADY_EXISTS;
+            }
         }
         
         // Determine the entry number.
@@ -319,14 +491,21 @@ extern "C" {
         obj_Retain(pObject);
         pNode->pObject = pObject;
         pNode->hash    = hash;
-        pNode->unique  = this->unique++;
+        pNode->unique  = ++this->unique;
+        if (this->pScope) {
+            array_Get(this->pScope, this->scopeLvl, 1, &pNode->scopeNext);
+            array_Put(this->pScope, this->scopeLvl, 1, &pNode->unique);
+            pNode->scopeLvl = this->scopeLvl;
+        }
         
-        pNodeList = objHash_NodeListFromHash( this, hash );
-        listdl_Add2Tail(pNodeList, pNode);
+        pNodeList = objHash_NodeListFromHash(this, hash);
+        listdl_Add2Head(pNodeList, pNode);
         
         ++this->num;
         
         // Return to caller.
+        if (pIndex)
+            *pIndex = pNode->unique;
         return ERESULT_SUCCESS;
     }
     
@@ -392,13 +571,16 @@ extern "C" {
                 pObj = pNode->pObject;
                 if (pObj) {
                     pVtbl = obj_getVtbl(pNode->pObject);
-                    if (pVtbl->pCopy) {
+                    if (pVtbl->pDeepCopy) {
+                        pObj = pVtbl->pDeepCopy(pObj);
+                    }
+                    else if (pVtbl->pCopy) {
                         pObj = pVtbl->pCopy(pObj);
                     }
                     else {
                         obj_Retain(pObj);
                     }
-                    objHash_Add(pOther, pNode->pObject);
+                    objHash_Add(pOther, pNode->pObject, NULL);
                 }
                 pNode = listdl_Next(pNodeList, pNode);
             }
@@ -486,6 +668,11 @@ extern "C" {
             this->pHash = NULL;
         }
         
+        if (this->pScope) {
+            obj_Release(this->pScope);
+            this->pScope = OBJ_NIL;
+        }
+        
         obj_Dealloc(this);
         this = NULL;
 
@@ -525,10 +712,7 @@ extern "C" {
 
         pNode = objHash_FindNode(this, hash, pObject);
         if (pNode) {
-            listdl_Delete(pNodeList, pNode);
-            pReturn = pNode->pObject;
-            pNode->pObject = OBJ_NIL;
-            listdl_Add2Head(&this->freeList, pNode);
+            pReturn = objHash_DeleteNode(this, pNode);
         }
         
         // Return to caller.
@@ -545,6 +729,7 @@ extern "C" {
         OBJHASH_NODE    *pNext;
         uint32_t        i;
         OBJ_ID          pReturn = OBJ_NIL;
+        uint32_t        zero = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -573,9 +758,45 @@ extern "C" {
             }
         }
         
+        // We need to zero all the scope levels if being used.
+        if (this->pScope) {
+            for (i=0; i<this->scopeLvl; ++i) {
+                array_Put(this->pScope, (i + 1), 1, &zero);
+            }
+            this->scopeLvl = 0;
+        }
+        
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
         return ERESULT_SUCCESS;
+    }
+    
+    
+    OBJ_ID          objHash_DeleteIndex(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        OBJ_ID          pReturn = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = objHash_FindUnique(this, index);
+        if (pNode) {
+            pReturn = objHash_DeleteNode(this, pNode);
+        }
+        
+        // Return to caller.
+        return pReturn;
     }
     
     
@@ -664,7 +885,33 @@ extern "C" {
     }
     
     
+    OBJ_ID          objHash_FindIndex(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    )
+    {
+        OBJHASH_NODE    *pNode;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pNode = objHash_FindUnique(this, index);
+        if (pNode) {
+            return pNode->pObject;
+        }
+        
+        // Return to caller.
+        return OBJ_NIL;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -710,7 +957,7 @@ extern "C" {
             listdl_Init(&this->pHash[i], offsetof(OBJHASH_NODE, list));
         }
         listdl_Init(&this->freeList, offsetof(OBJHASH_NODE, list));
-        
+ 
     #ifdef NDEBUG
     #else
         if( !objHash_Validate(this) ) {
@@ -828,6 +1075,176 @@ extern "C" {
         }
         
         return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S c o p e  C l o s e
+    //---------------------------------------------------------------
+    
+    ERESULT         objHash_ScopeClose(
+        OBJHASH_DATA    *this
+    )
+    {
+        uint32_t        zero = 0;
+        uint32_t        nextIndex = 0;
+        uint32_t        curIndex = 0;
+        OBJHASH_NODE    *pNode;
+        OBJ_ID          pReturn = OBJ_NIL;
+
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pScope) {
+            return ERESULT_NOT_IMPLEMENTED;
+        }
+        
+        array_Get(this->pScope, this->scopeLvl, 1, &curIndex);
+        while (curIndex) {
+            pNode = objHash_FindUnique(this, curIndex);
+            if (OBJ_NIL == pNode) {
+                DEBUG_BREAK();
+                return ERESULT_GENERAL_FAILURE;
+            }
+            nextIndex = pNode->scopeNext;
+            pReturn = objHash_DeleteNode(this, pNode);
+            if (pReturn) {
+                --this->num;
+                obj_Release(pReturn);
+                pReturn = OBJ_NIL;
+            }
+            curIndex = nextIndex;
+        }
+        
+        array_Put(this->pScope, this->scopeLvl, 1, &zero);
+        this->scopeLvl -= 1;
+        
+        return this->scopeLvl;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S c o p e  C u r r e n t
+    //---------------------------------------------------------------
+    
+    uint32_t        objHash_ScopeCurrent(
+        OBJHASH_DATA    *this
+    )
+    {
+        uint32_t        zero = 0;
+        
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            //this->eRc = ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+        
+        return this->scopeLvl;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S c o p e  E n u m
+    //---------------------------------------------------------------
+    
+    OBJENUM_DATA *  objHash_ScopeEnum(
+        OBJHASH_DATA    *this,
+        uint32_t        level
+    )
+    {
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        OBJHASH_NODE    *pNode;
+        ERESULT         eRc;
+        uint32_t        next;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return pEnum;
+        }
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return pEnum;
+        }
+#endif
+        
+        if (NULL == this->pScope) {
+            DEBUG_BREAK();
+            return pEnum;
+        }
+        eRc = array_Get(this->pScope, level,  1, &next);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return pEnum;
+        }
+        pEnum = objEnum_New();
+        if (OBJ_NIL == pEnum) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return OBJ_NIL;
+        }
+        
+        while (next) {
+            pNode = objHash_FindUnique(this, next);
+            if (NULL == pNode) {
+                break;
+            }
+            objEnum_Append(pEnum, pNode->pObject);
+            next = pNode->scopeNext;
+        }
+        eRc = objEnum_SortAscending(pEnum);
+        
+        // Return to caller.
+        return pEnum;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S c o p e  O p e n
+    //---------------------------------------------------------------
+    
+    uint32_t        objHash_ScopeOpen(
+        OBJHASH_DATA    *this
+    )
+    {
+        uint32_t        zero = 0;
+        
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            //this->eRc = ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pScope) {
+            BREAK_NOT_ZERO(this->scopeLvl);
+            this->pScope = array_New(sizeof(uint32_t));
+            if (OBJ_NIL == this->pScope) {
+                DEBUG_BREAK();
+                this->eRc = ERESULT_OUT_OF_MEMORY;
+                return 0;
+            }
+        }
+
+        this->scopeLvl += 1;
+        array_Expand(this->pScope, this->scopeLvl);
+        array_Put(this->pScope, this->scopeLvl, 1, &zero);
+
+        return this->scopeLvl;
     }
     
     

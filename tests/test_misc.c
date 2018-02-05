@@ -83,7 +83,7 @@ int         test_misc_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = misc_Alloc(0);
+    pObj = misc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = misc_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );

@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 1/29/2018 23:44:49.000)
+# ( 2/ 3/2018 20:26:57.000)
 
 
 LIBNAM=libCmn
@@ -135,6 +135,7 @@ OBJS = $(OBJS) $(OBJDIR)\srcErrors.obj $(OBJDIR)\srcErrors_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcFile.obj $(OBJDIR)\srcFile_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcFiles.obj $(OBJDIR)\srcFiles_object.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLoc.obj $(OBJDIR)\srcLoc_object.obj
+OBJS = $(OBJS) $(OBJDIR)\symAttr.obj $(OBJDIR)\symAttr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\symEntry.obj $(OBJDIR)\symEntry_object.obj
 OBJS = $(OBJS) $(OBJDIR)\symTable.obj $(OBJDIR)\symTable_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szHash.obj $(OBJDIR)\szHash_object.obj
@@ -156,6 +157,7 @@ OBJS = $(OBJS) $(OBJDIR)\u8Array.obj $(OBJDIR)\u8Array_object.obj
 OBJS = $(OBJS) $(OBJDIR)\uint128.obj $(OBJDIR)\uint128_object.obj
 OBJS = $(OBJS) $(OBJDIR)\utf8.obj $(OBJDIR)\utf8_object.obj
 OBJS = $(OBJS) $(OBJDIR)\value.obj $(OBJDIR)\value_object.obj
+OBJS = $(OBJS) $(OBJDIR)\visitor.obj $(OBJDIR)\visitor_object.obj
 OBJS = $(OBJS) $(OBJDIR)\wav.obj $(OBJDIR)\wav_object.obj
 OBJS = $(OBJS) $(OBJDIR)\xml.obj $(OBJDIR)\xml_object.obj
 OBJS = $(OBJS) $(OBJDIR)\AStr_JSON.obj
@@ -1134,6 +1136,14 @@ test_str:
 	$(OBJDIR)\$(@F).exe
 
 
+TESTS = $(TESTS) test_symAttr
+
+test_symAttr:
+	$(CC) $(CFLAGS) /Itests tests\test_symAttr.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
 TESTS = $(TESTS) test_symEntry
 
 test_symEntry:
@@ -1298,6 +1308,14 @@ TESTS = $(TESTS) test_value
 
 test_value:
 	$(CC) $(CFLAGS) /Itests tests\test_value.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_visitor
+
+test_visitor:
+	$(CC) $(CFLAGS) /Itests tests\test_visitor.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

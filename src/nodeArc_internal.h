@@ -58,11 +58,11 @@ struct nodeArc_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     NODE_DATA       super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    NODE_DATA       *pOut;      // Outbound Node for this arc
-    NODE_DATA       *pIn;       // Inbound Node for this arc
+    NODE_DATA       *pOut;          // Outbound Node for this arc
+    NODE_DATA       *pIn;           // Inbound Node for this arc
     uint32_t        weight;
     bool            fAdjacent;
 

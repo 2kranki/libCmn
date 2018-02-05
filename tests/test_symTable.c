@@ -132,7 +132,7 @@ int         test_symTable_General01(
                 pStr = AStr_NewA(stringTable[i]);
                 TINYTEST_FALSE( (OBJ_NIL == pStr) );
                 pStrs[i] = pStr;
-                eRc = symTable_Add(pObj, pStr);
+                eRc = symTable_AddEntry(pObj, pStr);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
                 obj_Release(pStr);
                 pStr = OBJ_NIL;

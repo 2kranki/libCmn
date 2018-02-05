@@ -1,25 +1,32 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEARC Console Transmit Task (nodeArc) Header
+//          Visitor Base Class (visitor) Header
 //****************************************************************
 /*
  * Program
- *			Separate nodeArc (nodeArc)
+ *			Visitor Base Class (visitor)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate nodeArc to run things without complications
- *          of interfering with the main nodeArc. A nodeArc may be 
- *          called a nodeArc on other O/S's.
+ *			This object provides the base for developing the Visitor
+ *          Pattern as described in the GOF book using a double
+ *          dispatch mechanism.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal nodeArc. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      You should implement methods in the inheriting class that
+ *          are named "Visit_" concatenated with the class name or name
+ *          that should be dispatched.  That method name must also
+ *          be added to the QueryInfo method of the inheriting object.
+ *          The method must be defined as:
+ *              ERESULT    Vist_xyzzy(OBJ_ID this, OBJ_ID pObj);
+ *  2.      The Accept() method in the other object will be defined
+ *          as follows:
+ *              ERESULT    Accept(OBJ_ID this, OBJ_ID visitor);
+ *          It must create the method name that will be called in
+ *          character format and then call the QueryInfo method
+ *          of the visitor to get the function to actually call.
  *
  * History
- *	07/14/2016 Generated
+ *	02/03/2018 Generated
  */
 
 
@@ -56,11 +63,10 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <node.h>
 
 
-#ifndef         NODEARC_H
-#define         NODEARC_H 1
+#ifndef         VISITOR_H
+#define         VISITOR_H
 
 
 
@@ -74,15 +80,16 @@ extern "C" {
     //****************************************************************
 
 
+    typedef struct visitor_data_s	VISITOR_DATA;    // Inherits from OBJ.
 
-    typedef struct nodeArc_vtbl_s	{
+    typedef struct visitor_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeArc_object.c.
+        // method names to the vtbl definition in visitor_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEARC_DATA *);
-    } NODEARC_VTBL;
+        //bool        (*pIsEnabled)(VISITOR_DATA *);
+    } VISITOR_VTBL;
 
 
 
@@ -99,14 +106,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to nodeArc object if successful, otherwise OBJ_NIL.
+     @return    pointer to visitor object if successful, otherwise OBJ_NIL.
      */
-    NODEARC_DATA *  nodeArc_Alloc(
+    VISITOR_DATA *     visitor_Alloc(
         void
     );
     
     
-    NODEARC_DATA *  nodeArc_New(
+    OBJ_ID          visitor_Class(
+        void
+    );
+    
+    
+    VISITOR_DATA *     visitor_New(
         void
     );
     
@@ -116,71 +128,51 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            nodeArc_getAdjacent(
-        NODEARC_DATA    *this
-    );
-    
-    bool            nodeArc_setAdjacent(
-        NODEARC_DATA    *this,
-        bool            fValue
-    );
-    
-    
-    NODE_DATA *     nodeArc_getInNode(
-        NODEARC_DATA    *this
+    ERESULT     visitor_getLastError(
+        VISITOR_DATA		*this
     );
 
-    bool            nodeArc_setInNode(
-        NODEARC_DATA    *this,
-        NODE_DATA       *pValue
-    );
-    
-    
-    NODE_DATA *     nodeArc_getOutNode(
-        NODEARC_DATA    *this
-    );
-    
-    bool            nodeArc_setOutNode(
-        NODEARC_DATA    *this,
-        NODE_DATA       *pValue
-    );
-    
-    
-    uint32_t        nodeArc_getWeight(
-        NODEARC_DATA    *this
-    );
-    
-    bool            nodeArc_setWeight(
-        NODEARC_DATA    *this,
-        uint32_t        value
-    );
-    
-    
-    
+
+
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODEARC_DATA *  nodeArc_Init(
-        NODEARC_DATA    *this
+    ERESULT     visitor_Disable(
+        VISITOR_DATA		*this
     );
 
 
+    ERESULT     visitor_Enable(
+        VISITOR_DATA		*this
+    );
+
+   
+    VISITOR_DATA *   visitor_Init(
+        VISITOR_DATA     *this
+    );
+
+
+    ERESULT     visitor_IsEnabled(
+        VISITOR_DATA		*this
+    );
+    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = nodeArc_ToDebugString(pObj,4);
-     @endcode
-     @param     this    nodeArc object pointer
+     @code 
+        ASTR_DATA      *pDesc = visitor_ToDebugString(this,4);
+     @endcode 
+     @param     this    VISITOR object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeArc_ToDebugString(
-        NODEARC_DATA    *this,
+    ASTR_DATA *    visitor_ToDebugString(
+        VISITOR_DATA     *this,
         int             indent
     );
     
@@ -191,5 +183,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* NODEARC_H */
+#endif	/* VISITOR_H */
 

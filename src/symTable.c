@@ -60,126 +60,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    bool            symTable_AddBlock(
-        SYMTABLE_DATA   *this
-    );
-    
-    static
-    uint16_t        symTable_IndexFromHash(
-        SYMTABLE_DATA   *this,
-        uint32_t        hash
-    );
-    
-    static
-    LISTDL_DATA *   symTable_NodeListFromHash(
-        SYMTABLE_DATA   *this,
-        uint32_t        hash
-    );
-    
-    
-    
-    /* Expand the current Pointer Array by Inc entries.
-     */
-    static
-    bool            symTable_AddBlock(
-        SYMTABLE_DATA    *this
-    )
-    {
-        SYMTABLE_BLOCK  *pBlock;
-        uint32_t        i;
-        
-        // Do initialization.
-        if ( 0 == listdl_Count(&this->freeList) )
-            ;
-        else {
-            return true;
-        }
-        
-        // Get a new block.
-        i = sizeof(SYMTABLE_BLOCK) + (this->cBlock * sizeof(SYMTABLE_NODE));
-        pBlock = (SYMTABLE_BLOCK *)mem_Malloc( i );
-        if( NULL == pBlock ) {
-            return false;
-        }
-        listdl_Add2Tail(&this->blocks, pBlock);
-        
-        // Now chain the entries to the Free chain.
-        for (i=0; i<this->cBlock; ++i) {
-            listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
-        }
-        
-        // Return to caller.
-        return true;
-    }
-    
-    
-    
-    static
-    SYMTABLE_NODE * symTable_FindNode(
-        SYMTABLE_DATA   *this,
-        uint32_t        hash,
-        OBJ_ID          pObject
-    )
-    {
-        LISTDL_DATA     *pNodeList;
-        SYMTABLE_NODE   *pNode;
-        int             iRc;
-        const
-        OBJ_IUNKNOWN    *pVtbl;
-        
-        // Do initialization.
-        pNodeList = symTable_NodeListFromHash(this, hash);
-        pVtbl = obj_getVtbl(pObject);
-        
-        pNode = listdl_Head(pNodeList);
-        while ( pNode ) {
-            if (pNode->hash == hash) {
-                iRc = pVtbl->pCompare(pObject,pNode->pObject);
-                if (0 == iRc) {
-                    return pNode;
-                }
-                if (iRc < 0) {
-                    break;
-                }
-            }
-            pNode = listdl_Next(pNodeList, pNode);
-        }
-        
-        // Return to caller.
-        return NULL;
-    }
-    
-    
-    
-    static
-    uint16_t        symTable_IndexFromHash(
-        SYMTABLE_DATA   *this,
-        uint32_t        hash
-    )
-    {
-        uint16_t        index;
-        
-        index = hash % this->cHash;
-        return index;
-    }
-    
-    
-    
-    static
-    LISTDL_DATA *   symTable_NodeListFromHash(
-        SYMTABLE_DATA   *this,
-        uint32_t        hash
-    )
-    {
-        LISTDL_DATA     *pNodeList;
-        
-        pNodeList = &this->pHash[symTable_IndexFromHash(this, hash)];
-        return( pNodeList );
-    }
-    
-    
-    
     
 
 
@@ -321,7 +201,7 @@ extern "C" {
 #endif
 
         symTable_setLastError(this, ERESULT_SUCCESS);
-        return this->num;
+        return objHash_getSize(this->pEntries);
     }
 
 
@@ -339,15 +219,12 @@ extern "C" {
     //                          A d d
     //----------------------------------------------------------
     
-    ERESULT         symTable_Add(
+    ERESULT         symTable_AddEntry(
         SYMTABLE_DATA   *this,
         OBJ_ID          pObject
     )
     {
-        LISTDL_DATA     *pNodeList;
-        SYMTABLE_NODE   *pNode;
-        uint32_t        hash;
-        OBJ_IUNKNOWN    *pVtbl;
+        ERESULT         eRc;
         
 #ifdef NDEBUG
 #else
@@ -359,41 +236,12 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pVtbl = obj_getVtbl(pObject);
         
-        hash = pVtbl->pHash(pObject);
-        pNode = symTable_Find(this, pObject);
-        if (pNode) {
-            //fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
-            return ERESULT_DATA_ALREADY_EXISTS;
-        }
-        
-        // Determine the entry number.
-        if (0 == listdl_Count(&this->freeList)) {
-            if ( symTable_AddBlock(this) )
-                ;
-            else {
-                return ERESULT_INSUFFICIENT_MEMORY;
-            }
-        }
-        pNode = listdl_DeleteHead(&this->freeList);
-        if (NULL == pNode) {
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Add it to the table.
-        obj_Retain(pObject);
-        pNode->pObject = pObject;
-        pNode->hash    = hash;
-        pNode->unique  = this->unique++;
-        
-        pNodeList = symTable_NodeListFromHash( this, hash );
-        listdl_Add2Tail(pNodeList, pNode);
-        
-        ++this->num;
+        eRc = objHash_Add(this->pEntries, pObject, NULL);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        this->eRc = eRc;
+        return eRc;
     }
     
     
@@ -501,6 +349,7 @@ extern "C" {
         }
 #endif
         
+#ifdef XYZZY                    //FIXME: old hash stuff, replace with objHash
         pOther = symTable_New(this->cHash);
         if (pOther) {
             eRc = symTable_Assign(this, pOther);
@@ -509,6 +358,7 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
         //obj_Release(pOther);
@@ -527,7 +377,6 @@ extern "C" {
     )
     {
         SYMTABLE_DATA   *this = objId;
-        SYMTABLE_BLOCK  *pBlock;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -542,16 +391,9 @@ extern "C" {
         }
 #endif
 
-        //FIXME: eRc = objHash_DeleteAll(this);
-        
-        while ( listdl_Count(&this->blocks) ) {
-            pBlock = listdl_DeleteHead(&this->blocks);
-            mem_Free( pBlock );
-        }
-        
-        if( this->pHash ) {
-            mem_Free( this->pHash );
-            this->pHash = NULL;
+        if(this->pEntries) {
+            obj_Release(this->pEntries);
+            this->pEntries = OBJ_NIL;
         }
         
         obj_setVtbl(this, this->pSuperVtbl);
@@ -569,17 +411,12 @@ extern "C" {
     //                      D e l e t e
     //----------------------------------------------------------
     
-    OBJ_ID          symTable_Delete(
+    OBJ_ID          symTable_DeleteEntry(
         SYMTABLE_DATA   *this,
         OBJ_ID          pObject
     )
     {
-        LISTDL_DATA     *pNodeList;
-        SYMTABLE_NODE   *pNode;
-        uint32_t        hash;
         OBJ_ID          pReturn = OBJ_NIL;
-        const
-        OBJ_IUNKNOWN    *pVtbl;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -589,34 +426,21 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pVtbl = obj_getVtbl(pObject);
         
-        hash = pVtbl->pHash(pObject);
-        pNodeList = symTable_NodeListFromHash(this, hash);
-        
-        pNode = symTable_FindNode(this, hash, pObject);
-        if (pNode) {
-            listdl_Delete(pNodeList, pNode);
-            pReturn = pNode->pObject;
-            pNode->pObject = OBJ_NIL;
-            listdl_Add2Head(&this->freeList, pNode);
-        }
+        pReturn = objHash_Delete(this->pEntries, pObject);
         
         // Return to caller.
+        this->eRc = objHash_getLastError(this->pEntries);
         return pReturn;
     }
     
     
-    ERESULT         symTable_DeleteAll(
+    ERESULT         symTable_DeleteAllEntries(
         SYMTABLE_DATA   *this
     )
     {
-        LISTDL_DATA     *pNodeList;
-        SYMTABLE_NODE   *pNode;
-        SYMTABLE_NODE   *pNext;
-        uint32_t        i;
-        OBJ_ID          pReturn = OBJ_NIL;
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -626,27 +450,11 @@ extern "C" {
         }
 #endif
         
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
-            pNode = listdl_Head(pNodeList);
-            while ( pNode ) {
-                pNext = listdl_Next(pNodeList, pNode);
-                listdl_Delete(pNodeList, pNode);
-                pReturn = pNode->pObject;
-                pNode->pObject = OBJ_NIL;
-                listdl_Add2Head(&this->freeList, pNode);
-                if (pReturn) {
-                    --this->num;
-                    obj_Release(pReturn);
-                    pReturn = OBJ_NIL;
-                }
-                pNode = pNext;
-            }
-        }
+        eRc = objHash_DeleteAll(this->pEntries);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return ERESULT_SUCCESS;
+        this->eRc = eRc;
+        return eRc;
     }
     
     
@@ -660,9 +468,6 @@ extern "C" {
     )
     {
         OBJENUM_DATA    *pEnum = OBJ_NIL;
-        LISTDL_DATA     *pNodeList;
-        SYMTABLE_NODE   *pNode;
-        uint32_t        i;
         ERESULT         eRc;
         
         // Do initialization.
@@ -677,23 +482,14 @@ extern "C" {
         }
 #endif
         
-        pEnum = objEnum_New();
+        pEnum = objHash_Enum(this->pEntries);
         if (OBJ_NIL == pEnum) {
             this->eRc = ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
         }
         
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
-            pNode = listdl_Head(pNodeList);
-            while (pNode) {
-                objEnum_Append(pEnum, pNode->pObject);
-                pNode = listdl_Next(pNodeList, pNode);
-            }
-        }
-        eRc = objEnum_SortAscending(pEnum);
-        
         // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
         return pEnum;
     }
     
@@ -708,10 +504,7 @@ extern "C" {
         OBJ_ID          pObject
     )
     {
-        SYMTABLE_NODE   *pNode;
-        uint32_t        hash;
-        const
-        OBJ_IUNKNOWN    *pVtbl;
+        OBJ_ID          pReturn = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -721,17 +514,12 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pVtbl = obj_getVtbl(pObject);
-        
-        hash = pVtbl->pHash(pObject);
-        
-        pNode = symTable_FindNode(this, hash, pObject);
-        if (pNode) {
-            return pNode->pObject;
-        }
+
+        pReturn = objHash_Find(this->pEntries, pObject);
         
         // Return to caller.
-        return OBJ_NIL;
+        this->eRc = objHash_getLastError(this->pEntries);
+        return pReturn;
     }
     
     
@@ -746,7 +534,6 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(SYMTABLE_DATA);
-        uint32_t        i;
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -776,25 +563,13 @@ extern "C" {
         
         symTable_setLastError(this, ERESULT_GENERAL_FAILURE);
 
-        this->cHash = cHash;
-        cbSize = 4096 - sizeof(SYMTABLE_BLOCK);
-        cbSize /= sizeof(SYMTABLE_NODE);
-        this->cBlock = cbSize;
-        
-        // Allocate the Hash Table.
-        cbSize = cHash * sizeof(LISTDL_DATA);
-        this->pHash = (LISTDL_DATA *)mem_Malloc( cbSize );
-        if (NULL == this->pHash) {
+        this->pEntries = objHash_New(cHash);
+        if (OBJ_NIL == this->pEntries) {
             DEBUG_BREAK();
-            mem_Free(this);
-            this = NULL;
-            return this;
+            obj_Release(this);
+            return OBJ_NIL;
         }
-        for (i=0; i<cHash; ++i) {
-            listdl_Init(&this->pHash[i], offsetof(SYMTABLE_NODE, list));
-        }
-        listdl_Init(&this->freeList, offsetof(SYMTABLE_NODE, list));
-        
+        objHash_setDuplicates(this->pEntries, true);
 
     #ifdef NDEBUG
     #else

@@ -1,22 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MISC Console Transmit Task (misc) Header
+//          Miscellaneous Routines (misc) Header
 //****************************************************************
 /*
  * Program
- *			Separate misc (misc)
+ *			Miscellaneous Routines (misc)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate misc to run things without complications
- *          of interfering with the main misc. A misc may be 
- *          called a misc on other O/S's.
+ *			This object provides Miscellaneous Routines which
+ *          do not fit into other objects.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal misc. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	11/25/2015 Generated
@@ -103,12 +98,12 @@ extern "C" {
      * via obj_misc1.
      */
     MISC_DATA *     misc_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
+        void
     );
     
     
     MISC_DATA *     misc_New(
-        uint16_t    stackSize           // Stack Size in Words
+        void
     );
     
     
@@ -261,9 +256,9 @@ extern "C" {
      @param     this    MISC object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
+                description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object when you are done
-     with it.
+                with it.
      */
     ASTR_DATA *    misc_ToDebugString(
         MISC_DATA       *this,

@@ -1,11 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   symEntry_internal.h
- *	Generated 03/27/2017 21:41:19
+ * File:   symAttr_internal.h
+ *	Generated 02/02/2018 10:14:55
  *
  * Notes:
- *  --	IMPORTANT -- SYM_Entry must be cacheable. So, it must use indexes
- *          only, NEVER use direct pointers.
+ *  --	N/A
  *
  */
 
@@ -40,21 +39,18 @@
 
 
 
-#include    <symEntry.h>
-#include    <node_internal.h>
+#include    <symAttr.h>
 
 
-
-
-
-#ifndef SYMENTRY_INTERNAL_H
-#define	SYMENTRY_INTERNAL_H
+#ifndef SYMATTR_INTERNAL_H
+#define	SYMATTR_INTERNAL_H
 
 
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
+
 
     
     typedef enum sym_primitive_e {
@@ -98,9 +94,9 @@ extern "C" {
         SYM_STORAGE_AUTO,           // Auto allocated local identifiers
         SYM_STORAGE_EXTERN,
         SYM_STORAGE_LOCAL,
-        SYM_STORAGE_MEMBER,                 // ???
+        SYM_STORAGE_MEMBER,         // ???
         SYM_STORAGE_PUBLIC,
-        SYM_STORAGE_SPROTO,                 // ???
+        SYM_STORAGE_SPROTO,         // ???
         SYM_STORAGE_STATIC,         // static identifiers in global context
         SYM_STORAGE_STATIC_LOCAL,   // static identifiers in local context
         SYM_STORAGE_STRUCT,
@@ -118,27 +114,20 @@ extern "C" {
         SYM_TYPE_VARIABLE,
     } SYM_TYPE;
     
+    
 
-    typedef struct sym_entry_s {
+    typedef struct sym_attr_s {
         uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        flags;
         uint32_t        nameHash;
         char            name[129];
+        char            genName[64];        // Generated External Name
         uint32_t        nameToken;          // szTbl Token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;
-        uint32_t        idxHashNext;        // Hash Index Chain
-        uint32_t        idxHashPrev;
-        uint32_t        idxScopeNext;
-        uint32_t        idxScopePrev;
-        uint32_t        idxParent;
-        uint32_t        idxChildHead;       // Child Chain
-        uint32_t        idxChildTail;
-        uint32_t        idxSibHead;         // Sibling Chain
-        uint32_t        idxSibTail;
         uint32_t        size;               // Data Size in Bytes
-        uint32_t        ptr;                // Pointer level
+        uint32_t        ptr;                // Pointer level (1 per *)
         union {
             uint32_t        misc[4];            // Set Overall Size.
             struct {
@@ -162,66 +151,89 @@ extern "C" {
                 uint16_t        storageClass;
             } variableType;
         };
-    } SYM_ENTRY;
+    } SYM_ATTR;
     
     
     
     
 
+    
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct symEntry_data_s	{
+struct symAttr_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    SYM_ENTRY       *pEntry;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+    SYM_ATTR        attr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct symEntry_class_data_s  symEntry_ClassObj;
+    struct symAttr_class_data_s  symAttr_ClassObj;
 
     extern
     const
-    SYMENTRY_VTBL         symEntry_Vtbl;
+    SYMATTR_VTBL         symAttr_Vtbl;
 
 
-    // Internal Functions
-    bool            symEntry_setLastError(
-        SYMENTRY_DATA   *this,
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            symAttr_setLastError(
+        SYMATTR_DATA     *this,
         ERESULT         value
     );
 
 
-    bool            symEntry_setName(
-        SYMENTRY_DATA   *this,
-        const
-        char            *pValue
+    OBJ_IUNKNOWN *  symAttr_getSuperVtbl(
+        SYMATTR_DATA     *this
     );
-    
-    
-    void            symEntry_Dealloc(
+
+
+    void            symAttr_Dealloc(
         OBJ_ID          objId
     );
-    
-    
-    void *          symEntry_QueryInfo(
+
+
+    void *          symAttr_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     symAttr_ToJSON(
+        SYMATTR_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			symEntry_Validate(
-        SYMENTRY_DATA       *this
+    bool			symAttr_Validate(
+        SYMATTR_DATA       *this
     );
 #endif
 
@@ -231,5 +243,5 @@ struct symEntry_data_s	{
 }
 #endif
 
-#endif	/* SYMENTRY_INTERNAL_H */
+#endif	/* SYMATTR_INTERNAL_H */
 

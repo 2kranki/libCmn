@@ -57,6 +57,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <name.h>
+#include        <visitor.h>
 
 
 

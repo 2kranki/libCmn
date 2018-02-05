@@ -108,38 +108,31 @@ extern "C" {
     //===============================================================
 
     MISC_DATA *     misc_Alloc(
-        uint16_t        stackSize
     )
     {
-        MISC_DATA       *cbp;
+        MISC_DATA       *this;
         uint32_t        cbSize = sizeof(MISC_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
-        cbp = obj_Alloc( cbSize );
-        obj_setMisc1(cbp, stackSize);
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
 
     MISC_DATA *     misc_New(
-        uint16_t        stackSize
     )
     {
-        MISC_DATA       *cbp;
+        MISC_DATA       *this;
         
-        cbp = misc_Alloc( stackSize );
-        if (cbp) {
-            cbp = misc_Init( cbp );
+        this = misc_Alloc( );
+        if (this) {
+            this = misc_Init(this);
         } 
-        return( cbp );
+        return this;
     }
 
 

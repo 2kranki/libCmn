@@ -1,22 +1,26 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SYMTABLE Console Transmit Task (symTable) Header
+//          Symbol Table (symTable) Header
 //****************************************************************
 /*
  * Program
- *			Separate symTable (symTable)
+ *			Symbol Table (symTable)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate symTable to run things without complications
- *          of interfering with the main symTable. A symTable may be 
- *          called a symTable on other O/S's.
+ *			This object provides a Generalized Symbol Table that
+ *          can be used in assemblers or compilers. It facilitates
+ *          scoped symbol tables and synonym access.
+ *
+ *          Since more and more computer languages allow synonyms to
+ *          be used in naming such as C's typedef (ie typedef short
+ *          int16_t;). This table uses an index of symbol table
+ *          entries where each entry points to another Attribute
+ *          table. The Attribute table contains the actual data
+ *          needed by the assembler or compiler.  That way, multiple
+ *          symbol entries can point to one attribute entry.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal symTable. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	03/27/2017 Generated
@@ -148,7 +152,7 @@ extern "C" {
     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error.
     */
-    ERESULT         symTable_Add(
+    ERESULT         symTable_AddEntry(
         SYMTABLE_DATA    *this,
         OBJ_ID           pObject
     );
@@ -159,7 +163,7 @@ extern "C" {
      @return    return the object deleted from the hash if successful.
                 Otherwise, return OBJ_NIL and set an ERESULT_* error.
      */
-    OBJ_ID          symTable_Delete(
+    OBJ_ID          symTable_DeleteEntry(
         SYMTABLE_DATA   *this,
         OBJ_ID          pObject
     );
@@ -169,7 +173,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error.
      */
-    ERESULT         symTable_DeleteAll(
+    ERESULT         symTable_DeleteAllEntries(
         SYMTABLE_DATA   *this
     );
     
@@ -201,7 +205,17 @@ extern "C" {
     );
 
 
-    ERESULT         symTable_IsEnabled(
+    ERESULT         symTable_ScopeClose(
+        SYMTABLE_DATA    *this
+    );
+    
+    
+    OBJENUM_DATA *  symTable_ScopeEnum(
+        SYMTABLE_DATA    *this
+    );
+    
+    
+    ERESULT         symTable_ScopeOpen(
         SYMTABLE_DATA	*this
     );
     

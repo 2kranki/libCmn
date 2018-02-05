@@ -62,64 +62,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    ERESULT         array_Expand(
-        ARRAY_DATA      *this,
-        uint32_t        min
-    )
-    {
-        void            *pWork;
-        uint32_t        oldMax;
-        uint32_t        oldMaxLen;
-        uint32_t        newMax;
-        uint32_t        newArraySize;
-        
-        // Do initialization.
-        if( this == NULL )
-            return ERESULT_INVALID_OBJECT;
-        
-        // Expand the Array.
-        oldMax = this->max;
-        if (min < oldMax) {
-            return ERESULT_SUCCESS;
-        }
-        if (0 == oldMax) {
-            newMax = 1;
-        }
-        else {
-            newMax = oldMax << 1;
-        }
-        while (min > newMax) {
-            newMax <<= 1;
-        }
-        newArraySize = array_OffsetOf(this, (newMax + 1));
-        pWork = (void *)mem_Malloc(newArraySize);
-        if( NULL == pWork ) {
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        oldMaxLen = array_OffsetOf(this, (oldMax + 1));
-        
-        // Copy the old entries into the new array if any.
-        if( this->pArray == NULL )
-            ;
-        else {
-            memmove(pWork, this->pArray, oldMaxLen);
-        }
-        
-        // Clear the new entries.
-        if (this->fZeroNew) {
-            memset((pWork + oldMaxLen), 0, array_OffsetOf(this, (newMax - oldMax)));
-        }
-        
-        this->max = newMax;
-        mem_Free(this->pArray);
-        this->pArray = pWork;
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
     void            array_FreeArray(
         ARRAY_DATA      *this
     )
@@ -925,6 +867,68 @@ extern "C" {
             );
         }
         this->size -= numElems;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        E x p a n d
+    //---------------------------------------------------------------
+    
+    ERESULT         array_Expand(
+        ARRAY_DATA      *this,
+        uint32_t        min
+    )
+    {
+        void            *pWork;
+        uint32_t        oldMax;
+        uint32_t        oldMaxLen;
+        uint32_t        newMax;
+        uint32_t        newArraySize;
+        
+        // Do initialization.
+        if( this == NULL )
+            return ERESULT_INVALID_OBJECT;
+        
+        // Expand the Array.
+        oldMax = this->max;
+        if (min < oldMax) {
+            return ERESULT_SUCCESS;
+        }
+        if (0 == oldMax) {
+            newMax = 1;
+        }
+        else {
+            newMax = oldMax << 1;
+        }
+        while (min > newMax) {
+            newMax <<= 1;
+        }
+        newArraySize = array_OffsetOf(this, (newMax + 1));
+        pWork = (void *)mem_Malloc(newArraySize);
+        if( NULL == pWork ) {
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        oldMaxLen = array_OffsetOf(this, (oldMax + 1));
+        
+        // Copy the old entries into the new array if any.
+        if( this->pArray == NULL )
+            ;
+        else {
+            memmove(pWork, this->pArray, oldMaxLen);
+        }
+        
+        // Clear the new entries.
+        if (this->fZeroNew) {
+            memset((pWork + oldMaxLen), 0, array_OffsetOf(this, (newMax - oldMax)));
+        }
+        
+        this->max = newMax;
+        mem_Free(this->pArray);
+        this->pArray = pWork;
         
         // Return to caller.
         return ERESULT_SUCCESS;

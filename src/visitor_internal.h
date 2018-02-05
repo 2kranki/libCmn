@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeGraph_internal.h
- *	Generated 07/14/2016 21:03:24
+ * File:   visitor_internal.h
+ *	Generated 02/03/2018 14:29:56
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,12 +38,12 @@
 
 
 
-#include    <nodeGraph.h>
-#include    <objArray.h>
+
+#include    <visitor.h>
 
 
-#ifndef NODEGRAPH_INTERNAL_H
-#define	NODEGRAPH_INTERNAL_H
+#ifndef VISITOR_INTERNAL_H
+#define	VISITOR_INTERNAL_H
 
 
 
@@ -53,47 +54,79 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct nodeGraph_data_s	{
+struct visitor_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    NODEARRAY_DATA  *pNodes;          // Table of Nodes
-    OBJARRAY_DATA   *pArcs;
+    ERESULT         eRc;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct nodeGraph_class_data_s  nodeGraph_ClassObj;
+    struct visitor_class_data_s  visitor_ClassObj;
 
     extern
     const
-    NODEGRAPH_VTBL         nodeGraph_Vtbl;
+    VISITOR_VTBL         visitor_Vtbl;
 
 
-    // Internal Functions
-    void            nodeGraph_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            visitor_setLastError(
+        VISITOR_DATA     *this,
+        ERESULT         value
+    );
+
+
+    OBJ_IUNKNOWN *  visitor_getSuperVtbl(
+        VISITOR_DATA     *this
+    );
+
+
+    void            visitor_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          nodeGraph_QueryInfo(
+    void *          visitor_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     visitor_ToJSON(
+        VISITOR_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			nodeGraph_Validate(
-        NODEGRAPH_DATA       *cbp
+    bool			visitor_Validate(
+        VISITOR_DATA       *this
     );
 #endif
 
@@ -103,5 +136,5 @@ struct nodeGraph_data_s	{
 }
 #endif
 
-#endif	/* NODEGRAPH_INTERNAL_H */
+#endif	/* VISITOR_INTERNAL_H */
 

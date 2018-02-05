@@ -41,6 +41,8 @@
 
 #include    <symTable.h>
 #include    <listdl.h>
+#include    <objArray.h>
+#include    <objHash.h>
 
 
 
@@ -86,14 +88,8 @@ struct symTable_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint32_t        unique;
-    uint32_t        num;            // Current Number of Entries
-    LISTDL_DATA     freeList;       // Free Node Linked List
-    LISTDL_DATA     blocks;
-    uint16_t        cBlock;         // Number of Nodes per Block
-    uint16_t        cHash;
-    LISTDL_DATA     *pHash;         // Main Hash Table
-
+    OBJHASH_DATA    *pEntries;
+    
 };
 #pragma pack(pop)
 
