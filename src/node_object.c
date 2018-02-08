@@ -65,11 +65,6 @@ OBJ_INFO        node_Info;            // Forward Reference
 
 
 
-OBJ_ID          node_Class(
-    void
-);
-
-
 
 static
 bool            node_ClassIsKindOf(

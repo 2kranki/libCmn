@@ -115,6 +115,11 @@ struct token_data_s	{
     );
     
     
+    TOKEN_DATA *    token_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			token_Validate(

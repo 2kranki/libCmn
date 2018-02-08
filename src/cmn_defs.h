@@ -406,12 +406,10 @@ extern "C" {
         OBJ_IDENT_SYMENTRY_CLASS,
         OBJ_IDENT_SYMTABLE,             // Symbol Table
         OBJ_IDENT_SYMTABLE_CLASS,
-        OBJ_IDENT_SZSTRARRAY,           // An Array of szStr's
-        OBJ_IDENT_SZSTRARRAY_CLASS,
+        OBJ_IDENT_SZDATA,               // Static String with Data
+        OBJ_IDENT_SZDATA_CLASS,
         OBJ_IDENT_SZHASH,               // Store void data with a char string key
         OBJ_IDENT_SZHASH_CLASS,
-        OBJ_IDENT_SZSTR,
-        OBJ_IDENT_SZSTR_CLASS,
         OBJ_IDENT_SZTBL,                // Static String Table
         OBJ_IDENT_SZTBL_CLASS,
         OBJ_IDENT_TABLE,

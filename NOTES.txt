@@ -3,7 +3,7 @@
 The object system was designed after Objective C. I liked how Objective C used Class
 Objects vs the actual working objects. So, I created a system that somewhat mimicks it.
 
-The object system consists of two parts, the same as Cocoa. Each objects actually con-
+The object system consists of two parts, the same as ObjC. Each objects actually con-
 sists of two objects. The first is the class object which is more static. In most cases,
 the class object just makes the working object. However, it can be used to store informa-
 tion accross all working objects created. This is rarely needed.
@@ -16,13 +16,21 @@ for further information.
 
 
 
-
+                            Family of Classes
 
 To eliminate header interference, I found that it was better to group objects in the
 same family into one header. I now put the object and vtbl definition into the family
 header and include in the .c files the actual .h files needed.  That seems to work the
 best. The "node" object is probably the largest family of objects in this system.
 
+
+
+                            JSON Input/Output
+
+If you add JSON I/O to a class, remember to add the class to "jsonin" so that it
+can properly handle an instance creation when a subclass is found. This is particu-
+larly important when the class was stored in an OBJ_ID that is just being used to
+hold the object.
 
 
 

@@ -193,7 +193,7 @@ static
 const
 OBJ_INFO        jsonIn_Info = {
     "jsonIn",
-    "JSON Input Parse Assistance",
+    "JSON Input Parsing Support",
     (OBJ_DATA *)&jsonIn_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&jsonIn_Vtbl

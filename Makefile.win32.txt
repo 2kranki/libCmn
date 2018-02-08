@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 2/ 3/2018 20:26:57.000)
+# ( 2/ 8/2018  4:23:13.000)
 
 
 LIBNAM=libCmn
@@ -138,6 +138,7 @@ OBJS = $(OBJS) $(OBJDIR)\srcLoc.obj $(OBJDIR)\srcLoc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\symAttr.obj $(OBJDIR)\symAttr_object.obj
 OBJS = $(OBJS) $(OBJDIR)\symEntry.obj $(OBJDIR)\symEntry_object.obj
 OBJS = $(OBJS) $(OBJDIR)\symTable.obj $(OBJDIR)\symTable_object.obj
+OBJS = $(OBJS) $(OBJDIR)\szData.obj $(OBJDIR)\szData_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szHash.obj $(OBJDIR)\szHash_object.obj
 OBJS = $(OBJS) $(OBJDIR)\szTbl.obj $(OBJDIR)\szTbl_object.obj
 OBJS = $(OBJS) $(OBJDIR)\table.obj $(OBJDIR)\table_object.obj
@@ -178,6 +179,7 @@ OBJS = $(OBJS) $(OBJDIR)\shellSortPtrs.obj
 OBJS = $(OBJS) $(OBJDIR)\srcLoc_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\str.obj
 OBJS = $(OBJS) $(OBJDIR)\symEntry_JSON.obj
+OBJS = $(OBJS) $(OBJDIR)\szData_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\szTbl_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\token_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\utf8_JSON.obj
@@ -1156,6 +1158,14 @@ TESTS = $(TESTS) test_symTable
 
 test_symTable:
 	$(CC) $(CFLAGS) /Itests tests\test_symTable.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_szData
+
+test_szData:
+	$(CC) $(CFLAGS) /Itests tests\test_szData.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

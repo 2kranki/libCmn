@@ -320,6 +320,97 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   D u p l i c a t e s
+    //---------------------------------------------------------------
+    
+    bool            szHash_getDuplicates(
+        SZHASH_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !szHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        this->eRc = ERESULT_SUCCESS;
+        return this->fDups ? true : false;
+    }
+    
+    
+    bool            szHash_setDuplicates(
+        SZHASH_DATA     *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !szHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fDups = fValue ? 1 : 0;
+        
+        this->eRc = ERESULT_SUCCESS;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         szHash_getLastError(
+        SZHASH_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !szHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            szHash_setLastError(
+        SZHASH_DATA     *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !szHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+    
     uint32_t        szHash_getSize(
         SZHASH_DATA     *this
     )
@@ -374,10 +465,14 @@ extern "C" {
 #endif
         
         hash = (*this->pComputeHash)(pszKey,NULL);
-        pNode = szHash_FindNode(this, hash, pszKey);
-        if (pNode) {
-            fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
-            return ERESULT_DATA_ALREADY_EXISTS;
+        if (this->fDups)
+            ;
+        else {
+            pNode = szHash_FindNode(this, hash, pszKey);
+            if (pNode) {
+                fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
+                return ERESULT_DATA_ALREADY_EXISTS;
+            }
         }
         
         // Determine the entry number.
@@ -399,7 +494,7 @@ extern "C" {
         pNode->hash   = hash;
         
         pNodeList = szHash_NodeListFromHash(this, hash);
-        listdl_Add2Tail(pNodeList, pNode);
+        listdl_Add2Head(pNodeList, pNode);
 
         ++this->num;
         
@@ -499,9 +594,8 @@ extern "C" {
     //                        E n u m
     //----------------------------------------------------------
     
-    ERESULT         szHash_EnumKeys(
-        SZHASH_DATA     *this,
-        ENUM_DATA       **ppEnum
+    ENUM_DATA *     szHash_EnumKeys(
+        SZHASH_DATA     *this
     )
     {
         ENUM_DATA       *pEnum = OBJ_NIL;
@@ -514,21 +608,17 @@ extern "C" {
 #else
         if( !szHash_Validate(this) ) {
             DEBUG_BREAK();
-            if (ppEnum) {
-                *ppEnum = pEnum;
-            }
-            return ERESULT_INVALID_OBJECT;
+            //this->eRc = ERESULT_INVALID_OBJECT;
+            return pEnum;
         }
 #endif
         
         pEnum = enum_New( );
-        if (pEnum) {
-        }
+        if (pEnum)
+            ;
         else {
-            if (ppEnum) {
-                *ppEnum = pEnum;
-            }
-            return ERESULT_OUT_OF_MEMORY;
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return pEnum;
         }
         
         for (i=0; i<this->cHash; ++i) {
@@ -541,10 +631,8 @@ extern "C" {
         }
         
         // Return to caller.
-        if (ppEnum) {
-            *ppEnum = pEnum;
-        }
-        return ERESULT_SUCCESS;
+        this->eRc = ERESULT_SUCCESS;
+        return pEnum;
     }
     
     

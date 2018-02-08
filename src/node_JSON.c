@@ -43,6 +43,7 @@
 
 /* Header File Inclusion */
 #include    <node_internal.h>
+#include    <name_internal.h>
 #include    <token_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
@@ -68,7 +69,75 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    NODE_DATA *     node_ParseObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        uint32_t        cls = 0;
+        OBJ_ID          pObj = OBJ_NIL;
+        uint8_t         *pUtf8;
+        SRCLOC_DATA     *pSrc = OBJ_NIL;
+        NAME_DATA       *pName = OBJ_NIL;
+
+        pInfo = obj_getInfo(node_Class());
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+        
+        pObj = jsonIn_SubobjectInHash(pParser, "name");
+        if (pObj) {
+            pName = name_ParseObject(pParser);
+            jsonIn_SubobjectEnd(pParser);
+            if (pName) {
+                pObject = node_New( );
+                obj_Release(pName);
+                pName = OBJ_NIL;
+            }
+        }
+        
+        if (pObject) {
+            cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
+            node_setClass(pObject, cls);
+            
+#ifdef XYZZY
+            pObj = jsonIn_SubobjectInHash(pParser, "data");
+            if (pObj) {
+                pObj = jsonIn_ParseObject(pParser);
+                jsonIn_SubobjectEnd(pParser);
+                if (pObj) {
+                    szData_setData(pObject, pObj);
+                    obj_Release(pObj);
+                    pObj = OBJ_NIL;
+                }
+            }
+#endif
+        }
+        
+        // Return to caller.
+    exit00:
+        if (pSrc) {
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+        }
+        return pObject;
+    }
     
+    
+    
+
     
     
     /****************************************************************

@@ -40,6 +40,7 @@
 
 
 #include    <enum.h>
+#include    <array.h>
 
 
 #ifndef ENUM_INTERNAL_H
@@ -54,6 +55,16 @@ extern "C" {
 
 
 
+    //      Node Descriptor
+#pragma pack(push, 1)
+    typedef struct  enum_node_s {
+        const
+        char            *pszKey;
+        uint32_t        index;
+    } ENUM_NODE;
+#pragma pack(pop)
+    
+    
 #pragma pack(push, 1)
 struct enum_data_s	{
     /* Warning - OBJ_DATA must be first in this object!

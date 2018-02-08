@@ -1,19 +1,26 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSONIN Console Transmit Task (jsonIn) Header
+//          JSON Input Parsing Support (jsonIn) Header
 //****************************************************************
 /*
  * Program
- *			Separate jsonIn (jsonIn)
+ *			JSON Input Parsing Support (jsonIn)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate jsonIn to run things without complications
- *          of interfering with the main jsonIn. A jsonIn may be 
- *          called a jsonIn on other O/S's.
+ *			This object provides a standardized way of parsing an
+ *          HJSON node tree. The support routines help the individual
+ *          object's JSON parser to successfully create objects
+ *          from HJSON node trees.
+ *
+ *          In particular, it is capable of properly parsing
+ *          sub-objects within the HSON tree as well as general
+ *          parsing of objects that are unknown to begin with.
  *
  * Remarks
- *	1.      None
+ *	1.      The ParseObject() method requires that all classes
+ *          to be parsed by it must be previously defined.
+ *  2.      Warning - Using this object will require memory for
+ *          all object methods being called by ParseObject().
  *
  * History
  *	12/21/2017 Generated
@@ -201,15 +208,44 @@ extern "C" {
     );
     
     
-    NODEHASH_DATA * jsonIn_SubobjectInHash(
-        JSONIN_DATA     *this,
-        const
-        char            *pSection
+    /*!
+     Parse an object from the current JSON Node tree using the object's
+     class to call the specific JSON Input parsers for that class.
+     @param     this    JSONIN object pointer
+     @return    If successful, a new object pointer and the last error is
+                set to ERESULT_SUCCESS, otherwise, OBJ_NIL and the last
+                error is set to an ERESULT_* error code
+     */
+    OBJ_ID          jsonIn_ParseObject(
+        JSONIN_DATA     *this
     );
     
     
+    /*!
+     Restore the JSON Node Tree that was saved from a prior call to the method,
+     SubobjectInHash().
+     @param     this    JSONIN object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
+     */
     bool            jsonIn_SubobjectEnd(
         JSONIN_DATA     *this
+    );
+    
+    
+    /*!
+     Set up the parser to process a sub-object of the JSON Node tree by:
+     *  Pushing the current JSON tree on the internal stack.
+     *  Setting up the found section as the parser input.
+     @param     this    JSONIN object pointer
+     @param     pSect   Section Name String (required)
+     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code.
+     @warning   The SubobjectEnd() method should be called once the sub-object
+                is parsed.
+     */
+    NODEHASH_DATA * jsonIn_SubobjectInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSect
     );
     
     

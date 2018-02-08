@@ -39,6 +39,7 @@
 
 #include    <name.h>
 #include    <AStr.h>
+#include    <jsonIn.h>
 #include    <W32Str.h>
 
 
@@ -102,6 +103,11 @@ struct name_data_s	{
         NAME_DATA       *this,
         const
         void            *pValue
+    );
+    
+    
+    NAME_DATA *     name_ParseObject(
+        JSONIN_DATA     *pParser
     );
     
     

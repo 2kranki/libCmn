@@ -159,6 +159,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          node_Class(
+        void
+    );
+    
+    
     const
     char *          node_FindClassDescription(
         int             class

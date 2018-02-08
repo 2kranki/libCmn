@@ -82,6 +82,8 @@ struct szHash_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    
+    ERESULT         eRc;
 
     // Compare two keys returning -1 if key1 < key2, 0 if key1 == key2,
     // 1 if key1 > key2
@@ -99,6 +101,8 @@ struct szHash_data_s	{
     uint16_t        cHash;
     LISTDL_DATA     *pHash;         // Main Hash Table
     //PTRARRAY_DATA   *pPtrArray;
+    uint8_t         fDups;
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)

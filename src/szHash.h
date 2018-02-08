@@ -162,6 +162,21 @@ extern "C" {
     );
     
     
+    bool            szHash_getDuplicates(
+        SZHASH_DATA     *this
+    );
+    
+    bool            szHash_setDuplicates(
+        SZHASH_DATA     *this,
+        bool            fValue
+    );
+    
+
+    ERESULT         szHash_getLastError(
+        SZHASH_DATA     *this
+    );
+    
+    
     /* Size() returns the current number of used entries.
      * Returns:
      *		Current Number of Entries in Table
@@ -207,14 +222,13 @@ extern "C" {
      ASTR_DATA      *pDesc = szHash_EnumKeys(this, &pEnum);
      @endcode
      @param     this    object pointer
-     @param     ppEnum  pointer to an Enumeration Object Pointer
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error code.
+     @return    If successful, pointer to an Enumeration Object Pointer.
+                Otherwise, OBJ_NIL and an ERESULT_* error code in the
+                Last Error Code.
      @warning   Remember to release the returned Enumeration object.
      */
-    ERESULT         szHash_EnumKeys(
-        SZHASH_DATA     *this,
-        ENUM_DATA       **ppEnum
+    ENUM_DATA *     szHash_EnumKeys(
+        SZHASH_DATA     *this
     );
     
     

@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   node_internal.h
- *	Generated 06/30/2015 22:51:43
+ * File:   szData_internal.h
+ *	Generated 02/07/2018 09:15:58
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,17 +38,13 @@
 
 
 
-#include    <name.h>
-#include    <node.h>
-#include    <nodeArray.h>
-#include    <nodeHash.h>
+
+#include    <szData.h>
 #include    <jsonIn.h>
-#include    <listdl.h>
-#include    <szTbl.h>
 
 
-#ifndef NODE_INTERNAL_H
-#define	NODE_INTERNAL_H
+#ifndef SZDATA_INTERNAL_H
+#define	SZDATA_INTERNAL_H
 
 
 
@@ -56,97 +53,87 @@ extern "C" {
 #endif
 
 
-    
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct node_data_s	{
+struct szData_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
-#define NODE_DUP_NAME   OBJ_FLAG_USER1   /* We allocated Name */
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
+    uint32_t        token;          // szTbl token
+
     int32_t         cls;
-    int32_t         type;
-    uint32_t        index;
-    NAME_DATA       *pName;
-    uint32_t        leftIndex;
-    uint32_t        middleIndex;
-    uint32_t        parentIndex;
-    uint32_t        rightIndex;
     OBJ_ID          pData;
-    OBJ_ID          pOther;
-    NODEARRAY_DATA  *pProperties;
-    OBJ_ID          pExtra;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    NODE_VTBL       node_Vtbl;
+    struct szData_class_data_s  szData_ClassObj;
 
     extern
     const
-    struct node_class_data_s   node_ClassObj;
-    
+    SZDATA_VTBL         szData_Vtbl;
 
 
-    // Internal Functions
-    
-    bool            node_setName(
-        NODE_DATA       *cbp,
-        NAME_DATA       *pValue
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+   bool            szData_setLastError(
+        SZDATA_DATA     *this,
+        ERESULT         value
     );
-    
-    
-    void            node_Dealloc(
+
+
+    OBJ_IUNKNOWN *  szData_getSuperVtbl(
+        SZDATA_DATA     *this
+    );
+
+
+    void            szData_Dealloc(
         OBJ_ID          objId
     );
 
-    
-    NODE_DATA *     node_Init(
-        NODE_DATA       *cbp
-    );
 
-    
-    NODE_DATA *     node_InitWithName(
-        NODE_DATA       *cbp,
-        NAME_DATA       *pName,
-        OBJ_ID          pData
-    );
-
-    
-    NODE_DATA *     node_InitWithPtr(
-        NODE_DATA       *this,
-        const
-        void            *pValue,
-        OBJ_ID          pData
-    );
-    
-    
-    NODE_DATA *     node_New(
+    SZDATA_DATA *   szData_New(
         void
     );
     
     
-    NODE_DATA *     node_ParseObject(
+    SZDATA_DATA *   szData_ParseObject(
         JSONIN_DATA     *pParser
     );
     
     
-    void *          node_QueryInfo(
+    void *          szData_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     szData_ToJSON(
+        SZDATA_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			node_Validate(
-        NODE_DATA       *cbp
+    bool			szData_Validate(
+        SZDATA_DATA       *this
     );
 #endif
 
@@ -156,5 +143,5 @@ struct node_data_s	{
 }
 #endif
 
-#endif	/* NODE_INTERNAL_H */
+#endif	/* SZDATA_INTERNAL_H */
 

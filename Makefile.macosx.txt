@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 2/ 3/2018 20:26:59.000)
+# ( 2/ 8/2018  4:23:15.000)
 
 
 LIBNAM=libCmn
@@ -1296,6 +1296,18 @@ $(OBJDIR)/symTable_object.o: $(SRCDIR)/symTable_object.c
 
 
 
+OBJS += $(OBJDIR)/szData.o $(OBJDIR)/szData_object.o
+
+
+$(OBJDIR)/szData.o: $(SRCDIR)/szData.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/szData_object.o: $(SRCDIR)/szData_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/szHash.o $(OBJDIR)/szHash_object.o
 
 
@@ -1668,6 +1680,12 @@ $(OBJDIR)/symEntry_JSON.o: $(SRCDIR)/symEntry_JSON.c
 
 
 OBJS += $(OBJDIR)/symEntry_JSON.o
+$(OBJDIR)/szData_JSON.o: $(SRCDIR)/szData_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/szData_JSON.o
 $(OBJDIR)/szTbl_JSON.o: $(SRCDIR)/szTbl_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -2542,6 +2560,13 @@ TESTS += test_symTable
 
 test_symTable:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_symTable.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_szData
+
+test_szData:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_szData.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

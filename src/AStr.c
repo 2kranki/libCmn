@@ -2137,11 +2137,9 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return AStr_ToDebugString;
                         }
-#ifdef XYZZY
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return AStr_ToJSON;
                         }
-#endif
                         break;
                         
                     default:

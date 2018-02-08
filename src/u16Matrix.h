@@ -212,7 +212,7 @@ extern "C" {
      @return    If successful, a new matrix, otherwise OBJ_NIL and
                 getLastError() ERESULT_* error code
      */
-    U16MATRIX_DATA *          u16Matrix_Multiply(
+    U16MATRIX_DATA * u16Matrix_Multiply(
         U16MATRIX_DATA	*this,
         U16MATRIX_DATA	*pOther
     );

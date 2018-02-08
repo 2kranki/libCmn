@@ -42,11 +42,24 @@
 
 /* Header File Inclusion */
 #include        <jsonIn_internal.h>
+#include        <AStr_internal.h>
 #include        <dec.h>
 #include        <hex.h>
-#include        <name.h>
-#include        <node.h>
-#include        <nodeHash.h>
+#include        <name_internal.h>
+#include        <node_internal.h>
+#include        <nodeHash_internal.h>
+#include        <null.h>
+#include        <number.h>
+#include        <objHash.h>
+#include        <srcLoc.h>
+#include        <symAttr.h>
+#include        <symEntry.h>
+#include        <szData_internal.h>
+#include        <szTbl.h>
+#include        <token_internal.h>
+#include        <utf8.h>
+#include        <value.h>
+#include        <W32Str.h>
 
 
 
@@ -907,7 +920,74 @@ extern "C" {
     }
     
     
+    OBJ_ID          jsonIn_ParseObject(
+        JSONIN_DATA     *this
+    )
+    {
+        ERESULT         eRc;
+        OBJ_ID          *pObj = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObj;
+        }
+        if (obj_Trace(this)) {
+            fprintf(stderr, "jsonIn_ParseObject:\n");
+        }
+#endif
+
+        pInfo = obj_getInfo(AStr_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)AStr_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(name_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)name_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(node_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)node_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(szData_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)szData_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(token_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)token_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        // Return to caller.
+        this->eRc = ERESULT_DATA_NOT_FOUND;
+        return pObj;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

@@ -201,6 +201,12 @@ extern "C" {
     );
     
     
+    /*!
+     Compare the names of the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if name == other
+     ERESULT_SUCCESS_LESS_THAN if name < other
+     ERESULT_SUCCESS_GREATER_THAN if name > other
+     */
     ERESULT         name_Compare(
         NAME_DATA       *this,
         NAME_DATA       *pOther
@@ -216,12 +222,6 @@ extern "C" {
         NAME_DATA       *this,
         const
         char            *pOther
-    );
-    
-    ERESULT         name_CompareW(
-        NAME_DATA       *this,
-        const
-        int32_t         *pOther
     );
     
     
