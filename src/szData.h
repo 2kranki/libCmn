@@ -1,16 +1,15 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SZDATA Console Transmit Task (szData) Header
+//          Static String with Data (szData) Header
 //****************************************************************
 /*
  * Program
- *			Separate szData (szData)
+ *			Static String with Data (szData)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate szData to run things without complications
- *          of interfering with the main szData. A szData may be 
- *          called a szData on other O/S's.
+ *			This object provides support to tie specific data to
+ *          a static string.  This object can be used with object
+ *          collections such as objArray and objHash.
  *
  * Remarks
  *	1.      None
@@ -124,7 +123,17 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new szData object from an szTbl token.
+     @param     token   a valid token from the global szTbl
+     @return    If successful, a valid szData object otherwise OBJ_NIL
+     */
+    SZDATA_DATA *   szData_NewFromToken(
+        uint32_t        token
+    );
     
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***

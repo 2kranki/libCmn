@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <genObj_internal.h>
 #include    <crc.h>
@@ -52,7 +53,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -104,7 +106,7 @@ int         test_genObj_OpenClose(
 
 int         test_genObj_License(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     GENOBJ_DATA     *pObj = OBJ_NIL;
@@ -136,7 +138,7 @@ int         test_genObj_License(
 
 int         test_genObj_Method01(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     GENOBJ_DATA     *pObj = OBJ_NIL;
@@ -149,11 +151,13 @@ int         test_genObj_Method01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genObj_AddVarA(pObj, "ClassName", "xyzzy");
+        eRc = genObj_VarAddA(pObj, "ClassName", "xyzzy");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
+        // Note - if we don't supply a str, GenMethod() will create one.
         eRc = genObj_GenMethod(pObj, &pStr, 4, "abc", "int", NULL, NULL, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "%s", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -200,7 +204,7 @@ int         test_genObj_Method01(
 
 int         test_genObj_Getter01(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     GENOBJ_DATA     *pObj = OBJ_NIL;
@@ -213,7 +217,7 @@ int         test_genObj_Getter01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genObj_AddVarA(pObj, "ClassName", "xyzzy");
+        eRc = genObj_VarAddA(pObj, "ClassName", "xyzzy");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         fprintf(stderr, "4, \"int\", \"abc\", NULL\n");
@@ -254,8 +258,205 @@ int         test_genObj_Getter01(
 
 
 
+int         test_genObj_Substitute01(
+    const
+    char            *pTestName
+)
+{
+    GENOBJ_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    char            *pStrA;
+    ASTR_DATA       *pResult = OBJ_NIL;
+    ERESULT         eRc;
+
+    fprintf(stderr, "Performing: %s\n\n", pTestName);
+    
+    pObj = genObj_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = genObj_VarAddA(pObj, "ClassName", "xyzzy");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStrA = "";
+        pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pResult) );
+        TINYTEST_TRUE( (0 == AStr_getLength(pResult)) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+            );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = NULL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStrA = "";
+        //pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = OBJ_NIL\n");
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_TRUE( (OBJ_NIL == pResult) );
+        TINYTEST_TRUE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_TRUE( (OBJ_NIL == pResult) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+            );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = OBJ_NIL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStrA = "Now is the time for all good men to come to the aid of their country!";
+        pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pResult) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pResult, pStrA)) );
+        TINYTEST_TRUE( (69 == AStr_getLength(pResult)) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+            );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = OBJ_NIL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStrA = "Our class name is $ClassName!";
+        pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pResult) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "Our class name is xyzzy!")) );
+        TINYTEST_TRUE( (24 == AStr_getLength(pResult)) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+                    );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = OBJ_NIL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStrA = "Our class name is ${ClassName}!";
+        pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pResult) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "Our class name is xyzzy!")) );
+        TINYTEST_TRUE( (24 == AStr_getLength(pResult)) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+                    );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = OBJ_NIL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStrA = "${ClassName}";
+        pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pResult) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "xyzzy")) );
+        TINYTEST_TRUE( (5 == AStr_getLength(pResult)) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+                    );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = OBJ_NIL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStrA = "${ClassName";
+        pStr = AStr_NewA(pStrA);
+        fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
+        pResult = genObj_Substitute(pObj, '$', pStr);
+        TINYTEST_TRUE( (ERESULT_FAILED(pObj->eRc)) );
+        TINYTEST_TRUE( (OBJ_NIL == pResult) );
+        //TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "xyzzy")) );
+        //TINYTEST_TRUE( (5 == AStr_getLength(pResult)) );
+        if (pResult) {
+            fprintf(
+                    stderr,
+                    "\toutput = (%d)\"%s\"\n\n",
+                    AStr_getLength(pResult),
+                    AStr_getData(pResult)
+                    );
+            obj_Release(pResult);
+            pResult = OBJ_NIL;
+        }
+        else {
+            fprintf(stderr, "\toutput = OBJ_NIL\n\n");
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_genObj);
+    TINYTEST_ADD_TEST(test_genObj_Substitute01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genObj_Getter01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genObj_Method01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genObj_License,setUp,tearDown);

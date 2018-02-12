@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include    <szHash_internal.h>
 #include    <enum_internal.h>
+#include    <ascii.h>
 #include    <stdio.h>
 #include    <str.h>
 #include    <utf8.h>

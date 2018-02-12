@@ -434,16 +434,19 @@ extern "C" {
     
     
     uint32_t        AStr_getLength(
-        ASTR_DATA      *this
+        ASTR_DATA       *this
     )
     {
+        uint32_t        len;
 #ifdef NDEBUG
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        return  utf8_StrLenA(AStr_getData(this));
+        len =  utf8_StrLenA(AStr_getData(this));
+        
+        return len;
     }
     
     
@@ -2140,6 +2143,9 @@ extern "C" {
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return AStr_ToJSON;
                         }
+                        if (str_Compare("ToString", (char *)pStr) == 0) {
+                            return AStr_ToString;
+                        }
                         break;
                         
                     default:
@@ -2534,7 +2540,30 @@ extern "C" {
     }
     
     
+    ASTR_DATA *     AStr_ToString(
+        ASTR_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        char            *pData;
+        uint32_t        lenStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_Copy(this);
+        
+        return pStr;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                       T o  U p p e r
     //---------------------------------------------------------------
@@ -2797,7 +2826,7 @@ extern "C" {
     )
     {
         if(this) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_ASTR) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_ASTR) )
                 ;
             else
                 return false;

@@ -135,6 +135,34 @@ extern "C" {
     }
     
     
+    SZDATA_DATA *   szData_NewFromToken(
+        uint32_t        token
+    )
+    {
+        SZDATA_DATA     *this;
+        const
+        char            *pStr;
+        
+        this = szData_Alloc( );
+        if (this) {
+            this = szData_Init(this);
+            if (this) {
+                pStr = szTbl_TokenToString(OBJ_NIL, token);
+                if (pStr) {
+                    this->token = token;
+                }
+                else {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+            }
+        }
+        
+        return this;
+    }
+    
+    
+    
 
     
 
@@ -891,6 +919,8 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        const
+        char            *pStrA = "";
         
         // Do initialization.
 #ifdef NDEBUG
@@ -906,13 +936,18 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
+        if (this->token) {
+            pStrA = szTbl_TokenToString(OBJ_NIL, this->token);
+        }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s)\n",
+                    "{%p(%s) name=(%d)%s\n",
                     this,
-                    pInfo->pClassName
+                    pInfo->pClassName,
+                    this->token,
+                    pStrA
             );
-
+        
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(

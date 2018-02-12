@@ -338,7 +338,7 @@ extern "C" {
     )
     {
         SYMTABLE_DATA       *pOther = OBJ_NIL;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -468,7 +468,7 @@ extern "C" {
     )
     {
         OBJENUM_DATA    *pEnum = OBJ_NIL;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
         if (NULL == this) {

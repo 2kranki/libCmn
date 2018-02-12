@@ -45,6 +45,7 @@
 #include        <ascii.h>
 #include        <dateTime.h>
 #include        <str.h>
+#include        <szTbl.h>
 #include        <utf8.h>
 
 
@@ -79,7 +80,10 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
+    //---------------------------------------------------------------
+    //          C r e a t e  S p a c e d  C o m m e n t
+    //---------------------------------------------------------------
+    
     ASTR_DATA *     genObj_CreateSpacedComment(
         GENOBJ_DATA     *this,
         const
@@ -117,6 +121,152 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                      S u b s t i t u t e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genObj_Substitute(
+        GENOBJ_DATA     *this,
+        const
+        W32CHR_T        marker,     // Marker (normally '$'
+        ASTR_DATA       *pStr       // Input String
+    )
+    {
+        ASTR_DATA       *pAStr = OBJ_NIL;
+        ASTR_DATA       *pData;
+        char            name[128];
+        char            *pName = name;
+        int             state = 0;
+        uint32_t        index = 1;
+        uint32_t        i = 0;
+        uint32_t        len = 0;
+        W32CHR_T        chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( marker == 0 ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+        if( pStr == NULL ) {
+            //DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        pAStr = AStr_New();
+        if (OBJ_NIL == pAStr) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return pAStr;
+        }
+        len = AStr_getLength(pStr);
+        
+        for (;;) {
+            if (index > len) {
+                if (0 == state)
+                    ;
+                else {
+                    this->eRc = ERESULT_PARSE_ERROR;
+                    obj_Release(pAStr);
+                    pAStr = OBJ_NIL;
+                    return pAStr;
+                }
+                break;
+            }
+            chr = AStr_CharGetW32(pStr, index);
+            switch (state) {
+                case 1:             // Accumulating name
+                    if (ascii_isAlphanumericW32(chr)) {
+                        i = utf8_W32ToUtf8(chr, pName);
+                        pName += i;
+                        ++index;
+                        break;
+                    }
+                    *pName = '\0';
+                    state = 3;
+                    break;
+                    
+                case 2:             // Accumulating {name}
+                    if (ascii_isAlphanumericW32(chr)) {
+                        i = utf8_W32ToUtf8(chr, pName);
+                        pName += i;
+                        ++index;
+                        break;
+                    }
+                    if (chr == '}')
+                        ;
+                    else {
+                        this->eRc = ERESULT_PARSE_ERROR;
+                        obj_Release(pAStr);
+                        pAStr = OBJ_NIL;
+                        return pAStr;
+                    }
+                    ++index;
+                    *pName = '\0';
+                    state = 3;
+                    //break;
+                    
+                case 3:             // Substitute name;
+                {
+                    pData = genObj_VarFind(this, name);
+                    if (pData) {
+                        AStr_Append(pAStr, pData);
+                    }
+                    else {
+                        AStr_AppendCharW32(pAStr, marker);
+                        AStr_AppendCharW32(pAStr, '{');
+                        AStr_AppendA(pAStr, pName);
+                        AStr_AppendCharW32(pAStr, '}');
+                    }
+                }
+                    state = 0;
+                    break;
+
+                default:            // Looking for marker
+                    if (marker == chr) {
+                        if (index <= (len - 2)) {
+                            if (marker == AStr_CharGetW32(pStr, (index + 1))) {
+                                AStr_AppendCharW32(pAStr, marker);
+                                index += 2;
+                                break;
+                            }
+                            else if ('{' == AStr_CharGetW32(pStr, (index + 1))) {
+                                state = 2;
+                                ++index;
+                            }
+                            else
+                                state = 1;
+                            pName = name;
+                            ++index;
+                        }
+                        else {
+                            //FIXME: Error
+                        }
+                    }
+                    else {
+                        ++index;
+                        AStr_AppendCharW32(pAStr, chr);
+                    }
+                    break;
+            }
+            
+        }
+        
+        // Return to caller.
+        return pAStr;
+    }
+    
+    
+    
+
+    
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -303,96 +453,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      A d d  V a r i a b l e
-    //---------------------------------------------------------------
-    
-    ERESULT         genObj_AddVarA(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        const
-        char            *pValue
-    )
-    {
-        ASTR_DATA       *pAValue = OBJ_NIL;
-        ASTR_DATA       *pAValueUC = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        NODE_DATA       *pNodeUC = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        pAValue = AStr_NewA(pValue);
-        if (OBJ_NIL == pAValue) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
-            return this->eRc;
-        }
-        pNode = node_NewWithUTF8(pName, pAValue);
-        if (OBJ_NIL == pAValue) {
-            obj_Release(pAValue);
-            this->eRc = ERESULT_OUT_OF_MEMORY;
-            return this->eRc;
-        }
-
-        this->eRc = nodeHash_Add(this->pHash, pNode);
-        if (!ERESULT_FAILED(this->eRc) && (0 == strcmp("ClassName", pName))) {
-            pAValueUC = AStr_ToUpper(pAValue);
-            if (OBJ_NIL == pAValueUC) {
-                obj_Release(pNode);
-                obj_Release(pAValue);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return this->eRc;
-            }
-            pNodeUC = node_NewWithUTF8("ClassNameUC", pAValueUC);
-            if (OBJ_NIL == pNodeUC) {
-                obj_Release(pNode);
-                obj_Release(pAValueUC);
-                obj_Release(pAValue);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return this->eRc;
-            }
-            this->eRc = nodeHash_Add(this->pHash, pNodeUC);
-        }
-        else if (!ERESULT_FAILED(this->eRc) && (0 == strcmp("SuperClassName", pName))) {
-            pAValueUC = AStr_ToUpper(pAValue);
-            if (OBJ_NIL == pAValueUC) {
-                obj_Release(pNode);
-                obj_Release(pAValue);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return this->eRc;
-            }
-            pNodeUC = node_NewWithUTF8("SuperClassNameUC", pAValueUC);
-            if (OBJ_NIL == pNodeUC) {
-                obj_Release(pNode);
-                obj_Release(pAValueUC);
-                obj_Release(pAValue);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return this->eRc;
-            }
-            this->eRc = nodeHash_Add(this->pHash, pNodeUC);
-        }
-
-        obj_Release(pNodeUC);
-        pNodeUC = OBJ_NIL;
-        obj_Release(pAValueUC);
-        pAValueUC = OBJ_NIL;
-        obj_Release(pNode);
-        pNode = OBJ_NIL;
-        obj_Release(pAValue);
-        pAValue = OBJ_NIL;
-
-        // Return to caller.
-        return this->eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -573,9 +633,8 @@ extern "C" {
         ASTR_DATA       **ppStr             // (in/out)
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -589,12 +648,16 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if (OBJ_NIL == pClassNameUC) {
+            return this->eRc;
+        }
+        
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
         }
@@ -623,10 +686,9 @@ extern "C" {
         char            *pIncludes
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
-        
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -639,11 +701,15 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if (OBJ_NIL == pClassNameUC) {
+            return this->eRc;
+        }
         
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
@@ -699,12 +765,9 @@ extern "C" {
     )
     {
         ASTR_DATA       *pOffset = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
         int32_t         i;
-        const
-        char            *pClassName;
-        const
-        char            *pClassNameUC;
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
         ASTR_DATA       *pMethodName = OBJ_NIL;
         ASTR_DATA       *pMethodDesc = OBJ_NIL;
         bool            fObject = false;
@@ -724,18 +787,18 @@ extern "C" {
         pOffset = AStr_New();
         BREAK_NULL(pOffset);
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             obj_Release(pOffset);
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
-        if (OBJ_NIL == pNode) {
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if (OBJ_NIL == pClassNameUC) {
             obj_Release(pOffset);
             return this->eRc;
         }
-        pClassNameUC = AStr_getData(node_getData(pNode));
+        
         if (0 == strcmp("eRc", pName)) {
             pMethodName = AStr_NewA("LastError");
             BREAK_NULL(pMethodName);
@@ -804,14 +867,14 @@ extern "C" {
                          "%s%s\t\t\t%s_get%s(\n",
                          AStr_getData(pOffset),
                          pDataType,
-                         pClassName,
+                         AStr_getData(pClassName),
                          AStr_getData(pMethodName)
                          );
         AStr_AppendPrint(
                          *ppStr,
                          "%s\t%s_DATA\t*this\n",
                          AStr_getData(pOffset),
-                         pClassNameUC
+                         AStr_getData(pClassNameUC)
                          );
         AStr_AppendPrint(*ppStr, "%s)\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "%s{\n", AStr_getData(pOffset));
@@ -862,7 +925,7 @@ extern "C" {
                          *ppStr,
                          "%s\tif (!%s_Validate(this)) {\n",
                          AStr_getData(pOffset),
-                         pClassName
+                         AStr_getData(pClassName)
                          );
         AStr_AppendPrint(*ppStr, "%s\t\tDEBUG_BREAK();\n", AStr_getData(pOffset));
         if (fObject) {
@@ -934,14 +997,14 @@ extern "C" {
                          *ppStr,
                          "%sbool\t\t\t%s_set%s(\n",
                          AStr_getData(pOffset),
-                         pClassName,
+                         AStr_getData(pClassName),
                          AStr_getData(pMethodName)
         );
         AStr_AppendPrint(
                          *ppStr,
                          "%s\t%s_DATA\t*this,\n",
                          AStr_getData(pOffset),
-                         pClassNameUC
+                         AStr_getData(pClassNameUC)
         );
         if (0 == strcmp("int", pDataType)) {
             AStr_AppendPrint(*ppStr, "%s\tint\t\t\tvalue\n", AStr_getData(pOffset));
@@ -996,7 +1059,7 @@ extern "C" {
                          *ppStr,
                          "%s\tif (!%s_Validate(this)) {\n",
                          AStr_getData(pOffset),
-                         pClassName
+                         AStr_getData(pClassName)
                          );
         AStr_AppendPrint(*ppStr, "%s\t\tDEBUG_BREAK();\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "%s\t\treturn false;\n", AStr_getData(pOffset));
@@ -1065,11 +1128,8 @@ extern "C" {
         ASTR_DATA       **ppStr             // (in/out)
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
-        const
-        char            *pClassNameUC;
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1083,17 +1143,16 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
-        if (OBJ_NIL == pNode) {
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if (OBJ_NIL == pClassNameUC) {
             return this->eRc;
         }
-        pClassNameUC = AStr_getData(node_getData(pNode));
-
+        
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
         }
@@ -1101,7 +1160,10 @@ extern "C" {
         genObj_GenHeading(this, OBJ_NIL);
         AStr_AppendA(*ppStr, "/*\n");
         AStr_AppendA(*ppStr, " * Program:\n");
-        AStr_AppendPrint(*ppStr, " *\t\t%s (%s)\n", pClassName, pClassNameUC);
+        AStr_AppendPrint(*ppStr, " *\t\t%s (%s)\n",
+                         AStr_getData(pClassName),
+                         AStr_getData(pClassNameUC)
+        );
         AStr_AppendA(*ppStr, " * Purpose:\n");
         AStr_AppendA(*ppStr, " *\t\tThis object does something cool!\n");
         AStr_AppendA(*ppStr, " * Remarks:\n");
@@ -1140,11 +1202,8 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
-        const
-        char            *pClassNameUC;
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1155,21 +1214,15 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
-            DEBUG_BREAK();
-            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             return OBJ_NIL;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
-        if (OBJ_NIL == pNode) {
-            DEBUG_BREAK();
-            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if (OBJ_NIL == pClassNameUC) {
             return OBJ_NIL;
         }
-        pClassNameUC = AStr_getData(node_getData(pNode));
-
+        
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
             DEBUG_BREAK();
@@ -1193,7 +1246,7 @@ extern "C" {
         }
         
         AStr_AppendA(pStr, "/* Header File Inclusion */\n");
-        AStr_AppendPrint(pStr, "#include <%s.h>\n", pClassName);
+        AStr_AppendPrint(pStr, "#include <%s.h>\n", AStr_getData(pClassName));
         AStr_AppendPrint(pStr, "#include <ascii.h>\n");
         AStr_AppendPrint(pStr, "#include <utf8.h>\n");
         if (pIncludes) {
@@ -1206,7 +1259,7 @@ extern "C" {
         AStr_AppendA(pStr, "\n\n\n");
         eRc = genObj_GenSection(this, &pStr, "Object Data Description", false);
         AStr_AppendA(pStr, "#pragma pack(push, 1)\n");
-        AStr_AppendPrint(pStr, "struct %s_data_s\t{\n", pClassName);
+        AStr_AppendPrint(pStr, "struct %s_data_s\t{\n", AStr_getData(pClassName));
         AStr_AppendA(pStr, "/* Warning - OBJ_DATA must be first in this object!\n");
         AStr_AppendA(pStr, " */\n");
         AStr_AppendA(pStr, "\tOBJ_DATA\t\tsuper;\n");
@@ -1227,49 +1280,49 @@ extern "C" {
         AStr_AppendPrint(
                          pStr,
                          "\tstruct %s_class_data_s  %s_ClassObj;\n\n",
-                         pClassName,
-                         pClassName
+                         AStr_getData(pClassName),
+                         AStr_getData(pClassName)
         );
         AStr_AppendA(pStr, "\textern\n");
         AStr_AppendA(pStr, "\tconst\n");
         AStr_AppendPrint(
                          pStr,
                          "\t%s_VTBL\t\t%s_Vtbl;\n\n",
-                         pClassNameUC,
-                         pClassName
+                         AStr_getData(pClassNameUC),
+                         AStr_getData(pClassName)
                          );
         AStr_AppendA(pStr, "\n\n\n");
         eRc = genObj_GenSection(this, &pStr, "Internal Method Forward Definitions", false);
-        AStr_AppendPrint(pStr, "\tbool\t\t%s_setLastError(\n", pClassName);
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", pClassNameUC);
+        AStr_AppendPrint(pStr, "\tbool\t\t%s_setLastError(\n", AStr_getData(pClassName));
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
-        AStr_AppendPrint(pStr, "\tOBJ_IUNKNOWN *\t%s_getSuperVtbl(\n", pClassName);
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", pClassNameUC);
+        AStr_AppendPrint(pStr, "\tOBJ_IUNKNOWN *\t%s_getSuperVtbl(\n", AStr_getData(pClassName));
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
-        AStr_AppendPrint(pStr, "\tvoid\t\t%s_Dealloc(\n", pClassName);
+        AStr_AppendPrint(pStr, "\tvoid\t\t%s_Dealloc(\n", AStr_getData(pClassName));
         AStr_AppendA(pStr, "\t\tOBJ_ID\t\tobjId\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
-        AStr_AppendPrint(pStr, "\tvoid *\t\t%s_QueryInfo(\n", pClassName);
+        AStr_AppendPrint(pStr, "\tvoid *\t\t%s_QueryInfo(\n", AStr_getData(pClassName));
         AStr_AppendA(pStr, "\t\tOBJ_ID\t\tobjId,\n");
         AStr_AppendA(pStr, "\t\tuint32_t\t\ttype,\n");
         AStr_AppendA(pStr, "\t\void\t\t*pData\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
-        AStr_AppendPrint(pStr, "\tASTR_DATA *\t%s_ToJSON(\n", pClassName);
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", pClassNameUC);
+        AStr_AppendPrint(pStr, "\tASTR_DATA *\t%s_ToJSON(\n", AStr_getData(pClassName));
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\t);\n\n\n");
         AStr_AppendA(pStr, "#ifdef NDEBUG\n");
         AStr_AppendA(pStr, "#else\n");
-        AStr_AppendPrint(pStr, "\tbool\t\t%s_Validate(\n", pClassName);
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", pClassNameUC);
+        AStr_AppendPrint(pStr, "\tbool\t\t%s_Validate(\n", AStr_getData(pClassName));
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\t);\n");
         AStr_AppendA(pStr, "#endif\n");
         AStr_AppendA(pStr, "\n\n\n");
         AStr_AppendA(pStr, "#ifdef\t__cplusplus\n");
         AStr_AppendA(pStr, "}\n");
         AStr_AppendA(pStr, "#endif\n\n\n");
-        AStr_AppendPrint(pStr, "#endif\t/* %s_INTERNAL_H */\n\n\n", pClassNameUC);
+        AStr_AppendPrint(pStr, "#endif\t/* %s_INTERNAL_H */\n\n\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\n\n\n");
         
         // Return to caller.
@@ -1360,12 +1413,9 @@ extern "C" {
     )
     {
         ASTR_DATA       *pOffset = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
         int32_t         i;
-        const
-        char            *pClassName;
-        const
-        char            *pClassNameUC;
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
         ASTR_DATA       *pMethodDesc = OBJ_NIL;
 
         // Do initialization.
@@ -1376,38 +1426,49 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            this->eRc = ERESULT_INVALID_PARAMETER;
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        
         pOffset = AStr_New();
+        if (OBJ_NIL == pOffset) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return ERESULT_OUT_OF_MEMORY;
+        }
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        
+        pClassName = genObj_VarFind(this, "ClassName");
+        if ((OBJ_NIL == pClassName) || !obj_IsKindOf(pClassName, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
-        if (OBJ_NIL == pNode) {
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if ((OBJ_NIL == pClassNameUC) || !obj_IsKindOf(pClassNameUC, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
             return this->eRc;
         }
-        pClassNameUC = AStr_getData(node_getData(pNode));
+        
         pMethodDesc = genObj_CreateSpacedComment(this, pName);
         if (OBJ_NIL == pMethodDesc) {
             obj_Release(pOffset);
             return this->eRc;
         }
+        
         i = 40 - AStr_getLength(pMethodDesc);
         if (i > 1) {
             AStr_CharInsertW32Repeat(pMethodDesc, 1, (i >> 1), ' ');
         }
         
-
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
+            if (OBJ_NIL == *ppStr) {
+                obj_Release(pOffset);
+                this->eRc = ERESULT_OUT_OF_MEMORY;
+                return ERESULT_OUT_OF_MEMORY;
+            }
         }
+        
         AStr_AppendPrint(
             *ppStr,
             "%s//---------------------------------------------------------------\n",
@@ -1439,7 +1500,7 @@ extern "C" {
                          "%s%s\t\t\t%s_%s(\n",
                          AStr_getData(pOffset),
                          pReturnType,
-                         pClassName,
+                         AStr_getData(pClassName),
                          pName
                          );
         if (pDataDefs) {
@@ -1447,7 +1508,7 @@ extern "C" {
                              *ppStr,
                              "%s\t%s_DATA\t*this,\n",
                              AStr_getData(pOffset),
-                             pClassNameUC
+                             AStr_getData(pClassNameUC)
             );
             AStr_AppendPrint(
                              *ppStr,
@@ -1460,7 +1521,7 @@ extern "C" {
                              *ppStr,
                              "%s\t%s_DATA\t*this\n",
                              AStr_getData(pOffset),
-                             pClassNameUC
+                             AStr_getData(pClassNameUC)
             );
         }
         AStr_AppendPrint(*ppStr, "%s)\n", AStr_getData(pOffset));
@@ -1503,7 +1564,7 @@ extern "C" {
                          *ppStr,
                          "%s\tif (!%s_Validate(this)) {\n",
                          AStr_getData(pOffset),
-                         pClassName
+                         AStr_getData(pClassName)
         );
         AStr_AppendPrint(*ppStr, "%s\t\tDEBUG_BREAK();\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "%s\t\treturn ERESULT_INVALID_OBJECT;\n", AStr_getData(pOffset));
@@ -1572,10 +1633,8 @@ extern "C" {
         ASTR_DATA       **ppStr             // (in/out)
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
-        
+        ASTR_DATA       *pClassName = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1588,12 +1647,11 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-        
+
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
         }
@@ -1602,7 +1660,7 @@ extern "C" {
         AStr_AppendA(*ppStr, "}\n");
         AStr_AppendA(*ppStr, "#endif\n");
         AStr_AppendA(*ppStr, "\n\n\n");
-        AStr_AppendA(*ppStr, "\n\n\n");
+        AStr_AppendPrint(*ppStr, "// End of %s\n\n\n", AStr_getData(pClassName));
         
         // Return to caller.
         genObj_setLastError(this, ERESULT_SUCCESS);
@@ -1622,11 +1680,8 @@ extern "C" {
         char            *pIncludes
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        const
-        char            *pClassName;
-        const
-        char            *pClassNameUC;
+        ASTR_DATA       *pClassName = OBJ_NIL;
+        ASTR_DATA       *pClassNameUC = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1640,17 +1695,16 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
+        
+        pClassName = genObj_VarFind(this, "ClassName");
+        if (OBJ_NIL == pClassName) {
             return this->eRc;
         }
-        pClassName = AStr_getData(node_getData(pNode));
-        pNode = nodeHash_FindA(this->pHash, "ClassNameUC");
-        if (OBJ_NIL == pNode) {
+        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        if (OBJ_NIL == pClassNameUC) {
             return this->eRc;
         }
-        pClassNameUC = AStr_getData(node_getData(pNode));
-
+        
         if (OBJ_NIL == *ppStr) {
             *ppStr = AStr_New();
         }
@@ -1668,15 +1722,15 @@ extern "C" {
                      );
         AStr_AppendA(*ppStr, "\n\n");
         AStr_AppendA(*ppStr, "/* Header File Inclusion */\n");
-        AStr_AppendPrint(*ppStr, "#include <%s_internal.h>\n", pClassName);
+        AStr_AppendPrint(*ppStr, "#include <%s_internal.h>\n", AStr_getData(pClassName));
         AStr_AppendPrint(*ppStr, "#include <ascii.h>\n");
         AStr_AppendPrint(*ppStr, "#include <utf8.h>\n");
         if (pIncludes) {
             AStr_AppendA(*ppStr, pIncludes);
         }
         AStr_AppendA(*ppStr, "\n\n\n");
-        AStr_AppendPrint(*ppStr, "#ifndef %s_INTERNAL_H\n", pClassNameUC);
-        AStr_AppendPrint(*ppStr, "#define %s_INTERNAL_H\n", pClassNameUC);
+        AStr_AppendPrint(*ppStr, "#ifndef %s_INTERNAL_H\n", AStr_getData(pClassNameUC));
+        AStr_AppendPrint(*ppStr, "#define %s_INTERNAL_H\n", AStr_getData(pClassNameUC));
         AStr_AppendA(*ppStr, "\n\n\n");
         AStr_AppendA(*ppStr, "#ifdef    __cplusplus\n");
         AStr_AppendA(*ppStr, "extern \"C\" {\n");
@@ -1702,12 +1756,11 @@ extern "C" {
         bool            fSection
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pWrk;
         uint32_t        i;
         const
         char            *pSep = NULL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1720,10 +1773,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pNode = nodeHash_FindA(this->pHash, "ClassName");
-        if (OBJ_NIL == pNode) {
-            return ERESULT_DATA_NOT_FOUND;
-        }
+        
         if (fSection) {
             pSep = "//===============================================================\n";
         }
@@ -1802,7 +1852,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genObj_Vtbl);
         
         genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->pHash = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        this->pHash = objHash_New(OBJHASH_TABLE_SIZE_SMALL);
         if (OBJ_NIL == this->pHash) {
             obj_Release(this);
             return OBJ_NIL;
@@ -2065,15 +2115,193 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  U p d a t e  V a r i a b l e
+    //                      A d d  V a r i a b l e
     //---------------------------------------------------------------
     
-    ERESULT         genObj_UpdateVar(
+    ERESULT         genObj_VarAdd(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
+    )
+    {
+        ASTR_DATA       *pValueUC = OBJ_NIL;
+        SZDATA_DATA     *pNode = OBJ_NIL;
+        SZDATA_DATA     *pNodeUC = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pNode = szData_NewA(pName);
+        if (OBJ_NIL == pNode) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        szData_setData(pNode, pValue);
+        this->eRc = objHash_Add(this->pHash, pNode, NULL);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        if (ERESULT_FAILED(this->eRc)) {
+            return this->eRc;
+        }
+
+        
+        if (0 == strcmp("ClassName", pName)) {
+            if (pValue) {
+                pValueUC = AStr_ToUpper(pValue);
+                if (OBJ_NIL == pValueUC) {
+                    this->eRc = ERESULT_OUT_OF_MEMORY;
+                    return this->eRc;
+                }
+            }
+            pNodeUC = szData_NewA("ClassNameUC");
+            if (OBJ_NIL == pNodeUC) {
+                obj_Release(pValueUC);
+                this->eRc = ERESULT_OUT_OF_MEMORY;
+                return this->eRc;
+            }
+            szData_setData(pNodeUC, pValueUC);
+            obj_Release(pValueUC);
+            pValueUC = OBJ_NIL;
+            this->eRc = objHash_Add(this->pHash, pNodeUC, NULL);
+            obj_Release(pNodeUC);
+            pNodeUC = OBJ_NIL;
+        }
+        else if (0 == strcmp("SuperClassName", pName)) {
+            if (pValue) {
+                pValueUC = AStr_ToUpper(pValue);
+                if (OBJ_NIL == pValueUC) {
+                    this->eRc = ERESULT_OUT_OF_MEMORY;
+                    return this->eRc;
+                }
+            }
+            pNodeUC = szData_NewA("SuperClassNameUC");
+            if (OBJ_NIL == pNodeUC) {
+                obj_Release(pValueUC);
+                this->eRc = ERESULT_OUT_OF_MEMORY;
+                return this->eRc;
+            }
+            szData_setData(pNodeUC, pValueUC);
+            obj_Release(pValueUC);
+            pValueUC = OBJ_NIL;
+            this->eRc = objHash_Add(this->pHash, pNodeUC, NULL);
+            obj_Release(pNodeUC);
+            pNodeUC = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return this->eRc;
+    }
+    
+    
+    ERESULT         genObj_VarAddA(
         GENOBJ_DATA     *this,
         const
         char            *pName,
         const
-        char            *pValue
+        char            *pValueA
+    )
+    {
+        ASTR_DATA       *pValue = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (pValueA) {
+            pValue = AStr_NewA(pValueA);
+            if (OBJ_NIL == pValue) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        this->eRc = genObj_VarAdd(this, pName, pValue);
+        
+        obj_Release(pValue);
+        pValue = OBJ_NIL;
+        
+        // Return to caller.
+        return this->eRc;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                  F i n d  V a r i a b l e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genObj_VarFind(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName
+    )
+    {
+        ASTR_DATA       *pValue = OBJ_NIL;
+        SZDATA_DATA     *pNode = OBJ_NIL;
+        SZDATA_DATA     *pNodeF = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return pValue;
+        }
+#endif
+        
+        pNode = szData_NewA(pName);
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return pValue;
+        }
+        
+        pNodeF = objHash_Find(this->pHash, pNode);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        if (pNodeF) {
+            pValue = szData_getData(pNodeF);
+            BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
+            this->eRc = ERESULT_SUCCESS;
+        }
+        else {
+            this->eRc = ERESULT_DATA_NOT_FOUND;
+        }
+
+        // Return to caller.
+        return pValue;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  U p d a t e  V a r i a b l e
+    //---------------------------------------------------------------
+    
+    ERESULT         genObj_VarUpdate(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
     )
     {
        // char            *pValueNew;

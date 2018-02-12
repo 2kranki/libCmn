@@ -143,25 +143,6 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Add a variable to the Substitution Variables.
-     @param     this    GENOBJ object pointer
-     @param     pName   Pointer to a UTF-8 Character String representing the
-                        variable's symbolic name
-     @param     pValue  Pointer to a UTF-8 Character String representing the
-                        variable's substitution value
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         genObj_AddVarA(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        const
-        char            *pValue
-    );
-    
-    
-    /*!
      Generate the Internal Object Header.
      @param     this    GENOBJ object pointer
      @param     pIncludes Pointer to a UTF-8 Character String representing the
@@ -197,6 +178,39 @@ extern "C" {
     ASTR_DATA *    genObj_ToDebugString(
         GENOBJ_DATA     *this,
         int             indent
+    );
+    
+    
+    /*!
+     Add a variable to the Substitution Variables.
+     @param     this    GENOBJ object pointer
+     @param     pName   Pointer to a UTF-8 Character String representing the
+                        variable's symbolic name
+     @param     pValue  Pointer to an AStr object representing the
+                        variable's substitution value
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         genObj_VarAdd(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
+    );
+    
+    ERESULT         genObj_VarAddA(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        const
+        char            *pValue
+    );
+    
+
+    ASTR_DATA *     genObj_VarFind(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName
     );
     
     

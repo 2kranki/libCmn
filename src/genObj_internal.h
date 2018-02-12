@@ -40,10 +40,10 @@
 
 
 #include    <genObj.h>
-#include    <node.h>
-#include    <nodeArray.h>
-#include    <nodeHash.h>
-#include    <szHash.h>
+#include    <objHash.h>
+#include    <szData.h>
+
+
 
 
 #ifndef GENOBJ_INTERNAL_H
@@ -71,7 +71,7 @@ struct genObj_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    NODEHASH_DATA   *pHash;
+    OBJHASH_DATA    *pHash;             // Hash of szData
     ASTR_DATA       *pDateTime;
     
 };
@@ -102,6 +102,13 @@ struct genObj_data_s	{
     );
 
 
+    ASTR_DATA *     genObj_CreateSpacedComment(
+        GENOBJ_DATA     *this,
+        const
+        char            *pStr
+    );
+    
+    
     void            genObj_Dealloc(
         OBJ_ID          objId
     );
@@ -192,6 +199,14 @@ struct genObj_data_s	{
     );
 
 
+    ASTR_DATA *     genObj_Substitute(
+        GENOBJ_DATA     *this,
+        const
+        W32CHR_T        marker,     // Marker (normally '$'
+        ASTR_DATA       *pStr       // Input String
+    );
+    
+    
     ASTR_DATA *     genObj_ToJSON(
         GENOBJ_DATA      *this
     );

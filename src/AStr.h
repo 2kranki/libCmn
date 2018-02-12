@@ -572,6 +572,16 @@ extern "C" {
     
     
     /*!
+     Create a new string from the current one.
+     @return    If successful, an new AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     AStr_ToString(
+        ASTR_DATA       *this
+    );
+    
+    
+    /*!
      Create a new string from the current one that is translated to
      upper case.
      @return    If successful, an new AStr object which must be released,

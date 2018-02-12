@@ -777,7 +777,6 @@ extern "C" {
         uint32_t        index
     )
     {
-        LISTDL_DATA     *pNodeList;
         OBJHASH_NODE    *pNode;
         OBJ_ID          pReturn = OBJ_NIL;
         
@@ -1138,7 +1137,6 @@ extern "C" {
         OBJHASH_DATA    *this
     )
     {
-        uint32_t        zero = 0;
         
 #ifdef NDEBUG
 #else

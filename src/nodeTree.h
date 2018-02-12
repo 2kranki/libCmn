@@ -231,8 +231,9 @@ extern "C" {
     
     
     /*!
-     Move the Parent's Children to the given index at once. This moves the children
-     including their children ad infinitum to be the children of the given index.
+     Add the Parent's Children to the given indexes children. This moves the children
+     including their children ad infinitum to be added to the children of the given
+     index.
      @param     this    NODETREE_DATA object pointer
      @param     parent  parent node index (relative to 1)
      @param     index   destination node index (relative to 1)

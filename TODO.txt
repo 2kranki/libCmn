@@ -9,6 +9,11 @@ will depend upon time and resources.
     -- change srcFile so that the file name index is supplied at object creation
         and passed to all tokens generated from the file.
 
+-- nodeTree
+    -- Add ToDebugString()
+    -- Add subtree extraction (ie creating a new tree from any tree node)
+
+
 --  srcFile
     -- a sidx table to track the lines from the file.
     -- provide the ability to set current location in the file as needed using
@@ -31,10 +36,6 @@ will depend upon time and resources.
 
 --  json
     -- json_ParseKeyWord() needs change for win32 (utf16 vs utf32)
-        -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas
-
---  token
-    -- token_getTextW() needs change for win32 (utf16 vs utf32)
         -- see MultiByteToWideChar() or WideCharToMultiByte() for ideas
 
 --  device
@@ -81,8 +82,6 @@ will depend upon time and resources.
 
 -- Finish Consumer deriving from Consumer in libPic32
 
--- get PPLEX3 working
--- get PrsObjC working
 
 
 -- get JSON to use srcFile internally
@@ -141,10 +140,6 @@ The following are things that need to be followed up on:
     -- Adjust AStr to fit AStrC/AStr using NSString
 
 
--- nodeTree
-    -- Add ToDebugString()
-
-
 -- objHash
     -- Finish
 
@@ -201,11 +196,6 @@ The following are things that need to be followed up on:
     - we should recognize '--' alone as terminating the scan (??)
     - compile the scanner from the normal documentation (add some form of
         markup language)
-
-
-
--- Token
-    -- look into having it inherit from Node.
 
 
 
