@@ -199,14 +199,6 @@ struct genObj_data_s	{
     );
 
 
-    ASTR_DATA *     genObj_Substitute(
-        GENOBJ_DATA     *this,
-        const
-        W32CHR_T        marker,     // Marker (normally '$'
-        ASTR_DATA       *pStr       // Input String
-    );
-    
-    
     ASTR_DATA *     genObj_ToJSON(
         GENOBJ_DATA      *this
     );

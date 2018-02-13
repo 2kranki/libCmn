@@ -121,149 +121,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                      S u b s t i t u t e
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     genObj_Substitute(
-        GENOBJ_DATA     *this,
-        const
-        W32CHR_T        marker,     // Marker (normally '$'
-        ASTR_DATA       *pStr       // Input String
-    )
-    {
-        ASTR_DATA       *pAStr = OBJ_NIL;
-        ASTR_DATA       *pData;
-        char            name[128];
-        char            *pName = name;
-        int             state = 0;
-        uint32_t        index = 1;
-        uint32_t        i = 0;
-        uint32_t        len = 0;
-        W32CHR_T        chr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        if( marker == 0 ) {
-            DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return OBJ_NIL;
-        }
-        if( pStr == NULL ) {
-            //DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return OBJ_NIL;
-        }
-#endif
-        pAStr = AStr_New();
-        if (OBJ_NIL == pAStr) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
-            return pAStr;
-        }
-        len = AStr_getLength(pStr);
-        
-        for (;;) {
-            if (index > len) {
-                if (0 == state)
-                    ;
-                else {
-                    this->eRc = ERESULT_PARSE_ERROR;
-                    obj_Release(pAStr);
-                    pAStr = OBJ_NIL;
-                    return pAStr;
-                }
-                break;
-            }
-            chr = AStr_CharGetW32(pStr, index);
-            switch (state) {
-                case 1:             // Accumulating name
-                    if (ascii_isAlphanumericW32(chr)) {
-                        i = utf8_W32ToUtf8(chr, pName);
-                        pName += i;
-                        ++index;
-                        break;
-                    }
-                    *pName = '\0';
-                    state = 3;
-                    break;
-                    
-                case 2:             // Accumulating {name}
-                    if (ascii_isAlphanumericW32(chr)) {
-                        i = utf8_W32ToUtf8(chr, pName);
-                        pName += i;
-                        ++index;
-                        break;
-                    }
-                    if (chr == '}')
-                        ;
-                    else {
-                        this->eRc = ERESULT_PARSE_ERROR;
-                        obj_Release(pAStr);
-                        pAStr = OBJ_NIL;
-                        return pAStr;
-                    }
-                    ++index;
-                    *pName = '\0';
-                    state = 3;
-                    //break;
-                    
-                case 3:             // Substitute name;
-                {
-                    pData = genObj_VarFind(this, name);
-                    if (pData) {
-                        AStr_Append(pAStr, pData);
-                    }
-                    else {
-                        AStr_AppendCharW32(pAStr, marker);
-                        AStr_AppendCharW32(pAStr, '{');
-                        AStr_AppendA(pAStr, pName);
-                        AStr_AppendCharW32(pAStr, '}');
-                    }
-                }
-                    state = 0;
-                    break;
-
-                default:            // Looking for marker
-                    if (marker == chr) {
-                        if (index <= (len - 2)) {
-                            if (marker == AStr_CharGetW32(pStr, (index + 1))) {
-                                AStr_AppendCharW32(pAStr, marker);
-                                index += 2;
-                                break;
-                            }
-                            else if ('{' == AStr_CharGetW32(pStr, (index + 1))) {
-                                state = 2;
-                                ++index;
-                            }
-                            else
-                                state = 1;
-                            pName = name;
-                            ++index;
-                        }
-                        else {
-                            //FIXME: Error
-                        }
-                    }
-                    else {
-                        ++index;
-                        AStr_AppendCharW32(pAStr, chr);
-                    }
-                    break;
-            }
-            
-        }
-        
-        // Return to caller.
-        return pAStr;
-    }
-    
-    
-    
 
     
     
@@ -2002,6 +1859,149 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      S u b s t i t u t e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genObj_Substitute(
+        GENOBJ_DATA     *this,
+        ASTR_DATA       *pStr       // Input String
+    )
+    {
+        ASTR_DATA       *pAStr = OBJ_NIL;
+        ASTR_DATA       *pData;
+        char            name[128];
+        char            *pName = name;
+        int             state = 0;
+        uint32_t        index = 1;
+        uint32_t        i = 0;
+        uint32_t        len = 0;
+        W32CHR_T        chr;
+        const
+        W32CHR_T        marker = '$';
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( marker == 0 ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+        if( pStr == NULL ) {
+            //DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        pAStr = AStr_New();
+        if (OBJ_NIL == pAStr) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return pAStr;
+        }
+        len = AStr_getLength(pStr);
+        
+        for (;;) {
+            if (index > len) {
+                if (0 == state)
+                    ;
+                else {
+                    this->eRc = ERESULT_PARSE_ERROR;
+                    obj_Release(pAStr);
+                    pAStr = OBJ_NIL;
+                    return pAStr;
+                }
+                break;
+            }
+            chr = AStr_CharGetW32(pStr, index);
+            switch (state) {
+                case 1:             // Accumulating name
+                    if (ascii_isAlphanumericW32(chr)) {
+                        i = utf8_W32ToUtf8(chr, pName);
+                        pName += i;
+                        ++index;
+                        break;
+                    }
+                    *pName = '\0';
+                    state = 3;
+                    break;
+                    
+                case 2:             // Accumulating {name}
+                    if (ascii_isAlphanumericW32(chr)) {
+                        i = utf8_W32ToUtf8(chr, pName);
+                        pName += i;
+                        ++index;
+                        break;
+                    }
+                    if (chr == '}')
+                        ;
+                    else {
+                        this->eRc = ERESULT_PARSE_ERROR;
+                        obj_Release(pAStr);
+                        pAStr = OBJ_NIL;
+                        return pAStr;
+                    }
+                    ++index;
+                    *pName = '\0';
+                    state = 3;
+                    //break;
+                    
+                case 3:             // Substitute name;
+                {
+                    pData = genObj_VarFind(this, name);
+                    if (pData) {
+                        AStr_Append(pAStr, pData);
+                    }
+                    else {
+                        AStr_AppendCharW32(pAStr, marker);
+                        AStr_AppendCharW32(pAStr, '{');
+                        AStr_AppendA(pAStr, pName);
+                        AStr_AppendCharW32(pAStr, '}');
+                    }
+                }
+                    state = 0;
+                    break;
+                    
+                default:            // Looking for marker
+                    if (marker == chr) {
+                        if (index <= (len - 2)) {
+                            if (marker == AStr_CharGetW32(pStr, (index + 1))) {
+                                AStr_AppendCharW32(pAStr, marker);
+                                index += 2;
+                                break;
+                            }
+                            else if ('{' == AStr_CharGetW32(pStr, (index + 1))) {
+                                state = 2;
+                                ++index;
+                            }
+                            else
+                                state = 1;
+                            pName = name;
+                            ++index;
+                        }
+                        else {
+                            //FIXME: Error
+                        }
+                    }
+                    else {
+                        ++index;
+                        AStr_AppendCharW32(pAStr, chr);
+                    }
+                    break;
+            }
+            
+        }
+        
+        // Return to caller.
+        return pAStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -2224,6 +2224,10 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
+        if (strlen(pName) > 64) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
         
         if (pValueA) {
@@ -2264,6 +2268,16 @@ extern "C" {
         if( !genObj_Validate(this) ) {
             DEBUG_BREAK();
             this->eRc = ERESULT_INVALID_OBJECT;
+            return pValue;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return pValue;
+        }
+       if (strlen(pName) > 64) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
             return pValue;
         }
 #endif

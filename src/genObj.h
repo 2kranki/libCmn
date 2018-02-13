@@ -164,6 +164,26 @@ extern "C" {
 
 
     /*!
+     Create a new string from an input text that contains simple bash-like substitution.
+     The input text is added to the returned string until a variable name starting with
+     "$..." or "${...}" is found.  "..." denotes up to 64 alphanumeric characters that
+     make up a variable name.  If the variable name is found in the variable hash, its
+     data string is substituted in the output string.  Otherwise, the variable name is
+     passed through in the "${...}" form.
+     @param     this    GENOBJ object pointer
+     @param     pStr    the input text string
+     @return    If successful, an AStr object which must be released containing the
+                expanded text, otherwise OBJ_NIL and an appropriate ERESULT_* error
+                code in Last Error.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     genObj_Substitute(
+        GENOBJ_DATA     *this,
+        ASTR_DATA       *pStr       // Input String
+    );
+    
+    
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 

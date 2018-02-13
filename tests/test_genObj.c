@@ -281,7 +281,7 @@ int         test_genObj_Substitute01(
         pStrA = "";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_getLength(pResult)) );
@@ -304,7 +304,7 @@ int         test_genObj_Substitute01(
         pStrA = "";
         //pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = OBJ_NIL\n");
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_TRUE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_TRUE( (OBJ_NIL == pResult) );
@@ -327,7 +327,7 @@ int         test_genObj_Substitute01(
         pStrA = "Now is the time for all good men to come to the aid of their country!";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, pStrA)) );
@@ -351,7 +351,7 @@ int         test_genObj_Substitute01(
         pStrA = "Our class name is $ClassName!";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "Our class name is xyzzy!")) );
@@ -375,7 +375,7 @@ int         test_genObj_Substitute01(
         pStrA = "Our class name is ${ClassName}!";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "Our class name is xyzzy!")) );
@@ -399,7 +399,7 @@ int         test_genObj_Substitute01(
         pStrA = "${ClassName}";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "xyzzy")) );
@@ -423,7 +423,7 @@ int         test_genObj_Substitute01(
         pStrA = "${ClassName";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
-        pResult = genObj_Substitute(pObj, '$', pStr);
+        pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_TRUE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_TRUE( (OBJ_NIL == pResult) );
         //TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "xyzzy")) );
