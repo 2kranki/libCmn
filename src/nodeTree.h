@@ -27,6 +27,8 @@
  *              be separate from the Node.
  *
  * References
+ *  --      Donald Knuth, "The Art of Computer Programming - Fundamental
+ *          Algorithms (Vol 1, 3rd Edition)", 1997, Addison Wesley
  *  --      Tenenbaum, Langsam, and Augenstein, "Data Structures Using C", 
  *          1990, Prentice-Hall
  *
@@ -465,7 +467,13 @@ extern "C" {
     );
     
     
-    /* Visit each child then the root (or current node) recursively.
+    /*!
+     Visit each node in post order which conforms to "Polish Notation".
+     @param     this     NODETREE_DATA object pointer
+     @param     pVisitor Function pointer to the routine called as each
+                node is visited
+     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
+                error.
      */
     ERESULT         nodeTree_VisitPostorder(
         NODETREE_DATA	*this,

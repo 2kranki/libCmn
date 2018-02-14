@@ -4,8 +4,13 @@
  *	Generated 08/04/2015 17:02:38
  *
  * Remarks:
- *  --      We use the left pointer of nodeEntry to be nextSibling
- *          and the right index for nextChild.
+ *  --      For multi-way trees or Forests represented by a binary tree,
+ *          traversal is different than normal binary tree traversal.
+ *          Inorder traversal of a multi-way tree/forest is postorder
+ *          traversal of the binary tree. Postorder of the multi-way
+ *          tree/forest is inorder traversal of the binary tree.
+ *          Preorder traversal of the multi-way tree/forest is postorder
+ *          traversal of the binary tree. (Knuth, ACP, Vol 1, 3rd Ed, page 337)
  *
  */
 
@@ -119,17 +124,15 @@ extern "C" {
     
     
 
-#ifdef XYZZY
     ERESULT         nodeTree_UpDownNodePost(
         NODETREE_DATA	*this,
-        NODE_DATA       *pNode,
+        uint32_t        index,              // Current Node
         NODEARRAY_DATA	*pArray
     )
     {
-        NODE_DATA       *pChild;
-        uint32_t        i;
-        uint32_t        iMax;
-        
+        NODE_DATA       *pNode;
+        uint32_t        childIndex;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -138,27 +141,41 @@ extern "C" {
             return false;
         }
 #endif
-        iMax = node_ChildCount(pNode);
-        
-        if (iMax) {
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_OpenNode(), NULL);
-            for (i=1; i<=iMax; ++i) {
-                pChild = node_Child(pNode, i);
-                if (pChild) {
-                    nodeTree_UpDownNodePost(this, pChild, pArray);
-                    if (ERESULT_FAILED(this->eRc)) {
-                        return this->eRc;
-                    }
+
+        pNode = objArray_Get(this->pArray, index);
+        if (pNode) {
+            childIndex = node_getChild(pNode);
+            if (childIndex) {
+                nodeArray_AppendNode(pArray, nodeTree_getOpenNode(this), NULL);
+                this->eRc = nodeTree_UpDownNodePost(
+                                                   this,
+                                                   childIndex,
+                                                   pArray
+                );
+                if (ERESULT_FAILED(this->eRc)) {
+                    return this->eRc;
+                }
+                nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
+            }
+            // visit current node.
+            nodeArray_AppendNode(pArray, pNode, NULL);
+            // Follow Sibling chain.
+            childIndex = node_getSibling(pNode);
+            if (childIndex) {
+                this->eRc = nodeTree_UpDownNodePost(
+                                                   this,
+                                                   childIndex,
+                                                   pArray
+                                                   );
+                if (ERESULT_FAILED(this->eRc)) {
+                    return this->eRc;
                 }
             }
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_CloseNode(), NULL);
         }
-        nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
-        
+
         // Return to caller.
         return true;
     }
-#endif
     
     
     
@@ -278,8 +295,6 @@ extern "C" {
             else {
                 DEBUG_BREAK();
             }
-            // Follow Sibling chain.
-            childIndex = node_getSibling(pEntry);
             if (childIndex) {
                 this->eRc = nodeTree_NodeInorder(
                                                    this,
@@ -292,6 +307,8 @@ extern "C" {
                     return this->eRc;
                 }
             }
+            // Follow Sibling chain.
+            childIndex = node_getSibling(pEntry);
         }
         
         // Return to caller.
@@ -299,6 +316,10 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                      N o d e  P o s t o r d e r
+    //---------------------------------------------------------------
     
     ERESULT         nodeTree_NodePostorder(
         NODETREE_DATA	*this,
@@ -341,6 +362,8 @@ extern "C" {
                     return this->eRc;
                 }
             }
+            // visit current node.
+            pVisitor(pObject, this, pNode, indent);
             // Follow Sibling chain.
             childIndex = node_getSibling(pNode);
             if (childIndex) {
@@ -355,8 +378,6 @@ extern "C" {
                     return this->eRc;
                 }
             }
-            // visit current node.
-            pVisitor(pObject, this, pNode, indent);
         }
         
         // Return to caller.
@@ -1764,11 +1785,11 @@ extern "C" {
             return false;
         }
 #endif
-        
+
         pArray = nodeArray_New();
         if (pArray) {
             nodeArray_AppendNode(pArray, nodeTree_getOpenNode(this), NULL);
-            //FIXME: nodeTree_UpDownNodePost(this, 1, pArray);
+            nodeTree_UpDownNodePost(this, 1, pArray);
             nodeArray_AppendNode(pArray, nodeTree_getCloseNode(this), NULL);
             nodeArray_setOther(pArray, this);
         }
@@ -1792,7 +1813,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pArray = nodeArray_New();
         if (pArray) {
             nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
@@ -2010,6 +2031,7 @@ extern "C" {
             return this->eRc;
         }
 #endif
+        return ERESULT_NOT_IMPLEMENTED;     //FIXME: Needs work!
         pQueue = objList_New();
         if (pQueue == OBJ_NIL) {
             DEBUG_BREAK();
@@ -2081,6 +2103,7 @@ extern "C" {
         }
 #endif
         
+        return ERESULT_NOT_IMPLEMENTED;     //FIXME: Needs work!
         nodeTree_NodeInorder(this, pVisitor, pObject, 1, 0);
         
         // Return to caller.

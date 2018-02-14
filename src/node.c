@@ -315,7 +315,7 @@ extern "C" {
         }
 #endif
         
-        return this->rightIndex;
+        return this->leftIndex;
     }
     
     
@@ -332,7 +332,7 @@ extern "C" {
         }
 #endif
         
-        this->rightIndex = value;
+        this->leftIndex = value;
         
         return true;
     }
@@ -979,7 +979,7 @@ extern "C" {
         }
 #endif
         
-        return this->leftIndex;
+        return this->rightIndex;
     }
     
     
@@ -996,7 +996,7 @@ extern "C" {
         }
 #endif
         
-        this->leftIndex = value;
+        this->rightIndex = value;
         
         return true;
     }
@@ -1891,6 +1891,14 @@ extern "C" {
         mem_Free((void *)pName);
         AStr_AppendA(pStr, str);
         
+        AStr_AppendCharRepeatA(pStr, indent, ' ');
+        AStr_AppendPrint(pStr, "\tleft=%d middle=%d right=%d parent=%d\n",
+                         node_getLeft(this),
+                         node_getMiddle(this),
+                         node_getRight(this),
+                         node_getParent(this)
+        );
+
         if (this->pData) {
             AStr_AppendCharRepeatA(pStr, indent+3, ' ');
             AStr_AppendA(pStr, "Data:\n");
