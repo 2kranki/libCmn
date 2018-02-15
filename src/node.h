@@ -31,6 +31,13 @@
  *  11/25/2016  Removed children property redefining node to simply
  *              be named data. Node structuring was moved to NodeATree,
  *              NodeGraph, NodeList, NodeMatrix and NodeTree.
+ *  02/18/2018  Chaged node's child and sibling indices to left and
+ *              right indices respectively which mirrors Knuth's
+ *              definition and is frankly more eloquent.
+ *
+ * References
+ *  --      Donald Knuth, "The Art of Computer Programming - Fundamental
+ *          Algorithms (Vol 1, 3rd Edition)", 1997, Addison Wesley
  */
 
 

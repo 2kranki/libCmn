@@ -17,7 +17,11 @@
  *          Internally, this tree structure is only efficient if most
  *          of the children nodes are occuppied (ie dense tree). If
  *          the tree is sparse, it will waste a significant amount of
- *          memory.
+ *          memory and you should use the nodeTree object.
+ *
+ *          This tree structure does not support Forests (ie multiple
+ *          trees) unless you use the root as a root of roots. However,
+ *          the nodeTree object easily supports forests.
  *
  * Remarks
  *	1.      None

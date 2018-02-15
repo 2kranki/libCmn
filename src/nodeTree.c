@@ -791,6 +791,9 @@ extern "C" {
             return 0;
         }
 #endif
+        node_setChild(pNode, 0);
+        node_setParent(pNode, 0);
+        node_setSibling(pNode, 0);
 
         // Try adding the root node.
         if (parent == 0) {
@@ -1653,6 +1656,156 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                   S i b l i n g  A d d
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeTree_SiblingAdd(
+        NODETREE_DATA   *this,
+        uint32_t        sibling,
+        NODE_DATA       *pNode
+    )
+    {
+        NODE_DATA       *pParent;
+        NODE_DATA       *pSibling;
+        uint32_t        index = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+        if( !(sibling <= objArray_getSize(this->pArray)) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+        if( pNode == OBJ_NIL ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+#endif
+        node_setChild(pNode, 0);
+        node_setParent(pNode, 0);
+        node_setSibling(pNode, 0);
+
+        // Try adding the root node.
+        if (sibling == 0) {
+            if( !(objArray_getSize(this->pArray) == 0) ) {
+                DEBUG_BREAK();
+                this->eRc = ERESULT_DATA_ALREADY_EXISTS;
+                return 0;
+            }
+            this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
+            if (!ERESULT_FAILED(this->eRc)) {
+                node_setIndex(pNode, index);
+            }
+            else {
+                DEBUG_BREAK();
+                this->eRc = ERESULT_GENERAL_FAILURE;
+                return 0;
+            }
+            goto eom;
+        }
+        
+        pSibling = objArray_Get(this->pArray, sibling);
+        if (pSibling) {
+            index = node_getSibling(pSibling);
+            if (index == 0) {     // No siblings
+                this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
+                if (!ERESULT_FAILED(this->eRc)) {
+                    node_setSibling(pSibling, index);
+                    node_setIndex(pNode, index);
+                    node_setParent(pNode, node_getParent(pSibling));
+                }
+            }
+            else {  // Sibling has other siblings, so add to end of sibling chain.
+                    // index points to next sibling.
+                for (;;) {
+                    pSibling = objArray_Get(this->pArray, index);
+                    if (node_getSibling(pSibling) == 0) {  // End of Sibling Chain
+                        this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
+                        if (!ERESULT_FAILED(this->eRc)) {
+                            node_setSibling(pSibling, index);
+                            node_setIndex(pNode, index);
+                            node_setParent(pNode, node_getParent(pSibling));
+                        }
+                        break;
+                    }
+                    index = node_getSibling(pSibling);
+                }
+            }
+        }
+        
+        // Return to caller.
+    eom:
+        return index;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  S i b l i n g  C o u n t
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeTree_SiblingCount(
+        NODETREE_DATA   *this,
+        uint32_t        node
+    )
+    {
+        NODE_DATA       *pSibling;
+        uint32_t        count = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+        if( !(node <= objArray_getSize(this->pArray)) ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+        if (node == 0) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+#endif
+        
+        pSibling = objArray_Get(this->pArray, node);
+        if (pSibling) {
+            node = node_getSibling(pSibling);
+            if (node == 0) {     // No children
+            }
+            else {  // Sibling has other siblings, so count them.
+                    // index points to next sibling
+                for (;;) {
+                    ++count;
+                    pSibling = objArray_Get(this->pArray, node);
+                    if (node_getSibling(pSibling) == 0) {  // End of Sibling Chain
+                        break;
+                    }
+                    node = node_getSibling(pSibling);
+                }
+            }
+        }
+        
+        // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
+        //eom:
+        return count;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                    S i b l i n g  N e x t
     //---------------------------------------------------------------
     
@@ -1700,6 +1853,48 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                  S i b l i n g s  A d d
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeTree_SiblingsAdd(
+        NODETREE_DATA   *this,
+        uint32_t        node,
+        ...             // NULL Terminated list of nodes
+    )
+    {
+        va_list         pList;
+        NODE_DATA       *pNodeList;
+        uint32_t        nodeIndex;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        va_start(pList, node);
+        for (;;) {
+            pNodeList = va_arg(pList, NODE_DATA *);
+            if (pNodeList) {
+                nodeIndex = nodeTree_SiblingAdd(this, node, pNodeList);
+                if (nodeIndex == 0) {
+                    return this->eRc;
+                }
+            }
+            else
+                break;
+        }
+        
+        // Return to caller.
+        return this->eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -2021,6 +2216,8 @@ extern "C" {
     {
         OBJLIST_DATA    *pQueue = OBJ_NIL;
         NODE_DATA       *pEntry = OBJ_NIL;
+        NODE_DATA       *pNext = OBJ_NIL;
+        uint32_t        index = 0;
         uint16_t        indent = 0;
         
         // Do initialization.
@@ -2031,7 +2228,6 @@ extern "C" {
             return this->eRc;
         }
 #endif
-        return ERESULT_NOT_IMPLEMENTED;     //FIXME: Needs work!
         pQueue = objList_New();
         if (pQueue == OBJ_NIL) {
             DEBUG_BREAK();
@@ -2044,23 +2240,23 @@ extern "C" {
             this->eRc = ERESULT_SUCCESS;
             return this->eRc;
         }
-        pVisitor(pObject, this, pEntry, indent);
         objList_Add2Head(pQueue, pEntry);
         while (objList_getSize(pQueue)) {
-            pEntry = objList_Tail(pQueue);
-            objList_DeleteTail(pQueue);
-            if (node_getChild(pEntry)) {
-                pEntry = objArray_Get(this->pArray, node_getChild(pEntry));
-                if (pEntry) {
-                    pVisitor(pObject, this, pEntry, indent);
-                    objList_Add2Head(pQueue, pEntry);
+            pEntry = objList_Head(pQueue);
+            objList_DeleteHead(pQueue);
+            pVisitor(pObject, this, pEntry, indent);
+            index = node_getChild(pEntry);
+            if (index) {
+                pNext = objArray_Get(this->pArray, index);
+                if (pNext) {
+                    objList_Add2Tail(pQueue, pNext);
                 }
-                while (node_getSibling(pEntry)) {
-                    pEntry = objArray_Get(this->pArray, node_getSibling(pEntry));
-                    if (pEntry) {
-                        pVisitor(pObject, this, pEntry, indent);
-                        objList_Add2Head(pQueue, pEntry);
-                    }
+            }
+            index = node_getSibling(pEntry);
+            if (index) {
+                pEntry = objArray_Get(this->pArray, index);
+                if (pEntry) {
+                    objList_Add2Head(pQueue, pEntry);
                 }
             }
         }

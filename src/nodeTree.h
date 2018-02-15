@@ -25,6 +25,11 @@
  *	09/19/2016 Added NodeNew(), NodeLinkChild(), and other functions
  *              that allowed the internal structure of the tree to
  *              be separate from the Node.
+ *  02/18/2018  Changed traversals which were based on binary trees to
+ *              the appropriate scan for multi-way trees. See Knuth,
+ *              pg 337.  Also, changed node's child and sibling indices
+ *              to left and right indices respectively which mirrors
+ *              Knuth's definition.
  *
  * References
  *  --      Donald Knuth, "The Art of Computer Programming - Fundamental
@@ -179,8 +184,7 @@ extern "C" {
      This method is the primary means of adding nodes to the tree.
      When a node is added, its index property is set to the tree index
      that it resides at in the tree. Child index allows a specific
-     child to be set or first available (if 0). To add a root, parent
-     and child indices must be 0.
+     child to be set or first available (if 0).
      @param     this    NODETREE_DATA object pointer
      @param     parent  parent node index (relative to 1)
      @param     pNode   Non-null Node pointer to be added as a child
@@ -223,7 +227,8 @@ extern "C" {
      @param     parent  parent node index (relative to 0, 0 == root)
                         relative to 1. 0 denotes first available child
                         and must be set if parent index is 0.
-     @return    If successful, an Node index, otherwise 0.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT         nodeTree_ChildrenAdd(
         NODETREE_DATA   *this,
@@ -239,7 +244,8 @@ extern "C" {
      @param     this    NODETREE_DATA object pointer
      @param     parent  parent node index (relative to 1)
      @param     index   destination node index (relative to 1)
-     @return    If successful, an Node index, otherwise 0.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT         nodeTree_ChildrenMove(
         NODETREE_DATA   *this,
@@ -263,7 +269,8 @@ extern "C" {
      Delete the given tree node and its children.
      @param     this    NODETREE_DATA object pointer
      @param     index   node index (relative to 1)
-     @return    If successful, an Node index, otherwise 0.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT     nodeTree_NodeDelete(
         NODETREE_DATA   *this,
@@ -279,7 +286,8 @@ extern "C" {
      @param     parent  parent node index (relative to 1)
      @param     index   child index (2 <= index <= order) This index is
                         relative to 1.
-     @return    If successful, an Node index, otherwise 0.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT     nodeTree_NodeLinkChild(
         NODETREE_DATA   *this,
@@ -367,6 +375,48 @@ extern "C" {
     
     
     /*!
+     Add a node to the end of the sibling chain for the given sibling if
+     possible. If sibling is zero and there is no root defined, then the
+     node is added as the root.
+     
+     This method is the secondary means of adding nodes to the tree.
+     When a node is added, its index property is set to the tree index
+     that it resides at in the tree.
+     
+     Using this method, you can add another tree to the root (node index
+     1) since all siblings of the root are other trees.
+     
+     @param     this    NODETREE_DATA object pointer
+     @param     sibling sibling node index to be added to (relative to 1)
+     @param     pNode   Non-null Node pointer to be added as a sibling
+     @return    If successful, an Node index, otherwise 0.
+     */
+    uint32_t    nodeTree_SiblingAdd(
+        NODETREE_DATA   *this,
+        uint32_t        sibling,            // Relative to 1
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Get the number of siblings that are beyond the given node. This
+     only counts the number of siblings directly attached to the node.
+     
+     If you call this method using 1 (ie root) for the node index, you
+     will get back the number of trees in this forest less the root's
+     tree.
+     @param     this    NODETREE_DATA object pointer
+     @param     node    node index (relative to 0, 0 == root)
+     @return    If successful, child count and LastError == ERESULT_SUCCESS,
+                otherwise 0 and LastError == ERESULT_* error code.
+     */
+    uint32_t    nodeTree_SiblingCount(
+        NODETREE_DATA   *this,
+        uint32_t        node            // Relative to 1
+    );
+    
+    
+    /*!
      Given a node return its next sibling.
      Example:
      @code
@@ -380,6 +430,26 @@ extern "C" {
     NODE_DATA *  nodeTree_SiblingNext(
         NODETREE_DATA   *this,
         uint32_t        sibling         // Relative to 1
+    );
+    
+    
+    /*!
+     Add a group of nodes to the given node at once as siblings.
+     Example:
+     @code
+     ERESULT        eRc = nodeTree_ChildrenAdd(pObject,1,pNode2,pNode3,NULL);
+     Node2 will be a sibling of the root node and Node3 will be a sibling of
+     Node2 and the root node.
+     @endcode
+     @param     this    NODETREE_DATA object pointer
+     @param     node    node index (relative to 1, 0 == root)
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
+     */
+    ERESULT         nodeTree_SiblingsAdd(
+        NODETREE_DATA   *this,
+        uint32_t        node,
+                                         ...                         // NULL Terminated list
     );
     
     
@@ -438,8 +508,8 @@ extern "C" {
      @param     this     NODETREE_DATA object pointer
      @param     pVisitor Function pointer to the routine called as each
                  node is visited
-     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
-                 error.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT         nodeTree_VisitBreadthFirst(
         NODETREE_DATA	*this,
@@ -472,8 +542,8 @@ extern "C" {
      @param     this     NODETREE_DATA object pointer
      @param     pVisitor Function pointer to the routine called as each
                 node is visited
-     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
-                error.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT         nodeTree_VisitPostorder(
         NODETREE_DATA	*this,
@@ -493,8 +563,8 @@ extern "C" {
      @param     this     NODETREE_DATA object pointer
      @param     pVisitor Function pointer to the routine called as each
                         node is visited
-     @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_*
-                error.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT         nodeTree_VisitPreorder(
         NODETREE_DATA	*this,

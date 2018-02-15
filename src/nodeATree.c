@@ -927,6 +927,8 @@ extern "C" {
         }
 #endif
         
+        return OBJ_NIL;         //FIXME:  See nodeTree
+        
         pArray = nodeArray_New();
         if (pArray) {
             nodeArray_AppendNode(pArray, nodeATree_OpenNode(), NULL);
@@ -997,6 +999,8 @@ extern "C" {
             return this->eRc;
         }
 #endif
+        
+        return ERESULT_NOT_IMPLEMENTED;         //FIXME:  See nodeTree
         
         eRc = nodeATree_NodePreorder(this, pVisitor, pObject, 1, 0);
         
