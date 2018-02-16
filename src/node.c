@@ -61,6 +61,8 @@ extern "C" {
     NODE_CLASS_DATA     classTable[] = {
         {NODE_CLASS_UNKNOWN,    "NODE_CLASS_UNKNOWN"},
         {NODE_CLASS_ROOT,       "NODE_CLASS_ROOT"},
+        {NODE_CLASS_ANY,        "NODE_CLASS_ANY"},
+        {NODE_CLASS_KLEENE,     "NODE_CLASS_KLEENE"},
         {NODE_CLASS_INTEGER,    "NODE_CLASS_INTEGER"},
         {NODE_CLASS_STRING,     "NODE_CLASS_STRING"},
         {NODE_CLASS_OPEN,       "NODE_CLASS_OPEN"},

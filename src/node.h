@@ -179,6 +179,12 @@ extern "C" {
     );
     
     
+    int             node_FindClassInteger(
+        const
+        char            *pDesc
+    );
+    
+    
     NODE_DATA *     node_NewFromJSONString(
         ASTR_DATA       *pString
     );
