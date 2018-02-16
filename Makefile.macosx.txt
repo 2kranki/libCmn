@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 2/ 8/2018  4:23:15.000)
+# ( 2/16/2018  4:36:46.000)
 
 
 LIBNAM=libCmn
@@ -788,18 +788,6 @@ $(OBJDIR)/node.o: $(SRCDIR)/node.c
 
 
 $(OBJDIR)/node_object.o: $(SRCDIR)/node_object.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-
-OBJS += $(OBJDIR)/nodeATree.o $(OBJDIR)/nodeATree_object.o
-
-
-$(OBJDIR)/nodeATree.o: $(SRCDIR)/nodeATree.c
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
-
-
-$(OBJDIR)/nodeATree_object.o: $(SRCDIR)/nodeATree_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -2224,13 +2212,6 @@ TESTS += test_node
 
 test_node:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_node.c 
-	$(OBJDIR)/$(@F) ./tests
-
-
-TESTS += test_nodeATree
-
-test_nodeATree:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_nodeATree.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

@@ -294,8 +294,6 @@ extern "C" {
         OBJ_IDENT_NODEARC_CLASS,
         OBJ_IDENT_NODEARRAY,            // An Array of Nodes
         OBJ_IDENT_NODEARRAY_CLASS,
-        OBJ_IDENT_NODEATREE,             // A Tree of Nodes using an Array internally
-        OBJ_IDENT_NODEATREE_CLASS,
         OBJ_IDENT_NODEENTRY,            // A Node to be used in other containers
         OBJ_IDENT_NODEENTRY_CLASS,
         OBJ_IDENT_NODEGRAPH,            // Graph of Nodes

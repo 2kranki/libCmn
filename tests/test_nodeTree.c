@@ -35,7 +35,7 @@
 static
 uint32_t        count = 0;
 static
-NODE_DATA       *pNodes[20];
+NODE_DATA       *pNodes[64];
 
 
 
@@ -741,7 +741,7 @@ int         test_nodeTree_UpDown01(
         eRc = nodeTree_VisitBreadthFirst(pObj, visitor, NULL);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\nBreadthFirst(%d):\n",count);
-        //XCTAssertTrue( (11 == count) );
+        XCTAssertTrue( (10 == count) );
         fprintf(stderr, "\tADBCEFGKHJ (should be)\n\t");
         for (i=0; i<count; ++i) {
             pStrA = node_getNameUTF8(pNodes[i]);
@@ -750,26 +750,26 @@ int         test_nodeTree_UpDown01(
             pStrA = NULL;
         }
         fprintf(stderr, " (actual)\n\n");
-#ifdef XYZZY
         eRc = name_CompareA(node_getName(pNodes[0]),"A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[1]),"B");
+        eRc = name_CompareA(node_getName(pNodes[1]),"D");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[2]),"E");
+        eRc = name_CompareA(node_getName(pNodes[2]),"B");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[3]),"I");
+        eRc = name_CompareA(node_getName(pNodes[3]),"C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[4]),"C");
+        eRc = name_CompareA(node_getName(pNodes[4]),"E");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[5]),"D");
+        eRc = name_CompareA(node_getName(pNodes[5]),"F");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[6]),"F");
+        eRc = name_CompareA(node_getName(pNodes[6]),"G");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[7]),"H");
+        eRc = name_CompareA(node_getName(pNodes[7]),"K");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName(pNodes[8]),"G");
+        eRc = name_CompareA(node_getName(pNodes[8]),"H");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-#endif
+        eRc = name_CompareA(node_getName(pNodes[9]),"J");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         pArray = nodeTree_ToLinearizationPost(pObj);
         XCTAssertFalse( (OBJ_NIL == pArray) );
