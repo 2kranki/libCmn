@@ -51,23 +51,11 @@ extern "C" {
 #endif
 
 
-    //                  Node
-    // A node represents an external block.
-    typedef struct blocks_node_s {
-        uint64_t            spcl;           // Anything that the user wants for this
-        uint8_t             *pData;
-    } BLOCKS_NODE;
-    
-    
-    //                  Group
-    // A group is an represents an external block.
-    typedef struct blocks_group_s {
+    //                  Block
+    typedef struct blocks_block_s {
         LISTDL_NODE         list;           // Chain for block list
-        uint16_t            num;            // Number of Nodes in this Group
-        uint16_t            used;           // Number of Nodes used in this Group
         uint8_t             data[0];        // Nodes
-    } BLOCKS_GROUP;
-#define BLOCKS_GROUP_SIZE   2048
+    } BLOCKS_BLOCK;
     
     
     
@@ -81,10 +69,9 @@ struct blocks_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    LISTDL_DATA     groups;
+    LISTDL_DATA     blocks;
     uint32_t        blockSize;
-    uint16_t        nodesPerGroup;
-    uint16_t        rsvd16;
+    uint32_t        blockAvail;
     uint32_t        cBlocks;
 
 };

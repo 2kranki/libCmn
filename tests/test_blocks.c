@@ -84,15 +84,18 @@ int         test_blocks_OpenClose(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = blocks_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = blocks_Init( pObj, 2048 );
+    pObj = blocks_Init(pObj, 4096);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
+        
+        fprintf(stderr, "\tBlockSize  = %d\n", blocks_getBlockSize(pObj));
+        fprintf(stderr, "\tBlockAvail = %d\n", blocks_getBlockAvail(pObj));
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
@@ -103,17 +106,16 @@ int         test_blocks_Add(
     char            *pTestName
 )
 {
-    ERESULT     eRc;
-    BLOCKS_DATA	*pObj = OBJ_NIL;
-    void        *pBlk1 = NULL;
-    void        *pBlk2 = NULL;
-    void        *pBlk3 = NULL;
-    void        *pBlk4 = NULL;
-    void        *pWrk;
-    uint8_t     *pBlks[8] = {NULL};
-    uint32_t    cBlks = 0;
-    BLOCKS_GROUP    *pGroup;
-    BLOCKS_NODE     *pNode;
+    ERESULT         eRc;
+    BLOCKS_DATA	    *pObj = OBJ_NIL;
+    void            *pBlk1 = NULL;
+    void            *pBlk2 = NULL;
+    void            *pBlk3 = NULL;
+    void            *pBlk4 = NULL;
+    void            *pWrk;
+    uint8_t         *pBlks[8] = {NULL};
+    uint32_t        cBlks = 0;
+    BLOCKS_BLOCK    *pGroup;
     int             i;
     ENUM_DATA       *pEnum = OBJ_NIL;
     uint64_t        i64 = 0;
@@ -133,11 +135,13 @@ int         test_blocks_Add(
         XCTAssertFalse( (NULL == pBlk3) );
         pBlk4 = blocks_Add(pObj);
         XCTAssertFalse( (NULL == pBlk4) );
-        
+        XCTAssertTrue( (4 == blocks_getSize(pObj)) );
+
         eRc = blocks_Enum(pObj, &pEnum);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         eRc = enum_Next(pEnum, 8, (void**)pBlks, &cBlks);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (4 == cBlks) );
         XCTAssertTrue( (pBlks[0] == pBlk1) );
         XCTAssertTrue( (pBlks[1] == pBlk2) );
         XCTAssertTrue( (pBlks[2] == pBlk3) );
@@ -154,37 +158,11 @@ int         test_blocks_Add(
         pWrk = blocks_Get(pObj, 4);
         XCTAssertTrue( (pWrk == pBlk4) );
         
-        i64 = blocks_GetSpcl(pObj, 1);
-        XCTAssertTrue( (i64 == 0) );
-        i64 = blocks_GetSpcl(pObj, 2);
-        XCTAssertTrue( (i64 == 0) );
-        i64 = blocks_GetSpcl(pObj, 3);
-        XCTAssertTrue( (i64 == 0) );
-        i64 = blocks_GetSpcl(pObj, 4);
-        XCTAssertTrue( (i64 == 0) );
-        
-        eRc = blocks_PutSpcl(pObj, 1, 1);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        i64 = blocks_GetSpcl(pObj, 1);
-        XCTAssertTrue( (i64 == 1) );
-        eRc = blocks_PutSpcl(pObj, 2, 2);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        i64 = blocks_GetSpcl(pObj, 2);
-        XCTAssertTrue( (i64 == 2) );
-        eRc = blocks_PutSpcl(pObj, 3, 3);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        i64 = blocks_GetSpcl(pObj, 3);
-        XCTAssertTrue( (i64 == 3) );
-        eRc = blocks_PutSpcl(pObj, 4, 4);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        i64 = blocks_GetSpcl(pObj, 4);
-        XCTAssertTrue( (i64 == 4) );
-        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 

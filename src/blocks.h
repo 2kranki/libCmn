@@ -61,6 +61,8 @@
 #ifndef         BLOCKS_H
 #define         BLOCKS_H
 
+#define BLOCKS_BLOCK_SIZE   2048            /* Default Block Size */
+//  Needed overhead will be removed to control the block list.
 
 
 #ifdef	__cplusplus
@@ -107,7 +109,12 @@ extern "C" {
     
     
     BLOCKS_DATA *   blocks_New(
-        uint32_t        blockSize
+        uint32_t        blockSize       // If 0, use default size.
+    );
+    
+    
+    uint32_t        blocks_Available(
+        uint32_t        blockSize       // If 0, use default size.
     );
     
     
@@ -116,6 +123,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        blocks_getBlockAvail(
+        BLOCKS_DATA     *this
+    );
+    
+    
     uint32_t        blocks_getBlockSize(
         BLOCKS_DATA     *this
     );
