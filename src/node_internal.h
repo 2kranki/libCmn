@@ -43,6 +43,8 @@
 #include    <nodeHash.h>
 #include    <jsonIn.h>
 #include    <listdl.h>
+#include    <objHash.h>
+#include    <szData.h>
 #include    <szTbl.h>
 
 
@@ -64,6 +66,7 @@ struct node_data_s	{
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
 #define NODE_DUP_NAME   OBJ_FLAG_USER1   /* We allocated Name */
+    // obj's misc2 is used for our misc property.
 
     // Common Data
     ERESULT         eRc;
@@ -77,7 +80,7 @@ struct node_data_s	{
     uint32_t        rightIndex;
     OBJ_ID          pData;
     OBJ_ID          pOther;
-    NODEARRAY_DATA  *pProperties;
+    OBJHASH_DATA    *pProperties;
     OBJ_ID          pExtra;
 
 };

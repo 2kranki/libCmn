@@ -183,8 +183,10 @@ NODE_VTBL       node_Vtbl = {
     node_setLeft,
     node_getMiddle,
     node_setMiddle,
-    node_getMisc,
-    node_setMisc,
+    node_getMisc1,
+    node_setMisc1,
+    node_getMisc2,
+    node_setMisc2,
     node_getName,
     node_getOther,
     node_setOther,
@@ -195,7 +197,7 @@ NODE_VTBL       node_Vtbl = {
     node_Property,
     node_PropertyAdd,
     node_PropertyCount,
-    node_Properties
+    node_PropertyKeys
 };
 
 

@@ -872,7 +872,7 @@ extern "C" {
             msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return ERESULT_OUT_OF_MEMORY;
         }
-        node_setMisc(pNode, vtblOffset);
+        node_setMisc1(pNode, vtblOffset);
         
         nodeArray_AppendNode(this->pRegistry, pNode, NULL);
         obj_Release(pNode);

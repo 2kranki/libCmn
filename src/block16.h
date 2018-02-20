@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Fixed Sized Header and Data Areas (block) Header
+//          Fixed Sized Header and Data Areas (block16) Header
 //****************************************************************
 /*
  * Program
@@ -10,7 +10,7 @@
  *			This object provides the means of manipulating a data
  *          block that consists of a fixed size header and a fixed
  *          size data area whose combined sizes must fit in a
- *          uint16_t.
+ *          uint16_t (ie 64k).
  *
  * Remarks
  *	1.      None

@@ -54,8 +54,8 @@ extern "C" {
     //                  Node
     // A node represents an external block.
     typedef struct blocks_node_s {
-        uint8_t             *pData;
         uint64_t            spcl;           // Anything that the user wants for this
+        uint8_t             *pData;
     } BLOCKS_NODE;
     
     

@@ -419,25 +419,13 @@ extern "C" {
         OBJHASH_DATA    *this
     )
     {
-        char            str[256];
         uint32_t        i;
         int             j;
         bool            fRc;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA       *pWrk;
-#ifdef XYZZY
-        const
-        char            *pChr;
-        char            chrs[32];
-        uint32_t        crc = 0;
-        int32_t         chrW;
-        int32_t         *pChrW;
-        uint32_t        len;
-        const
-        char            *pData;
-#endif
+        ASTR_DATA       *pData;
         LISTDL_DATA     *pNodeList;
         OBJHASH_NODE    *pNode;
         void *          (*pQueryInfo)(
@@ -445,6 +433,7 @@ extern "C" {
             uint32_t        type,
             void            *pData
         );
+        ASTR_DATA       *pWrkStr;
         ASTR_DATA *     (*pToJSON)(
             OBJ_ID          objId
         );
@@ -491,21 +480,15 @@ extern "C" {
         }
         
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{\"objectType\":\"%s\"\n\"entries:[",
-                     pInfo->pClassName
-                     );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"\n\"entries:[", pInfo->pClassName);
         
         // Scan the Hash Table creating entries for each of the objects
-        // in the table.
+        // in the table and appending them to the array.
         for (i=0; ((i < this->cHash) && fRc); ++i) {
             pNodeList = &this->pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
+                pData = OBJ_NIL;
                 pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
                 if (pQueryInfo) {
                     pToJSON =   (*pQueryInfo)(
@@ -514,46 +497,22 @@ extern "C" {
                                           "ToJSON"
                                 );
                     if (pToJSON) {
-                        pWrk = (*pToJSON)(pNode->pObject);
-                        if (pWrk) {
-                            //FIXME: Add this to JSON for objHash
+                        pData = (*pToJSON)(pNode->pObject);
+                        if (pData) {
+                            AStr_Append(pStr, pData);
+                            obj_Release(pData);
+                            pData = OBJ_NIL;
+                            if (i < (this->cHash - 1)) {
+                                AStr_AppendA(pStr, ",\n");
+                            }
                         }
                     }
                 }
                 pNode = listdl_Next(pNodeList, pNode);
             }
         }
-        AStr_AppendA(pStr, "\n\n\n");
+        AStr_AppendA(pStr, "]\n\n\n");
 
-        
-        
-#ifdef XYZZY
-        crc = W32Str_getCrcIEEE(this);
-        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
-        
-        len = array_getSize((ARRAY_DATA *)this) - 1;
-        AStr_AppendPrint(pStr, ", \"len\":%u", len);
-        if (len) {
-            AStr_AppendA(pStr, ", \"data\":[");
-            pChr = pData;
-            for (i=0; i<(len-1); ++i) {
-                pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
-                chrW = *pChrW;
-                W32Str_Int64ToChrClean(chrW, chrs);
-                AStr_AppendA(pStr, chrs);
-                AStr_AppendA(pStr, ",");
-            }
-            pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
-            chrW = *pChrW;
-            W32Str_Int64ToChrClean(chrW, chrs);
-            AStr_AppendA(pStr, chrs);
-            AStr_AppendA(pStr, "] ");
-        }
-        else {
-            AStr_AppendA(pStr, ", \"data\":null ");
-        }
-#endif
-        
         AStr_AppendA(pStr, "}\n");
         
         return pStr;

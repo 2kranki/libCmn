@@ -97,7 +97,7 @@ extern "C" {
      released.
      @return    pointer to szData object if successful, otherwise OBJ_NIL.
      */
-    SZDATA_DATA *     szData_Alloc(
+    SZDATA_DATA *   szData_Alloc(
         void
     );
     
@@ -107,7 +107,7 @@ extern "C" {
     );
     
     
-    SZDATA_DATA *     szData_NewA(
+    SZDATA_DATA *   szData_NewA(
         const
         char            *pName
     );
@@ -161,13 +161,13 @@ extern "C" {
     );
     
     
-    ERESULT     szData_getLastError(
+    ERESULT         szData_getLastError(
         SZDATA_DATA		*this
     );
 
 
     const
-    char *          szData_getString(
+    char *          szData_getName(
         SZDATA_DATA     *this
     );
     

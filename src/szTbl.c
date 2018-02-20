@@ -672,7 +672,7 @@ extern "C" {
         uint32_t        token           // [in]
     )
     {
-        SZTBL_NODE      *pNode;
+        SZTBL_NODE      *pNode = NULL;
         
         // Do initialization.
         if (OBJ_NIL == this) {
@@ -686,11 +686,14 @@ extern "C" {
         }
 #endif
         
-        pNode = (SZTBL_NODE *)ptrArray_GetData(this->pPtrArray, token);
+        if (this->pPtrArray) {
+            pNode = (SZTBL_NODE *)ptrArray_GetData(this->pPtrArray, token);
+        }
         if (NULL == pNode) {
             this->eRc = ERESULT_DATA_NOT_FOUND;
+            return NULL;
         }
-        
+
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
         return (const char *)pNode->data;

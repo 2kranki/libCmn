@@ -41,7 +41,10 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        "node_internal.h"
+#include        <node_internal.h>
+#include        <AStrArray.h>
+#include        <objArray.h>
+#include        <szData.h>
 #include        <stdarg.h>
 #include        <stdio.h>
 
@@ -668,7 +671,42 @@ extern "C" {
     //                          M i s c
     //---------------------------------------------------------------
     
-    uint16_t        node_getMisc(
+    uint16_t        node_getMisc1(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return obj_getMisc1(this);
+    }
+    
+    
+    bool            node_setMisc1(
+        NODE_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_setMisc1(this, value);
+        return true;
+    }
+    
+    
+    
+    uint16_t        node_getMisc2(
         NODE_DATA       *this
     )
     {
@@ -685,7 +723,7 @@ extern "C" {
     }
     
     
-    bool            node_setMisc(
+    bool            node_setMisc2(
         NODE_DATA       *this,
         uint16_t        value
     )
@@ -702,6 +740,10 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
     
     NAME_DATA *     node_getName(
         NODE_DATA       *this
@@ -882,7 +924,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //---------------------------------------------------------------
     
-    NODEARRAY_DATA * node_getProperties(
+    OBJHASH_DATA * node_getProperties(
         NODE_DATA       *this
     )
     {
@@ -901,7 +943,7 @@ extern "C" {
     
     bool            node_setProperties(
         NODE_DATA       *this,
-        NODEARRAY_DATA  *pValue
+        OBJHASH_DATA    *pValue
     )
     {
 #ifdef NDEBUG
@@ -1651,15 +1693,16 @@ extern "C" {
     //                    P r o p e r t y  G e t
     //---------------------------------------------------------------
     
-    NODE_DATA *     node_Property(
+    OBJ_ID          node_Property(
         NODE_DATA       *this,
         const
         char            *pName
     )
     {
-        ERESULT         eRc;
-        NODE_DATA       *pProperty = OBJ_NIL;
-        
+        OBJ_ID          pProperty = OBJ_NIL;
+        SZDATA_DATA     *pData = OBJ_NIL;
+        SZDATA_DATA     *pFound = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1670,7 +1713,15 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            eRc = nodeArray_FindA(this->pProperties, pName, &pProperty);
+            pData = szData_NewA(pName);
+            if (pData) {
+                pFound = objHash_Find(this->pProperties, pData);
+                obj_Release(pData);
+                pData = OBJ_NIL;
+                if (pFound) {
+                    pProperty = szData_getData(pFound);
+                }
+            }
         }
         
         // Return to caller.
@@ -1685,10 +1736,13 @@ extern "C" {
     
     ERESULT         node_PropertyAdd(
         NODE_DATA       *this,
+        const
+        char            *pName,
         NODE_DATA       *pData
     )
     {
         ERESULT         eRc;
+        SZDATA_DATA     *pSzData = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1703,16 +1757,31 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeArray_New( );
+            this->pProperties = objHash_New(OBJHASH_TABLE_SIZE_XXXSMALL);
             if (OBJ_NIL == this->pProperties) {
-                return ERESULT_INSUFFICIENT_MEMORY;
+                this->eRc = ERESULT_OUT_OF_MEMORY;
+                goto eom;
             }
         }
         
-        eRc = nodeArray_AppendNode(this->pProperties, pData, NULL );
+        pSzData = szData_NewA(pName);
+        if (pSzData == OBJ_NIL) {
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            goto eom;
+        }
+        szData_setData(pSzData, pData);
+        eRc = objHash_Add(this->pProperties, pSzData, NULL);
+        if (ERESULT_FAILED(eRc)) {
+            this->eRc = eRc;
+            goto eom;
+        }
+        obj_Release(pSzData);
+        pSzData = OBJ_NIL;
         
         // Return to caller.
-        return eRc;
+        this->eRc = ERESULT_SUCCESS;
+    eom:
+        return this->eRc;
     }
     
     
@@ -1721,11 +1790,11 @@ extern "C" {
     //              P r o p e r t y  C o u n t
     //---------------------------------------------------------------
     
-    uint16_t        node_PropertyCount(
+    uint32_t        node_PropertyCount(
         NODE_DATA		*this
     )
     {
-        uint16_t        num = 0;
+        uint32_t        num = 0;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1736,7 +1805,7 @@ extern "C" {
         }
 #endif
         if (this->pProperties) {
-            num = nodeArray_getSize(this->pProperties);
+            num = objHash_getSize(this->pProperties);
         }
         
         // Return to caller.
@@ -1746,15 +1815,20 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                    P r o p e r t i e s
+    //                    P r o p e r t y  K e y s
     //---------------------------------------------------------------
     
-    NODEARRAY_DATA * node_Properties(
+    ASTRARRAY_DATA * node_PropertyKeys(
         NODE_DATA       *this
     )
     {
         ERESULT         eRc;
-        
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        uint32_t        i;
+        SZDATA_DATA     *pData;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1765,11 +1839,33 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            eRc = nodeArray_SortAscending(this->pProperties);
+            pEnum = objHash_Enum(this->pProperties);
+            if (pEnum ==  OBJ_NIL) {
+                return pArray;
+            }
+            pArray = AStrArray_New();
+            if (pArray ==  OBJ_NIL) {
+                return pArray;
+            }
+            for (;;) {
+                eRc = objEnum_Next(pEnum, 1, (OBJ_ID *)&pData, &i);
+                if (i)
+                    ;
+                else
+                    break;
+                pStr = AStr_NewA(szData_getName(pData));
+                if (pStr) {
+                    eRc = AStrArray_AppendStr(pArray, pStr, NULL);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
         }
         
         // Return to caller.
-        return this->pProperties;
+        return pArray;
     }
     
     
@@ -1883,12 +1979,13 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(node) Name=%s class=%d index=%d misc=%d\n",
+                     "{%p(node) Name=%s class=%d index=%d misc1=%d misc2=%d\n",
                      this,
                      pName,
                      node_getClass(this),
                      node_getIndex(this),
-                     node_getMisc(this)
+                     node_getMisc1(this),
+                     node_getMisc2(this)
             );
         mem_Free((void *)pName);
         AStr_AppendA(pStr, str);

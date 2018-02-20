@@ -533,7 +533,7 @@ int         test_nodeTree_UpDown01(
     const
     char            *pStrA;
     ERESULT         eRc = ERESULT_SUCCESS;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     

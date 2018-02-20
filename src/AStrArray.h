@@ -167,6 +167,24 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code
+     ASTR_DATA      *pDesc = AStrArray_ToDebugString(this, 4);
+     @endcode
+     @param     this    ASTRARRAY_DATA object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     AStrArray_ToDebugString(
+        ASTRARRAY_DATA  *this,
+        int             indent
+    );
+    
+    
 
     
 #ifdef	__cplusplus

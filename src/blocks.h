@@ -8,9 +8,13 @@
  *			A List of Data Blocks (blocks)
  * Purpose
  *			This object provides a updatable list of data blocks.
+ *          Many collections allocate smaller areas. This object
+ *          provides an easy way to allocate those smaller areas
+ *          in blocks to facilitate memory management.
  *
  * Remarks
- *	1.      None
+ *	1.      Internally, blocks are made up of nodes which have
+ *          have a fixed size.
  *
  * History
  *	09/04/2016 Generated

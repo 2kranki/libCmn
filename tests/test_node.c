@@ -25,13 +25,14 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <appl_internal.h>
+#include    <AStrArray.h>
 #include    <szTbl.h>
 
 
 
 int         setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -45,7 +46,7 @@ int         setUp(
 
 int         tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -77,10 +78,10 @@ int         tearDown(
 
 int         test_node_Utf8(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    NODE_DATA	*pObj = OBJ_NIL;
+    NODE_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = node_Alloc( );
@@ -104,10 +105,10 @@ int         test_node_Utf8(
 
 int         test_node_Utf8Con(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    NODE_DATA	*pObj = OBJ_NIL;
+    NODE_DATA	    *pObj = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = node_Alloc();
@@ -127,8 +128,91 @@ int         test_node_Utf8Con(
 
 
 
+int         test_node_Property01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    NODE_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pAStr = OBJ_NIL;
+    const
+    char            *pStr = NULL;
+    ASTR_DATA       *pAWrk = OBJ_NIL;
+    ASTRARRAY_DATA  *pKeys = OBJ_NIL;
+    uint32_t        i;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = node_Alloc();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = node_InitWithUTF8Con( pObj, "abc", OBJ_NIL );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pStr = "c";
+        pAStr = AStr_NewA(pStr);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        eRc = node_PropertyAdd(pObj, pStr, (OBJ_ID)pAStr);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pAWrk = node_Property(pObj, pStr);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+        
+        pStr = "a";
+        pAStr = AStr_NewA(pStr);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        eRc = node_PropertyAdd(pObj, pStr, (OBJ_ID)pAStr);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pAWrk = node_Property(pObj, pStr);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+        
+        pStr = "b";
+        pAStr = AStr_NewA(pStr);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        eRc = node_PropertyAdd(pObj, pStr, (OBJ_ID)pAStr);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pAWrk = node_Property(pObj, pStr);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+        
+        pStr = "a";
+        pAWrk = node_Property(pObj, pStr);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+
+        pKeys = node_PropertyKeys(pObj);
+        XCTAssertFalse( (OBJ_NIL == pKeys) );
+        i = AStrArray_getSize(pKeys);
+        XCTAssertTrue( (3 == i) );
+        pAWrk = AStrArray_Get(pKeys, 1);
+        XCTAssertFalse( (OBJ_NIL == pAWrk) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, "a")) );
+        pAWrk = AStrArray_Get(pKeys, 2);
+        XCTAssertFalse( (OBJ_NIL == pAWrk) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, "b")) );
+        pAWrk = AStrArray_Get(pKeys, 3);
+        XCTAssertFalse( (OBJ_NIL == pAWrk) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, "c")) );
+        obj_Release(pKeys);
+        pKeys = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_node);
+    TINYTEST_ADD_TEST(test_node_Property01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_node_Utf8Con,setUp,tearDown);
     TINYTEST_ADD_TEST(test_node_Utf8,setUp,tearDown);
 TINYTEST_END_SUITE();

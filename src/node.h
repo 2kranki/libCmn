@@ -73,8 +73,9 @@
 
 
 #include        <cmn_defs.h>
-#include        <name.h>
 #include        <AStr.h>
+#include        <name.h>
+#include        <objHash.h>
 #include        <visitor.h>
 
 
@@ -135,8 +136,10 @@ extern "C" {
         bool            (*pSetLeft)(NODE_DATA *this, uint32_t value);
         uint32_t        (*pGetMiddle)(NODE_DATA *this);
         bool            (*pSetMiddle)(NODE_DATA *this, uint32_t value);
-        uint16_t        (*pGetMisc)(NODE_DATA *this);
-        bool            (*pSetMisc)(NODE_DATA *this,uint16_t value);
+        uint16_t        (*pGetMisc1)(NODE_DATA *this);
+        bool            (*pSetMisc1)(NODE_DATA *this,uint16_t value);
+        uint16_t        (*pGetMisc2)(NODE_DATA *this);
+        bool            (*pSetMisc2)(NODE_DATA *this,uint16_t value);
         NAME_DATA *     (*pGetName)(NODE_DATA *this);
         OBJ_ID          (*pGetOther)(NODE_DATA *this);
         bool            (*pSetOther)(NODE_DATA *this,OBJ_ID pValue);
@@ -145,10 +148,15 @@ extern "C" {
         uint32_t        (*pGetRight)(NODE_DATA *this);
         bool            (*pSetRight)(NODE_DATA *this, uint32_t value);
         // Methods:
-        NODE_DATA *     (*pProperty)(NODE_DATA *this, const char *pName);
-        ERESULT         (*pPropertyAdd)(NODE_DATA *this, NODE_DATA *pData);
-        uint16_t        (*pPropertyCount)(NODE_DATA	*this);
-        NODEARRAY_DATA * (*pProperties)(NODE_DATA *this);
+        OBJ_ID          (*pProperty)(NODE_DATA *this, const char *pName);
+        ERESULT         (*pPropertyAdd)(
+                            NODE_DATA       *this,
+                            const
+                            char            *pName,
+                            NODE_DATA       *pData
+                        );
+        uint32_t        (*pPropertyCount)(NODE_DATA	*this);
+        ASTRARRAY_DATA * (*pPropertyKeys)(NODE_DATA *this);
     } NODE_VTBL;
     
     
@@ -314,17 +322,29 @@ extern "C" {
     );
     
     
-    // Misc can be used as needed.
-    uint16_t        node_getMisc(
+    /*!
+     Misc1 and Misc2 can optionally be used as needed.
+     */
+    uint16_t        node_getMisc1(
         NODE_DATA       *this
     );
     
-    bool            node_setMisc(
+    bool            node_setMisc1(
+        NODE_DATA       *this,
+        uint16_t        value
+    );
+
+    
+    uint16_t        node_getMisc2(
+        NODE_DATA       *this
+    );
+    
+    bool            node_setMisc2(
         NODE_DATA       *this,
         uint16_t        value
     );
     
-    
+
     /*!
      @return    If successful, an Name object which must be released,
                 otherwise OBJ_NIL.
@@ -346,7 +366,10 @@ extern "C" {
         NODE_DATA       *this
     );
 
-    
+
+    /*!
+     Can be used to attach any other object to this node.
+     */
     OBJ_ID          node_getOther(
         NODE_DATA       *this
     );
@@ -367,7 +390,7 @@ extern "C" {
     );
     
     
-    NODEARRAY_DATA * node_getProperties(
+    OBJHASH_DATA *  node_getProperties(
         NODE_DATA       *this
     );
     
@@ -392,7 +415,9 @@ extern "C" {
     );
     
     
-    // Type is user defined.
+    /*!
+     Type is user defined and optionally.
+     */
     int32_t         node_getType(
         NODE_DATA       *this
     );
@@ -485,7 +510,7 @@ extern "C" {
     );
     
     
-    NODE_DATA *     node_Property(
+    OBJ_ID          node_Property(
         NODE_DATA       *this,
         const
         char            *pName
@@ -494,16 +519,18 @@ extern "C" {
 
     ERESULT         node_PropertyAdd(
         NODE_DATA		*this,
+        const
+        char            *pName,
         NODE_DATA       *pData
     );
     
     
-    uint16_t        node_PropertyCount(
+    uint32_t        node_PropertyCount(
         NODE_DATA		*this
     );
     
     
-    NODEARRAY_DATA * node_Properties(
+    ASTRARRAY_DATA * node_PropertyKeys(
         NODE_DATA       *this
     );
     
