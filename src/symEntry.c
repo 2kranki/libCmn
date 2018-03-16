@@ -127,6 +127,54 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          A t t r
+    //---------------------------------------------------------------
+    
+    SYMATTR_DATA *  symEntry_getAttr(
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        this->eRc = ERESULT_SUCCESS;
+        return this->pAttr;
+    }
+    
+    
+    bool        symEntry_setAttr(
+        SYMENTRY_DATA   *this,
+        SYMATTR_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pAttr) {
+            obj_Release(this->pAttr);
+        }
+        this->pAttr = pValue;
+        
+        this->eRc = ERESULT_SUCCESS;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          C l a s s
     //---------------------------------------------------------------
     
@@ -653,6 +701,7 @@ extern "C" {
             mem_Free(this->pEntry);
             this->pEntry = NULL;
         }
+        symEntry_setAttr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super object which we

@@ -42,6 +42,7 @@
 
 #include    <symEntry.h>
 #include    <node_internal.h>
+#include    <value.h>
 
 
 
@@ -139,29 +140,7 @@ extern "C" {
         uint32_t        idxSibTail;
         uint32_t        size;               // Data Size in Bytes
         uint32_t        ptr;                // Pointer level
-        union {
-            uint32_t        misc[4];            // Set Overall Size.
-            struct {
-                uint32_t        value;
-            } constantType;
-            struct {
-                uint32_t        offset;
-            } fieldType;
-            struct {
-                uint32_t        addr;
-            } functionType;
-            struct {
-                uint32_t        idxKeyHead;         // Keyword Parameters Chain
-                uint32_t        idxKeyTail;
-                uint32_t        idxPosHead;         // Positional Parameters Chain
-                uint32_t        idxPosTail;
-            } macroType;
-            struct {
-                uint32_t        addr;
-                uint16_t        baseType;
-                uint16_t        storageClass;
-            } variableType;
-        };
+        uint32_t        attr;               // symAttr Index
     } SYM_ENTRY;
     
     
@@ -179,6 +158,7 @@ struct symEntry_data_s	{
     // Common Data
     ERESULT         eRc;
     SYM_ENTRY       *pEntry;
+    SYMATTR_DATA    *pAttr;
 
 };
 #pragma pack(pop)

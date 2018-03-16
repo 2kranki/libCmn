@@ -81,11 +81,11 @@ struct nodeScan_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    uint32_t        index;
-    uint32_t        rsvd32_1;
+    uint32_t        index;      // Scan Index (relative to 1)
+    uint32_t        start;      // Scan Start Index (relative to 1)
     NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
     //                          // up/down members.
-    NODETREE_DATA   *pTree;
+    NODETREE_DATA   *pTree;     // Tree associated with linearized tree list
     NODE_DATA       *pClose;
     NODE_DATA       *pOpen;
 
@@ -129,10 +129,9 @@ struct nodeScan_data_s	{
     void *          nodeScan_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
-    
+
     
 #ifdef NDEBUG
 #else

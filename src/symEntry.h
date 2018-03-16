@@ -57,6 +57,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <name.h>
+#include        <symAttr.h>
 #include        <visitor.h>
 
 
@@ -134,6 +135,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    SYMATTR_DATA *  symEntry_getAttr(
+        SYMENTRY_DATA    *this
+    );
+    
+    bool            symEntry_setAttr(
+        SYMENTRY_DATA   *this,
+        SYMATTR_DATA    *pValue
+    );
+    
+    
     int32_t         symEntry_getClass(
         SYMENTRY_DATA   *this
     );

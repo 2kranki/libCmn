@@ -116,6 +116,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                       A r c s
+    //---------------------------------------------------------------
+    
     OBJARRAY_DATA * nodeGraph_getArcs(
         NODEGRAPH_DATA     *this
     )
@@ -157,6 +161,90 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       D i r e c t e d
+    //---------------------------------------------------------------
+    
+    bool            nodeGraph_getDirected(
+        NODEGRAPH_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->fDirected ? true : false;
+    }
+    
+    bool            nodeGraph_setDirected(
+        NODEGRAPH_DATA  *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        //this->priority = value;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      L a s t  E r r o r
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeGraph_getLastError(
+        NODEGRAPH_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return this->eRc;
+        }
+#endif
+        
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+    
+    
+    bool            nodeGraph_setLastError(
+        NODEGRAPH_DATA  *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       P r i o r i t y
+    //---------------------------------------------------------------
+    
     uint16_t        nodeGraph_getPriority(
         NODEGRAPH_DATA     *this
     )
@@ -191,6 +279,10 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+    
     uint32_t        nodeGraph_getSize(
         NODEGRAPH_DATA       *this
     )
@@ -485,6 +577,37 @@ extern "C" {
         
         // Return to caller.
         return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      N o d e  A d d
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeGraph_NodeAdd(
+        NODEGRAPH_DATA  *this,
+        NODE_DATA       *pNode              // [in] node pointer
+    )
+    {
+        uint32_t        index = 0;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return false;
+        }
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = nodeArray_AppendNode(this->pNodes, pNode, &index);
+        
+        // Return to caller.
+        return index;
     }
     
     

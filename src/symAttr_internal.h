@@ -40,6 +40,7 @@
 
 
 #include    <symAttr.h>
+#include    <value.h>
 
 
 #ifndef SYMATTR_INTERNAL_H

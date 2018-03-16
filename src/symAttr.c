@@ -119,6 +119,50 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                         C l a s s
+    //---------------------------------------------------------------
+    
+    int32_t         symAttr_getClass(
+        SYMATTR_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symAttr_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        symAttr_setLastError(this, ERESULT_SUCCESS);
+        return this->attr.cls;
+    }
+    
+    
+    bool            symAttr_setClass(
+        SYMATTR_DATA    *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !symAttr_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->attr.cls = value;
+        
+        symAttr_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     

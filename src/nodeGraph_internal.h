@@ -61,8 +61,11 @@ struct nodeGraph_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
+    ERESULT         eRc;
     NODEARRAY_DATA  *pNodes;          // Table of Nodes
     OBJARRAY_DATA   *pArcs;
+    uint8_t         fDirected;
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)
@@ -77,6 +80,12 @@ struct nodeGraph_data_s	{
 
 
     // Internal Functions
+    bool            nodeGraph_setArcs(
+        NODEGRAPH_DATA  *this,
+        OBJARRAY_DATA   *pValue
+    );
+    
+    
     void            nodeGraph_Dealloc(
         OBJ_ID          objId
     );

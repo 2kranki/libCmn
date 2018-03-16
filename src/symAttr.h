@@ -99,7 +99,7 @@ extern "C" {
      released.
      @return    pointer to symAttr object if successful, otherwise OBJ_NIL.
      */
-    SYMATTR_DATA *     symAttr_Alloc(
+    SYMATTR_DATA *  symAttr_Alloc(
         void
     );
     
@@ -109,7 +109,7 @@ extern "C" {
     );
     
     
-    SYMATTR_DATA *     symAttr_New(
+    SYMATTR_DATA *  symAttr_New(
         void
     );
     
@@ -119,6 +119,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    int32_t         symAttr_getClass(
+        SYMATTR_DATA    *this
+    );
+    
+    bool            symAttr_setClass(
+        SYMATTR_DATA    *this,
+        int32_t         value
+    );
+    
+    
     ERESULT         symAttr_getLastError(
         SYMATTR_DATA    *this
     );

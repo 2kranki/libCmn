@@ -127,6 +127,10 @@ extern "C" {
     );
     
     
+    /*!
+     All matching and scanning uses the index property
+     to know where to start the next match or scan.
+     */
     uint32_t        nodeScan_getIndex(
         NODESCAN_DATA   *this
     );
@@ -147,6 +151,17 @@ extern "C" {
     );
     
     
+    /*!
+     All matching and scanning set the start property
+     to indicate where the scan started.
+     */
+    uint32_t        nodeScan_getStart(
+        NODESCAN_DATA   *this
+    );
+    
+    
+    
+    
 
     
     //---------------------------------------------------------------
@@ -163,15 +178,30 @@ extern "C" {
     );
     
 
+    /*!
+     Advance the scan the provided number of nodes.
+     @param     this    Object Pointer
+     @param     numChrs The number of nodes to advance over
+     @return    If successful, the current node, otherwise OBJ_NIL
+                and Last Error contains an error reason.
+     */
     NODE_DATA *     nodeScan_InputAdvance(
         NODESCAN_DATA	*this,
-        uint16_t        numChrs
+        uint32_t        numChrs
     );
 
     
+    /*!
+     Provide the node that is the provided number of nodes ahead of the current
+     one without affecting the current index or node.
+     @param     this    Object Pointer
+     @param     num     The number of nodes to look ahead
+     @return    If successful, the node in advance of the current one, otherwise
+                OBJ_NIL and Last Error contains an error reason.
+     */
     NODE_DATA *     nodeScan_InputLookAhead(
         NODESCAN_DATA   *this,
-        uint16_t        num
+        uint32_t        num
     );
 
     
@@ -193,10 +223,17 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeScan_ScanF(
+    /*!
+     Scan the linearized tree starting at the given index and stopping when the
+     given class is found or at the end of the tree.
+     @param     this    Object Pointer
+     @param     cls     The node class to stop at (must not be zero)
+     @return    If successful, an index of the match relative to 1,
+                otherwise 0.
+     */
+    NODE_DATA *     nodeScan_ScanClassUntil(
         NODESCAN_DATA   *this,
-        char     *pTemplate,
-        ...
+        int32_t         cls
     );
     
     

@@ -2299,7 +2299,6 @@ extern "C" {
         }
 #endif
         
-        return ERESULT_NOT_IMPLEMENTED;     //FIXME: Needs work!
         nodeTree_NodeInorder(this, pVisitor, pObject, 1, 0);
         
         // Return to caller.

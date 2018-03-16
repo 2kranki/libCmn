@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//         A Directed Graph of Nodes (nodeGraph) Header
+//         A Graph of Nodes (nodeGraph) Header
 //****************************************************************
 /*
  * Program
- *			A Directed Graph of Nodes (nodeGraph)
+ *			A Graph of Nodes (nodeGraph)
  * Purpose
  *			This object provides a directed graph of Nodes. A Graph
  *          consists of Nodes with Arcs defining the relationship.
@@ -15,10 +15,14 @@
  *          called a nodeGraph on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal nodeGraph. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      "Acyclic" means that there are no cycles within the graph
+ *          (ie no arcs form loops) and is a characterisitic of Trees
+ *          and Forests.
+ *  2.      If the graph is "directed", then the directed property
+ *          should be set immediately upon graph creation.  A directed
+ *          graph is one in which each arc denotes a one-way connection.
+ *          An "undirected" graph (default) is one in which each arc
+ *          denotes a two-way connection between the two nodes.
  *
  * History
  *	07/14/2016 Generated
@@ -59,6 +63,8 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <node.h>
+#include        <nodeArray.h>
+#include        <objArray.h>
 
 
 #ifndef         NODEGRAPH_H
@@ -119,21 +125,40 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*!
+     Arcs property is an array of all the arcs in the graph. If this
+     is a directed graph, then the arcs are one way.  Otherwise, the
+     arcs represent a two-way connection.  All objects within the
+     array should be the Node Arc object.
+     */
+    OBJARRAY_DATA * nodeGraph_getArcs(
+        NODEGRAPH_DATA     *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    uint32_t        nodeGraph_ArcAdd(
+        NODEGRAPH_DATA  *this,
+        uint32_t        indexFrom,          // [in] From Node index
+        uint32_t        indexTo,            // [in] To Node index
+        const
+        char            *pName              // [in] Optional Name or NULL
+    );
+    
+    
     NODEGRAPH_DATA * nodeGraph_Init(
         NODEGRAPH_DATA  *this
     );
 
 
-    NODEGRAPH_DATA * nodeGraph_NodeAdd(
+    uint32_t        nodeGraph_NodeAdd(
         NODEGRAPH_DATA  *this,
-        NODE_DATA       *pNode,             // [in] node pointer
-        uint32_t        *pIndex             // [out] returned node index
+        NODE_DATA       *pNode              // [in] node pointer
     );
     
     

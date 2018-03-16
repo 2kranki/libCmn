@@ -245,6 +245,10 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*!
+     Child index property is used to point to the next child node
+     if needed.  Note that this uses the Left index internally.
+     */
     uint32_t        node_getChild(
         NODE_DATA       *this
     );
@@ -255,8 +259,10 @@ extern "C" {
     );
     
     
-    // Class is used to categorize the node with some kind of
-    // identification if needed.
+    /*!
+     Class property is used to categorize the node with some kind of
+     identification if needed.
+     */
     int32_t         node_getClass(
         NODE_DATA       *this
     );
@@ -284,6 +290,20 @@ extern "C" {
     bool            node_setExtra(
         NODE_DATA       *this,
         OBJ_ID          pValue
+    );
+    
+    
+    /*!
+     From index property is used to point to the "From" node
+     if needed.  Note that this uses the Left index internally.
+     */
+    uint32_t        node_getFrom(
+        NODE_DATA       *this
+    );
+    
+    bool            node_setFrom(
+        NODE_DATA       *this,
+        uint32_t        value
     );
     
     
@@ -405,6 +425,10 @@ extern "C" {
     );
     
     
+    /*!
+     Sibling index property is used to point to the next Sibling node
+     if needed.  Note that this uses the Left index internally.
+     */
     uint32_t        node_getSibling(
         NODE_DATA       *this
     );
@@ -413,6 +437,20 @@ extern "C" {
         NODE_DATA       *this,
         uint32_t        value
     );
+    
+    
+    /*!
+     To index property is used to point to the "To" node
+     if needed.  Note that this uses the Right index internally.
+     */
+    uint32_t        node_getFrom(
+                                 NODE_DATA       *this
+                                 );
+    
+    bool            node_setFrom(
+                                 NODE_DATA       *this,
+                                 uint32_t        value
+                                 );
     
     
     /*!

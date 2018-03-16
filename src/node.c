@@ -473,6 +473,47 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      F r o m  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getFrom(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->leftIndex;
+    }
+    
+    
+    bool            node_setFrom(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->leftIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------
     
@@ -1028,6 +1069,47 @@ extern "C" {
     
     
     bool            node_setSibling(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    T o  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getTo(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->rightIndex;
+    }
+    
+    
+    bool            node_setTo(
         NODE_DATA       *this,
         uint32_t        value
     )
