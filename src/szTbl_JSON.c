@@ -113,6 +113,7 @@ extern "C" {
         SZTBL_DATA      *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
+#ifdef XYZZY
         uint32_t        crc = 0;
         uint32_t        length = 0;
         uint32_t        i;
@@ -120,6 +121,7 @@ extern "C" {
         const
         char            *pSrc;
         ASTR_DATA       *pWrk;
+#endif
         
         pInfo = obj_getInfo(szTbl_Class());
         
@@ -230,7 +232,7 @@ extern "C" {
         SZTBL_DATA      *this
     )
     {
-        char            str[256];
+        //char            str[256];
         uint32_t        i;
         uint32_t        j;
         ASTR_DATA       *pStr;

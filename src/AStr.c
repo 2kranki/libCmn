@@ -2545,8 +2545,8 @@ extern "C" {
     )
     {
         ASTR_DATA       *pStr;
-        char            *pData;
-        uint32_t        lenStr;
+        //char            *pData;
+        //uint32_t        lenStr;
         
         // Do initialization.
 #ifdef NDEBUG

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'symAttr'
-//	Generated 02/02/2018 10:14:55
+//	Class Object Metods and Tables for 'md5ChkSum'
+//	Generated 04/01/2018 21:11:43
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   SYMATTR_IS_SINGLETON     1
+//#define   MD5CHKSUM_IS_SINGLETON     1
 
-#define			SYMATTR_OBJECT_C	    1
-#include        <symAttr_internal.h>
+#define			MD5CHKSUM_OBJECT_C	    1
+#include        <md5ChkSum_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct symAttr_class_data_s	{
+struct md5ChkSum_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct symAttr_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct symAttr_class_data_s SYMATTR_CLASS_DATA;
+typedef struct md5ChkSum_class_data_s MD5CHKSUM_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct symAttr_class_data_s SYMATTR_CLASS_DATA;
 
 
 static
-void *          symAttrClass_QueryInfo(
+void *          md5ChkSumClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +73,17 @@ void *          symAttrClass_QueryInfo(
 
 static
 const
-OBJ_INFO        symAttr_Info;            // Forward Reference
+OBJ_INFO        md5ChkSum_Info;            // Forward Reference
 
 
 
 
 static
-bool            symAttrClass_IsKindOf(
+bool            md5ChkSumClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SYMATTR_CLASS == classID) {
+    if (OBJ_IDENT_MD5CHKSUM_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +94,25 @@ bool            symAttrClass_IsKindOf(
 
 
 static
-uint16_t		symAttrClass_WhoAmI(
+uint16_t		md5ChkSumClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_SYMATTR_CLASS;
+    return OBJ_IDENT_MD5CHKSUM_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&symAttr_Info,
-    symAttrClass_IsKindOf,
+	&md5ChkSum_Info,
+    md5ChkSumClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    symAttr_Class,
-    symAttrClass_WhoAmI,
-    (P_OBJ_QUERYINFO)symAttrClass_QueryInfo
+    md5ChkSum_Class,
+    md5ChkSumClass_WhoAmI,
+    (P_OBJ_QUERYINFO)md5ChkSumClass_QueryInfo
 };
 
 
@@ -122,8 +122,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-SYMATTR_CLASS_DATA  symAttr_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SYMATTR_CLASS, 0, 1},
+MD5CHKSUM_CLASS_DATA  md5ChkSum_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_MD5CHKSUM_CLASS, 0, 1},
 	//0
 };
 
@@ -134,18 +134,18 @@ SYMATTR_CLASS_DATA  symAttr_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          symAttrClass_QueryInfo(
+void *          md5ChkSumClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    SYMATTR_CLASS_DATA *this = objId;
+    MD5CHKSUM_CLASS_DATA *this = objId;
 #ifdef XYZZY
     const
     char            *pStr = pData;
 #endif
-
+    
     if (OBJ_NIL == this) {
         return NULL;
     }
@@ -185,7 +185,7 @@ void *          symAttrClass_QueryInfo(
                     
                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return symAttrClass_WhoAmI;
+                        return md5ChkSumClass_WhoAmI;
                     }
                     break;
                     
@@ -211,11 +211,11 @@ void *          symAttrClass_QueryInfo(
 //===========================================================
 
 static
-bool            symAttr_IsKindOf(
+bool            md5ChkSum_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SYMATTR == classID) {
+    if (OBJ_IDENT_MD5CHKSUM == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -227,56 +227,57 @@ bool            symAttr_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            symAttr_Dealloc(
+void            md5ChkSum_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          symAttr_Class(
+OBJ_ID          md5ChkSum_Class(
     void
 )
 {
-    return (OBJ_ID)&symAttr_ClassObj;
+    return (OBJ_ID)&md5ChkSum_ClassObj;
 }
 
 
 static
-uint16_t		symAttr_WhoAmI(
+uint16_t		md5ChkSum_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_SYMATTR;
+    return OBJ_IDENT_MD5CHKSUM;
 }
 
 
 const
-SYMATTR_VTBL     symAttr_Vtbl = {
+MD5CHKSUM_VTBL     md5ChkSum_Vtbl = {
     {
-        &symAttr_Info,
-        symAttr_IsKindOf,
-#ifdef  SYMATTR_IS_SINGLETON
+        &md5ChkSum_Info,
+        md5ChkSum_IsKindOf,
+#ifdef  MD5CHKSUM_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        symAttr_Dealloc,
-        symAttr_Class,
-        symAttr_WhoAmI,
-        (P_OBJ_QUERYINFO)symAttr_QueryInfo,
-        (P_OBJ_TOSTRING)symAttr_ToDebugString,
-        NULL,			// symAttr_Enable,
-        NULL,			// symAttr_Disable,
-        NULL,			// (P_OBJ_ASSIGN)symAttr_Assign,
-        NULL,			// (P_OBJ_COMPARE)symAttr_Compare,
-        NULL, 			// (P_OBJ_PTR)symAttr_Copy,
-        NULL 			// (P_OBJ_HASH)symAttr_Hash,
+        md5ChkSum_Dealloc,
+        md5ChkSum_Class,
+        md5ChkSum_WhoAmI,
+        (P_OBJ_QUERYINFO)md5ChkSum_QueryInfo,
+        (P_OBJ_TOSTRING)md5ChkSum_ToDebugString,
+        NULL,			// md5ChkSum_Enable,
+        NULL,			// md5ChkSum_Disable,
+        NULL,			// (P_OBJ_ASSIGN)md5ChkSum_Assign,
+        NULL,			// (P_OBJ_COMPARE)md5ChkSum_Compare,
+        NULL, 			// (P_OBJ_PTR)md5ChkSum_Copy,
+        NULL, 			// (P_OBJ_PTR)md5ChkSum_DeepCopy,
+        NULL 			// (P_OBJ_HASH)md5ChkSum_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //symAttr_IsEnabled,
+    //md5ChkSum_IsEnabled,
  
 };
 
@@ -284,12 +285,12 @@ SYMATTR_VTBL     symAttr_Vtbl = {
 
 static
 const
-OBJ_INFO        symAttr_Info = {
-    "symAttr",
-    "Symbol Entry Attributes",
-    (OBJ_DATA *)&symAttr_ClassObj,
+OBJ_INFO        md5ChkSum_Info = {
+    "md5ChkSum",
+    "MD5 Check Sum",	
+    (OBJ_DATA *)&md5ChkSum_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&symAttr_Vtbl
+    (OBJ_IUNKNOWN *)&md5ChkSum_Vtbl
 };
 
 

@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 2/16/2018  4:36:46.000)
+# ( 4/ 2/2018  1:47:44.000)
 
 
 LIBNAM=libCmn
@@ -728,6 +728,18 @@ $(OBJDIR)/macro.o: $(SRCDIR)/macro.c
 
 
 $(OBJDIR)/macro_object.o: $(SRCDIR)/macro_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/md5ChkSum.o $(OBJDIR)/md5ChkSum_object.o
+
+
+$(OBJDIR)/md5ChkSum.o: $(SRCDIR)/md5ChkSum.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/md5ChkSum_object.o: $(SRCDIR)/md5ChkSum_object.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
 
@@ -1584,6 +1596,12 @@ $(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c
 
 
 OBJS += $(OBJDIR)/listdl.o
+$(OBJDIR)/md5_plumb.o: $(SRCDIR)/md5_plumb.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/md5_plumb.o
 $(OBJDIR)/name_JSON.o: $(SRCDIR)/name_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 
@@ -2170,6 +2188,13 @@ TESTS += test_macro
 
 test_macro:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_macro.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_md5ChkSum
+
+test_md5ChkSum:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_md5ChkSum.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

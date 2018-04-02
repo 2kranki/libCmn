@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Macro (macro) Header
+//          MD5CHKSUM Console Transmit Task (md5ChkSum) Header
 //****************************************************************
 /*
  * Program
- *				Macro (macro)
+ *			Separate md5ChkSum (md5ChkSum)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate macro to run things without complications
- *              of interfering with the main macro. A macro may be 
- *              called a macro on other O/S's.
+ *			This object provides a standardized way of handling
+ *          a separate md5ChkSum to run things without complications
+ *          of interfering with the main md5ChkSum. A md5ChkSum may be 
+ *          called a md5ChkSum on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal macro. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	08/08/2015 Generated
+ *	04/01/2018 Generated
  */
 
 
@@ -55,13 +52,11 @@
 
 
 #include        <cmn_defs.h>
-#include        <name.h>
-#include        <objArray.h>
-#include        <node.h>
+#include        <AStr.h>
 
 
-#ifndef         MACRO_H
-#define         MACRO_H
+#ifndef         MD5CHKSUM_H
+#define         MD5CHKSUM_H
 
 
 
@@ -75,17 +70,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct macro_data_s	MACRO_DATA;
+    typedef struct md5ChkSum_data_s	MD5CHKSUM_DATA;    // Inherits from OBJ.
 
-    typedef struct macro_vtbl_s	{
+    typedef struct md5ChkSum_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in $P_object.c.
+        // method names to the vtbl definition in md5ChkSum_object.c.
         // Properties:
         // Methods:
-    } MACRO_VTBL;
-    
-    
+        //bool        (*pIsEnabled)(MD5CHKSUM_DATA *);
+    } MD5CHKSUM_VTBL;
 
 
 
@@ -98,18 +92,24 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the macro including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to md5ChkSum object if successful, otherwise OBJ_NIL.
      */
-    MACRO_DATA *    macro_Alloc(
+    MD5CHKSUM_DATA *     md5ChkSum_Alloc(
         void
     );
     
     
-    MACRO_DATA *    macro_NewWithName(
-        NAME_DATA       *pName
+    OBJ_ID          md5ChkSum_Class(
+        void
+    );
+    
+    
+    MD5CHKSUM_DATA *     md5ChkSum_New(
+        void
     );
     
     
@@ -118,65 +118,78 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NAME_DATA *    macro_getName(
-        MACRO_DATA      *this
+    /*!
+     digest is 16 bytes long md5 check sum.
+     */
+    uint8_t *   md5ChkSum_getDigest(
+        MD5CHKSUM_DATA  *this
     );
     
     
+    ERESULT     md5ChkSum_getLastError(
+        MD5CHKSUM_DATA  *this
+    );
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Disable() terminates the macro macro.
-     */
-    bool            macro_Disable(
-        MACRO_DATA		*this
-    );
-
-
-    /* Enable() starts the macro.
-     */
-    bool            macro_Enable(
-        MACRO_DATA		*this
-    );
-
-
-    bool            macro_IsEnabled(
-        MACRO_DATA		*this
-    );
-    
-    
-    MACRO_DATA *    macro_Init(
-        MACRO_DATA       *this,
-        NAME_DATA        *pName
-    );
-
-
-    MACRO_DATA *    macro_InitWithUTF8Con(
-        MACRO_DATA      *this,
-        const
-        char            *pName
-    );
-    
-    
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Finalize the md5 check sum calculation generating the digest.
+     @param     this    MD5CHKSUM object pointer
      */
-    ASTR_DATA *     macro_ToDebugString(
-        MACRO_DATA      *this,
+    ERESULT     md5ChkSum_Finalize(
+        MD5CHKSUM_DATA	*this
+    );
+
+   
+    MD5CHKSUM_DATA * md5ChkSum_Init(
+        MD5CHKSUM_DATA  *this
+    );
+
+
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = md5ChkSum_ToDebugString(this,4);
+     @endcode 
+     @param     this    MD5CHKSUM object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA * md5ChkSum_ToDebugString(
+        MD5CHKSUM_DATA  *this,
         int             indent
     );
     
     
+    /*!
+     Update the checksum with more data. This method should be called as many times
+     as needed. The data order is important.
+     @param     this    MD5CHKSUM object pointer
+     @param     pData   Pointer to data to be check summed
+     @param     len     length of area pointed to by pData
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error code.
+     */
+    ERESULT         md5ChkSum_Update(
+        MD5CHKSUM_DATA  *this,
+        const
+        uint8_t         *pData,
+        uint32_t        len
+    );
+    
+    
+
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* MACRO_H */
+#endif	/* MD5CHKSUM_H */
 

@@ -144,9 +144,11 @@ void *          i32ArrayClass_QueryInfo(
 )
 {
     I32ARRAY_CLASS_DATA *this = objId;
+#ifdef XYZZY
     const
     char            *pStr = pData;
-    
+#endif
+
     if (OBJ_NIL == this) {
         return NULL;
     }

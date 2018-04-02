@@ -224,6 +224,21 @@ extern "C" {
     
     
     /*!
+     Scan the linerarized tree matching a regex-like array of types.
+     @param     this    Object Pointer
+     @param     pRegex  Pointer to a variable length array of node types which must
+                        not be zero followed by a zero to terminate the list.
+     @return    If successful, a starting index of the match relative to 1,
+                otherwise 0.
+     */
+    NODE_DATA *     nodeScan_MatchClassesRegex(
+        NODESCAN_DATA   *this,
+        int32_t         *pRegex             // [in] Zero-terminated array of
+                                            //      node types
+    );
+    
+    
+    /*!
      Scan the linearized tree starting at the given index and stopping when the
      given class is found or at the end of the tree.
      @param     this    Object Pointer

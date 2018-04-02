@@ -133,6 +133,82 @@ SZHASH_DATA     *pHash = OBJ_NIL;
 
 
 //------------------------------------------------------------------
+//             genLibIncludePath - Generate a Lib Include Path.
+//------------------------------------------------------------------
+
+ASTR_DATA *     genLibIncludePath(
+    ARGS            *pResults,
+    ASTR_DATA       *pName,
+    NODEARRAY_DATA  *pLibDeps
+)
+{
+    ERESULT         eRc;
+    ASTR_DATA       *pStr =  OBJ_NIL;
+    char            *pLibIncludePath;
+    char            *pLibIncludePrefix;
+    
+    BREAK_NULL(pResults);
+    pLibIncludePath   = szHash_FindA(pHash, "libIncludePath");
+    BREAK_NULL(pLibIncludePath);
+    pLibIncludePrefix = szHash_FindA(pHash, "libIncludePrefix");
+    BREAK_NULL(pLibIncludePrefix);
+    pStr = AStr_New();
+
+    switch (pResults->makeType) {
+            
+        case MAKETYPE_MACOSX:
+            eRc =   AStr_AppendPrint(
+                            pStr,
+                            "CFLAGS += -I%s/%s%s/src -I%s/%s%s/src/$(SYS)\n",
+                            pLibIncludePath,
+                            pLibIncludePrefix,
+                            AStr_getData(pName),
+                            pLibIncludePath,
+                            pLibIncludePrefix,
+                            AStr_getData(pName)
+                    );
+            eRc =   AStr_AppendPrint(
+                            pStr,
+                            "CFLAGS_LIBS += -l%s -L$(HOME)/Support/lib/$(SYS)/%s%s\n",
+                            AStr_getData(pName),
+                            pLibIncludePrefix,
+                            AStr_getData(pName)
+                    );
+            break;
+            
+        case MAKETYPE_MSC32:
+            eRc =   AStr_AppendPrint(
+                            pStr,
+                            "CFLAGS = $(CFLAGS) /I%s\\%s%s\\src "
+                            "/I%s\\%s%s\\src\\$(SYS)\n",
+                            pLibIncludePath,
+                            pLibIncludePrefix,
+                            AStr_getData(pName),
+                            pLibIncludePath,
+                            pLibIncludePrefix,
+                            AStr_getData(pName)
+                    );
+            eRc =   AStr_AppendPrint(
+                            pStr,
+                            "LIBS = $(LIBS) "
+                            "$(INSTALL_BASE)\\%s%s\\%s%s.lib\n",
+                            pLibIncludePrefix,
+                            AStr_getData(pName),
+                            pLibIncludePrefix,
+                            AStr_getData(pName)
+                    );
+            break;
+            
+        default:
+            break;
+    }
+
+    return pStr;
+}
+
+
+
+//------------------------------------------------------------------
 //             genMakeFile - Generate the Make File.
 //------------------------------------------------------------------
 
@@ -1299,7 +1375,7 @@ int             genMakeFile(
     ARGS            *pResults
 )
 {
-    ERESULT         eRc;
+    //ERESULT         eRc;
     NODE_DATA       *pNode;
     NODEARRAY_DATA  *pLibDeps = OBJ_NIL;
     NODEHASH_DATA   *pPrimaryHash = OBJ_NIL;
@@ -1430,8 +1506,8 @@ int         parseArgs(
     const
     char        **ppWrkArgV = argv;
     int         i;
-    NODE_DATA   *pNode = OBJ_NIL;
-    ASTR_DATA   *pStr = OBJ_NIL;
+    //NODE_DATA   *pNode = OBJ_NIL;
+    //ASTR_DATA   *pStr = OBJ_NIL;
     ERESULT     eRc;
     
     BREAK_NULL(pResults);
@@ -1463,6 +1539,13 @@ int         parseArgs(
         exit(EXIT_FAILURE);
     }
 
+    // Set up libPath default;
+    eRc = szHash_AddA(pHash, "libIncludePath", "..");
+    if (ERESULT_FAILED(eRc) ) {
+        fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Hash\n");
+        exit(EXIT_FAILURE);
+    }
+    
     // Set up libPrefix default;
     eRc = szHash_AddA(pHash, "libIncludePrefix", "lib");
     if (ERESULT_FAILED(eRc) ) {
@@ -1501,6 +1584,26 @@ int         parseArgs(
         else if (0 == strcmp(*ppWrkArgV, "--no-force")) {
             --pResults->fForce;
         }
+        else if (0 == strncmp(*ppWrkArgV, "--libIncludePath", 16)) {
+            char        *pStr = NULL;
+            if (*(*ppWrkArgV+16) == '\0') {
+                ++ppWrkArgV;
+                --wrkArgC;
+                if (wrkArgC <= 0) {
+                    show_usage("ERROR: --libIncludePath is missing the path!\n");
+                    return 99;
+                }
+                pStr = strdup(*ppWrkArgV);
+            }
+            else {
+                pStr = strdup(*ppWrkArgV+16);
+            }
+            eRc = szHash_AddA(pHash, "libIncludePath", pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Hash\n");
+                exit(EXIT_FAILURE);
+            }
+        }
         else if (0 == strcmp(*ppWrkArgV, "--macosx")) {
             pResults->makeType = MAKETYPE_MACOSX;
         }
@@ -1516,8 +1619,8 @@ int         parseArgs(
         else if (0 == strcmp(*ppWrkArgV, "--no-nl")) {
             pResults->fNL = 0;
         }
-        else if (0 == strncmp(*ppWrkArgV, "--out", 6)) {
-            if (*(*ppWrkArgV+6) == '\0') {
+        else if (0 == strncmp(*ppWrkArgV, "--out", 5)) {
+            if (*(*ppWrkArgV+5) == '\0') {
                 ++ppWrkArgV;
                 --wrkArgC;
                 if (wrkArgC <= 0) {
@@ -1527,7 +1630,7 @@ int         parseArgs(
                 pResults->pOutFilePath = strdup(*ppWrkArgV);
             }
             else {
-                pResults->pOutFilePath = strdup(*ppWrkArgV+6);
+                pResults->pOutFilePath = strdup(*ppWrkArgV+5);
             }
         }
         else if (0 == strcmp(*ppWrkArgV, "--ws")) {

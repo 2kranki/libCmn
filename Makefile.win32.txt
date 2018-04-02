@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 2/16/2018  4:36:44.000)
+# ( 4/ 2/2018  1:47:42.000)
 
 
 LIBNAM=libCmn
@@ -91,6 +91,7 @@ OBJS = $(OBJS) $(OBJDIR)\lex.obj $(OBJDIR)\lex_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lexj.obj $(OBJDIR)\lexj_object.obj
 OBJS = $(OBJS) $(OBJDIR)\lru.obj $(OBJDIR)\lru_object.obj
 OBJS = $(OBJS) $(OBJDIR)\macro.obj $(OBJDIR)\macro_object.obj
+OBJS = $(OBJS) $(OBJDIR)\md5ChkSum.obj $(OBJDIR)\md5ChkSum_object.obj
 OBJS = $(OBJS) $(OBJDIR)\misc.obj $(OBJDIR)\misc_object.obj
 OBJS = $(OBJS) $(OBJDIR)\msgBus.obj $(OBJDIR)\msgBus_object.obj
 OBJS = $(OBJS) $(OBJDIR)\msgData.obj $(OBJDIR)\msgData_object.obj
@@ -164,6 +165,7 @@ OBJS = $(OBJS) $(OBJDIR)\AStr_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\dec_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\hex_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\listdl.obj
+OBJS = $(OBJS) $(OBJDIR)\md5_plumb.obj
 OBJS = $(OBJS) $(OBJDIR)\name_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\node_JSON.obj
 OBJS = $(OBJS) $(OBJDIR)\null_JSON.obj
@@ -725,6 +727,14 @@ TESTS = $(TESTS) test_macro
 
 test_macro:
 	$(CC) $(CFLAGS) /Itests tests\test_macro.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
+	del *.obj
+	$(OBJDIR)\$(@F).exe
+
+
+TESTS = $(TESTS) test_md5ChkSum
+
+test_md5ChkSum:
+	$(CC) $(CFLAGS) /Itests tests\test_md5ChkSum.c /link /out:$(OBJDIR)\$(@F).exe $(LIBPATH) $(LIBS) 
 	del *.obj
 	$(OBJDIR)\$(@F).exe
 

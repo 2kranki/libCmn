@@ -141,8 +141,8 @@ void *          visitorClass_QueryInfo(
 )
 {
     VISITOR_CLASS_DATA *this = objId;
-    const
-    char            *pStr = pData;
+    //const
+    //char            *pStr = pData;
     
     if (OBJ_NIL == this) {
         return NULL;

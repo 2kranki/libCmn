@@ -865,11 +865,11 @@ extern "C" {
         uint32_t        regexSrchLen = 0;   // Minimum search length
         uint32_t        startIndex;
         uint32_t        i;
-        uint32_t        j;
+        //uint32_t        j;
         int32_t         *pIdxRegex;
         int32_t         curRegex;
         int32_t         stopRegex;
-        int32_t         curClass;
+        //int32_t         curClass;
         bool            fKleene = false;
 
         // Do initialization.

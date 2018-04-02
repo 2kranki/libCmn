@@ -787,6 +787,14 @@ extern "C" {
         }
 #endif
         
+        if( (this->type > pOther->type) ) {
+            return ERESULT_SUCCESS_GREATER_THAN;
+        }
+        if( (this->type < pOther->type) ) {
+            return ERESULT_SUCCESS_LESS_THAN;
+        }
+        // Types are equal.
+        
         if( (this->pName) && (OBJ_NIL == pOther->pName) ) {
             DEBUG_BREAK();
             return ERESULT_SUCCESS_GREATER_THAN;

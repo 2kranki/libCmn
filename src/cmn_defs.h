@@ -276,6 +276,8 @@ extern "C" {
         OBJ_IDENT_LRU_CLASS,
         OBJ_IDENT_MACRO,
         OBJ_IDENT_MACRO_CLASS,
+        OBJ_IDENT_MD5CHKSUM,            // MD5 Check Sum Calculation
+        OBJ_IDENT_MD5CHKSUM_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMOSX,               // Memory Debug for OSX
@@ -480,6 +482,7 @@ extern "C" {
         OBJ_IDENT_PARSERS_ENTRIES=OBJ_IDENT_OS_ENTRIES+128,         //  64 Objects
         OBJ_IDENT_PIC32_ENTRIES=OBJ_IDENT_PARSERS_ENTRIES+128,      //  64 Objects
         OBJ_IDENT_EMU_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+256,          //  32 Objects
+        OBJ_IDENT_TERM_ENTRIES=OBJ_IDENT_EMU_ENTRIES+256,           //  32 Objects
         OBJ_IDENT_USER_ENTRIES=16384
     } OBJ_IDENTS;
 #endif

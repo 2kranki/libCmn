@@ -423,7 +423,7 @@ extern "C" {
     )
     {
         ENUM_DATA       *pEnum = OBJ_NIL;
-        uint32_t        i;
+        //uint32_t        i;
         BLOCKS_BLOCK    *pBlock;
 
         // Do initialization.
@@ -472,7 +472,7 @@ extern "C" {
         uint32_t        index
     )
     {
-        uint32_t        i;
+        //uint32_t        i;
         BLOCKS_BLOCK    *pBlock;
         uint32_t        count = 0;
         

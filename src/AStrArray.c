@@ -610,7 +610,7 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
 

@@ -1364,7 +1364,7 @@ extern "C" {
         OBJ_ID          pData
     )
     {
-        NODEENTRY_DATA  *pEntry;
+        //NODEENTRY_DATA  *pEntry;
         uint32_t        index = 0;
         NODE_DATA       *pNode;
         
@@ -1665,7 +1665,7 @@ extern "C" {
         NODE_DATA       *pNode
     )
     {
-        NODE_DATA       *pParent;
+        //NODE_DATA       *pParent;
         NODE_DATA       *pSibling;
         uint32_t        index = 0;
         

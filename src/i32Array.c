@@ -1038,7 +1038,7 @@ extern "C" {
     )
     {
         FILE            *pFile;
-        uint32_t        index = 0;
+        //uint32_t        index = 0;
         uint32_t        size;
         int32_t         *pData;
         int32_t         data;

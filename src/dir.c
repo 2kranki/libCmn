@@ -520,6 +520,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
+        eRc = objEnum_SortAscending(pEnum);
+        
         // Return to caller.
         dir_setLastError(this, ERESULT_SUCCESS);
         return pEnum;

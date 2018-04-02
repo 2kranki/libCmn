@@ -85,7 +85,7 @@ extern "C" {
         OBJ_INFO        *pInfo;
         uint32_t        cls = 0;
         OBJ_ID          pObj = OBJ_NIL;
-        uint8_t         *pUtf8;
+        //uint8_t         *pUtf8;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
 

@@ -115,11 +115,13 @@ extern "C" {
         OBJ_INFO        *pInfo;
         uint32_t        crc = 0;
         uint32_t        length = 0;
+#ifdef XYZZY
         uint32_t        i;
         W32CHR_T        ch;
         const
         char            *pSrc;
         ASTR_DATA       *pWrk;
+#endif
         
         pInfo = obj_getInfo(symEntry_Class());
         
@@ -231,11 +233,12 @@ extern "C" {
     )
     {
         char            str[256];
-        uint32_t        i;
+        //uint32_t        i;
         int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
+#ifdef XYZZY
         const
         char            *pChr;
         uint32_t        crc = 0;
@@ -244,6 +247,7 @@ extern "C" {
         uint32_t        len;
         const
         char            *pData;
+#endif
         SYM_ENTRY       *pEntry = NULL;
 
 #ifdef NDEBUG

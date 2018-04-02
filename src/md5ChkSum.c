@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   symAttr.c
- *	Generated 02/02/2018 10:14:54
+ * File:   md5ChkSum.c
+ *	Generated 04/01/2018 21:11:43
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <symAttr_internal.h>
+#include <md5ChkSum_internal.h>
 
 
 
@@ -60,11 +60,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            symAttr_task_body(
+    void            md5ChkSum_task_body(
         void            *pData
     )
     {
-        //SYMATTR_DATA  *this = pData;
+        //MD5CHKSUM_DATA  *this = pData;
         
     }
 #endif
@@ -80,12 +80,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SYMATTR_DATA *     symAttr_Alloc(
-        void
+    MD5CHKSUM_DATA *     md5ChkSum_Alloc(
     )
     {
-        SYMATTR_DATA       *this;
-        uint32_t        cbSize = sizeof(SYMATTR_DATA);
+        MD5CHKSUM_DATA       *this;
+        uint32_t        cbSize = sizeof(MD5CHKSUM_DATA);
         
         // Do initialization.
         
@@ -97,15 +96,14 @@ extern "C" {
 
 
 
-    SYMATTR_DATA *     symAttr_New(
-        void
+    MD5CHKSUM_DATA *     md5ChkSum_New(
     )
     {
-        SYMATTR_DATA       *this;
+        MD5CHKSUM_DATA       *this;
         
-        this = symAttr_Alloc( );
+        this = md5ChkSum_Alloc( );
         if (this) {
-            this = symAttr_Init(this);
+            this = md5ChkSum_Init(this);
         } 
         return this;
     }
@@ -119,45 +117,23 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                         C l a s s
+    //                        D i g e s t
     //---------------------------------------------------------------
     
-    int32_t         symAttr_getClass(
-        SYMATTR_DATA    *this
+    uint8_t *   md5ChkSum_getDigest(
+        MD5CHKSUM_DATA  *this
     )
     {
-        
-        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        symAttr_setLastError(this, ERESULT_SUCCESS);
-        return this->attr.cls;
-    }
-    
-    
-    bool            symAttr_setClass(
-        SYMATTR_DATA    *this,
-        int32_t         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symAttr_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->attr.cls = value;
-        
-        symAttr_setLastError(this, ERESULT_SUCCESS);
-        return true;
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
+        return this->digest;
     }
     
     
@@ -166,15 +142,15 @@ extern "C" {
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         symAttr_getLastError(
-        SYMATTR_DATA     *this
+    ERESULT         md5ChkSum_getLastError(
+        MD5CHKSUM_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -185,14 +161,14 @@ extern "C" {
     }
 
 
-    bool            symAttr_setLastError(
-        SYMATTR_DATA     *this,
+    bool            md5ChkSum_setLastError(
+        MD5CHKSUM_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -209,34 +185,34 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        symAttr_getPriority(
-        SYMATTR_DATA     *this
+    uint16_t        md5ChkSum_getPriority(
+        MD5CHKSUM_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            symAttr_setPriority(
-        SYMATTR_DATA     *this,
+    bool            md5ChkSum_setPriority(
+        MD5CHKSUM_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -244,7 +220,7 @@ extern "C" {
 
         //this->priority = value;
 
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -254,207 +230,56 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        symAttr_getSize(
-        SYMATTR_DATA       *this
+    uint32_t        md5ChkSum_getSize(
+        MD5CHKSUM_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * symAttr_getStr(
-        SYMATTR_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symAttr_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        symAttr_setLastError(this, ERESULT_SUCCESS);
-        return this->pStr;
-    }
-    
-    
-    bool        symAttr_setStr(
-        SYMATTR_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symAttr_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        symAttr_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  symAttr_getSuperVtbl(
-        SYMATTR_DATA     *this
+    OBJ_IUNKNOWN *  md5ChkSum_getSuperVtbl(
+        MD5CHKSUM_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
   
 
-    //---------------------------------------------------------------
-    //                         T y p e
-    //---------------------------------------------------------------
     
-    int32_t         symAttr_getType(
-        SYMATTR_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symAttr_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        symAttr_setLastError(this, ERESULT_SUCCESS);
-        return this->attr.type;
-        return 0;
-    }
-    
-    
-    bool            symAttr_setType(
-        SYMATTR_DATA    *this,
-        int32_t         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symAttr_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->attr.type = value;
-        
-        symAttr_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-
 
     //===============================================================
     //                          M e t h o d s
     //===============================================================
 
 
-    //---------------------------------------------------------------
-    //                        A c c e p t
-    //---------------------------------------------------------------
-    
-    ERESULT         symAttr_Accept(
-        SYMATTR_DATA    *this,
-        VISITOR_DATA     *pVisitor
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        ERESULT         (*pMethod)(VISITOR_DATA *this, SYMATTR_DATA *pObj) = NULL;
-        const
-        OBJ_IUNKNOWN    *pVtbl;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !symAttr_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == pVisitor ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pStr = AStr_NewA("Visit_symEntry_");
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        AStr_AppendHex32(pStr, this->attr.type);
-        
-        pVtbl = obj_getVtbl(pVisitor);
-        if (pVtbl && pVtbl->pQueryInfo) {
-            pMethod =   pVtbl->pQueryInfo(
-                                          pVisitor,
-                                          OBJ_QUERYINFO_TYPE_METHOD,
-                                          (void *)AStr_getData(pStr)
-                                          );
-        }
-        
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
-        if (NULL == pMethod) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_FUNCTION;
-        }
-        
-        eRc = pMethod(pVisitor, this);
-        
-        return eRc;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -465,27 +290,27 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = symAttr__Assign(this,pOther);
+        ERESULT eRc = md5ChkSum__Assign(this,pOther);
      @endcode 
-     @param     this    SYMATTR object pointer
-     @param     pOther  a pointer to another SYMATTR object
+     @param     this    MD5CHKSUM object pointer
+     @param     pOther  a pointer to another MD5CHKSUM object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         symAttr_Assign(
-        SYMATTR_DATA		*this,
-        SYMATTR_DATA      *pOther
+    ERESULT         md5ChkSum_Assign(
+        MD5CHKSUM_DATA		*this,
+        MD5CHKSUM_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !symAttr_Validate(pOther) ) {
+        if( !md5ChkSum_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -518,13 +343,73 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        symAttr_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return symAttr_getLastError(this);
+        md5ChkSum_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return md5ChkSum_getLastError(this);
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         md5ChkSum_Compare(
+        MD5CHKSUM_DATA     *this,
+        MD5CHKSUM_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if( !md5ChkSum_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !md5ChkSum_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        this->eRc = eRc;
+        return eRc;
+    }
     
     
     //---------------------------------------------------------------
@@ -535,32 +420,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        symAttr      *pCopy = symAttr_Copy(this);
+        md5ChkSum      *pCopy = md5ChkSum_Copy(this);
      @endcode 
-     @param     this    SYMATTR object pointer
-     @return    If successful, a SYMATTR object which must be released,
+     @param     this    MD5CHKSUM object pointer
+     @return    If successful, a MD5CHKSUM object which must be released,
                 otherwise OBJ_NIL.
-     @warning  Remember to release the returned the SYMATTR object.
+     @warning  Remember to release the returned the MD5CHKSUM object.
      */
-    SYMATTR_DATA *     symAttr_Copy(
-        SYMATTR_DATA       *this
+    MD5CHKSUM_DATA *     md5ChkSum_Copy(
+        MD5CHKSUM_DATA       *this
     )
     {
-        SYMATTR_DATA       *pOther = OBJ_NIL;
+        MD5CHKSUM_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = symAttr_New( );
+        pOther = md5ChkSum_New( );
         if (pOther) {
-            eRc = symAttr_Assign(this, pOther);
+            eRc = md5ChkSum_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -569,7 +454,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -579,11 +464,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            symAttr_Dealloc(
+    void            md5ChkSum_Dealloc(
         OBJ_ID          objId
     )
     {
-        SYMATTR_DATA   *this = objId;
+        MD5CHKSUM_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -591,7 +476,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -599,11 +484,9 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SYMATTR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((MD5CHKSUM_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        symAttr_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -620,15 +503,15 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         symAttr_Disable(
-        SYMATTR_DATA		*this
+    ERESULT         md5ChkSum_Disable(
+        MD5CHKSUM_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -639,7 +522,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -649,15 +532,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         symAttr_Enable(
-        SYMATTR_DATA		*this
+    ERESULT         md5ChkSum_Enable(
+        MD5CHKSUM_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -668,21 +551,48 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
 
 
     //---------------------------------------------------------------
+    //                          F i n a l i z e
+    //---------------------------------------------------------------
+    
+    ERESULT         md5ChkSum_Finalize(
+        MD5CHKSUM_DATA  *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !md5ChkSum_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        MD5Final(this->digest, &this->ctx);
+        
+        // Return to caller.
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SYMATTR_DATA *   symAttr_Init(
-        SYMATTR_DATA       *this
+    MD5CHKSUM_DATA *   md5ChkSum_Init(
+        MD5CHKSUM_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SYMATTR_DATA);
+        uint32_t        cbSize = sizeof(MD5CHKSUM_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -699,34 +609,36 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMATTR);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MD5CHKSUM);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SYMATTR);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_MD5CHKSUM);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&symAttr_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&md5ChkSum_Vtbl);
         
-        symAttr_setLastError(this, ERESULT_GENERAL_FAILURE);
+        md5ChkSum_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
+        MD5Init(&this->ctx);
+        
     #ifdef NDEBUG
     #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "symAttr::offsetof(eRc) = %lu\n", offsetof(SYMATTR_DATA,eRc));
-        //fprintf(stderr, "symAttr::sizeof(SYMATTR_DATA) = %lu\n", sizeof(SYMATTR_DATA));
+        fprintf(stderr, "md5ChkSum::offsetof(eRc) = %lu\n", offsetof(MD5CHKSUM_DATA,eRc));
+        fprintf(stderr, "md5ChkSum::sizeof(MD5CHKSUM_DATA) = %lu\n", sizeof(MD5CHKSUM_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(SYMATTR_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(MD5CHKSUM_DATA));
     #endif
 
         return this;
@@ -738,27 +650,27 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         symAttr_IsEnabled(
-        SYMATTR_DATA		*this
+    ERESULT         md5ChkSum_IsEnabled(
+        MD5CHKSUM_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            symAttr_setLastError(this, ERESULT_SUCCESS_TRUE);
+            md5ChkSum_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        symAttr_setLastError(this, ERESULT_SUCCESS_FALSE);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -775,14 +687,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = symAttr_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = md5ChkSum_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "symAttr", prefix,
+                        the object name, "md5ChkSum", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -790,13 +702,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          symAttr_QueryInfo(
+    void *          md5ChkSum_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SYMATTR_DATA     *this = objId;
+        MD5CHKSUM_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -805,7 +717,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -814,7 +726,7 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)symAttr_Class();
+                return (void *)md5ChkSum_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -842,30 +754,24 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
-                    case 'A':
-                        if (str_Compare("Accept", (char *)pStr) == 0) {
-                            return symAttr_Accept;
-                        }
-                        break;
-                        
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return symAttr_Disable;
+                            return md5ChkSum_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return symAttr_Enable;
+                            return md5ChkSum_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return symAttr_ToDebugString;
+                            return md5ChkSum_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return symAttr_ToJSON;
+                            return md5ChkSum_ToJSON;
                         }
                         break;
                         
@@ -875,9 +781,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == symAttr_ToDebugString)
+                if (pData == md5ChkSum_ToDebugString)
                     return "ToDebugString";
-                if (pData == symAttr_ToJSON)
+                if (pData == md5ChkSum_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -898,16 +804,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = symAttr_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = md5ChkSum_ToDebugString(this,4);
      @endcode 
-     @param     this    SYMATTR object pointer
+     @param     this    MD5CHKSUM object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     symAttr_ToDebugString(
-        SYMATTR_DATA      *this,
+    ASTR_DATA *     md5ChkSum_ToDebugString(
+        MD5CHKSUM_DATA      *this,
         int             indent
     )
     {
@@ -923,23 +829,22 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = symAttr_Vtbl.iVtbl.pInfo;
+        pInfo = md5ChkSum_Vtbl.iVtbl.pInfo;
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s)\n",
                     this,
-                    pInfo->pClassName,
-                    symAttr_getSize(this)
+                    pInfo->pClassName
             );
 
 #ifdef  XYZZY        
@@ -965,14 +870,14 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
     
     
-    ASTR_DATA *     symAttr_ToJSON(
-        SYMATTR_DATA      *this
+    ASTR_DATA *     md5ChkSum_ToJSON(
+        MD5CHKSUM_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -983,7 +888,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !symAttr_Validate(this) ) {
+        if( !md5ChkSum_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -999,8 +904,38 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        symAttr_setLastError(this, ERESULT_SUCCESS);
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
         return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       U p d a t e
+    //---------------------------------------------------------------
+    
+    ERESULT         md5ChkSum_Update(
+        MD5CHKSUM_DATA  *this,
+        const
+        uint8_t         *pData,
+        uint32_t        len
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !md5ChkSum_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        MD5Update(&this->ctx, pData, len);
+        
+        // Return to caller.
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS_FALSE);
+        return ERESULT_SUCCESS_FALSE;
     }
     
     
@@ -1011,15 +946,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            symAttr_Validate(
-        SYMATTR_DATA      *this
+    bool            md5ChkSum_Validate(
+        MD5CHKSUM_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SYMATTR) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_MD5CHKSUM) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1035,7 +970,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SYMATTR_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(MD5CHKSUM_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

@@ -420,7 +420,7 @@ extern "C" {
     )
     {
         uint32_t        i;
-        int             j;
+        //int             j;
         bool            fRc;
         ASTR_DATA       *pStr;
         const
@@ -433,7 +433,7 @@ extern "C" {
             uint32_t        type,
             void            *pData
         );
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         ASTR_DATA *     (*pToJSON)(
             OBJ_ID          objId
         );
