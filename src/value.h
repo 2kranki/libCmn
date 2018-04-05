@@ -143,6 +143,10 @@ extern "C" {
         uint8_t         *pData
     );
     
+    /*!
+     Create a value object where the data will be freed upon
+     release of the object.
+     */
     VALUE_DATA *    value_NewDataFree(
         int32_t         length,
         uint8_t         *pData
@@ -201,6 +205,15 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint8_t *       value_getData(
+        VALUE_DATA      *this
+    );
+    
+    uint32_t        value_getDataLen(
+        VALUE_DATA      *this
+    );
+    
+    
     int16_t         value_getI16(
         VALUE_DATA      *this
     );

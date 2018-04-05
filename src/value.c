@@ -321,6 +321,61 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          D a t a
+    //---------------------------------------------------------------
+    
+    uint8_t *       value_getData(
+        VALUE_DATA      *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)){
+            value_setLastError(this, ERESULT_SUCCESS);
+            return this->value.data.pData;
+        }
+        else {
+            value_setLastError(this, ERESULT_DATA_MISSING);
+            return NULL;
+        }
+    }
+    
+
+    uint32_t        value_getDataLen(
+        VALUE_DATA      *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)){
+            value_setLastError(this, ERESULT_SUCCESS);
+            return this->value.data.length;
+        }
+        else {
+            value_setLastError(this, ERESULT_DATA_MISSING);
+            return 0;
+        }
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                          I n t 1 6
     //---------------------------------------------------------------
     

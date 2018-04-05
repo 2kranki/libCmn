@@ -121,6 +121,7 @@ int         test_md5ChkSum_Read01(
     int             iRc;
     const
     uint8_t         answer[16] = {0xeb,0x25,0xa3,0x26,0xf0,0x21,0xac,0xcd,0x3e,0xb7,0xb6,0x1f,0xe2,0xd5,0x7d,0xc3};
+    uint32_t        amtRead = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -146,10 +147,10 @@ int         test_md5ChkSum_Read01(
             pBuffer = mem_Malloc(fileSize);
             TINYTEST_FALSE( (NULL == pBuffer) );
 
-            eRc = fileio_Read(pObj, fileSize, pBuffer);
+            eRc = fileio_Read(pObj, (uint32_t)fileSize, pBuffer, &amtRead);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-            eRc = md5ChkSum_Update(pChkSum, pBuffer, fileSize);
+            eRc = md5ChkSum_Update(pChkSum, pBuffer, amtRead);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
             mem_Free(pBuffer);

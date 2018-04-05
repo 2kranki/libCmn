@@ -634,8 +634,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "md5ChkSum::offsetof(eRc) = %lu\n", offsetof(MD5CHKSUM_DATA,eRc));
-        fprintf(stderr, "md5ChkSum::sizeof(MD5CHKSUM_DATA) = %lu\n", sizeof(MD5CHKSUM_DATA));
+        //fprintf(stderr, "md5ChkSum::offsetof(eRc) = %lu\n", offsetof(MD5CHKSUM_DATA,eRc));
+        //fprintf(stderr, "md5ChkSum::sizeof(MD5CHKSUM_DATA) = %lu\n", sizeof(MD5CHKSUM_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(MD5CHKSUM_DATA));

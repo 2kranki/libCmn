@@ -1,5 +1,5 @@
 # Generated file do not edit!
-# ( 4/ 2/2018  1:47:44.000)
+# ( 4/ 2/2018 14:37:26.000)
 
 
 LIBNAM=libCmn
@@ -1782,6 +1782,13 @@ PROGS += lexFileToJSON
 
 lexFileToJSON:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/lexFileToJSON $(LIBPATH) -o $(OBJDIR)/$(@F) programs/lexFileToJSON/lexFileToJSON.c 
+	echo $(OBJDIR)/$(@F)
+
+
+PROGS += md5Util
+
+md5Util:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/md5Util $(LIBPATH) -o $(OBJDIR)/$(@F) programs/md5Util/md5Util.c 
 	echo $(OBJDIR)/$(@F)
 
 

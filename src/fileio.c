@@ -225,7 +225,6 @@ extern "C" {
 
 
     FILEIO_DATA *   fileio_New(
-        PATH_DATA       *pPath
     )
     {
         FILEIO_DATA     *this;
@@ -246,7 +245,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         FILEIO_DATA     *pObj = OBJ_NIL;
         
-        pObj = fileio_New(pPath);
+        pObj = fileio_New( );
         if (pObj) {
             eRc = fileio_Create(pObj, pPath);
             if (ERESULT_FAILED(eRc)) {
@@ -600,7 +599,7 @@ extern "C" {
         }
 #endif
         
-        pOther = fileio_New(this->pPath);
+        pOther = fileio_New( );
         if (pOther) {
             eRc = fileio_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -955,8 +954,9 @@ extern "C" {
 
     ERESULT         fileio_Read(
         FILEIO_DATA     *this,
-        uint32_t        cBuffer,
-        void            *pBuffer
+        uint32_t        cBuffer,            // (in)
+        void            *pBuffer,           // (in)
+        uint32_t        *pReadCount         // (out)
     )
     {
         size_t          bytes_read;
@@ -975,6 +975,9 @@ extern "C" {
         if (-1 == bytes_read) {
             fileio_setLastError(this, ERESULT_READ_ERROR);
             return ERESULT_READ_ERROR;
+        }
+        if (pReadCount) {
+            *pReadCount = (uint32_t)bytes_read;
         }
         if(bytes_read == cBuffer)
             ;
@@ -1089,7 +1092,7 @@ extern "C" {
     //                          S i z e
     //---------------------------------------------------------------
     
-    int64_t         fileio_Size(
+    size_t          fileio_Size(
         FILEIO_DATA     *this
     )
     {
@@ -1097,7 +1100,7 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
-        int64_t         fileSize = -1;
+        size_t          fileSize = -1;
         
         // Do initialization.
 #ifdef NDEBUG

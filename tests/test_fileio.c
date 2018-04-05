@@ -115,6 +115,7 @@ int         test_fileio_Read01(
     char            *pPathA = "/Users/bob/Support/testFiles/test_objects.json.txt";
     int64_t         fileSize = 0;
     uint8_t         *pBuffer = NULL;
+    uint32_t        amtRead = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -136,8 +137,9 @@ int         test_fileio_Read01(
         if (fileSize) {
             pBuffer = mem_Malloc(fileSize);
             TINYTEST_FALSE( (NULL == pBuffer) );
-            eRc = fileio_Read(pObj, fileSize, pBuffer);
+            eRc = fileio_Read(pObj, fileSize, pBuffer, &amtRead);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            TINYTEST_TRUE( (amtRead == fileSize) );
             mem_Free(pBuffer);
             pBuffer = NULL;
         }

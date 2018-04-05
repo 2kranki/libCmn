@@ -108,7 +108,7 @@ extern "C" {
     
     
     FILEIO_DATA *   fileio_New(
-        PATH_DATA       *pPath
+        void
     );
     
     
@@ -210,16 +210,20 @@ extern "C" {
     
  
     /*!
-     Read a block of data from a specific location in a file.
-     @param     this    object pointer
-     @param     cBuffer Data block size
-     @param     pBuffer Data block pointer
+     Read a block of data from a specific location in a file. If a partial
+     amount of data is read, pReadCount will contain the amount if present
+     and the returned code will be ERESULT_SUCCESS_PARTIAL_DATA.
+     @param     this        object pointer
+     @param     cBuffer     Data block size
+     @param     pBuffer     Data block pointer
+     @param     pReadCount  Optional Amount actually read pointer
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
     ERESULT         fileio_Read(
         FILEIO_DATA     *this,
         uint32_t        cBuffer,
-        void            *pBuffer
+        void            *pBuffer,
+        uint32_t        *pReadCount
     );
     
     
@@ -248,7 +252,7 @@ extern "C" {
     );
     
     
-    int64_t         fileio_Size(
+    size_t          fileio_Size(
         FILEIO_DATA     *this
     );
     

@@ -224,6 +224,7 @@ ERESULT         rrds32_Header_Read(
     ERESULT         eRc;
     off_t           fileOffset = 0;
     off_t           seekOffset;
+    uint32_t        amtRead = 0;
     
     // Seek to the appropriate location within the file.
     seekOffset = fileio_Seek(this->pIO, fileOffset);
@@ -236,7 +237,7 @@ ERESULT         rrds32_Header_Read(
     }
     
     // Read the data.
-    eRc = fileio_Read(this->pIO, this->headerSize, pBuffer);
+    eRc = fileio_Read(this->pIO, this->headerSize, pBuffer, &amtRead);
     
     // Return to Caller.
     rrds32_setLastError(this, eRc);
@@ -290,6 +291,7 @@ ERESULT         rrds32_LSN_Read(
     ERESULT         eRc;
     off_t           fileOffset;
     off_t           seekOffset;
+    uint32_t        amtRead = 0;
 
     // Seek to the appropriate location within the file.
     fileOffset = rrds32_RecordOffset(this,lsn);
@@ -303,7 +305,7 @@ ERESULT         rrds32_LSN_Read(
     }
     
     // Read the data.
-    eRc = fileio_Read(this->pIO, this->pHeader->recordSize, pBuffer);
+    eRc = fileio_Read(this->pIO, this->pHeader->recordSize, pBuffer, &amtRead);
 
     // Return to Caller.
     rrds32_setLastError(this, eRc);
@@ -381,7 +383,7 @@ ERESULT         rrds32_Setup(
     uint16_t        headerSize
 )
 {
-    this->pIO = fileio_New(pPath);
+    this->pIO = fileio_New( );
     if (OBJ_NIL == this->pIO) {
         DEBUG_BREAK();
         rrds32_setLastError(this, ERESULT_OBJECT_CREATION);
@@ -894,6 +896,7 @@ ERESULT         rrds32_Open(
 {
     ERESULT         eRc;
     RRDS32_HEADER   header;
+    uint32_t        amtRead = 0;
 
 	// Do initialization.
 #ifdef NDEBUG
@@ -917,7 +920,7 @@ ERESULT         rrds32_Open(
         return eRc;
     }
     
-    eRc = fileio_Read(this->pIO, sizeof(RRDS32_HEADER), (uint8_t *)&header);
+    eRc = fileio_Read(this->pIO, sizeof(RRDS32_HEADER), (uint8_t *)&header, &amtRead);
     if (ERESULT_FAILED(eRc)) {
         this->eRc = eRc;
         return eRc;

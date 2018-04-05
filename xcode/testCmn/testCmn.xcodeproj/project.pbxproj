@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C40DEA642071BB21007CE920 /* md5ChkSum_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA612071BB1F007CE920 /* md5ChkSum_object.c */; };
 		C40DEA652071BB21007CE920 /* md5ChkSum.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA622071BB20007CE920 /* md5ChkSum.c */; };
-		C40DEA672071BB57007CE920 /* test_md5ChkSum.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA662071BB57007CE920 /* test_md5ChkSum.c */; };
 		C40DEA6A20725C5E007CE920 /* md5_plumb.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA6820725C5C007CE920 /* md5_plumb.c */; };
 		C42122F71FE5B3F400F45294 /* compiler_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C42122F51FE5B3F200F45294 /* compiler_object.c */; };
 		C42122F81FE5B3F400F45294 /* compiler.c in Sources */ = {isa = PBXBuildFile; fileRef = C42122F61FE5B3F300F45294 /* compiler.c */; };
@@ -297,6 +296,7 @@
 		C4AA73B21FE2B740001FACEC /* node_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73A01FE2B73C001FACEC /* node_JSON.c */; };
 		C4AA73B31FE2B740001FACEC /* lexj_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73A21FE2B73E001FACEC /* lexj_object.c */; };
 		C4AA73B41FE2B740001FACEC /* dec_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73A41FE2B740001FACEC /* dec_JSON.c */; };
+		C4EA161120750E4A00B2588B /* test_hex.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EA161020750E4900B2588B /* test_hex.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -316,7 +316,6 @@
 		C40DEA612071BB1F007CE920 /* md5ChkSum_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5ChkSum_object.c; sourceTree = "<group>"; };
 		C40DEA622071BB20007CE920 /* md5ChkSum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5ChkSum.c; sourceTree = "<group>"; };
 		C40DEA632071BB21007CE920 /* md5ChkSum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5ChkSum.h; sourceTree = "<group>"; };
-		C40DEA662071BB57007CE920 /* test_md5ChkSum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_md5ChkSum.c; sourceTree = "<group>"; };
 		C40DEA6820725C5C007CE920 /* md5_plumb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5_plumb.c; sourceTree = "<group>"; };
 		C40DEA6920725C5D007CE920 /* md5_plumb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5_plumb.h; sourceTree = "<group>"; };
 		C42122F31FE5B3F000F45294 /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
@@ -873,6 +872,7 @@
 		C4AA73A21FE2B73E001FACEC /* lexj_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lexj_object.c; sourceTree = "<group>"; };
 		C4AA73A31FE2B73F001FACEC /* hjson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hjson.h; sourceTree = "<group>"; };
 		C4AA73A41FE2B740001FACEC /* dec_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dec_JSON.c; sourceTree = "<group>"; };
+		C4EA161020750E4900B2588B /* test_hex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_hex.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -906,7 +906,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C40DEA662071BB57007CE920 /* test_md5ChkSum.c */,
+				C4EA161020750E4900B2588B /* test_hex.c */,
 			);
 			name = testCmn;
 			path = ../../tests;
@@ -1658,7 +1658,6 @@
 				C421236C1FE9756200F45294 /* number_JSON.c in Sources */,
 				C4359C031FC9C48400CA858E /* scandec32.c in Sources */,
 				C4359A611FC9C38800CA858E /* enum.c in Sources */,
-				C40DEA672071BB57007CE920 /* test_md5ChkSum.c in Sources */,
 				C4359A3B1FC9C38800CA858E /* jsonOut.c in Sources */,
 				C4359BD61FC9C48400CA858E /* trace_object.c in Sources */,
 				C4669B7C1FEBC7910048FC14 /* jsonIn_object.c in Sources */,
@@ -1709,6 +1708,7 @@
 				C4359BEE1FC9C48400CA858E /* textIn.c in Sources */,
 				C421233E1FE82A8C00F45294 /* pplex3_object.c in Sources */,
 				C4359C201FC9D25300CA858E /* memOSX_object.c in Sources */,
+				C4EA161120750E4A00B2588B /* test_hex.c in Sources */,
 				C4359B031FC9C3D800CA858E /* nodeTree_object.c in Sources */,
 				C43599B61FC9C36800CA858E /* bitMatrix.c in Sources */,
 				C4359A6F1FC9C38800CA858E /* dbField_object.c in Sources */,

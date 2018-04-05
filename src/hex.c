@@ -342,6 +342,86 @@ extern "C" {
     //---------------------------------------------------------------
     //                     S c a n  H e x
     //---------------------------------------------------------------
+
+    /*!
+     Scan the input hexadecimal character buffer converting the data
+     to binary data.
+     @param     cLen        (input) length of hexadecimal character data
+     @param     pInput      (input) point to hexadecimal character data
+     @param     ppOutput    number to be displayed as the address/offset
+     @return    If successful, ERESULT_SUCCESS and *ppOutput if present
+                will contain a value data object with the binary data.
+                Otherwise, an ERESULT_* error code.
+     */
+    ERESULT         hex_ScanData(
+        uint32_t        cLen,
+        const
+        char            *pInput,
+        VALUE_DATA      **ppOutput
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i = 0;
+        int             high;
+        int             low;
+        uint8_t         *pData;
+        const
+        char            *pChr;
+        uint8_t         *pOutByte;
+        VALUE_DATA      *pValue = OBJ_NIL;
+
+        // Do initialization.
+        if( (cLen == 0) || (cLen & 1) ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if( NULL == pInput )
+            return ERESULT_INVALID_PARAMETER;
+        if (ppOutput)
+            *ppOutput = OBJ_NIL;
+        else
+            return ERESULT_INVALID_PARAMETER;
+
+        pData = mem_Malloc(cLen / 2);
+        if (NULL == pData) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        pChr = pInput;
+        pOutByte = pData;
+        for( i=0; i<(cLen / 2); ++i) {
+            high = hex_DigitToIntA(*pChr++);
+            if( -1 == high ) {
+                eRc = ERESULT_PARSE_ERROR;
+                break;
+            }
+            low = hex_DigitToIntA(*pChr++);
+            if( -1 == low ) {
+                eRc = ERESULT_PARSE_ERROR;
+                break;
+            }
+            *pOutByte++ = ((high & 0x0F) << 4) | (low & 0x0F);
+        }
+        
+        if (ERESULT_FAILED(eRc)) {
+            mem_Free(pData);
+            pData = NULL;
+            eRc = ERESULT_PARSE_ERROR;
+        }
+        else {
+            pValue = value_NewDataFree((cLen / 2), pData);
+            if (OBJ_NIL == pValue) {
+                mem_Free(pData);
+                pData = NULL;
+                eRc = ERESULT_OUT_OF_MEMORY;
+            }
+            *ppOutput = pValue;
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
     
     bool            hex_ScanUint32A(
         uint32_t        cLen,

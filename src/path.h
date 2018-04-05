@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          PATH Console Transmit Task (path) Header
+//          File/Directory Path (path) Header
 //****************************************************************
 /*
  * Program
- *			Separate path (path)
+ *			File/Directory Path (path)
  * Purpose
  *			This object provides a standardized way of handling a path
  *

@@ -248,8 +248,45 @@ int         test_hex_Shared03(
 
 
 
+int         test_hex_ScanData01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    char            *pBuffer = NULL;
+    static
+    const
+    char            *pInput =  "0123456789abcdef";
+    const
+    char            *pOutputCheck =  "\x01\x23\x45\x67\x89\xab\xcd\xef";
+    const
+    int             outputLength = 8;
+    VALUE_DATA      *pValue = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    eRc =   hex_ScanData(
+                16,
+                pInput,
+                &pValue
+            );
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+    TINYTEST_TRUE( (pValue) );
+    pBuffer = (char *)value_getData(pValue);
+    TINYTEST_TRUE( (0 == memcmp(pBuffer, pOutputCheck, outputLength)) );
+    obj_Release(pValue);
+    pValue = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_hex);
+    TINYTEST_ADD_TEST(test_hex_ScanData01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hex_Shared03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hex_Shared02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hex_Shared01,setUp,tearDown);

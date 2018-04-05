@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          HEX Console Transmit Task (hex) Header
+//          Hexadecimal Data (hex) Header
 //****************************************************************
 /*
  * Program
- *			Separate hex (hex)
+ *			Hexadecimal Data (hex)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate hex to run things without complications
- *          of interfering with the main hex. A hex may be 
- *          called a hex on other O/S's.
+ *          a hexadecimal data.
  *
  * Remarks
  *	1.      Using this object allows for testable code, because a
@@ -56,6 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <value.h>
 
 
 #ifndef         HEX_H
@@ -163,6 +162,20 @@ extern "C" {
     int64_t         hex_getInt64A(
         const
         char            *pData
+    );
+    
+    
+    /*!
+     Try to convert the hexadecimal character string to binary data.
+     @return:
+        If successful, ERESULT_SUCCESS and a pValue which contains the
+        data.  Otherwise, an ERESULT_* error code.
+     */
+    ERESULT         hex_ScanData(
+         uint32_t        cLen,
+         const
+         char            *pInput,
+         VALUE_DATA      **ppOutput
     );
     
     
