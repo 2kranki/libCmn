@@ -556,6 +556,10 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (!obj_Flag(this, FILEIO_FILE_OPEN)) {
+            DEBUG_BREAK();
+            return ERESULT_FILE_CLOSED;
+        }
 #endif
         
         //  Close the File.

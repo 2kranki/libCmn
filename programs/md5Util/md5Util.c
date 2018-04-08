@@ -34,26 +34,28 @@ uint32_t    cDigest = 16;
 
 
 
-void            digestParse(
+ERESULT         digestParse(
+    const
     char            *pStr,
     uint32_t        cStr,
     PATH_DATA       **ppPath,
-    const
-    uint8_t         **ppDigest
+    VALUE_DATA      **ppDigest
 );
 
 
 
 int             digestFromFile(
-    path_Data       *pPath
+    PATH_DATA       *pPath
 )
 {
+    ERESULT         eRc;
     FILEIO_DATA     *pIO = OBJ_NIL;
     size_t          fileSize;
     uint32_t        amtRead;
     uint32_t        bufferSize = 2048;
     uint8_t         *pBuffer = NULL;
     uint32_t        i;
+    VALUE_DATA      *pValue = OBJ_NIL;
 
     if (fDebug) {
         fprintf(stdout, "digestFromFile()\n");
@@ -115,8 +117,13 @@ int             digestFromFile(
         return 1;
     }
 
-    for(;;) {
-    }    
+    eRc = digestParse(pBuffer, fileSize, &pPath, &pValue);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "FATAL - Error parsing digest, %s!\n\n\n",
+            pBuffer
+        );
+        exit(99);
+    }
 
     mem_Free(pBuffer);
     pBuffer = NULL;
@@ -143,16 +150,20 @@ void            digestCopy(
 
 
 ERESULT         digestParse(
+    const
     char            *pStr,
     uint32_t        cStr,
     PATH_DATA       **ppPath,
-    const
-    uint8_t         **ppDigest
+    VALUE_DATA      **ppDigest
 )
 {
+    ERESULT         eRc;
     uint32_t        i;
-    uint8           digest[16];
+    uint8_t         digest[16];
     PATH_DATA       *pPath = OBJ_NIL;
+    const
+    char            *pData;
+    VALUE_DATA      *pValue = OBJ_NIL;
 
     if (fDebug) {
         fprintf(stdout, "digestParse()\n");
@@ -165,18 +176,30 @@ ERESULT         digestParse(
         digest[i] = 0;
     }
 
-     if (0 == strncmp(pBuffer, "MD5 (", 5)) 
+     if (0 == strncmp(pStr, "MD5 (", 5)) 
         ;
     else {
         return ERESULT_PARSE_ERROR;
     }
-     if (pBuffer[cLen - 1] == '\n') 
+     if (pStr[cStr - 1] == '\n') 
         ;
     else {
         return ERESULT_PARSE_ERROR;
     }
 
-   
+    pData = pStr + cStr - 33;
+    if (fDebug) {
+        fprintf(stdout, "\tdata = \"%32s\"\n", pData);
+    }
+    eRc = hex_ScanData(32, pData, &pValue);
+    if (ERESULT_FAILED(eRc)) {
+        if (fDebug) {
+            fprintf(stdout, "\tscan data failed!\n");
+        }
+        return ERESULT_PARSE_ERROR;
+    }
+
+    return ERESULT_SUCCESS;
 }
 
 

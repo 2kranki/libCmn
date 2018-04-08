@@ -217,6 +217,45 @@ extern "C" {
     
     
     
+    int             utf8_StrNCmp(
+        const
+        char            *pSrc1,
+        const
+        char            *pSrc2,
+        uint32_t        len
+    )
+    {
+        W32CHR_T        ch1 = 1;
+        W32CHR_T        ch2 = 1;
+        int             i = 0;
+        
+        if ((NULL == pSrc1) && (NULL == pSrc2)) {
+            return 0;
+        }
+        if ((NULL == pSrc1) && pSrc2) {
+            return -1;
+        }
+        if ((NULL == pSrc2) && pSrc1) {
+            return 1;
+        }
+        
+        while ((i == 0) && ch1 && ch2 && len--) {
+            ch1 = utf8_Utf8ToW32_Scan( &pSrc1 );
+            ch2 = utf8_Utf8ToW32_Scan( &pSrc2 );
+            i = ch1 - ch2;
+        }
+        if (i < 0) {
+            i = -1;
+        }
+        if (i > 0) {
+            i = 1;
+        }
+        
+        return i;
+    }
+    
+    
+    
     char *          utf8_StrDup(
         const
         char            *pSrc

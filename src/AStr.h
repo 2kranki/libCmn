@@ -368,11 +368,27 @@ extern "C" {
     
     
     /*!
+     Compare the given string against 'this' from the left hand side of the string
+     (ie compare the leading part of the string)
+     @param     this    object pointer
+     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
+                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
+                ERESULT_* error code.
+     */
+    ERESULT         AStr_CompareLeftA(
+        ASTR_DATA        *this,
+        const
+        char            *pOther
+    );
+    
+    
+    /*!
      Compare the given string against 'this' from the right hand side of the string
      (ie compare the trailing part of the string)
      @param     this    object pointer
-     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise, ERESULT_SUCCESS_LESS_THAN,
-                ERESULT_SUCCESS_GREATER_THAN or an ERESULT_* error code.
+     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
+                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
+                ERESULT_* error code.
      */
     ERESULT         AStr_CompareRightA(
         ASTR_DATA		*this,
@@ -469,7 +485,7 @@ extern "C" {
         ASTR_DATA		*this,
         uint32_t        offset,
         uint32_t        len,
-        ASTR_DATA      **ppOther            // [out]
+        ASTR_DATA       **ppOther            // [out]
     );
     
     

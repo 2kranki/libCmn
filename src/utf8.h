@@ -174,6 +174,11 @@ extern "C" {
     );
     
     
+    /*!
+     Compare the UTF-8 characters of src1 and src2.
+     @return    0 for (src1 == src2), < 0 for (src1 < src2) or
+                > 0 for (src1 > src2)
+     */
     int             utf8_StrCmp(
         const
         char            *pSrc1,
@@ -188,7 +193,20 @@ extern "C" {
         W32CHR_T        *pSrc2
     );
     
+    /*!
+     Compare at most the first N UTF-8 characters of src1 and src2.
+     @return    0 for (src1 == src2), < 0 for (src1 < src2) or
+                > 0 for (src1 > src2)
+     */
+    int             utf8_StrNCmp(
+        const
+        char            *pSrc1,
+        const
+        char            *pSrc2,
+        uint32_t        N
+    );
     
+
     char *          utf8_StrDup(
         const
         char            *pSrc

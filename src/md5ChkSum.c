@@ -42,6 +42,10 @@
 
 /* Header File Inclusion */
 #include <md5ChkSum_internal.h>
+#include <fileio.h>
+#include <hex.h>
+#include <path.h>
+#include <value.h>
 
 
 
@@ -109,8 +113,99 @@ extern "C" {
     }
 
 
-
     
+    
+    // "MD5 ("file name/path") = "16 byte hexadecimal digest(32 chars)"\n"
+    ERESULT         md5ChkSum_ParseDigest(
+        ASTR_DATA       *pInput,
+        PATH_DATA       **ppPath,
+        VALUE_DATA      **ppDigest
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        cInput = 0;
+        const
+        uint32_t        cDigest = 8;
+        uint8_t         digest[16];
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        VALUE_DATA      *pValue = OBJ_NIL;
+
+#ifdef NDEBUG
+#else
+        if (OBJ_NIL == pInput) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if ((OBJ_NIL == ppPath) && (OBJ_NIL == ppDigest)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (ppPath)
+            *ppPath = OBJ_NIL;
+        if (ppDigest)
+            *ppDigest = NULL;
+        for (i=0; i<cDigest; ++i) {
+            digest[i] = 0;
+        }
+        cInput = AStr_getLength(pInput);
+        
+        if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pInput, "MD5 ("))
+            ;
+        else {
+            return ERESULT_PARSE_ERROR;
+        }
+        if (ERESULT_SUCCESS_EQUAL == AStr_CompareRightA(pInput,"\n"))
+            ;
+        else {
+            return ERESULT_PARSE_ERROR;
+        }
+        
+        if (ppPath) {
+            i = cInput - 33;
+            eRc = AStr_CharFindPrevW32(pInput, &i, ')');
+            if (ERESULT_FAILED(eRc)) {
+                return ERESULT_PARSE_ERROR;
+            }
+            eRc = AStr_Mid(pInput, 6, (cInput - 42), &pStr);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+            //fprintf(stderr, "%s\n", AStr_getData(pStr));
+            pPath = path_NewA(AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            if (OBJ_NIL == pPath) {
+                return ERESULT_PARSE_ERROR;
+            }
+            *ppPath = pPath;
+        }
+
+        if (ppDigest) {
+            eRc = AStr_Mid(pInput, (AStr_getLength(pInput) - 32), 32, &pStr);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+            //fprintf(stderr, "\"%s\"\n", AStr_getData(pStr));
+            eRc = hex_ScanData(32, AStr_getData(pStr), &pValue);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pValue);
+                pValue = OBJ_NIL;
+                return ERESULT_PARSE_ERROR;
+            }
+            *ppDigest = pValue;
+        }
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -562,10 +657,16 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         md5ChkSum_Finalize(
-        MD5CHKSUM_DATA  *this
+        MD5CHKSUM_DATA  *this,
+        PATH_DATA       *pPath,         // (in) Optional File
+        ASTR_DATA       **ppOutput      // (out) Optional MD5 String
     )
     {
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pMd5File = OBJ_NIL;
+        ASTR_DATA       *pMD5 = OBJ_NIL;
+        uint32_t        i;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -577,9 +678,135 @@ extern "C" {
         
         MD5Final(this->digest, &this->ctx);
         
+        if (pPath && ppOutput) {
+            eRc = path_SplitPath(pPath, OBJ_NIL, OBJ_NIL, &pMd5File);
+            if (OBJ_NIL == pMd5File) {
+                goto eom;
+            }
+            
+            pMD5 = AStr_New();
+            if (pMD5) {
+                AStr_AppendPrint(pMD5, "MD5 (%s) = ", path_getData(pMd5File));
+                for(i=0; i<16; ++i) {
+                    AStr_AppendPrint(pMD5, "%02x", this->digest[i]);
+                }
+                AStr_AppendPrint(pMD5, "\n");
+            }
+            *ppOutput = pMD5;
+        }
+        
+        obj_Release(pMd5File);
+        pMd5File = OBJ_NIL;
+        
         // Return to caller.
-        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+    eom:
+        md5ChkSum_setLastError(this, eRc);
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     F r o m  UTF-8 File
+    //---------------------------------------------------------------
+    
+    ERESULT         md5ChkSum_FromUtf8File(
+        MD5CHKSUM_DATA  *this,
+        PATH_DATA       *pPath,         // (in) Optional File
+        ASTR_DATA       **ppOutput      // (out) Optional MD5 String
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //PATH_DATA       *pMd5File = OBJ_NIL;
+        ASTR_DATA       *pMD5 = OBJ_NIL;
+        //uint32_t        i;
+        uint32_t        cBuffer = 4096;
+        uint8_t         *pBuffer = NULL;
+        FILEIO_DATA     *pIO = OBJ_NIL;
+        size_t          fileSize;
+        uint32_t        amtRead;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !md5ChkSum_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pBuffer = mem_Malloc(cBuffer);
+        if (NULL == pBuffer) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        pIO = fileio_New( );
+        if (OBJ_NIL == pIO) {
+            DEBUG_BREAK();
+            mem_Free(pBuffer);
+            pBuffer = NULL;
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
+        eRc = fileio_Open(pIO, pPath);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            mem_Free(pBuffer);
+            pBuffer = NULL;
+            return eRc;
+        }
+        
+        fileSize = fileio_Size(pIO);
+        
+        while(fileSize) {
+            eRc = fileio_Read(pIO, cBuffer, pBuffer, &amtRead);
+            if (ERESULT_FAILED(eRc)) {
+                mem_Free(pBuffer);
+                pBuffer = NULL;
+            }
+            
+            eRc = md5ChkSum_Update(this, pBuffer, amtRead);
+            if (ERESULT_FAILED(eRc)) {
+                mem_Free(pBuffer);
+                pBuffer = NULL;
+                fprintf(stderr, "FATAL - Buffer MD5 Check Sum Calculation Error!\n\n\n");
+                exit(99);
+            }
+            
+            fileSize -= amtRead;
+        }
+        
+        eRc = fileio_Close(pIO, false);
+        if (ERESULT_FAILED(eRc)) {
+            mem_Free(pBuffer);
+            pBuffer = NULL;
+            fprintf(stderr, "FATAL - Error closing input file!\n\n\n");
+            exit(99);
+        }
+        
+        obj_Release(pIO);
+        pIO = OBJ_NIL;
+        
+        mem_Free(pBuffer);
+        pBuffer = NULL;
+        
+        eRc = md5ChkSum_Finalize(this, pPath, &pMD5);
+        if (!ERESULT_FAILED(eRc) && ppOutput) {
+            *ppOutput = pMD5;
+        }
+        else {
+            obj_Release(pMD5);
+            pMD5 = OBJ_NIL;
+        }
+        
+        // Return to caller.
+    eom:
+        md5ChkSum_setLastError(this, eRc);
+        return eRc;
     }
     
     

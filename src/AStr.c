@@ -1461,6 +1461,48 @@ extern "C" {
     }
     
 
+    ERESULT         AStr_CompareLeftA(
+        ASTR_DATA       *this,
+        const
+        char            *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int32_t         i;
+        int32_t         len;
+        int             lenData;
+        int             offset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pData ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        lenData = utf8_StrLenA(pData);
+        len = AStr_getLength(this);
+        if (len < lenData) {
+            return ERESULT_DATA_TOO_SMALL;
+        }
+        
+        offset = 1;
+        i = utf8_StrNCmp(array_Ptr(this->pData, offset), pData, lenData);
+        if( i < 0 )
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        if( i > 0 )
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
     ERESULT         AStr_CompareRightA(
         ASTR_DATA		*this,
         const

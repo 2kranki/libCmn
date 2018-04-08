@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <value.h>
 
 
 #ifndef         MD5CHKSUM_H
@@ -98,7 +99,7 @@ extern "C" {
      released.
      @return    pointer to md5ChkSum object if successful, otherwise OBJ_NIL.
      */
-    MD5CHKSUM_DATA *     md5ChkSum_Alloc(
+    MD5CHKSUM_DATA * md5ChkSum_Alloc(
         void
     );
     
@@ -108,12 +109,31 @@ extern "C" {
     );
     
     
-    MD5CHKSUM_DATA *     md5ChkSum_New(
+    MD5CHKSUM_DATA * md5ChkSum_New(
         void
     );
     
     
+    /*!
+     Parse a UTF-8 Input string generating the file path and digest from it.
+     @param     pInput      Input string to be parsed
+     @param     ppPath      Pointer to File Path to be returned optionally
+                            (Use OBJ_NIL if not needed.)
+     @param     ppDigest    Optional pointer to an Value object to be
+                            returned. (Used OBJ_NIL if not needed.)
+     @return    If successful, ERESULT_SUCCESS and optionally a path and/or
+                digest objects.  Otherwise, an ERESULT_* error code.
+     @warning   Remember to release the returned path and value objects if
+                present.
+     */
+    ERESULT         md5ChkSum_ParseDigest(
+        ASTR_DATA       *pInput,
+        PATH_DATA       **ppPath,
+        VALUE_DATA      **ppDigest
+    );
 
+    
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
@@ -121,12 +141,12 @@ extern "C" {
     /*!
      digest is 16 bytes long md5 check sum.
      */
-    uint8_t *   md5ChkSum_getDigest(
+    uint8_t *       md5ChkSum_getDigest(
         MD5CHKSUM_DATA  *this
     );
     
     
-    ERESULT     md5ChkSum_getLastError(
+    ERESULT         md5ChkSum_getLastError(
         MD5CHKSUM_DATA  *this
     );
 
@@ -139,13 +159,42 @@ extern "C" {
 
     /*!
      Finalize the md5 check sum calculation generating the digest.
-     @param     this    MD5CHKSUM object pointer
+     @param     this        MD5CHKSUM object pointer
+     @param     pPath       an optional file name that is used to
+                            generate the MD5 output string.  This is
+                            required if the MD5 output string is being
+                            generated.  Otherwise, it is not needed.
+     @param     ppOutput    Optional pointer to an ASTR pointer where
+                            a new MD5 Digest ASTR is returned.
+     @return    If successful, ERESULT_SUCCESS and an optional MD5 ASTR.
+                Otherwise, an ERESULT_* error code.
+     @warning   Remember to release the returned ppOutput AStr object.
      */
-    ERESULT     md5ChkSum_Finalize(
-        MD5CHKSUM_DATA	*this
+    ERESULT         md5ChkSum_Finalize(
+        MD5CHKSUM_DATA	*this,
+        PATH_DATA       *pPath,         // (in) Optional File Path
+        ASTR_DATA       **ppOutput      // (out) Optional MD5 String
     );
 
    
+    /*!
+     Process the given file path generating the md5 check sum and optionally
+     generating the digest string for that file path.
+     @param     this        MD5CHKSUM object pointer
+     @param     pPath       File Path of file to be calculated
+     @param     ppOutput    Optional pointer to an ASTR pointer where
+                            a new MD5 Digest ASTR is returned.
+     @return    If successful, ERESULT_SUCCESS and an optional MD5 ASTR.
+                Otherwise, an ERESULT_* error code.
+     @warning   Remember to release the returned ppOutput AStr object.
+     */
+    ERESULT         md5ChkSum_FromUtf8File(
+        MD5CHKSUM_DATA  *this,
+        PATH_DATA       *pPath,         // (in) File Path
+        ASTR_DATA       **ppOutput      // (out) Optional MD5 String
+    );
+    
+    
     MD5CHKSUM_DATA * md5ChkSum_Init(
         MD5CHKSUM_DATA  *this
     );
