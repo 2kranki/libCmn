@@ -31,15 +31,13 @@ char        **ppOptions = NULL;
 uint8_t     digest[16] = {0};
 const
 uint32_t    cDigest = 16;
+PATH_DATA   *pDigestPath = OBJ_NIL;
 
 
 
-ERESULT         digestParse(
+void            digestCopy(
     const
-    char            *pStr,
-    uint32_t        cStr,
-    PATH_DATA       **ppPath,
-    VALUE_DATA      **ppDigest
+    uint8_t         *pDigest
 );
 
 
@@ -49,84 +47,40 @@ int             digestFromFile(
 )
 {
     ERESULT         eRc;
-    FILEIO_DATA     *pIO = OBJ_NIL;
-    size_t          fileSize;
-    uint32_t        amtRead;
-    uint32_t        bufferSize = 2048;
-    uint8_t         *pBuffer = NULL;
-    uint32_t        i;
     VALUE_DATA      *pValue = OBJ_NIL;
+    PATH_DATA       *pMD5_FileName = OBJ_NIL;
+    ASTR_DATA       *pMD5 = OBJ_NIL;
 
     if (fDebug) {
         fprintf(stdout, "digestFromFile()\n");
-    }
-   
-    pIO = fileio_New( );
-    if (OBJ_NIL == pChkSum) {
-        fprintf(stderr, "FATAL - Could not create fileio Object!\n\n\n");
-        exit(99);
-    }
-        
-    if (fDebug) {
         fprintf(stdout, "\tpath = \"%s\"\n", path_getData(pPath));
     }
-    eRc = fileio_Open(pIO, pPath);
-    if (ERESULT_FAILED(eRc)) {
-        fprintf(stderr, "FATAL - Could not open file for input, %s!\n\n\n",
+  
+    pMD5 = AStr_NewFromUtf8File(pPath); 
+    if (OBJ_NIL == pMD5) {
+        fprintf(stderr, "FATAL - Could not read Digest File, %s!\n\n\n",
             path_getData(pPath)
         );
         exit(99);
     }
 
-    fileSize = fileio_Size(pIO);
-    if (fDebug) {
-        fprintf(stderr, "\tFile Size == %zu\n", fileSize);
-    }
-    
-    pBuffer = mem_Malloc(fileSize + 1);
-    if (NULL == pBuffer) {
-        fprintf(stderr, "FATAL - Could allocate read buffer!\n\n\n");
-        exit(99);
-    }
-    pBuffer[fileSize] = '\0';
-
-    eRc = fileio_Read(pIO, fileSize, pBuffer, &amtRead);
-    if (ERESULT_FAILED(eRc) || !(fileSize == amtRead)) {
-        fprintf(stderr, "FATAL - Error reading input file, %s!\n\n\n",
+    eRc = md5ChkSum_ParseDigest(pMD5, &pMD5_FileName, &pValue);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "FATAL - Error parsing digest from %s!\n\n\n",
             path_getData(pPath)
         );
         exit(99);
     }
 
-    eRc = fileio_Close(pIO, false);
-    if (ERESULT_FAILED(eRc)) {
-        fprintf(stderr, "FATAL - Error closing input file, %s!\n\n\n",
-            path_getData(pPath)
-        );
-        exit(99);
+    if (pMD5_FileName && pDigestPath) {
+        obj_Release(pDigestPath);
     }
-    
-    obj_Release(pIO);
-    pIO = OBJ_NIL;
-    
-    if (0 == strncmp(pBuffer, "MD5 (", 5)) 
-        ;
-    else {
-        mem_Free(pBuffer);
-        pBuffer = NULL;
-        return 1;
-    }
+    pDigestPath = pMD5_FileName;
+    pMD5_FileName = OBJ_NIL;
+    digestCopy(value_getData(pValue));
+    obj_Release(pValue);
+    pValue = OBJ_NIL;
 
-    eRc = digestParse(pBuffer, fileSize, &pPath, &pValue);
-    if (ERESULT_FAILED(eRc)) {
-        fprintf(stderr, "FATAL - Error parsing digest, %s!\n\n\n",
-            pBuffer
-        );
-        exit(99);
-    }
-
-    mem_Free(pBuffer);
-    pBuffer = NULL;
     return 0;
 }
 
@@ -145,61 +99,6 @@ void            digestCopy(
     for (i=0; i<cDigest; ++i) {
         digest[i] = pDigest[i];
     }
-}
-
-
-
-ERESULT         digestParse(
-    const
-    char            *pStr,
-    uint32_t        cStr,
-    PATH_DATA       **ppPath,
-    VALUE_DATA      **ppDigest
-)
-{
-    ERESULT         eRc;
-    uint32_t        i;
-    uint8_t         digest[16];
-    PATH_DATA       *pPath = OBJ_NIL;
-    const
-    char            *pData;
-    VALUE_DATA      *pValue = OBJ_NIL;
-
-    if (fDebug) {
-        fprintf(stdout, "digestParse()\n");
-    }
-    if (ppPath)
-        *ppPath = OBJ_NIL;
-    if (ppDigest)
-        *ppDigest = NULL;
-    for (i=0; i<cDigest; ++i) {
-        digest[i] = 0;
-    }
-
-     if (0 == strncmp(pStr, "MD5 (", 5)) 
-        ;
-    else {
-        return ERESULT_PARSE_ERROR;
-    }
-     if (pStr[cStr - 1] == '\n') 
-        ;
-    else {
-        return ERESULT_PARSE_ERROR;
-    }
-
-    pData = pStr + cStr - 33;
-    if (fDebug) {
-        fprintf(stdout, "\tdata = \"%32s\"\n", pData);
-    }
-    eRc = hex_ScanData(32, pData, &pValue);
-    if (ERESULT_FAILED(eRc)) {
-        if (fDebug) {
-            fprintf(stdout, "\tscan data failed!\n");
-        }
-        return ERESULT_PARSE_ERROR;
-    }
-
-    return ERESULT_SUCCESS;
 }
 
 
@@ -339,10 +238,10 @@ int             createFileCheckSum(
     uint32_t        amtRead;
     uint32_t        bufferSize = 2048;
     uint8_t         *pBuffer = NULL;
-    PATH_DATA       *pMd5Path = OBJ_NIL;
-    PATH_DATA       *pMd5File = OBJ_NIL;
+    PATH_DATA       *pMD5Path = OBJ_NIL;
     FILE            *pFile = NULL;
     uint32_t        i;
+    ASTR_DATA       *pMD5Str = OBJ_NIL;
     
     if (fDebug) {
         fprintf(stdout, "createFileCheckSum()\n");
@@ -408,59 +307,38 @@ int             createFileCheckSum(
     obj_Release(pIO);
     pIO = OBJ_NIL;
     
-    eRc = md5ChkSum_Finalize(pChkSum);
+    eRc = md5ChkSum_Finalize(pChkSum, pPath, &pMD5Str);
     if (ERESULT_FAILED(eRc)) {
         fprintf(stderr, "FATAL - MD5 Check Sum Finalization Error!\n\n\n");
         exit(99);
     }
 
-    pBuffer = md5ChkSum_getDigest(pChkSum);
-
-    pMd5Path = path_Copy(pPath);
-    if (OBJ_NIL == pMd5Path) {
+    pMD5Path = path_Copy(pPath);
+    if (OBJ_NIL == pMD5Path) {
         fprintf(stderr, "FATAL - Could not create copy of File Path!\n\n\n");
         exit(99);
     }
 
-    eRc = path_AppendExtA(pMd5Path, "md5.txt");
+    eRc = path_AppendExtA(pMD5Path, "md5.txt");
     if (ERESULT_FAILED(eRc)) {
         fprintf(stderr, "FATAL - Failed to make MD5 File Path!\n\n\n");
         exit(99);
     }
- 
-    eRc = path_SplitPath(pPath, OBJ_NIL, OBJ_NIL, &pMd5File);
-    if (OBJ_NIL == pMd5File) {
-        fprintf(stderr, "FATAL - Could not create MD5 File Name!\n\n\n");
+
+    eRc = AStr_ToUtf8File(pMD5Str, pMD5Path);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "FATAL - Could not create MD5 File: %s!\n\n\n",
+            path_getData(pMD5Path)
+        );
         exit(99);
     }
 
-    pFile = fopen(path_getData(pMd5Path), "w");
-    if (NULL == pFile) {
-        fprintf(stderr, "FATAL - Could not create MD5 File!\n\n\n");
-        exit(99);
-    }
-    fprintf(pFile, "MD5 (%s) = ", path_getData(pMd5File));
-    if (fDebug || !fQuiet) {
-        fprintf(stdout, "MD5 (%s) = ", path_getData(pMd5File));
-    }
-    for(i=0; i<16; ++i) {
-        fprintf(pFile, "%02x", pBuffer[i]);
-        if (fDebug || !fQuiet) {
-            fprintf(stdout, "%02x", pBuffer[i]);
-        }
-    }
-    fprintf(pFile, "\n");
-    if (fDebug || !fQuiet) {
-        fprintf(stdout, "\n\n");
-    }
-    fclose(pFile);
-  
     obj_Release(pChkSum);
     pChkSum = OBJ_NIL;
-    obj_Release(pMd5Path);
-    pMd5Path = OBJ_NIL;
-    obj_Release(pMd5File);
-    pMd5File = OBJ_NIL;
+    obj_Release(pMD5Path);
+    pMD5Path = OBJ_NIL;
+    obj_Release(pMD5Str);
+    pMD5Str = OBJ_NIL;
     return 0;
  }
 

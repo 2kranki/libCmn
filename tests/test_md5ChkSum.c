@@ -293,6 +293,64 @@ int         test_md5ChkSum_Read02(
 
 
 
+int         test_md5ChkSum_Read03(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    MD5CHKSUM_DATA  *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    const
+    char            *pPathA = "/Users/bob/Support/testFiles/test_ebcdic.txt";
+    const
+    uint8_t         *pDigest = NULL;
+    int             iRc;
+    const
+    uint8_t         answer[16] =
+    {0xeb,0x25,0xa3,0x26,0xf0,0x21,0xac,0xcd,0x3e,0xb7,0xb6,0x1f,0xe2,0xd5,0x7d,0xc3};
+    ASTR_DATA       *pStr = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    
+    pObj = md5ChkSum_NewFromUtf8File(pPath);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pDigest = md5ChkSum_getDigest(pObj);
+        TINYTEST_FALSE( (NULL == pDigest) );
+        fprintf(stderr, "md5 digest = eb25a326f021accd3eb7b61fe2d57dc3\n");
+        fprintf(stderr, "our digest = ");
+        for(iRc=0; iRc<16; ++iRc) {
+            fprintf(stderr, "%02x", pDigest[iRc]);
+        }
+        fprintf(stderr, "\n");
+        
+        iRc = memcmp(pDigest, answer, 16);
+        fprintf(stderr, "iRc = %d\n", iRc);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        pStr = md5ChkSum_getMD5_Str(pObj);
+        if (pStr) {
+            fprintf(stderr, "MD5 String = \"%s\"\n", AStr_getData(pStr));
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_md5ChkSum_Parse01(
     const
     char            *pTestName
@@ -348,6 +406,7 @@ int         test_md5ChkSum_Parse01(
 
 TINYTEST_START_SUITE(test_md5ChkSum);
     TINYTEST_ADD_TEST(test_md5ChkSum_Parse01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_md5ChkSum_Read03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_md5ChkSum_Read02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_md5ChkSum_Read01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_md5ChkSum_OpenClose,setUp,tearDown);

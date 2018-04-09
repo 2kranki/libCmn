@@ -114,6 +114,25 @@ extern "C" {
 
 
     
+    MD5CHKSUM_DATA * md5ChkSum_NewFromUtf8File(
+        PATH_DATA       *pPath
+    )
+    {
+        MD5CHKSUM_DATA  *this;
+        ERESULT         eRc;
+        
+        this = md5ChkSum_Alloc( );
+        if (this) {
+            this = md5ChkSum_Init(this);
+            if (this) {
+                eRc = md5ChkSum_FromUtf8File(this, pPath, OBJ_NIL);
+                md5ChkSum_setLastError(this, eRc);
+            }
+        }
+        return this;
+    }
+
+    
     
     // "MD5 ("file name/path") = "16 byte hexadecimal digest(32 chars)"\n"
     ERESULT         md5ChkSum_ParseDigest(
@@ -257,7 +276,7 @@ extern "C" {
 
 
     bool            md5ChkSum_setLastError(
-        MD5CHKSUM_DATA     *this,
+        MD5CHKSUM_DATA  *this,
         ERESULT         value
     )
     {
@@ -276,6 +295,55 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     md5ChkSum_getMD5_Str(
+        MD5CHKSUM_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !md5ChkSum_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
+        return this->pMD5_Str;
+    }
+    
+    
+    bool            md5ChkSum_setMD5_Str(
+        MD5CHKSUM_DATA  *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !md5ChkSum_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pMD5_Str) {
+            obj_Release(this->pMD5_Str);
+            //this->pMD5_Str = OBJ_NIL;
+        }
+        this->pMD5_Str = pValue;
+        
+        md5ChkSum_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -582,6 +650,7 @@ extern "C" {
             ((MD5CHKSUM_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
+        md5ChkSum_setMD5_Str(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -693,6 +762,7 @@ extern "C" {
                 AStr_AppendPrint(pMD5, "\n");
             }
             *ppOutput = pMD5;
+            md5ChkSum_setMD5_Str(this, pMD5);
         }
         
         obj_Release(pMd5File);

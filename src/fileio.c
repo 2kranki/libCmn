@@ -238,7 +238,7 @@ extern "C" {
 
 
 
-    ERESULT         fileio_CreateFile(
+    FILEIO_DATA *   fileio_NewCreate(
         PATH_DATA       *pPath
     )
     {
@@ -249,17 +249,47 @@ extern "C" {
         if (pObj) {
             eRc = fileio_Create(pObj, pPath);
             if (ERESULT_FAILED(eRc)) {
-                return eRc;
+                obj_Release(pObj);
+                pObj = OBJ_NIL;
+                return pObj;
             }
             eRc = fileio_Close(pObj, false);
             if (ERESULT_FAILED(eRc)) {
-                return eRc;
+                obj_Release(pObj);
+                pObj = OBJ_NIL;
+                return pObj;
             }
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
+            eRc = fileio_Open(pObj, pPath);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pObj);
+                pObj = OBJ_NIL;
+                return pObj;
+            }
         }
         
-        return eRc;
+        return pObj;
+    }
+    
+    
+    
+    FILEIO_DATA *   fileio_NewOpen(
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        FILEIO_DATA     *pObj = OBJ_NIL;
+        
+        pObj = fileio_New( );
+        if (pObj) {
+            eRc = fileio_Open(pObj, pPath);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pObj);
+                pObj = OBJ_NIL;
+                return pObj;
+            }
+        }
+        
+        return pObj;
     }
     
     

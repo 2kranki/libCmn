@@ -82,6 +82,7 @@ struct md5ChkSum_data_s	{
     struct MD5Context
                     ctx;
     uint8_t         digest[16];
+    ASTR_DATA       *pMD5_Str;
 
 };
 #pragma pack(pop)

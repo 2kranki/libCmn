@@ -113,11 +113,22 @@ extern "C" {
     
     
     /*!
-     Create a new file of zero bytes in length.
+     Create a new file of zero bytes in length and return the fileio object
+     ready to read/write data in it.
      @param     pPath   Path file name to be created
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    ERESULT         fileio_CreateFile(
+    FILEIO_DATA *   fileio_NewCreate(
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Open an existing file.
+     @param     pPath   File's Path
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    FILEIO_DATA *   fileio_NewOpen(
         PATH_DATA       *pPath
     );
     

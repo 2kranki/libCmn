@@ -114,6 +114,11 @@ extern "C" {
     );
     
     
+    MD5CHKSUM_DATA * md5ChkSum_NewFromUtf8File(
+        PATH_DATA       *pPath
+    );
+    
+    
     /*!
      Parse a UTF-8 Input string generating the file path and digest from it.
      @param     pInput      Input string to be parsed
@@ -151,6 +156,11 @@ extern "C" {
     );
 
 
+    ASTR_DATA *     md5ChkSum_getMD5_Str(
+        MD5CHKSUM_DATA  *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
