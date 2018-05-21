@@ -4,7 +4,7 @@
  *	Generated 11/25/2015 16:57:23
  * Notes:
  *  *       Used some public domain functions written by
- *          Clarenc Lehman and Kevin Kenny.
+ *          Clarence Lehman and Kevin Kenny.
  *
  */
 

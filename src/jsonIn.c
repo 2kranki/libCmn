@@ -895,7 +895,7 @@ extern "C" {
         }
 #endif
 
-        pNode = hjson_ParseFile(pParser);
+        pNode = hjson_ParseFileHash(pParser);
         if (OBJ_NIL == pNode) {
             obj_Release(pParser);
             this->eRc = ERESULT_PARSE_ERROR;

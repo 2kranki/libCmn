@@ -16,7 +16,8 @@
  *          path on other O/S's.
  *
  * Remarks
- *	1.      None
+ *    1.    The object User flags and Misc data are not used in this
+ *          object.
  *
  * History
  *	06/09/2015 Generated
@@ -74,6 +75,7 @@ extern "C" {
 
 
     // PATH_DATA and PATH_VTBL are defined in "cmn_defs.h"
+    // PATH_DATA inherits from ASTR_DATA.
 
 
 
@@ -154,7 +156,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // AppendAStr() just appends the string without and further
+    // AppendAStr() just appends the string without any further
     // changes.
     ERESULT         path_AppendA(
         PATH_DATA       *this,
@@ -163,7 +165,7 @@ extern "C" {
     );
     
     
-    // AppendAStr() just appends the string without and further
+    // AppendAStr() just appends the string without any further
     // changes.
     ERESULT         path_AppendAStr(
         PATH_DATA       *this,
@@ -273,6 +275,20 @@ extern "C" {
     ERESULT         path_DateLastUpdated(
         PATH_DATA        *this,
         DATETIME_DATA    **ppDate
+    );
+    
+    
+    /*!
+     Variable names should have the syntax of [a-zA-Z_][a-zA-Z0-9_]*.
+     Find the previous occurrence of the given character starting the search at the
+     given index into the string.  The search is performed in an decreasing index
+     until the beginning of the string is reached.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         path_ExpandEnvVars(
+        PATH_DATA       *this
     );
     
     

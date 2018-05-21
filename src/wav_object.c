@@ -31,8 +31,8 @@
  */
 
 
-#include        "obj.h"
-#include        "wav_internal.h"
+#include        <obj.h>
+#include        <wav_internal.h>
 
 
 

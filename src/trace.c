@@ -100,7 +100,9 @@ extern "C" {
             pShared = trace_Alloc( );
             if (pShared) {
                 pShared = trace_InitStream(pShared, stderr);
-                trace_setTrace(pShared, true);
+                if (pShared) {
+                    trace_setTrace(pShared, true);
+                }
             }
         }
         this = pShared;

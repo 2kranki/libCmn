@@ -97,11 +97,6 @@ struct hjson_data_s	{
     );
     
     
-    NODE_DATA *     hjson_ParseFileObject(
-        HJSON_DATA      *this
-    );
-    
-    
     NODE_DATA *     hjson_ParseHash(
         HJSON_DATA      *this
     );

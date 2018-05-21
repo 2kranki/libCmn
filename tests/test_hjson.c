@@ -150,7 +150,7 @@ int         test_hjson01(
     if (pHJSON) {
         
         //obj_TraceSet(pHJSON, true);
-        pFileNode = hjson_ParseFile(pHJSON);
+        pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
             pStrA = node_getNameUTF8(pFileNode);
@@ -269,7 +269,7 @@ int         test_hjson02(
     if (pHJSON) {
         
         obj_TraceSet(pHJSON, true);
-        pFileNode = hjson_ParseFile(pHJSON);
+        pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
             pStrA = node_getNameUTF8(pFileNode);
@@ -330,7 +330,7 @@ int         test_hjson03(
     if (pHJSON) {
         
         obj_TraceSet(pHJSON, true);
-        pFileNode = hjson_ParseFile(pHJSON);
+        pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
             pStrA = node_getNameUTF8(pFileNode);
@@ -395,7 +395,7 @@ int             test_hjson_File01(
     if (pObj) {
         
         obj_TraceSet(pObj, true);
-        pFileNode = hjson_ParseFile(pObj);
+        pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
             pStr = node_ToDebugString(pFileNode, 0);
@@ -450,7 +450,7 @@ int             test_hjson_File02(
     if (pObj) {
         
         obj_TraceSet(pObj, true);
-        pFileNode = hjson_ParseFile(pObj);
+        pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
             pStr = node_ToDebugString(pFileNode, 0);

@@ -77,10 +77,10 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct lexj_data_s	LEXJ_DATA;    // Inherits from OBJ.
+    typedef struct lexj_data_s	LEXJ_DATA;      // Inherits from LEX.
 
     typedef struct lexj_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        OBJ_IUNKNOWN    iVtbl;                  // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in lexj_object.c.
         // Properties:
@@ -111,6 +111,7 @@ extern "C" {
         LEXJ_SEP_LOWEST=LEX_CLASS_SEP_GROUP,
         LEXJ_SEP_COLON,                     // :
         LEXJ_SEP_COMMA,                     // ,
+        LEXJ_SEP_EQUAL,                     // =
         LEXJ_SEP_LBRACKET,                  // [
         LEXJ_SEP_LBRACE,                    // {
         LEXJ_SEP_MINUS,                     // -

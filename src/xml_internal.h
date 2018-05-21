@@ -42,8 +42,8 @@
 #define	XML_INTERNAL_H
 
 
-#include    "xml.h"
-#include    "objArray.h"
+#include    <xml.h>
+#include    <objArray.h>
 
 #ifdef	__cplusplus
 extern "C" {

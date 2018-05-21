@@ -3,6 +3,16 @@
 //  genMake
 //
 //  Created on 5/10/17.
+/*
+ *  Notes:
+ *  1.      'make' scans and executes variable definitions before it
+ *          executes the make tree.  So, variables should be con-
+ *          sidered global and can not be over-ridden for short
+ *          periods of time in the make file.  Therefore, it is better
+ *          to have the over-ridden parts in a separate makefiles.
+ *          That is why we use separate definition files for the
+ *          library vs programs.
+ */
 //
 
 
@@ -39,6 +49,7 @@
 #include <cmn_defs.h>
 #include <ascii.h>
 #include <dateTime.h>
+#include <genMake.h>
 #include <hjson.h>
 #include <node.h>
 #include <nodeArray.h>
@@ -82,15 +93,15 @@ typedef     struct args_s {
     int             fWS;
     int             lexSelect;
     const
-    char            *pInFilePath;      // ("-f" | "--file")<string> or ("-f" | "--file") <string>
+    char            *pInFilePath;      // ("-f" | "--file=")<string> or ("-f" | "--file") <string>
     FILE            *pInput;
     int             mFlag;
     int             nFlag;
     const
-    char            *pOutFilePath;     // ("-o" | "--out")<string> or ("-o" | "--out") <string>
+    char            *pOutFilePath;     // ("-o" | "--out=")<string> or ("-o" | "--out") <string>
     FILE            *pOutput;
     const
-    char            *pR;                // -r=<string> or -r <string>
+    char            *pR;                // "-r="<string> or "-r" <string>
     
     int             cOptions;
     const
@@ -127,6 +138,7 @@ ARGS args = {
 };
 
 
+GENMAKE_DATA    *pGen = OBJ_NIL;
 SZHASH_DATA     *pHash = OBJ_NIL;
 
 
@@ -215,7 +227,8 @@ ASTR_DATA *     genLibIncludePath(
 void            genMakeFile_initial(
     ARGS            *pResults,
     ASTR_DATA       *pName,
-    NODEARRAY_DATA  *pLibDeps
+    NODEARRAY_DATA  *pLibDeps,
+    DATETIME_DATA   *pDateTime
 )
 {
     NODE_DATA       *pNode;
@@ -229,7 +242,7 @@ void            genMakeFile_initial(
             
         case MAKETYPE_MACOSX:
             fprintf(pResults->pOutput, "# Generated file do not edit!\n");
-            pStr = dateTime_ToString(pResults->pDateTime);
+            pStr = dateTime_ToString(pDateTime);
             fprintf(pResults->pOutput, "# (%s)\n\n", AStr_getData(pStr));
             obj_Release(pStr);
             fprintf(pResults->pOutput, "\n");
@@ -380,7 +393,8 @@ void            genMakeFile_objects(
     ERESULT         eRc;
     NODE_DATA       *pNode;
     NODEARRAY_DATA  *pArray =  OBJ_NIL;
-    ASTR_DATA       *pStr;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pWrk = OBJ_NIL;
     int             i;
     int             iMax;
     const
@@ -404,32 +418,15 @@ void            genMakeFile_objects(
                         pNode = nodeArray_Get(pArray, i+1);
                         if (pNode) {
                             pName = node_getNameUTF8(pNode);
-                            fprintf(
-                                    pResults->pOutput,
-                                    "OBJS += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n",
-                                    pName,
-                                    pName
-                            );
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "$(OBJDIR)/%s.o: $(SRCDIR)/%s.c\n",
-                                    pName,
-                                    pName
-                            );
-                            fprintf(pResults->pOutput,
-                                    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n");
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput,
-                                    "$(OBJDIR)/%s_object.o: $(SRCDIR)/%s_object.c\n",
-                                    pName,
-                                    pName
+                            pWrk =  genMake_CompileObject(
+                                        pGen,
+                                        pName,
+                                        "SRCDIR",
+                                        "OBJDIR"
                                     );
-                            fprintf(pResults->pOutput,
-                                    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n");
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\n");
-                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "%s", AStr_getData(pWrk));
+                            obj_Release(pWrk);
+                            pWrk = OBJ_NIL;
                             mem_Free((void *)pName);
                         }
                     }
@@ -440,72 +437,19 @@ void            genMakeFile_objects(
                 for (i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pRoutines, i+1);
                     if (pNode) {
-                        ASTR_DATA       *pWrk;
                         pStr = node_getData(pNode);
-                        pWrk = AStr_Copy(pStr);
-                        if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                            fprintf(pResults->pOutput,
-                                    "$(OBJDIR)/%s.o: $(SRCDIR)/%s\n",
-                                    AStr_getData(pWrk),
-                                    AStr_getData(pStr)
-                            );
-                            fprintf(pResults->pOutput,
-                                    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n"
-                            );
-                            fprintf(pResults->pOutput, "\n");
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                            fprintf(pResults->pOutput,
-                                    "$(OBJDIR)/%s.o: $(SRCDIR)/%s\n",
-                                    AStr_getData(pWrk),
-                                    AStr_getData(pStr)
-                            );
-                            fprintf(pResults->pOutput,
-                                    "\t$(AS) $(AFLAGS) -c -o $(OBJDIR)/$(@F) $<\n"
-                            );
-                            fprintf(pResults->pOutput, "\n");
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".s") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                            fprintf(pResults->pOutput,
-                                    "$(OBJDIR)/%s.o: $(SRCDIR)/%s\n",
-                                    AStr_getData(pWrk),
-                                    AStr_getData(pStr)
-                            );
-                            fprintf(pResults->pOutput,
-                                    "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) $<\n"
-                            );
-                            fprintf(pResults->pOutput, "\n");
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                            fprintf(pResults->pOutput,
-                                    "$(OBJDIR)/%s.o: $(SRCDIR)/%s\n",
-                                    AStr_getData(pWrk),
-                                    AStr_getData(pStr)
-                                    );
-                            fprintf(pResults->pOutput,
-                                    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n"
-                                    );
-                            fprintf(pResults->pOutput, "\n");
-                        }
-                        fprintf(pResults->pOutput, "\n");
-                        fprintf(pResults->pOutput, "\n");
-                        fprintf(
-                                pResults->pOutput,
-                                "OBJS += $(OBJDIR)/%s.o\n",
-                                AStr_getData(pWrk)
-                        );
-                        
+                        pWrk =  genMake_CompileRoutine(
+                                    pGen,
+                                    AStr_getData(pStr),
+                                    "SRCDIR",
+                                    "OBJDIR"
+                                );
+                        fprintf(pResults->pOutput, "%s", AStr_getData(pWrk));
                         obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
                     }
                 }
             }
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
             break;
             
         case MAKETYPE_MSC32:
@@ -537,52 +481,20 @@ void            genMakeFile_objects(
                 for (i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pRoutines, i+1);
                     if (pNode) {
-                        ASTR_DATA       *pWrk;
                         pStr = node_getData(pNode);
-                        pWrk = AStr_Copy(pStr);
-                        if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".s") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                        }
-                        fprintf(
-                                pResults->pOutput,
-                                "OBJS = $(OBJS) $(OBJDIR)\\%s.obj\n",
-                                AStr_getData(pWrk)
-                        );
-                        
+                        pWrk =  genMake_CompileRoutine(
+                                        pGen,
+                                        AStr_getData(pStr),
+                                        "SRCDIR",
+                                        "OBJDIR"
+                                );
+                        fprintf(pResults->pOutput, "%s", AStr_getData(pWrk));
                         obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
                     }
                 }
             }
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "{src}.asm{$(OBJDIR)}.obj:\n");
-            fprintf(pResults->pOutput, "\t$(AS) $(AFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "{src}.c{$(OBJDIR)}.obj:\n");
-            fprintf(pResults->pOutput, "\t$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "{src\\$(SYS)}.asm{$(OBJDIR)}.obj:\n");
-            fprintf(pResults->pOutput, "\t$(AS) $(AFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "{src\\$(SYS)}.c{$(OBJDIR)}.obj:\n");
-            fprintf(pResults->pOutput, "\t$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
-            fprintf(pResults->pOutput, "\n");
+            genMake_CompileRules(pGen, "SRCDIR", "OBJDIR");
             break;
             
         default:
@@ -849,36 +761,120 @@ void            genMakeFile_library(
 
 
 
-void            genMakeFile_programs(
+ERESULT         genMakeFile_program(
     ARGS            *pResults,
-    NODEHASH_DATA   *pTests
+    ASTR_DATA       *pProgName,
+    NODEHASH_DATA   *pProgram
 )
 {
-    ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     NODE_DATA       *pNode;
     NODEARRAY_DATA  *pArray =  OBJ_NIL;
     NODEARRAY_DATA  *pDeps =  OBJ_NIL;
     NODE_DATA       *pDep;
-    ASTR_DATA       *pStr;
-    ASTR_DATA       *pPgmWrk;
+    NODEHASH_DATA   *pObjects =  OBJ_NIL;
+    NODEHASH_DATA   *pRoutines =  OBJ_NIL;
+    OBJARRAY_DATA   *pNames =  OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pWrk = OBJ_NIL;
     int             i;
     int             iMax;
     int             j;
     int             jMax;
-    
+
     BREAK_NULL(pResults);
-    BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
+    BREAK_FALSE((obj_IsKindOf(pProgram, OBJ_IDENT_NODEHASH)));
+    pNames = objArray_New( );
+    BREAK_NULL(pNames);
+
+    // Convert the object names into .c files.
+    pNode = nodeHash_FindA(pProgram, "objects");
+    if (NULL == pNode) {
+    }
+    else {
+        pNode = node_getData(pNode);
+        pObjects = node_getData(pNode);
+        BREAK_FALSE((obj_IsKindOf(pObjects, OBJ_IDENT_NODEHASH)));
+    }
+    eRc = nodeHash_Nodes(pObjects, &pArray);
+    if (ERESULT_FAILED(eRc)) {
+    }
+    else {
+        iMax = nodeArray_getSize(pArray);
+        for (i=0; i<iMax; ++i) {
+            pNode = nodeArray_Get(pArray, i+1);
+            if (pNode) {
+                pStr = name_getStrA(node_getName(pNode));
+                pWrk = AStr_Copy(pStr);
+                BREAK_NULL(pWrk);
+                eRc = AStr_AppendA(pWrk, ".c");
+                eRc = objArray_AppendObj(pNames, pWrk, NULL);
+                BREAK_FAILED(eRc);
+                obj_Release(pWrk);
+                pWrk = AStr_Copy(pStr);
+                BREAK_NULL(pWrk);
+                eRc = AStr_AppendA(pWrk, "_object.c");
+                eRc = objArray_AppendObj(pNames, pWrk, NULL);
+                BREAK_FAILED(eRc);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+        }
+    }
     
+    // Accumulate the routines which have a file extension.
+    pNode = nodeHash_FindA(pProgram, "routines");
+    if (NULL == pNode) {
+    }
+    else {
+        pNode = node_getData(pNode);
+        pRoutines = node_getData(pNode);
+        BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
+        iMax = nodeArray_getSize(pArray);
+        for (i=0; i<iMax; ++i) {
+            pNode = nodeArray_Get(pArray, i+1);
+            if (pNode) {
+                pStr = name_getStrA(node_getName(pNode));
+                pWrk = AStr_Copy(pStr);
+                BREAK_NULL(pWrk);
+                eRc = objArray_AppendObj(pNames, pWrk, NULL);
+                BREAK_FAILED(eRc);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+        }
+    }
+    
+    // Now we have an array of file names with extensions. So, we must
+    // compile them and then link them.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+#ifdef XYZZY
     switch (pResults->makeType) {
             
         case MAKETYPE_MACOSX:
-            if (pTests) {
+            if (pPrograms) {
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "PROGS =\n");
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "\n");
-                eRc = nodeHash_Nodes(pTests, &pArray);
+                eRc = nodeHash_Nodes(pPrograms, &pArray);
                 if (ERESULT_FAILED(eRc)) {
                 }
                 else {
@@ -903,10 +899,233 @@ void            genMakeFile_programs(
                                     "$(CFLAGS) "
                                     "$(CFLAGS_LIBS) "
                                     "-L$(LIBDIR) "
-                                    "-Iprograms/%s "
+                                    "-Iprograms/%s/src "
                                     "$(LIBPATH) "
                                     "-o $(OBJDIR)/$(@F) "
-                                    "programs/%s/%s ",
+                                    "programs/%s/src/%s ",
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pStr)
+                                    );
+                            pDep = node_getData(pNode);
+                            if (pDep) {
+                                BREAK_FALSE((obj_IsKindOf(pDep, OBJ_IDENT_NODE)));
+                                pDeps = node_getData(pDep);
+                            }
+                            else {
+                                pDeps = OBJ_NIL;
+                            }
+                            if (pDeps && obj_IsKindOf(pDeps, OBJ_IDENT_NODEARRAY)) {
+                                jMax = nodeArray_getSize(pDeps);
+                                for (j=0; j<jMax; ++j) {
+                                    pNode = nodeArray_Get(pDeps, j+1);
+                                    if (pNode) {
+                                        ASTR_DATA       *pWrk;
+                                        pWrk = node_getData(pNode);
+                                        if (pWrk && obj_IsKindOf(pWrk, OBJ_IDENT_ASTR)) {
+                                            fprintf(pResults->pOutput,
+                                                    "programs/%s/%s ",
+                                                    AStr_getData(pPgmWrk),
+                                                    AStr_getData(pWrk)
+                                                    );
+                                        }
+                                    }
+                                }
+                                obj_Release(pDeps);
+                                pDeps = OBJ_NIL;
+                                obj_Release(pPgmWrk);
+                                pPgmWrk = OBJ_NIL;
+                            }
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\techo $(OBJDIR)/$(@F)\n");
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\n");
+                            
+                            obj_Release(pWrk);
+                        }
+                    }
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                }
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, ".PHONY: programs\n");
+                fprintf(pResults->pOutput, "programs:  $(PROGS)\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+            }
+            break;
+            
+        case MAKETYPE_MSC32:
+            if (pPrograms) {
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "PROGS =\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                eRc = nodeHash_Nodes(pPrograms, &pArray);
+                if (ERESULT_FAILED(eRc)) {
+                }
+                else {
+                    BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
+                    iMax = nodeArray_getSize(pArray);
+                    for (i=0; i<iMax; ++i) {
+                        pNode = nodeArray_Get(pArray, i+1);
+                        if (pNode) {
+                            ASTR_DATA       *pWrk;
+                            BREAK_FALSE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
+                            pStr = name_getStrA(node_getName(pNode));
+                            BREAK_FALSE((obj_IsKindOf(pStr, OBJ_IDENT_ASTR)));
+                            pWrk = AStr_Copy(pStr);
+                            if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
+                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
+                            }
+                            pPgmWrk = AStr_Copy(pWrk);
+                            fprintf(
+                                    pResults->pOutput,
+                                    "PROGS = $(PROGS) %s\n",
+                                    AStr_getData(pWrk)
+                                    );
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "%s:\n", AStr_getData(pWrk));
+                            fprintf(pResults->pOutput,
+                                    "\t$(CC) $(CFLAGS) /Iprograms\\%s "
+                                    "programs\\%s\\%s ",
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pWrk),
+                                    AStr_getData(pStr)
+                                    );
+                            pDep = node_getData(pNode);
+                            if (pDep) {
+                                BREAK_FALSE((obj_IsKindOf(pDep, OBJ_IDENT_NODE)));
+                                pDeps = node_getData(pDep);
+                            }
+                            else {
+                                pDeps = OBJ_NIL;
+                            }
+                            if (pDeps && obj_IsKindOf(pDeps, OBJ_IDENT_NODEARRAY)) {
+                                jMax = nodeArray_getSize(pDeps);
+                                for (j=0; j<jMax; ++j) {
+                                    pNode = nodeArray_Get(pDeps, j+1);
+                                    if (pNode) {
+                                        ASTR_DATA       *pWrk;
+                                        pWrk = node_getData(pNode);
+                                        if (pWrk && obj_IsKindOf(pWrk, OBJ_IDENT_ASTR)) {
+                                            fprintf(pResults->pOutput,
+                                                    "programs\\%s\\%s ",
+                                                    AStr_getData(pPgmWrk),
+                                                    AStr_getData(pWrk)
+                                                    );
+                                        }
+                                    }
+                                }
+                                obj_Release(pDeps);
+                                pDeps = OBJ_NIL;
+                            }
+                            fprintf(pResults->pOutput,
+                                    "/link "
+                                    "/out:$(OBJDIR)\\$(@F).exe "
+                                    "$(LIBPATH) $(LIBS) "
+                                    );
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\tdel *.obj\n");
+                            fprintf(pResults->pOutput, "\t$(OBJDIR)\\$(@F).exe\n");
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "\n");
+                            
+                            obj_Release(pWrk);
+                            obj_Release(pPgmWrk);
+                            pPgmWrk = OBJ_NIL;
+                        }
+                    }
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                }
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "programs:  $(PROGS)\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+            }
+            break;
+            
+        default:
+            break;
+    }
+#endif
+    
+    return eRc;
+}
+
+
+
+void            genMakeFile_programs(
+    ARGS            *pResults,
+    NODEHASH_DATA   *pPrograms
+)
+{
+    ERESULT         eRc;
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray =  OBJ_NIL;
+    NODEARRAY_DATA  *pDeps =  OBJ_NIL;
+    NODE_DATA       *pDep;
+    NODEHASH_DATA   *pObjects =  OBJ_NIL;
+    NODEHASH_DATA   *pRoutines =  OBJ_NIL;
+    ASTR_DATA       *pStr;
+    ASTR_DATA       *pPgmWrk;
+    ASTR_DATA       *pProgName;
+    int             i;
+    int             iMax;
+    int             j;
+    int             jMax;
+    
+    BREAK_NULL(pResults);
+    BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEHASH)));
+    
+    switch (pResults->makeType) {
+            
+        case MAKETYPE_MACOSX:
+            if (pPrograms) {
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "PROGS =\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                fprintf(pResults->pOutput, "\n");
+                eRc = nodeHash_Nodes(pPrograms, &pArray);
+                if (ERESULT_FAILED(eRc)) {
+                }
+                else {
+                    BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
+                    iMax = nodeArray_getSize(pArray);
+                    for (i=0; i<iMax; ++i) {
+                        pNode = nodeArray_Get(pArray, i+1);
+                        if (pNode) {
+                            ASTR_DATA       *pWrk;
+                            BREAK_FALSE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
+                            pProgName = name_getStrA(node_getName(pNode));
+                            pWrk = AStr_Copy(pStr);
+                            if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
+                                AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
+                            }
+                            pPgmWrk = AStr_Copy(pWrk);
+                            fprintf(pResults->pOutput, "PROGS += %s\n", AStr_getData(pWrk));
+                            fprintf(pResults->pOutput, "\n");
+                            fprintf(pResults->pOutput, "%s:\n", AStr_getData(pWrk));
+                            fprintf(pResults->pOutput,
+                                    "\t$(CC) "
+                                    "$(CFLAGS) "
+                                    "$(CFLAGS_LIBS) "
+                                    "-L$(LIBDIR) "
+                                    "-Iprograms/%s/src "
+                                    "$(LIBPATH) "
+                                    "-o $(OBJDIR)/$(@F) "
+                                    "programs/%s/src/%s ",
                                     AStr_getData(pWrk),
                                     AStr_getData(pWrk),
                                     AStr_getData(pStr)
@@ -964,13 +1183,13 @@ void            genMakeFile_programs(
             break;
             
         case MAKETYPE_MSC32:
-            if (pTests) {
+            if (pPrograms) {
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "PROGS =\n");
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "\n");
                 fprintf(pResults->pOutput, "\n");
-                eRc = nodeHash_Nodes(pTests, &pArray);
+                eRc = nodeHash_Nodes(pPrograms, &pArray);
                 if (ERESULT_FAILED(eRc)) {
                 }
                 else {
@@ -1459,7 +1678,7 @@ int             genMakeFile(
         }
     }
 
-    genMakeFile_initial(pResults, pName, pLibDeps);
+    genMakeFile_initial(pResults, pName, pLibDeps, pResults->pDateTime);
     genMakeFile_objects(pResults, pObjects, pRoutines);
     switch (pResults->makeType) {
             
@@ -1519,9 +1738,10 @@ int         parseArgs(
         fprintf(stdout, "\n");
     }
     if (NULL == pResults) {
+        DEBUG_BREAK();
         return -1;
     }
-    
+
     // Validate some of the input.
     pResults->pProgramPath = argv[0];
     if( wrkArgC <= 1 ) {
@@ -1535,9 +1755,17 @@ int         parseArgs(
     
     pHash = szHash_New(SZHASH_TABLE_SIZE_XXSMALL);
     if (OBJ_NIL == pHash) {
+        DEBUG_BREAK();
         fprintf(stderr, "FATAL - Out of Memory\n");
         exit(EXIT_FAILURE);
     }
+    pGen = genMake_New();
+    if (OBJ_NIL == pGen) {
+        DEBUG_BREAK();
+        fprintf(stderr, "FATAL - Out of Memory\n");
+        exit(EXIT_FAILURE);
+    }
+    genMake_setDict(pGen, pHash);
 
     // Set up libPath default;
     eRc = szHash_AddA(pHash, "libIncludePath", "..");
@@ -1547,7 +1775,7 @@ int         parseArgs(
     }
     
     // Set up libPrefix default;
-    eRc = szHash_AddA(pHash, "libIncludePrefix", "lib");
+    eRc = szHash_AddA(pHash, "libNamePrefix", "lib");
     if (ERESULT_FAILED(eRc) ) {
         fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Hash\n");
         exit(EXIT_FAILURE);
@@ -1606,12 +1834,15 @@ int         parseArgs(
         }
         else if (0 == strcmp(*ppWrkArgV, "--macosx")) {
             pResults->makeType = MAKETYPE_MACOSX;
+            genMake_setMakeType(pGen, GENMAKE_TYPE_MACOSX);
         }
         else if (0 == strcmp(*ppWrkArgV, "--msc32")) {
             pResults->makeType = MAKETYPE_MSC32;
+            genMake_setMakeType(pGen, GENMAKE_TYPE_MSC32);
         }
         else if (0 == strcmp(*ppWrkArgV, "--msc64")) {
             pResults->makeType = MAKETYPE_MSC64;
+            genMake_setMakeType(pGen, GENMAKE_TYPE_MSC64);
         }
         else if (0 == strcmp(*ppWrkArgV, "--nl")) {
             pResults->fNL = 1;
@@ -1939,6 +2170,11 @@ int             main(
 {
     int             iRc = 0;
     
+    pGen = genMake_New();
+    if (OBJ_NIL == pGen) {
+        fprintf(stderr, "FATAL - Could not create Generate Object!\n\n");
+        exit(99);
+    }
     //test_fileno(stdin);
     //test_fileno(stdout);
     //test_fileno(stderr);

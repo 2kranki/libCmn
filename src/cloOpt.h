@@ -75,9 +75,9 @@ extern "C" {
 
     typedef enum cloOpt_type_e {
         CLOOPT_TYPE_UNKNOWN=0,
-        CLOOPT_TYPE_CSV,
+        CLOOPT_TYPE_CSV,            // ???
         CLOOPT_TYPE_NUMBER,
-        CLOOPT_TYPE_PATH,
+        CLOOPT_TYPE_STRING,
         CLOOPT_TYPE_SWITCH,
     } CLOOPT_TYPE;
     

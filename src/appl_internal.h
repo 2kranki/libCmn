@@ -52,11 +52,6 @@
 extern "C" {
 #endif
 
-    typedef enum appl_parse_rc {
-        APPL_PARSE_RC_ERROR=0,
-        APPL_PARSE_RC_BUMP,             /* Bump one character */
-        APPL_PARSE_RC_NEXT              /* Go to the next parameter */
-    } APPL_PARSE_RC;
 
 
 #pragma pack(push, 1)
@@ -68,26 +63,52 @@ struct appl_data_s	{
 
     // Common Data
     ERESULT         eRc;
+    DATETIME_DATA   *pDateTime;
     NODEHASH_DATA   *pProperties;
+    
+    // Arguments and Options
     uint8_t         fDebug;
     uint8_t         fForce;
+    uint8_t         fQuiet;
+    uint8_t         rsvd8;
     uint16_t        iVerbose;
     uint16_t        cOptions;
-    uint16_t        cArgs;
-    const
-    char            **ppArgs;
-    const
-    char            **ppOptions;
+    //uint16_t        rsvd16;
+    ASTRARRAY_DATA  *pArgs;
+    ASTRARRAY_DATA  *pEnv;
+    uint16_t        cProgramArgs;
+    uint16_t        cGroupArgs;
+    uint32_t        nextArg;
+    PATH_DATA       *pProgramPath;
+    APPL_CLO        *pProgramArgs;
+    APPL_CLO        *pGroupArgs;
 
-    void            (*pParseArgsDefaults)(OBJ_ID);
-    int             (*pParseArgsLong)(OBJ_ID, const char *);
-    int             (*pParseArgsShort)(OBJ_ID, const char *);
+    OBJ_ID          pObjPrs;
+    ERESULT         (*pParseArgsDefaults)(OBJ_ID);
+    /*!
+     @return    If successful, ERESULT_SUCCESS_0, ERESULT_SUCCESS_1,
+                ERESULT_SUCCESS_2 or ERESULT_SUCCESS_3 to denote how
+                many parameters were used beyond the normal 1.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         (*pParseArgsLong)(
+                            OBJ_ID          this,
+                            bool            fTrue,
+                            ASTR_DATA       *pName,
+                            ASTR_DATA       *pWrk,
+                            uint32_t        index,
+                            ASTRARRAY_DATA  *pArgs
+                    );
+    ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
 
-    int             (*pProcessArg)(OBJ_ID, const char *);
+    OBJ_ID          pObjProcess;
+    ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *);
 
-    void            (*pUsageProgLine)(OBJ_ID, FILE *pOutput);
-    void            (*pUsageDesc)(OBJ_ID, FILE *pOutput);
-    void            (*pUsageSwitches)(OBJ_ID, FILE *pOutput);
+    OBJ_ID          pObjUsage;
+    ERESULT         (*pUsageProgLine)(OBJ_ID, FILE *, PATH_DATA *, const char *);
+    ERESULT         (*pUsageDesc)(OBJ_ID, FILE *, PATH_DATA *);
+    ERESULT         (*pUsageOptions)(OBJ_ID, FILE *);
+    
 };
 #pragma pack(pop)
 
@@ -101,20 +122,67 @@ struct appl_data_s	{
 
 
     // Internal Functions
+    bool            appl_setLastError(
+        APPL_DATA     *this,
+        ERESULT         value
+    );
+    
+    
+    APPL_CLO *      appl_ArgFindLong(
+        APPL_DATA       *this,
+        const
+        char            *pLong
+    );
+    
+    
+    APPL_CLO *      appl_ArgFindShort(
+        APPL_DATA       *this,
+        char            chr
+    );
+    
+    
     void            appl_Dealloc(
         OBJ_ID          objId
     );
 
 
+    ASTR_DATA *     appl_ConstructProgramLine(
+        int             cArgs,
+        const
+        char            **ppArgs
+    );
+    
+    
+    ERESULT         appl_Help(
+        APPL_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+    
+    
     bool            appl_setParseArgsDefaults(
         APPL_DATA       *this,
-        void            (*pValue)(OBJ_ID)
+        ERESULT         (*pValue)(OBJ_ID)
     );
     
     
     bool            appl_setParseArgsKeywords(
         APPL_DATA       *this,
         void            (*pValue)(OBJ_ID, const char *)
+    );
+    
+    
+    ERESULT         appl_ParseArgsLong(
+        APPL_DATA       *this,
+        bool            fTrue,
+        ASTR_DATA       *pArg
+    );
+    
+    
+    ERESULT         appl_ParseArgsShort(
+        APPL_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
     );
     
     
@@ -125,12 +193,16 @@ struct appl_data_s	{
     );
 
 
-    bool            appl_setLastError(
-        APPL_DATA     *this,
-        ERESULT         value
+    void            appl_UsageArg(
+        APPL_DATA       *this,
+        ASTR_DATA       *pStr,              // in-out
+        APPL_CLO        *pClo
     );
-
-
+    
+    
+    void            appl_UsageNoMsg(
+        APPL_DATA       *this
+    );
 
 
 #ifdef NDEBUG

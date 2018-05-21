@@ -101,9 +101,140 @@ int         test_AStrArray_OpenClose(
 
 
 
+int         test_AStrArray_NewFromArgV(
+    const
+    char        *pTestName
+)
+{
+    ASTRARRAY_DATA  *pObj = OBJ_NIL;
+    int             cArg = 5;
+    const
+    char            *pArgV[] ={
+        "abc/def/x.txt",
+        "jjj",
+        "kk",
+        "ll",
+        "mm"
+    };
+    ASTR_DATA       *pStr = OBJ_NIL;
+    int             i;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = AStrArray_NewFromArgV(cArg, pArgV);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        i = AStrArray_getSize(pObj);
+        TINYTEST_TRUE( (i == cArg) );
+        pStr = AStrArray_Get(pObj, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "abc/def/x.txt")) );
+        pStr = AStrArray_Get(pObj, 2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "jjj")) );
+        pStr = AStrArray_Get(pObj, 3);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "kk")) );
+        pStr = AStrArray_Get(pObj, 4);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "ll")) );
+        pStr = AStrArray_Get(pObj, 5);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "mm")) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    pObj = AStrArray_NewFromArgV((cArg - 1), pArgV);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        i = AStrArray_getSize(pObj);
+        TINYTEST_TRUE( (i == (cArg - 1)) );
+        pStr = AStrArray_Get(pObj, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "abc/def/x.txt")) );
+        pStr = AStrArray_Get(pObj, 2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "jjj")) );
+        pStr = AStrArray_Get(pObj, 3);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "kk")) );
+        pStr = AStrArray_Get(pObj, 4);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "ll")) );
+        pStr = AStrArray_Get(pObj, 5);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStrArray_NewFromArrayA(
+    const
+    char        *pTestName
+)
+{
+    ASTRARRAY_DATA  *pObj = OBJ_NIL;
+    const
+    char            *pArgV[] ={
+        "abc/def/x.txt",
+        "jjj",
+        "kk",
+        "ll",
+        "mm",
+        NULL
+    };
+    ASTR_DATA       *pStr = OBJ_NIL;
+    int             i;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = AStrArray_NewFromArrayA(pArgV);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        i = AStrArray_getSize(pObj);
+        TINYTEST_TRUE( (5 == i) );
+        pStr = AStrArray_Get(pObj, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "abc/def/x.txt")) );
+        pStr = AStrArray_Get(pObj, 2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "jjj")) );
+        pStr = AStrArray_Get(pObj, 3);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "kk")) );
+        pStr = AStrArray_Get(pObj, 4);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "ll")) );
+        pStr = AStrArray_Get(pObj, 5);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "mm")) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStrArray);
-  TINYTEST_ADD_TEST(test_AStrArray_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStrArray_NewFromArrayA,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStrArray_NewFromArgV,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStrArray_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_AStrArray);

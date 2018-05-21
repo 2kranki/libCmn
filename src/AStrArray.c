@@ -103,8 +103,77 @@ extern "C" {
     }
     
     
+    ASTRARRAY_DATA *    AStrArray_NewFromArgV(
+        int             cArgs,
+        const
+        char            *ppArgV[]
+    )
+    {
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        int             i;
+        
+        if ((cArgs < 1) || (NULL == ppArgV)) {
+            return OBJ_NIL;
+        }
+        pArray = AStrArray_New( );
+        if (pArray) {
+            for (i=0; i<cArgs; ++i) {
+                if (ppArgV[i]) {
+                    pStr = AStr_NewA(ppArgV[i]);
+                    if (pStr) {
+                        AStrArray_AppendStr(pArray, pStr, NULL);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                    else {
+                        obj_Release(pArray);
+                        pArray = OBJ_NIL;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return pArray;
+    }
     
     
+    ASTRARRAY_DATA *    AStrArray_NewFromArrayA(
+        const
+        char            *ppArgV[]
+    )
+    {
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        if (NULL == ppArgV) {
+            return OBJ_NIL;
+        }
+        pArray = AStrArray_New( );
+        if (pArray) {
+            while (*ppArgV) {
+                pStr = AStr_NewA(*ppArgV);
+                if (pStr) {
+                    AStrArray_AppendStr(pArray, pStr, NULL);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+                else {
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                    break;
+                }
+                ++ppArgV;
+            }
+        }
+        
+        return pArray;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                      P r o p e r t i e s

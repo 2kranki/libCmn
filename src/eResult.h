@@ -93,6 +93,11 @@ extern "C" {
         ERESULT_SUCCESS_PARTIAL_DATA        = 7,
         ERESULT_SUCCESS_DATA_EXISTS         = 6,
         ERESULT_SUCCESS_DATA_CHANGED        = 5,
+        ERESULT_SUCCESS_3                   = 3,
+        ERESULT_SUCCESS_2                   = 2,
+        ERESULT_SUCCESS_1                   = 1,
+        ERESULT_SUCCESS_0                   = 0,
+
         ERESULT_SUCCESS_UNEQUAL             = 4,    // Returned if we can not determine
         //                                          // a < or > relationship
         ERESULT_SUCCESS_GREATER_THAN        = 2,

@@ -203,14 +203,14 @@ BOOL            INT_ValidEntry(
     CFA_DATA *      cfa_Alloc(
     )
     {
-        CFA_DATA        *cbp;
+        CFA_DATA        *this;
         
         // Do initialization.
         
-        cbp = (CFA_DATA *)obj_Alloc( sizeof(CFA_DATA) );
+        this = (CFA_DATA *)obj_Alloc( sizeof(CFA_DATA) );
         
         // Return to caller.
-        return( cbp );
+        return( this );
     }
 
 
@@ -222,25 +222,25 @@ BOOL            INT_ValidEntry(
     //===============================================================
 
     uint16_t        cfa_getEntrySize(
-        CFA_DATA		*cbp
+        CFA_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cfa_Validate( cbp ) ) {
+        if( !cfa_Validate( this ) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        return cbp->entrySize;
+        return this->entrySize;
     }
 
 
     bool			cfa_putEntrySize(
-        CFA_DATA		*cbp,
+        CFA_DATA		*this,
         uint16_t        value
     )
     {
@@ -248,7 +248,7 @@ BOOL            INT_ValidEntry(
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cfa_Validate( cbp ) ) {
+        if( !cfa_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -258,7 +258,7 @@ BOOL            INT_ValidEntry(
         }
 #endif
         
-        cbp->entrySize = ROUNDUP4(value);
+        this->entrySize = ROUNDUP4(value);
         
         return true;
     }
@@ -266,25 +266,25 @@ BOOL            INT_ValidEntry(
 
 
     uint16_t        cfa_getNumEntries(
-        CFA_DATA		*cbp
+        CFA_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cfa_Validate( cbp ) ) {
+        if( !cfa_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
         
-        return cbp->cEntries;
+        return this->cEntries;
     }
 
 
     bool			cfa_putNumEntries(
-        CFA_DATA		*cbp,
+        CFA_DATA		*this,
         uint16_t        value
     )
     {
@@ -292,7 +292,7 @@ BOOL            INT_ValidEntry(
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !cfa_Validate( cbp ) ) {
+        if( !cfa_Validate( this ) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -302,7 +302,7 @@ BOOL            INT_ValidEntry(
         }
 #endif
         
-        cbp->cEntries = value;
+        this->cEntries = value;
         
         return true;
     }
@@ -320,18 +320,18 @@ BOOL            INT_ValidEntry(
      **********************************************************/
 
     CFA_INDEX       cfa_Count(
-        CFA_DATA        *cbp
+        CFA_DATA        *this
     )
     {
 #ifdef NDEBUG
 #else
-        if ( !cfa_Validate(cbp) ) {
+        if ( !cfa_Validate(this) ) {
             DEBUG_BREAK();
             return -1;
         }
 #endif
 
-        return( cbp->cEntries );
+        return( this->cEntries );
     }
 
 
@@ -344,26 +344,26 @@ BOOL            INT_ValidEntry(
         OBJ_ID          objId
     )
     {
-        CFA_DATA        *cbp = objId;
+        CFA_DATA        *this = objId;
 
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if ( !cfa_Validate(cbp) ) {
+        if ( !cfa_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
-        if (cbp->ppIndex) {
-            mem_Free(cbp->ppIndex);
-            cbp->ppIndex = NULL;
+        if (this->ppIndex) {
+            mem_Free(this->ppIndex);
+            this->ppIndex = NULL;
         }
 
-        obj_Dealloc( cbp );
-        //cbp = NULL;
+        obj_Dealloc(this);
+        //this = NULL;
     }
     
     
@@ -373,16 +373,17 @@ BOOL            INT_ValidEntry(
     //**********************************************************
 
     void **         cfa_Index(
-        CFA_DATA        *cbp
+        CFA_DATA        *this
     )
     {
     #ifdef RMW_DEBUG
-        if ( !cfa_Validate(cbp) ) {
+        if ( !cfa_Validate(this) ) {
             DEBUG_BREAK();
-            return cbp;
+            return NULL;
         }
     #endif
-        return( cbp->ppIndex );
+        
+        return this->ppIndex;
     }
 
 
@@ -461,17 +462,17 @@ BOOL            INT_ValidEntry(
 #ifdef NDEBUG
 #else
     bool			cfa_Validate(
-        CFA_DATA        *cbp
+        CFA_DATA        *this
     )
     {
         
         // Do initialization.
         
-        if( cbp && obj_IsKindOf(cbp,OBJ_IDENT_CFA) )
+        if( this && obj_IsKindOf(this, OBJ_IDENT_CFA) )
             ;
         else
             return false;
-        if( (sizeof(CFA_DATA) <= obj_getSize(cbp)) )
+        if( (sizeof(CFA_DATA) <= obj_getSize(this)) )
             ;
         else {
             return false;

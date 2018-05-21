@@ -88,6 +88,14 @@ int             str_Compare(
 	char			*pszStr2
 );
 
+int             str_CompareN(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             len
+);
+
 int             str_CompareW32(
     const
     W32CHR_T		*pszStr1,
@@ -184,7 +192,7 @@ char *          str_DupRight(
 /* ExpandTabs() copies the Input String to the Output String in-
  * cluding the null-terminator for the Maximum number of Chars
  * specified and expands all Horizontal Tabls to the required number
- * of Spaces.	The Output String is always left nul-terminated.
+ * of Spaces.    The Output String is always left nul-terminated.
  * Returns:
  *	TRUE			=	Successful Completion
  *	FALSE           =	Invalid Parmeters || Buffer Overflow
@@ -195,6 +203,23 @@ bool            str_ExpandTabs(
     const
 	char			*pszIn,
 	int             tabSiz
+);
+
+
+/* ExpandTo() expands the Output String to the specified length
+ * within the output area total size.  If the column number is
+ * greater than the output length, then the Output String is
+ * filled to its fullest.  The output area will always be left
+ * with a nul-terminator.
+ * Returns:
+ *    TRUE            =    Successful Completion
+ *    FALSE           =    Invalid Parmeters || Buffer Overflow
+ */
+bool            str_ExpandTo(
+    char            *pszOut,        /* Output Buffer Pointer */
+    int             outLen,         /* Output Buffer Length */
+    int             colNo,          /* Column Number to expand to */
+    char            fillChr         /* Character to use for fill */
 );
 
 

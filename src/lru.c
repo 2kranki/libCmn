@@ -68,6 +68,7 @@ extern "C" {
     // any of mine on my Core 2 duo using gcc -O3, and it passes my favorite sanity
     // tests well. I've had reports it doesn't do well with integer sequences with
     // a multiple of 34.
+#ifdef NOT_NEEDED_YET
     static
     uint32_t        uint32_hash(
         uint32_t        a
@@ -82,6 +83,7 @@ extern "C" {
         
         return a;
     }
+#endif
     
     
     

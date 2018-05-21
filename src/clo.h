@@ -8,7 +8,7 @@
  *              Command Line Options (clo)
  * Purpose
  *              These routines process the command line arguments
- *              into Options and Switches.  Both of which can have
+ *              into Options and Arguments.  Both of which can have
  *				String Parameters.  This class is not consistent
  *				with the Unix pseudo standard of using command line
  *				switches.
@@ -35,23 +35,29 @@
  *				repeat as often as necessary.  In BNF terms, it would be:
  *
  *				Command_Line -> Program_Switches Switch_Option_Groups
- *								;
- *				Program_Switches -> Switch Program_Switches
- *									|
- *									;
- *				Switch -> ('-' | '/') Name Optional_Parameter
  *						;
- *				Optional_Parameter -> '=' Data
- *									|
- *									;
+ *				Program_Switches -> Switch Program_Switches
+ *						|
+ *						;
  *				Switch_Option_Groups -> Switches Options
- *									 ;
+ *						;
  *				Switches -> Switch Switches
- *						  |
- *						  ;
- *				Options -> Name Optional_Parameter Options
- *						 |
- *						 ;
+ *						|
+ *						;
+ *              Switch -> Long_Swtich | Short_Switch
+ *                      ;
+ *              Long_Switch -> ("--" | "--not-") Name Optional_Parameter
+ *                      ;
+ *              Short_Switch -> ('-' | '/') Name Optional_Parameter
+ *                      ;
+ *              Optional_Parameter -> '=' Data
+ *                      | White-space Data          <- ie next option
+ *                      |
+ *                      ;
+ *				Options -> Parameter Options
+ *						|
+ *						;
+ *              Parameter -> Path | Number | String | HJSON_Value_String
  *
  *
  * Remarks
@@ -100,6 +106,7 @@
 #include        <AStr.h>
 #include        <cloOpt.h>
 #include        <node.h>
+#include        <nodeHash.h>
 
 
 #ifndef         CLO_H
@@ -116,6 +123,47 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+
+    typedef enum clo_type_e {
+        CLO_TYPE_UNKNOWN=0,
+        CLO_TYPE_BOOL,                  // uint8_t - 0 or 1
+        CLO_TYPE_EXEC,                  // Execute given routine
+        CLO_TYPE_HJSON,                 // Node pointer - HJSON will be used
+        //                              // to parse the Argument's parameter
+        //                              // looking for a "value" not a "hash".
+        //                              // (Argument parameter is required)
+        CLO_TYPE_INCR,                  // uint16_t - Every occurence increases the
+        //                              // associated value (default is 0);
+        CLO_TYPE_NUMBER,                // Number pointer
+        //                              // (Argument parameter is required)
+        CLO_TYPE_PATH,                  // Path pointer
+        //                              // (Argument parameter is required)
+        CLO_TYPE_STRING,                // AStr pointer
+        //                              // (Argument parameter is required)
+        CLO_TYPE_VALUE,                 // Value pointer
+        //                              // (Argument parameter is required)
+    } CLO_TYPE;
+    
+    typedef enum clo_flags_e {
+        CLO_FLAG_UNKNOWN=0,
+        CLO_FLAG_OPTION=0x0001,         // TRUE == Option (ie no leading -char or --name)
+    } CLO_FLAGS;
+    
+    typedef struct clo_arg_s  {
+        uint16_t        type;           // See CLO_TYPE above.
+        uint16_t        flags;          // See CLO_FLAGS above.
+        const
+        char            *pArgLong;      // Long form of switch without "--"
+        W32CHR_T        argShort;       // Optional Short form of switch without "-"
+        uint32_t        offset;         // Offset of Argument Data in respective
+        //                              //  data area supplied
+        void            (*pExec)(OBJ_ID); // Method to execute with OBJ_ID
+        //                              //      of APPL_DATA
+        const
+        char            *pDesc;         // Argument Description should be of form:
+                                        //      \tName\t\tDescription\n
+    }  CLO_ARG;
+    
 
     typedef struct clo_data_s	CLO_DATA;    // Inherits from OBJ.
 
@@ -150,7 +198,18 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     clo_ConstructProgramLine(
+        int             cArgs,
+        const
+        char            **ppArgs
+    );
+    
+    
     CLO_DATA *      clo_New(
+        void
+    );
+    
+    CLO_DATA *      clo_NewFromArgV(
         uint16_t        cArgs,
         const
         char            **ppArgs
@@ -184,18 +243,26 @@ extern "C" {
 
    
     CLO_DATA *      clo_Init(
+        CLO_DATA        *this
+    );
+
+
+    /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this    CLO object pointer
+     @param     cArgs   number of charater strings in ppArgs
+     @param     ppArgs  point to a charater string array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         clo_SetupFromArgV(
         CLO_DATA        *this,
         uint16_t        cArgs,
         const
         char            **ppArgs
     );
-
-
-    ERESULT         clo_IsEnabled(
-        CLO_DATA		*this
-    );
     
- 
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

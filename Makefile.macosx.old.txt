@@ -8,7 +8,8 @@ TEMP=/tmp
 BASEDIR = $(TEMP)/$(LIBNAM)
 
 CFLAGS_LIBS = 
-CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+#CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+CFLAGS += -g -Isrc -Isrc/$(SYS)
 CFLAGS += -D__MACOSX_ENV__
 
 INSTALL_BASE = $(HOME)/Support/lib/$(SYS)
@@ -1767,28 +1768,28 @@ PROGS =
 PROGS += genGetterSetter
 
 genGetterSetter:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genGetterSetter $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genGetterSetter/genGetterSetter.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genGetterSetter/src $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genGetterSetter/src/genGetterSetter.c 
 	echo $(OBJDIR)/$(@F)
 
 
 PROGS += genMake
 
 genMake:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genMake $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genMake/genMake.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/genMake/src $(LIBPATH) -o $(OBJDIR)/$(@F) programs/genMake/src/genMake.c 
 	echo $(OBJDIR)/$(@F)
 
 
 PROGS += lexFileToJSON
 
 lexFileToJSON:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/lexFileToJSON $(LIBPATH) -o $(OBJDIR)/$(@F) programs/lexFileToJSON/lexFileToJSON.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/lexFileToJSON/src $(LIBPATH) -o $(OBJDIR)/$(@F) programs/lexFileToJSON/src/lexFileToJSON.c 
 	echo $(OBJDIR)/$(@F)
 
 
 PROGS += md5Util
 
 md5Util:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/md5Util $(LIBPATH) -o $(OBJDIR)/$(@F) programs/md5Util/md5Util.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Iprograms/md5Util/src $(LIBPATH) -o $(OBJDIR)/$(@F) programs/md5Util/src/mainProgram.c programs/md5Util/src/exec.c programs/md5Util/src/exec_object.c programs/md5Util/src/main.c programs/md5Util/src/main_object.c
 	echo $(OBJDIR)/$(@F)
 
 

@@ -42,9 +42,9 @@
 #define	WSTRC_INTERNAL_H
 
 
-#include    "W32StrC.h"
-#include    "AStr.h"
-#include    "utf8.h"
+#include    <W32StrC.h>
+#include    <AStr.h>
+#include    <utf8.h>
 
 
 #ifdef	__cplusplus

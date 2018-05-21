@@ -58,6 +58,7 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+#ifdef NOT_NEEDED_YET
     static
     uint32_t        u12Array_OffsetOf(
         U12ARRAY_DATA   *this,
@@ -70,6 +71,7 @@ extern "C" {
    
         return offset;
     }
+#endif
 
 
 

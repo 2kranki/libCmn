@@ -5,7 +5,30 @@
  *
  */
 
+/*
+ There are several approaches to scanning/parsing command line switches:
  
+ One technique is to have a predefined tabular mechanism that defines
+ what switches are and have the parsed output put into specific locations
+ previously defined.
+ 
+ Another technique is to parse the switches and options into a "parse"
+ tree of nodes which would then be scanned similar to how we scan JSON
+ text. Using this technique gives us the power of the JSON format which
+ the long switches fit nicely such as --xyzzy="{1:23,2:\"/abc/a.txt\"}"
+ */
+
+/*
+ Another thing to think about is what should be the format of our output?
+ 
+ One technique is generate dynamic structures internally and supply
+ routines to query the structures.
+ 
+ Another technique is to put the output in specific locations defined
+ by the caller using a base and offset.
+ */
+
+
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -41,7 +64,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <clo_internal.h>
+#include    <clo_internal.h>
+#include    <ascii.h>
 
 
 
@@ -51,13 +75,248 @@ extern "C" {
     
 
     
-
+#ifdef XYZZY
+    CLO_ARG         defaultArgs[] = {
+        {'d', "debug",  CLO_TYPE_BOOL,  0, offsetof(CLO_DATA, fDebug), NULL, "Set Debug Mode"},
+        {'f', "force",  CLO_TYPE_BOOL,  0, offsetof(CLO_DATA, fForce), NULL, "Set Force Mode"},
+        {'v', "verbose", CLO_TYPE_INCR, 0, offsetof(CLO_DATA, iVerbose), NULL,  "Set Verbose Mode"},
+    };
+    static
+    int             cDefaultArgs = 5;
+#endif
+    
+    
+    
 
  
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    //---------------------------------------------------------------
+    //               F i n d  A r g u m e n t
+    //---------------------------------------------------------------
+    
+#ifdef XYZZY
+    CLO_ARG *       clo_ArgFindLong(
+        CLO_DATA        *this,
+        const
+        char            *pLong
+                                     )
+    {
+        int             iRc = 0;
+        APPL_CLO        *pClo = NULL;
+        int             i = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        // Search Group Args.
+        if (this->cGroupArguments && this->pGroupArguments) {
+            for (i=0; i<this->cGroupArguments; ++i) {
+                if (this->pGroupArguments[i].pArgLong) {
+                    iRc = str_Compare(pLong, this->pGroupArguments[i].pArgLong);
+                    if (0 == iRc) {
+                        pClo = &this->pGroupArguments[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Program Args.
+        if (this->cProgramArguments && this->pProgramArguments) {
+            for (i=0; i<this->cProgramArguments; ++i) {
+                if (this->pProgramArguments[i].pArgLong) {
+                    iRc = str_Compare(pLong, this->pProgramArguments[i].pArgLong);
+                    if (0 == iRc) {
+                        pClo = &this->pProgramArguments[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Default Args.
+        if (cDefaultArgs) {
+            for (i=0; i<cDefaultArgs; ++i) {
+                if (defaultArgs[i].pArgLong) {
+                    iRc = str_Compare(pLong, defaultArgs[i].pArgLong);
+                    if (0 == iRc) {
+                        pClo = &defaultArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        return pClo;
+    }
+    
+    
+    
+    CLO_ARG *       clo_ArgFindShort(
+        CLO_DATA        *this,
+        char            chr
+    )
+    {
+        int             iRc = 0;
+        APPL_CLO        *pClo = NULL;
+        int             i = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        // Search Group Args.
+        if (this->cGroupArguments && this->pGroupArguments) {
+            for (i=0; i<this->cGroupArguments; ++i) {
+                if (this->pGroupArguments[i].argChr) {
+                    iRc = chr - this->pGroupArguments[i].argChr;
+                    if (0 == iRc) {
+                        pClo = &this->pGroupArguments[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Program Args.
+        if (this->cProgramArguments && this->pProgramArguments) {
+            for (i=0; i<this->cProgramArguments; ++i) {
+                if (this->pProgramArguments[i].argChr) {
+                    iRc = chr - this->pProgramArguments[i].argChr;
+                    if (0 == iRc) {
+                        pClo = &this->pProgramArguments[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Default Args.
+        if (cDefaultArgs) {
+            for (i=0; i<cDefaultArgs; ++i) {
+                if (defaultArgs[i].argChr) {
+                    iRc = chr - defaultArgs[i].argChr;
+                    if (0 == iRc) {
+                        pClo = &defaultArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        return pClo;
+    }
+#endif
+    
+    
+    
+    //---------------------------------------------------------------
+    //               P a r s e  A r g u m e n t
+    //---------------------------------------------------------------
+    
+#ifdef XYZZY
+    ERESULT         appl_ArgParseLong(
+                                      APPL_DATA       *this,
+                                      int             *pArgC,
+                                      const
+                                      char            ***pppArgV
+                                      )
+    {
+        int             iRc = 0;
+        APPL_CLO        *pClo = NULL;
+        int             i = 0;
+        int             len = 0;
+        int             cData = 0;
+        int             cName = 0;
+        const
+        char            *pData;
+        const
+        char            *pName;
+        const
+        char            *pWrk;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef NDEBUG
+#else
+        pWrk = **pppArgV;
+        if ((*pWrk == '-') && (*(pWrk+1) == '-'))
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_ERROR;
+        }
+#endif
+        pWrk = **pppArgV + 2;
+        len = (int)strlen(pWrk);
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    ERESULT         appl_ArgParseShort(
+                                       APPL_DATA       *this,
+                                       int             *pArgC,
+                                       const
+                                       char            ***pppArgV
+                                       )
+    {
+        int             iRc = 0;
+        APPL_CLO        *pClo = NULL;
+        int             i = 0;
+        const
+        char            *pWrk;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef NDEBUG
+#else
+        pWrk = **pppArgV;
+        if (*pWrk == '-')
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_ERROR;
+        }
+#endif
+        pWrk = **pppArgV + 1;
+        
+        
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     ASTRARRAY_DATA * clo_ScanArgs(
         ASTR_DATA        *pStr
     )
@@ -149,6 +408,7 @@ extern "C" {
         
         return pArray;
     }
+#endif
     
     
 
@@ -179,17 +439,69 @@ extern "C" {
 
 
 
+    ASTR_DATA *     clo_ConstructProgramLine(
+        int             cArgs,
+        const
+        char            **ppArgs
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        uint32_t        i;
+        
+        if (cArgs) {
+            pStr = AStr_NewA(*ppArgs);
+            if (pStr) {
+                for(i=1; i<cArgs; ++i) {
+                    eRc = AStr_AppendA(pStr, " ");
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                        break;
+                    }
+                    eRc = AStr_AppendA(pStr, ppArgs[i]);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                        break;
+                    }
+                }
+            }
+        }
+        return pStr;
+    }
+    
+    
+    
     CLO_DATA *     clo_New(
+        void
+    )
+    {
+        CLO_DATA        *this;
+        
+        this = clo_Alloc( );
+        if (this) {
+            this = clo_Init(this);
+        }
+        return this;
+    }
+    
+    
+    CLO_DATA *     clo_NewFromArgV(
         uint16_t        cArgs,
         const
         char            **ppArgs
     )
     {
-        CLO_DATA       *this;
+        CLO_DATA        *this;
+        ERESULT         eRc;
         
         this = clo_Alloc( );
         if (this) {
-            this = clo_Init(this, cArgs, ppArgs);
+            this = clo_Init(this);
+            if (this) {
+                eRc = clo_SetupFromArgV(this, cArgs, ppArgs);
+            }
         } 
         return this;
     }
@@ -203,6 +515,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          A r g s
+    //---------------------------------------------------------------
+    
     ASTRARRAY_DATA * clo_getArgs(
         CLO_DATA        *this
     )
@@ -241,6 +557,41 @@ extern "C" {
         }
         this->pArgs = pValue;
         
+        clo_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          A r g  D e f s
+    //---------------------------------------------------------------
+    
+    bool            clo_setArgDefs(
+        CLO_DATA        *this,
+        uint16_t        cProgramArgs1,
+        CLO_ARG         *pProgramArgs1,
+        uint16_t        cProgramArgs2,
+        CLO_ARG         *pProgramArgs2,
+        uint16_t        cGroupArgs,
+        CLO_ARG         *pGroupArgs
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !clo_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->cProgramArgs1 = cProgramArgs1;
+        this->pProgramArgs1 = pProgramArgs1;
+        this->cProgramArgs2 = cProgramArgs2;
+        this->pProgramArgs2 = pProgramArgs2;
+        this->cGroupArgs = cGroupArgs;
+        this->pGroupArgs = pGroupArgs;
+
         clo_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
@@ -290,6 +641,10 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                      P r i o r i t y
+    //---------------------------------------------------------------
+    
     uint16_t        clo_getPriority(
         CLO_DATA     *this
     )
@@ -330,6 +685,10 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                  P r o g r a m  P a t h
+    //---------------------------------------------------------------
+    
     PATH_DATA *  clo_getProgramPath(
         CLO_DATA     *this
     )
@@ -373,6 +732,10 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                           S i z e
+    //---------------------------------------------------------------
     
     uint32_t        clo_getSize(
         CLO_DATA       *this
@@ -629,15 +992,12 @@ extern "C" {
     //---------------------------------------------------------------
 
     CLO_DATA *      clo_Init(
-        CLO_DATA        *this,
-        uint16_t        cArgs,
-        const
-        char            **ppArgs
+        CLO_DATA        *this
     )
     {
         uint32_t        cbSize = sizeof(CLO_DATA);
-        ERESULT         eRc;
-        int             i;
+        //ERESULT         eRc;
+        //int             i;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -666,16 +1026,6 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&clo_Vtbl);
         
         clo_setLastError(this, ERESULT_GENERAL_FAILURE);
-
-        this->pArgs = AStrArray_New( );
-        if (this->pArgs) {
-            for (i=0; i<cArgs; ++i) {
-                ASTR_DATA       *pStr = AStr_NewA(ppArgs[i]);
-                if (pStr) {
-                    eRc = AStrArray_AppendStr(this->pArgs, pStr, NULL);
-                }
-            }
-        }
 
     #ifdef NDEBUG
     #else
@@ -707,7 +1057,7 @@ extern "C" {
 #else
         if( !clo_Validate(this) ) {
             DEBUG_BREAK();
-            return clo_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -792,6 +1142,7 @@ extern "C" {
         char            *pCmdLineA
     )
     {
+        ASTR_DATA       *pCmdLine = OBJ_NIL;
 #ifdef XYZZY
         uint16_t        cbSize;
         int             Num = 0;
@@ -800,8 +1151,23 @@ extern "C" {
 #endif
         
         // Do initialization.
-        if( pCmdLineA == NULL )
-            return( false );
+#ifdef NDEBUG
+#else
+        if( !clo_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        if( pCmdLineA == NULL ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        pCmdLine = AStr_NewA(pCmdLineA);
+        if(OBJ_NIL == pCmdLine) {
+            DEBUG_BREAK();
+            return false;
+        }
+
 
 #ifdef XYZZY
         // Analyze input string to calculate array needed.
@@ -871,6 +1237,46 @@ extern "C" {
         
         // Return to caller.
         return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                 S e t u p  F r o m  A r g V
+    //---------------------------------------------------------------
+    
+    ERESULT         clo_SetupFromArgV(
+        CLO_DATA        *this,
+        uint16_t        cArgs,
+        const
+        char            **ppArgs
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTRARRAY_DATA  *pArgs;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !clo_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Reset any prior parse data.
+        
+        pArgs = AStrArray_NewFromArgV(cArgs, ppArgs);
+        clo_setArgs(this, pArgs);           // Reset any prior data.
+        if (pArgs) {
+            obj_Release(pArgs);
+            pArgs = OBJ_NIL;
+        }
+        else {
+            eRc = ERESULT_OUT_OF_MEMORY;
+        }
+        
+        return eRc;
     }
     
     

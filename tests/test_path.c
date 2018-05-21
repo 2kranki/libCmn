@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <path_internal.h>
+#include    <string.h>
 
 
 
@@ -925,27 +926,110 @@ int         test_path_ToBash(
 
 
 
+int         test_path_ExpandEnvVars01(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pStr = OBJ_NIL;
+    const
+    char        *pHome = NULL;
+    int         len = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pHome = getenv("HOME");
+    if (pHome) {
+        len = (int)strlen(pHome);
+    }
+    pObj = path_NewA("${HOME}");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = path_ExpandEnvVars(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
+        //obj_Release(pStr);
+        //pStr = NULL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_path_ExpandEnvVars02(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pStr = OBJ_NIL;
+    const
+    char        *pHome = NULL;
+    int         len = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pHome = getenv("HOME");
+    if (pHome) {
+        len = (int)strlen(pHome);
+        pStr = AStr_NewA(pHome);
+        eRc = AStr_AppendA(pStr, "$");
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        eRc = AStr_AppendA(pStr, pHome);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+    }
+    pObj = path_NewA("${HOME}$$${HOME}");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = path_ExpandEnvVars(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_path);
-  TINYTEST_ADD_TEST(test_path_ToBash,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CleanDir06,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CleanDir05,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CleanDir04,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CleanDir03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CleanDir02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CleanDir01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath08,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath07,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath06,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath05,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath04,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath03,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_SplitPath01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_NewFromEnv,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_DateLastUpdated,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_CharFindNext,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_path_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_ExpandEnvVars02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_ExpandEnvVars01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_ToBash,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CleanDir06,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CleanDir05,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CleanDir04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CleanDir03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CleanDir02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CleanDir01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath08,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath07,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath06,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath05,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitPath01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_NewFromEnv,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_DateLastUpdated,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_CharFindNext,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_path);

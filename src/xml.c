@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "xml_internal.h"
+#include <xml_internal.h>
 #include <stdio.h>
 
 

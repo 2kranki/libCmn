@@ -1,11 +1,44 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   appl.c
- *	Generated 06/05/2017 10:38:38
+ * Generated 06/05/2017 10:38:38
  *
  */
 
+/*
+ There are several approaches to scanning/parsing command line arguments:
  
+ One technique is to put the usage and argument scanning hard coded in
+ the program.  For most programs, this is quite easy to do and not worth
+ a lot of fuss over.
+ 
+ One technique is to have a predefined tabular mechanism that defines
+ what switches are and have the parsed output put into specific locations
+ previously defined.
+ 
+ Another technique is to parse the switches and options into a "parse"
+ tree of nodes which would then be scanned similar to how we scan JSON
+ text. Using this technique gives us the power of the JSON format which
+ the long switches fit nicely such as --xyzzy="{1:23,2:\"/abc/a.txt\"}"
+ */
+
+/*
+ Another thing to think about is what should be the format of our output?
+ 
+ One technique is generate dynamic structures internally and supply
+ routines to query the structures.  The more that I have thought about;
+ the more that I think that this is the proper support.  A lot of programs
+ are very simple in their need for command line parsing, but some such
+ as the linker can be quite complex.  JSON or Apple's plist make very
+ powerful ways of building the node structure.
+ 
+ Another technique is to put the output in specific locations defined
+ by the caller using a base and offset.  The problem with this is that
+ it gets more difficult if a switch is entered more than once.  An
+ example of this is designating multiple libraries using the linker.
+ */
+
+
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -42,8 +75,10 @@
 
 /* Header File Inclusion */
 #include    <appl_internal.h>
+#include    <ascii.h>
 #include    <dir.h>
 #include    <misc.h>
+#include    <str.h>
 #include    <trace.h>
 
 
@@ -53,7 +88,74 @@ extern "C" {
 #endif
     
 
-    
+    APPL_CLO        defaultArgs[] = {
+        {
+            '?',                        // Short
+            NULL,                       // Long
+            APPL_ARG_PROGRAM,           // Class
+            APPL_ARG_EXEC,              // Type
+            0,                          // Offset
+            (void *)appl_Help,          // Executed Routine
+            "Display Help"              // Description
+        },
+        {
+            'd',
+            "debug",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_BOOL,
+            offsetof(APPL_DATA, fDebug),
+            NULL,
+            "Set Debug Mode"
+        },
+        {
+            'f',
+            "force",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_BOOL,
+            offsetof(APPL_DATA, fForce),
+            NULL,
+            "Set Force Mode"
+        },
+        {
+            'h',
+            "help",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_EXEC,
+            0,
+            (void *)appl_Help,
+            "Display Help"
+        },
+        {
+            's',
+            "quiet",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_BOOL,
+            offsetof(APPL_DATA, fQuiet),
+            NULL,
+            "Set Quiet Mode"
+            
+        },
+        {
+            's',
+            "silent",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_BOOL,
+            offsetof(APPL_DATA, fQuiet),
+            NULL,
+            "Set Quiet Mode"
+        },
+        {
+            'v',
+            "verbose",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_INCR,
+            offsetof(APPL_DATA, iVerbose),
+            NULL,
+            "Set Verbose Mode"
+        },
+    };
+    static
+    int             cDefaultArgs = (sizeof(defaultArgs) / sizeof(APPL_CLO));
 
 
  
@@ -61,19 +163,175 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            appl_scan_body(
-        void            *pData
+    //---------------------------------------------------------------
+    //               F i n d  A r g u m e n t
+    //---------------------------------------------------------------
+    
+    APPL_CLO *      appl_ArgFindLong(
+        APPL_DATA       *this,
+        const
+        char            *pLong
     )
     {
-        //APPL_DATA  *this = pData;
+        int             iRc = 0;
+        APPL_CLO        *pClo = NULL;
+        int             i = 0;
         
-    }
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
 #endif
+        
+        // Search Group Args.
+        if (this->cGroupArgs && this->pGroupArgs) {
+            for (i=0; i<this->cGroupArgs; ++i) {
+                if (this->pGroupArgs[i].pArgLong) {
+                    iRc = str_Compare(pLong, this->pGroupArgs[i].pArgLong);
+                    if (0 == iRc) {
+                        pClo = &this->pGroupArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Program Args.
+        if (this->cProgramArgs && this->pProgramArgs) {
+            for (i=0; i<this->cProgramArgs; ++i) {
+                if (this->pProgramArgs[i].pArgLong) {
+                    iRc = str_Compare(pLong, this->pProgramArgs[i].pArgLong);
+                    if (0 == iRc) {
+                        pClo = &this->pProgramArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Default Args.
+        if (cDefaultArgs) {
+            for (i=0; i<cDefaultArgs; ++i) {
+                if (defaultArgs[i].pArgLong) {
+                    iRc = str_Compare(pLong, defaultArgs[i].pArgLong);
+                    if (0 == iRc) {
+                        pClo = &defaultArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        return pClo;
+    }
+    
+    
 
+    APPL_CLO *      appl_ArgFindShort(
+        APPL_DATA       *this,
+        char            chr
+    )
+    {
+        int             iRc = 0;
+        APPL_CLO        *pClo = NULL;
+        int             i = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        // Search Group Args.
+        if (this->cGroupArgs && this->pGroupArgs) {
+            for (i=0; i<this->cGroupArgs; ++i) {
+                if (this->pGroupArgs[i].argChr) {
+                    iRc = chr - this->pGroupArgs[i].argChr;
+                    if (0 == iRc) {
+                        pClo = &this->pGroupArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Program Args.
+        if (this->cProgramArgs && this->pProgramArgs) {
+            for (i=0; i<this->cProgramArgs; ++i) {
+                if (this->pProgramArgs[i].argChr) {
+                    iRc = chr - this->pProgramArgs[i].argChr;
+                    if (0 == iRc) {
+                        pClo = &this->pProgramArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        // Search Default Args.
+        if (cDefaultArgs) {
+            for (i=0; i<cDefaultArgs; ++i) {
+                if (defaultArgs[i].argChr) {
+                    iRc = chr - defaultArgs[i].argChr;
+                    if (0 == iRc) {
+                        pClo = &defaultArgs[i];
+                        return pClo;
+                    }
+                }
+            }
+        }
+        
+        return pClo;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //          C o n s t r u c t  P r o g r a m  L i n e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     appl_ConstructProgramLine(
+        int             cArgs,
+        const
+        char            **ppArgs
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        uint32_t        i;
+        
+        if (cArgs) {
+            pStr = AStr_NewA(*ppArgs);
+            if (pStr) {
+                for(i=1; i<cArgs; ++i) {
+                    eRc = AStr_AppendA(pStr, " ");
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                        break;
+                    }
+                    eRc = AStr_AppendA(pStr, ppArgs[i]);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                        break;
+                    }
+                }
+            }
+        }
+        return pStr;
+    }
+    
+    
+    
 
-
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -100,28 +358,178 @@ extern "C" {
 
 
     APPL_DATA *     appl_New(
-        uint16_t    cArgs,
-        const
-        char        *pArgs[]
     )
     {
         APPL_DATA       *this;
         
         this = appl_Alloc( );
         if (this) {
-            this = appl_Init(this, cArgs, pArgs);
-        } 
+            this = appl_Init(this);
+        }
+        return this;
+    }
+    
+    
+    APPL_DATA *     appl_NewFromArgV(
+        int             cArgs,
+        const
+        char            *ppArgs[],
+        const
+        char            **ppEnv
+    )
+    {
+        APPL_DATA       *this;
+        ERESULT         eRc;
+        
+        this = appl_Alloc( );
+        if (this) {
+            this = appl_Init(this);
+            if (this) {
+                eRc = appl_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
+            }
+        }
         return this;
     }
 
 
 
-    
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                      A r g s
+    //---------------------------------------------------------------
+    
+    ASTRARRAY_DATA * appl_getArgs(
+        APPL_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return this->pArgs;
+    }
+    
+    
+    bool            appl_setArgs(
+        APPL_DATA       *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pArgs) {
+            obj_Release(this->pArgs);
+        }
+        this->pArgs = pValue;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          A r g  D e f s
+    //---------------------------------------------------------------
+    
+    bool            appl_setArgDefs(
+        APPL_DATA       *this,
+        uint16_t        cProgramArgs,
+        APPL_CLO        *pProgramArgs,
+        uint16_t        cGroupArgs,
+        APPL_CLO        *pGroupArgs
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->cProgramArgs = cProgramArgs;
+        this->pProgramArgs = pProgramArgs;
+        this->cGroupArgs = cGroupArgs;
+        this->pGroupArgs = pGroupArgs;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      D a t e  T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * appl_getDateTime(
+        APPL_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return this->pDateTime;
+    }
+    
+    
+    bool            appl_setDateTime(
+        APPL_DATA       *this,
+        DATETIME_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pDateTime) {
+            obj_Release(this->pDateTime);
+        }
+        this->pDateTime = pValue;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          D e b u g
+    //---------------------------------------------------------------
+    
     bool            appl_getDebug(
         APPL_DATA       *this
     )
@@ -146,6 +554,58 @@ extern "C" {
     }
     
 
+    
+    //---------------------------------------------------------------
+    //                      E n v
+    //---------------------------------------------------------------
+    
+    ASTRARRAY_DATA * appl_getEnv(
+        APPL_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return this->pEnv;
+    }
+    
+    
+    bool            appl_setEnv(
+        APPL_DATA       *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pEnv) {
+            obj_Release(this->pEnv);
+        }
+        this->pEnv = pValue;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          F o r c e
+    //---------------------------------------------------------------
     
     bool            appl_getForce(
         APPL_DATA       *this
@@ -177,7 +637,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         appl_getLastError(
-        APPL_DATA     *this
+        APPL_DATA       *this
     )
     {
 
@@ -196,7 +656,7 @@ extern "C" {
 
 
     bool            appl_setLastError(
-        APPL_DATA     *this,
+        APPL_DATA       *this,
         ERESULT         value
     )
     {
@@ -215,11 +675,23 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                      P a r s e  A r g s
+    //---------------------------------------------------------------
+    
     bool            appl_setParseArgs(
         APPL_DATA       *this,
-        void            (*pValueDefaults)(OBJ_ID),
-        int             (*pValueLong)(OBJ_ID, const char *),
-        int             (*pValueShort)(OBJ_ID, const char *)
+        OBJ_ID          pObj,
+        ERESULT         (*pValueDefaults)(OBJ_ID),
+        int             (*pValueLong)(
+                                      OBJ_ID          this,
+                                      bool            fTrue,
+                                      ASTR_DATA       *pName,
+                                      ASTR_DATA       *pWrk,
+                                      uint32_t        index,
+                                      ASTRARRAY_DATA  *pArgs
+                        ),
+        int             (*pValueShort)(OBJ_ID, int *, const char ***)
     )
     {
 #ifdef NDEBUG
@@ -230,6 +702,7 @@ extern "C" {
         }
 #endif
         
+        this->pObjPrs = pObj;
         this->pParseArgsDefaults = pValueDefaults;
         this->pParseArgsLong = pValueLong;
         this->pParseArgsShort = pValueShort;
@@ -241,7 +714,8 @@ extern "C" {
     
     bool            appl_setProcessArgs(
         APPL_DATA       *this,
-        int             (*pProcessArg)(OBJ_ID, const char *)
+        OBJ_ID          pObj,
+        int             (*pProcessArg)(OBJ_ID, ASTR_DATA *)
     )
     {
 #ifdef NDEBUG
@@ -252,52 +726,13 @@ extern "C" {
         }
 #endif
         
+        this->pObjProcess = pObj;
         this->pProcessArg = pProcessArg;
         
         return true;
     }
     
     
-    
-    bool            appl_setParseArgsDefaults(
-        APPL_DATA       *this,
-        void            (*pValue)(OBJ_ID)
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pParseArgsDefaults = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    bool            appl_setParseArgsLong(
-        APPL_DATA       *this,
-        int             (*pValue)(OBJ_ID, const char *)
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pParseArgsLong = pValue;
-        
-        return true;
-    }
-    
-
     
     uint16_t        appl_getPriority(
         APPL_DATA     *this
@@ -339,6 +774,58 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                P r o g r a m  P a t h
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     appl_getProgramPath(
+        APPL_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return this->pProgramPath;
+    }
+    
+    
+    bool            appl_setProgramPath(
+        APPL_DATA       *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pProgramPath) {
+            obj_Release(this->pProgramPath);
+        }
+        this->pProgramPath = pValue;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      P r o p e r t i e s
+    //---------------------------------------------------------------
+    
     NODEHASH_DATA * appl_getProperties(
         APPL_DATA       *this
     )
@@ -383,6 +870,35 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          Q u i e t
+    //---------------------------------------------------------------
+    
+    bool            appl_getQuiet(
+        APPL_DATA       *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        
+        if (this->fQuiet) {
+            fRc = true;
+        }
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return fRc;
+    }
+    
+    
+    
     uint32_t        appl_getSize(
         APPL_DATA       *this
     )
@@ -401,6 +917,63 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          U s a g e
+    //---------------------------------------------------------------
+    
+    bool            appl_setUsage(
+        APPL_DATA       *this,
+        OBJ_ID          pObj,
+        ERESULT         (*pUsageDesc)(OBJ_ID, FILE *, PATH_DATA *),
+        ERESULT         (*pUsageProgLine)(OBJ_ID, FILE *, PATH_DATA *, const char *),
+        ERESULT         (*pUsageOptions)(OBJ_ID, FILE *)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pObjUsage = pObj;
+        this->pUsageDesc = pUsageDesc;
+        this->pUsageProgLine = pUsageProgLine;
+        this->pUsageOptions = pUsageOptions;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          V e r b o s e
+    //---------------------------------------------------------------
+    
+    int             appl_getVerbose(
+        APPL_DATA       *this
+    )
+    {
+        int             iRc = -1;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return iRc;
+        }
+#endif
+        
+        iRc = this->iVerbose;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return iRc;
+    }
+    
+    
+    
 
     
 
@@ -409,44 +982,6 @@ extern "C" {
     //===============================================================
 
 
-    //---------------------------------------------------------------
-    //                     A d d  P r o p e r t y
-    //---------------------------------------------------------------
-    
-    ERESULT         appl_AddProperty(
-        APPL_DATA       *this,
-        NODE_DATA       *pData
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pData) {
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeHash_New( 17 );
-            if (OBJ_NIL == this->pProperties) {
-                return ERESULT_INSUFFICIENT_MEMORY;
-            }
-        }
-        
-        eRc = nodeHash_Add(this->pProperties, pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -550,7 +1085,7 @@ extern "C" {
         }
 #endif
         
-        pOther = appl_New(this->cArgs, this->ppArgs);
+        pOther = appl_New( );
         if (pOther) {
             eRc = appl_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -589,12 +1124,10 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((APPL_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
+        appl_setArgs(this, OBJ_NIL);
+        appl_setDateTime(this, OBJ_NIL);
+        appl_setEnv(this, OBJ_NIL);
+        appl_setProgramPath(this, OBJ_NIL);
         appl_setProperties(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -670,14 +1203,82 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          E x e c
+    //---------------------------------------------------------------
+    
+    int             appl_Exec(
+        APPL_DATA       *this
+    )
+    {
+        int             iRc = 0;
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return appl_getLastError(this);
+        }
+#endif
+        
+        eRc = appl_ParseArgs(this);
+        if (ERESULT_FAILED(eRc)) {
+            return 8;
+        }
+
+        if (this->pProcessArg) {
+            for (;;) {
+                pStr = appl_NextArg(this);
+                if (OBJ_NIL == pStr) {
+                    break;
+                }
+                iRc = this->pProcessArg(this->pObjProcess, pStr);
+                if (iRc) {
+                    return iRc;
+                }
+            }
+        }
+
+        // Return to caller.
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return iRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          H e l p
+    //---------------------------------------------------------------
+    
+    ERESULT         appl_Help(
+        APPL_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        appl_UsageNoMsg(this);
+        exit(4);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
     APPL_DATA *     appl_Init(
-        APPL_DATA       *this,
-        uint16_t        cArgs,
-        const
-        char            **ppArgs
+        APPL_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(APPL_DATA);
@@ -685,7 +1286,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        
+
         /* cbSize can be zero if Alloc() was not called and we are
          * are passed the address of a zero'd area.
          */
@@ -700,7 +1301,7 @@ extern "C" {
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_APPL);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
-            obj_Release(this);
+            //obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
@@ -709,8 +1310,12 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&appl_Vtbl);
         
         appl_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->cArgs = cArgs;
-        this->ppArgs = ppArgs;
+        this->pDateTime = dateTime_NewCurrent( );
+        if (OBJ_NIL == this->pDateTime) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -719,8 +1324,9 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        //fprintf(stderr, "sizeof(APPL_DATA) = %lu\n", sizeof(APPL_DATA));
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(APPL_DATA));
+        BREAK_NOT_BOUNDARY4((void *)sizeof(APPL_DATA));
     #endif
 
         return this;
@@ -759,6 +1365,41 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                  N e x t  A r g u m e n t
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     appl_NextArg(
+        APPL_DATA       *this
+    )
+    {
+        ASTR_DATA       *pData = OBJ_NIL;
+        ERESULT         eRc = ERESULT_DATA_MISSING;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->nextArg <= AStrArray_getSize(this->pArgs)) {
+            pData = AStrArray_Get(this->pArgs, this->nextArg);
+            if (pData) {
+                ++this->nextArg;
+                eRc = ERESULT_SUCCESS;
+            }
+        }
+
+        // Return to caller.
+        appl_setLastError(this, eRc);
+        return pData;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //              N u m b e r  O f  P r o p e r t i e s
     //---------------------------------------------------------------
     
@@ -790,286 +1431,339 @@ extern "C" {
     //                  P a r s e  A r g u m e n t s
     //---------------------------------------------------------------
     
-    int             appl_ParseArgs(
+    ERESULT         appl_ParseArgs(
         APPL_DATA       *this
     )
     {
-        int             wrkArgC = this->cArgs;
-        const
-        char            **ppWrkArgV = this->ppArgs;
+        ERESULT         eRc;
+        int             wrkArgC = 0;
         int             i;
 #ifdef XYZZY
         int             offset;
         int             len;
         char            wrkstr[64];
 #endif
-        int             iRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == this->pArgs) {
+            DEBUG_BREAK();
+            appl_setLastError(this, ERESULT_DATA_MISSING);
+            return ERESULT_DATA_MISSING;
         }
 #endif
         TRC_OBJ(this,"%s:\n", __func__);
-        
-        // Set option defaults here;
-        this->fDebug = 0;
-        this->fForce = 0;
-        this->iVerbose = 0;
-        if (this->pParseArgsDefaults) {
-            this->pParseArgsDefaults(this);
+        wrkArgC = AStrArray_getSize(this->pArgs);
+#ifdef NDEBUG
+#else
+        if (wrkArgC < 1) {
+            DEBUG_BREAK();
+            appl_setLastError(this, ERESULT_DATA_MISSING);
+            return ERESULT_DATA_MISSING;
         }
+#endif
 
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
             fprintf(stdout, "\tcArgs = %d\n", wrkArgC);
             for (i=0; i<wrkArgC; ++i) {
-                fprintf(stdout, "\targ[%d]=\"%s\"\n", i, ppWrkArgV[i]);
+                ASTR_DATA           *pStr = OBJ_NIL;
+                pStr = AStrArray_Get(this->pArgs, (i+1));
+                if (pStr) {
+                    fprintf(stderr, "\targ[%d]=\"%s\"\n", i, AStr_getData(pStr));
+               }
             }
             fprintf(stdout, "\n");
         }
 #endif
         
-        // Validate some of the input.
-#ifdef XYZZY
-        pResults->pProgramPath = argv[0];
-        if( wrkArgC <= 1 ) {
-            usage( "No arguments" );
-        }
-#endif
-#ifdef XYZZY
-        if( wrkArgC == 2 && ppWrkArgV[1][0] == '?' && ppWrkArgV[1][1] == 0) {
-            appl_Usage( );
-            exit(99);
-        }
-#endif
-        
-        // Process the switches.
-        for (wrkArgC--,ppWrkArgV++; wrkArgC>0; wrkArgC--,ppWrkArgV++) {
-            if (0 == strcmp(*ppWrkArgV, "--debug")) {
-                ++this->fDebug;
-            }
-            else if (0 == strcmp(*ppWrkArgV, "--no-debug")) {
-                --this->fDebug;
-            }
-            else if (0 == strcmp(*ppWrkArgV, "--force")) {
-                ++this->fForce;
-            }
-            else if (0 == strcmp(*ppWrkArgV, "--no-force")) {
-                --this->fForce;
-            }
-            else if (this->pParseArgsLong) {
-                iRc = APPL_PARSE_RC_ERROR;
-                iRc = this->pParseArgsLong(this, *ppWrkArgV);
-                switch (iRc) {
-                    case APPL_PARSE_RC_BUMP:
-                        break;
-                        
-                    case APPL_PARSE_RC_NEXT:
-                        break;
-                        
-                    default:
-                        //appl_Usage(this, "Unknown flag");
-                        break;
-                }
-            }
-#ifdef  XYZZY
-            else if (0 == strncmp(*ppWrkArgV, "--file", 6)) {
-                if (*(*ppWrkArgV+6) == '\0') {
-                    ++ppWrkArgV;
-                    --wrkArgC;
-                    if (wrkArgC <= 0) {
-                        usage("ERROR: --file is missing the path!\n");
-                        return 99;
+        // Process the arguments skipping the program path.
+        while (this->nextArg <= wrkArgC) {
+            ASTR_DATA           *pStr = OBJ_NIL;
+            ASTR_DATA           *pWrk = OBJ_NIL;
+            uint32_t            len = 0;
+            pStr = AStrArray_Get(this->pArgs, this->nextArg);
+            if (pStr) {
+                len = AStr_getLength(pStr);
+                if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pStr, "--not-")) {
+                    if (6 == len) {
+                        appl_Usage(this, "ERROR - Missing flag");
+                        exit(8);
                     }
-                    pResults->pFile = strdup(*ppWrkArgV);
+                    eRc = AStr_Right(pStr, (len - 6), &pWrk);
+                    if (!ERESULT_FAILED(eRc)) {
+                        eRc = appl_ParseArgsLong(this, false, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                    }
+                }
+                else if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pStr, "--")) {
+                    if (2 == len) {
+                        // End of Option Scanning
+                        break;
+                    }
+                    eRc = AStr_Right(pStr, (len - 2), &pWrk);
+                    if (!ERESULT_FAILED(eRc)) {
+                        eRc = appl_ParseArgsLong(this, true, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                    }
+                }
+                else if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pStr, "-")) {
+                    if (1 == len) {
+                        appl_Usage(this, "ERROR - Missing flag");
+                        exit(8);
+                    }
                 }
                 else {
-                    pResults->pFile = strdup(*ppWrkArgV+6);
+                    break;
                 }
+                ++this->nextArg;
             }
-#endif
-#ifdef  XYZZY
-            else if (0 == strncmp(*argv, "--name", 6)) {
-                wrkstr[0] = '\0';
-                len = (int)strlen(*argv) - 6;
-                offset = 6;
-                if ('=' == *(*argv + offset)) {
-                    ++offset;
-                    --len;
-                }
-                if ('"' == *(*argv + offset)) {
-                    ++offset;
-                    len -= 2;
-                }
-                if (len > 63) {
-                    len =  63;
-                    fprintf(stderr, "WARNING - name is too long! Limiting length to 63!\n");
-                }
-                strncat(wrkstr, (*argv + offset), len);
-                if (len) {
-                    pResults->pName = strdup(wrkstr);
-                }
-            }
-#endif
-            else if (0 == strcmp(*ppWrkArgV, "--")) {
-                --wrkArgC;
-                ++ppWrkArgV;
-                break;
-            }
-            else if (**ppWrkArgV == '-') {
-                const
-                char        *pWrk = *ppWrkArgV + 1;
-                while (*pWrk) {
-                    switch(tolower(*pWrk)) {
-                        case 'd':
-                            ++this->fDebug;
-                            break;
-#ifdef  XYZZY
-                        case 'f':
-                            ++pWrk;
-                            if (*pWrk == '\0') {
-                                ++ppWrkArgV;
-                                --wrkArgC;
-                                if (wrkArgC <= 0) {
-                                    usage("ERROR: --file is missing the path!\n");
-                                    return 99;
-                                }
-                                pResults->pFile = strdup(*ppWrkArgV);
-                            }
-                            else {
-                                pResults->pFile = strdup(*ppWrkArgV);
-                            }
-                            pWrk = "";
-                            continue;
-                            break;
-#endif
-#ifdef  XYZZY
-                        case 'm':
-                            ++pResults->mFlag;
-                            break;
-                        case 'n':
-                            ++pResults->nFlag;
-                            break;
-                        case 'r':       // -r<string> or -r=<string> or -r <string>
-                            ++pWrk;
-                            if (*pWrk == '=') {
-                                ++pWrk;
-                                if (*pWrk == '\0') {
-                                    usage("ERROR: -r is missing its string!\n");
-                                    return 99;
-                                }
-                                else {
-                                    pResults->pR = strdup(pWrk);
-                                }
-                                pWrk = "";
-                                continue;
-                            }
-                            else if (*pWrk == '\0') {
-                                ++ppWrkArgV;
-                                --wrkArgC;
-                                if (wrkArgC <= 0) {
-                                    usage("ERROR: -r is missing its string!\n");
-                                    return 99;
-                                }
-                                pResults->pR = strdup(*ppWrkArgV);
-                            }
-                            else {
-                                if (*pWrk == '\0') {
-                                    usage("ERROR: -r is missing its string!\n");
-                                    return 99;
-                                }
-                                else {
-                                    pResults->pR = strdup(pWrk);
-                                }
-                                pWrk = "";
-                                continue;
-                            }
-                            break;
-#endif
-                        default:
-                            iRc = APPL_PARSE_RC_ERROR;
-                            if (this->pParseArgsShort) {
-                                iRc = this->pParseArgsShort(this, pWrk);
-                            }
-                            switch (iRc) {
-                                case APPL_PARSE_RC_BUMP:
-                                    ++pWrk;
-                                    if (*pWrk == '\0') {
-                                        ++ppWrkArgV;
-                                        --wrkArgC;
-                                    }
-                                    break;
-                                    
-                                case APPL_PARSE_RC_NEXT:
-                                    ++ppWrkArgV;
-                                    --wrkArgC;
-                                    break;
-                                    
-                                default:
-                                    appl_Usage(this, "Unknown flag");
-                                    break;
-                            }
-                    }
-                    ++pWrk;
-                }
-            }
-            else
-                break;
         }
-        
-        this->cOptions = wrkArgC;
-        this->ppOptions = ppWrkArgV;
-        
-        return 0;
+
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
     }
     
     
-    
-    //---------------------------------------------------------------
-    //              P r o c e s s  A r g s
-    //---------------------------------------------------------------
-    
-    int             appl_ProcessArgs(
-        APPL_DATA       *this
+    ERESULT         appl_ParseArgsLong(
+        APPL_DATA       *this,
+        bool            fTrue,
+        ASTR_DATA       *pArg
     )
     {
-        int             iRc = 0;
-        int             i;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pName = OBJ_NIL;
+        ASTR_DATA       *pData = OBJ_NIL;
+        uint32_t        idxEql = 0;
+        uint32_t        len = 0;
+        APPL_CLO        *pClo = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        len = AStr_getLength(pArg);
+        eRc = AStr_CharFindNextW32(pArg, &idxEql, '=');
+        if (ERESULT_FAILED(eRc)) {
+            pName = AStr_Copy(pArg);
+        }
+        else {
+            if (1 == idxEql) {
+                appl_Usage(this, "ERROR - Missing flag - %s", AStr_getData(pArg));
+                exit(8);
+            }
+            eRc = AStr_Left(pArg, (idxEql - 1), &pName);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+            if (idxEql < len) {
+                eRc = AStr_Right(pArg, (len - idxEql), &pData);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pName);
+                    return eRc;
+                }
+            }
+            else {
+                appl_Usage(this, "ERROR - Missing data - %s", AStr_getData(pArg));
+                exit(8);
+            }
+        }
+        
+        pClo = appl_ArgFindLong(this, AStr_getData(pName));
+        if (NULL == pClo) {
+            appl_Usage(this, "ERROR - Unknown flag - %s", AStr_getData(pName));
+            exit(8);
+        }
+        
+        if (pClo) {
+            void            *pPtr = (uint8_t *)this + pClo->offset;
+            switch (pClo->type) {
+                case APPL_ARG_BOOL:             // uint8_t - 0 or 1
+                    if (fTrue) {
+                        *((uint8_t *)pPtr) = 1;
+                    }
+                    else {
+                        *((uint8_t *)pPtr) = 0;
+                    }
+                    break;
+                case APPL_ARG_EXEC:             // Execute given routine
+                    eRc = pClo->pExec(this, pData);
+                    if (ERESULT_FAILED(eRc)) {
+                        appl_Usage(
+                                   this,
+                                   "ERROR - Execute Routine for --%s failed!",
+                                   pClo->pArgLong
+                        );
+                        exit(8);
+                    }
+                    break;
+                case APPL_ARG_INCR:             // uint16_t - Every occurence increases the
+                    //                          // associated value (default is 0);
+                    if (fTrue) {
+                        *((uint16_t *)pPtr) += 1;
+                    }
+                    else {
+                        *((uint16_t *)pPtr) -= 1;
+                    }
+                    break;
+                case APPL_ARG_NUMBER:           // Number pointer
+                    break;
+                case APPL_ARG_PATH:             // Path pointer
+                    if (OBJ_NIL == pData) {
+                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
+                            pData = AStrArray_Get(this->pArgs, this->nextArg);
+                            if (pData) {
+                                pData = AStr_Copy(pData);
+                                ++this->nextArg;
+                            }
+                        }
+                    }
+                    if (pData) {
+                        *((PATH_DATA **)pPtr) = path_NewFromAStr(pData);
+                    }
+                    else {
+                        appl_Usage(
+                                   this,
+                                   "ERROR - Missing Path for --%s",
+                                   pClo->pArgLong
+                        );
+                        exit(8);
+                    }
+                    break;
+                case APPL_ARG_STRING:           // AStr pointer
+                    if (OBJ_NIL == pData) {
+                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
+                            pData = AStrArray_Get(this->pArgs, this->nextArg);
+                            if (pData) {
+                                pData = AStr_Copy(pData);
+                                ++this->nextArg;
+                            }
+                        }
+                    }
+                    if (pData) {
+                        *((ASTR_DATA **)pPtr) = pData;
+                        pData = OBJ_NIL;
+                    }
+                    else {
+                        appl_Usage(
+                                   this,
+                                   "ERROR - Missing Path for --%s",
+                                   pClo->pArgLong
+                                   );
+                        exit(8);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Return to caller.
+        obj_Release(pName);
+        obj_Release(pData);
+        return eRc;
+    }
+    
+    
+    ERESULT         appl_ParseArgsShort(
+        APPL_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        const
+        char            *pWrk = **pppArgV + 1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        while (*pWrk) {
+            switch(tolower(*pWrk)) {
+                case '?':
+                case 'h':
+                    appl_Usage(this, NULL);
+                    exit(4);
+                    break;
+                case 'd':
+                    ++this->fDebug;
+                    break;
+                default:
+                    if (this->pParseArgsShort) {
+                        eRc = this->pParseArgsShort(this->pObjPrs, pArgC, pppArgV);
+                    }
+            }
+            ++pWrk;
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+        
+        
+
+    //---------------------------------------------------------------
+    //                     P r o p e r t y  A d d
+    //---------------------------------------------------------------
+    
+    ERESULT         appl_PropertyAdd(
+        APPL_DATA       *this,
+        NODE_DATA       *pData
+    )
+    {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pData) {
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        if (this->pProcessArg) {
-            for (i=0; i<this->cOptions; ++i) {
-                iRc = this->pProcessArg(this, this->ppOptions[i]);
-                if (iRc) {
-                    break;
-                }
+        if (OBJ_NIL == this->pProperties) {
+            this->pProperties = nodeHash_New( 17 );
+            if (OBJ_NIL == this->pProperties) {
+                return ERESULT_INSUFFICIENT_MEMORY;
             }
         }
         
+        eRc = nodeHash_Add(this->pProperties, pData);
+        
         // Return to caller.
-        return iRc;
+        return eRc;
     }
     
     
     
     //---------------------------------------------------------------
-    //                      P r o p e r t y
+    //                    P r o p e r t y  F i n d
     //---------------------------------------------------------------
     
-    NODE_DATA *     appl_Property(
+    NODE_DATA *     appl_PropertyFind(
         APPL_DATA       *this,
         const
         char            *pName
@@ -1153,6 +1847,81 @@ extern "C" {
         }
         
         return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                 S e t u p  F r o m  A r g V
+    //---------------------------------------------------------------
+    
+    /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this    object pointer
+     @param     cArgs   number of charater strings in ppArgs
+     @param     ppArgV  point to a charater string array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         appl_SetupFromArgV(
+        APPL_DATA       *this,
+        uint16_t        cArgs,
+        const
+        char            *ppArgV[],
+        const
+        char            **ppEnv
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTRARRAY_DATA  *pArgs;
+        PATH_DATA       *pPath;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Set program defaults here;
+        this->fDebug = 0;
+        this->fForce = 0;
+        this->iVerbose = 0;
+        if (this->pParseArgsDefaults) {
+            eRc = this->pParseArgsDefaults(this->pObjPrs);
+        }
+        
+        // Reset any prior parse data.
+        appl_setArgs(this, OBJ_NIL);
+        appl_setProgramPath(this, OBJ_NIL);
+        appl_setEnv(this, OBJ_NIL);
+
+        pArgs = AStrArray_NewFromArgV(cArgs, ppArgV);
+        if (pArgs) {
+            appl_setArgs(this, pArgs);           // Reset any prior data.
+            obj_Release(pArgs);
+            pArgs = OBJ_NIL;
+        }
+        else {
+            eRc = ERESULT_OUT_OF_MEMORY;
+        }
+        if ((cArgs > 0) && ppArgV && ppArgV[0]) {
+            pPath = path_NewA(ppArgV[0]);
+            appl_setProgramPath(this, pPath);
+            obj_Release(pPath);
+        }
+        if (ppEnv) {
+            pArgs = AStrArray_NewFromArrayA(ppEnv);
+            if (pArgs) {
+                appl_setEnv(this, pArgs);
+                obj_Release(pArgs);
+            }
+        }
+        this->nextArg = 2;
+
+        return eRc;
     }
     
     
@@ -1247,43 +2016,138 @@ extern "C" {
     {
         FILE            *pOutput = stderr;
         char            szMsg[1024];
+        ERESULT         eRc;
+        PATH_DATA       *pName = OBJ_NIL;
         const
-        char            *pProgramName = NULL;
-        
+        char            *pNameA = "???";
+
         fprintf(pOutput, "\n\n");
-        pProgramName = this->ppArgs[0];
+        if (this->pProgramPath) {
+            eRc = path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
+            if (pName) {
+                pNameA = path_getData(pName);
+            }
+        }
         if (pMsg) {
             va_list     values;
             va_start(values, pMsg);
             vsnprintf(szMsg, sizeof(szMsg), pMsg, values);
             va_end(values);
-            fprintf(pOutput, "?%s - %s\n\n", pProgramName, szMsg);
+            //fprintf(pOutput, "%s - %s\n\n", pNameA, szMsg);
+            fprintf(pOutput, "%s\n", szMsg);
         }
         
-        if (this->pUsageProgLine) {
-            this->pUsageProgLine(this, pOutput);
-        }
-        else {
-            fprintf(
-                pOutput,
-                "Usage: %s -[dfh]\n",
-                pProgramName
-            );
-        }
-        if (this->pUsageDesc) {
-            this->pUsageDesc(this, pOutput);
-        }
-        fprintf( pOutput, "\t--[no-]debug   Set debug mode\n");
-        fprintf( pOutput, "\t--[no-]force   Set force mode\n");
-        fprintf( pOutput, "\t-h,--help      Display this help and exit\n");
-        if (this->pUsageSwitches) {
-            this->pUsageSwitches(this, pOutput);
-        }
-        fprintf(pOutput, "\n\n\n");
+        appl_UsageNoMsg(this);
+        obj_Release(pName);
+        pName = OBJ_NIL;
     }
     
     
+    void            appl_UsageArg(
+        APPL_DATA       *this,
+        ASTR_DATA       *pStr,              // in-out
+        APPL_CLO        *pClo
+    )
+    {
+        ERESULT         eRc;
+        int32_t         len;
+        
+                eRc = AStr_Truncate(pStr, 0);
+                eRc = AStr_AppendA(pStr, "  ");
+                if (pClo->argChr) {
+                    eRc = AStr_AppendCharW32(pStr, '-');
+                    eRc = AStr_AppendCharW32(pStr, pClo->argChr);
+                }
+                if (pClo->pArgLong) {
+                    if (pClo->argChr) {
+                        eRc = AStr_AppendCharW32(pStr, ',');
+                    }
+                    eRc = AStr_AppendA(pStr, "--");
+                    eRc = AStr_AppendA(pStr, pClo->pArgLong);
+                }
+                len = 25 - AStr_getLength(pStr);
+                if (len > 0) {
+                    eRc = AStr_AppendCharRepeatW32(pStr, len, ' ');
+                }
+                else {
+                    eRc = AStr_AppendCharW32(pStr, ' ');
+                }
+                if (pClo->pDesc) {
+                    eRc = AStr_AppendA(pStr, pClo->pDesc);
+                }
+    }
     
+    
+    void            appl_UsageNoMsg(
+        APPL_DATA       *this
+    )
+    {
+        FILE            *pOutput = stderr;
+        ERESULT         eRc;
+        PATH_DATA       *pName = OBJ_NIL;
+        const
+        char            *pNameA = "???";
+        int             i;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        pStr = AStr_New( );
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK( );
+            return;
+        }
+        if (this->pProgramPath) {
+            eRc = path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
+            if (pName) {
+                pNameA = path_getData(pName);
+            }
+        }
+        fprintf(pOutput, "\n");
+        fprintf(pOutput, "Usage:\n");
+        if (this->pUsageProgLine) {
+            this->pUsageProgLine(
+                                 this->pObjUsage,
+                                 pOutput,
+                                 this->pProgramPath,
+                                 pNameA
+            );
+        }
+        else {
+            fprintf(
+                    pOutput,
+                    "  %s [options]\n",
+                    pNameA
+            );
+        }
+        if (this->pUsageDesc) {
+            fprintf(pOutput, "Description:\n");
+            this->pUsageDesc(this->pObjUsage, pOutput, this->pProgramPath);
+        }
+        fprintf( pOutput, "Options:\n");
+        if (cDefaultArgs) {
+            for (i=0; i<cDefaultArgs; ++i) {
+                appl_UsageArg(this, pStr, &defaultArgs[i]);
+                fprintf( pOutput, "%s\n", AStr_getData(pStr));
+            }
+        }
+        if (this->cProgramArgs) {
+            for (i=0; i<this->cProgramArgs; ++i) {
+                appl_UsageArg(this, pStr, &this->pProgramArgs[i]);
+                fprintf( pOutput, "%s\n", AStr_getData(pStr));
+            }
+        }
+        if (this->pUsageOptions) {
+            this->pUsageOptions(this->pObjUsage, pOutput);
+        }
+        fprintf(pOutput, "\n\n\n");
+
+        obj_Release(pName);
+        pName = OBJ_NIL;
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

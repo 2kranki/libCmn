@@ -61,18 +61,22 @@ extern "C" {
 
     /* Local function declarations
      */
+#ifdef NOT_NEEDED_YET
     static
     bool            fileio_FileDelete(
         const
         char            *pFileName
     );
+#endif
     
     
+#ifdef NOT_NEEDED_YET
     static
     bool            fileio_FileExtend(
         FILEIO_DATA      *this,
         uint32_t         Block           /* Block to extend to */
     );
+#endif
 
     
     
@@ -89,6 +93,7 @@ extern "C" {
      *          RRDS_OK          =   Successful Completion
      *          RRDS_ERROR_OPEN  =   Disk File Open Error
      */
+#ifdef NOT_NEEDED_YET
     static
     int             fileio_FileCreate(
         const
@@ -106,6 +111,7 @@ extern "C" {
         // Return to Caller.
         return fileHandle;
     }
+#endif
     
     
     
@@ -118,6 +124,7 @@ extern "C" {
      *          RRDS_OK              =   Successful Completion
      *          RRDS_ERROR_DELETE    =   Disk File Deletion Error
      */
+#ifdef NOT_NEEDED_YET
     static
     bool            fileio_FileDelete(
         const
@@ -136,6 +143,7 @@ extern "C" {
         // Return to Caller.
         return true;
     }
+#endif
     
     
     
@@ -150,6 +158,7 @@ extern "C" {
      *          RRDS_ERROR_SEEK  =   Disk Seek Error
      *          RRDS_ERROR_WRITE =   Disk Write Error
      */
+#ifdef NOT_NEEDED_YET
     static
     bool            fileio_FileExtend(
         FILEIO_DATA     *this,
@@ -192,6 +201,7 @@ extern "C" {
         // Return to Caller.
         return true;
     }
+#endif
     
     
     

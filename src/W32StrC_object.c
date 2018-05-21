@@ -32,8 +32,8 @@
 
 
 #define			W32STRC_OBJECT_C	    1
-#include        "obj.h"
-#include        "W32StrC_internal.h"
+#include        <obj.h>
+#include        <W32StrC_internal.h>
 
 
 

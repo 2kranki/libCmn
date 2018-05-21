@@ -66,138 +66,140 @@ extern "C" {
 #define			CharType_Quote			0x08
 #define			CharType_Upper			0x04
 #define			CharType_White			0x02
-    
+#define         CharType_Escape         0x01    // String Escape Characters
+    //                                          // (Such as b,r,n,f,x)
+
     static
     const
     uint8_t     CharTypeTable[128] = {
-        0,									//   0 00 - NUL
-        0,									//   1 01 - SOH
-        0,									//   2 02 - STX
-        0,									//   3 03 - ETX
-        0,									//   4 04 - EOT
-        0,									//   5 05 - ENQ
-        0,									//   6 06 - ACK
-        0,									//   7 07 - BEL
-        CharType_White,						//   8 08 - BS (Backspace)
-        CharType_White,						//   9 09 - HT (Horizontal Tab)
-        CharType_White,						//  10 0A - LF/NL (Line Feed/New Line)
-        0,									//  11 0B - VT (Vertical Tab)
-        CharType_White,						//  12 0C - FF (Form Feed)
-        CharType_White,						//  13 0D - CR (Carriage Return)
-        0,									//  14 0E - SO
-        0,									//  15 0F - SI
-        0,									//  16 10 - DLE
-        0,									//  17 11 - DC1
-        0,									//  18 12 - DC2
-        0,									//  19 13 - DC3
-        0,									//  20 14 - DC4
-        0,									//  21 15 - NAK
-        0,									//  22 16 - SYN
-        0,									//  23 17 - ETB
-        0,									//  24 18 - CAN
-        0,									//  25 19 - EM
-        0,									//  26 1A - SUB
-        0,									//  27 1B - ESC
-        0,									//  28 1C - FS
-        0,									//  29 1D - GS
-        0,									//  30 1E - RS
-        0,									//  31 1F - US
-        CharType_White,						//  32 20 - SP - space/blank
-        0,									//  33 21 - '!'
-        CharType_Quote,						//  34 22 - '"'
-        0,									//  35 23 - '#'
-        0,									//  36 24 - '$'
-        0,									//  37 25 - '%'
-        0,									//  38 26 - '&'
-        CharType_Quote,						//  39 27 - "'"
-        0,									//  40 28 - ')'
-        0,									//  41 29 - '('
-        0,									//  42 2A - '*'
-        0,									//  43 2B - '+'
-        0,									//  44 2C - ','
-        0,									//  45 2D - '-'
-        0,									//  46 2E - '.'
-        0,									//  47 2F - '/'
-        CharType_Numeric,					//  48 30 - '0'
-        CharType_Numeric,					//  49 31 - '1'
-        CharType_Numeric,					//  50 32 - '2'
-        CharType_Numeric,					//  51 33 - '3'
-        CharType_Numeric,					//  52 34 - '4'
-        CharType_Numeric,					//  53 35 - '5'
-        CharType_Numeric,					//  54 36 - '6'
-        CharType_Numeric,					//  55 37 - '7'
-        CharType_Numeric,					//  56 38 - '8'
-        CharType_Numeric,					//  57 39 - '9'
-        0,									//  58 3A - ':'
-        0,									//  59 3B - ';'
-        0,									//  60 3C - '<'
-        0,									//  61 3D - '='
-        0,									//  62 3E - '>'
-        0,									//  63 3F - '?'
-        0,									//  64 40 - '@'
-        (CharType_Alpha|CharType_Upper),	//  65 41 - 'A'
-        (CharType_Alpha|CharType_Upper),	//  66 42 - 'B'
-        (CharType_Alpha|CharType_Upper),	//  67 43 - 'C'
-        (CharType_Alpha|CharType_Upper),	//  68 44 - 'D'
-        (CharType_Alpha|CharType_Upper),	//  69 45 - 'E'
-        (CharType_Alpha|CharType_Upper),	//  70 46 - 'F'
-        (CharType_Alpha|CharType_Upper),	//  71 47 - 'G'
-        (CharType_Alpha|CharType_Upper),	//  72 48 - 'H'
-        (CharType_Alpha|CharType_Upper),	//  73 49 - 'I'
-        (CharType_Alpha|CharType_Upper),	//  74 4A - 'J'
-        (CharType_Alpha|CharType_Upper),	//  75 4B - 'K'
-        (CharType_Alpha|CharType_Upper),	//  76 4C - 'L'
-        (CharType_Alpha|CharType_Upper),	//  77 4D - 'M'
-        (CharType_Alpha|CharType_Upper),	//  78 4E - 'N'
-        (CharType_Alpha|CharType_Upper),	//  79 4F - 'O'
-        (CharType_Alpha|CharType_Upper),	//  80 50 - 'P'
-        (CharType_Alpha|CharType_Upper),	//  81 51 - 'Q'
-        (CharType_Alpha|CharType_Upper),	//  82 52 - 'R'
-        (CharType_Alpha|CharType_Upper),	//  83 53 - 'S'
-        (CharType_Alpha|CharType_Upper),	//  84 54 - 'T'
-        (CharType_Alpha|CharType_Upper),	//  85 55 - 'U'
-        (CharType_Alpha|CharType_Upper),	//  86 56 - 'V'
-        (CharType_Alpha|CharType_Upper),	//  87 57 - 'W'
-        (CharType_Alpha|CharType_Upper),	//  88 58 - 'X'
-        (CharType_Alpha|CharType_Upper),	//  89 59 - 'Y'
-        (CharType_Alpha|CharType_Upper),	//  90 5A - 'Z'
-        0,									//  91 5B - '['
-        0,									//  92 5C - '\'
-        0,									//  93 5D - ']'
-        0,									//  94 5E - '^'
-        0,									//  95 5F - '_'
-        0,									//  96 60 - '`'
-        (CharType_Alpha|CharType_Lower),	//  97 61 - 'a'
-        (CharType_Alpha|CharType_Lower),	//  98 62 - 'b'
-        (CharType_Alpha|CharType_Lower),	//  99 63 - 'c'
-        (CharType_Alpha|CharType_Lower),	// 100 64 - 'd'
-        (CharType_Alpha|CharType_Lower),	// 101 65 - 'e'
-        (CharType_Alpha|CharType_Lower),	// 102 66 - 'f'
-        (CharType_Alpha|CharType_Lower),	// 103 67 - 'g'
-        (CharType_Alpha|CharType_Lower),	// 104 68 - 'h'
-        (CharType_Alpha|CharType_Lower),	// 105 69 - 'i'
-        (CharType_Alpha|CharType_Lower),	// 106 6A - 'j'
-        (CharType_Alpha|CharType_Lower),	// 107 6B - 'k'
-        (CharType_Alpha|CharType_Lower),	// 108 6C - 'l'
-        (CharType_Alpha|CharType_Lower),	// 109 6D - 'm'
-        (CharType_Alpha|CharType_Lower),	// 110 6E - 'n'
-        (CharType_Alpha|CharType_Lower),	// 111 6F - 'o'
-        (CharType_Alpha|CharType_Lower),	// 112 70 - 'p'
-        (CharType_Alpha|CharType_Lower),	// 113 71 - 'q'
-        (CharType_Alpha|CharType_Lower),	// 114 72 - 'r'
-        (CharType_Alpha|CharType_Lower),	// 115 73 - 's'
-        (CharType_Alpha|CharType_Lower),	// 116 74 - 't'
-        (CharType_Alpha|CharType_Lower),	// 117 75 - 'u'
-        (CharType_Alpha|CharType_Lower),	// 118 76 - 'v'
-        (CharType_Alpha|CharType_Lower),	// 119 77 - 'w'
-        (CharType_Alpha|CharType_Lower),	// 120 78 - 'x'
-        (CharType_Alpha|CharType_Lower),	// 121 79 - 'y'
-        (CharType_Alpha|CharType_Lower),	// 122 7A - 'z'
-        0,									// 123 7B - '{'
-        0,									// 124 7C - '|'
-        0,									// 125 7D - '}'
-        0,									// 126 7E - '~'
-        CharType_White						// 127 7F - DEL
+        0,									                    //   0 00 - NUL
+        0,									                    //   1 01 - SOH
+        0,									                    //   2 02 - STX
+        0,									                    //   3 03 - ETX
+        0,									                    //   4 04 - EOT
+        0,									                    //   5 05 - ENQ
+        0,									                    //   6 06 - ACK
+        0,									                    //   7 07 - BEL
+        CharType_White,						                    //   8 08 - BS (Backspace)
+        CharType_White,						                    //   9 09 - HT (Horizontal Tab)
+        CharType_White,						                    //  10 0A - LF/NL (Line Feed/New Line)
+        0,									                    //  11 0B - VT (Vertical Tab)
+        CharType_White,						                    //  12 0C - FF (Form Feed)
+        CharType_White,						                    //  13 0D - CR (Carriage Return)
+        0,									                    //  14 0E - SO
+        0,									                    //  15 0F - SI
+        0,									                    //  16 10 - DLE
+        0,									                    //  17 11 - DC1
+        0,									                    //  18 12 - DC2
+        0,									                    //  19 13 - DC3
+        0,									                    //  20 14 - DC4
+        0,									                    //  21 15 - NAK
+        0,									                    //  22 16 - SYN
+        0,									                    //  23 17 - ETB
+        0,									                    //  24 18 - CAN
+        0,									                    //  25 19 - EM
+        0,									                    //  26 1A - SUB
+        0,									                    //  27 1B - ESC
+        0,									                    //  28 1C - FS
+        0,									                    //  29 1D - GS
+        0,									                    //  30 1E - RS
+        0,									                    //  31 1F - US
+        CharType_White,						                    //  32 20 - SP - space/blank
+        0,									                    //  33 21 - '!'
+        CharType_Quote,						                    //  34 22 - '"'
+        0,									                    //  35 23 - '#'
+        0,									                    //  36 24 - '$'
+        0,									                    //  37 25 - '%'
+        0,									                    //  38 26 - '&'
+        CharType_Quote,						                    //  39 27 - "'"
+        0,									                    //  40 28 - ')'
+        0,									                    //  41 29 - '('
+        0,									                    //  42 2A - '*'
+        0,									                    //  43 2B - '+'
+        0,									                    //  44 2C - ','
+        0,									                    //  45 2D - '-'
+        0,									                    //  46 2E - '.'
+        0,									                    //  47 2F - '/'
+        CharType_Numeric,					                    //  48 30 - '0'
+        CharType_Numeric,					                    //  49 31 - '1'
+        CharType_Numeric,					                    //  50 32 - '2'
+        CharType_Numeric,					                    //  51 33 - '3'
+        CharType_Numeric,					                    //  52 34 - '4'
+        CharType_Numeric,					                    //  53 35 - '5'
+        CharType_Numeric,					                    //  54 36 - '6'
+        CharType_Numeric,					                    //  55 37 - '7'
+        CharType_Numeric,					                    //  56 38 - '8'
+        CharType_Numeric,					                    //  57 39 - '9'
+        0,									                    //  58 3A - ':'
+        0,									                    //  59 3B - ';'
+        0,									                    //  60 3C - '<'
+        0,									                    //  61 3D - '='
+        0,									                    //  62 3E - '>'
+        CharType_Escape,							            //  63 3F - '?'
+        0,									                    //  64 40 - '@'
+        (CharType_Alpha|CharType_Upper),	                    //  65 41 - 'A'
+        (CharType_Alpha|CharType_Upper),	                    //  66 42 - 'B'
+        (CharType_Alpha|CharType_Upper),	                    //  67 43 - 'C'
+        (CharType_Alpha|CharType_Upper),	                    //  68 44 - 'D'
+        (CharType_Alpha|CharType_Upper),	                    //  69 45 - 'E'
+        (CharType_Alpha|CharType_Upper),	                    //  70 46 - 'F'
+        (CharType_Alpha|CharType_Upper),	                    //  71 47 - 'G'
+        (CharType_Alpha|CharType_Upper),	                    //  72 48 - 'H'
+        (CharType_Alpha|CharType_Upper),	                    //  73 49 - 'I'
+        (CharType_Alpha|CharType_Upper),	                    //  74 4A - 'J'
+        (CharType_Alpha|CharType_Upper),	                    //  75 4B - 'K'
+        (CharType_Alpha|CharType_Upper),	                    //  76 4C - 'L'
+        (CharType_Alpha|CharType_Upper),	                    //  77 4D - 'M'
+        (CharType_Alpha|CharType_Upper),	                    //  78 4E - 'N'
+        (CharType_Alpha|CharType_Upper),	                    //  79 4F - 'O'
+        (CharType_Alpha|CharType_Upper),	                    //  80 50 - 'P'
+        (CharType_Alpha|CharType_Upper),	                    //  81 51 - 'Q'
+        (CharType_Alpha|CharType_Upper),	                    //  82 52 - 'R'
+        (CharType_Alpha|CharType_Upper),	                    //  83 53 - 'S'
+        (CharType_Alpha|CharType_Upper),	                    //  84 54 - 'T'
+        (CharType_Alpha|CharType_Upper),	                    //  85 55 - 'U'
+        (CharType_Alpha|CharType_Upper),	                    //  86 56 - 'V'
+        (CharType_Alpha|CharType_Upper),	                    //  87 57 - 'W'
+        (CharType_Alpha|CharType_Upper),	                    //  88 58 - 'X'
+        (CharType_Alpha|CharType_Upper),	                    //  89 59 - 'Y'
+        (CharType_Alpha|CharType_Upper),	                    //  90 5A - 'Z'
+        0,									                    //  91 5B - '['
+        CharType_Escape,									    //  92 5C - '\'
+        0,									                    //  93 5D - ']'
+        0,									                    //  94 5E - '^'
+        0,									                    //  95 5F - '_'
+        0,									                    //  96 60 - '`'
+        (CharType_Alpha|CharType_Lower),	                    //  97 61 - 'a'
+        (CharType_Alpha|CharType_Lower|CharType_Escape),	    //  98 62 - 'b'
+        (CharType_Alpha|CharType_Lower),	                    //  99 63 - 'c'
+        (CharType_Alpha|CharType_Lower),	                    // 100 64 - 'd'
+        (CharType_Alpha|CharType_Lower),	                    // 101 65 - 'e'
+        (CharType_Alpha|CharType_Lower|CharType_Escape),	    // 102 66 - 'f'
+        (CharType_Alpha|CharType_Lower),	                    // 103 67 - 'g'
+        (CharType_Alpha|CharType_Lower),	                    // 104 68 - 'h'
+        (CharType_Alpha|CharType_Lower),	                    // 105 69 - 'i'
+        (CharType_Alpha|CharType_Lower),	                    // 106 6A - 'j'
+        (CharType_Alpha|CharType_Lower),	                    // 107 6B - 'k'
+        (CharType_Alpha|CharType_Lower),	                    // 108 6C - 'l'
+        (CharType_Alpha|CharType_Lower),	                    // 109 6D - 'm'
+        (CharType_Alpha|CharType_Lower|CharType_Escape),	    // 110 6E - 'n'
+        (CharType_Alpha|CharType_Lower),	                    // 111 6F - 'o'
+        (CharType_Alpha|CharType_Lower),	                    // 112 70 - 'p'
+        (CharType_Alpha|CharType_Lower),	                    // 113 71 - 'q'
+        (CharType_Alpha|CharType_Lower|CharType_Escape),	    // 114 72 - 'r'
+        (CharType_Alpha|CharType_Lower),	                    // 115 73 - 's'
+        (CharType_Alpha|CharType_Lower),	                    // 116 74 - 't'
+        (CharType_Alpha|CharType_Lower),	                    // 117 75 - 'u'
+        (CharType_Alpha|CharType_Lower|CharType_Escape),	    // 118 76 - 'v'
+        (CharType_Alpha|CharType_Lower),	                    // 119 77 - 'w'
+        (CharType_Alpha|CharType_Lower|CharType_Escape),	    // 120 78 - 'x'
+        (CharType_Alpha|CharType_Lower),	                    // 121 79 - 'y'
+        (CharType_Alpha|CharType_Lower),	                    // 122 7A - 'z'
+        0,									                    // 123 7B - '{'
+        0,									                    // 124 7C - '|'
+        0,									                    // 125 7D - '}'
+        0,									                    // 126 7E - '~'
+        CharType_White						                    // 127 7F - DEL
     };
     
     
@@ -477,6 +479,54 @@ extern "C" {
     
     
     
+    
+    //**********************************************************
+    //                  i s H e x
+    //**********************************************************
+    
+    bool                ascii_isHexW32(
+        W32CHR_T            w32Char
+    )
+    {
+        bool                fRc = false;
+        
+        if ( (w32Char >= '0') && (w32Char <= '0') ) {
+            fRc = true;
+        }
+        else if ( (w32Char >= 'a') && (w32Char <= 'f') ) {
+            fRc = true;
+        }
+        else if ( (w32Char >= 'A') && (w32Char <= 'F') ) {
+            fRc = true;
+        }
+
+        return fRc;
+        
+    }
+    
+    
+    int                 ascii_FromHexW32(
+        W32CHR_T            w32Char
+    )
+    {
+        bool                iRc = -1;
+        
+        if ( (w32Char >= '0') && (w32Char <= '0') ) {
+            iRc = w32Char - '0';
+        }
+        else if ( (w32Char >= 'a') && (w32Char <= 'f') ) {
+            iRc = w32Char - 'a';
+        }
+        else if ( (w32Char >= 'A') && (w32Char <= 'F') ) {
+            iRc = w32Char - 'A';
+        }
+        
+        return iRc;
+        
+    }
+    
+    
+
     
     //**********************************************************
     //                  i s L o w e r

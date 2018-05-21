@@ -1,22 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4 tw=90
 
 //****************************************************************
-//          ARRAY Console Transmit Task (AStrArray) Header
+//          An Array of AStr Objects (AStrArray) Header
 //****************************************************************
 /*
  * Program
- *				Separate AStrArray (AStrArray)
+ *			An Array of AStr Objects (AStrArray)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate AStrArray to run things without complications
- *              of interfering with the main AStrArray. A AStrArray may be 
- *              called a AStrArray on other O/S's.
+ *			This object provides an array of AStr objects.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal AStrArray. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *    1.    The Object User flags and Misc data are not used in
+ *          this object.
  *
  * History
  *	Copied from NodeArray 09/25/2015
@@ -97,13 +92,34 @@ extern "C" {
     );
     
     
+    ASTRARRAY_DATA *    AStrArray_NewFromArgV(
+        int             cArgs,
+        const
+        char            *ppArgV[]
+    );
+    
+    
+    /*!
+     Create a string that describes this object and the objects within it.
+     @param     ppArgV  pointer to NULL-terminated array of strings
+     @return    If successful, an AStrArray object which must be released
+                containing the array of strings, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTRARRAY_DATA *    AStrArray_NewFromArrayA(
+        const
+        char            *ppArgV[]
+    );
+    
+    
 
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
     uint32_t        AStrArray_getSize(
-        ASTRARRAY_DATA	*cbp
+        ASTRARRAY_DATA	*this
     );
     
     
@@ -114,7 +130,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         AStrArray_AppendStr(
-        ASTRARRAY_DATA	*cbp,
+        ASTRARRAY_DATA	*this,
         ASTR_DATA       *pObject,
         uint32_t        *pIndex
     );
@@ -124,7 +140,7 @@ extern "C" {
     // but not releasing it. It needs to be released before it is
     // discarded.
     ASTR_DATA *     AStrArray_DeleteFirst(
-        ASTRARRAY_DATA	*cbp
+        ASTRARRAY_DATA	*this
     );
     
     
@@ -132,38 +148,38 @@ extern "C" {
     // but not releasing it. It needs to be released before it is
     // discarded.
     ASTR_DATA *     AStrArray_DeleteLast(
-        ASTRARRAY_DATA	*cbp
+        ASTRARRAY_DATA	*this
     );
     
     
     ASTR_DATA *     AStrArray_Get(
-        ASTRARRAY_DATA	*cbp,
+        ASTRARRAY_DATA	*this,
         uint32_t        index       // Relative to 1
     );
     
     ASTR_DATA *     AStrArray_GetFirst(
-        ASTRARRAY_DATA  *cbp
+        ASTRARRAY_DATA  *this
     );
     
     ASTR_DATA *     AStrArray_GetLast(
-        ASTRARRAY_DATA	*cbp
+        ASTRARRAY_DATA	*this
     );
     
     
     ASTRARRAY_DATA * AStrArray_Init(
-        ASTRARRAY_DATA  *cbp
+        ASTRARRAY_DATA  *this
     );
 
 
     ERESULT         AStrArray_InsertStr(
-        ASTRARRAY_DATA	*cbp,
+        ASTRARRAY_DATA	*this,
         uint32_t        index,
         ASTR_DATA       *pObject
     );
     
     
     ERESULT         AStrArray_SortAscending(
-        ASTRARRAY_DATA	*cbp
+        ASTRARRAY_DATA	*this
     );
     
     
@@ -177,7 +193,7 @@ extern "C" {
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
      description, otherwise OBJ_NIL.
-     @warning  Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     AStrArray_ToDebugString(
         ASTRARRAY_DATA  *this,

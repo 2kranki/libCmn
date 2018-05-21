@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "wav_internal.h"
+#include <wav_internal.h>
 #include <stdint.h>
 #include <stdio.h>
 

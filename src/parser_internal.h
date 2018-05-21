@@ -69,15 +69,15 @@ extern "C" {
         NODEHASH_DATA   *pProperties;
 
         // Input Data/Routines
-        TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t);
-        TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t);
+        TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t);
+        TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
         OBJ_ID          pSrcObj;
         uint16_t        sizeInputs;
         uint16_t        curInputs;
         TOKEN_DATA      *pInputs;
         
         // Parse Data
-        bool            (*pParse)(OBJ_ID,NODETREE_DATA **);
+        bool            (*pParse)(OBJ_ID, NODETREE_DATA **);
         OBJ_ID          pParseObj;
         OBJARRAY_DATA   *pSemanticStack;
         

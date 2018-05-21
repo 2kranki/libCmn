@@ -432,8 +432,35 @@ extern "C" {
         return pData;
     }
     
+
+    
+    //---------------------------------------------------------------
+    //                       L e n g t h
+    //---------------------------------------------------------------
     
     uint32_t        AStr_getLength(
+        ASTR_DATA       *this
+    )
+    {
+        uint32_t        len;
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        len =  utf8_StrLenA(AStr_getData(this));
+        
+        return len;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        AStr_getSize(
         ASTR_DATA       *this
     )
     {

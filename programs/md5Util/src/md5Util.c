@@ -5,6 +5,7 @@
 //
 
 #include    <cmn_defs.h>
+#include    <appl.h>
 #include    <dir.h>
 #include    <file.h>
 #include    <fileio.h>
@@ -131,7 +132,7 @@ void            usage(
     }
     fprintf(
             stderr,
-            "Usage: %s [-dl] input-file; %s ? for help\n",
+            "Usage: %s [-dl?] input-file; %s ? for help\n",
             pProgram,
             pProgram
     );
@@ -139,8 +140,8 @@ void            usage(
     fprintf( stderr, "\t-d,--[no-]debug  Set debug mode\n");
     fprintf( stderr, "\t-f,--[no-]force  Force replacements\n");
     fprintf( stderr, "\t-q,--[no-]quiet  Only set return code\n");
-    fprintf( stderr, "\t-s,--src         Generate JSONs from Source File\n");
-    fprintf( stderr, "\t-l,--nl          Exclude NL tokens\n");
+    //fprintf( stderr, "\t-s,--src         Generate JSONs from Source File\n");
+    //fprintf( stderr, "\t-l,--nl          Exclude NL tokens\n");
 }
 
 
@@ -351,12 +352,19 @@ int             main(
     char            *argv[]
 )
 {
+    APPL_DATA       *pAppl = OBJ_NIL;
     PATH_DATA       *pRef1 = OBJ_NIL;
     PATH_DATA       *pRef2 = OBJ_NIL;
     bool            fRc;
     ASTR_DATA       *pVerb = OBJ_NIL;
     int             i;
     int             iRc = 0;
+    
+    pAppl = appl_New(argc, argv);
+    if (OBJ_NIL == pAppl) {
+        fprintf(stderr, "FATAL - Unable to create Application Framework!\n\n\n");
+        exit(99);
+    }
     
     parseArgs(argc, argv);
     if (cOptions == 0) {

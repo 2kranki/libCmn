@@ -176,8 +176,8 @@ extern "C" {
     
     bool            parser_setSourceFunction(
         PARSER_DATA     *this,
-        TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t),
-        TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
+        TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t),
+        TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t),
         OBJ_ID          pSrcObj
     );
     

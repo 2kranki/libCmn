@@ -27,6 +27,20 @@
 #include    <clo_internal.h>
 
 
+CLO_ARG     pPgmArgs[] = {
+    // Type         Flag    ArgLong     ArgShort    Offset          Desc
+    {CLO_TYPE_BOOL, 0,      "ARG1",     '1',        0,      NULL,   "ARG1,1\tAn Argument 1"},
+    {CLO_TYPE_BOOL, 0,      "ARG2",     '2',        0,      NULL,   "ARG2,2\tAn Argument 2"},
+};
+
+CLO_ARG     pGrpArgs[] = {
+    // Type         Flag    ArgLong     ArgShort    Offset          Desc
+    {CLO_TYPE_BOOL, 0,      "GRP1",     'g',        0,     NULL,    "GRP1,g\tA Group Argument 1"},
+    {CLO_TYPE_BOOL, 0,      "GRP2",     'h',        0,     NULL,    "GRP2,h\tA Group Argument 2"},
+};
+
+
+
 
 int         setUp(
     const
@@ -85,7 +99,7 @@ int         test_clo_OpenClose(
     
     pObj = clo_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = clo_Init( pObj, 0, NULL );
+    pObj = clo_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -101,9 +115,37 @@ int         test_clo_OpenClose(
 
 
 
+int         test_clo_Parse01(
+    const
+    char        *pTestName
+)
+{
+    CLO_DATA    *pObj = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = clo_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = clo_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        // Test something.
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_clo);
-  TINYTEST_ADD_TEST(test_clo_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_clo_Parse01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_clo_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_clo);

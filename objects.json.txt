@@ -1,5 +1,6 @@
 {
     "name":"libCmn",
+    "type":"library",
     "deps":null,
     "headers_private":
     [
@@ -26,9 +27,9 @@
     ],
     "objects":
     {
-        "appl":null,
-        "array":["cmn"],
-        "ascii":["cmn","AStr"],
+        "appl":{"test":null},
+        "array":{"deps":["cmn"], "test":null},
+        "ascii":{"deps":["cmn","AStr"], "test":null},
         "AStr":["cmn"],
         "AStrArray":["cmn","AStr"],
         "AStrC":["cmn"],
@@ -197,16 +198,51 @@
         "memWin32_object.c":null
     },
     "programs": {
-        "genGetterSetter.c":null,
-        "genMake.c":null,
-        "lexFileToJSON.c":null,
-        "md5Util.c":null
+        "genGetterSetter":
+        {
+            "routines":
+            [
+                "genGetterSetter.c"
+            ],
+        },
+        "genMake":
+        {
+            "routines":
+            [
+                "genMake.c"
+            ],
+        },
+        "lexFileToJSON":
+        {
+            "routines":
+            [
+                "lexFileToJSON.c"
+            ],
+        },
+        "md5Util":
+        {
+            "headers_private":
+            [
+                "md5Util.h"
+            ],
+            "objects":
+            {
+                "exec":["md5Util"],
+                "main":["md5Util"]
+            }
+            "routines":
+            [
+                "mainProgram.c"
+            ],
+            "tests":
+            {
+                "test_exec.c":null,
+                "test_main.c":null
+            }   
+        }
     },
     "tests":
     {
-        "test_appl.c":null,
-        "test_array.c":null,
-        "test_ascii.c":null,
         "test_AStr.c":null,
         "test_AStrArray.c":null,
         "test_AStrC.c":null,

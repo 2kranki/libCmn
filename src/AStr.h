@@ -11,8 +11,8 @@
  *          manipulation with support for unicode characters.
  *
  * Remarks
- *	1.      Some -A (ascii) methods have been removed since
- *          the characters within this object could be unicode.
+ *	1.      The Object User flags and Misc data are not used in
+ *          this object.
  *
  * History
  *	09/19/2015 Generated
@@ -197,6 +197,16 @@ extern "C" {
     );
     
     
+    /*!
+     @return:   return the number of Ascii or Unicode characters in
+                the string, not the actual size of the string in
+                memory.  -1 indicates an error occurred.
+     */
+    uint32_t        AStr_getSize(
+        ASTR_DATA      *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -301,6 +311,18 @@ extern "C" {
     );
     
     
+    /*!
+     Find the next occurrence of the given character starting the search at the
+     given index into the string.  The search is performed in an increasing index
+     until the end of the string is reached.
+     @param     this    object pointer
+     @param     pIndex  required pointer to string index (set to 0 to start at
+                        the beginning of the string)
+     @param     chr     character to look for
+     @return    If character was found, ERESULT_SUCCESS and the string index gives
+                the index of the character within the string (relative to 1). Otherwise,
+                an ERESULT_* error code is returned.
+     */
     ERESULT         AStr_CharFindNextW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,                // [in-out]
@@ -309,6 +331,18 @@ extern "C" {
     );
     
     
+    /*!
+     Find the previous occurrence of the given character starting the search at the
+     given index into the string.  The search is performed in an decreasing index
+     until the beginning of the string is reached.
+     @param     this    object pointer
+     @param     pIndex  required pointer to string index (set to 0 to start at
+                        the end of the string)
+     @param     chr     character to look for
+     @return    If character was found, ERESULT_SUCCESS and the string index gives
+                the index of the character within the string (relative to 1). Otherwise,
+                an ERESULT_* error code is returned.
+     */
     ERESULT         AStr_CharFindPrevW32(
         ASTR_DATA		*this,
         uint32_t        *pIndex,                // [in-out]

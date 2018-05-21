@@ -57,21 +57,28 @@ extern "C" {
 
     typedef enum clo_opt_type_e {
         CLO_OPT_TYPE_UNKNOWN=0,
+        CLO_OPT_TYPE_BOOL,
         CLO_OPT_TYPE_CSV,
+        CLO_OPT_TYPE_DIR,
+        CLO_OPT_TYPE_NODE,
         CLO_OPT_TYPE_NUMBER,
         CLO_OPT_TYPE_PATH,
+        CLO_OPT_TYPE_STRING,
         CLO_OPT_TYPE_SWITCH,
+        CLO_OPT_TYPE_VALUE,
     } CLO_OPT_TYPE;
     
     
-    typedef struct clo_opt_def_s {
+    typedef struct clo_opt_dfn_s {
         char            argChr;
         const
-        char            *pArgStr;
-        uint8_t         type;
+        char            *pArgLong;
+        uint16_t        type;
+        uint16_t        rsvd16;
+        uint32_t        size;           // in bytes
         const
         char            *pName;         // Node Name
-    } CLO_OPT_DEF;
+    } CLO_OPT_DFN;
     
     
     
@@ -87,8 +94,27 @@ struct clo_data_s	{
     // Common Data
     ERESULT         eRc;
     PATH_DATA       *pProgramPath;
+    ASTR_DATA       *pCommandLine;
     ASTRARRAY_DATA  *pArgs;
+    NODEHASH_DATA   *pCLO;
+    uint8_t         fDebug;
+    uint8_t         fForce;
+    uint16_t        iVerbose;
 
+
+    uint16_t        cProgramArgs1;
+    uint16_t        cProgramArgs2;
+    uint16_t        cGroupArgs;
+    uint16_t        rsvd16;
+    CLO_ARG         *pProgramArgs1;
+    CLO_ARG         *pProgramArgs2;
+    CLO_ARG         *pGroupArgs;
+    uint8_t         *pProgramResults;           // Program Arguments
+    uint8_t         *pGroupResults;             // Group Arguments and Options
+    
+    OBJ_ID          *pGroupObj;
+    void            (*pGroupInit)(OBJ_ID, uint8_t *);
+    
 };
 #pragma pack(pop)
 

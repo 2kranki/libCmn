@@ -11,16 +11,90 @@
  *          nodes. HJSON is a relaxed version of JSON. To parse
  *          it, we use a specialized lexical scanner, lexj.
  *
+ *          HJSON is a relaxed form of JSON.  JSON data is accepted,
+ *          as well as a less formal syntax. (See the BNF below.)
+ *          Our form of HJSON is based on the formal definition
+ *          that can be found on the internet.  However, we have
+ *          modified it slightly for our own purposes.
+ *
  * Remarks
  *	1.      I changed the definition of the quoteless string to end
  *          with '\n' and any of '{','}','[',']',':',','. This al-
  *          lows it to be used for object names as well as quote-
  *          less strings. If any of those characters needs to be
  *          added to a string, then simply quote the string.
+ *  2.      We do not support multi-line strings at this point.
+ *
  *
  * History
  *	07/08/2017 Generated
  */
+
+
+/*                  OUR HJSON BNF
+ 
+ BNF Suffixes:
+    ? == 0 or 1 repetition
+    + == 1 or more repetitions
+    * == 0 or more repetitions
+ 
+ 
+ 
+ object     :   '{' members? '}'
+            ;
+ members    :   pair ((',' | '\n') pair?)*
+            ;
+ pair       :   (string | quoteless-string) (':' | '=') value
+            ;
+ array      :   '[' elements? ']'
+            ;
+ elements   :   value (',' value)*
+            ;
+ value      :   string
+            |   number
+            |   object
+            |   array
+            |   "true"
+            |   "false"
+            |   "null"
+            ;
+ string     :   '"' char* '"'
+            ;
+ quoteless-string
+            :   any-Unicode-char-except-','-':'-'='-'['-']'-'{'-or-'}'+
+            ;
+ char       :   any-Unicode-char-except-'"'-or-'\'-or-control-char
+            |   "\""
+            |   "\\"
+            |   "\/"
+            |   "\b"
+            |   "\f"
+            |   "\n"
+            |   "\r"
+            |   "\t"
+            |   "\u" four-hex-digits
+            ;
+ number     :   int
+            |   int frac
+            |   int exp
+            |   int frac exp
+            ;
+ int        :   digit
+            |   digit digit*
+            |   '-' digit
+            |   '-' digit digit*
+            ;
+ frac       :   '.' digit*
+            ;
+ exp        :   e digit*
+            ;
+ digit      :   '1'..'9'
+            ;
+ e          :   ('e' 'E') ('+' | '-')?
+            ;
+ */
+
+
 
 
 /*
@@ -188,10 +262,30 @@ extern "C" {
     );
     
     
-    // If successful, returns a node, "hash", which has a nodeHash
-    // as its data.
-    NODE_DATA *     hjson_ParseFile(
+    /*!
+     Parse the input file assuming that it is a JSON Hash, ('{'...'}'), is
+     at the highest level.
+     @param     this    HJSON object pointer
+     @return    If successful, a Hash Node object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned Hash Node object.
+     */
+    NODE_DATA *     hjson_ParseFileHash(
         HJSON_DATA		*this
+    );
+    
+    
+    /*!
+     Parse the input file assuming that it is a JSON value as given in
+     the grammar above.  You must test the object returned to determine
+     what type that it is (Node, Node Array, Node Hash, True, False, Null).
+     @param     this    HJSON object pointer
+     @return    If successful, a Node object or Node Collection which
+                must be released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NODE_DATA *     hjson_ParseFileValue(
+        HJSON_DATA        *this
     );
     
     

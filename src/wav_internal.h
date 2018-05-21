@@ -61,8 +61,8 @@
 #define	WAV_INTERNAL_H
 
 
-#include    "wav.h"
-#include    "u8Array.h"
+#include    <wav.h>
+#include    <u8Array.h>
 
 #ifdef	__cplusplus
 extern "C" {

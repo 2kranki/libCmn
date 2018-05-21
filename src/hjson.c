@@ -168,35 +168,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //               P a r s e  F i l e  O b j e c t
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     hjson_ParseFileObject(
-        HJSON_DATA      *this
-    )
-    {
-        NODE_DATA       *pNode;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !hjson_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        pNode = hjson_ParseHash(this);
-        if( OBJ_NIL == pNode ) {
-            return pNode;
-        }
-
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                   P a r s e  H a s h
     //---------------------------------------------------------------
     
@@ -548,7 +519,7 @@ extern "C" {
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
         tokenClass = token_getClass(pToken);
-        if( tokenClass == LEXJ_SEP_COLON ) {
+        if((tokenClass == LEXJ_SEP_COLON) || (tokenClass == LEXJ_SEP_EQUAL)) {
             lexj_TokenAdvance(this->pLexJ, 1);
             TRC_OBJ(this, "\tfound :\n");
         }
@@ -1406,10 +1377,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      P a r s e  F i l e
+    //                          P a r s e
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseFile(
+    NODE_DATA *     hjson_ParseFileHash(
         HJSON_DATA		*this
     )
     {
@@ -1431,14 +1402,43 @@ extern "C" {
 #endif
         TRC_OBJ(this, "%s:\n", __func__);
         
-        pNode = hjson_ParseFileObject(this);
+        pNode = hjson_ParseHash(this);
         
         // Return to caller.
         return pNode;
     }
     
     
+    NODE_DATA *     hjson_ParseFileValue(
+        HJSON_DATA        *this
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !hjson_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            obj_TraceSet(this->pLexJ, true);
+        }
+#endif
+        TRC_OBJ(this, "%s:\n", __func__);
+        
+        pNode = hjson_ParseValue(this);
+        
+        // Return to caller.
+        return pNode;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

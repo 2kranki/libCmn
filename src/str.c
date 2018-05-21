@@ -131,6 +131,57 @@ int             str_Compare(
 }
 
 
+int             str_CompareN(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             len
+)
+{
+    int             i;
+    int             result = 0;
+    
+    // Do initialization.
+    
+    //    Compare the strings.
+    for( ;; ) {
+        if( *pszStr1 )
+            ;
+        else {
+            if( *pszStr2 )
+                result = -1;
+            break;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1 )
+                result = 1;
+            break;
+        }
+        i = *pszStr1 - *pszStr2;
+        if( i ) {
+            if( i < 0 )
+                result = -1;
+            else
+                result = 1;
+            break;
+        }
+        ++pszStr1;
+        ++pszStr2;
+        --len;
+        if (0 == len) {
+            result = 0;
+            break;
+        }
+    }
+    
+    // Return to caller.
+    return( result );
+}
+
+
 int             str_CompareW32(
     const
     W32CHR_T		*pszStr1,
@@ -561,6 +612,46 @@ bool            str_ExpandTabs(
 	return( fRc );
 }
 
+
+
+/**********************************************************
+ str_ExpandTo - Expand a String to a certain length.
+ **********************************************************/
+
+bool            str_ExpandTo(
+    char            *pszOut,
+    int             outLen,
+    int             colNo,
+    char            fillChr
+)
+{
+    int             i;
+    int             max;
+    char            *pChr;
+    
+    // Do initialization.
+    if( outLen > 0 )
+        ;
+    else
+        return false;
+    if( NULL == pszOut )
+        return false;
+    
+    /* Copy the String expanding Horizontal Tabs.
+     */
+    i = (int)str_LengthA(pszOut);
+    pChr = pszOut + i;
+    max = colNo;
+    if (max > outLen)
+        max = outLen - 1;
+    for( ; i < max; ++i ) {
+        *pChr++ = fillChr;
+    }
+    *pChr = '\0';
+    
+    // Return to caller.
+    return true;
+}
 
 
 

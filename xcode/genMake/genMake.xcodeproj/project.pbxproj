@@ -52,7 +52,6 @@
 		C40B2EB6205EC9A000BA0646 /* W32Str.c in Sources */ = {isa = PBXBuildFile; fileRef = C40B2EAE205EC99F00BA0646 /* W32Str.c */; };
 		C40B2EB7205EC9A000BA0646 /* visitor_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40B2EAF205EC9A000BA0646 /* visitor_object.c */; };
 		C40B2EB8205EC9A000BA0646 /* W32Str_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C40B2EB1205EC9A000BA0646 /* W32Str_JSON.c */; };
-		C4A4EE771FCF10FC00199650 /* genMake.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4EE761FCF10FC00199650 /* genMake.c */; };
 		C4A4EF481FCF286F00199650 /* hash32_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4EE7F1FCF285F00199650 /* hash32_object.c */; };
 		C4A4EF491FCF286F00199650 /* eResult_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4EE801FCF285F00199650 /* eResult_object.c */; };
 		C4A4EF4A1FCF286F00199650 /* blkdrcds16.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4EE811FCF285F00199650 /* blkdrcds16.c */; };
@@ -294,6 +293,9 @@
 		C4A4F1631FCF295200199650 /* srcFiles_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4F0D41FCF295000199650 /* srcFiles_object.c */; };
 		C4A4F1641FCF295200199650 /* ternary.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4F0D51FCF295100199650 /* ternary.c */; };
 		C4A4F1651FCF295200199650 /* table.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A4F0D81FCF295100199650 /* table.c */; };
+		C4EA1990207CFD6400B2588B /* genMake.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EA198F207CFD6300B2588B /* genMake.c */; };
+		C4EA199D207D0A9100B2588B /* genMake.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EA1999207D0A8F00B2588B /* genMake.c */; };
+		C4EA199E207D0A9100B2588B /* genMake_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EA199C207D0A9000B2588B /* genMake_object.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -393,7 +395,6 @@
 		C40B2EB2205EC9A000BA0646 /* W32Str_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = W32Str_internal.h; sourceTree = "<group>"; };
 		C40B2EB3205EC9A000BA0646 /* W32Str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = W32Str.h; sourceTree = "<group>"; };
 		C4A4EE6C1FCF10AB00199650 /* genMake */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = genMake; sourceTree = BUILT_PRODUCTS_DIR; };
-		C4A4EE761FCF10FC00199650 /* genMake.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = genMake.c; sourceTree = "<group>"; };
 		C4A4EE791FCF285F00199650 /* blkdrcds16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blkdrcds16.h; sourceTree = "<group>"; };
 		C4A4EE7A1FCF285F00199650 /* blocks_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blocks_internal.h; sourceTree = "<group>"; };
 		C4A4EE7B1FCF285F00199650 /* cmdutl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmdutl.h; sourceTree = "<group>"; };
@@ -864,6 +865,11 @@
 		C4A4F0D51FCF295100199650 /* ternary.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ternary.c; sourceTree = "<group>"; };
 		C4A4F0D71FCF295100199650 /* sidx_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sidx_internal.h; sourceTree = "<group>"; };
 		C4A4F0D81FCF295100199650 /* table.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = table.c; sourceTree = "<group>"; };
+		C4EA198F207CFD6300B2588B /* genMake.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = genMake.c; path = src/genMake.c; sourceTree = "<group>"; };
+		C4EA1999207D0A8F00B2588B /* genMake.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = genMake.c; sourceTree = "<group>"; };
+		C4EA199A207D0A8F00B2588B /* genMake_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genMake_internal.h; sourceTree = "<group>"; };
+		C4EA199B207D0A9000B2588B /* genMake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genMake.h; sourceTree = "<group>"; };
+		C4EA199C207D0A9000B2588B /* genMake_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = genMake_object.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -897,7 +903,7 @@
 		C4A4EE6E1FCF10AB00199650 /* genMake */ = {
 			isa = PBXGroup;
 			children = (
-				C4A4EE761FCF10FC00199650 /* genMake.c */,
+				C4EA198F207CFD6300B2588B /* genMake.c */,
 			);
 			name = genMake;
 			path = ../../programs/genMake;
@@ -1087,6 +1093,10 @@
 				C4A4EEE31FCF286700199650 /* fileio_object.c */,
 				C4A4EF011FCF286900199650 /* fileio.c */,
 				C4A4EE861FCF286000199650 /* fileio.h */,
+				C4EA199A207D0A8F00B2588B /* genMake_internal.h */,
+				C4EA199C207D0A9000B2588B /* genMake_object.c */,
+				C4EA1999207D0A8F00B2588B /* genMake.c */,
+				C4EA199B207D0A9000B2588B /* genMake.h */,
 				C40B2E42205EC74C00BA0646 /* genObj_internal.h */,
 				C40B2E41205EC74C00BA0646 /* genObj_object.c */,
 				C40B2E45205EC74C00BA0646 /* genObj.c */,
@@ -1581,6 +1591,7 @@
 				C4A4F1551FCF295200199650 /* misc.c in Sources */,
 				C4A4EFC01FCF290200199650 /* lru_object.c in Sources */,
 				C4A4F14C1FCF295200199650 /* node_JSON.c in Sources */,
+				C4EA199E207D0A9100B2588B /* genMake_object.c in Sources */,
 				C4A4F1631FCF295200199650 /* srcFiles_object.c in Sources */,
 				C4A4F14E1FCF295200199650 /* uint128_object.c in Sources */,
 				C4A4EF5B1FCF286F00199650 /* cfa_object.c in Sources */,
@@ -1612,6 +1623,7 @@
 				C40B2EB4205EC9A000BA0646 /* visitor.c in Sources */,
 				C4A4F0F51FCF295100199650 /* psxSem.c in Sources */,
 				C40B2E78205EC87E00BA0646 /* pplex2_object.c in Sources */,
+				C4EA199D207D0A9100B2588B /* genMake.c in Sources */,
 				C4A4EFAE1FCF286F00199650 /* AStr_object.c in Sources */,
 				C4A4F1071FCF295200199650 /* value_object.c in Sources */,
 				C4A4F0F31FCF295100199650 /* trctbl.c in Sources */,
@@ -1669,7 +1681,6 @@
 				C4A4EF4A1FCF286F00199650 /* blkdrcds16.c in Sources */,
 				C4A4F1601FCF295200199650 /* timer_object.c in Sources */,
 				C4A4F1101FCF295200199650 /* nodeGraph_object.c in Sources */,
-				C4A4EE771FCF10FC00199650 /* genMake.c in Sources */,
 				C4A4EF891FCF286F00199650 /* file_object.c in Sources */,
 				C4A4F15A1FCF295200199650 /* u16Array.c in Sources */,
 				C4A4EF481FCF286F00199650 /* hash32_object.c in Sources */,
@@ -1810,6 +1821,7 @@
 				C4A4EF6D1FCF286F00199650 /* dateTime.c in Sources */,
 				C40B2E5F205EC7FC00BA0646 /* parser.c in Sources */,
 				C4A4F0FA1FCF295100199650 /* prodcons_object.c in Sources */,
+				C4EA1990207CFD6400B2588B /* genMake.c in Sources */,
 				C4A4EFB61FCF28C600199650 /* memOSX.c in Sources */,
 				C4A4F12B1FCF295200199650 /* utf8_object.c in Sources */,
 				C4A4EFBF1FCF290200199650 /* listdl.c in Sources */,

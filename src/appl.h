@@ -1,22 +1,31 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          APPL Console Transmit Task (appl) Header
+//          Application Control (appl) Header
 //****************************************************************
 /*
  * Program
- *			Separate appl (appl)
+ *			Application Control (appl)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate appl to run things without complications
- *          of interfering with the main appl. A appl may be 
- *          called a appl on other O/S's.
+ *			This object provides the basis for an application.
+ *          It helps in scanning the arguments given and provides
+ *          various support functions needed by most applications.
+ *          It is meant to be inherited by an object which is
+ *          specialized for the actual application.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal appl. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *  0.      We parse "--" switches using HJSON. So, the format of
+ *          "--" switch is:
+ *              "--".name('='.HJSON_text)?
+ *          or
+ *              "--".name HJSON_text
+ *	1.      Argument switches, --force, --debug(-d), --verbose(-v),
+ *          and --help(-?,-h), are handled by this object.
+ *  2.      --debug will cause this object's trace flag to be turned
+ *          on.
+ *  3.      This object is intended to be inherited by another
+ *          object which would add the specialization needed by
+ *          the particular application.
  *
  * History
  *	06/05/2017 Generated
@@ -56,6 +65,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <AStrArray.h>
+#include        <dateTime.h>
 #include        <node.h>
 
 
@@ -85,6 +96,41 @@ extern "C" {
         //bool        (*pIsEnabled)(APPL_DATA *);
     } APPL_VTBL;
 
+    
+    typedef enum appl_arg_class_e {
+        APPL_ARG_UNKNOWN=0,
+        APPL_ARG_PROGRAM,           // uint8_t - 0 or 1
+        APPL_ARG_GROUP,             // Execute given routine
+    } APPL_ARG_CLASS;
+    
+    typedef enum appl_arg_type_e {
+        //APPL_ARG_UNKNOWN=0,       // Defined above
+        APPL_ARG_BOOL=1,            // uint8_t - 0 or 1
+        APPL_ARG_EXEC,              // Execute given routine
+        APPL_ARG_INCR,              // uint16_t - Every occurence increases the
+        //                          // associated value (default is 0);
+        APPL_ARG_NUMBER,            // Number pointer
+        APPL_ARG_PATH,              // Path pointer
+        APPL_ARG_STRING,            // AStr pointer
+    } APPL_ARG_TYPE;
+    
+    typedef struct appl_clo_s    {
+        W32CHR_T        argChr;             // UTF-8 Argument Character (optional)
+        //                                  // (Use 0 if not needed.)
+        const
+        char            *pArgLong;          // UTF-8 Long Argument Name (required)
+        uint16_t        cls;                // Argument Class (See APPL_ARG_CLASS above.)
+        uint16_t        type;               // Argument Type (See APPL_ARG_TYPE above.)
+        uint32_t        offset;             // Offset of Argument Data
+        ERESULT         (*pExec)(           // Method to execute if APPL_ARG_EXEC
+                            OBJ_ID,
+                            ASTR_DATA *         // Data Ptr for arg if given with '='
+                        );
+        //                                  // of APPL_DATA
+        const
+        char            *pDesc;             // Argument Description
+    } APPL_CLO;
+    
 
 
     /****************************************************************
@@ -108,10 +154,17 @@ extern "C" {
     
     
     APPL_DATA *     appl_New(
-        uint16_t    cArgs,
-        const
-        char        *pArgs[]
+        void
     );
+    
+    APPL_DATA *     appl_NewFromArgV(
+        int             cArgs,
+        const
+        char            *ppArgs[],
+        const
+        char            **ppEnv
+    );
+    
     
     
 
@@ -119,13 +172,27 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            appl_setArgDefs(
+        APPL_DATA       *this,
+        uint16_t        cProgramArgs,
+        APPL_CLO        *pProgramArgs,
+        uint16_t        cGroupArgs,
+        APPL_CLO        *pGroupArgs
+    );
+    
+    
+    DATETIME_DATA * appl_getDateTime(
+        APPL_DATA       *this
+    );
+    
+    
     bool            appl_getDebug(
-        APPL_DATA     *this
+        APPL_DATA       *this
     );
     
     
     bool            appl_getForce(
-        APPL_DATA     *this
+        APPL_DATA       *this
     );
     
     
@@ -134,9 +201,57 @@ extern "C" {
     );
 
 
+    bool            appl_setParseArgs(
+        APPL_DATA       *this,
+        OBJ_ID          pExit,
+        ERESULT         (*pValueDefaults)(OBJ_ID),
+        ERESULT         (*pValueLong)(
+                                      OBJ_ID          this,
+                                      bool            fTrue,
+                                      ASTR_DATA       *pName,
+                                      ASTR_DATA       *pWrk,
+                                      uint32_t        index,
+                                      ASTRARRAY_DATA  *pArgs
+                        ),
+        ERESULT         (*pValueShort)(
+                                       OBJ_ID, int *, const char ***
+                        )
+    );
+    
+    
     bool            appl_setProcessArgs(
         APPL_DATA       *this,
-        int             (*pProcessArg)(OBJ_ID, const char *)
+        OBJ_ID          pObj,
+        ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *)
+    );
+    
+    
+    PATH_DATA *     appl_getProgramPath(
+        APPL_DATA       *this
+    );
+    
+    bool            appl_setProgramPath(
+        APPL_DATA       *this,
+        PATH_DATA       *pValue
+    );
+
+    
+    bool            appl_getQuiet(
+        APPL_DATA       *this
+    );
+    
+    
+    bool            appl_setUsage(
+        APPL_DATA       *this,
+        OBJ_ID          pObj,
+        ERESULT         (*pUsageDesc)(OBJ_ID, FILE *, PATH_DATA *),
+        ERESULT         (*pUsageProgLine)(OBJ_ID, FILE *, PATH_DATA *, const char *),
+        ERESULT         (*pUsageOptions)(OBJ_ID, FILE *)
+    );
+
+    
+    int             appl_getVerbose(
+        APPL_DATA     *this
     );
     
     
@@ -146,56 +261,59 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         appl_AddProperty(
-        APPL_DATA       *this,
-        NODE_DATA       *pData
+    int             appl_Exec(
+        APPL_DATA       *this
     );
+
     
-    
-    ERESULT         appl_Disable(
-        APPL_DATA		*this
-    );
-
-
-    ERESULT         appl_Enable(
-        APPL_DATA		*this
-    );
-
-   
     APPL_DATA *     appl_Init(
-        APPL_DATA       *this,
-        uint16_t        cArgs,
-        const
-        char            **pArgs
+        APPL_DATA       *this
     );
 
 
-    ERESULT         appl_IsEnabled(
-        APPL_DATA		*this
+    ASTR_DATA *     appl_NextArg(
+        APPL_DATA       *this
     );
     
- 
+    
     uint16_t        appl_NumberOfProperties(
         APPL_DATA       *this
     );
 
     
-    int             appl_ParseArgs(
+    ERESULT         appl_ParseArgs(
         APPL_DATA       *this
     );
     
     
-    /*! Process remaining arguments after parsing off the flags.
-     */
-    int             appl_ProcessArgs(
-         APPL_DATA       *this
+    ERESULT         appl_PropertyAdd(
+        APPL_DATA       *this,
+        NODE_DATA       *pData
     );
     
     
-    NODE_DATA *     appl_Property(
+    NODE_DATA *     appl_PropertyFind(
         APPL_DATA       *this,
         const
         char            *pName
+    );
+    
+    
+    /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this    object pointer
+     @param     cArgs   number of charater strings in ppArgs
+     @param     ppArgV  point to a charater string array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         appl_SetupFromArgV(
+        APPL_DATA       *this,
+        uint16_t        cArgs,
+        const
+        char            *ppArgV[],
+        const
+        char            **ppEnv
     );
     
     

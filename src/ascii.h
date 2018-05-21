@@ -191,6 +191,16 @@ extern "C" {
     );
     
     
+    /*!
+     Convert a hexadecimal character to internal binary if possible.
+     @return:   If valid hexadecimal character, return it converted to
+                binary (ie 0..15), otherwise -1.
+     */
+    int                 ascii_FromHexW32(
+        W32CHR_T            w32Char
+    );
+    
+    
     bool                ascii_isAlphaA(
         char                asciiChar
     );
@@ -207,6 +217,11 @@ extern "C" {
     
     
     bool                ascii_isAsciiW32(
+        W32CHR_T            w32Char
+    );
+    
+    
+    bool                ascii_isHexW32(
         W32CHR_T            w32Char
     );
     
