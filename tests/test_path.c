@@ -722,6 +722,108 @@ int         test_path_SplitPath08(
 
 
 
+int         test_path_SplitFile01(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //ASTR_DATA   *pDrive = OBJ_NIL;
+    //PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pFileName = OBJ_NIL;
+    ASTR_DATA   *pFileN = OBJ_NIL;
+    ASTR_DATA   *pFileE = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = path_NewA("/x/y/z.txt");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = path_SplitFile(pObj, &pFileN, &pFileE);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        if (pFileName) {
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+        }
+        
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (6 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "/x/y/z")) );
+        if (pFileN) {
+            obj_Release(pFileN);
+            pFileN = OBJ_NIL;
+        }
+        
+        XCTAssertTrue( (pFileE) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
+        if (pFileE) {
+            obj_Release(pFileE);
+            pFileE = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_path_SplitFile02(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //ASTR_DATA   *pDrive = OBJ_NIL;
+    //PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pFileName = OBJ_NIL;
+    ASTR_DATA   *pFileN = OBJ_NIL;
+    ASTR_DATA   *pFileE = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = path_NewA("txt");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = path_SplitFile(pObj, &pFileN, &pFileE);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        if (pFileName) {
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+        }
+        
+        XCTAssertTrue( (pFileN) );
+        XCTAssertTrue( (3 == AStr_getLength(pFileN)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(pFileN), "txt")) );
+        if (pFileN) {
+            obj_Release(pFileN);
+            pFileN = OBJ_NIL;
+        }
+        
+        XCTAssertTrue( (OBJ_NIL == pFileE) );
+        //XCTAssertTrue( (3 == AStr_getLength(pFileE)) );
+        //XCTAssertTrue( (0 == strcmp(AStr_getData(pFileE), "txt")) );
+        if (pFileE) {
+            obj_Release(pFileE);
+            pFileE = OBJ_NIL;
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_path_CleanDir01(
     const
     char        *pTestName
@@ -933,7 +1035,7 @@ int         test_path_ExpandEnvVars01(
 {
     PATH_DATA   *pObj = OBJ_NIL;
     ERESULT     eRc;
-    ASTR_DATA   *pStr = OBJ_NIL;
+    //ASTR_DATA   *pStr = OBJ_NIL;
     const
     char        *pHome = NULL;
     int         len = 0;
@@ -1018,6 +1120,8 @@ TINYTEST_START_SUITE(test_path);
     TINYTEST_ADD_TEST(test_path_CleanDir03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_CleanDir02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_CleanDir01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitFile02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_path_SplitFile01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_SplitPath08,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_SplitPath07,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_SplitPath06,setUp,tearDown);

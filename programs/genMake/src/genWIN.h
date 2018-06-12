@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          GENWIN32 Console Transmit Task (genWIN32) Header
+//          GENWIN Console Transmit Task (genWIN) Header
 //****************************************************************
 /*
  * Program
- *			Separate genWIN32 (genWIN32)
+ *			Separate genWIN (genWIN)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate genWIN32 to run things without complications
- *          of interfering with the main genWIN32. A genWIN32 may be 
- *          called a genWIN32 on other O/S's.
+ *          a separate genWIN to run things without complications
+ *          of interfering with the main genWIN. A genWIN may be 
+ *          called a genWIN on other O/S's.
  *
  * Remarks
  *	1.      None
@@ -52,12 +52,15 @@
 
 
 #include        <genMake.h>
-#include        <genBase.h>
 #include        <AStr.h>
+#include        <node.h>
+#include        <nodeArray.h>
+#include        <nodeHash.h>
+#include        <szHash.h>
 
 
-#ifndef         GENWIN32_H
-#define         GENWIN32_H
+#ifndef         GENWIN_H
+#define         GENWIN_H
 
 
 
@@ -71,16 +74,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct genWIN32_data_s	GENWIN32_DATA;    // Inherits from OBJ.
+    typedef struct genWIN_data_s	GENWIN_DATA;    // Inherits from OBJ.
 
-    typedef struct genWIN32_vtbl_s	{
+    typedef struct genWIN_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in genWIN32_object.c.
+        // method names to the vtbl definition in genWIN_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(GENWIN32_DATA *);
-    } GENWIN32_VTBL;
+        //bool        (*pIsEnabled)(GENWIN_DATA *);
+    } GENWIN_VTBL;
 
 
 
@@ -97,19 +100,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to genWIN32 object if successful, otherwise OBJ_NIL.
+     @return    pointer to genWIN object if successful, otherwise OBJ_NIL.
      */
-    GENWIN32_DATA *     genWIN32_Alloc(
+    GENWIN_DATA *     genWIN_Alloc(
         void
     );
     
     
-    OBJ_ID              genWIN32_Class(
+    OBJ_ID            genWIN_Class(
         void
     );
     
     
-    GENWIN32_DATA *     genWIN32_New(
+    GENWIN_DATA *     genWIN_New(
         void
     );
     
@@ -119,18 +122,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    GENBASE_DATA *  genWIN32_getBase(
-        GENWIN32_DATA   *this
-    );
-    
-    bool            genWIN32_setBase(
-        GENWIN32_DATA   *this,
-        GENBASE_DATA    *pValue
-    );
-    
-    
-    ERESULT     genWIN32_getLastError(
-        GENWIN32_DATA		*this
+    ERESULT     genWIN_getLastError(
+        GENWIN_DATA		*this
     );
 
 
@@ -140,40 +133,43 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     genWIN32_Disable(
-        GENWIN32_DATA		*this
-    );
-
-
-    ERESULT     genWIN32_Enable(
-        GENWIN32_DATA		*this
-    );
-
-   
-    GENWIN32_DATA *   genWIN32_Init(
-        GENWIN32_DATA     *this
-    );
-
-
-    ERESULT     genWIN32_IsEnabled(
-        GENWIN32_DATA		*this
+    /*!
+     Generate the Make File writing it to the output file.
+     @param     this    GENWIN object pointer
+     @param     pNodes  The scanned JSON nodes
+     @param     pDict   Dictionary for various substitutions
+     @param     pOutput An open FILE in writeable mode
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         genWIN_GenMakefile(
+        GENWIN_DATA     *this,
+        NODE_DATA       *pNodes,
+        SZHASH_DATA     *pDict,
+        DATETIME_DATA   *pDateTime,
+        FILE            *pOutput
     );
     
- 
+    
+    GENWIN_DATA *   genWIN_Init(
+        GENWIN_DATA     *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = genWIN32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = genWIN_ToDebugString(this,4);
      @endcode 
-     @param     this    GENWIN32 object pointer
+     @param     this    GENWIN object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    genWIN32_ToDebugString(
-        GENWIN32_DATA     *this,
+    ASTR_DATA *    genWIN_ToDebugString(
+        GENWIN_DATA     *this,
         int             indent
     );
     
@@ -184,5 +180,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* GENWIN32_H */
+#endif	/* GENWIN_H */
 

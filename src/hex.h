@@ -100,7 +100,7 @@ extern "C" {
      released.
      @return:   pointer to hex object if successful, otherwise OBJ_NIL.
      */
-    HEX_DATA *     hex_Alloc(
+    HEX_DATA *      hex_Alloc(
         void
     );
     
@@ -110,7 +110,7 @@ extern "C" {
     );
     
     
-    HEX_DATA *     hex_New(
+    HEX_DATA *      hex_New(
         void
     );
     

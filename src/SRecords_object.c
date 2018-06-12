@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'genWIN64'
-//	Generated 04/18/2018 09:07:22
+//	Class Object Metods and Tables for 'SRecords'
+//	Generated 12/31/2017 11:53:25
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   GENWIN64_IS_SINGLETON     1
+//#define   SRECORDS_IS_SINGLETON     1
 
-#define			GENWIN64_OBJECT_C	    1
-#include        <genWIN64_internal.h>
+#define			SRECORDS_OBJECT_C	    1
+#include        <SRecords_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct genWIN64_class_data_s	{
+struct SRecords_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct genWIN64_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct genWIN64_class_data_s GENWIN64_CLASS_DATA;
+typedef struct SRecords_class_data_s SRECORDS_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct genWIN64_class_data_s GENWIN64_CLASS_DATA;
 
 
 static
-void *          genWIN64Class_QueryInfo(
+void *          SRecordsClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +73,17 @@ void *          genWIN64Class_QueryInfo(
 
 static
 const
-OBJ_INFO        genWIN64_Info;            // Forward Reference
+OBJ_INFO        SRecords_Info;            // Forward Reference
 
 
 
 
 static
-bool            genWIN64Class_IsKindOf(
+bool            SRecordsClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_GENWIN64_CLASS == classID) {
+    if (OBJ_IDENT_SRECORDS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +94,25 @@ bool            genWIN64Class_IsKindOf(
 
 
 static
-uint16_t		genWIN64Class_WhoAmI(
+uint16_t		SRecordsClass_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_GENWIN64_CLASS;
+    return OBJ_IDENT_SRECORDS_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&genWIN64_Info,
-    genWIN64Class_IsKindOf,
+	&SRecords_Info,
+    SRecordsClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    genWIN64_Class,
-    genWIN64Class_WhoAmI,
-    (P_OBJ_QUERYINFO)genWIN64Class_QueryInfo
+    SRecords_Class,
+    SRecordsClass_WhoAmI,
+    (P_OBJ_QUERYINFO)SRecordsClass_QueryInfo
 };
 
 
@@ -122,8 +122,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-GENWIN64_CLASS_DATA  genWIN64_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_GENWIN64_CLASS, 0, 1},
+SRECORDS_CLASS_DATA  SRecords_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SRECORDS_CLASS, 0, 1},
 	//0
 };
 
@@ -134,13 +134,13 @@ GENWIN64_CLASS_DATA  genWIN64_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          genWIN64Class_QueryInfo(
+void *          SRecordsClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    GENWIN64_CLASS_DATA *this = objId;
+    SRECORDS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -154,16 +154,15 @@ void *          genWIN64Class_QueryInfo(
             return this;
             break;
             
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
+        // Query for an address to specific data within the object.
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
-                case 'O':
-                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
-                        return &this->pObjCatalog;
+                case 'C':
+                    if (str_Compare("ClassObject", (char *)pStr) == 0) {
+                        return (void *)&SRecords_ClassObj;
                     }
                     break;
                     
@@ -171,7 +170,6 @@ void *          genWIN64Class_QueryInfo(
                     break;
             }
             break;
-#endif
             
         case OBJ_QUERYINFO_TYPE_INFO:
             return (void *)obj_getInfo(this);
@@ -183,7 +181,7 @@ void *          genWIN64Class_QueryInfo(
                     
                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return genWIN64Class_WhoAmI;
+                        return SRecordsClass_WhoAmI;
                     }
                     break;
                     
@@ -209,11 +207,11 @@ void *          genWIN64Class_QueryInfo(
 //===========================================================
 
 static
-bool            genWIN64_IsKindOf(
+bool            SRecords_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_GENWIN64 == classID) {
+    if (OBJ_IDENT_SRECORDS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -225,57 +223,57 @@ bool            genWIN64_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            genWIN64_Dealloc(
+void            SRecords_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          genWIN64_Class(
+OBJ_ID          SRecords_Class(
     void
 )
 {
-    return (OBJ_ID)&genWIN64_ClassObj;
+    return (OBJ_ID)&SRecords_ClassObj;
 }
 
 
 static
-uint16_t		genWIN64_WhoAmI(
+uint16_t		SRecords_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_GENWIN64;
+    return OBJ_IDENT_SRECORDS;
 }
 
 
 const
-GENWIN64_VTBL     genWIN64_Vtbl = {
+SRECORDS_VTBL     SRecords_Vtbl = {
     {
-        &genWIN64_Info,
-        genWIN64_IsKindOf,
-#ifdef  GENWIN64_IS_SINGLETON
+        &SRecords_Info,
+        SRecords_IsKindOf,
+#ifdef  SRECORDS_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        genWIN64_Dealloc,
-        genWIN64_Class,
-        genWIN64_WhoAmI,
-        (P_OBJ_QUERYINFO)genWIN64_QueryInfo,
-        (P_OBJ_TOSTRING)genWIN64_ToDebugString,
-        NULL,			// genWIN64_Enable,
-        NULL,			// genWIN64_Disable,
-        NULL,			// (P_OBJ_ASSIGN)genWIN64_Assign,
-        NULL,			// (P_OBJ_COMPARE)genWIN64_Compare,
-        NULL, 			// (P_OBJ_PTR)genWIN64_Copy,
-        NULL, 			// (P_OBJ_PTR)genWIN64_DeepCopy,
-        NULL 			// (P_OBJ_HASH)genWIN64_Hash,
+        SRecords_Dealloc,
+        SRecords_Class,
+        SRecords_WhoAmI,
+        (P_OBJ_QUERYINFO)SRecords_QueryInfo,
+        (P_OBJ_TOSTRING)SRecords_ToDebugString,
+        NULL,			// SRecords_Enable,
+        NULL,			// SRecords_Disable,
+        NULL,			// (P_OBJ_ASSIGN)SRecords_Assign,
+        NULL,			// (P_OBJ_COMPARE)SRecords_Compare,
+        NULL, 			// (P_OBJ_PTR)SRecords_Copy,
+        NULL,           // (P_OBJ_PTR)SRecords_DeepCopy,
+        NULL 			// (P_OBJ_HASH)SRecords_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //genWIN64_IsEnabled,
+    //SRecords_IsEnabled,
  
 };
 
@@ -283,12 +281,12 @@ GENWIN64_VTBL     genWIN64_Vtbl = {
 
 static
 const
-OBJ_INFO        genWIN64_Info = {
-    "genWIN64",
-    "Generate Makefile for WIN64",
-    (OBJ_DATA *)&genWIN64_ClassObj,
+OBJ_INFO        SRecords_Info = {
+    "SRecords",
+    "Motorola S-Record Reader/Writer",
+    (OBJ_DATA *)&SRecords_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&genWIN64_Vtbl
+    (OBJ_IUNKNOWN *)&SRecords_Vtbl
 };
 
 

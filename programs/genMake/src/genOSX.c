@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <genOSX_internal.h>
+#include        <fbso.h>
 #include        <trace.h>
 
 
@@ -59,16 +60,241 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            genOSX_task_body(
-        void            *pData
+    //---------------------------------------------------------------
+    //  G e n e r a t e  O b j e c t  C o m p i l a t i o n
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genOSX_CompileObjectStr(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir
     )
     {
-        //GENOSX_DATA  *this = pData;
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
         
-    }
+        // Do initialization.
+        TRC_OBJ(
+                this,
+                "genOSX_CompileObject(\"%s\", %s",
+                pName
+                );
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
 #endif
+        if (NULL == pSrcDir) {
+            pSrcDir = "SRCDIR";
+        }
+        if (NULL == pObjDir) {
+            pObjDir = "OBJDIR";
+        }
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+        
+        if (0 == strcmp(pObjDir, "OBJDIR")) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "OBJS += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n\n",
+                                     pName,
+                                     pName
+                    );
+        }
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "$(%s)/%s.o: $(%s)/%s.c\n\n",
+                                 pObjDir,
+                                 pName,
+                                 pSrcDir,
+                                 pName
+                );
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
+                                 pObjDir
+                );
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "$(%s)/%s_object.o: $(%s)/%s_object.c\n",
+                                 pObjDir,
+                                 pName,
+                                 pSrcDir,
+                                 pName
+                );
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n\n",
+                                 pObjDir
+                );
+        
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //  G e n e r a t e  R o u t i n e  C o m p i l a t i o n
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genOSX_CompileRoutineStr(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pFileName = OBJ_NIL;
+        ASTR_DATA       *pFileExt = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            //genBase_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+         if (NULL == pSrcDir) {
+            pSrcDir = "SRCDIR";
+        }
+        if (NULL == pObjDir) {
+            pObjDir = "OBJDIR";
+        }
+        pPath = path_NewA(pName);
+        if (OBJ_NIL == pPath) {
+            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+        eRc = path_SplitFile(pPath, &pFileName, &pFileExt);
+        BREAK_NULL(pFileName);
+        BREAK_NULL(pFileExt);
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            obj_Release(pFileExt);
+            pFileExt = OBJ_NIL;
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+            genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        TRC_OBJ(this, "genOSX_CompileRoutine(\"%s\", %s", pName);
+
+        if (0 == strcmp(pObjDir, "OBJDIR")) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "OBJS += $(%s)/%s.o\n\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName)
+                                     );
+        }
+        if (AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(%s)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
+                                     pObjDir
+                                     );
+        }
+        else if (AStr_CompareA(pFileExt, "asm") == ERESULT_SUCCESS_EQUAL) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(%s)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(AS) $(AFLAGS) -c -o $(%s)/$(@F) $<\n\n",
+                                     pObjDir
+                                     );
+        }
+        else if (AStr_CompareA(pFileExt, "s") == ERESULT_SUCCESS_EQUAL) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(%s)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<\n\n",
+                                     pObjDir
+                                     );
+        }
+        else if (AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(SRCDIR)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
+                                     pObjDir
+                                     );
+        }
+        else {
+            obj_Release(pFileExt);
+            pFileExt = OBJ_NIL;
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+        
+    // Return to caller.
+    obj_Release(pFileExt);
+    pFileExt = OBJ_NIL;
+    obj_Release(pFileName);
+    pFileName = OBJ_NIL;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    genOSX_setLastError(this, ERESULT_SUCCESS);
+    return pStr;
+}
+
+
+
 
 
 
@@ -119,54 +345,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    //---------------------------------------------------------------
-    //                        B a s e
-    //---------------------------------------------------------------
-    
-    GENBASE_DATA *  genOSX_getBase(
-        GENOSX_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genOSX_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        genOSX_setLastError(this, ERESULT_SUCCESS);
-        return this->pBase;
-    }
-    
-    
-    bool        genOSX_setBase(
-        GENOSX_DATA     *this,
-        GENBASE_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genOSX_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pBase) {
-            obj_Release(this->pBase);
-        }
-        this->pBase = pValue;
-        
-        genOSX_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                  D i c t i o n a r y
     //---------------------------------------------------------------
@@ -258,6 +436,95 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //          L i b r a r y  I n c l u d e  P a t h
+    //---------------------------------------------------------------
+    
+    ERESULT         genOSX_setLibIncludePath(
+        GENOSX_DATA     *this,
+        PATH_DATA *     (*pLibIncludePath)(
+                                         GENOSX_DATA *,
+                                         const char *,
+                                         const char *,
+                                         const char *
+                        )
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        this->pLibIncludePath = pLibIncludePath;
+        
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //          L i b r a r y  I n s t a l l e d  P a t h
+    //---------------------------------------------------------------
+    
+    ERESULT         genOSX_setLibInstalledPath(
+        GENOSX_DATA     *this,
+        PATH_DATA *     (*pLibInstalledPath)(
+                                         GENOSX_DATA *,
+                                         const char *,
+                                         const char *,
+                                         const char *
+                        )
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        this->pLibInstalledPath = pLibInstalledPath;
+        
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //          L i b r a r y  N a m e
+    //---------------------------------------------------------------
+    
+    ERESULT         genOSX_setLibName(
+        GENOSX_DATA     *this,
+        ASTR_DATA *     (*pLibName)(
+                               GENOSX_DATA *,
+                               const char *,
+                               const char *
+                        )
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        this->pLibName = pLibName;
+        
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -478,6 +745,131 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
+    //---------------------------------------------------------------
+    
+    /*!
+     Library Include paths can be used for different purposes and
+     can refer to different types of subdirectories. This requires
+     dictionay entries for "LibIncludePath" and "LibIncludePrefix".
+     */
+    
+    ASTR_DATA *     genOSX_CFlagsLibIncludePath(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Library Name
+        const
+        char            *pLibIncludePath,
+        const
+        char            *pLibNamePrefix
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        PATH_DATA       *pLib = OBJ_NIL;
+        ASTR_DATA       *pFullName =  OBJ_NIL;
+        
+        // Do initialization.
+        TRC_OBJ(this, "genOSX_CFlagsLibIncludePath(\"%s\", %s", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        pFullName = this->pLibName(this, pName, pLibNamePrefix);
+        if (pLib) {
+            return OBJ_NIL;
+        }
+        pLib = this->pLibIncludePath(this, pName, pLibIncludePath, pLibNamePrefix);
+        if (pLib) {
+            return OBJ_NIL;
+        }
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+        
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "CFLAGS += -I%s/src -I%s/src/$(SYS)\n",
+                                 path_getData(pLib),
+                                 path_getData(pLib)
+                );
+                
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //  G e n e r a t e  L i b r a r y  O b j e c t  P a t h
+    //---------------------------------------------------------------
+    
+    /*!
+     Library Include paths can be used for different purposes and
+     can refer to different types of subdirectories.
+     */
+    
+    ASTR_DATA *     genOSX_CFlagsLibObjectPath(
+        GENOSX_DATA     *this,
+        const
+        char            *pName              // Library Name
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        char            *pLibObjectPath = NULL;
+        char            *pLibObjectPrefix = NULL;
+        
+        // Do initialization.
+        TRC_OBJ(
+                this,
+                "genOSX_CFlagsLibObjectPath(\"%s\", %s",
+                pName
+                );
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        pLibObjectPath   = szHash_FindA(this->pDict, "LibObjectPath");
+        if (NULL == pLibObjectPath) {
+            return OBJ_NIL;
+        }
+        TRC_OBJ(this, "\tLibObjectPath=\"%s\"", pLibObjectPath);
+        pLibObjectPrefix = szHash_FindA(this->pDict, "LibObjectPrefix");
+        TRC_OBJ(this, "\tLibObjectPrefix=\"%s\"", (pLibObjectPrefix ? pLibObjectPrefix : ""));
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+        
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "CFLAGS_LIBS += -l%s%s -L%s/%s%s\n",
+                                 pLibObjectPrefix,
+                                 pName,
+                                 pLibObjectPath,
+                                 (pLibObjectPrefix ? pLibObjectPrefix : ""),
+                                 pName
+                );
+        
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -541,48 +933,40 @@ extern "C" {
     //  G e n e r a t e  O b j e c t  C o m p i l a t i o n
     //---------------------------------------------------------------
     
-    ASTR_DATA *     genOSX_CompileObject(
+    ERESULT         genOSX_CompileObject(
         GENOSX_DATA     *this,
         const
-        char            *pName,             // Object Class Name
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir
+        char            *pName              // Object Class Name
     )
     {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+        const
+        char            *pSrcDir;
+        const
+        char            *pObjDir;
+        const
+        char            *pObjVar;
+
         // Do initialization.
         TRC_OBJ(this, "genOSX_CompileObject(\"%s\", %s, %s)", pName, pSrcDir, pObjDir);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
-        }
-        if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
-        }
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
         
-        if (0 == strcmp(pObjDir, "OBJDIR")) {
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "OBJS += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n\n",
-                                     pName,
-                                     pName
-                    );
-        }
+        eRc =   fbso_Print(
+                           genBase_getOut((GENBASE_DATA *)this),
+                           "%s += $(%S)/%s.o $(%s)/%s_object.o\n\n",
+                           pObjVar,
+                           pObjDir,
+                           pName,
+                           pObjDir,
+                           pName
+                );
+#ifdef XYZZY
         eRc =   AStr_AppendPrint(
                                  pStr,
                                  "$(%s)/%s.o: $(%s)/%s.c\n\n",
@@ -609,10 +993,11 @@ extern "C" {
                                  "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n\n",
                                  pObjDir
                 );
+#endif
         
         // Return to caller.
-        genOSX_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
+        genOSX_setLastError(this, eRc);
+        return eRc;
     }
     
     
@@ -624,7 +1009,7 @@ extern "C" {
     ASTR_DATA *     genOSX_CompileRoutine(
         GENOSX_DATA    *this,
         const
-        char            *pName,             // Object Class Name
+        char            *pName,                 // Routine File Name
         const
         char            *pSrcDir,
         const
@@ -673,6 +1058,12 @@ extern "C" {
             return OBJ_NIL;
         }
         
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "OBJS += $(%s)/%s.o\n\n",
+                                 pObjDir,
+                                 AStr_getData(pFileName)
+                );
         if (AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL) {
             eRc =   AStr_AppendPrint(
                                      pStr,
@@ -744,14 +1135,6 @@ extern "C" {
             pStr = OBJ_NIL;
             genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
-        }
-        if (0 == strcmp(pObjDir, "OBJDIR")) {
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "OBJS += $(%s)/%s.o\n\n",
-                                     pObjDir,
-                                     pFileName
-                                     );
         }
     
         // Return to caller.
@@ -887,8 +1270,8 @@ extern "C" {
         }
 #endif
 
-        genOSX_setBase(this, OBJ_NIL);
-        genOSX_setDict(this, OBJ_NIL);
+        //genOSX_setBase(this, OBJ_NIL);
+        //genOSX_setDict(this, OBJ_NIL);
         genOSX_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -943,7 +1326,37 @@ extern "C" {
     }
     
     
+    const char *    genOSX_DictFind(
+        GENOSX_DATA     *this,
+        const
+        char            *pName
+    )
+    {
+        //ERESULT         eRc;
+        const
+        char            *pData = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return pData;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pDict) {
+            return pData;
+        }
+        
+        pData = szHash_FindA(this->pDict, pName);
+        
+        // Return to caller.
+        return pData;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -1002,6 +1415,210 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
+    //---------------------------------------------------------------
+    
+    /*!
+     Generate the Library Path given a name, the libraries super
+     directory and an optional prefix.  The library super directory
+     and optional library prefix name can either be supplied as a
+     parameter of the method or they can be provided by the internal
+     dictionary.  The dictionary will be accessed for "LibIncludePath"
+     or "LibNamePrefix" if their respective method parameter is NULL.
+     The diotionary entries for either can be over-ridden by passing
+     "" instead of NULL.
+     @param     this    object pointer
+     @param     pName   library name
+     @param     pLibIncludePath Optional directory which contains the
+     library.  If NULL, then "LibIncludePath" must
+     be present in the dictionary.
+     @param     pLibNamePrefix  Optional prefix to the library name
+     such as "lib".  If NULL, then "LibNamePrefix"
+     will be used if present in the dictionary.
+     */
+    
+    PATH_DATA *     genOSX_LibIncludePath(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Library Name
+        const
+        char            *pLibIncludePath,
+        const
+        char            *pLibNamePrefix
+    )
+    {
+        ERESULT         eRc;
+        PATH_DATA       *pPath =  OBJ_NIL;
+        ASTR_DATA       *pFullName = OBJ_NIL;
+        
+        // Do initialization.
+        TRC_OBJ(this, "genOSX_LibIncludePath(\"%s\", %s", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        pFullName = this->pLibName(this, pName, pLibNamePrefix);
+        if ( OBJ_NIL == pFullName) {
+            genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
+        if ((OBJ_NIL == pLibIncludePath) && this->pDict) {
+            pLibIncludePath = szHash_FindA(this->pDict, "LibIncludePath");
+        }
+        TRC_OBJ(this, "\tLibIncludePath=\"%s\"", (pLibIncludePath ? pLibIncludePath : ""));
+        
+        if (pLibIncludePath) {
+            pPath = path_NewA(pLibIncludePath);
+            if (OBJ_NIL == pPath) {
+                genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                return OBJ_NIL;
+            }
+            eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
+        }
+        else {
+            pPath = path_NewA(AStr_getData(pFullName));
+            if (OBJ_NIL == pPath) {
+                genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                return OBJ_NIL;
+            }
+            eRc = ERESULT_SUCCESS;
+        }
+        
+        // Return to caller.
+        obj_Release(pFullName);
+        pFullName = OBJ_NIL;
+        genOSX_setLastError(this, eRc);
+        return pPath;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //  G e n e r a t e  L i b r a r y  I n s t a l l e d  P a t h
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     genOSX_LibInstalledPath(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Library Name
+        const
+        char            *pLibInstalledPath,
+        const
+        char            *pLibNamePrefix
+    )
+    {
+        ERESULT         eRc;
+        PATH_DATA       *pPath =  OBJ_NIL;
+        ASTR_DATA       *pFullName = OBJ_NIL;
+        
+        // Do initialization.
+        TRC_OBJ(this, "genOSX_LibInstalledPath(\"%s\", %s", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        pFullName = this->pLibName(this, pName, pLibNamePrefix);
+        if ( OBJ_NIL == pFullName) {
+            genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
+        if ((OBJ_NIL == pLibInstalledPath) && this->pDict) {
+            pLibInstalledPath = szHash_FindA(this->pDict, "LibInstalledPath");
+        }
+        TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
+        
+        if (pLibInstalledPath) {
+            pPath = path_NewA(pLibInstalledPath);
+            if (OBJ_NIL == pPath) {
+                genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                return OBJ_NIL;
+            }
+            eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
+        }
+        else {
+            pPath = path_NewA(AStr_getData(pFullName));
+            if (OBJ_NIL == pPath) {
+                genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                return OBJ_NIL;
+            }
+            eRc = ERESULT_SUCCESS;
+        }
+        
+        // Return to caller.
+        obj_Release(pFullName);
+        pFullName = OBJ_NIL;
+        genOSX_setLastError(this, eRc);
+        return pPath;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //  G e n e r a t e  t h e  f u l l  L i b r a r y  N a m e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genOSX_LibName(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Library Name
+        const
+        char            *pLibNamePrefix
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pFullName = OBJ_NIL;
+        
+        // Do initialization.
+        TRC_OBJ(this, "genOSX_LibName(\"%s\", %s", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
+            pLibNamePrefix = szHash_FindA(this->pDict, "LibNamePrefix");
+        }
+        TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
+        
+        if (pLibNamePrefix) {
+            pFullName = AStr_NewA(pLibNamePrefix);
+            if (OBJ_NIL == pFullName) {
+                genOSX_setLastError(this, ERESULT_GENERAL_FAILURE);
+                return OBJ_NIL;
+            }
+            eRc = AStr_AppendA(pFullName, pName);
+        }
+        else {
+            pFullName = AStr_NewA(pName);
+            if (OBJ_NIL == pFullName) {
+                genOSX_setLastError(this, ERESULT_GENERAL_FAILURE);
+                return OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return pFullName;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //         G e n e r a t e  F i n a l
     //---------------------------------------------------------------
@@ -1094,9 +1711,11 @@ extern "C" {
 #endif
         
         fprintf(pOutput, "# Generated file do not edit!\n");
-        pStr = dateTime_ToString(pDateTime);
-        fprintf(pOutput, "# (%s)\n\n", AStr_getData(pStr));
-        obj_Release(pStr);
+        if (pDateTime) {
+            pStr = dateTime_ToString(pDateTime);
+            fprintf(pOutput, "# (%s)\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
         fprintf(pOutput, "\n");
         //fprintf(pOutput, "CC=clang\n");
         fprintf(pOutput, "LIBNAM=%s\n", AStr_getData(pName));
@@ -1107,7 +1726,7 @@ extern "C" {
         fprintf(pOutput, "CFLAGS_LIBS = \n");
         fprintf(pOutput, "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
         if (pLibDeps) {
-            char            *pLibIncludePrefix = szHash_FindA(genBase_getDict(this->pBase), "libIncludePrefix");
+            char            *pLibIncludePrefix = szHash_FindA(this->pDict, "libIncludePrefix");
             iMax = nodeArray_getSize(pLibDeps);
             for (i=0; i<iMax; ++i) {
                 pNode = nodeArray_Get(pLibDeps, i+1);
@@ -1212,6 +1831,7 @@ extern "C" {
         GENOSX_DATA     *this,
         NODE_DATA       *pNodes,
         SZHASH_DATA     *pDict,
+        DATETIME_DATA   *pDateTime,
         FILE            *pOutput
     )
     {
@@ -1224,9 +1844,9 @@ extern "C" {
         NODEARRAY_DATA  *pRoutines = OBJ_NIL;
         NODEHASH_DATA   *pTests = OBJ_NIL;
         NODEHASH_DATA   *pMacosx = OBJ_NIL;
-        NODEHASH_DATA   *pWin32 = OBJ_NIL;
+        //NODEHASH_DATA   *pWin32 = OBJ_NIL;
         ASTR_DATA       *pName = OBJ_NIL;
-        DATETIME_DATA   *pDateTime = OBJ_NIL;
+        //DATETIME_DATA   *pDateTime = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1235,8 +1855,21 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (OBJ_NIL == pNodes) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == pDict) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pOutput) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
-        pDateTime = genBase_getDateTime(this->pBase);
+        this->pDict = pDict;
+        this->pOutput = pOutput;
         
         pPrimaryHash = node_getData(pNodes);
         BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
@@ -1279,7 +1912,7 @@ extern "C" {
             else {
                 pNode = node_getData(pNode);
                 pPrograms = node_getData(pNode);
-                BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEHASH)));
+                BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEARRAY)));
             }
             pNode = nodeHash_FindA(pPrimaryHash, "tests");
             if (NULL == pNode) {
@@ -1297,22 +1930,25 @@ extern "C" {
                 pMacosx = node_getData(pNode);
                 BREAK_FALSE((obj_IsKindOf(pMacosx, OBJ_IDENT_NODEHASH)));
             }
-            pNode = nodeHash_FindA(pPrimaryHash, "win32");
-            if (NULL == pNode) {
-            }
-            else {
-                pNode = node_getData(pNode);
-                pWin32 = node_getData(pNode);
-                BREAK_FALSE((obj_IsKindOf(pWin32, OBJ_IDENT_NODEHASH)));
-            }
         }
         
         genOSX_GenInitial(this, pName, pLibDeps, pDateTime, pOutput);
-        genOSX_GenObjects(this, pObjects, pRoutines, pOutput);
+
+        if (pObjects || pRoutines) {
+            fprintf(pOutput, "\n");
+            fprintf(pOutput, "OBJS =\n");
+            if (pObjects) {
+                genOSX_GenObjects(this, pObjects, pOutput);
+            }
+            if (pRoutines) {
+                genOSX_GenRoutines(this, pRoutines, pOutput);
+            }
+        }
+
         genOSX_GenOSSpecific(this, pMacosx, pOutput);
         genOSX_GenLibrary(this, pOutput);
         if (pPrograms) {
-            genOSX_GenPrograms(this, pPrograms, pOutput);
+            //genOSX_GenPrograms(this, pPrograms, pOutput);
         }
         genOSX_GenTests(this, pTests, pOutput);
         genOSX_GenFinal(this, pOutput);
@@ -1331,7 +1967,6 @@ extern "C" {
     ERESULT         genOSX_GenObjects(
         GENOSX_DATA     *this,
         NODEHASH_DATA   *pObjects,
-        NODEARRAY_DATA  *pRoutines,
         FILE            *pOutput
     )
     {
@@ -1345,11 +1980,9 @@ extern "C" {
         const
         char            *pName;
 
-        fprintf(pOutput, "\n");
-        fprintf(pOutput, "OBJS =\n");
         if (pObjects) {
-            eRc = nodeHash_Nodes(pObjects, &pArray);
-            if (ERESULT_FAILED(eRc)) {
+            pArray = nodeHash_Nodes(pObjects);
+            if (OBJ_NIL == pArray) {
             }
             else {
                 BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
@@ -1358,8 +1991,8 @@ extern "C" {
                     pNode = nodeArray_Get(pArray, i+1);
                     if (pNode) {
                         pName = node_getNameUTF8(pNode);
-                        pWrk =  genBase_CompileObject(
-                                                      this->pBase,
+                        pWrk =  genOSX_CompileObjectStr(
+                                                      this,
                                                       pName,
                                                       "SRCDIR",
                                                       "OBJDIR"
@@ -1369,24 +2002,6 @@ extern "C" {
                         pWrk = OBJ_NIL;
                         mem_Free((void *)pName);
                     }
-                }
-            }
-        }
-        if (pRoutines) {
-            iMax = nodeArray_getSize(pRoutines);
-            for (i=0; i<iMax; ++i) {
-                pNode = nodeArray_Get(pRoutines, i+1);
-                if (pNode) {
-                    pStr = node_getData(pNode);
-                    pWrk =  genBase_CompileRoutine(
-                                                   this->pBase,
-                                                   AStr_getData(pStr),
-                                                   "SRCDIR",
-                                                   "OBJDIR"
-                                                   );
-                    fprintf(pOutput, "%s", AStr_getData(pWrk));
-                    obj_Release(pWrk);
-                    pWrk = OBJ_NIL;
                 }
             }
         }
@@ -1432,8 +2047,8 @@ extern "C" {
         // the headers copied across.
         
         if (pSection) {
-            eRc = nodeHash_Nodes(pSection, &pArray);
-            if (ERESULT_FAILED(eRc)) {
+            pArray = nodeHash_Nodes(pSection);
+            if (OBJ_NIL == pArray) {
             }
             else {
                 iMax = nodeArray_getSize(pArray);
@@ -1523,13 +2138,174 @@ extern "C" {
     //         G e n e r a t e  P r o g r a m s
     //---------------------------------------------------------------
     
+    ERESULT         genOSX_GenProgram(
+        GENOSX_DATA     *this,
+        NODEHASH_DATA   *pProgram,
+        FILE            *pOutput
+    )
+    {
+        //ERESULT         eRc;
+        NODE_DATA       *pNode;
+        NODEARRAY_DATA  *pLibDeps = OBJ_NIL;
+        NODEHASH_DATA   *pObjects = OBJ_NIL;
+        NODEARRAY_DATA  *pRoutines = OBJ_NIL;
+        NODEHASH_DATA   *pTests = OBJ_NIL;
+        NODEHASH_DATA   *pMacosx = OBJ_NIL;
+        //NODEHASH_DATA   *pWin32 = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        ASTR_DATA       *pDir = OBJ_NIL;
+        //DATETIME_DATA   *pDateTime = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pProgram) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pOutput) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        BREAK_FALSE((obj_IsKindOf(pProgram, OBJ_IDENT_NODEHASH)));
+        pNode = nodeHash_FindA(pProgram, "name");
+        if (NULL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        else {
+            pNode = node_getData(pNode);
+            pName = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pName, OBJ_IDENT_ASTR)));
+        }
+        pNode = nodeHash_FindA(pProgram, "sub_dir");
+        if (NULL == pNode) {
+            pDir = pName;
+        }
+        else {
+            pNode = node_getData(pNode);
+            pDir = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pDir, OBJ_IDENT_ASTR)));
+        }
+        pNode = nodeHash_FindA(pProgram, "lib_deps");
+        if (NULL == pNode) {
+        }
+        else {
+            pNode = node_getData(pNode);
+            pLibDeps = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pLibDeps, OBJ_IDENT_NODEARRAY)));
+        }
+        pNode = nodeHash_FindA(pProgram, "objects");
+        if (NULL == pNode) {
+        }
+        else {
+            pNode = node_getData(pNode);
+            pObjects = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pObjects, OBJ_IDENT_NODEHASH)));
+        }
+        pNode = nodeHash_FindA(pProgram, "routines");
+        if (NULL == pNode) {
+        }
+        else {
+            pNode = node_getData(pNode);
+            pRoutines = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
+        }
+        pNode = nodeHash_FindA(pProgram, "tests");
+        if (NULL == pNode) {
+        }
+        else {
+            pNode = node_getData(pNode);
+            pTests = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
+        }
+        pNode = nodeHash_FindA(pProgram, "macosx");
+        if (NULL == pNode) {
+        }
+        else {
+            pNode = node_getData(pNode);
+            pMacosx = node_getData(pNode);
+            BREAK_FALSE((obj_IsKindOf(pMacosx, OBJ_IDENT_NODEHASH)));
+        }
+        
+        //genOSX_GenInitial(this, pName, pLibDeps, pDateTime, pOutput);
+        
+        if (pObjects || pRoutines) {
+            fprintf(pOutput, "\n");
+            fprintf(pOutput, "OBJS_%s =\n", AStr_getData(pName));
+            if (pObjects) {
+                genOSX_GenObjects(this, pObjects, pOutput);
+            }
+            if (pRoutines) {
+                genOSX_GenRoutines(this, pRoutines, pOutput);
+            }
+        }
+        
+        //genOSX_GenOSSpecific(this, pMacosx, pOutput);
+        //genOSX_GenLibrary(this, pOutput);
+        //genOSX_GenTests(this, pTests, pOutput);
+        //genOSX_GenFinal(this, pOutput);
+        
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS_FALSE);
+        return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
     ERESULT         genOSX_GenPrograms(
+        GENOSX_DATA     *this,
+        NODEARRAY_DATA  *pPrograms,
+        FILE            *pOutput
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pNode;
+        NODEARRAY_DATA  *pArray =  OBJ_NIL;
+        NODEHASH_DATA   *pHash =  OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        int             i;
+        int             iMax;
+        const
+        char            *pName;
+        
+        if (pPrograms) {
+            iMax = nodeArray_getSize(pPrograms);
+            for (i=0; i<iMax; ++i) {
+                pNode = nodeArray_Get(pPrograms, i+1);
+                if (pNode) {
+                    pHash = node_getData(pNode);
+                    BREAK_FALSE((obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)));
+                    eRc = genOSX_GenProgram(this, pHash, pOutput);
+                    if (ERESULT_FAILED(eRc)) {
+                        DEBUG_BREAK();
+                        genOSX_setLastError(this, eRc);
+                        return eRc;
+                    }
+                }
+            }
+        }
+        
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    ERESULT         genOSX_GenProgramsOld(
         GENOSX_DATA     *this,
         NODEHASH_DATA   *pPrograms,
         FILE            *pOutput
     )
     {
-        ERESULT         eRc;
         NODE_DATA       *pNode;
         NODEARRAY_DATA  *pArray =  OBJ_NIL;
         NODEARRAY_DATA  *pDeps =  OBJ_NIL;
@@ -1559,8 +2335,8 @@ extern "C" {
             fprintf(pOutput, "\n");
             fprintf(pOutput, "\n");
             fprintf(pOutput, "\n");
-            eRc = nodeHash_Nodes(pPrograms, &pArray);
-            if (ERESULT_FAILED(eRc)) {
+            pArray = nodeHash_Nodes(pPrograms);
+            if (OBJ_NIL == pArray) {
             }
             else {
                 BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
@@ -1651,6 +2427,59 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //          G e n e r a t e  R o u t i n e s
+    //---------------------------------------------------------------
+    
+    ERESULT         genOSX_GenRoutines(
+        GENOSX_DATA     *this,
+        NODEARRAY_DATA  *pRoutines,
+        FILE            *pOutput
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pNode;
+        NODEARRAY_DATA  *pArray =  OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        int             i;
+        int             iMax;
+        const
+        char            *pName;
+        
+        if (pRoutines) {
+            iMax = nodeArray_getSize(pRoutines);
+            for (i=0; i<iMax; ++i) {
+                pNode = nodeArray_Get(pRoutines, i+1);
+                if (pNode) {
+                    pStr = node_getData(pNode);
+                    pWrk =  genOSX_CompileRoutineStr(
+                                                     this,
+                                                     AStr_getData(pStr),
+                                                     "SRCDIR",
+                                                     "OBJDIR"
+                                                     );
+                    if (pWrk) {
+                        fprintf(pOutput, "%s", AStr_getData(pWrk));
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                    }
+#ifndef NDEBUG
+                    else {
+                        DEBUG_BREAK();
+                    }
+#endif
+                }
+            }
+        }
+        
+        // Return to caller.
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //              G e n e r a t e  T e s t s
     //---------------------------------------------------------------
     
@@ -1686,8 +2515,8 @@ extern "C" {
             fprintf(pOutput, "\n");
             fprintf(pOutput, "\n");
             fprintf(pOutput, "\n");
-            eRc = nodeHash_Nodes(pTests, &pArray);
-            if (ERESULT_FAILED(eRc)) {
+            pArray = nodeHash_Nodes(pTests);
+            if (OBJ_NIL == pArray) {
             }
             else {
                 BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
@@ -1795,21 +2624,21 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, MAIN_IDENT_GENOSX);
+        this = (OBJ_ID)genBase_Init((GENBASE_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, MAIN_IDENT_GENOSX);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_GENOSX);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, MAIN_IDENT_GENOSX);   // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genOSX_Vtbl);
         
         genOSX_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pLibIncludePath = genOSX_LibIncludePath;
+        this->pLibName = genOSX_LibName;
 
     #ifdef NDEBUG
     #else
@@ -1914,25 +2743,24 @@ extern "C" {
                 return (void *)genOSX_Class();
                 break;
                 
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
+        // Query for an address to specific data within the object.
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'C':
+                        if (str_Compare("ClassObject", (char *)pStr) == 0) {
+                            return (void *)&genOSX_ClassObj;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -2020,7 +2848,7 @@ extern "C" {
         }
 #endif
               
-        pInfo = genOSX_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

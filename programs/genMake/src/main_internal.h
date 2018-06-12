@@ -41,7 +41,6 @@
 
 #include        <main.h>
 #include        <appl_internal.h>
-#include        <genBase.h>
 
 
 #ifndef MAIN_INTERNAL_H
@@ -67,14 +66,12 @@ struct main_data_s	{
     ERESULT         eRc;
     uint16_t        makeType;       // See MAKETYPE
     uint16_t        reserved;
-    ASTR_DATA       *pStr;
     SZHASH_DATA     *pDict;
-    GENBASE_DATA    *pBase;
     OBJ_ID          pGen;
     PATH_DATA       *pFilePath;
     PATH_DATA       *pOutputPath;
     NODE_DATA       *pNodes;
-    FILE            *pOut;
+    TEXTOUT_DATA    *pOut;
 
     volatile
     int32_t         numRead;
@@ -114,6 +111,21 @@ struct main_data_s	{
         int             *pArgC,
         const
         char            ***pppArgV
+    );
+    
+    ERESULT         main_ParseInputFile(
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
+    );
+    
+    ERESULT         main_ParseInputStr(
+        MAIN_DATA       *this,
+        const
+        char            *pStr
+    );
+    
+    ERESULT         main_ProcessInit(
+        MAIN_DATA       *this
     );
     
     ERESULT         main_ProcessArg(

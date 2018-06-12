@@ -38,9 +38,12 @@
  *          input look ahead and advance function.  In addition,
  *          you probably want to provide a parse function and
  *          possibly error functions.
- *  2.      This object requires the use of the Static String table
- *          for any tokenized strings. Strings may not be self-
- *          contained within a token.
+ *  2.      This object requires the use of the global Static
+ *          String table for any tokenized strings. Strings may
+ *          not be self-contained within a token.  When tokens
+ *          are no longer needed, you should issue:
+ *              szTbl_SharedReset( );
+ *          to reset the global Static String Table.
  *
  * History
  *	09/07/2015 Generated

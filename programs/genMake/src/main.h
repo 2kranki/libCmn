@@ -53,8 +53,10 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <fbso.h>
 #include        <path.h>
 #include        <szHash.h>
+#include        <textOut.h>
 
 
 #ifndef         MAIN_H
@@ -170,7 +172,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         main_DictAdd(
+    ERESULT         main_DictAddUpdate(
         MAIN_DATA       *this,
         const
         char            *pName,
@@ -195,6 +197,21 @@ extern "C" {
     );
 
    
+    /*!
+     Generate a makefile given the internal nodes and the dictionary.
+     Example:
+     @code
+     ASTR_DATA      *pDesc = main_ToDebugString(this,4);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         main_GenMakefile(
+        MAIN_DATA       *this
+    );
+    
+    
     MAIN_DATA *     main_Init(
         MAIN_DATA       *this
     );

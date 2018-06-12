@@ -502,8 +502,10 @@ extern "C" {
         fRc = misc_Disable(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc(this);
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }

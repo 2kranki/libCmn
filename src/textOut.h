@@ -108,42 +108,80 @@ extern "C" {
     );
     
     
+    TEXTOUT_DATA *     textOut_NewAStr(
+        void
+    );
+    
+    
 
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     textOut_getLastError(
-        TEXTOUT_DATA		*this
+    ERESULT         textOut_getLastError(
+        TEXTOUT_DATA	*this
     );
 
 
+    uint16_t        textOut_getOffset(
+        TEXTOUT_DATA    *this
+    );
+    
+    bool            textOut_setOffset(
+        TEXTOUT_DATA    *this,
+        uint16_t        value
+    );
+    
+
+    char            textOut_getOffsetChr(
+        TEXTOUT_DATA    *this
+    );
+    
+    bool            textOut_setOffsetChr(
+        TEXTOUT_DATA    *this,
+        char            value
+    );
+    
+    
+    ASTR_DATA *     textOut_getStr(
+        TEXTOUT_DATA    *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     textOut_Disable(
-        TEXTOUT_DATA		*this
-    );
-
-
-    ERESULT     textOut_Enable(
-        TEXTOUT_DATA		*this
-    );
-
-   
-    TEXTOUT_DATA *   textOut_Init(
+    TEXTOUT_DATA *  textOut_Init(
         TEXTOUT_DATA     *this
     );
 
 
-    ERESULT     textOut_IsEnabled(
-        TEXTOUT_DATA		*this
+    ERESULT         textOut_Print(
+        TEXTOUT_DATA    *this,
+        const
+        char            *pFormat,
+        ...
     );
     
- 
+    
+    ERESULT         textOut_Putc(
+        TEXTOUT_DATA    *this,
+        const
+        char            chr
+    );
+    
+    
+    ERESULT         textOut_Putwc(
+        TEXTOUT_DATA    *this,
+        const
+        W32CHR_T        chr
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

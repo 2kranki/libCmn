@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   genWIN32_internal.h
- *	Generated 04/18/2018 09:07:15
+ * File:   SRecords_internal.h
+ *	Generated 11/22/2017 13:10:45
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,12 @@
 
 
 
-#include    <genWIN32.h>
+#include    <SRecords.h>
+#include    <srcFile.h>
 
 
-#ifndef GENWIN32_INTERNAL_H
-#define	GENWIN32_INTERNAL_H
+#ifndef SRECORDS_INTERNAL_H
+#define	SRECORDS_INTERNAL_H
 
 
 
@@ -51,43 +52,71 @@
 extern "C" {
 #endif
 
+    typedef enum fsm_action_e {
+        FSM_ACTION_UNKNOWN=0,
+        FSM_ACTION_SKIP_LEADING_WS,
+        FSM_ACTION_READ_CHAR,
+        FSM_ACTION_ADD_CHECKSUM,
+        FSM_ACTION_CHECK_CHECKSUM,
+        FSM_ACTION_STORE_RECORD_LENGTH,
+        FSM_ACTION_ZERO_DATA_INDEX,
+        FSM_ACTION_STORE_DATA,
+        FSM_ACTION_INCREASE_DATA_INDEX,
+        FSM_ACTION_COMPLETION,
+    } FSM_ACTION;
 
+    typedef enum fsm_state_e {
+        FSM_STATE_UNKNOWN=0,
+        FSM_STATE_START=1,
+        FSM_STATE_FINISH=1,
+        FSM_STATE_SKIP_LEADING_WS,
+        FSM_STATE_READ_ADDR_1_1,
+        FSM_STATE_READ_ADDR_1_2,
+        FSM_STATE_READ_ADDR_2_1,
+        FSM_STATE_READ_ADDR_2_2,
+        FSM_STATE_READ_ADDR_3_1,
+        FSM_STATE_READ_ADDR_3_2,
+        FSM_STATE_READ_ADDR_4_1,
+        FSM_STATE_READ_ADDR_4_2,
+        FSM_STATE_READ_DATA_1,
+        FSM_STATE_READ_DATA_2,
+        FSM_STATE_READ_CHECKSUM_1,
+        FSM_STATE_READ_CHECKSUM_2,
+    } FSM_STATE;
+    
 
-
+    
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
-#pragma pack(push, 1)
-struct genWIN32_data_s	{
+ #pragma pack(push, 1)
+struct SRecords_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    uint16_t        size;		    // maximum number of elements
+    uint16_t        size;		/* maximum number of elements           */
     uint16_t        reserved;
-    GENBASE_DATA    *pBase;
-    SZHASH_DATA     *pDict;
     ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    SRCFILE_DATA    *pSrc;
+    uint32_t        startAddr;
+    uint8_t         *pAddrBase;
+    uint8_t         *pAddrCur;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct genWIN32_class_data_s  genWIN32_ClassObj;
+    struct SRecords_class_data_s  SRecords_ClassObj;
 
     extern
     const
-    GENWIN32_VTBL         genWIN32_Vtbl;
+    SRECORDS_VTBL       SRecords_Vtbl;
 
 
 
@@ -95,31 +124,31 @@ struct genWIN32_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            genWIN32_setLastError(
-        GENWIN32_DATA     *this,
+   bool            SRecords_setLastError(
+        SRECORDS_DATA   *this,
         ERESULT         value
     );
 
 
-    OBJ_IUNKNOWN *  genWIN32_getSuperVtbl(
-        GENWIN32_DATA     *this
+    OBJ_IUNKNOWN *  SRecords_getSuperVtbl(
+        SRECORDS_DATA   *this
     );
 
 
-    void            genWIN32_Dealloc(
+    void            SRecords_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          genWIN32_QueryInfo(
+    void *          SRecords_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     genWIN32_ToJSON(
-        GENWIN32_DATA      *this
+    ASTR_DATA *     SRecords_ToJSON(
+        SRECORDS_DATA   *this
     );
 
 
@@ -127,8 +156,8 @@ struct genWIN32_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			genWIN32_Validate(
-        GENWIN32_DATA       *this
+    bool			SRecords_Validate(
+        SRECORDS_DATA   *this
     );
 #endif
 
@@ -138,5 +167,5 @@ struct genWIN32_data_s	{
 }
 #endif
 
-#endif	/* GENWIN32_INTERNAL_H */
+#endif	/* SRECORDS_INTERNAL_H */
 

@@ -400,6 +400,8 @@ extern "C" {
         OBJ_IDENT_SRCFILES_CLASS,
         OBJ_IDENT_SRCLOC,               // Source Location (File, Line, Col)
         OBJ_IDENT_SRCLOC_CLASS,
+        OBJ_IDENT_SRECORDS,             // S-Record Reader/Writer
+        OBJ_IDENT_SRECORDS_CLASS,
         OBJ_IDENT_SYMATTR,              // Symbol Table Attributes
         OBJ_IDENT_SYMATTR_CLASS,
         OBJ_IDENT_SYMENTRY,             // Symbol Table Entry

@@ -73,30 +73,23 @@ struct genBase_data_s	{
     uint16_t        makeType;       // Program, Library, etc
     uint16_t        osType;         // OSX, Win32, Win64, etc
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    ASTR_DATA       *pName;         // (Not Owned)
     SZHASH_DATA     *pDict;
     NODE_DATA       *pNodes;
     DATETIME_DATA   *pDateTime;
     FBSO_DATA       *pOut;
+    NODEHASH_DATA   *pObjDirs;      // Object Directories
+    NODEHASH_DATA   *pHeaders;      // (Not Owned)
+    NODEARRAY_DATA  *pLibDeps;      // (Not Owned)
+    NODEHASH_DATA   *pObjects;      // (Not Owned)
+    NODEHASH_DATA   *pPrograms;     // (Not Owned)
+    NODEARRAY_DATA  *pRoutines;     // (Not Owned)
+    NODEHASH_DATA   *pTests;        // (Not Owned)
 
     PATH_DATA *     (*pLibIncludePath)(GENBASE_DATA *, const char *, const char *, const char *);
     PATH_DATA *     (*pLibInstalledPath)(GENBASE_DATA *, const char *, const char *, const char *);
     ASTR_DATA *     (*pLibName)(GENBASE_DATA *, const char *, const char *);
     PATH_DATA *     (*pLibObjectPath)(GENBASE_DATA *, const char *, const char *, const char *);
-
-    // Routines supplied by inheritors
-    ERESULT         (*pFinal)(GENBASE_DATA *);
-    ERESULT         (*pInitial)(GENBASE_DATA *, ASTR_DATA *, NODEARRAY_DATA  *);
-    ERESULT         (*pLibrary)(GENBASE_DATA *);
-    ERESULT         (*pObjects)(GENBASE_DATA *, NODEHASH_DATA *, NODEARRAY_DATA  *);
-    ERESULT         (*pOsSpecific)(GENBASE_DATA *, NODEHASH_DATA  *);
-    ERESULT         (*pPrograms)(GENBASE_DATA *, NODEHASH_DATA  *);
-    ERESULT         (*pTests)(GENBASE_DATA *, NODEHASH_DATA *);
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
@@ -121,16 +114,74 @@ struct genBase_data_s	{
     );
 
 
+    bool            genBase_setObjDirs(
+        GENBASE_DATA    *this,
+        NODEHASH_DATA   *pValue
+    );
+    
+    
     OBJ_IUNKNOWN *  genBase_getSuperVtbl(
         GENBASE_DATA     *this
     );
 
 
+    ERESULT         genBase_CompileObject(
+        GENBASE_DATA    *this,
+        const
+        char            *pName
+    );
+    
+    
     void            genBase_Dealloc(
         OBJ_ID          objId
     );
 
 
+    ERESULT         genBase_GenFinal(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenInitial(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenLibrary(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenObject(
+        GENBASE_DATA    *this,
+        NODE_DATA       *pNode
+    );
+    
+    ERESULT         genBase_GenObjects(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenOSSpecific(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenPrograms(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenRoutines(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ERESULT         genBase_GenTests(
+        GENBASE_DATA    *this
+    );
+    
+    
     void *          genBase_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

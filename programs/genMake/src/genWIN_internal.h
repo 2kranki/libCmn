@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   genWIN64_internal.h
- *	Generated 04/18/2018 09:07:22
+ * File:   genWIN_internal.h
+ *	Generated 04/18/2018 09:07:15
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,11 @@
 
 
 
-#include    <genWIN64.h>
+#include    <genWIN.h>
 
 
-#ifndef GENWIN64_INTERNAL_H
-#define	GENWIN64_INTERNAL_H
+#ifndef GENWIN_INTERNAL_H
+#define	GENWIN_INTERNAL_H
 
 
 
@@ -59,7 +59,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct genWIN64_data_s	{
+struct genWIN_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -69,25 +69,25 @@ struct genWIN64_data_s	{
     ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
-    GENBASE_DATA    *pBase;
     SZHASH_DATA     *pDict;
     ASTR_DATA       *pStr;
+    FILE            *pOutput;       // (Not owned)
 
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
-
+    PATH_DATA *     (*pLibIncludePath)(GENWIN_DATA *, const char *, const char *, const char *);
+    PATH_DATA *     (*pLibInstalledPath)(GENWIN_DATA *, const char *, const char *, const char *);
+    ASTR_DATA *     (*pLibName)(GENWIN_DATA *, const char *, const char *);
+    PATH_DATA *     (*pLibObjectPath)(GENWIN_DATA *, const char *, const char *, const char *);
+    
 };
 #pragma pack(pop)
 
     extern
     const
-    struct genWIN64_class_data_s  genWIN64_ClassObj;
+    struct genWIN_class_data_s  genWIN_ClassObj;
 
     extern
     const
-    GENWIN64_VTBL         genWIN64_Vtbl;
+    GENWIN_VTBL             genWIN_Vtbl;
 
 
 
@@ -95,31 +95,31 @@ struct genWIN64_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            genWIN64_setLastError(
-        GENWIN64_DATA     *this,
+   bool            genWIN_setLastError(
+        GENWIN_DATA     *this,
         ERESULT         value
     );
 
 
-    OBJ_IUNKNOWN *  genWIN64_getSuperVtbl(
-        GENWIN64_DATA     *this
+    OBJ_IUNKNOWN *  genWIN_getSuperVtbl(
+        GENWIN_DATA     *this
     );
 
 
-    void            genWIN64_Dealloc(
+    void            genWIN_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          genWIN64_QueryInfo(
+    void *          genWIN_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     genWIN64_ToJSON(
-        GENWIN64_DATA      *this
+    ASTR_DATA *     genWIN_ToJSON(
+        GENWIN_DATA      *this
     );
 
 
@@ -127,8 +127,8 @@ struct genWIN64_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			genWIN64_Validate(
-        GENWIN64_DATA       *this
+    bool			genWIN_Validate(
+        GENWIN_DATA       *this
     );
 #endif
 
@@ -138,5 +138,5 @@ struct genWIN64_data_s	{
 }
 #endif
 
-#endif	/* GENWIN64_INTERNAL_H */
+#endif	/* GENWIN_INTERNAL_H */
 

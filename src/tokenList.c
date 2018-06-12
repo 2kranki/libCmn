@@ -404,9 +404,12 @@ extern "C" {
             mem_Free( pBlock );
         }
         
-        obj_Dealloc( this );
-        this = NULL;
-        
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
         // Return to caller.
     }
     
@@ -674,6 +677,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&tokenList_Vtbl);
         
         cbSize = HASH_BLOCK_SIZE - sizeof(TOKENLIST_BLOCK);

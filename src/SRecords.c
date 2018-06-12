@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   genWIN32.c
- *	Generated 04/18/2018 09:07:15
+ * File:   SRecords.c
+ *	Generated 11/22/2017 13:10:45
  *
  */
 
@@ -41,8 +41,9 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <genWIN32_internal.h>
-#include        <trace.h>
+#include    <SRecords_internal.h>
+#include    <ascii.h>
+#include    <srcErrors.h>
 
 
 
@@ -61,11 +62,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            genWIN32_task_body(
+    void            SRecords_task_body(
         void            *pData
     )
     {
-        //GENWIN32_DATA  *this = pData;
+        //SRECORDS_DATA  *this = pData;
         
     }
 #endif
@@ -81,12 +82,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    GENWIN32_DATA *     genWIN32_Alloc(
-        void
+    SRECORDS_DATA *     SRecords_Alloc(
     )
     {
-        GENWIN32_DATA       *this;
-        uint32_t        cbSize = sizeof(GENWIN32_DATA);
+        SRECORDS_DATA   *this;
+        uint32_t        cbSize = sizeof(SRECORDS_DATA);
         
         // Do initialization.
         
@@ -98,15 +98,14 @@ extern "C" {
 
 
 
-    GENWIN32_DATA *     genWIN32_New(
-        void
+    SRECORDS_DATA *     SRecords_New(
     )
     {
-        GENWIN32_DATA       *this;
+        SRECORDS_DATA       *this;
         
-        this = genWIN32_Alloc( );
+        this = SRecords_Alloc( );
         if (this) {
-            this = genWIN32_Init(this);
+            this = SRecords_Init(this);
         } 
         return this;
     }
@@ -120,66 +119,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                        B a s e
-    //---------------------------------------------------------------
-    
-    GENBASE_DATA *  genWIN32_getBase(
-        GENWIN32_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genWIN32_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
-        return this->pBase;
-    }
-    
-    
-    bool            genWIN32_setBase(
-        GENWIN32_DATA   *this,
-        GENBASE_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genWIN32_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pBase) {
-            obj_Release(this->pBase);
-        }
-        this->pBase = pValue;
-        
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         genWIN32_getLastError(
-        GENWIN32_DATA     *this
+    ERESULT         SRecords_getLastError(
+        SRECORDS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -190,14 +141,14 @@ extern "C" {
     }
 
 
-    bool            genWIN32_setLastError(
-        GENWIN32_DATA     *this,
+    bool            SRecords_setLastError(
+        SRECORDS_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -214,34 +165,34 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        genWIN32_getPriority(
-        GENWIN32_DATA     *this
+    uint16_t        SRecords_getPriority(
+        SRECORDS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            genWIN32_setPriority(
-        GENWIN32_DATA     *this,
+    bool            SRecords_setPriority(
+        SRECORDS_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -249,7 +200,7 @@ extern "C" {
 
         //this->priority = value;
 
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -259,19 +210,19 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        genWIN32_getSize(
-        GENWIN32_DATA       *this
+    uint32_t        SRecords_getSize(
+        SRECORDS_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -281,33 +232,33 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * genWIN32_getStr(
-        GENWIN32_DATA     *this
+    ASTR_DATA * SRecords_getStr(
+        SRECORDS_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
     
-    bool        genWIN32_setStr(
-        GENWIN32_DATA     *this,
+    bool        SRecords_setStr(
+        SRECORDS_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -319,7 +270,7 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -329,22 +280,22 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  genWIN32_getSuperVtbl(
-        GENWIN32_DATA     *this
+    OBJ_IUNKNOWN *  SRecords_getSuperVtbl(
+        SRECORDS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -367,27 +318,27 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = genWIN32__Assign(this,pOther);
+        ERESULT eRc = SRecords__Assign(this,pOther);
      @endcode 
-     @param     this    GENWIN32 object pointer
-     @param     pOther  a pointer to another GENWIN32 object
+     @param     this    SRECORDS object pointer
+     @param     pOther  a pointer to another SRECORDS object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         genWIN32_Assign(
-        GENWIN32_DATA		*this,
-        GENWIN32_DATA      *pOther
+    ERESULT         SRecords_Assign(
+        SRECORDS_DATA		*this,
+        SRECORDS_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !genWIN32_Validate(pOther) ) {
+        if( !SRecords_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -420,73 +371,13 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        genWIN32_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return genWIN32_getLastError(this);
+        SRecords_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return SRecords_getLastError(this);
     }
     
-    
-    
-    //---------------------------------------------------------------
-    //                      C o m p a r e
-    //---------------------------------------------------------------
-    
-    /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
-     */
-    ERESULT         genWIN32_Compare(
-        GENWIN32_DATA     *this,
-        GENWIN32_DATA     *pOther
-    )
-    {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
-#ifdef NDEBUG
-#else
-        if( !genWIN32_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( !genWIN32_Validate(pOther) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        this->eRc = eRc;
-        return eRc;
-    }
     
     
     //---------------------------------------------------------------
@@ -497,32 +388,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        genWIN32      *pCopy = genWIN32_Copy(this);
+        SRecords      *pCopy = SRecords_Copy(this);
      @endcode 
-     @param     this    GENWIN32 object pointer
-     @return    If successful, a GENWIN32 object which must be released,
+     @param     this    SRECORDS object pointer
+     @return    If successful, a SRECORDS object which must be released,
                 otherwise OBJ_NIL.
-     @warning  Remember to release the returned the GENWIN32 object.
+     @warning  Remember to release the returned the SRECORDS object.
      */
-    GENWIN32_DATA *     genWIN32_Copy(
-        GENWIN32_DATA       *this
+    SRECORDS_DATA *     SRecords_Copy(
+        SRECORDS_DATA       *this
     )
     {
-        GENWIN32_DATA       *pOther = OBJ_NIL;
+        SRECORDS_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = genWIN32_New( );
+        pOther = SRecords_New( );
         if (pOther) {
-            eRc = genWIN32_Assign(this, pOther);
+            eRc = SRecords_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -531,7 +422,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -541,11 +432,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            genWIN32_Dealloc(
+    void            SRecords_Dealloc(
         OBJ_ID          objId
     )
     {
-        GENWIN32_DATA   *this = objId;
+        SRECORDS_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -553,7 +444,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -561,11 +452,15 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((GENWIN32_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SRECORDS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        genWIN32_setStr(this, OBJ_NIL);
+        SRecords_setStr(this, OBJ_NIL);
+        if (this->pSrc) {
+            obj_Release(this->pSrc);
+            this->pSrc = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -582,15 +477,15 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         genWIN32_Disable(
-        GENWIN32_DATA		*this
+    ERESULT         SRecords_Disable(
+        SRECORDS_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -601,7 +496,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -611,15 +506,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         genWIN32_Enable(
-        GENWIN32_DATA		*this
+    ERESULT         SRecords_Enable(
+        SRECORDS_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -630,7 +525,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -640,11 +535,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    GENWIN32_DATA *   genWIN32_Init(
-        GENWIN32_DATA       *this
+    SRECORDS_DATA *   SRecords_Init(
+        SRECORDS_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(GENWIN32_DATA);
+        uint32_t        cbSize = sizeof(SRECORDS_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -661,34 +556,34 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, MAIN_IDENT_GENWIN32);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SRECORDS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_GENWIN32);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRECORDS);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&genWIN32_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SRecords_Vtbl);
         
-        genWIN32_setLastError(this, ERESULT_GENERAL_FAILURE);
+        SRecords_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "genWIN32::offsetof(eRc) = %lu\n", offsetof(GENWIN32_DATA,eRc));
-        fprintf(stderr, "genWIN32::sizeof(GENWIN32_DATA) = %lu\n", sizeof(GENWIN32_DATA));
+        //fprintf(stderr, "SRecords::offsetof(eRc) = %lu\n", offsetof(SRECORDS_DATA,eRc));
+        //fprintf(stderr, "SRecords::sizeof(SRECORDS_DATA) = %lu\n", sizeof(SRECORDS_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(GENWIN32_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SRECORDS_DATA));
     #endif
 
         return this;
@@ -700,27 +595,27 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         genWIN32_IsEnabled(
-        GENWIN32_DATA		*this
+    ERESULT         SRecords_IsEnabled(
+        SRECORDS_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            genWIN32_setLastError(this, ERESULT_SUCCESS_TRUE);
+            SRecords_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        genWIN32_setLastError(this, ERESULT_SUCCESS_FALSE);
+        SRecords_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -737,14 +632,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = genWIN32_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SRecords_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "genWIN32", prefix,
+                        the object name, "SRecords", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -752,13 +647,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          genWIN32_QueryInfo(
+    void *          SRecords_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        GENWIN32_DATA     *this = objId;
+        SRECORDS_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -767,7 +662,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -775,29 +670,7 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)genWIN32_Class();
-                break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -806,22 +679,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return genWIN32_Disable;
+                            return SRecords_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return genWIN32_Enable;
+                            return SRecords_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return genWIN32_ToDebugString;
+                            return SRecords_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return genWIN32_ToJSON;
+                            return SRecords_ToJSON;
                         }
                         break;
                         
@@ -831,9 +704,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == genWIN32_ToDebugString)
+                if (pData == SRecords_ToDebugString)
                     return "ToDebugString";
-                if (pData == genWIN32_ToJSON)
+                if (pData == SRecords_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -847,23 +720,145 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                            R e a d
+    //---------------------------------------------------------------
+    
+    ERESULT         SRecords_ReadFromAStr(
+        SRECORDS_DATA   *this,
+        ASTR_DATA       *pStr,
+        uint8_t         *pMemory,
+        uint32_t        cMemory,
+        uint32_t        *pMemoryUsed
+    )
+    {
+        char            nextChar[4];
+        TOKEN_DATA      *pToken;
+        int32_t         chr;
+        int32_t         cls;
+        
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !SRecords_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        nextChar[2] = '\0';
+        nextChar[3] = '\0';
+        if (pMemoryUsed) {
+            *pMemoryUsed = 0;
+        }
+
+        this->pSrc =    srcFile_NewFromAStr(
+                                            pStr,
+                                            OBJ_NIL,
+                                            1,
+                                            4,                  // tabsize
+                                            true,               // true == Expand Tabs
+                                            true                // true == Remove NL's
+                        );
+        if (OBJ_NIL == this->pSrc) {
+            DEBUG_BREAK();
+            return ERESULT_FAILURE;
+        }
+        
+        // Skip over leading white space.
+        pToken = srcFile_InputAdvance(this->pSrc, 1);
+        chr = token_getChrW32(pToken);
+        cls = token_getClass(pToken);
+        while (cls == ASCII_LEXICAL_WHITESPACE) {
+            pToken = srcFile_InputAdvance(this->pSrc, 1);
+            chr = token_getChrW32(pToken);
+            cls = token_getClass(pToken);
+        }
+        
+        if (chr == 'S') {
+            // Found Record type.
+        }
+            
+        // Return to caller.
+        SRecords_setLastError(this, ERESULT_SUCCESS);
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
+    
+    ASTR_DATA *     SRecords_ToStringS1(
+        uint16_t        load,
+        uint16_t        start,
+        uint16_t        len,
+        uint8_t         *pData
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        rem = len;
+        uint32_t        size;
+        uint8_t         *pChr = pData;
+        uint8_t         chksum;
+        
+        // Do initialization.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        // Create S0 Record.
+        AStr_AppendA(pStr, "S00600004844521B\n");
+        
+        // Create S1 Record(s).
+        while (rem) {
+            size = rem;
+            if (size > 16) {
+                size = 16;
+            }
+            chksum = size + 2 + 1;
+            chksum += ((load >> 8) & 0xFF) + (load & 0xFF);
+            AStr_AppendPrint(pStr, "S1%02X%04X", (size + 2 + 1), (load & 0xFFFF));
+            for (i=0; i<size; ++i) {
+                chksum += *pChr;
+                AStr_AppendHex8(pStr, *pChr);
+                ++pChr;
+            }
+            AStr_AppendPrint(pStr, "%02X\n", ((0xFF - chksum) & 0xFF));
+            load += size;
+            rem -= size;
+        }
+        
+        // Create S9 Record.
+        size = 0;
+        chksum = size + 2 + 1;
+        chksum += ((start >> 8) & 0xFF) + (start & 0xFF);
+        AStr_AppendPrint(pStr, "S9%02X%04X", (size + 2 + 1), (start & 0xFFFF));
+        AStr_AppendPrint(pStr, "%02X\n", ((0xFF - chksum) & 0xFF));
+
+        // Return to caller.
+        return pStr;
+    }
+    
+    
     
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = genWIN32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SRecords_ToDebugString(this,4);
      @endcode 
-     @param     this    GENWIN32 object pointer
+     @param     this    SRECORDS object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     genWIN32_ToDebugString(
-        GENWIN32_DATA      *this,
+    ASTR_DATA *     SRecords_ToDebugString(
+        SRECORDS_DATA   *this,
         int             indent
     )
     {
@@ -879,13 +874,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = genWIN32_Vtbl.iVtbl.pInfo;
+        pInfo = SRecords_Vtbl.iVtbl.pInfo;
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -895,7 +890,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    genWIN32_getSize(this)
+                    SRecords_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -921,25 +916,24 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
     
     
-    ASTR_DATA *     genWIN32_ToJSON(
-        GENWIN32_DATA      *this
+    ASTR_DATA *     SRecords_ToJSON(
+        SRECORDS_DATA      *this
     )
     {
         ERESULT         eRc;
-        int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
-        if( !genWIN32_Validate(this) ) {
+        if( !SRecords_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -955,7 +949,7 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        genWIN32_setLastError(this, ERESULT_SUCCESS);
+        SRecords_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -967,15 +961,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            genWIN32_Validate(
-        GENWIN32_DATA      *this
+    bool            SRecords_Validate(
+        SRECORDS_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, MAIN_IDENT_GENWIN32) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_SRECORDS) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -991,7 +985,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(GENWIN32_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(SRECORDS_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

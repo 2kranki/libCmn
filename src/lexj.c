@@ -502,17 +502,12 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((LEXJ_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
         lexj_setInput(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        lex_Dealloc(this);          // Needed for inheritance
-        //obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.

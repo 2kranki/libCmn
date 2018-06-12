@@ -40,6 +40,7 @@
 
 
 #include        <genOSX.h>
+#include        <genBase_internal.h>
 
 
 #ifndef GENOSX_INTERNAL_H
@@ -62,7 +63,7 @@ extern "C" {
 struct genOSX_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    GENBASE_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
@@ -70,15 +71,15 @@ struct genOSX_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pStr;
-    GENBASE_DATA    *pBase;
-    SZHASH_DATA     *pDict;
-    FILE            *pOutput;
+    DATETIME_DATA   *pDateTime;
+    SZHASH_DATA     *pDict;         // (Not owned)
+    FILE            *pOutput;       // (Not owned)
 
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
-
+    PATH_DATA *     (*pLibIncludePath)(GENOSX_DATA *, const char *, const char *, const char *);
+    PATH_DATA *     (*pLibInstalledPath)(GENOSX_DATA *, const char *, const char *, const char *);
+    ASTR_DATA *     (*pLibName)(GENOSX_DATA *, const char *, const char *);
+    PATH_DATA *     (*pLibObjectPath)(GENOSX_DATA *, const char *, const char *, const char *);
+    
 };
 #pragma pack(pop)
 
@@ -136,7 +137,6 @@ struct genOSX_data_s	{
     ERESULT         genOSX_GenObjects(
         GENOSX_DATA     *this,
         NODEHASH_DATA   *pObjects,
-        NODEARRAY_DATA  *pRoutines,
         FILE            *pOutput
     );
     
@@ -150,7 +150,14 @@ struct genOSX_data_s	{
     
     ERESULT         genOSX_GenPrograms(
         GENOSX_DATA     *this,
-        NODEHASH_DATA   *pPrograms,
+        NODEARRAY_DATA  *pPrograms,
+        FILE            *pOutput
+    );
+    
+    
+    ERESULT         genOSX_GenRoutines(
+        GENOSX_DATA     *this,
+        NODEARRAY_DATA  *pRoutines,
         FILE            *pOutput
     );
     

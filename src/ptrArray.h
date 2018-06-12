@@ -181,6 +181,24 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code
+     ASTR_DATA      *pDesc = ptrArray_ToDebugString(this, 4);
+     @endcode
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    ptrArray_ToDebugString(
+        PTRARRAY_DATA   *this,
+        int             indent
+    );
+    
+    
     // Visit() visits each entry in the table in order from 1 to N.
     // The visit routine needs to return true to continue the visiting
     // or false to break it off.

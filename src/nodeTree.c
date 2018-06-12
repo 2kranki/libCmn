@@ -1081,8 +1081,10 @@ extern "C" {
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc(this);
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -1633,7 +1635,7 @@ extern "C" {
         NODETREE_DATA   *this
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODEARRAY_DATA  *pProperties = OBJ_NIL;
         
         // Do initialization.
@@ -1646,7 +1648,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            eRc = nodeHash_Nodes(this->pProperties, &pProperties);
+            pProperties = nodeHash_Nodes(this->pProperties);
         }
         
         // Return to caller.

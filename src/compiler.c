@@ -1351,23 +1351,23 @@ extern "C" {
     //---------------------------------------------------------------
     
     NODEARRAY_DATA * compiler_Properties(
-        COMPILER_DATA       *cbp
+        COMPILER_DATA       *this
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODEARRAY_DATA  *pProperties = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if( !compiler_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        if (cbp->pProperties) {
-            eRc = nodeHash_Nodes(cbp->pProperties, &pProperties);
+        if (this->pProperties) {
+            pProperties = nodeHash_Nodes(this->pProperties);
         }
         
         // Return to caller.

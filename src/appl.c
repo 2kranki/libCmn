@@ -553,6 +553,28 @@ extern "C" {
         return fRc;
     }
     
+    bool            appl_setDebug(
+        APPL_DATA       *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (fValue)
+            this->fDebug = true;
+        else
+            this->fDebug = false;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
 
     
     //---------------------------------------------------------------
@@ -715,7 +737,8 @@ extern "C" {
     bool            appl_setProcessArgs(
         APPL_DATA       *this,
         OBJ_ID          pObj,
-        int             (*pProcessArg)(OBJ_ID, ASTR_DATA *)
+        ERESULT         (*pProcessInit)(OBJ_ID),
+        ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *)
     )
     {
 #ifdef NDEBUG
@@ -727,6 +750,7 @@ extern "C" {
 #endif
         
         this->pObjProcess = pObj;
+        this->pProcessInit = pProcessInit;
         this->pProcessArg = pProcessArg;
         
         return true;
@@ -1131,8 +1155,9 @@ extern "C" {
         appl_setProperties(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -1210,7 +1235,6 @@ extern "C" {
         APPL_DATA       *this
     )
     {
-        int             iRc = 0;
         ERESULT         eRc;
         ASTR_DATA       *pStr;
         
@@ -1225,25 +1249,34 @@ extern "C" {
         
         eRc = appl_ParseArgs(this);
         if (ERESULT_FAILED(eRc)) {
-            return 8;
+            appl_setLastError(this, eRc);
+            return 16;
         }
 
         if (this->pProcessArg) {
+            if (this->pProcessInit) {
+                eRc = this->pProcessInit(this->pObjProcess);
+                if (ERESULT_FAILED(eRc)) {
+                    appl_setLastError(this, eRc);
+                    return 16;
+                }
+            }
             for (;;) {
                 pStr = appl_NextArg(this);
                 if (OBJ_NIL == pStr) {
                     break;
                 }
-                iRc = this->pProcessArg(this->pObjProcess, pStr);
-                if (iRc) {
-                    return iRc;
+                eRc = this->pProcessArg(this->pObjProcess, pStr);
+                if (ERESULT_FAILED(eRc)) {
+                    appl_setLastError(this, eRc);
+                    return 16;
                 }
             }
         }
 
         // Return to caller.
         appl_setLastError(this, ERESULT_SUCCESS);
-        return iRc;
+        return 0;
     }
     
     
@@ -1820,6 +1853,23 @@ extern "C" {
                 
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
+                break;
+                
+                // Query for an address to specific data within the object.
+                // This should be used very sparingly since it breaks the
+                // object's encapsulation.
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+                        
+                    case 'C':
+                        if (str_Compare("ClassObject", (char *)pStr) == 0) {
+                            return (void *)&appl_ClassObj;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
                 break;
                 
             case OBJ_QUERYINFO_TYPE_METHOD:

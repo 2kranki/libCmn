@@ -206,9 +206,20 @@ extern "C" {
 
     // Returns a array of all nodes in the hash
     // sorted by name in ascending order.
-    ERESULT         nodeHash_Nodes(
-        NODEHASH_DATA	*this,
-        NODEARRAY_DATA  **ppKeys
+    /*!
+     Return an array of all nodes in the hash sorted by name in
+     ascending order.
+     information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     @param     this    NodeHash object pointer
+     @return    NodeArray object pointer which must be released if
+                successful.  Otherwise, OBJ_NIL and object's error
+                code is set to the specific error.
+     @warning   Remember to release the returned object.
+     */
+    NODEARRAY_DATA * nodeHash_Nodes(
+        NODEHASH_DATA	*this
     );
     
     

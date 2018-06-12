@@ -57,7 +57,8 @@ struct fbso_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define FBSO_FLAG_BIGENDIAN OBJ_FLAG_USER1
+#define FBSO_FLAG_CLOSE OBJ_FLAG_USER1
+#define FBSO_FLAG_BIGENDIAN OBJ_FLAG_USER2
 
     // Common Data
     PATH_DATA       *pPath;

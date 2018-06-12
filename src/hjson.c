@@ -120,6 +120,7 @@ extern "C" {
             if( tokenClass == LEXJ_SEP_COMMA ) {
                 TRC_OBJ(this,"\t, - found\n");
                 lexj_TokenAdvance(this->pLexJ, 1);
+                continue;
             }
             if( tokenClass == LEXJ_SEP_RBRACKET ) {
                 break;
@@ -221,6 +222,7 @@ extern "C" {
                 if( tokenClass == LEXJ_SEP_COMMA ) {
                     TRC_OBJ(this,"\t, - found\n");
                     lexj_TokenAdvance(this->pLexJ, 1);
+                    continue;
                 }
                 if( tokenClass == LEXJ_SEP_RBRACE ) {
                     break;
@@ -1099,12 +1101,6 @@ extern "C" {
         if( !hjson_Validate(this) ) {
             DEBUG_BREAK();
             return;
-        }
-#endif
-
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((HJSON_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 

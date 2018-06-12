@@ -52,8 +52,12 @@
 
 
 #include        <genMake.h>
-#include        <AStr.h>
 #include        <genBase.h>
+#include        <AStr.h>
+#include        <node.h>
+#include        <nodeArray.h>
+#include        <nodeHash.h>
+#include        <szHash.h>
 
 
 #ifndef         GENOSX_H
@@ -71,10 +75,10 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct genOSX_data_s	GENOSX_DATA;    // Inherits from OBJ.
+    typedef struct genOSX_data_s	GENOSX_DATA;    // Inherits from genBase.
 
     typedef struct genOSX_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        GENBASE_VTBL    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in genOSX_object.c.
         // Properties:
@@ -119,16 +123,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    GENBASE_DATA *  genOSX_getBase(
-        GENOSX_DATA     *this
-    );
-    
-    bool            genOSX_setBase(
-        GENOSX_DATA     *this,
-        GENBASE_DATA    *pValue
-    );
-    
-    
     SZHASH_DATA *   genOSX_getDict(
         GENOSX_DATA     *this
     );
@@ -144,6 +138,38 @@ extern "C" {
     );
 
 
+    ERESULT         genOSX_setLibIncludePath(
+        GENOSX_DATA     *this,
+        PATH_DATA *     (*pLibIncludePath)(
+                                    GENOSX_DATA *,
+                                    const char *,
+                                    const char *,
+                                    const char *
+                        )
+    );
+    
+    
+    ERESULT         genOSX_setLibInstalledPath(
+        GENOSX_DATA     *this,
+        PATH_DATA *     (*pLibInstalledPath)(
+                                            GENOSX_DATA *,
+                                            const char *,
+                                            const char *,
+                                            const char *
+                        )
+    );
+    
+    
+    ERESULT         genOSX_setLibName(
+        GENOSX_DATA     *this,
+        ASTR_DATA *     (*pLibName)(
+                                  GENOSX_DATA *,
+                                  const char *,
+                                  const char *
+        )
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -172,6 +198,7 @@ extern "C" {
         GENOSX_DATA     *this,
         NODE_DATA       *pNodes,
         SZHASH_DATA     *pDict,
+        DATETIME_DATA   *pDateTime,
         FILE            *pOutput
     );
     

@@ -215,43 +215,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      G e n e r a t o r s
-    //---------------------------------------------------------------
-    
-    ERESULT         genBase_setGenerators(
-        GENBASE_DATA    *this,
-        ERESULT         (*pFinal)(GENBASE_DATA *),
-        ERESULT         (*pInitial)(GENBASE_DATA *, ASTR_DATA *, NODEARRAY_DATA  *),
-        ERESULT         (*pLibrary)(GENBASE_DATA *),
-        ERESULT         (*pObjects)(GENBASE_DATA *, NODEHASH_DATA *, NODEARRAY_DATA  *),
-        ERESULT         (*pOsSpecific)(GENBASE_DATA *, NODEHASH_DATA  *),
-        ERESULT         (*pPrograms)(GENBASE_DATA *, NODEHASH_DATA  *),
-        ERESULT         (*pTests)(GENBASE_DATA *, NODEHASH_DATA *)
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        this->pFinal = pFinal;
-        this->pInitial = pInitial;
-        this->pLibrary = pLibrary;
-        this->pObjects = pObjects;
-        this->pOsSpecific = pOsSpecific;
-        this->pPrograms = pPrograms;
-        this->pTests = pTests;
-
-        genBase_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
@@ -428,6 +391,54 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genBase_getName(
+        GENBASE_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pName;
+    }
+    
+    
+    bool            genBase_setName(
+        GENBASE_DATA    *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pName) {
+            obj_Release(this->pName);
+        }
+        this->pName = pValue;
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //         S c a n n e d  D a t a b a s e  N o d e s
     //---------------------------------------------------------------
     
@@ -473,6 +484,77 @@ extern "C" {
         return true;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                      O b j  D i r s
+    //---------------------------------------------------------------
+    
+    NODEHASH_DATA * genBase_getObjDirs(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pObjDirs;
+    }
+    
+    
+    bool            genBase_setObjDirs(
+        GENBASE_DATA    *this,
+        NODEHASH_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pObjDirs) {
+            obj_Release(this->pObjDirs);
+        }
+        this->pObjDirs = pValue;
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      O u t p u t
+    //---------------------------------------------------------------
+    
+    FBSO_DATA *     genBase_getOut(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pOut;
+    }
     
     
     //---------------------------------------------------------------
@@ -542,54 +624,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * genBase_getStr(
-        GENBASE_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        genBase_setLastError(this, ERESULT_SUCCESS);
-        return this->pStr;
-    }
-    
-    
-    bool        genBase_setStr(
-        GENBASE_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        genBase_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -824,15 +858,9 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((GENMAKE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
         genBase_setDict(this, OBJ_NIL);
         genBase_setNodes(this, OBJ_NIL);
-        genBase_setStr(this, OBJ_NIL);
+        genBase_setObjDirs(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -849,7 +877,7 @@ extern "C" {
     //             D i c t i o n a r y  M e t h o d s
     //---------------------------------------------------------------
     
-    ERESULT         genBase_DictAdd(
+    ERESULT         genBase_DictAddUpdate(
         GENBASE_DATA    *this,
         const
         char            *pName,
@@ -999,7 +1027,7 @@ extern "C" {
 
         switch (this->makeType) {
                 
-            case GENMAKE_TYPE_MACOSX:
+            case GENMAKE_OS_MACOSX:
                 eRc =   AStr_AppendPrint(
                                          pStr,
                                          "CFLAGS += -I%s/src -I%s/src/$(SYS)\n",
@@ -1008,7 +1036,7 @@ extern "C" {
                         );
                 break;
                 
-            case GENMAKE_TYPE_MSC32:
+            case GENMAKE_OS_MSC32:
                 eRc =   AStr_AppendPrint(
                                          pStr,
                                          "CFLAGS = $(CFLAGS) /I%s\\src /I%s\\src\\$(SYS)\n",
@@ -1076,7 +1104,7 @@ extern "C" {
         
         switch (this->makeType) {
                 
-            case GENMAKE_TYPE_MACOSX:
+            case GENMAKE_OS_MACOSX:
                 eRc =   AStr_AppendPrint(
                                          pStr,
                                          "CFLAGS_LIBS += -l%s%s -L%s/%s%s\n",
@@ -1088,7 +1116,7 @@ extern "C" {
                                          );
                 break;
                 
-            case GENMAKE_TYPE_MSC32:
+            case GENMAKE_OS_MSC32:
                 eRc =   AStr_AppendPrint(
                                          pStr,
                                          "LIBS = $(LIBS) "
@@ -1111,332 +1139,324 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //  G e n e r a t e  O b j e c t  C o m p i l a t i o n
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     genBase_CompileObject(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Object Class Name
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_CompileObject(\"%s\", %s",
-                pName
-                );
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
-        }
-        if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
-        }
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
-        
-        switch (this->makeType) {
-                
-            case GENMAKE_TYPE_MACOSX:
-                if (0 == strcmp(pObjDir, "OBJDIR")) {
-                    eRc =   AStr_AppendPrint(
-                                             pStr,
-                                             "OBJS += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n\n",
-                                             pName,
-                                             pName
-                            );
-                }
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "$(%s)/%s.o: $(%s)/%s.c\n\n",
-                                         pObjDir,
-                                         pName,
-                                         pSrcDir,
-                                         pName
-                                         );
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                         pObjDir
-                                         );
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "$(%s)/%s_object.o: $(%s)/%s_object.c\n",
-                                         pObjDir,
-                                         pName,
-                                         pSrcDir,
-                                         pName
-                                         );
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n\n",
-                                         pObjDir
-                                         );
-                break;
-                
-            case GENMAKE_TYPE_MSC32:
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "OBJS = $(OBJS) $(%s)\\%s.obj $(%s)\\%s_object.obj\n",
-                                         pObjDir,
-                                         pName,
-                                         pObjDir,
-                                         pName
-                                         );
-                break;
-                
-            default:
-                break;
-        }
-        
-        // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //  G e n e r a t e  R o u t i n e  C o m p i l a t i o n
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     genBase_CompileRoutine(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Object Class Name
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        PATH_DATA       *pPath = OBJ_NIL;
-        ASTR_DATA       *pFileName = OBJ_NIL;
-        ASTR_DATA       *pFileExt = OBJ_NIL;
+//---------------------------------------------------------------
+//         G e n e r a t e  F i n a l
+//---------------------------------------------------------------
 
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_CompileRoutine(\"%s\", %s",
-                pName
-                );
+ERESULT         genBase_GenFinal(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            genBase_setLastError(this, ERESULT_INVALID_OBJECT);
-            return OBJ_NIL;
-        }
-#endif
-        if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
-        }
-        if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
-        }
-        pPath = path_NewA(pName);
-        if (OBJ_NIL == pStr) {
-            genBase_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return OBJ_NIL;
-        }
-        eRc = path_SplitFile(pPath, &pFileName, &pFileExt);
-        BREAK_NULL(pFileName);
-        BREAK_NULL(pFileExt);
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            obj_Release(pFileExt);
-            pFileExt = OBJ_NIL;
-            obj_Release(pFileName);
-            pFileName = OBJ_NIL;
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-            genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
-            return OBJ_NIL;
-        }
-        
-        switch (this->makeType) {
-                
-            case GENMAKE_TYPE_MACOSX:
-                if (AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL) {
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "$(%s)/%s.o: $(%s)/%s\n",
-                                pObjDir,
-                                AStr_getData(pFileName),
-                                pSrcDir,
-                                pName
-                            );
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                pObjDir
-                            );
-                }
-                else if (AStr_CompareA(pFileExt, "asm") == ERESULT_SUCCESS_EQUAL) {
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "$(%s)/%s.o: $(%s)/%s\n",
-                                pObjDir,
-                                AStr_getData(pFileName),
-                                pSrcDir,
-                                pName
-                            );
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "\t$(AS) $(AFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                pObjDir
-                            );
-                }
-                else if (AStr_CompareA(pFileExt, "s") == ERESULT_SUCCESS_EQUAL) {
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "$(%s)/%s.o: $(%s)/%s\n",
-                                pObjDir,
-                                AStr_getData(pFileName),
-                                pSrcDir,
-                                pName
-                            );
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<\n\n",
-                                pObjDir
-                            );
-                }
-                else if (AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL) {
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "$(%s)/%s.o: $(SRCDIR)/%s\n",
-                                pObjDir,
-                                AStr_getData(pFileName),
-                                pSrcDir,
-                                pName
-                            );
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                pObjDir
-                            );
-                }
-                else {
-                    obj_Release(pFileExt);
-                    pFileExt = OBJ_NIL;
-                    obj_Release(pFileName);
-                    pFileName = OBJ_NIL;
-                    obj_Release(pPath);
-                    pPath = OBJ_NIL;
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                    genBase_setLastError(this, ERESULT_INVALID_PARAMETER);
-                    return OBJ_NIL;
-                }
-                if (0 == strcmp(pObjDir, "OBJDIR")) {
-                    eRc =   AStr_AppendPrint(
-                                pStr,
-                                "OBJS += $(%s)/%s.o\n\n",
-                                pObjDir,
-                                pFileName
-                            );
-                }
-                break;
-                
-            case GENMAKE_TYPE_MSC32:
-#ifdef XYZZY
-                iMax = nodeArray_getSize(pRoutines);
-                for (i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(pRoutines, i+1);
-                    if (pNode) {
-                        ASTR_DATA       *pWrk;
-                        pStr = node_getData(pNode);
-                        pWrk = AStr_Copy(pStr);
-                        if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".s") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                        }
-                        fprintf(
-                                pResults->pOutput,
-                                "OBJS = $(OBJS) $(OBJDIR)\\%s.obj\n",
-                                AStr_getData(pWrk)
-                                );
-                        
-                        obj_Release(pWrk);
-                    }
-                }
-        }
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "{src}.asm{$(OBJDIR)}.obj:\n");
-        fprintf(pResults->pOutput, "\t$(AS) $(AFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "{src}.c{$(OBJDIR)}.obj:\n");
-        fprintf(pResults->pOutput, "\t$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "{src\\$(SYS)}.asm{$(OBJDIR)}.obj:\n");
-        fprintf(pResults->pOutput, "\t$(AS) $(AFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "{src\\$(SYS)}.c{$(OBJDIR)}.obj:\n");
-        fprintf(pResults->pOutput, "\t$(CC) $(CFLAGS) /c /Fo$(OBJDIR)\\$(@F) $<\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-        fprintf(pResults->pOutput, "\n");
-#endif
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "OBJS = $(OBJS) $(%s)\\%s.obj $(%s)\\%s_object.obj\n",
-                                         pObjDir,
-                                         pName,
-                                         pObjDir,
-                                         pName
-                                         );
-                break;
-        
-            default:
-                break;
-        }
-    
-        // Return to caller.
-        obj_Release(pFileExt);
-        pFileExt = OBJ_NIL;
-        obj_Release(pFileName);
-        pFileName = OBJ_NIL;
-        obj_Release(pPath);
-        pPath = OBJ_NIL;
-        genBase_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
     }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e  I n i t i a l  D a t a
+//---------------------------------------------------------------
+
+ERESULT         genBase_GenInitial(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e  L i b r a r y
+//---------------------------------------------------------------
+
+ERESULT         genBase_GenLibrary(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e  O b j e c t s
+//---------------------------------------------------------------
+
+ERESULT         genBase_CompileObject(
+    GENBASE_DATA    *this,
+    const
+    char            *pName
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+ERESULT         genBase_GenObject(
+    GENBASE_DATA    *this,
+    NODE_DATA       *pNode
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    const
+    char            *pName;
+
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    BREAK_FALSE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
+
+    pName = node_getNameUTF8(pNode);
+    if (NULL == pName) {
+        DEBUG_BREAK();
+        eRc = ERESULT_DATA_MISSING;
+    }
+
+    if(ERESULT_FAILED(eRc))
+        ;
+    else {
+        if (((GENBASE_VTBL *)obj_getVtbl(this))->pCompileObject) {
+            eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pCompileObject(this, pName);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                exit(102);
+            }
+        }
+    }
+
+    // Return to caller.
+    genBase_setLastError(this, eRc);
+    return eRc;
+}
+
+
+ERESULT         genBase_GenObjects(
+    GENBASE_DATA    *this
+)
+{
+    ERESULT         eRc;
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray =  OBJ_NIL;
+    int             i;
+    int             iMax;
+
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    if (this->pObjects) {
+        pArray = nodeHash_Nodes(this->pObjects);
+        if (OBJ_NIL == pArray) {
+        }
+        else {
+            BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
+            iMax = nodeArray_getSize(pArray);
+            for (i=0; i<iMax; ++i) {
+                pNode = nodeArray_Get(pArray, i+1);
+                if (pNode) {
+                    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenObject(this, pNode);
+                    if (ERESULT_FAILED(eRc)) {
+                        DEBUG_BREAK();
+                        exit(102);
+                    }
+                    
+                }
+            }
+        }
+    }
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e  O / S  S p e c i f i c
+//---------------------------------------------------------------
+
+ERESULT         genBase_GenOSSpecific(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e   P r o g r a m s
+//---------------------------------------------------------------
+
+ERESULT         genBase_GenPrograms(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e   R o u t i n e s
+//---------------------------------------------------------------
+
+ERESULT         genBase_GenRoutines(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
+
+
+
+//---------------------------------------------------------------
+//         G e n e r a t e  T e s t s
+//---------------------------------------------------------------
+
+ERESULT         genBase_GenTests(
+    GENBASE_DATA    *this
+)
+{
+    
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if( !genBase_Validate(this) ) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+    }
+#endif
+    
+    //obj_Enable(this);
+    
+    // Put code here...
+    
+    // Return to caller.
+    genBase_setLastError(this, ERESULT_SUCCESS);
+    return ERESULT_SUCCESS;
+}
 
 
 
@@ -1480,10 +1500,10 @@ ASTR_DATA *     genBase_CompileRules(
     
     switch (this->makeType) {
             
-        case GENMAKE_TYPE_MACOSX:
+        case GENMAKE_OS_MACOSX:
             break;
             
-        case GENMAKE_TYPE_MSC32:
+        case GENMAKE_OS_MSC32:
             eRc =   AStr_AppendPrint(
                         pStr,
                         "{src}.asm{$(%s)}.obj:\n",
@@ -1542,20 +1562,16 @@ ASTR_DATA *     genBase_CompileRules(
 //---------------------------------------------------------------
 
 ERESULT         genBase_GenMakefile(
-    GENBASE_DATA        *this
+    GENBASE_DATA        *this,
+    NODE_DATA           *pNodes,
+    SZHASH_DATA         *pDict,
+    DATETIME_DATA       *pDateTime,
+    FBSO_DATA           *pOut
 )
 {
     ERESULT             eRc;
     NODE_DATA           *pNode;
-    NODEARRAY_DATA      *pLibDeps = OBJ_NIL;
     NODEHASH_DATA       *pPrimaryHash = OBJ_NIL;
-    NODEHASH_DATA       *pObjects = OBJ_NIL;
-    NODEHASH_DATA       *pPrograms = OBJ_NIL;
-    NODEARRAY_DATA      *pRoutines = OBJ_NIL;
-    NODEHASH_DATA       *pTests = OBJ_NIL;
-    NODEHASH_DATA       *pMacosx = OBJ_NIL;
-    NODEHASH_DATA       *pWin32 = OBJ_NIL;
-    ASTR_DATA           *pName = OBJ_NIL;
 
     // Do initialization.
 #ifdef NDEBUG
@@ -1565,8 +1581,12 @@ ERESULT         genBase_GenMakefile(
         return ERESULT_INVALID_OBJECT;
     }
 #endif
+    this->pNodes = pNodes;
+    this->pDict = pDict;
+    this->pDateTime = pDateTime;
+    this->pOut = pOut;
     
-    pPrimaryHash = node_getData(this->pNodes);
+    pPrimaryHash = node_getData(pNodes);
     BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
     if (pPrimaryHash) {
         pNode = nodeHash_FindA(pPrimaryHash, "name");
@@ -1574,135 +1594,130 @@ ERESULT         genBase_GenMakefile(
         }
         else {
             pNode = node_getData(pNode);
-            pName = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pName, OBJ_IDENT_ASTR)));
+            this->pName = node_getData(pNode);
+            if (obj_IsKindOf(this->pName, OBJ_IDENT_NULL)) {
+                this->pName = OBJ_NIL;
+            }
+            else if (obj_IsKindOf(this->pName, OBJ_IDENT_ASTR)) {
+            }
+            else {
+                DEBUG_BREAK();
+            }
         }
-        pNode = nodeHash_FindA(pPrimaryHash, "lib_deps");
+        pNode = nodeHash_FindA(pPrimaryHash, "deps");
         if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
-            pLibDeps = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pLibDeps, OBJ_IDENT_NODEARRAY)));
+            this->pLibDeps = node_getData(pNode);
+            if (obj_IsKindOf(this->pLibDeps, OBJ_IDENT_NULL)) {
+                this->pLibDeps = OBJ_NIL;
+            }
+            else if (obj_IsKindOf(this->pLibDeps, OBJ_IDENT_NODEARRAY)) {
+            }
+            else {
+                DEBUG_BREAK();
+            }
         }
         pNode = nodeHash_FindA(pPrimaryHash, "objects");
         if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
-            pObjects = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pObjects, OBJ_IDENT_NODEHASH)));
+            this->pObjects = node_getData(pNode);
+            if (obj_IsKindOf(this->pObjects, OBJ_IDENT_NULL)) {
+                this->pObjects = OBJ_NIL;
+            }
+            else if (obj_IsKindOf(this->pObjects, OBJ_IDENT_NODEHASH)) {
+            }
+            else {
+                DEBUG_BREAK();
+            }
         }
         pNode = nodeHash_FindA(pPrimaryHash, "routines");
         if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
-            pRoutines = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
+            this->pRoutines = node_getData(pNode);
+            if (obj_IsKindOf(this->pRoutines, OBJ_IDENT_NULL)) {
+                this->pRoutines = OBJ_NIL;
+            }
+            else if (obj_IsKindOf(this->pRoutines, OBJ_IDENT_NODEARRAY)) {
+            }
+            else {
+                DEBUG_BREAK();
+            }
         }
         pNode = nodeHash_FindA(pPrimaryHash, "programs");
         if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
-            pPrograms = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEHASH)));
+            this->pPrograms = node_getData(pNode);
+            if (obj_IsKindOf(this->pPrograms, OBJ_IDENT_NULL)) {
+                this->pPrograms = OBJ_NIL;
+            }
+            else if (obj_IsKindOf(this->pPrograms, OBJ_IDENT_NODEHASH)) {
+            }
+            else {
+                DEBUG_BREAK();
+            }
         }
         pNode = nodeHash_FindA(pPrimaryHash, "tests");
         if (NULL == pNode) {
         }
         else {
             pNode = node_getData(pNode);
-            pTests = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "macosx");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pMacosx = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pMacosx, OBJ_IDENT_NODEHASH)));
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "win32");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pWin32 = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pWin32, OBJ_IDENT_NODEHASH)));
-        }
-    }
-    
-    if (this->pInitial) {
-        eRc = this->pInitial(this, pName, pLibDeps);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            exit(99);
-        }
-    }
-
-    if (this->pObjects) {
-        eRc = this->pObjects(this, pObjects, pRoutines);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            exit(99);
-        }
-    }
-
-#ifdef XYZZY
-    switch (this->makeType) {
-            
-        case MAKETYPE_MACOSX:
-            if (pMacosx) {
-                genMakeFile_macosx(pResults, pMacosx);
+            this->pTests = node_getData(pNode);
+            if (obj_IsKindOf(this->pTests, OBJ_IDENT_NULL)) {
+                this->pTests = OBJ_NIL;
             }
-            break;
-            
-        case MAKETYPE_MSC32:
-            if (pWin32) {
-                genMakeFile_win32(pResults, pWin32);
+            else if (obj_IsKindOf(this->pTests, OBJ_IDENT_NODEHASH)) {
             }
-            break;
-            
-        default:
-            break;
-    }
-#endif
-    
-    if (this->pLibrary) {
-        eRc = this->pLibrary(this);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            exit(99);
+            else {
+                DEBUG_BREAK();
+            }
         }
+        //TODO: Find O/S Specific data.
     }
     
-    if (this->pPrograms && pPrograms) {
-        eRc = this->pPrograms(this, pPrograms);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            exit(99);
-        }
-    }
-    
-    if (this->pTests) {
-        eRc = this->pTests(this, pTests);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            exit(99);
-        }
-    }
-    
-    if (this->pFinal) {
-        eRc = this->pFinal(this);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            exit(99);
-        }
+    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenInitial(this);
+    if (ERESULT_FAILED(eRc)) {
+        DEBUG_BREAK();
+        exit(100);
     }
 
+    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenObjects(this);
+    if (ERESULT_FAILED(eRc)) {
+        DEBUG_BREAK();
+        exit(101);
+    }
+    
+    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenRoutines(this);
+    if (ERESULT_FAILED(eRc)) {
+        DEBUG_BREAK();
+        exit(102);
+    }
+    
+    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenTests(this);
+    if (ERESULT_FAILED(eRc)) {
+        DEBUG_BREAK();
+        exit(102);
+    }
+    
+    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenPrograms(this);
+    if (ERESULT_FAILED(eRc)) {
+        DEBUG_BREAK();
+        exit(102);
+    }
+
+    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenFinal(this);
+    if (ERESULT_FAILED(eRc)) {
+        DEBUG_BREAK();
+        exit(102);
+    }
+    
     // Return to caller.
     genBase_setLastError(this, ERESULT_SUCCESS_FALSE);
     return ERESULT_SUCCESS_FALSE;

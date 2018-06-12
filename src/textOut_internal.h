@@ -40,6 +40,7 @@
 
 
 #include    <textOut.h>
+#include    <fbso.h>
 
 
 #ifndef TEXTOUT_INTERNAL_H
@@ -55,6 +56,7 @@ extern "C" {
     typedef enum textOut_type_e {
         TEXTOUT_TYPE_UNKNOWN=0,
         TEXTOUT_TYPE_ASTR,
+        TEXTOUT_TYPE_FBSO,
         TEXTOUT_TYPE_FILE,
         TEXTOUT_TYPE_U8ARRAY
     } TEXTOUT_TYPE;
@@ -76,10 +78,12 @@ struct textOut_data_s	{
 
     // Common Data
     ERESULT         eRc;
+    uint16_t        offset;         //
     uint16_t        tabSize;        //
+    char            offsetChr;
     uint8_t         fTabify;
-    //uint8_t         rsvd8[1];
     uint8_t         type;
+    uint8_t         rsvd8[1];
     union {
         ASTR_DATA           *pStr;
         FILE                *pFile;

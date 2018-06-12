@@ -1,30 +1,37 @@
 {
     "name":"libCmn",
     "type":"library",
-    "deps":null,
-    "headers_private":
-    [
-        "idxblk16_internal.h",
-        "str_internal.h"
-    ],
-    "headers_public":
-    [
-        "cmn_defs.h",
-        "chario.h",
-        "mem.h",
-        "obj.h",
-        "str.h"
-    ],
-    "headers_test":
-    [
-        "test_defs.h",
-        "objTest.h"
-    ],
-    "headers_macosx":
-    [
-        "cmn_osx.h",
-        "memOSX.h"
-    ],
+    "deps":null,                    // An array of library names without "lib"
+    "headers": {
+        "private":
+        [
+            "idxblk16_internal.h",
+            "str_internal.h"
+        ],
+        "public":
+        [
+            "cmn_defs.h",
+            "chario.h",
+            "mem.h",
+            "obj.h",
+            "str.h"
+        ],
+        "test":
+        [
+            "test_defs.h",
+            "objTest.h"
+        ],
+        "macosx":
+        [
+            "cmn_osx.h",
+            "memOSX.h"
+        ],
+        "win32":
+        [
+            "cmn_win32.h",
+            "memWin32.h"
+        ],
+    }
     "objects":
     {
         "appl":{"test":null},
@@ -47,8 +54,8 @@
         "cb16":["cmn"],
         "cb32":["cmn","psxMutex","psxSem"],
         "cfa":["cmn"],
-        "clo":null,
-        "cloOpt":null,
+        #"clo":null,
+        #"cloOpt":null,
         "cmdutl":["cmn","AStr","false","node","nodeArray","nodeHash",
                     "nodeTree","null","path","srcFile","true"],
         "compiler":["cmn"],
@@ -129,6 +136,7 @@
                     "tokenList","u8Array","WStr"],
         "srcFiles":["cmn","objArray","path","srcFile","token"],
         "srcLoc":["cmn","AStr"],
+        "SRecords":["cmn","AStr","srcFile"],
         "symAttr":["cmn"],
         "symEntry":["cmn"],
         "symTable":["cmn"],
@@ -197,30 +205,55 @@
         "memWin32.c":null,
         "memWin32_object.c":null
     },
-    "programs": {
-        "genGetterSetter":
+    "programs": [
+        /*******
         {
-            "routines":
-            [
+            "name":"genGetterSetter",
+            "routines": [
                 "genGetterSetter.c"
-            ],
+            ]
         },
-        "genMake":
+        ********/
         {
+            "name":"genMake",
+            "type":"program",
+            "lib_deps":["Cmn"],
+            "headers": {
+                "private":
+                [
+                    "genMake.h"
+                ],
+                "test":
+                [
+                    "test_defs.h"
+                ],
+            }
+            "objects":
+            {
+                "genOSX":["md5Util"],
+                "genWIN":["md5Util"],
+                "main":["md5Util"]
+            },
             "routines":
             [
-                "genMake.c"
+                "mainProgram.c"
             ],
+            "tests":
+            {
+                "test_genOSX.c":null,
+                "test_genWIN.c":null,
+                "test_main.c":null
+            }   
         },
-        "lexFileToJSON":
+        /*******
         {
-            "routines":
-            [
+            "name":"lexFileToJSON",
+            "routines": [
                 "lexFileToJSON.c"
-            ],
+            ]
         },
-        "md5Util":
         {
+            "name":"md5Util",
             "headers_private":
             [
                 "md5Util.h"
@@ -229,7 +262,7 @@
             {
                 "exec":["md5Util"],
                 "main":["md5Util"]
-            }
+            },
             "routines":
             [
                 "mainProgram.c"
@@ -239,8 +272,9 @@
                 "test_exec.c":null,
                 "test_main.c":null
             }   
-        }
-    },
+        },
+        ********/
+    ],
     "tests":
     {
         "test_AStr.c":null,
@@ -260,8 +294,8 @@
         "test_cb16.c":null,
         "test_cb32.c":null,
         "test_cfa.c":null,
-        "test_clo.c":null,
-        "test_cloOpt.c":null,
+        #"test_clo.c":null,
+        #"test_cloOpt.c":null,
         #"test_cmdutl.c":null,
         "test_compiler.c":null,
         "test_consumer.c":null,
@@ -345,6 +379,7 @@
         "test_srcFile.c":null,
         "test_srcFiles.c":null,
         "test_srcLoc.c":null,
+        "test_SRecords.c":null,
         "test_str.c":null,
         "test_symAttr.c":null,
         "test_symEntry.c":null,

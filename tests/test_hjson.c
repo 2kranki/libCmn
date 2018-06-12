@@ -383,10 +383,9 @@ int             test_hjson_File01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    XCTAssertTrue( (cArgs > 1) );
-    pPath = path_NewA(ppArgs[1]);
+    pPath = path_NewA("~/git/libCmn/tests/test_hjson_01.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    eRc = path_AppendFileNameA(pPath, "test_hjson_01.txt");
+    eRc = path_Clean(pPath);
     XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
     
     pObj = hjson_NewFromPath(pPath, 4);
@@ -435,10 +434,9 @@ int             test_hjson_File02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    XCTAssertTrue( (cArgs > 1) );
-    pPath = path_NewA(ppArgs[1]);
+    pPath = path_NewA("~/git/libCmn/tests/test_hjson_02.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    eRc = path_AppendFileNameA(pPath, "test_hjson_02.txt");
+    eRc = path_Clean(pPath);
     XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
 
     pInput = fopen(path_getData(pPath), "r");

@@ -366,39 +366,42 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        NODELIST_DATA   *cbp = objId;
+        NODELIST_DATA   *this = objId;
         NODELIST_BLOCK  *pBlock;
         NODELIST_NODE   *pEntry;
         
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }
 #ifdef NDEBUG
 #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
         
         // Release all the nodes.
-        while ( (pEntry = listdl_Head(&cbp->list)) ) {
+        while ( (pEntry = listdl_Head(&this->list)) ) {
             if (pEntry->pNode) {
                 obj_Release(pEntry->pNode);
                 pEntry->pNode = OBJ_NIL;
             }
-            listdl_DeleteHead(&cbp->list);
+            listdl_DeleteHead(&this->list);
         }
         
-        while ( listdl_Count(&cbp->blocks) ) {
-            pBlock = listdl_DeleteHead(&cbp->blocks);
+        while ( listdl_Count(&this->blocks) ) {
+            pBlock = listdl_DeleteHead(&this->blocks);
             mem_Free( pBlock );
         }
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
-        
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
         // Return to caller.
     }
     

@@ -28,6 +28,11 @@
 
 
 
+#include    <test_data.c>
+
+
+
+
 int         setUp(
     const
     char        *pTestName
@@ -51,8 +56,21 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
-    mem_Dump( );
+    szTbl_SharedReset( );
+    trace_SharedReset( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+                );
+        exitCode = 4;
+        return 0;
+    }
+
     mem_Release( );
     
     return 1; 
@@ -70,7 +88,9 @@ int         test_main_OpenClose(
 {
     MAIN_DATA	*pObj = OBJ_NIL;
    
-    pObj = main_Alloc(0);
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = main_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = main_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -82,6 +102,41 @@ int         test_main_OpenClose(
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_main_MakeFile01(
+    const
+    char        *pTestName
+)
+{
+    ERESULT     eRc;
+    MAIN_DATA   *pObj = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = main_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = main_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        appl_setDebug((APPL_DATA *)pObj, true);
+        eRc = main_ParseArgsDefault(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = main_ParseInputStr(pObj, pGoodJson1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = main_GenMakefile(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
@@ -89,7 +144,8 @@ int         test_main_OpenClose(
 
 
 TINYTEST_START_SUITE(test_main);
-  TINYTEST_ADD_TEST(test_main_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_main_MakeFile01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_main_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_main);

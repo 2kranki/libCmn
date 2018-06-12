@@ -61,7 +61,7 @@ extern "C" {
     ****************************************************************/
 
     static
-    FBSO_DATA *   fbso_InternalInit(
+    FBSO_DATA *   fbso_InitOpen(
         FBSO_DATA       *this,
         PATH_DATA       *pPath,
         const
@@ -110,6 +110,48 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        obj_FlagSet(this, FBSO_FLAG_CLOSE, true);
+
+#ifdef NDEBUG
+#else
+        if( !fbso_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        BREAK_NOT_BOUNDARY4(&this->pFile);
+#endif
+        
+        return this;
+    }
+    
+    
+    
+    static
+    FBSO_DATA *   fbso_InitStd(
+        FBSO_DATA       *this,
+        FILE            *pOut
+    )
+    {
+        uint32_t        cbSize = sizeof(FBSO_DATA);
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        if (NULL == pOut) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = obj_Init( this, cbSize, OBJ_IDENT_FBSO );
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&fbso_Vtbl);
+        
+        
+        this->pFile = pOut;
         
 #ifdef NDEBUG
 #else
@@ -171,7 +213,25 @@ extern "C" {
     }
     
     
+    FBSO_DATA *     fbso_NewStd(
+        FILE            *pFileOut
+    )
+    {
+        FBSO_DATA       *this;
+        
+        // Do initialization.
+        
+        this = fbso_Alloc( );
+        if (this) {
+            this = fbso_InitStd(this, pFileOut);
+        }
+        
+        // Return to caller.
+        return this;
+    }
     
+    
+
     
 
     //===============================================================
@@ -426,11 +486,13 @@ extern "C" {
         }
 #endif
 
-        if (this->pFile) {
-            fflush(this->pFile);
-            fclose(this->pFile);
-            this->pFile = NULL;
+        if (obj_Flag(this,FBSO_FLAG_CLOSE)) {
+            if (this->pFile) {
+                fflush(this->pFile);
+                fclose(this->pFile);
+            }
         }
+        this->pFile = NULL;
         
         if (this->pBuffer) {
             mem_Free(this->pBuffer);
@@ -440,8 +502,10 @@ extern "C" {
         fbso_setPath(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc(this);
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -458,7 +522,7 @@ extern "C" {
     )
     {
 
-        this = fbso_InternalInit(this, pPath, "w");
+        this = fbso_InitOpen(this, pPath, "w");
 
         return this;
     }
@@ -471,7 +535,7 @@ extern "C" {
     )
     {
         
-        this = fbso_InternalInit(this, pPath, "w+");
+        this = fbso_InitOpen(this, pPath, "w+");
         
         return this;
     }
@@ -713,7 +777,7 @@ extern "C" {
     
     ERESULT         fbso_Putwc(
         FBSO_DATA		*this,
-        uint32_t        chr
+        W32CHR_T        chr
     )
     {
         int             iRc;
@@ -744,7 +808,7 @@ extern "C" {
     //                      P u t  A S t r
     //---------------------------------------------------------------
     
-    ERESULT         fbso_PutStr(
+    ERESULT         fbso_PutAStr(
         FBSO_DATA		*this,
         ASTR_DATA       *pStr
     )

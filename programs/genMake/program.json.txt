@@ -16,8 +16,7 @@
     "objects":
     {
         "genOSX":["genMake"],
-        "genWIN32":["genMake"],
-        "genWIN64":["genMake"],
+        "genWIN":["genMake"],
         "main":["genMake"]
     },
     "routines":
@@ -31,8 +30,7 @@
     "tests":
     {
         "test_genOSX.c":null,
-        "test_genWIN32.c":null,
-        "test_genWIN64.c":null,
+        "test_genWIN.c":null,
         "test_main.c":null
     }
 }

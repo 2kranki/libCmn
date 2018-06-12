@@ -439,8 +439,9 @@ extern "C" {
         }
         
         obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc( this );
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = NULL;
 
         // Return to caller.

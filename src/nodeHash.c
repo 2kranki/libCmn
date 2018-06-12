@@ -558,9 +558,12 @@ extern "C" {
             this->pHash = NULL;
         }
         
-        obj_Dealloc(this);
-        this = NULL;
-        
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
         // Return to caller.
     }
     
@@ -867,27 +870,22 @@ extern "C" {
     //                         N o d e s
     //---------------------------------------------------------------
     
-    ERESULT         nodeHash_Nodes(
-        NODEHASH_DATA	*this,
-        NODEARRAY_DATA  **ppKeys
+    NODEARRAY_DATA * nodeHash_Nodes(
+        NODEHASH_DATA	*this
     )
     {
         NODEARRAY_DATA  *pKeys;
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry = OBJ_NIL;
         uint32_t        i;
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == ppKeys ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
         }
 #endif
         
@@ -909,10 +907,8 @@ extern "C" {
         nodeArray_SortAscending(pKeys);
         
         // Return to caller.
-        if (ppKeys) {
-            *ppKeys = pKeys;
-        }
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        nodeHash_setLastError(this, eRc);
+        return pKeys;
     }
     
     

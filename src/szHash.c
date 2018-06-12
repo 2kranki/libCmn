@@ -773,46 +773,56 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY
-        ASTR_DATA       *pWrkStr;
-#endif
-        
+        uint32_t        i;
+        LISTDL_DATA     *pNodeList;
+        SZHASH_NODE     *pNode;
+        const
+        OBJ_INFO        *pInfo;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(szHash) ",
-                     this
-                     );
-        AStr_AppendA(pStr, str);
-        
-#ifdef  XYZZY
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
-                                                                             this->pData,
-                                                                             indent+3
-                                                                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+        eRc = AStr_AppendPrint(
+                               pStr,
+                               "{%p(%s) num=%d\n",
+                               this,
+                               pInfo->pClassName,
+                               this->num
+                               );
+
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                AStr_AppendCharRepeatA(pStr, (indent + 4), ' ');
+                eRc =   AStr_AppendPrint(
+                                         pStr,
+                                         "%p %s\n",
+                                         pNode,
+                                         pNode->pszKey
+                                         );
+                pNode = listdl_Next(pNodeList, pNode);
             }
         }
-#endif
-        
-        j = snprintf(str, sizeof(str), " %p(szHash)}\n", this);
-        AStr_AppendA(pStr, str);
-        
+
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 " %p(%s)}\n",
+                                 this,
+                                 pInfo->pClassName
+                                 );
+
         return pStr;
     }
     

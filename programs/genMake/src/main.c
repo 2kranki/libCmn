@@ -43,8 +43,7 @@
 /* Header File Inclusion */
 #include        <main_internal.h>
 #include        <genOSX.h>
-#include        <genWIN32.h>
-#include        <genWIN64.h>
+#include        <genWIN.h>
 #include        <hjson.h>
 
 
@@ -137,7 +136,7 @@ extern "C" {
 #endif
         
         this->makeType = MAKETYPE_MACOS;
-        main_DictAdd(this, "makeType", "macos");
+        main_DictAddUpdate(this, "makeType", "macos");
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -160,7 +159,7 @@ extern "C" {
 #endif
         
         this->makeType = MAKETYPE_MSC32;
-        main_DictAdd(this, "makeType", "msc32");
+        main_DictAddUpdate(this, "makeType", "msc32");
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -183,7 +182,7 @@ extern "C" {
 #endif
         
         this->makeType = MAKETYPE_MSC64;
-        main_DictAdd(this, "makeType", "msc64");
+        main_DictAddUpdate(this, "makeType", "msc64");
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -564,49 +563,6 @@ extern "C" {
 
 
 
-    ASTR_DATA * main_getStr(
-        MAIN_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        main_setLastError(this, ERESULT_SUCCESS);
-        return this->pStr;
-    }
-    
-    
-    bool        main_setStr(
-        MAIN_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        main_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
     
     
 
@@ -767,11 +723,11 @@ extern "C" {
         main_setFilePath(this, OBJ_NIL);
         main_setNodes(this, OBJ_NIL);
         main_setOutputPath(this, OBJ_NIL);
-        main_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -783,7 +739,7 @@ extern "C" {
     //             D i c t i o n a r y  M e t h o d s
     //---------------------------------------------------------------
     
-    ERESULT         main_DictAdd(
+    ERESULT         main_DictAddUpdate(
         MAIN_DATA       *this,
         const
         char            *pName,
@@ -820,7 +776,7 @@ extern "C" {
     }
     
     
-    ERESULT         main_DictDeleta(
+    ERESULT         main_DictDelete(
         MAIN_DATA       *this,
         const
         char            *pName
@@ -897,6 +853,7 @@ extern "C" {
         ERESULT         eRc;
         int             iRc;
         ASTR_DATA       *pStr;
+        bool            fFile = true;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -913,39 +870,9 @@ extern "C" {
             exit(8);
         }
         
-        this->pBase = genBase_New( );
-        switch (this->makeType) {
-            case MAKETYPE_MACOS:
-                this->pGen = (OBJ_ID)genOSX_New( );
-                if (this->pGen) {
-                    genOSX_setBase(this->pGen, this->pBase);
-                    genOSX_setDict(this->pGen, this->pDict);
-                }
-                break;
-            case MAKETYPE_MSC32:
-                this->pGen = genWIN32_New( );
-                if (this->pGen) {
-                    genWIN32_setBase(this->pGen, this->pBase);
-                }
-                break;
-            case MAKETYPE_MSC64:
-                this->pGen = genWIN64_New( );
-                if (this->pGen) {
-                    genWIN64_setBase(this->pGen, this->pBase);
-                }
-                break;
-            default:
-                appl_Usage((APPL_DATA *)this, "ERROR - Failed to indicate type of makefile to generate!");
-                exit(8);
-        }
-        if ((OBJ_NIL == this->pBase) || (OBJ_NIL == this->pGen)) {
-            fprintf(stderr, "FATAL - Could not create generator objects!\n\n\n");
-            exit(12);
-        }
-        
         if (this->pOutputPath) {
-            this->pOut = fopen(path_getData(this->pOutputPath), "w");
-            if (NULL == this->pOut) {
+            //FIXME: this->pOut = textOut_NewFilePath(this->pOutputPath);
+            if (OBJ_NIL == this->pOut) {
                 fprintf(
                         stderr,
                         "FATAL - Could not open output file, %s!\n\n\n",
@@ -955,7 +882,16 @@ extern "C" {
             }
         }
         else {
-            this->pOut = stdout;
+            this->pOut = textOut_NewAStr( );
+            if (OBJ_NIL == this->pOut) {
+                fprintf(
+                        stderr,
+                        "FATAL - Could not open output file, %s!\n\n\n",
+                        path_getData(this->pOutputPath)
+                        );
+                exit(12);
+            }
+            fFile = false;
         }
         
         for (;;) {
@@ -969,6 +905,11 @@ extern "C" {
             }
         }
         
+        if (fFile) {
+            fclose(this->pOut);
+            this->pOut = NULL;
+        }
+        
         // Return to caller.
         main_setLastError(this, ERESULT_SUCCESS);
         return 0;
@@ -976,6 +917,78 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                  G e n  M a k e  F i l e
+    //---------------------------------------------------------------
+    
+    ERESULT         main_GenMakefile(
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == this->pDict) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        if (OBJ_NIL == this->pNodes) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+#endif
+        
+        switch (this->makeType) {
+                
+            case MAKETYPE_MACOS:
+                this->pGen = (OBJ_ID)genOSX_New( );
+                if (this->pGen) {
+                    if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
+                        obj_TraceSet(this->pGen, true);
+                    }
+                }
+                break;
+                
+            case MAKETYPE_MSC32:
+            case MAKETYPE_MSC64:
+                this->pGen = genWIN_New( );
+                if (this->pGen) {
+                    if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
+                        obj_TraceSet(this->pGen, true);
+                    }
+                }
+                break;
+                
+            default:
+                appl_Usage((APPL_DATA *)this, "ERROR - Failed to indicate type of makefile to generate!");
+                exit(8);
+        }
+        if (OBJ_NIL == this->pGen) {
+            fprintf(stderr, "FATAL - Could not create generator object!\n\n\n");
+            exit(12);
+        }
+        eRc = genBase_GenMakefile(
+                                  this->pGen,
+                                  this->pNodes,
+                                  this->pDict,
+                                  appl_getDateTime((APPL_DATA *)this),
+                                  this->pOut
+                );
+        
+        
+        // Return to caller.
+        main_setLastError(this, eRc);
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -1022,7 +1035,12 @@ extern "C" {
                           (void *)main_ParseArgsLong,
                           (void *)main_ParseArgsShort
         );
-        appl_setProcessArgs((APPL_DATA *)this, this, (void *)main_ProcessArg);
+        appl_setProcessArgs(
+                            (APPL_DATA *)this,
+                            this,
+                            (void *)main_ProcessInit,
+                            (void *)main_ProcessArg
+        );
         appl_setUsage(
                           (APPL_DATA *)this,
                           this,
@@ -1101,27 +1119,27 @@ extern "C" {
 #endif
         
         this->makeType = MAKETYPE_MACOS;
-        eRc = main_DictAdd(this, "makeType", "macosx");
+        eRc = main_DictAddUpdate(this, "makeType", "macosx");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'makeType' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
 
         // Set up libPath default;
-        eRc = main_DictAdd(this, "libIncludePath", "..");
+        eRc = main_DictAddUpdate(this, "libIncludePath", "..");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
         // Set up libPrefix default;
-        eRc = main_DictAdd(this, "libNamePrefix", "lib");
+        eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        this->pOut = stdout;
+        this->pOut = fbso_NewStd(stdout);
         
         // Return to caller.
         main_setLastError(this, ERESULT_SUCCESS);
@@ -1156,15 +1174,15 @@ extern "C" {
         // Do something.
         if (0 == strcmp("--macosx", **pppArgV)) {
             this->makeType = MAKETYPE_MACOS;
-            eRc = main_DictAdd(this, "makeType", "macosx");
+            eRc = main_DictAddUpdate(this, "makeType", "macosx");
         }
         else if (0 == strcmp("--msc32", **pppArgV)) {
             this->makeType = MAKETYPE_MSC32;
-            eRc = main_DictAdd(this, "makeType", "msc32");
+            eRc = main_DictAddUpdate(this, "makeType", "msc32");
         }
         else if (0 == strcmp("--msc64", **pppArgV)) {
             this->makeType = MAKETYPE_MSC64;
-            eRc = main_DictAdd(this, "makeType", "msc64");
+            eRc = main_DictAddUpdate(this, "makeType", "msc64");
         }
         else if (0 == strncmp("--input", **pppArgV, 6)) {
             if (*(**pppArgV+6) == '\0') {
@@ -1294,7 +1312,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         main_ParseInputFile(
-        MAIN_DATA        *this
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
     )
     {
         //ERESULT         eRc;
@@ -1312,9 +1331,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
         
-        pObj = hjson_NewFromPath(this->pFilePath, 4);
+        pObj = hjson_NewFromPath(pPath, 4);
         if (pObj) {
             
             if  (appl_getDebug((APPL_DATA *)this)) {
@@ -1342,19 +1365,16 @@ extern "C" {
     }
     
     
-    
-    //---------------------------------------------------------------
-    //              P r o c e s s  A r g
-    //---------------------------------------------------------------
-    
-    ERESULT         main_ProcessArg(
+    ERESULT         main_ParseInputStr(
         MAIN_DATA       *this,
-        ASTR_DATA       *pStr
+        const
+        char            *pStr
     )
     {
-        const
-        char            *pWrk;
-        PATH_DATA       *pPath = OBJ_NIL;
+        //ERESULT         eRc;
+        HJSON_DATA      *pObj = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        NODE_DATA       *pFileNode;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1363,13 +1383,101 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        fprintf(stderr, "Processing - %s...\n", AStr_getData(pStr));
+        if (NULL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
+        
+        pObj = hjson_NewA(pStr, 4);
+        if (pObj) {
+            
+            if  (appl_getDebug((APPL_DATA *)this)) {
+                obj_TraceSet(pObj, true);
+            }
+            pFileNode = hjson_ParseFileHash(pObj);
+            if (pFileNode) {
+                this->pNodes = pFileNode;
+                if (appl_getDebug((APPL_DATA *)this)) {
+                    pWrk = node_ToDebugString(pFileNode, 0);
+                    fprintf(stderr, "%s\n\n\n", AStr_getData(pWrk));
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                }
+            }
+            
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
         
         
         // Return to caller.
         main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //              P r o c e s s  A r g s
+    //---------------------------------------------------------------
+    
+    ERESULT         main_ProcessInit(
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        
+        // Return to caller.
+        main_setLastError(this, eRc);
+        return eRc;
+    }
+    
+    
+    ERESULT         main_ProcessArg(
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        PATH_DATA       *pPath = OBJ_NIL;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (!appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "Processing - %s...\n", AStr_getData(pStr));
+        }
+        pPath = path_NewFromAStr(pStr);
+        eRc = main_ParseInputFile(this, pPath);
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        eRc = main_GenMakefile(this);
+        
+        // Return to caller.
+        main_setLastError(this, eRc);
+        return eRc;
     }
     
     
@@ -1400,6 +1508,23 @@ extern "C" {
 #endif
         
         switch (type) {
+                
+                // Query for an address to specific data within the object.
+                // This should be used very sparingly since it breaks the
+                // object's encapsulation.
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+                        
+                    case 'C':
+                        if (str_Compare("ClassObject", (char *)pStr) == 0) {
+                            return (void *)&main_ClassObj;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
                 
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
@@ -1432,6 +1557,39 @@ extern "C" {
         }
         
         return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //             S e t u p  T e x t O u t
+    //---------------------------------------------------------------
+    
+    ERESULT         main_SetupTextOutAStr(
+        MAIN_DATA        *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        this->pOut = textOut_NewAStr( );
+        if (OBJ_NIL == this->pOut) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1599,7 +1757,7 @@ extern "C" {
         char            *pNameA
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG

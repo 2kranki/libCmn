@@ -77,15 +77,28 @@ extern "C" {
         MAIN_IDENT_GENBASE_CLASS,
         MAIN_IDENT_GENOSX,
         MAIN_IDENT_GENOSX_CLASS,
-        MAIN_IDENT_GENWIN32,
-        MAIN_IDENT_GENWIN32_CLASS,
-        MAIN_IDENT_GENWIN64,
-        MAIN_IDENT_GENWIN64_CLASS,
+        MAIN_IDENT_GENWIN,
+        MAIN_IDENT_GENWIN_CLASS,
         MAIN_IDENT_MAIN,
         MAIN_IDENT_MAIN_CLASS,
     } MAIN_IDENTS;
     
 
+    typedef enum genMake_os_e {
+        GENMAKE_OS_UNKNOW=0,
+        GENMAKE_OS_MACOSX,
+        GENMAKE_OS_MSC32,
+        GENMAKE_OS_MSC64,
+        GENMAKE_OS_PIC32
+    } GENMAKE_OS;
+    
+    typedef enum genMake_type_e {
+        GENMAKE_TYPE_UNKNOW=0,
+        GENMAKE_TYPE_LIB,
+        GENMAKE_TYPE_PGM
+    } GENMAKE_TYPE;
+
+    
 #ifdef XYZZY
     typedef struct exec_data_s	EXEC_DATA;    // Inherits from OBJ.
 

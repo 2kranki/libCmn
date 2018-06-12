@@ -172,7 +172,7 @@ PTRARRAY_VTBL   ptrArray_Vtbl = {
         ptrArray_Class,
         ptrArray_WhoAmI,
         NULL,           // (P_OBJ_QUERYINFO)
-        NULL,           // (P_OBJ_TOSTRING)ptrArray_ToDebugString,
+        (P_OBJ_TOSTRING)ptrArray_ToDebugString,
         NULL,            // ptrArray_Enable,
         NULL,            // ptrArray_Disable,
         NULL,            // (P_OBJ_ASSIGN)ptrArray_Assign,

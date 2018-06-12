@@ -1435,10 +1435,12 @@ extern "C" {
         if (this->pArray) {
             pMem = (char *)this->pArray;
             size = array_getSizeInBytes(this);
+            j = 1;
             while (size) {
                 if (indent) {
-                    AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
+                    AStr_AppendCharRepeatW32(pStr, indent, ' ');
                 }
+                AStr_AppendCharRepeatW32(pStr, 3, ' ');
                 j = hex_put16BytesObj_64(
                                          pHex,
                                          (uint64_t)pMem,

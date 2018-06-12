@@ -109,6 +109,29 @@ extern "C" {
     }
 
 
+    TEXTOUT_DATA *  textOut_NewAStr(
+    )
+    {
+        TEXTOUT_DATA    *this;
+        
+        this = textOut_Alloc( );
+        if (this) {
+            this = textOut_Init(this);
+            if (this) {
+                this->pStr = AStr_New( );
+                if (this->pStr) {
+                    this->type = TEXTOUT_TYPE_ASTR;
+                }
+                else {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+           }
+       }
+        return this;
+    }
+    
+    
 
     
 
@@ -159,6 +182,94 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                          O f f s e t
+    //---------------------------------------------------------------
+    
+    uint16_t        textOut_getOffset(
+        TEXTOUT_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        textOut_setLastError(this, ERESULT_SUCCESS);
+        return this->offset;
+    }
+    
+    
+    bool            textOut_setOffset(
+        TEXTOUT_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->offset = value;
+        
+        textOut_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                 O f f s e t  C h a r
+    //---------------------------------------------------------------
+    
+    char            textOut_getOffsetChr(
+        TEXTOUT_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        textOut_setLastError(this, ERESULT_SUCCESS);
+        return this->offsetChr;
+    }
+    
+    
+    bool            textOut_setOffsetChr(
+        TEXTOUT_DATA    *this,
+        char            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->offsetChr = value;
+        
+        textOut_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -631,15 +742,124 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                          P r i n t
+    //---------------------------------------------------------------
+    
+    ERESULT         textOut_Print(
+        TEXTOUT_DATA    *this,
+        const
+        char            *pFormat,
+        ...
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        char            str[256];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStr = NULL;
+        char            *pWrk = NULL;
+
+        /* Do Initialization.
+         */
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        va_start( arg_ptr, pFormat );
+        str[0] = '\0';
+        size = vsnprintf( str, sizeof(str), pFormat, arg_ptr );
+        va_end( arg_ptr );
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            va_start( arg_ptr, pFormat );
+            size = vsnprintf( pStr, size, pFormat, arg_ptr );
+            va_end( arg_ptr );
+            pWrk = pStr;
+            while (*pWrk) {
+                eRc = textOut_Putc(this, *pWrk);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+                ++pWrk;
+            }
+            mem_Free( pStr );
+            pStr = NULL;
+        }
+        else {
+            pWrk = str;
+            while (*pWrk) {
+                eRc = textOut_Putc(this, *pWrk);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+                ++pWrk;
+            }
+        }
+        
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       P u t  C h a r
     //---------------------------------------------------------------
     
-    ERESULT         textOut_PutChar(
+    ERESULT         textOut_Putc(
+        TEXTOUT_DATA    *this,
+        const
+        char            chr
+    )
+    {
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        switch (this->type) {
+                
+            case TEXTOUT_TYPE_ASTR:
+                this->eRc = AStr_AppendCharW32(this->pStr, chr);
+                break;
+                
+            case TEXTOUT_TYPE_FILE:
+                iRc = putc(chr, this->pFile);
+                this->eRc = ERESULT_SUCCESS;
+                if (iRc == EOF) {
+                    this->eRc = ERESULT_WRITE_ERROR;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        // Return to caller.
+        return this->eRc;
+    }
+    
+    
+    ERESULT         textOut_Putwc(
         TEXTOUT_DATA    *this,
         const
         W32CHR_T        chr
     )
     {
+        int             iRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -656,6 +876,14 @@ extern "C" {
                 this->eRc = AStr_AppendCharW32(this->pStr, chr);
                 break;
 
+            case TEXTOUT_TYPE_FILE:
+                iRc = putw(chr, this->pFile);
+                this->eRc = ERESULT_SUCCESS;
+               if (iRc == EOF) {
+                    this->eRc = ERESULT_WRITE_ERROR;
+                }
+                break;
+                
             default:
                 break;
         }

@@ -594,6 +594,69 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     ptrArray_ToDebugString(
+        PTRARRAY_DATA   *this,
+        int             indent
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pInfo = obj_getInfo(this);
+        pStr = AStr_New();
+        if (indent) {
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        }
+
+        AStr_AppendPrint(
+                     pStr,
+                     "{%p(%s) size=%d max=%d\n",
+                     this,
+                     pInfo->pClassName,
+                     this->size,
+                     this->max
+        );
+        
+        if (this->ppArray) {
+            for (i=0; i<this->size; ++i) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, (indent + 4), ' ');
+                }
+                eRc =   AStr_AppendPrint(
+                                         pStr,
+                                         "%8d - %p\n",
+                                         (i + 1),
+                                         this->ppArray[i]
+                                         );
+            }
+        }
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "%p(%s)}\n",
+                                 this,
+                                 pInfo->pClassName
+                                 );
+        
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 

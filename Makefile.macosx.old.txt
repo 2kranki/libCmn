@@ -1261,6 +1261,18 @@ $(OBJDIR)/srcLoc_object.o: $(SRCDIR)/srcLoc_object.c
 
 
 
+OBJS += $(OBJDIR)/SRecords.o $(OBJDIR)/SRecords_object.o
+
+
+$(OBJDIR)/SRecords.o: $(SRCDIR)/SRecords.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/SRecords_object.o: $(SRCDIR)/SRecords_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/symAttr.o $(OBJDIR)/symAttr_object.o
 
 
@@ -2546,6 +2558,13 @@ TESTS += test_srcLoc
 
 test_srcLoc:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_srcLoc.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_SRecords
+
+test_SRecords:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_SRecords.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

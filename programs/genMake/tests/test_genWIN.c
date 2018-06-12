@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <genWIN32_internal.h>
+#include    <genWIN_internal.h>
 
 
 
@@ -74,18 +74,18 @@ int             tearDown(
 
 
 
-int             test_genWIN32_OpenClose(
+int             test_genWIN_OpenClose(
     const
     char            *pTestName
 )
 {
-    GENWIN32_DATA	    *pObj = OBJ_NIL;
+    GENWIN_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = genWIN32_Alloc( );
+    pObj = genWIN_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = genWIN32_Init( pObj );
+    pObj = genWIN_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,11 +102,11 @@ int             test_genWIN32_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_genWIN32);
-    TINYTEST_ADD_TEST(test_genWIN32_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_genWIN);
+    TINYTEST_ADD_TEST(test_genWIN_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_genWIN32);
+TINYTEST_MAIN_SINGLE_SUITE(test_genWIN);
 
 
 

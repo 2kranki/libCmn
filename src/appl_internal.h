@@ -102,6 +102,7 @@ struct appl_data_s	{
     ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
 
     OBJ_ID          pObjProcess;
+    ERESULT         (*pProcessInit)(OBJ_ID);
     ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *);
 
     OBJ_ID          pObjUsage;
@@ -122,9 +123,27 @@ struct appl_data_s	{
 
 
     // Internal Functions
+    bool            appl_setDebug(
+        APPL_DATA       *this,
+        bool            fValue
+    );
+    
+    
     bool            appl_setLastError(
         APPL_DATA     *this,
         ERESULT         value
+    );
+    
+    
+    bool            appl_setParseArgsDefaults(
+        APPL_DATA       *this,
+        ERESULT         (*pValue)(OBJ_ID)
+    );
+    
+    
+    bool            appl_setParseArgsKeywords(
+        APPL_DATA       *this,
+        void            (*pValue)(OBJ_ID, const char *)
     );
     
     
@@ -156,18 +175,6 @@ struct appl_data_s	{
     ERESULT         appl_Help(
         APPL_DATA       *this,
         ASTR_DATA       *pStr
-    );
-    
-    
-    bool            appl_setParseArgsDefaults(
-        APPL_DATA       *this,
-        ERESULT         (*pValue)(OBJ_ID)
-    );
-    
-    
-    bool            appl_setParseArgsKeywords(
-        APPL_DATA       *this,
-        void            (*pValue)(OBJ_ID, const char *)
     );
     
     

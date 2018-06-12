@@ -49,7 +49,7 @@ int             main(
     
     iRc = main_Exec(pMain);
 
-    obj_Release(pMain);
+    //obj_Release(pMain);
     pMain = OBJ_NIL;
     return iRc;
 }

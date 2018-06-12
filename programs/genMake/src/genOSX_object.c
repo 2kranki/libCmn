@@ -86,6 +86,9 @@ bool            genOSXClass_IsKindOf(
     if (MAIN_IDENT_GENOSX_CLASS == classID) {
        return true;
     }
+    if (MAIN_IDENT_GENBASE_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -216,6 +219,9 @@ bool            genOSX_IsKindOf(
     if (MAIN_IDENT_GENOSX == classID) {
        return true;
     }
+    if (MAIN_IDENT_GENBASE == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
@@ -250,33 +256,44 @@ uint16_t		genOSX_WhoAmI(
 const
 GENOSX_VTBL     genOSX_Vtbl = {
     {
-        &genOSX_Info,
-        genOSX_IsKindOf,
-#ifdef  GENOSX_IS_SINGLETON
-        obj_RetainNull,
-        obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
-        genOSX_Dealloc,
-        genOSX_Class,
-        genOSX_WhoAmI,
-        (P_OBJ_QUERYINFO)genOSX_QueryInfo,
-        (P_OBJ_TOSTRING)genOSX_ToDebugString,
-        NULL,			// genOSX_Enable,
-        NULL,			// genOSX_Disable,
-        NULL,			// (P_OBJ_ASSIGN)genOSX_Assign,
-        NULL,			// (P_OBJ_COMPARE)genOSX_Compare,
-        NULL, 			// (P_OBJ_PTR)genOSX_Copy,
-        NULL, 			// (P_OBJ_PTR)genOSX_DeepCopy,
-        NULL 			// (P_OBJ_HASH)genOSX_Hash,
-    },
+        {
+            &genOSX_Info,
+            genOSX_IsKindOf,
+    #ifdef  GENOSX_IS_SINGLETON
+            obj_RetainNull,
+            obj_ReleaseNull,
+    #else
+            obj_RetainStandard,
+            obj_ReleaseStandard,
+    #endif
+            genOSX_Dealloc,
+            genOSX_Class,
+            genOSX_WhoAmI,
+            (P_OBJ_QUERYINFO)genOSX_QueryInfo,
+            (P_OBJ_TOSTRING)genOSX_ToDebugString,
+            NULL,			// genOSX_Enable,
+            NULL,			// genOSX_Disable,
+            NULL,			// (P_OBJ_ASSIGN)genOSX_Assign,
+            NULL,			// (P_OBJ_COMPARE)genOSX_Compare,
+            NULL, 			// (P_OBJ_PTR)genOSX_Copy,
+            NULL, 			// (P_OBJ_PTR)genOSX_DeepCopy,
+            NULL 			// (P_OBJ_HASH)genOSX_Hash,
+        },
+        NULL,               // pCompileObject
+        (void *)genBase_GenFinal,
+        (void *)genBase_GenInitial,
+        (void *)genBase_GenLibrary,
+        (void *)genBase_GenObjects,
+        (void *)genBase_GenOSSpecific,
+        (void *)genBase_GenPrograms,
+        (void *)genBase_GenRoutines,
+        (void *)genBase_GenTests,
+        (void *)genBase_GenObject,
+    }
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //genOSX_IsEnabled,
- 
+
 };
 
 

@@ -55,6 +55,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <fbso.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <nodeHash.h>
@@ -84,19 +85,20 @@ extern "C" {
         // method names to the vtbl definition in genBase_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(GENBASE_DATA *);
+        ERESULT     (*pCompileObject)(GENBASE_DATA *, const char *);
+        ERESULT     (*pGenFinal)(GENBASE_DATA *);
+        ERESULT     (*pGenInitial)(GENBASE_DATA *);
+        ERESULT     (*pGenLibrary)(GENBASE_DATA *);
+        ERESULT     (*pGenObjects)(GENBASE_DATA *);
+        ERESULT     (*pGenOSSpecific)(GENBASE_DATA *);
+        ERESULT     (*pGenPrograms)(GENBASE_DATA *);
+        ERESULT     (*pGenRoutines)(GENBASE_DATA *);
+        ERESULT     (*pGenTests)(GENBASE_DATA *);
+        ERESULT     (*pGenObject)(GENBASE_DATA *, NODE_DATA *);
     } GENBASE_VTBL;
 
 
-    typedef enum genBase_type_e {
-        GENMAKE_TYPE_UNKNOW=0,
-        GENMAKE_TYPE_MACOSX,
-        GENMAKE_TYPE_MSC32,
-        GENMAKE_TYPE_MSC64,
-        GENMAKE_TYPE_PIC32
-    } GENMAKE_TYPE;
-    
-    
+
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -215,9 +217,18 @@ extern "C" {
     );
     
     
+    NODEHASH_DATA * genBase_getObjDirs(
+        GENBASE_DATA    *this
+    );
 
 
+    FBSO_DATA *     genBase_getOut(
+        GENBASE_DATA    *this
+    );
     
+    
+    
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -243,12 +254,21 @@ extern "C" {
      Add the given name and its data to the dictionary.
      */
     
-    ERESULT         genBase_DictAdd(
+    ERESULT         genBase_DictAddUpdate(
         GENBASE_DATA    *this,
         const
         char            *pName,            
         const
         char            *pData
+    );
+    
+    
+    ERESULT         genBase_GenMakefile(
+        GENBASE_DATA        *this,
+        NODE_DATA           *pNodes,
+        SZHASH_DATA         *pDict,
+        DATETIME_DATA       *pDateTime,
+        FBSO_DATA           *pOut
     );
     
     
@@ -350,6 +370,7 @@ extern "C" {
     );
     
     
+#ifdef XYZZY
     /*!
      Generate instructions to compile a 'C' object consisting of
      the object source and the method source files and sent to
@@ -376,6 +397,7 @@ extern "C" {
         const
         char            *pObjDir
     );
+#endif
     
     
     /*!

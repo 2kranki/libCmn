@@ -12,8 +12,6 @@
  *          This path is based partially on url format and Unix path
  *          format. The general form of a path is:
  *              [driveSpecifier:] [/directory]* fileName [.ext]
- *          of interfering with the main path. A path may be called a 
- *          path on other O/S's.
  *
  * Remarks
  *    1.    The object User flags and Misc data are not used in this
@@ -358,10 +356,22 @@ extern "C" {
     );
     
     
+    /*!
+     Split the path into its 2 basic components of the file name and file
+     extension.  The file name consists of drive (optionally), directory (optionally)
+     and file name.  Generally, this is used to parse the file name and file
+     extension on the full File Name output from the SplitPath() method.
+     @param     this        object pointer
+     @param     ppFileName  optional pointer to an AStr object pointer where the
+                            leading file path will be returned if present.
+     @param     ppFileExt   optional pointer to an AStr object pointer where the
+                            trailing file extension will be returned if present.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     */
     ERESULT         path_SplitFile(
         PATH_DATA		*this,
-        ASTR_DATA       **ppFileName,
-        ASTR_DATA       **ppFileExt
+        ASTR_DATA       **ppFileName,       // (out) - optional
+        ASTR_DATA       **ppFileExt         // (out) - optional
     );
     
     

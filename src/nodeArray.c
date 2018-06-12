@@ -488,8 +488,11 @@ extern "C" {
             this->pOther = OBJ_NIL;
         }
 
-        obj_Dealloc(this);
-        this = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }

@@ -108,7 +108,11 @@ extern "C" {
     );
     
     
+    FBSO_DATA *     fbso_NewStd(
+        FILE            *pFileOut
+    );
     
+
     
 
     //---------------------------------------------------------------
@@ -179,11 +183,9 @@ extern "C" {
     
     
     /*!
-     Put the given data into the file. If the data size is too big
-     for one byte, break the data up into multiple bytes using the 
-     endian type.
+     Put the given data into the file.
      @param     this    object pointer
-     @param     value   data to be put into the array
+     @param     value   data to be written to the file
      @return    If successful, ERESULT_SUCCESS. Otherwise, an
                  ERESULT_* error code.
      */
@@ -194,6 +196,14 @@ extern "C" {
     );
     
     
+    /*!
+     Put the given data into the file in multiple bytes using the
+     object's endian type to determine the order.
+     @param     this    object pointer
+     @param     value   data to be written to the file
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
     ERESULT         fbso_PutU16(
         FBSO_DATA		*this,
         const
@@ -201,6 +211,14 @@ extern "C" {
     );
     
     
+    /*!
+     Put the given data into the file in multiple bytes using the
+     object's endian type to determine the order.
+     @param     this    object pointer
+     @param     value   data to be written to the file
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+     ERESULT_* error code.
+     */
     ERESULT         fbso_PutU24(
         FBSO_DATA		*this,
         const
@@ -208,6 +226,14 @@ extern "C" {
     );
     
     
+    /*!
+     Put the given data into the file in multiple bytes using the
+     object's endian type to determine the order.
+     @param     this    object pointer
+     @param     value   data to be written to the file
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+     ERESULT_* error code.
+     */
     ERESULT         fbso_PutU32(
         FBSO_DATA		*this,
         const
@@ -230,13 +256,21 @@ extern "C" {
 
     ERESULT         fbso_Putwc(
         FBSO_DATA		*this,
-        uint32_t        chr
+        W32CHR_T        chr
     );
     
     
-    ERESULT         fbso_PutStr(
+    /*!
+     Write the given string to the file without any
+     trailing NUL.
+     @param     this    object pointer
+     @param     pValue  data to be written to the file
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         fbso_PutAStr(
         FBSO_DATA		*this,
-        ASTR_DATA       *pStr
+        ASTR_DATA       *pValue
     );
     
     

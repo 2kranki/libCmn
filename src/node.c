@@ -1508,8 +1508,8 @@ extern "C" {
             return pArray;
         }
         
-        if (obj_IsKindOf(pData,OBJ_IDENT_NODEHASH)) {
-            this->eRc = nodeHash_Nodes((NODEHASH_DATA *)pData, &pArray);
+        if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+            pArray = nodeHash_Nodes((NODEHASH_DATA *)pData);
         }
         else if (obj_IsKindOf(pData,OBJ_IDENT_NODEARRAY)) {
             pArray = nodeArray_Copy((NODEARRAY_DATA *)pData);

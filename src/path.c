@@ -683,52 +683,7 @@ extern "C" {
                 break;
         }
         
-#ifdef FUTURE_OPTION
-        // Expand Environment variables.
-        while (fMore) {
-            fMore = false;
-            for (i=0; i<AStr_getLength((ASTR_DATA *)this); ++i) {
-                if ((AStr_getLength((ASTR_DATA *)this) - i) >= 3) {
-                    chr1 = AStr_CharGetW32((ASTR_DATA *)this, i+1);
-                    chr2 = AStr_CharGetW32((ASTR_DATA *)this, i+2);
-                    if( (chr1 == '$') && (chr2 == '{') ) {
-                        ASTR_DATA       *pName = AStr_New();
-                        if (OBJ_NIL == pName) {
-                            return ERESULT_INVALID_DATA;
-                        }
-                        for (j=i+2; j<AStr_getLength((ASTR_DATA *)this); ++j) {
-                            chr1 = AStr_CharGetW32((ASTR_DATA *)this, j+1);
-                            if( chr1 == '}' ) {
-                                fMore = true;
-                                break;
-                            }
-                        }
-                        if (fMore) {
-                            
-                            eRc =   pwr2Array_Delete(
-                                                     (PWR2ARRAY_DATA *)this,
-                                                     (i + 1),
-                                                     (j - i)
-                                    );
-                        }
-                        else {
-                            return ERESULT_INVALID_DATA;
-                        }
-                        eRc =   pwr2Array_Delete(
-                                                 (PWR2ARRAY_DATA *)this,
-                                                 (i + 1),
-                                                 1
-                                                 );
-                        if (ERESULT_HAS_FAILED(eRc)) {
-                            ;
-                        }
-                        continue;
-                    }
-                }
-            }
-        }
-#endif
-        
+        eRc = path_ExpandEnvVars(this);
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1489,7 +1444,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         path_SplitFile(
-        PATH_DATA		*cbp,
+        PATH_DATA		*this,
         ASTR_DATA       **ppFileName,
         ASTR_DATA       **ppFileExt
     )
@@ -1499,25 +1454,27 @@ extern "C" {
         uint32_t        begin = 1;
         uint32_t        end;
         uint32_t        begDir = 1;
-        
+        //ASTR_DATA       *pFileName = OBJ_NIL;
+        //ASTR_DATA       *pFileExt = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if( !path_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         index2 = 0;
-        eRc = AStr_CharFindPrevW32((ASTR_DATA *)cbp, &index2, '.');
+        eRc = AStr_CharFindPrevW32((ASTR_DATA *)this, &index2, '.');
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             begin = begDir;
             end = index2 - 1;
             if (ppFileName) {
                 if (begin <= end) {
                     eRc =   AStr_Mid(
-                                    (ASTR_DATA *)cbp,
+                                    (ASTR_DATA *)this,
                                     begin,
                                     (end - begin + 1),
                                     ppFileName
@@ -1528,11 +1485,11 @@ extern "C" {
                 }
             }
             begin = index2 + 1;
-            end = AStr_getLength((ASTR_DATA *)cbp);
+            end = AStr_getLength((ASTR_DATA *)this);
             if (ppFileExt) {
                 if (begin <= end) {
                     eRc =   AStr_Mid(
-                                      (ASTR_DATA *)cbp,
+                                      (ASTR_DATA *)this,
                                       begin,
                                       (end - begin + 1),
                                       ppFileExt
@@ -1546,10 +1503,10 @@ extern "C" {
         else {
             if (ppFileName) {
                 begin = begDir;
-                end = AStr_getLength((ASTR_DATA *)cbp);
+                end = AStr_getLength((ASTR_DATA *)this);
                 if (begin <= end) {
                     eRc =   AStr_Mid(
-                                    (ASTR_DATA *)cbp,
+                                    (ASTR_DATA *)this,
                                     begin,
                                     (end - begin + 1),
                                     ppFileName

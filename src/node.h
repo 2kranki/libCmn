@@ -443,14 +443,14 @@ extern "C" {
      To index property is used to point to the "To" node
      if needed.  Note that this uses the Right index internally.
      */
-    uint32_t        node_getFrom(
-                                 NODE_DATA       *this
-                                 );
+    uint32_t        node_getTo(
+        NODE_DATA       *this
+    );
     
-    bool            node_setFrom(
-                                 NODE_DATA       *this,
-                                 uint32_t        value
-                                 );
+    bool            node_setTo(
+        NODE_DATA       *this,
+        uint32_t        value
+    );
     
     
     /*!

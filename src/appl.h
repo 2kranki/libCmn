@@ -190,7 +190,7 @@ extern "C" {
         APPL_DATA       *this
     );
     
-    
+
     bool            appl_getForce(
         APPL_DATA       *this
     );
@@ -222,6 +222,7 @@ extern "C" {
     bool            appl_setProcessArgs(
         APPL_DATA       *this,
         OBJ_ID          pObj,
+        ERESULT         (*pProcessInit)(OBJ_ID),
         ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *)
     );
     

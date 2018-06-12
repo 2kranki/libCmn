@@ -1,5 +1,5 @@
 /*
- *	Generated 04/18/2018 09:07:22
+ *	Generated 04/18/2018 09:07:03
  */
 
 
@@ -24,7 +24,10 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <genWIN64_internal.h>
+#include    <genBase_internal.h>
+
+
+#include    <test_data.c>
 
 
 
@@ -74,18 +77,18 @@ int             tearDown(
 
 
 
-int             test_genWIN64_OpenClose(
+int             test_genBase_OpenClose(
     const
     char            *pTestName
 )
 {
-    GENWIN64_DATA	    *pObj = OBJ_NIL;
+    GENBASE_DATA	*pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = genWIN64_Alloc( );
+    pObj = genBase_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = genWIN64_Init( pObj );
+    pObj = genBase_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,11 +105,11 @@ int             test_genWIN64_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_genWIN64);
-    TINYTEST_ADD_TEST(test_genWIN64_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_genBase);
+    TINYTEST_ADD_TEST(test_genBase_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_genWIN64);
+TINYTEST_MAIN_SINGLE_SUITE(test_genBase);
 
 
 

@@ -710,29 +710,27 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
-        
+        const
+        OBJ_INFO        *pInfo;
+
         if (OBJ_NIL == this) {
             this = szTbl_Shared();
         }
 
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(szTbl) ",
-                     this
-            );
-        AStr_AppendA(pStr, str);
+        eRc = AStr_AppendPrint(
+                               pStr,
+                               "{%p(%s) size=%d\n",
+                               this,
+                               pInfo->pClassName,
+                               this->size
+                               );
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -747,9 +745,16 @@ extern "C" {
         }
 #endif
         
-        j = snprintf( str, sizeof(str), " %p(szTbl)}\n", this );
-        AStr_AppendA(pStr, str);
-        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 " %p(%s)}\n",
+                                 this,
+                                 pInfo->pClassName
+                                 );
+
         return pStr;
     }
     

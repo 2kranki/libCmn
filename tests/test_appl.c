@@ -302,10 +302,10 @@ int         test_appl_Usage01(
 )
 {
     APPL_DATA   *pObj = OBJ_NIL;
-    ERESULT     eRc;
+    //ERESULT     eRc;
     bool        fRc;
-    APPL_CLO    *pClo;
-    ASTR_DATA   *pStr = OBJ_NIL;
+    //APPL_CLO    *pClo;
+    //ASTR_DATA   *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = appl_Alloc( );
