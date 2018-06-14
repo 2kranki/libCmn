@@ -268,6 +268,9 @@
 		C49ADDA42010EF360056FADD /* szTbl_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C49ADDA32010EF340056FADD /* szTbl_JSON.c */; };
 		C49ADE0B201448030056FADD /* i32Array.c in Sources */ = {isa = PBXBuildFile; fileRef = C49ADE08201447FF0056FADD /* i32Array.c */; };
 		C49ADE0C201448030056FADD /* i32Array_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49ADE0A201448010056FADD /* i32Array_object.c */; };
+		C49C4C3A20D2953200FB4497 /* psxExec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49C4C3620D2952E00FB4497 /* psxExec_object.c */; };
+		C49C4C3B20D2953200FB4497 /* psxExec.c in Sources */ = {isa = PBXBuildFile; fileRef = C49C4C3720D2953000FB4497 /* psxExec.c */; };
+		C49C4C3D20D30BF200FB4497 /* test_psxExec.c in Sources */ = {isa = PBXBuildFile; fileRef = C49C4C3C20D30BF100FB4497 /* test_psxExec.c */; };
 		C4AA73631FDBB245001FACEC /* genObj_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73611FDBB243001FACEC /* genObj_object.c */; };
 		C4AA73641FDBB245001FACEC /* genObj.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73621FDBB244001FACEC /* genObj.c */; };
 		C4AA736F1FE0F671001FACEC /* token_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA736B1FE0F66D001FACEC /* token_object.c */; };
@@ -298,7 +301,6 @@
 		C4AA73B41FE2B740001FACEC /* dec_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73A41FE2B740001FACEC /* dec_JSON.c */; };
 		C4BB273620C4387B00FE72AC /* SRecords.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273220C4387700FE72AC /* SRecords.c */; };
 		C4BB273720C4387B00FE72AC /* SRecords_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273420C4387900FE72AC /* SRecords_object.c */; };
-		C4EC4EC520BEAAE8004DADD9 /* test_appl.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EC4EC420BEAAE8004DADD9 /* test_appl.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -828,6 +830,11 @@
 		C49ADE08201447FF0056FADD /* i32Array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = i32Array.c; sourceTree = "<group>"; };
 		C49ADE09201448000056FADD /* i32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = i32Array.h; sourceTree = "<group>"; };
 		C49ADE0A201448010056FADD /* i32Array_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = i32Array_object.c; sourceTree = "<group>"; };
+		C49C4C3620D2952E00FB4497 /* psxExec_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_object.c; sourceTree = "<group>"; };
+		C49C4C3720D2953000FB4497 /* psxExec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec.c; sourceTree = "<group>"; };
+		C49C4C3820D2953100FB4497 /* psxExec_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec_internal.h; sourceTree = "<group>"; };
+		C49C4C3920D2953100FB4497 /* psxExec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec.h; sourceTree = "<group>"; };
+		C49C4C3C20D30BF100FB4497 /* test_psxExec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_psxExec.c; sourceTree = "<group>"; };
 		C4AA735F1FDBB241001FACEC /* genObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genObj.h; sourceTree = "<group>"; };
 		C4AA73601FDBB242001FACEC /* genObj_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genObj_internal.h; sourceTree = "<group>"; };
 		C4AA73611FDBB243001FACEC /* genObj_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = genObj_object.c; sourceTree = "<group>"; };
@@ -878,7 +885,6 @@
 		C4BB273320C4387800FE72AC /* SRecords_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRecords_internal.h; sourceTree = "<group>"; };
 		C4BB273420C4387900FE72AC /* SRecords_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SRecords_object.c; sourceTree = "<group>"; };
 		C4BB273520C4387A00FE72AC /* SRecords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRecords.h; sourceTree = "<group>"; };
-		C4EC4EC420BEAAE8004DADD9 /* test_appl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_appl.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -912,7 +918,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4EC4EC420BEAAE8004DADD9 /* test_appl.c */,
+				C49C4C3C20D30BF100FB4497 /* test_psxExec.c */,
 			);
 			name = testCmn;
 			path = ../../tests;
@@ -1294,6 +1300,10 @@
 				C4359B171FC9C42300CA858E /* psxCond_object.c */,
 				C4359B321FC9C42600CA858E /* psxCond.c */,
 				C4359B3F1FC9C42700CA858E /* psxCond.h */,
+				C49C4C3820D2953100FB4497 /* psxExec_internal.h */,
+				C49C4C3620D2952E00FB4497 /* psxExec_object.c */,
+				C49C4C3720D2953000FB4497 /* psxExec.c */,
+				C49C4C3920D2953100FB4497 /* psxExec.h */,
 				C4359B2A1FC9C42500CA858E /* psxLock_internal.h */,
 				C4359B431FC9C42700CA858E /* psxLock_object.c */,
 				C4359B2F1FC9C42500CA858E /* psxLock.c */,
@@ -1656,7 +1666,6 @@
 				C4AA73781FE1D9FD001FACEC /* lex_object.c in Sources */,
 				C4359B541FC9C42700CA858E /* ptrArray_object.c in Sources */,
 				C4359AFE1FC9C3D800CA858E /* node_object.c in Sources */,
-				C4EC4EC520BEAAE8004DADD9 /* test_appl.c in Sources */,
 				C4359BE71FC9C48400CA858E /* szHash.c in Sources */,
 				C43599C71FC9C36800CA858E /* audioCW_object.c in Sources */,
 				C4359A501FC9C38800CA858E /* dir.c in Sources */,
@@ -1695,6 +1704,7 @@
 				C4359B561FC9C42700CA858E /* ptrArray.c in Sources */,
 				C4AA73A71FE2B740001FACEC /* name_JSON.c in Sources */,
 				C4AA73A61FE2B740001FACEC /* W32Str_JSON.c in Sources */,
+				C49C4C3B20D2953200FB4497 /* psxExec.c in Sources */,
 				C4359BE01FC9C48400CA858E /* table.c in Sources */,
 				C4359BF31FC9C48400CA858E /* u8Array_object.c in Sources */,
 				C4359A4A1FC9C38800CA858E /* fbsi_object.c in Sources */,
@@ -1766,6 +1776,7 @@
 				C4359AF61FC9C3D800CA858E /* objHash.c in Sources */,
 				C43599AF1FC9C36800CA858E /* clo.c in Sources */,
 				C4AA73AB1FE2B740001FACEC /* hjson.c in Sources */,
+				C49C4C3A20D2953200FB4497 /* psxExec_object.c in Sources */,
 				C43599AD1FC9C36800CA858E /* bptree.c in Sources */,
 				C4359B051FC9C3D800CA858E /* nodeTree.c in Sources */,
 				C43599A91FC9C36800CA858E /* appl.c in Sources */,
@@ -1844,6 +1855,7 @@
 				C4359AE91FC9C3D800CA858E /* objList_object.c in Sources */,
 				C4AA73AD1FE2B740001FACEC /* hex_JSON.c in Sources */,
 				C4359B011FC9C3D800CA858E /* objCb.c in Sources */,
+				C49C4C3D20D30BF200FB4497 /* test_psxExec.c in Sources */,
 				C42122FE1FE5B42700F45294 /* parser.c in Sources */,
 				C49ADE0C201448030056FADD /* i32Array_object.c in Sources */,
 				C43599A21FC9C36800CA858E /* array.c in Sources */,

@@ -1,0 +1,36 @@
+{
+    "name":"uMake",
+    "type":"program",
+    "lib_deps":["Cmn"],
+    "headers_private":
+    [
+        "genMake.h"
+    ],
+    "headers_public":
+    [
+    ],
+    "headers_test":
+    [
+        "test_defs.h"
+    ],
+    "objects":
+    {
+        "genOSX":["genMake"],
+        "genWIN":["genMake"],
+        "main":["genMake"]
+    },
+    "routines":
+    [
+        "mainProgram.c"
+    ],
+    "macosx": {
+    },
+    "win32": {
+    },
+    "tests":
+    {
+        "test_genOSX.c":null,
+        "test_genWIN.c":null,
+        "test_main.c":null
+    }
+}

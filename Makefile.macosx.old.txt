@@ -1117,6 +1117,18 @@ $(OBJDIR)/psxCond_object.o: $(SRCDIR)/psxCond_object.c
 
 
 
+OBJS += $(OBJDIR)/psxExec.o $(OBJDIR)/psxExec_object.o
+
+
+$(OBJDIR)/psxExec.o: $(SRCDIR)/psxExec.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/psxExec_object.o: $(SRCDIR)/psxExec_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/psxLock.o $(OBJDIR)/psxLock_object.o
 
 
@@ -2446,6 +2458,13 @@ TESTS += test_psxCond
 
 test_psxCond:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxCond.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_psxExec
+
+test_psxExec:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_psxExec.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

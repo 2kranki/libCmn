@@ -363,6 +363,8 @@ extern "C" {
         OBJ_IDENT_PSXCOND,              // Posix Condition
         OBJ_IDENT_PSXCOND_CLASS,
         OBJ_IDENT_PSXLOCK,              // Posix Lock
+        OBJ_IDENT_PSXEXEC,              // Posix Task Execution
+        OBJ_IDENT_PSXEXEC_CLASS,
         OBJ_IDENT_PSXLOCK_CLASS,
         OBJ_IDENT_PSXMUTEX,             // Posix Mutex
         OBJ_IDENT_PSXMUTEX_CLASS,

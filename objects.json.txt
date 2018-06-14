@@ -123,6 +123,7 @@
         "pplex2":["cmn","lex"],
         "pplex3":["cmn","lex"],
         "psxCond":["cmn","AStr"],
+        "psxExec":["cmn","AStr"],
         "psxLock":["cmn","AStr"],
         "psxMutex":["cmn","AStr"],
         "psxSem":["cmn","AStr"],
