@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   objHash_JSON.c
+ * File:   nodeHash_JSON.c
  *
- * Created on 12/19/2017 from W32Str_JSON
+ * Created on 06/19/2018 from objHash_JSON
  */
 
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <objHash_internal.h>
+#include    <nodeHash_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -70,7 +70,7 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            objHash_Int64ToChrClean(
+    void            nodeHash_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
     )
@@ -99,7 +99,81 @@ extern "C" {
     
 
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    NODEHASH_DATA * nodeHash_ParseObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        NODEHASH_DATA   *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        uint32_t        cls = 0;
+        OBJ_ID          pObj = OBJ_NIL;
+        //uint8_t         *pUtf8;
+        //SRCLOC_DATA     *pSrc = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        
+        pInfo = obj_getInfo(node_Class());
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            return pObject;
+            //goto exit00;
+        }
+        
+#ifdef XYZZY
+        pObj = jsonIn_SubobjectInHash(pParser, "name");
+        if (pObj) {
+            pName = name_ParseObject(pParser);
+            jsonIn_SubobjectEnd(pParser);
+            if (pName) {
+                pObject = node_New( );
+                obj_Release(pName);
+                pName = OBJ_NIL;
+            }
+        }
+#endif
+        
+#ifdef XYZZY
+        if (pObject) {
+            cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
+            node_setClass(pObject, cls);
+            
+            pObj = jsonIn_SubobjectInHash(pParser, "data");
+            if (pObj) {
+                pObj = jsonIn_ParseObject(pParser);
+                jsonIn_SubobjectEnd(pParser);
+                if (pObj) {
+                    szData_setData(pObject, pObj);
+                    obj_Release(pObj);
+                    pObj = OBJ_NIL;
+                }
+            }
+        }
+#endif
+
+        // Return to caller.
+    exit00:
+        ;
+#ifdef XYZZY
+        if (pSrc) {
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+        }
+#endif
+        return pObject;
+    }
     
+    
+    
+
     
     
     /****************************************************************
@@ -112,20 +186,20 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         objHash_NewFromJSONString(
+    ERESULT         nodeHash_NewFromJSONString(
         ASTR_DATA       *pString,
-        W32STR_DATA     **ppData
+        NODEHASH_DATA   **ppData
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         JSONIN_DATA     *pParser;
         NODE_DATA       *pFileNode = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo = obj_getInfo(nodeHash_Class( ));
 #ifdef XYZZY
         NODE_DATA       *pNode;
-        NODEHASH_DATA   *pHash;
         NODEARRAY_DATA  *pArray;
-        const
-        OBJ_INFO        *pInfo = objHash_Vtbl.iVtbl.pInfo;
+        NODEHASH_DATA   *pHash;
         uint32_t        i = 0;
 #endif
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -147,6 +221,12 @@ extern "C" {
         pParser = jsonIn_New();
         eRc = jsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
+            goto exit00;
+        }
+        
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
@@ -393,10 +473,10 @@ extern "C" {
     
     
 
-    ERESULT         objHash_NewFromJSONStringA(
+    ERESULT         nodeHash_NewFromJSONStringA(
         const
         char            *pString,
-        W32STR_DATA     **ppData
+        NODEHASH_DATA   **ppData
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -404,7 +484,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = objHash_NewFromJSONString(pStr, ppData);
+            eRc = nodeHash_NewFromJSONString(pStr, ppData);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -415,8 +495,8 @@ extern "C" {
     
     
     
-    ASTR_DATA *     objHash_ToJSON(
-        OBJHASH_DATA    *this
+    ASTR_DATA *     nodeHash_ToJSON(
+        NODEHASH_DATA   *this
     )
     {
         uint32_t        i;
@@ -427,7 +507,8 @@ extern "C" {
         OBJ_INFO        *pInfo;
         ASTR_DATA       *pData;
         LISTDL_DATA     *pNodeList;
-        OBJHASH_NODE    *pNode;
+        NODEHASH_NODE   *pEntry;
+        //NODE_DATA       *pNode;
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -440,38 +521,26 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !objHash_Validate(this) ) {
+        if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
-        pInfo = objHash_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
 
-        // Scan the Hash Table insuring that all entries have
-        // an "ToJSON" method.
+        // Scan the Hash Table insuring that all entries are Nodes
+        // which have the "ToJSON" method.
         fRc = true;
         for (i=0; ((i < this->cHash) && fRc); ++i) {
             pNodeList = &this->pHash[i];
-            pNode = listdl_Head(pNodeList);
-            while (pNode) {
-                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
-                if (pQueryInfo) {
-                    pToJSON = (*pQueryInfo)(
-                                pNode->pObject,
-                                OBJ_QUERYINFO_TYPE_METHOD,
-                                "ToJSON"
-                            );
-                    if (NULL == pToJSON) {
-                        fRc = false;
-                        break;
-                    }
-                }
-                else {
-                    fRc = false;
+            pEntry = listdl_Head(pNodeList);
+            while (pEntry) {
+                fRc = obj_IsKindOf(pEntry->pNode, OBJ_IDENT_NODE);
+                if (!fRc) {
                     break;
                 }
-                pNode = listdl_Next(pNodeList, pNode);
+                pEntry = listdl_Next(pNodeList, pEntry);
             }
         }
         if (!fRc) {
@@ -481,30 +550,31 @@ extern "C" {
         
         pStr = AStr_New();
         AStr_AppendPrint(
-                         pStr,
-                         "{\"objectType\":\"%s\",\n\t\"count\":%d,\n\t\"entries:[\n",
-                         pInfo->pClassName,
-                         this->num
+                    pStr,
+                    "{\"objectType\":\"%s\",\n\t\"count\":%d,\n\t\"entries:[\n",
+                    pInfo->pClassName,
+                    this->size
         );
         
         // Scan the Hash Table creating entries for each of the objects
         // in the table and appending them to the array.
-        j = this->num;
+        j = this->size;
         for (i=0; ((i < this->cHash) && fRc); ++i) {
             pNodeList = &this->pHash[i];
-            pNode = listdl_Head(pNodeList);
-            while (pNode) {
+            pEntry = listdl_Head(pNodeList);
+            while (pEntry) {
                 pData = OBJ_NIL;
-                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
+                pQueryInfo = obj_getVtbl(pEntry->pNode)->pQueryInfo;
                 if (pQueryInfo) {
                     pToJSON =   (*pQueryInfo)(
-                                          pNode->pObject,
+                                          pEntry->pNode,
                                           OBJ_QUERYINFO_TYPE_METHOD,
                                           "ToJSON"
                                 );
                     if (pToJSON) {
-                        pData = (*pToJSON)(pNode->pObject);
+                        pData = (*pToJSON)(pEntry->pNode);
                         if (pData) {
+                            //AStr_AppendPrint(pStr, "/* %d */\n", j++);
                             AStr_Append(pStr, pData);
                             obj_Release(pData);
                             pData = OBJ_NIL;
@@ -517,7 +587,7 @@ extern "C" {
                         }
                     }
                 }
-                pNode = listdl_Next(pNodeList, pNode);
+                pEntry = listdl_Next(pNodeList, pEntry);
             }
         }
         AStr_AppendA(pStr, "]\n\n\n");

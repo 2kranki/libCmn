@@ -226,6 +226,15 @@ extern "C" {
     );
     
     
+    /*!
+     @return:   true if asciiChar is [a..z] or [A..Z] or [0..9] or '_'.
+                Otherwise, false is returned.
+     */
+    bool                ascii_isLabelCharW32(
+        W32CHR_T            asciiChar
+    );
+    
+    
     bool                ascii_isLowerA(
         char                asciiChar
     );

@@ -54,6 +54,7 @@
 #include        <genMake.h>
 #include        <AStr.h>
 #include        <fbso.h>
+#include        <node.h>
 #include        <path.h>
 #include        <szHash.h>
 #include        <textOut.h>
@@ -86,12 +87,12 @@ extern "C" {
     } MAIN_VTBL;
 
 
-    typedef enum make_type_e {
-        MAKETYPE_UNKNOWN=0,
-        MAKETYPE_MACOS,
-        MAKETYPE_MSC32,
-        MAKETYPE_MSC64
-    } MAKETYPE;
+    typedef enum os_type_e {
+        OSTYPE_UNKNOWN=0,
+        OSTYPE_MACOS,
+        OSTYPE_MSC32,
+        OSTYPE_MSC64
+    } OSTYPE;
     
     
     typedef enum out_type_e {
@@ -156,6 +157,16 @@ extern "C" {
     );
 
 
+    TEXTOUT_DATA *  main_getOutput(
+        MAIN_DATA       *this
+    );
+    
+    bool            main_setOutput(
+        MAIN_DATA       *this,
+        TEXTOUT_DATA    *pValue
+    );
+    
+
     PATH_DATA *     main_getOutputPath(
         MAIN_DATA       *this
     );
@@ -176,8 +187,7 @@ extern "C" {
         MAIN_DATA       *this,
         const
         char            *pName,
-        const
-        char            *pData
+        OBJ_ID          pData
     );
     
     ERESULT         main_DictDeleta(
@@ -186,11 +196,6 @@ extern "C" {
         char            *pName
     );
     
-
-    ERESULT         main_Disable(
-        MAIN_DATA		*this
-    );
-
 
     int             main_Exec(
         MAIN_DATA		*this
@@ -217,11 +222,6 @@ extern "C" {
     );
 
 
-    ERESULT         main_IsEnabled(
-        MAIN_DATA		*this
-    );
-    
- 
     int             main_Run(
         MAIN_DATA		*this
     );

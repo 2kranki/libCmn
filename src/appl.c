@@ -1622,33 +1622,42 @@ extern "C" {
         
         if (pClo) {
             void            *pPtr = (uint8_t *)this + pClo->offset;
+            if (0 == pClo->offset) {
+                pPtr = NULL;
+            }
             switch (pClo->type) {
                 case APPL_ARG_BOOL:             // uint8_t - 0 or 1
-                    if (fTrue) {
-                        *((uint8_t *)pPtr) = 1;
-                    }
-                    else {
-                        *((uint8_t *)pPtr) = 0;
+                    if (pPtr) {
+                        if (fTrue) {
+                            *((uint8_t *)pPtr) = 1;
+                        }
+                        else {
+                            *((uint8_t *)pPtr) = 0;
+                        }
                     }
                     break;
                 case APPL_ARG_EXEC:             // Execute given routine
-                    eRc = pClo->pExec(this, pData);
-                    if (ERESULT_FAILED(eRc)) {
-                        appl_Usage(
-                                   this,
-                                   "ERROR - Execute Routine for --%s failed!",
-                                   pClo->pArgLong
-                        );
-                        exit(8);
+                    break;
+                case APPL_ARG_EXEC_PARM:        // Execute given routine
+                    if (OBJ_NIL == pData) {
+                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
+                            pData = AStrArray_Get(this->pArgs, this->nextArg);
+                            if (pData) {
+                                pData = AStr_Copy(pData);
+                                ++this->nextArg;
+                            }
+                        }
                     }
                     break;
                 case APPL_ARG_INCR:             // uint16_t - Every occurence increases the
                     //                          // associated value (default is 0);
-                    if (fTrue) {
-                        *((uint16_t *)pPtr) += 1;
-                    }
-                    else {
-                        *((uint16_t *)pPtr) -= 1;
+                    if (pPtr) {
+                        if (fTrue) {
+                            *((uint16_t *)pPtr) += 1;
+                        }
+                        else {
+                            *((uint16_t *)pPtr) -= 1;
+                        }
                     }
                     break;
                 case APPL_ARG_NUMBER:           // Number pointer
@@ -1663,7 +1672,7 @@ extern "C" {
                             }
                         }
                     }
-                    if (pData) {
+                    if (pData && pPtr) {
                         *((PATH_DATA **)pPtr) = path_NewFromAStr(pData);
                     }
                     else {
@@ -1685,7 +1694,7 @@ extern "C" {
                             }
                         }
                     }
-                    if (pData) {
+                    if (pData && pPtr) {
                         *((ASTR_DATA **)pPtr) = pData;
                         pData = OBJ_NIL;
                     }
@@ -1700,6 +1709,17 @@ extern "C" {
                     break;
                 default:
                     break;
+            }
+            if (pClo->pExec) {
+                eRc = pClo->pExec(this, pData);
+                if (ERESULT_FAILED(eRc)) {
+                    appl_Usage(
+                               this,
+                               "ERROR - Execute Routine for --%s failed!",
+                               pClo->pArgLong
+                    );
+                    exit(8);
+                }
             }
         }
 

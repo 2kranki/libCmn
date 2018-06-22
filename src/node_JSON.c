@@ -401,18 +401,20 @@ extern "C" {
         NODE_DATA       *this
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
-        //char            str2[256];
-        //uint32_t        len;
-        //uint32_t        lenChars;
-        //const
-        //int32_t         *pWStr = NULL;
         const
         OBJ_INFO        *pInfo;
-        
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA *     (*pToJSON)(
+            OBJ_ID          objId
+        );
+
 #ifdef NDEBUG
 #else
         if( !node_Validate( this ) ) {
@@ -423,22 +425,120 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{\"objectType\":\"%s\",\"class\":\"%d\",\"index\":%d,",
+        AStr_AppendPrint(
+                     pStr,
+                     "{\"objectType\":\"%s\","
+                         "\"class\":\"%d\","
+                         "\"type\":\"%d\","
+                         "\"index\":%d,\n",
                      pInfo->pClassName,
                      this->cls,
+                     this->type,
                      this->index
                      );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(
+                         pStr,
+                         "\t\"leftIndex\":\"%s\","
+                         "\"middleIndex\":\"%d\","
+                         "\"parentIndex\":\"%d\","
+                         "\"rightIndex\":%d,\n",
+                         this->leftIndex,
+                         this->middleIndex,
+                         this->parentIndex,
+                         this->rightIndex
+                         );
+
+        if (this->pName) {
+            pWrkStr = name_ToJSON(this->pName);
+            AStr_AppendA(pStr, "\"name\":");
+            AStr_Append(pStr, pWrkStr);\
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
         
-        pWrkStr = name_ToJSON(this->pName);
-        AStr_AppendA(pStr, "\"name\":");
-        AStr_Append(pStr, pWrkStr);\
-        obj_Release(pWrkStr);
-        pWrkStr = OBJ_NIL;
+        if (this->pData) {
+            pQueryInfo = obj_getVtbl(this->pData)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJSON =   (*pQueryInfo)(
+                                          this->pData,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                          );
+                if (pToJSON) {
+                    pWrkStr = (*pToJSON)(this->pData);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"data\":\n");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+        }
+        
+        if (this->pOther) {
+            pQueryInfo = obj_getVtbl(this->pOther)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJSON =   (*pQueryInfo)(
+                                          this->pOther,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                          );
+                if (pToJSON) {
+                    pWrkStr = (*pToJSON)(this->pOther);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"other\":\n");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+        }
+        
+        if (this->pExtra) {
+            pQueryInfo = obj_getVtbl(this->pExtra)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJSON =   (*pQueryInfo)(
+                                          this->pExtra,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                          );
+                if (pToJSON) {
+                    pWrkStr = (*pToJSON)(this->pExtra);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"extra\":\n");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+        }
+        
+        if (this->pProperties) {
+            pQueryInfo = obj_getVtbl(this->pProperties)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJSON =   (*pQueryInfo)(
+                                          this->pProperties,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                          );
+                if (pToJSON) {
+                    pWrkStr = (*pToJSON)(this->pProperties);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"properties\":\n");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+        }
         
         AStr_AppendA(pStr, "}\n");
         

@@ -38,6 +38,7 @@
 
 
 #include    <nodeHash.h>
+#include    <jsonIn.h>
 #include    <listdl.h>
 #include    <str.h>
 
@@ -109,8 +110,19 @@ struct nodeHash_data_s	{
     void            nodeHash_Dealloc(
         OBJ_ID          objId
     );
-
-
+    
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned null object must be released.
+     */
+    NODEHASH_DATA * nodeHash_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeHash_Validate(

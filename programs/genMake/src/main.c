@@ -53,6 +53,10 @@ extern "C" {
 #endif
     
 
+    ERESULT         main_ArgLibInclude(
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
     ERESULT         main_ArgMacos(
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
@@ -65,9 +69,27 @@ extern "C" {
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
+    ERESULT         main_DefaultsMacos(
+        MAIN_DATA       *this
+    );
+    ERESULT         main_DefaultsMsc32(
+        MAIN_DATA       *this
+    );
+    ERESULT         main_DefaultsMsc64(
+        MAIN_DATA       *this
+    );
 
 
     APPL_CLO        pPgmArgs[] = {
+        {
+            0,
+            "libInclude",
+            APPL_ARG_PROGRAM,
+            APPL_ARG_PATH,
+            0,
+            (void *)main_ArgLibInclude,
+            "Set Library Include Base Path"
+        },
         {
             0,
             "macos",
@@ -75,7 +97,7 @@ extern "C" {
             APPL_ARG_EXEC,
             0,
             (void *)main_ArgMacos,
-            "Generate MacOS Makefile"
+            "Generate MacOS Makefile (default)"
         },
         {
             0,
@@ -97,12 +119,12 @@ extern "C" {
         },
         {
             'o',
-            "output",
+            "out",
             APPL_ARG_PROGRAM,
             APPL_ARG_PATH,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
-            "Set Output File Path"
+            "Set Output Base Path"
         },
     };
     static
@@ -120,11 +142,12 @@ extern "C" {
     //                     A r g  R o u t i n e s
     //---------------------------------------------------------------
     
-    ERESULT         main_ArgMacos(
+    ERESULT         main_ArgLibInclude(
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -135,8 +158,30 @@ extern "C" {
         }
 #endif
         
-        this->makeType = MAKETYPE_MACOS;
-        main_DictAddUpdate(this, "makeType", "macos");
+        //eRc = main_DefaultsMacos(this);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         main_ArgMacos(
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = main_DefaultsMacos(this);
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -148,7 +193,8 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -158,8 +204,7 @@ extern "C" {
         }
 #endif
         
-        this->makeType = MAKETYPE_MSC32;
-        main_DictAddUpdate(this, "makeType", "msc32");
+        eRc = main_DefaultsMsc32(this);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -171,7 +216,8 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -181,15 +227,155 @@ extern "C" {
         }
 #endif
         
-        this->makeType = MAKETYPE_MSC64;
-        main_DictAddUpdate(this, "makeType", "msc64");
-        
+        eRc = main_DefaultsMsc64(this);
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
     
     
 
+    //---------------------------------------------------------------
+    //                D e f a u l t  R o u t i n e s
+    //---------------------------------------------------------------
+    
+    ERESULT         main_DefaultsMacos(
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        this->osType = OSTYPE_MACOS;
+        main_DictAddUpdate(this, "osType", "macos");
+        
+        // Set up libPath defaults
+        eRc = main_DictAddUpdate(this, "libIncludePath", "..");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        // Set up libPrefix default;
+        eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = main_DictAddUpdate(this, "outBase", "/usr/local/lib");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = main_DictAddUpdate(this, "tmpBase", "/TMP");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         main_DefaultsMsc32(
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        this->osType = OSTYPE_MSC32;
+        main_DictAddUpdate(this, "osType", "msc32");
+        
+        //FIXME: Update this!
+
+        // Set up libPath defaults
+        eRc = main_DictAddUpdate(this, "libIncludePath", "..");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        // Set up libPrefix default;
+        eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         main_DefaultsMsc64(
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        this->osType = OSTYPE_MSC64;
+        main_DictAddUpdate(this, "osType", "msc64");
+        
+        //FIXME: Update this!
+        eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
 
 
 
@@ -265,7 +451,7 @@ extern "C" {
     //                  D i c t i o n a r y
     //---------------------------------------------------------------
     
-    SZHASH_DATA *   main_getDict(
+    NODEHASH_DATA * main_getDict(
         MAIN_DATA       *this
     )
     {
@@ -286,7 +472,7 @@ extern "C" {
     
     bool            main_setDict(
         MAIN_DATA       *this,
-        SZHASH_DATA     *pValue
+        NODEHASH_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -401,6 +587,50 @@ extern "C" {
     
 
     //---------------------------------------------------------------
+    //                      M a k e  T y p e
+    //---------------------------------------------------------------
+    
+    uint16_t        main_getMakeType(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        main_setLastError(this, ERESULT_SUCCESS);
+        return this->makeType;
+    }
+    
+    
+    bool            main_setMakeType(
+        MAIN_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->makeType = value;
+        
+        main_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          N o d e s
     //---------------------------------------------------------------
     
@@ -441,6 +671,98 @@ extern "C" {
             obj_Release(this->pNodes);
         }
         this->pNodes = pValue;
+        
+        main_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      O/S  T y p e
+    //---------------------------------------------------------------
+    
+    uint16_t        main_getOsType(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        main_setLastError(this, ERESULT_SUCCESS);
+        return this->osType;
+    }
+    
+    
+    bool            main_setOsType(
+        MAIN_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->osType = value;
+        
+        main_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      O u t p u t
+    //---------------------------------------------------------------
+    
+    TEXTOUT_DATA *  main_getOutput(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        main_setLastError(this, ERESULT_SUCCESS);
+        return this->pOutput;
+    }
+    
+    
+    bool            main_setOutput(
+        MAIN_DATA       *this,
+        TEXTOUT_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pOutput) {
+            obj_Release(this->pOutput);
+        }
+        this->pOutput = pValue;
         
         main_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -743,8 +1065,7 @@ extern "C" {
         MAIN_DATA       *this,
         const
         char            *pName,
-        const
-        char            *pData
+        OBJ_ID          pData
     )
     {
         ERESULT         eRc;
@@ -759,17 +1080,17 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = szHash_New(SZHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        if (szHash_FindA(this->pDict, pName)) {
-            eRc = szHash_DeleteA(this->pDict, pName);
+        if (nodeHash_FindA(this->pDict, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, pName);
         }
-        eRc = szHash_AddA(this->pDict, pName, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -872,7 +1193,7 @@ extern "C" {
         
         if (this->pOutputPath) {
             //FIXME: this->pOut = textOut_NewFilePath(this->pOutputPath);
-            if (OBJ_NIL == this->pOut) {
+            if (OBJ_NIL == this->pOutput) {
                 fprintf(
                         stderr,
                         "FATAL - Could not open output file, %s!\n\n\n",
@@ -882,8 +1203,8 @@ extern "C" {
             }
         }
         else {
-            this->pOut = textOut_NewAStr( );
-            if (OBJ_NIL == this->pOut) {
+            this->pOutput = textOut_NewAStr( );
+            if (OBJ_NIL == this->pOutput) {
                 fprintf(
                         stderr,
                         "FATAL - Could not open output file, %s!\n\n\n",
@@ -906,8 +1227,8 @@ extern "C" {
         }
         
         if (fFile) {
-            fclose(this->pOut);
-            this->pOut = NULL;
+            //FIXME: fclose(this->pOut);
+            this->pOutput = NULL;
         }
         
         // Return to caller.
@@ -942,11 +1263,15 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
+        if (OBJ_NIL == this->pOutput) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
 #endif
         
-        switch (this->makeType) {
+        switch (this->osType) {
                 
-            case MAKETYPE_MACOS:
+            case OSTYPE_MACOS:
                 this->pGen = (OBJ_ID)genOSX_New( );
                 if (this->pGen) {
                     if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
@@ -955,8 +1280,8 @@ extern "C" {
                 }
                 break;
                 
-            case MAKETYPE_MSC32:
-            case MAKETYPE_MSC64:
+            case OSTYPE_MSC32:
+            case OSTYPE_MSC64:
                 this->pGen = genWIN_New( );
                 if (this->pGen) {
                     if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
@@ -973,12 +1298,12 @@ extern "C" {
             fprintf(stderr, "FATAL - Could not create generator object!\n\n\n");
             exit(12);
         }
-        eRc = genBase_GenMakefile(
+        eRc =   genBase_GenMakefile(
                                   this->pGen,
                                   this->pNodes,
                                   this->pDict,
                                   appl_getDateTime((APPL_DATA *)this),
-                                  this->pOut
+                                  this->pOutput
                 );
         
         
@@ -1032,8 +1357,8 @@ extern "C" {
                           (APPL_DATA *)this,
                           this,
                           (void *)main_ParseArgsDefault,
-                          (void *)main_ParseArgsLong,
-                          (void *)main_ParseArgsShort
+                          NULL, //(void *)main_ParseArgsLong,
+                          NULL  //(void *)main_ParseArgsShort
         );
         appl_setProcessArgs(
                             (APPL_DATA *)this,
@@ -1118,29 +1443,26 @@ extern "C" {
         }
 #endif
         
-        this->makeType = MAKETYPE_MACOS;
-        eRc = main_DictAddUpdate(this, "makeType", "macosx");
+        eRc = main_DefaultsMacos(this);
+
+        eRc = main_DictAddUpdate(this, "makeType", "d");
         if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'makeType' to Dictionary\n");
+            fprintf(stderr, "FATAL - Failed to add 'TYPE' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = main_DictAddUpdate(this, "resultType", "lib");
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'TYPE' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        
+       this->pOutput = textOut_NewAStr( );
+        if (OBJ_NIL == this->pOutput) {
+            fprintf(stderr, "FATAL - Failed to create TextOut Object!\n");
             exit(EXIT_FAILURE);
         }
 
-        // Set up libPath default;
-        eRc = main_DictAddUpdate(this, "libIncludePath", "..");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        // Set up libPrefix default;
-        eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        this->pOut = fbso_NewStd(stdout);
-        
         // Return to caller.
         main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
@@ -1173,16 +1495,13 @@ extern "C" {
         
         // Do something.
         if (0 == strcmp("--macosx", **pppArgV)) {
-            this->makeType = MAKETYPE_MACOS;
-            eRc = main_DictAddUpdate(this, "makeType", "macosx");
+            eRc = main_DefaultsMacos(this);
         }
         else if (0 == strcmp("--msc32", **pppArgV)) {
-            this->makeType = MAKETYPE_MSC32;
-            eRc = main_DictAddUpdate(this, "makeType", "msc32");
+            eRc = main_DefaultsMsc32(this);
         }
         else if (0 == strcmp("--msc64", **pppArgV)) {
-            this->makeType = MAKETYPE_MSC64;
-            eRc = main_DictAddUpdate(this, "makeType", "msc64");
+            eRc = main_DefaultsMsc64(this);
         }
         else if (0 == strncmp("--input", **pppArgV, 6)) {
             if (*(**pppArgV+6) == '\0') {
@@ -1451,7 +1770,11 @@ extern "C" {
     {
         PATH_DATA       *pPath = OBJ_NIL;
         ERESULT         eRc = ERESULT_SUCCESS;
-        
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        PATH_DATA       *pArgDir = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1468,7 +1791,58 @@ extern "C" {
         if (!appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "Processing - %s...\n", AStr_getData(pStr));
         }
+        if (appl_getDebug((APPL_DATA *)this)) {
+            eRc = main_DictAddUpdate(this, "makeType", "d");
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add 'makeType' to Dictionary\n");
+                exit(EXIT_FAILURE);
+            }
+        }
         pPath = path_NewFromAStr(pStr);
+        if (OBJ_NIL == pPath) {
+            fprintf(stderr, "FATAL - Failed to create path from \n");
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_IsFile(pPath);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(
+                    stderr,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    path_getData(pPath)
+            );
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    path_getData(pPath)
+            );
+            exit(EXIT_FAILURE);
+        }
+        pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
+        if (OBJ_NIL == pArgDir) {
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    path_getData(pPath)
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = main_DictAddUpdate(this, "srcDir", path_getData(pArgDir));
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'srcDir' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+        obj_Release(pArgDir);
+        pArgDir = OBJ_NIL;
+        eRc = main_DictAddUpdate(this, "srcFile", path_getData(pPath));
+        if (ERESULT_FAILED(eRc) ) {
+            fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+
         eRc = main_ParseInputFile(this, pPath);
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -1577,14 +1951,14 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->pOut) {
+        if (this->pOutput) {
             DEBUG_BREAK();
             return ERESULT_GENERAL_FAILURE;
         }
 #endif
         
-        this->pOut = textOut_NewAStr( );
-        if (OBJ_NIL == this->pOut) {
+        this->pOutput = textOut_NewAStr( );
+        if (OBJ_NIL == this->pOutput) {
             return ERESULT_OUT_OF_MEMORY;
         }
         

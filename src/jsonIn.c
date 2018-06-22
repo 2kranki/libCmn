@@ -47,6 +47,7 @@
 #include        <hex.h>
 #include        <name_internal.h>
 #include        <node_internal.h>
+#include        <nodeArray_internal.h>
 #include        <nodeHash_internal.h>
 #include        <null.h>
 #include        <number.h>
@@ -961,6 +962,14 @@ extern "C" {
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)node_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(nodeHash_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)nodeHash_ParseObject(this);
             this->eRc = ERESULT_SUCCESS;
             return pObj;
         }

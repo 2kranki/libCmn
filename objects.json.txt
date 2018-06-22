@@ -176,6 +176,7 @@
         "md5_plumb.c",
         "name_JSON.c",
         "node_JSON.c",
+        "nodeHash_JSON.c",
         "null_JSON.c",
         "number_JSON.c",
         "obj.c",

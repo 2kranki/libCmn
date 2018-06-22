@@ -1326,11 +1326,11 @@ extern "C" {
 #else
         if( !node_Validate( this ) ) {
             DEBUG_BREAK();
-            return -1;
+            return ERESULT_INVALID_OBJECT;
         }
         if( !node_Validate( pOther ) ) {
             DEBUG_BREAK();
-            return -1;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -1340,7 +1340,34 @@ extern "C" {
     }
     
     
+    ERESULT         node_CompareA(
+        NODE_DATA       *this,
+        const
+        char            *pName
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !node_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = name_CompareA(this->pName, pName);
+        
+        return eRc;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -2018,6 +2045,9 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return node_ToDebugString;
                         }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return node_ToJSON;
+                        }
                         break;
                         
                     default:
@@ -2144,7 +2174,7 @@ extern "C" {
     )
     {
         if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_NODE) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODE) )
                 ;
             else
                 return false;

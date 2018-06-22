@@ -99,19 +99,21 @@ extern "C" {
     
     typedef enum appl_arg_class_e {
         APPL_ARG_UNKNOWN=0,
-        APPL_ARG_PROGRAM,           // uint8_t - 0 or 1
+        APPL_ARG_PROGRAM,           //
         APPL_ARG_GROUP,             // Execute given routine
     } APPL_ARG_CLASS;
     
     typedef enum appl_arg_type_e {
         //APPL_ARG_UNKNOWN=0,       // Defined above
-        APPL_ARG_BOOL=1,            // uint8_t - 0 or 1
-        APPL_ARG_EXEC,              // Execute given routine
+        APPL_ARG_BOOL=1,            // uint8_t - 0 or 1 (No other parameters)
+        APPL_ARG_EXEC,              // Execute given routine w/o parameter
+        APPL_ARG_EXEC_PARM,         // Execute given routine w/parameter (either
+        //                          // from '=' or following parameter
         APPL_ARG_INCR,              // uint16_t - Every occurence increases the
         //                          // associated value (default is 0);
-        APPL_ARG_NUMBER,            // Number pointer
-        APPL_ARG_PATH,              // Path pointer
-        APPL_ARG_STRING,            // AStr pointer
+        APPL_ARG_NUMBER,            // Number object parameter
+        APPL_ARG_PATH,              // Path object parameter
+        APPL_ARG_STRING,            // AStr object parameter
     } APPL_ARG_TYPE;
     
     typedef struct appl_clo_s    {
@@ -121,10 +123,11 @@ extern "C" {
         char            *pArgLong;          // UTF-8 Long Argument Name (required)
         uint16_t        cls;                // Argument Class (See APPL_ARG_CLASS above.)
         uint16_t        type;               // Argument Type (See APPL_ARG_TYPE above.)
-        uint32_t        offset;             // Offset of Argument Data
+        uint32_t        offset;             // Offset of Argument Data (NULL == do
+        //                                  // not use this)
         ERESULT         (*pExec)(           // Method to execute if APPL_ARG_EXEC
                             OBJ_ID,
-                            ASTR_DATA *         // Data Ptr for arg if given with '='
+                            ASTR_DATA *         // Data Ptr for arg
                         );
         //                                  // of APPL_DATA
         const

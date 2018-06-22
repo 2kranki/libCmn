@@ -455,6 +455,20 @@ extern "C" {
     );
     
     
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+            '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+                is returned.
+     */
+    ERESULT         AStr_ExpandEnvVars(
+        ASTR_DATA       *this
+    );
+
+
     uint32_t        AStr_Hash(
         ASTR_DATA       *this
     );

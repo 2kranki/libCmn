@@ -115,11 +115,30 @@ extern "C" {
     );
     
     
+    OBJ_ID          nodeHash_Class(
+        void
+    );
+    
+    
     NODEHASH_DATA * nodeHash_New(
         uint16_t        cHash           // [in] Hash Table Size
     );
     
     
+    ERESULT         nodeHash_NewFromJSONString(
+        ASTR_DATA       *pString,
+        NODEHASH_DATA   **ppData
+    );
+    
+    
+    ERESULT         nodeHash_NewFromJSONStringA(
+        const
+        char            *pString,
+        NODEHASH_DATA   **ppData
+    );
+    
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -170,7 +189,7 @@ extern "C" {
     );
     
     
-    ERESULT         nodeHash_Delete(
+    ERESULT         nodeHash_DeleteA(
         NODEHASH_DATA	*this,
         const
         char            *pName
@@ -204,8 +223,6 @@ extern "C" {
     );
 
 
-    // Returns a array of all nodes in the hash
-    // sorted by name in ascending order.
     /*!
      Return an array of all nodes in the hash sorted by name in
      ascending order.
@@ -264,7 +281,18 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the
+     objects within it in JSON format.
+     @return    If successful, an AStr object which must be released,
+     otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     nodeHash_ToJSON(
+        NODEHASH_DATA   *this
+    );
     
+    
+
     
     
 #ifdef	__cplusplus

@@ -199,7 +199,7 @@ extern "C" {
         NODE_DATA       *pNodes,
         SZHASH_DATA     *pDict,
         DATETIME_DATA   *pDateTime,
-        FILE            *pOutput
+        TEXTOUT_DATA    *pOutput
     );
     
     

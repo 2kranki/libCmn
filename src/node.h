@@ -487,7 +487,7 @@ extern "C" {
     
     
     /*!
-     Compare this node to the other node.
+     Compare this node's name to the other node's name.
      @result
                  ERESULT_SUCCESS_EQUAL if this == other,
                  ERESULT_SUCCESS_LESS_THAN if this < other
@@ -497,8 +497,22 @@ extern "C" {
         NODE_DATA		*this,
         NODE_DATA       *pOther
     );
+
     
+    /*!
+     Compare this node's name to a character string.
+     @result
+                ERESULT_SUCCESS_EQUAL if this == pName,
+                ERESULT_SUCCESS_LESS_THAN if this < pName
+                or ERESULT_SUCCESS_GREATER_THAN if this > pName.
+     */
+    ERESULT         node_CompareA(
+        NODE_DATA       *this,
+        const
+        char            *pName
+    );
     
+
     /*!
      Create a new Node Array from the data for this node if that
      data is a Node Array or a Node Hash.
@@ -592,7 +606,18 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the
+     objects within it in JSON format.
+     @return    If successful, an AStr object which must be released,
+     otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     node_ToJSON(
+        NODE_DATA       *this
+    );
     
+    
+
     
 #ifdef	__cplusplus
 }

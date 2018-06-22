@@ -642,7 +642,7 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    ERESULT         nodeHash_Delete(
+    ERESULT         nodeHash_DeleteA(
         NODEHASH_DATA	*this,
         const
         char            *pName
@@ -1004,7 +1004,6 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
         uint32_t        i;
         uint32_t        j;
         ASTR_DATA       *pStr;
@@ -1012,22 +1011,23 @@ extern "C" {
         NODE_DATA       *pNode;
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry = OBJ_NIL;
-        
+        const
+        OBJ_INFO        *pInfo;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        
+        pInfo = obj_getInfo(this);
+
         pStr = AStr_New();
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(nodeHash) Size=%d\n",
+        AStr_AppendPrint(
+                     pStr,
+                     "{%p(%s) Size=%d\n",
                      this,
+                     pInfo->pClassName,
                      this->size
                      );
-        AStr_AppendA(pStr, str);
         
         for (i=0; i<this->cHash; ++i) {
             pNodeList = &this->pHash[i];
@@ -1048,8 +1048,7 @@ extern "C" {
         
         AStr_AppendCharRepeatA(pStr, 1, '\n');
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), "%p(nodeHash)}\n", this );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint( pStr, "%p(%s)}\n", this, pInfo->pClassName);
         
         return pStr;
     }

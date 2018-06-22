@@ -41,6 +41,7 @@
 
 #include        <main.h>
 #include        <appl_internal.h>
+#include        <nodeHash.h>
 
 
 #ifndef MAIN_INTERNAL_H
@@ -65,18 +66,14 @@ struct main_data_s	{
     // Common Data
     ERESULT         eRc;
     uint16_t        makeType;       // See MAKETYPE
-    uint16_t        reserved;
-    SZHASH_DATA     *pDict;
+    uint16_t        osType;         // See OSTYPE
+    //uint16_t        reserved;
+    NODEHASH_DATA   *pDict;
     OBJ_ID          pGen;
     PATH_DATA       *pFilePath;
     PATH_DATA       *pOutputPath;
     NODE_DATA       *pNodes;
-    TEXTOUT_DATA    *pOut;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    TEXTOUT_DATA    *pOutput;
 
 };
 #pragma pack(pop)

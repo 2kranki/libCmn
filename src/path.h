@@ -113,6 +113,13 @@ extern "C" {
     );
     
     
+    PATH_DATA *     path_NewFromDriveDirFilename(
+        ASTR_DATA       *pDrive,
+        PATH_DATA       *pDir,
+        PATH_DATA       *pFileName      // includes file extension
+    );
+    
+    
     PATH_DATA *     path_NewFromEnv(
         const
         char            *pStr
@@ -277,13 +284,13 @@ extern "C" {
     
     
     /*!
-     Variable names should have the syntax of [a-zA-Z_][a-zA-Z0-9_]*.
-     Find the previous occurrence of the given character starting the search at the
-     given index into the string.  The search is performed in an decreasing index
-     until the beginning of the string is reached.
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
      @param     this    object pointer
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-     is returned.
+                is returned.
      */
     ERESULT         path_ExpandEnvVars(
         PATH_DATA       *this

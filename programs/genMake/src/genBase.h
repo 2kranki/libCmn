@@ -55,7 +55,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
-#include        <fbso.h>
+#include        <textOut.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <nodeHash.h>
@@ -172,6 +172,11 @@ extern "C" {
     );
 
 
+    NODEARRAY_DATA * genBase_getLibDeps(
+        GENBASE_DATA    *this
+    );
+    
+    
     ERESULT         genBase_setLibIncludePath(
         GENBASE_DATA    *this,
         PATH_DATA *     (*pLibIncludePath)(
@@ -217,17 +222,47 @@ extern "C" {
     );
     
     
+    NODE_DATA *     genBase_getNodes(
+        GENBASE_DATA    *this
+    );
+    
+    
     NODEHASH_DATA * genBase_getObjDirs(
         GENBASE_DATA    *this
     );
 
 
-    FBSO_DATA *     genBase_getOut(
+    NODEHASH_DATA * genBase_getObjects(
         GENBASE_DATA    *this
     );
     
     
+    TEXTOUT_DATA *  genBase_getOutput(
+        GENBASE_DATA    *this
+    );
     
+    bool            genBase_setOutput(
+        GENBASE_DATA    *this,
+        TEXTOUT_DATA    *pValue
+    );
+    
+    
+    NODEARRAY_DATA * genBase_getPrograms(
+        GENBASE_DATA    *this
+    );
+    
+
+    NODEARRAY_DATA * genBase_getRoutines(
+        GENBASE_DATA    *this
+    );
+    
+    
+    NODEHASH_DATA * genBase_getTests(
+        GENBASE_DATA    *this
+    );
+    
+    
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
@@ -263,12 +298,27 @@ extern "C" {
     );
     
     
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+            '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+                is returned.
+     */
+    ERESULT         genBase_ExpandDict(
+        GENBASE_DATA    *this,
+        ASTR_DATA       *pStr
+    );
+    
+    
     ERESULT         genBase_GenMakefile(
         GENBASE_DATA        *this,
         NODE_DATA           *pNodes,
         SZHASH_DATA         *pDict,
         DATETIME_DATA       *pDateTime,
-        FBSO_DATA           *pOut
+        TEXTOUT_DATA        *pOutput
     );
     
     

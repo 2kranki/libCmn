@@ -70,11 +70,8 @@ struct genOSX_data_s	{
     ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
-    ASTR_DATA       *pStr;
-    DATETIME_DATA   *pDateTime;
-    SZHASH_DATA     *pDict;         // (Not owned)
-    FILE            *pOutput;       // (Not owned)
-
+    ASTR_DATA       *pName;
+ 
     PATH_DATA *     (*pLibIncludePath)(GENOSX_DATA *, const char *, const char *, const char *);
     PATH_DATA *     (*pLibInstalledPath)(GENOSX_DATA *, const char *, const char *, const char *);
     ASTR_DATA *     (*pLibName)(GENOSX_DATA *, const char *, const char *);
@@ -114,58 +111,42 @@ struct genOSX_data_s	{
 
 
     ERESULT         genOSX_GenFinal(
-        GENOSX_DATA     *this,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenInitial(
-        GENOSX_DATA     *this,
-        ASTR_DATA       *pName,
-        NODEARRAY_DATA  *pLibDeps,
-        DATETIME_DATA   *pDateTime,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenLibrary(
-        GENOSX_DATA     *this,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenObjects(
-        GENOSX_DATA     *this,
-        NODEHASH_DATA   *pObjects,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenOSSpecific(
-        GENOSX_DATA     *this,
-        NODEHASH_DATA   *pSection,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenPrograms(
-        GENOSX_DATA     *this,
-        NODEARRAY_DATA  *pPrograms,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenRoutines(
-        GENOSX_DATA     *this,
-        NODEARRAY_DATA  *pRoutines,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     
     ERESULT         genOSX_GenTests(
-        GENOSX_DATA     *this,
-        NODEHASH_DATA   *pTests,
-        FILE            *pOutput
+        GENOSX_DATA     *this
     );
     
     

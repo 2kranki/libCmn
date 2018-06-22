@@ -19,6 +19,32 @@
 
 
 /*
+                            Dictionary Values
+ 
+ * Mostly set in main::main_ParseArgsDefault, main::main_ParseArgsLong
+ * and main::main_ParseArgsShort.
+ 
+ makeType:      "d" for debug, "r" for release
+ osType:        "macosx", "win32", "win64"
+ outBase:       Base Directory for output
+ resultType:    "pgm" or "lib"
+ srcDir:        Source File Base Drive/Directory
+ srcFile:       Source File Full Path
+ tmpBase:       Temporary Base Directory
+ 
+ 
+ 
+ 
+ 
+ 
+ */
+
+
+
+
+
+
+/*
  This is free and unencumbered software released into the public domain.
  
  Anyone is free to copy, modify, publish, use, compile, sell, or

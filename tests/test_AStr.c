@@ -1098,8 +1098,91 @@ int             test_AStr_Match01(
 
 
 
+int         test_AStr_ExpandEnvVars01(
+    const
+    char        *pTestName
+)
+{
+    ASTR_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //ASTR_DATA   *pStr = OBJ_NIL;
+    const
+    char        *pHome = NULL;
+    int         len = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pHome = getenv("HOME");
+    if (pHome) {
+        len = (int)strlen(pHome);
+    }
+    pObj = AStr_NewA("${HOME}");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = AStr_ExpandEnvVars(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
+        //obj_Release(pStr);
+        //pStr = NULL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStr_ExpandEnvVars02(
+    const
+    char        *pTestName
+)
+{
+    ASTR_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pStr = OBJ_NIL;
+    const
+    char        *pHome = NULL;
+    int         len = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pHome = getenv("HOME");
+    if (pHome) {
+        len = (int)strlen(pHome);
+        pStr = AStr_NewA(pHome);
+        eRc = AStr_AppendA(pStr, "$");
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        eRc = AStr_AppendA(pStr, pHome);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+    }
+    pObj = AStr_NewA("${HOME}$$${HOME}");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = AStr_ExpandEnvVars(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_ExpandEnvVars02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_ExpandEnvVars01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_Match01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_JSON02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_JSON01,setUp,tearDown);

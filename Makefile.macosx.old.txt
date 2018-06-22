@@ -1639,6 +1639,12 @@ $(OBJDIR)/node_JSON.o: $(SRCDIR)/node_JSON.c
 
 
 OBJS += $(OBJDIR)/node_JSON.o
+$(OBJDIR)/nodeHash_JSON.o: $(SRCDIR)/nodeHash_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeHash_JSON.o
 $(OBJDIR)/null_JSON.o: $(SRCDIR)/null_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 

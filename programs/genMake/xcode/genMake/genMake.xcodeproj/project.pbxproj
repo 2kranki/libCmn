@@ -551,7 +551,6 @@
 		C47D8D462087824F005C8239 /* psxMutex_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxMutex_internal.h; sourceTree = "<group>"; };
 		C47D8D472087824F005C8239 /* pplex3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pplex3.h; sourceTree = "<group>"; };
 		C47D8D482087824F005C8239 /* ptrArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptrArray.c; sourceTree = "<group>"; };
-		C47D8D492087824F005C8239 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		C47D8D4A2087824F005C8239 /* psxLock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxLock.c; sourceTree = "<group>"; };
 		C47D8D6720878271005C8239 /* nodeArc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeArc.c; sourceTree = "<group>"; };
 		C47D8D6820878271005C8239 /* objArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objArray.c; sourceTree = "<group>"; };
@@ -1359,7 +1358,6 @@
 				C47D8D1220878249005C8239 /* ptrArray_object.c */,
 				C47D8D482087824F005C8239 /* ptrArray.c */,
 				C47D8D192087824A005C8239 /* ptrArray.h */,
-				C47D8D492087824F005C8239 /* README.txt */,
 				C47D8D412087824E005C8239 /* rrds32_internal.h */,
 				C47D8D1E2087824B005C8239 /* rrds32_object.c */,
 				C47D8D1F2087824B005C8239 /* rrds32.c */,

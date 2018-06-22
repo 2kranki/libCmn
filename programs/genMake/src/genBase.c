@@ -170,7 +170,7 @@ extern "C" {
     //                  D i c t i o n a r y
     //---------------------------------------------------------------
     
-    SZHASH_DATA *   genBase_getDict(
+    NODEHASH_DATA * genBase_getDict(
         GENBASE_DATA    *this
     )
     {
@@ -191,7 +191,7 @@ extern "C" {
     
     bool            genBase_setDict(
         GENBASE_DATA    *this,
-        SZHASH_DATA     *pValue
+        NODEHASH_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -257,6 +257,30 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                      L i b D e p s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * genBase_getLibDeps(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pLibDeps;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //          L i b r a r y  I n c l u d e  P a t h
     //---------------------------------------------------------------
@@ -535,10 +559,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      O u t p u t
+    //                      O b j e c t s
     //---------------------------------------------------------------
     
-    FBSO_DATA *     genBase_getOut(
+    NODEHASH_DATA * genBase_getObjects(
         GENBASE_DATA    *this
     )
     {
@@ -553,10 +577,59 @@ extern "C" {
 #endif
         
         genBase_setLastError(this, ERESULT_SUCCESS);
-        return this->pOut;
+        return this->pObjects;
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                      O u t p u t
+    //---------------------------------------------------------------
+    
+    TEXTOUT_DATA *  genBase_getOutput(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pOutput;
+    }
+    
+
+    bool            genBase_setOutput(
+        GENBASE_DATA    *this,
+        TEXTOUT_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pOutput) {
+            obj_Release(this->pOutput);
+        }
+        this->pOutput = pValue;
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -603,6 +676,54 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      P r o g r a m s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * genBase_getPrograms(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pPrograms;
+    }
+
+    
+    
+    //---------------------------------------------------------------
+    //                      R o u t i n e s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * genBase_getRoutines(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pRoutines;
+    }
+    
+    
+    
+   //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -649,6 +770,30 @@ extern "C" {
     
   
 
+    //---------------------------------------------------------------
+    //                      T e s t s
+    //---------------------------------------------------------------
+    
+    NODEHASH_DATA * genBase_getTests(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        genBase_setLastError(this, ERESULT_SUCCESS);
+        return this->pTests;
+    }
+    
+    
+    
 
 
     //===============================================================
@@ -858,9 +1003,11 @@ extern "C" {
         }
 #endif
 
+        genBase_setDateTime(this, OBJ_NIL);
         genBase_setDict(this, OBJ_NIL);
         genBase_setNodes(this, OBJ_NIL);
         genBase_setObjDirs(this, OBJ_NIL);
+        genBase_setOutput(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -973,6 +1120,113 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
+    //---------------------------------------------------------------
+    
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         genBase_ExpandDict(
+        GENBASE_DATA    *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        j;
+        uint32_t        len;
+        int32_t         chr;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!genBase_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (0 == AStr_getLength(pStr)) {
+            return ERESULT_SUCCESS;
+        }
+        
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = AStr_CharFindNextW32(pStr, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = AStr_CharGetW32(pStr, i+1);
+                if (chr == '{') {
+                    i += 2;
+                    j = i;
+                    eRc = AStr_CharFindNextW32(pStr, &j, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = j - i;
+                    eRc = AStr_Mid(pStr, i, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    
+                    // Find the name from the Dictionary.
+                    pEnvVar = szHash_FindA(this->pDict, AStr_getData(pName));
+                    if (NULL == pEnvVar) {
+                        obj_Release(pName);
+                        return ERESULT_DATA_NOT_FOUND;
+                    }
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                    
+                    // Substitute the name from the Dictionary.
+                    eRc = AStr_Remove(pStr, i-2, len+3);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    eRc = AStr_InsertA(pStr, i-2, pEnvVar);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    pEnvVar = NULL;
+                    fMore = true;
+                }
+                else if (chr == '$') {
+                    eRc = AStr_Remove(pStr, i, 1);
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+                else {
+                    return ERESULT_PARSE_ERROR;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
     //---------------------------------------------------------------
@@ -1482,7 +1736,6 @@ ASTR_DATA *     genBase_CompileRules(
     if( !genBase_Validate(this) ) {
         DEBUG_BREAK();
         //return ERESULT_INVALID_OBJECT;
-        genBase_setLastError(this, ERESULT_INVALID_OBJECT);
         return OBJ_NIL;
     }
 #endif
@@ -1566,7 +1819,7 @@ ERESULT         genBase_GenMakefile(
     NODE_DATA           *pNodes,
     SZHASH_DATA         *pDict,
     DATETIME_DATA       *pDateTime,
-    FBSO_DATA           *pOut
+    TEXTOUT_DATA        *pOutput
 )
 {
     ERESULT             eRc;
@@ -1581,11 +1834,11 @@ ERESULT         genBase_GenMakefile(
         return ERESULT_INVALID_OBJECT;
     }
 #endif
-    this->pNodes = pNodes;
-    this->pDict = pDict;
-    this->pDateTime = pDateTime;
-    this->pOut = pOut;
-    
+    genBase_setDateTime(this, pDateTime);
+    genBase_setDict(this, pDict);
+    genBase_setNodes(this, pNodes);
+    genBase_setOutput(this, pOutput);
+
     pPrimaryHash = node_getData(pNodes);
     BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
     if (pPrimaryHash) {
@@ -1863,7 +2116,6 @@ ERESULT         genBase_GenMakefile(
         if( !genBase_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            genBase_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
 #endif
@@ -1933,7 +2185,6 @@ ERESULT         genBase_GenMakefile(
         if( !genBase_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            genBase_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
 #endif
@@ -1999,7 +2250,7 @@ ERESULT         genBase_GenMakefile(
 #else
         if( !genBase_Validate(this) ) {
             DEBUG_BREAK();
-            genBase_setLastError(this, ERESULT_INVALID_OBJECT);
+            //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
@@ -2147,6 +2398,64 @@ ERESULT         genBase_GenMakefile(
         }
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //  G e n e r a t e  t h e  f u l l  L i b r a r y  N a m e
+    //---------------------------------------------------------------
+    
+    /*!
+     Take the dictionary entries from the defaults and over-rides to
+     create base directories and file paths needed to build the
+     library or program.
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+                is returned.
+     */
+    ERESULT         genBase_SetupDictionary(
+        GENBASE_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+#ifdef xyzzz
+        if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
+            pLibNamePrefix = szHash_FindA(this->pDict, "LibNamePrefix");
+        }
+        TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
+        
+        if (pLibNamePrefix) {
+            pFullName = AStr_NewA(pLibNamePrefix);
+            if (OBJ_NIL == pFullName) {
+                genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
+                return OBJ_NIL;
+            }
+            eRc = AStr_AppendA(pFullName, pName);
+        }
+        else {
+            pFullName = AStr_NewA(pName);
+            if (OBJ_NIL == pFullName) {
+                genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
+                return OBJ_NIL;
+            }
+        }
+#endif
+        
+        
+        // Return to caller.
+        genBase_setLastError(this, eRc);
+        return eRc;
     }
     
     

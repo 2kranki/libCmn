@@ -154,16 +154,15 @@ void *          genBaseClass_QueryInfo(
             return this;
             break;
             
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
+        // Query for an address to specific data within the object.
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
-                case 'O':
-                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
-                        return &this->pObjCatalog;
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&genBase_Info;
                     }
                     break;
                     
@@ -171,7 +170,6 @@ void *          genBaseClass_QueryInfo(
                     break;
             }
             break;
-#endif
             
         case OBJ_QUERYINFO_TYPE_INFO:
             return (void *)obj_getInfo(this);

@@ -41,7 +41,7 @@
 
 #include    <genBase.h>
 #include    <fbso.h>
-#include    <szHash.h>
+#include    <nodeHash.h>
 
 
 #ifndef GENBASE_INTERNAL_H
@@ -74,15 +74,15 @@ struct genBase_data_s	{
     uint16_t        osType;         // OSX, Win32, Win64, etc
     uint16_t        rsvd16;
     ASTR_DATA       *pName;         // (Not Owned)
-    SZHASH_DATA     *pDict;
+    NODEHASH_DATA   *pDict;
     NODE_DATA       *pNodes;
     DATETIME_DATA   *pDateTime;
-    FBSO_DATA       *pOut;
+    TEXTOUT_DATA    *pOutput;
     NODEHASH_DATA   *pObjDirs;      // Object Directories
     NODEHASH_DATA   *pHeaders;      // (Not Owned)
     NODEARRAY_DATA  *pLibDeps;      // (Not Owned)
     NODEHASH_DATA   *pObjects;      // (Not Owned)
-    NODEHASH_DATA   *pPrograms;     // (Not Owned)
+    NODEARRAY_DATA  *pPrograms;     // (Not Owned)
     NODEARRAY_DATA  *pRoutines;     // (Not Owned)
     NODEHASH_DATA   *pTests;        // (Not Owned)
 

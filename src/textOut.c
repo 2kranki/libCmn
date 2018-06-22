@@ -729,8 +729,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "textOut::offsetof(eRc) = %lu\n", offsetof(TEXTOUT_DATA,eRc));
-        fprintf(stderr, "textOut::sizeof(TEXTOUT_DATA) = %lu\n", sizeof(TEXTOUT_DATA));
+        //fprintf(stderr, "textOut::offsetof(eRc) = %lu\n", offsetof(TEXTOUT_DATA,eRc));
+        //fprintf(stderr, "textOut::sizeof(TEXTOUT_DATA) = %lu\n", sizeof(TEXTOUT_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(TEXTOUT_DATA));

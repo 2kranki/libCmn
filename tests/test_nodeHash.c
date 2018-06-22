@@ -173,7 +173,7 @@ int         test_nodeHash_AddFindDelete01(
             pNode = OBJ_NIL;
         }
  
-        eRc = nodeHash_Delete(pHash, strings[5]);
+        eRc = nodeHash_DeleteA(pHash, strings[5]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = nodeHash_getSize(pHash);
         XCTAssertTrue( (cnt == 9) );
@@ -190,10 +190,60 @@ int         test_nodeHash_AddFindDelete01(
 
 
 
+int         test_nodeHash_JSON01(
+    const
+    char        *pTestName
+)
+{
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pNode;
+    NODE_DATA       *pNodeFnd;
+    uint32_t        i;
+    uint32_t        cnt;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pHash = nodeHash_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pHash) );
+    pHash = nodeHash_Init( pHash, 5 );
+    XCTAssertFalse( (OBJ_NIL == pHash) );
+    if (pHash) {
+        
+        for (i=0; i<10; ++i) {
+            pNode = node_NewWithUTF8(strings[i], OBJ_NIL);
+            eRc = nodeHash_Add(pHash, pNode);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            cnt = nodeHash_getSize(pHash);
+            XCTAssertTrue( (cnt == (i+1)) );
+            pNodeFnd = nodeHash_FindA(pHash, strings[i]);
+            XCTAssertTrue( (pNode) );
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+        }
+        
+        pStr = nodeHash_ToJSON(pHash);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        fprintf(stderr, "JSON=\"%s\"\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pHash);
+        pHash = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_nodeHash);
-  TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_nodeHash_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeHash_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_nodeHash);
