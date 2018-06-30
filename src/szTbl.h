@@ -20,6 +20,9 @@
  *          the end of the string. UTF-8 works since it is greater
  *          than 0 for each byte representing a character.  W32
  *          characters are stored as UTF-8.
+ *  3.      The token associated with a string in the table
+ *          will never change and can be relied on as long as the
+ *          table is in existence.
  *
  * History
  *	06/12/2015 Generated
@@ -110,6 +113,27 @@ extern "C" {
     );
 
 
+    SZTBL_DATA *     szTbl_New(
+        void
+    );
+    
+    
+    SZTBL_DATA *    szTbl_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+    
+    
+    SZTBL_DATA *    szTbl_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+    
+    
+    /*!
+     Access a table that is shared by all objects.  For most applications, it is
+     best to use this table rather than create a separate one.
+     @return    If successful, a pointer to the shared szTbl.  Otherwise, OBJ_NIL.
+     */
     SZTBL_DATA *    szTbl_Shared(
         void
     );

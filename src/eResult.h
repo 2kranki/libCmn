@@ -275,7 +275,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT_DATA *     eResult_Init(
-        ERESULT_DATA       *cbp
+        ERESULT_DATA       *this
     );
 
 

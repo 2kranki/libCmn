@@ -47,7 +47,7 @@ struct szTbl_class_data_s	{
     OBJ_DATA        super;
     
     // Common Data
-    //uint32_t        misc;
+    SZTBL_DATA      *pShared;
 };
 typedef struct szTbl_class_data_s SZTBL_CLASS_DATA;
 
@@ -113,8 +113,46 @@ static
 const
 SZTBL_CLASS_DATA  szTbl_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SZTBL_CLASS, 0, 1},
-	//0
+	OBJ_NIL
 };
+
+
+
+SZTBL_DATA *     szTbl_getShared(
+)
+{
+    SZTBL_CLASS_DATA    *pClass;
+    SZTBL_DATA          *pShared = OBJ_NIL;
+    
+    pClass = szTbl_Class( );
+    if (pClass->pShared) {
+        pShared = pClass->pShared;
+    }
+    
+    return pShared;
+}
+
+
+bool            szTbl_setShared(
+    SZTBL_DATA      *pValue
+)
+{
+    SZTBL_CLASS_DATA    *pClass;
+    SZTBL_DATA          *pShared = OBJ_NIL;
+    
+    pClass = szTbl_Class( );
+    if (pClass->pShared) {
+        pShared = pClass->pShared;
+    }
+
+    obj_Retain(pValue);
+    if (pClass->pShared) {
+        obj_Release(pClass->pShared);
+    }
+    pClass->pShared = pValue;
+    
+    return true;
+}
 
 
 
@@ -146,6 +184,44 @@ OBJ_ID          szTbl_Class(
 {
     return (OBJ_ID)&szTbl_ClassObj;
 }
+
+
+SZTBL_DATA *     szTbl_Shared(
+)
+{
+    SZTBL_CLASS_DATA    *pClass;
+    
+    pClass = szTbl_Class( );
+    if (pClass->pShared) {
+    }
+    else {
+        pClass->pShared = szTbl_Alloc( );
+        if (pClass->pShared) {
+            pClass->pShared = szTbl_Init(pClass->pShared);
+        }
+    }
+    
+    return pClass->pShared;
+}
+
+
+
+SZTBL_DATA *     szTbl_SharedReplace(
+    SZTBL_DATA      *this
+)
+{
+    szTbl_setShared(this);
+    return this;
+}
+
+
+SZTBL_DATA *     szTbl_SharedReset(
+)
+{
+    szTbl_setShared(OBJ_NIL);
+    return OBJ_NIL;
+}
+
 
 
 static

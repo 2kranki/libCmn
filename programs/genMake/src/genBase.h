@@ -145,13 +145,13 @@ extern "C" {
     );
 
     
-    SZHASH_DATA *   genBase_getDict(
+    NODEHASH_DATA * genBase_getDict(
         GENBASE_DATA    *this
     );
     
     bool            genBase_setDict(
         GENBASE_DATA    *this,
-        SZHASH_DATA     *pValue
+        NODEHASH_DATA   *pValue
     );
 
     
@@ -289,7 +289,7 @@ extern "C" {
      Add the given name and its data to the dictionary.
      */
     
-    ERESULT         genBase_DictAddUpdate(
+    ERESULT         genBase_DictAddUpdateA(
         GENBASE_DATA    *this,
         const
         char            *pName,            
@@ -316,7 +316,7 @@ extern "C" {
     ERESULT         genBase_GenMakefile(
         GENBASE_DATA        *this,
         NODE_DATA           *pNodes,
-        SZHASH_DATA         *pDict,
+        NODEHASH_DATA       *pDict,
         DATETIME_DATA       *pDateTime,
         TEXTOUT_DATA        *pOutput
     );

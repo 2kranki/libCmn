@@ -111,56 +111,56 @@ extern "C" {
                 break;
                 
            case VALUE_TYPE_INT8:            // int8_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i8 = (int8_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_INT16:           // int16_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i16 = (int16_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_INT32:           // int32_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i32 = (int32_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_INT64:           // int64_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i64 = (int64_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT8:           // int8_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u8 = (uint8_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT16:          // int16_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u16 = (uint16_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT32:          // int32_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u32 = (uint32_t)integer;
                 jsonIn_SubobjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT64:          // int64_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u64 = (uint64_t)integer;
                 jsonIn_SubobjectEnd(pParser);
@@ -175,7 +175,7 @@ extern "C" {
             case VALUE_TYPE_DATA:
             case VALUE_TYPE_DATA_FREE:
                 pObject->type = VALUE_TYPE_DATA_FREE;
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 pObject->value.data.pData = hex_ParseObject(
                                                             pParser,
                                                             &pObject->value.data.length

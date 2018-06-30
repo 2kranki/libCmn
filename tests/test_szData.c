@@ -140,7 +140,7 @@ int             test_szData_Create01(
 
         pStr = szData_ToJSON(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        //fprintf(stderr, "\tToJSON: %s\n", AStr_getData(pStr));
+        fprintf(stderr, "\tToJSON: %s\n", AStr_getData(pStr));
         TINYTEST_TRUE( (0 == strcmp(pJSON, AStr_getData(pStr))) );
         obj_Release(pStr);
         pStr = OBJ_NIL;

@@ -188,8 +188,8 @@ extern "C" {
     {
         PATH_DATA       *this =  OBJ_NIL;
         ERESULT         eRc;
-        char            *pData;
-        size_t          len;
+        //char            *pData;
+        //size_t          len;
         
         // Do initialization.
         this = path_Alloc( );

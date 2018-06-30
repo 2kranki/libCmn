@@ -27,6 +27,10 @@
  *              other type of object as long as you provide
  *              the hash and comparison routines that are ap-
  *              propriate for that type.
+ *  4.          Neither the key nor the data is copied.  The
+ *              pointers to them are stored in the table.  So,
+ *              care must be taken that the key and data are
+ *              NOT changed while they are stored in table.
  *
  * History
  *	06/11/2015 Generated

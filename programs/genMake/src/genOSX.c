@@ -775,15 +775,12 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr =  OBJ_NIL;
-        char            *pLibObjectPath = NULL;
-        char            *pLibObjectPrefix = NULL;
-        
+        NODE_DATA       *pLibObjectPath = OBJ_NIL;
+        NODE_DATA       *pLibObjectPrefix = OBJ_NIL;
+        OBJ_ID          pPath = OBJ_NIL;
+        OBJ_ID          pPrefix = OBJ_NIL;
+
         // Do initialization.
-        TRC_OBJ(
-                this,
-                "genOSX_CFlagsLibObjectPath(\"%s\", %s",
-                pName
-                );
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
@@ -792,24 +789,24 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pLibObjectPath =    szHash_FindA(
+        pLibObjectPath =    nodeHash_FindA(
                                 genBase_getDict((GENBASE_DATA *)this),
                                 "LibObjectPath"
                             );
         if (NULL == pLibObjectPath) {
             return OBJ_NIL;
         }
-        TRC_OBJ(this, "\tLibObjectPath=\"%s\"", pLibObjectPath);
-        pLibObjectPrefix =  szHash_FindA(
+        pLibObjectPrefix =  nodeHash_FindA(
                                 genBase_getDict((GENBASE_DATA *)this),
                                 "LibObjectPrefix"
                             );
-        TRC_OBJ(this, "\tLibObjectPrefix=\"%s\"", (pLibObjectPrefix ? pLibObjectPrefix : ""));
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
             return OBJ_NIL;
         }
         
+        //TODO: Fixme
+#ifdef XYZZY
         eRc =   AStr_AppendPrint(
                                  pStr,
                                  "CFLAGS_LIBS += -l%s%s -L%s/%s%s\n",
@@ -819,6 +816,7 @@ extern "C" {
                                  (pLibObjectPrefix ? pLibObjectPrefix : ""),
                                  pName
                 );
+#endif
         
         // Return to caller.
         genOSX_setLastError(this, ERESULT_SUCCESS);

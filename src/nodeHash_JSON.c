@@ -113,8 +113,8 @@ extern "C" {
         NODEHASH_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        cls = 0;
-        OBJ_ID          pObj = OBJ_NIL;
+        //uint32_t        cls = 0;
+        //OBJ_ID          pObj = OBJ_NIL;
         //uint8_t         *pUtf8;
         //SRCLOC_DATA     *pSrc = OBJ_NIL;
         //NODEHASH_DATA   *pHash = OBJ_NIL;

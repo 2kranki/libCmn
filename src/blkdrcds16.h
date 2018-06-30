@@ -189,12 +189,25 @@ extern "C" {
     );
     
     
+    /*!
+     Copy a record from the block into a supplied area.
+     @param     this        BLKDRCDS16 object pointer
+     @param     index       record number (relative to 1)
+     @param     dataSize    size of the supplied data area
+     @param     pData       Optional pointer to the data area. If NULL, no data
+                            is copied.
+     @param     pSizeUsed   Optional pointer to a size to be returned. The size
+                            used will be the record size if it fits in the area
+                            provided or the truncated size of the area provided.
+                            If NULL, no size is returned.
+     @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+     */
     ERESULT         blkdrcds16_RecordGet(
         BLKDRCDS16_DATA	*this,
         uint16_t        index,
         uint16_t        dataSize,
-        void            *pData,
-        uint16_t        *pReturnedSize
+        void            *pData,             // Optional
+        uint16_t        *pSizeUsed          // Optional
     );
     
     

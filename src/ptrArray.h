@@ -168,6 +168,14 @@ extern "C" {
     );
 
 
+    /*!
+     Insert the given data at the given index shifting the array as needed. This
+     does an insert before operation.
+     @param     this    object pointer
+     @param     index   a number relative to 1 that indexes into the array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_* error
+     code.
+     */
     ERESULT         ptrArray_InsertData(
         PTRARRAY_DATA	*this,
         uint32_t        index,

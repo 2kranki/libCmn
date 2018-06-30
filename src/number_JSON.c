@@ -83,7 +83,6 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         uint16_t        type;               // See NUMBER_TYPE;
-        OBJ_ID          pObj;
         int64_t         integer;
 
         pInfo = obj_getInfo(number_Class());
@@ -110,7 +109,7 @@ extern "C" {
 #endif
  
             case NUMBER_TYPE_INT16:          // int16_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->i16 = (int16_t)integer;
                 jsonIn_SubobjectEnd(pParser);
@@ -120,7 +119,7 @@ extern "C" {
                 break;
 
             case NUMBER_TYPE_INT32:          // int32_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->i32 = (int32_t)integer;
                 jsonIn_SubobjectEnd(pParser);
@@ -130,7 +129,7 @@ extern "C" {
                 break;
                 
             case NUMBER_TYPE_INT64:          // int64_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->i64 = (int64_t)integer;
                 jsonIn_SubobjectEnd(pParser);
@@ -140,7 +139,7 @@ extern "C" {
                 break;
                 
             case NUMBER_TYPE_UINT16:         // uint16_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->u16 = (uint16_t)integer;
                 jsonIn_SubobjectEnd(pParser);
@@ -150,7 +149,7 @@ extern "C" {
                 break;
                 
             case NUMBER_TYPE_UINT32:         // uint32_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->u32 = (uint32_t)integer;
                 jsonIn_SubobjectEnd(pParser);
@@ -160,7 +159,7 @@ extern "C" {
                 break;
                 
             case NUMBER_TYPE_UINT64:         // uint64_t
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->u64 = (uint64_t)integer;
                 jsonIn_SubobjectEnd(pParser);

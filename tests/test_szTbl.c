@@ -125,7 +125,7 @@ int         test_szTbl_OpenClose(
     SZTBL_DATA	*pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = szTbl_Shared();
+    pObj = szTbl_New();
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -146,16 +146,17 @@ int         test_szTbl_Add(
     char        *pTestName
 )
 {
-    SZTBL_DATA	*pObj = OBJ_NIL;
-    ERESULT     eRc;
-    uint32_t    i = 0;
-    uint32_t    token;
-    uint32_t    tokenW;
-    char        **ppStr;
+    SZTBL_DATA	    *pObj = OBJ_NIL;
+    SZTBL_DATA      *pNew = OBJ_NIL;
+    //ERESULT         eRc;
+    uint32_t        i = 0;
+    uint32_t        token;
+    uint32_t        tokenW;
+    char            **ppStr;
     const
-    char        *pStr;
-    ASTR_DATA	*pAStr = OBJ_NIL;
-    W32STR_DATA *pWStr = OBJ_NIL;
+    char            *pStr;
+    ASTR_DATA	    *pAStr = OBJ_NIL;
+    W32STR_DATA     *pWStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = szTbl_Shared();
@@ -170,7 +171,8 @@ int         test_szTbl_Add(
             pStr = szTbl_TokenToString(pObj, token);
             XCTAssertFalse( (NULL == pStr) );
             if (pStr) {
-                XCTAssertTrue( (0 == strcmp(*ppStr,pStr)) );
+                XCTAssertTrue( (0 == strcmp(*ppStr, pStr)) );
+                fprintf(stderr, "\tAdded and confirmed: %s\n", pStr);
             }
             ++ppStr;
         }
@@ -180,6 +182,7 @@ int         test_szTbl_Add(
         XCTAssertFalse( (OBJ_NIL == pWStr) );
         tokenW = szTbl_StringW32ToToken(pObj, W32Str_getData(pWStr));
         XCTAssertTrue( (token == tokenW) );
+        fprintf(stderr, "\tConfirmed: %s\n", "item");
         obj_Release(pWStr);
         pWStr = OBJ_NIL;
         
@@ -188,12 +191,16 @@ int         test_szTbl_Add(
         tokenW = szTbl_StringW32ToToken(pObj, W32Str_getData(pWStr));
         token = szTbl_StringToToken(pObj, "item size");
         XCTAssertTrue( (token == tokenW) );
+        fprintf(stderr, "\tAdded and confirmed: %s\n", "item size");
         obj_Release(pWStr);
         pWStr = OBJ_NIL;
 
         pAStr = szTbl_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));
+        pNew = szTbl_NewFromJSONString(pAStr);
+        obj_Release(pNew);
+        pNew = OBJ_NIL;
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 

@@ -88,7 +88,6 @@ extern "C" {
         OBJ_INFO        *pInfo;
         uint32_t        type = 0;
         ASTR_DATA       *pWrk;
-        OBJ_ID          pObj;
         uint8_t         *pUtf8;
         int64_t         integer;
         
@@ -105,7 +104,7 @@ extern "C" {
         switch (type) {
 
             case NAME_TYPE_ASTR:
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 pWrk = AStr_ParseObject(pParser);
                 pObject = name_NewAStr(pWrk);
                 obj_Release(pWrk);
@@ -116,7 +115,7 @@ extern "C" {
                 break;
                 
             case NAME_TYPE_INTEGER:
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject = name_NewInt(integer);
                 jsonIn_SubobjectEnd(pParser);
@@ -126,7 +125,7 @@ extern "C" {
                 break;
 
             case NAME_TYPE_UTF8:
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 pUtf8 = utf8_ParseObject(pParser, NULL);
                 jsonIn_SubobjectEnd(pParser);
                 if (pUtf8) {

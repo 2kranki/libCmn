@@ -168,6 +168,13 @@ extern "C" {
     );
     
     
+    NODEARRAY_DATA *    jsonIn_FindArrayNodeInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection
+    );
+    
+    
     int64_t         jsonIn_FindIntegerNodeInHash(
         JSONIN_DATA     *this,
         const
@@ -227,8 +234,24 @@ extern "C" {
      @param     this    JSONIN object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
      */
-    bool            jsonIn_SubobjectEnd(
+    ERESULT         jsonIn_SubobjectEnd(
         JSONIN_DATA     *this
+    );
+    
+    
+    /*!
+     Set up the parser to process a JSON Hash Node tree by:
+     *  Pushing the current JSON tree on the internal stack.
+     *  Setting up the given JSON Hash Node as the parser input.
+     @param     this    JSONIN object pointer
+     @param     pHash   JSON Hash Node (required)
+     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code.
+     @warning   The SubobjectEnd() method should be called once the sub-object
+                is parsed.
+     */
+    ERESULT         jsonIn_SubobjectFromHash(
+        JSONIN_DATA     *this,
+        NODEHASH_DATA   *pHash
     );
     
     
@@ -242,7 +265,7 @@ extern "C" {
      @warning   The SubobjectEnd() method should be called once the sub-object
                 is parsed.
      */
-    NODEHASH_DATA * jsonIn_SubobjectInHash(
+    ERESULT         jsonIn_SubobjectInHash(
         JSONIN_DATA     *this,
         const
         char            *pSect

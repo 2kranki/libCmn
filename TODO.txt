@@ -4,6 +4,19 @@ The following are things that are being throught about. Whether they get done or
 will depend upon time and resources.
 
 
+-- Finish JSON processing for: (See szData as an example.)
+    -- Node
+    -- NodeArray
+    -- NodeHash
+    -- objHash
+    -- szData
+    -- NodeList
+    -- NodeTree
+    -- szTbl
+    -- Add ToDebugString()
+    -- Add subtree extraction (ie creating a new tree from any tree node)
+
+
 --  Change srcLoc to use a file name index rather than a pointer so that it can
     be written to/read from a file.
     -- change srcFile so that the file name index is supplied at object creation

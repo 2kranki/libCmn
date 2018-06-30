@@ -78,18 +78,21 @@ extern "C" {
     /*                    Heap Control Block
      */
     /* This control block resides only in memory and is used to block
-     * actual strings in the heap.
+     * actual strings in the heap.  Heap blocks are not deleted only
+     * added.
      */
+#pragma pack(push, 1)
     typedef struct szTbl_heap_s {
+        struct szTbl_heap_s *pNext;
         uint16_t            cbSize;
         uint16_t            size;
         uint16_t            used;
         uint16_t            rsvd;
-        struct szTbl_heap_s *pNext;
         uint8_t             node[0];
         //SZTBL_NODE          node[0];  // MSC gets C2233 if we use this.
     } SZTBL_HEAP;
-    
+#pragma pack(pop)
+
     
     
 #pragma pack(push, 1)
@@ -117,10 +120,20 @@ struct szTbl_data_s	{
 
 
     // Internal Functions
+    SZTBL_DATA *     szTbl_getShared(
+        void
+    );
+    
+    bool            szTbl_setShared(
+        SZTBL_DATA      *pValue
+    );
+    
+
     void            szTbl_Dealloc(
         OBJ_ID          objId
     );
 
+    
 #ifdef NDEBUG
 #else
     bool			szTbl_Validate(

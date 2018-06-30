@@ -171,6 +171,15 @@ extern "C" {
         NODE_DATA       *pNode
     );
 
+    ERESULT         nodeHash_AddA(
+        NODEHASH_DATA    *this,
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    );
+    
+    
 
     /*!
      Copy the hash. Any element of the Hash that has a copy method

@@ -17,6 +17,18 @@
  *          that can be found on the internet.  However, we have
  *          modified it slightly for our own purposes.
  *
+ *          ParseFileHash() parses JSON text that has a hash at
+ *          the highest level, '{'...'}'.  This is the normal
+ *          language definition.  ParseFileValue() can be used
+ *          to parse JSON starting at 'value' rule in the grammar
+ *          below if the highest level is not necessarily a hash.
+ *          A hash or array is always returned in the data of a
+ *          node whose name is "array" or "hash".  Likewise, the
+ *          keywords, null, true and false, are always returned
+ *          as a data object of null, true or false of a node
+ *          whose name is the same keyword of "null", "true" or
+ *          "false"
+ *
  * Remarks
  *	1.      I changed the definition of the quoteless string to end
  *          with '\n' and any of '{','}','[',']',':',','. This al-

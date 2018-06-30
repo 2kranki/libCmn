@@ -58,7 +58,7 @@
 #include        <szData_internal.h>
 #include        <szTbl.h>
 #include        <token_internal.h>
-#include        <utf8.h>
+#include        <utf8_internal.h>
 #include        <value.h>
 #include        <W32Str.h>
 
@@ -655,6 +655,42 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
+    NODEARRAY_DATA *    jsonIn_FindArrayNodeInHash(
+        JSONIN_DATA     *this,
+        const
+        char            *pSection
+    )
+    {
+        NODE_DATA       *pNode;
+        //ASTR_DATA       *pData;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return pArray;
+        }
+#endif
+        
+        pNode = jsonIn_FindNodeInHash(this, pSection, "array");
+        if (OBJ_NIL == pNode) {
+            return pArray;
+        }
+        pArray = node_getData(pNode);
+        if ( obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY) )
+            ;
+        else {
+            DEBUG_BREAK();
+            pArray = OBJ_NIL;
+        }
+
+        return pArray;
+    }
+    
+    
+    
     NODE_DATA *     jsonIn_FindNodeInHash(
         JSONIN_DATA     *this,
         const
@@ -677,17 +713,21 @@ extern "C" {
         
         pNode = nodeHash_FindA(this->pHash, pSection);
         if (OBJ_NIL == pNode) {
+            jsonIn_setLastError(this, ERESULT_DATA_NOT_FOUND);
             return OBJ_NIL;
         }
         pNode = node_getData(pNode);
         if (OBJ_NIL == pNode) {
+            jsonIn_setLastError(this, ERESULT_DATA_ERROR);
             return OBJ_NIL;
         }
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, pType))) {
+            jsonIn_setLastError(this, ERESULT_INVALID_DATA);
             return OBJ_NIL;
         }
 
+        jsonIn_setLastError(this, ERESULT_SUCCESS);
         return pNode;
     }
     
@@ -708,17 +748,23 @@ extern "C" {
 #else
         if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
+            //jsonIn_setLastError(this, ERESULT_INVALID_OBJECT);
             return 0;
         }
 #endif
         
         pNode = jsonIn_FindNodeInHash(this, pSection, "integer");
         if (OBJ_NIL == pNode) {
+            jsonIn_setLastError(this, ERESULT_DATA_NOT_FOUND);
             return num;
         }
         pData = node_getData(pNode);
         if (pData) {
             num = dec_getInt64A(AStr_getData(pData));
+            jsonIn_setLastError(this, ERESULT_SUCCESS);
+        }
+        else {
+            jsonIn_setLastError(this, ERESULT_DATA_ERROR);
         }
         
         return num;
@@ -863,8 +909,10 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
+        //ERESULT         eRc = ERESULT_SUCCESS;
         HJSON_DATA      *pParser;
         NODE_DATA       *pNode;
+        NAME_DATA       *pName;
         NODEHASH_DATA   *pHash;
 
         // Do initialization.
@@ -902,9 +950,18 @@ extern "C" {
             this->eRc = ERESULT_PARSE_ERROR;
             return ERESULT_PARSE_ERROR;
         }
+        pName = node_getName(pNode);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
+            obj_Release(pNode);
+            obj_Release(pParser);
+            this->eRc = ERESULT_DATA_ERROR;
+            return ERESULT_DATA_ERROR;
+        }
 
         pHash = node_getData(pNode);
         if (OBJ_NIL == pHash) {
+            obj_Release(pNode);
+            obj_Release(pParser);
             this->eRc = ERESULT_DATA_MISSING;
             return ERESULT_DATA_MISSING;
         }
@@ -1103,37 +1160,72 @@ extern "C" {
     //                     S u b  O b j e c t
     //---------------------------------------------------------------
     
-    bool            jsonIn_SubobjectEnd(
+    ERESULT         jsonIn_SubobjectEnd(
         JSONIN_DATA     *this
     )
     {
-        bool            fRc = false;
+        ERESULT         eRc = ERESULT_FAILURE;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (objList_getSize(this->pList) > 0) {
             this->pHash = objList_Tail(this->pList);
             objList_DeleteTail(this->pList);
-            fRc = true;
+            eRc = ERESULT_SUCCESS;
         }
         
-        return fRc;
+        return eRc;
     }
     
     
-    NODEHASH_DATA * jsonIn_SubobjectInHash(
+    ERESULT         jsonIn_SubobjectFromHash(
+        JSONIN_DATA     *this,
+        NODEHASH_DATA   *pHash
+    )
+    {
+        ERESULT         eRc = ERESULT_FAILURE;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pHash) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH))
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_ERROR;
+        }
+#endif
+        
+        objList_Add2Tail(this->pList, this->pHash);
+        this->pHash = pHash;
+        
+        eRc = ERESULT_SUCCESS;
+        return eRc;
+    }
+    
+    
+    ERESULT         jsonIn_SubobjectInHash(
         JSONIN_DATA     *this,
         const
         char            *pSection
     )
     {
+        ERESULT         eRc = ERESULT_FAILURE;
         NODE_DATA       *pNode;
         NAME_DATA       *pName;
         
@@ -1142,31 +1234,33 @@ extern "C" {
 #else
         if( !jsonIn_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         pNode = nodeHash_FindA(this->pHash, pSection);
         if (OBJ_NIL == pNode) {
-            return OBJ_NIL;
+            return ERESULT_DATA_NOT_FOUND;
         }
         pNode = node_getData(pNode);
         if (OBJ_NIL == pNode) {
-            return OBJ_NIL;
+            return ERESULT_DATA_ERROR;
         }
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
-            return OBJ_NIL;
+            return ERESULT_DATA_ERROR;
         }
         
         objList_Add2Tail(this->pList, this->pHash);
         this->pHash = node_getData(pNode);
         
-        return this->pHash;
+        eRc = ERESULT_SUCCESS;
+        return eRc;
     }
     
     
     
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

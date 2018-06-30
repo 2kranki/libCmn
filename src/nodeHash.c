@@ -441,10 +441,48 @@ extern "C" {
         ++this->size;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
 
 
+    ERESULT         nodeHash_AddA(
+        NODEHASH_DATA    *this,
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pName ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8AndClass(pName, cls, pData);
+        if (OBJ_NIL == pNode) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        eRc = nodeHash_Add(this, pNode);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
 
     //---------------------------------------------------------------
     //                          C o p y
@@ -1005,7 +1043,7 @@ extern "C" {
     )
     {
         uint32_t        i;
-        uint32_t        j;
+        //uint32_t        j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
         NODE_DATA       *pNode;

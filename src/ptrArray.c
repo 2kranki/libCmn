@@ -522,6 +522,7 @@ extern "C" {
             return eRc;
         }
         if (index < this->size) {
+            // Shift array starting at the current index.
             memmove(
                     &this->ppArray[index+1],
                     &this->ppArray[index],

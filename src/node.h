@@ -605,6 +605,18 @@ extern "C" {
         int             indent
     );
     
+    /*!
+     Convert the Data Object to a string if possible and return it.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+     data parameter in string form, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object when you are done
+     with it.
+     */
+    ASTR_DATA *     node_ToString_Data(
+        NODE_DATA       *this
+    );
+    
     
     /*!
      Create a string that describes this object and the

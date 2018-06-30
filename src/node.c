@@ -44,6 +44,7 @@
 #include        <node_internal.h>
 #include        <AStrArray.h>
 #include        <objArray.h>
+#include        <path.h>
 #include        <szData.h>
 #include        <stdarg.h>
 #include        <stdio.h>
@@ -2162,7 +2163,57 @@ extern "C" {
     }
     
     
+    ASTR_DATA *     node_ToString_Data(
+        NODE_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToString)(
+            OBJ_ID          objId
+        );
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !node_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->pData) {
+            if (obj_IsKindOf(this, OBJ_IDENT_ASTR)) {
+                pStr = AStr_Copy((ASTR_DATA *)this->pData);
+            }
+            else if (obj_IsKindOf(this, OBJ_IDENT_PATH)) {
+                pStr = AStr_Copy(path_getAStr((PATH_DATA *)this->pData));
+            }
+            else {
+                pQueryInfo = obj_getVtbl(this->pData)->pQueryInfo;
+                if (pQueryInfo) {
+                    pToString = (*pQueryInfo)(
+                                        this->pData,
+                                        OBJ_QUERYINFO_TYPE_METHOD,
+                                        "ToString"
+                                );
+                    if (pToString) {
+                        pStr = (*pToString)(this->pData);
+                    }
+                }
+            }
+        }
+
+        return pStr;
+    }
     
+    
+    
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

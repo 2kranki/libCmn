@@ -59,6 +59,7 @@ struct eResult_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
     uint32_t        maxErrors;          // Maximum number of errors until fatal

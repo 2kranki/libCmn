@@ -80,15 +80,15 @@ extern "C" {
     ERESULT_DATA *  eResult_Alloc(
     )
     {
-        ERESULT_DATA    *cbp;
+        ERESULT_DATA    *this;
         uint32_t        cbSize = sizeof(ERESULT_DATA);
         
         // Do initialization.
         
-        cbp = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -96,17 +96,17 @@ extern "C" {
     ERESULT_DATA *  eResult_New(
     )
     {
-        ERESULT_DATA    *cbp;
+        ERESULT_DATA    *this;
         
         // Do initialization.
         
-        cbp = eResult_Alloc( );
-        if (cbp) {
-            cbp = eResult_Init(cbp);
+        this = eResult_Alloc( );
+        if (this) {
+            this = eResult_Init(this);
         }
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -208,16 +208,16 @@ extern "C" {
 
 
     uint32_t        eResult_getSize(
-        ERESULT_DATA       *cbp
+        ERESULT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !eResult_Validate( cbp ) ) {
+        if( !eResult_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        return( 0 );
+        return 0;
     }
 
 
@@ -238,22 +238,25 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        ERESULT_DATA    *cbp = objId;
+        ERESULT_DATA    *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !eResult_Validate( cbp ) ) {
+        if( !eResult_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -492,6 +495,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&eResult_Vtbl);
         
         this->numErrors = 0;

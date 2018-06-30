@@ -97,8 +97,11 @@ extern "C" {
             goto exit00;
         }
 
-        pObj = jsonIn_SubobjectInHash(pParser, "name");
-        if (pObj) {
+        // Create the initial object once the key is established.
+        eRc = jsonIn_SubobjectInHash(pParser, "name");
+        if (ERESULT_FAILED(eRc))
+            ;
+        else {
             pUtf8 = utf8_ParseObject(pParser, NULL);
             jsonIn_SubobjectEnd(pParser);
             if (pUtf8) {
@@ -108,12 +111,15 @@ extern "C" {
             }
         }
         
+        // Now add this object's other fields.
         if (pObject) {
             cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
             szData_setClass(pObject, cls);
             
-            pObj = jsonIn_SubobjectInHash(pParser, "data");
-            if (pObj) {
+            eRc = jsonIn_SubobjectInHash(pParser, "data");
+            if (ERESULT_FAILED(eRc))
+                ;
+            else {
                 pObj = jsonIn_ParseObject(pParser);
                 jsonIn_SubobjectEnd(pParser);
                 if (pObj) {

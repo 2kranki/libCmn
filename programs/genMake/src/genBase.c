@@ -1024,7 +1024,7 @@ extern "C" {
     //             D i c t i o n a r y  M e t h o d s
     //---------------------------------------------------------------
     
-    ERESULT         genBase_DictAddUpdate(
+    ERESULT         genBase_DictAddUpdateA(
         GENBASE_DATA    *this,
         const
         char            *pName,
@@ -1044,17 +1044,17 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = szHash_New(SZHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        if (szHash_FindA(this->pDict, pName)) {
-            eRc = szHash_DeleteA(this->pDict, pName);
+        if (nodeHash_FindA(this->pDict, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, pName);
         }
-        eRc = szHash_AddA(this->pDict, pName, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -1146,6 +1146,7 @@ extern "C" {
         bool            fMore = true;
         //PATH_DATA       *pPath = OBJ_NIL;
         ASTR_DATA       *pName = OBJ_NIL;
+        NODE_DATA       *pVar = OBJ_NIL;
         const
         char            *pEnvVar = NULL;
         
@@ -1189,13 +1190,14 @@ extern "C" {
                     }
                     
                     // Find the name from the Dictionary.
-                    pEnvVar = szHash_FindA(this->pDict, AStr_getData(pName));
-                    if (NULL == pEnvVar) {
+                    pVar = nodeHash_FindA(this->pDict, AStr_getData(pName));
+                    if (OBJ_NIL == pVar) {
                         obj_Release(pName);
                         return ERESULT_DATA_NOT_FOUND;
                     }
                     obj_Release(pName);
                     pName = OBJ_NIL;
+                    //FIXME: Get pEnvVar from node data
                     
                     // Substitute the name from the Dictionary.
                     eRc = AStr_Remove(pStr, i-2, len+3);
@@ -1344,7 +1346,10 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pLibObjectPath   = szHash_FindA(this->pDict, "LibObjectPath");
+        
+        //FIXME: get data To_String ??? or To_PATH ????
+#ifdef XYZZY
+        pLibObjectPath   = nodeHash_FindA(this->pDict, "LibObjectPath");
         if (NULL == pLibObjectPath) {
             return OBJ_NIL;
         }
@@ -1385,6 +1390,7 @@ extern "C" {
             default:
                 break;
         }
+#endif
         
         // Return to caller.
         genBase_setLastError(this, ERESULT_SUCCESS);

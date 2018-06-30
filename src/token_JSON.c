@@ -100,7 +100,7 @@ extern "C" {
             goto exit00;
         }
 
-        pObj = jsonIn_SubobjectInHash(pParser, "loc");
+        eRc = jsonIn_SubobjectInHash(pParser, "loc");
         pSrc = srcLoc_ParseObject(pParser);
         jsonIn_SubobjectEnd(pParser);
         if (OBJ_NIL == pSrc) {
@@ -114,7 +114,7 @@ extern "C" {
         switch (type) {
                 
             case TOKEN_TYPE_INTEGER:
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject = token_NewInteger(srcLoc_getSrc(pSrc), cls, integer);
                 jsonIn_SubobjectEnd(pParser);
@@ -124,7 +124,7 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 pUtf8 = utf8_ParseObject(pParser, NULL);
                 jsonIn_SubobjectEnd(pParser);
                 if (pUtf8) {
@@ -135,7 +135,7 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_W32CHAR:
-                pObj = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject = token_NewCharW32(srcLoc_getSrc(pSrc), cls, (W32CHR_T)integer);
                 jsonIn_SubobjectEnd(pParser);

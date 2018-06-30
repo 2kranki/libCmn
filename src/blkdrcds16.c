@@ -925,8 +925,8 @@ extern "C" {
         size = pIndex->idxSize;
         pBlockData = (((uint8_t *)this->pBlock) + pIndex->idxOffset);
         
-        if (pData) {
-            size = size < dataSize ? size : dataSize;
+        size = size < dataSize ? size : dataSize;
+        if (pData && size) {
             memmove(pData, pBlockData, size);
         }
         

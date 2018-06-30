@@ -12,7 +12,8 @@
  *          collections such as objArray and objHash.
  *
  * Remarks
- *	1.      None
+ *	1.      This object uses szTbl, the static string table, to
+ *          store this object's key.
  *
  * History
  *	02/07/2018 Generated

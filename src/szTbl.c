@@ -5,6 +5,9 @@
  *
  */
 
+//                  W-A-R-N-I-N-G
+//  Never allow deletions.  This table should never provide that.
+
  
 /*
  This is free and unencumbered software released into the public domain.
@@ -50,10 +53,6 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    
-
-    static
-    SZTBL_DATA      *pShared = OBJ_NIL;
     
 
 
@@ -158,34 +157,17 @@ extern "C" {
 
 
 
-    SZTBL_DATA *     szTbl_Shared(
+    SZTBL_DATA *     szTbl_New(
     )
     {
-        
-        if (pShared) {
-        }
-        else {
-            pShared = szTbl_Alloc( );
-            if (pShared) {
-                pShared = szTbl_Init(pShared);
-            }
-         }
-        
-        return pShared;
-    }
-    
-    
-    
-    SZTBL_DATA *     szTbl_SharedReset(
-    )
-    {
-        
-        if (pShared) {
-            obj_Release(pShared);
-            pShared = OBJ_NIL;
+        SZTBL_DATA      *this;
+
+        this = szTbl_Alloc( );
+        if (this) {
+            this = szTbl_Init(this);
         }
         
-        return pShared;
+        return this;
     }
     
     
@@ -259,6 +241,95 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                 A d d  S t r i n g
+    //---------------------------------------------------------------
+    
+    uint32_t        szTbl_AddString(
+        SZTBL_DATA      *this,
+        const
+        char            *pStr           // [in]
+    )
+    {
+        SZTBL_HEAP      *pHb;
+        SZTBL_NODE      *pNode;
+        uint32_t        hash;
+        size_t          strLen;
+        uint32_t        nodeSize;
+        ERESULT         eRc;
+        uint32_t        index;
+        uint32_t        token;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = szTbl_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if( !szTbl_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        if (NULL == pStr) {
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return 0;
+        }
+#endif
+        
+        pNode = (SZTBL_NODE *)szHash_FindA(this->pHashTable, pStr);
+        if (pNode) {
+            this->eRc = ERESULT_SUCCESS_DATA_EXISTS;
+            return pNode->ident;
+        }
+        
+        hash = str_HashA(pStr, &strLen);
+        nodeSize = node_SizeNeeded(strLen);
+        
+        // Add a Heap block if necessary.
+        pHb = this->pHeap;
+        while( pHb ) {
+            if( (pHb->size - pHb->used) >= nodeSize )
+                break;
+            pHb = pHb->pNext;
+        }
+        if( NULL == pHb ) {
+            pHb = szTbl_BlockAdd(this);
+            if( NULL == pHb ) {
+                this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+                return 0;
+            }
+        }
+        
+        if( (pHb->size - pHb->used) >= nodeSize )
+            ;
+        else {
+            this->eRc = ERESULT_INSUFFICIENT_MEMORY;
+            return 0;
+        }
+        pNode = (SZTBL_NODE *)(((char *)pHb->node) + pHb->used);
+        BREAK_NOT_BOUNDARY4(pNode);
+        
+        pNode->hash = hash;
+        pNode->max = nodeSize - sizeof(SZTBL_NODE);
+        pNode->len = strLen;
+        str_Copy((char *)pNode->data, pNode->len+1, pStr);
+        eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
+        if (ERESULT_HAS_FAILED(eRc)) {
+            this->eRc = ERESULT_GENERAL_FAILURE;
+            return 0;
+        }
+        pNode->ident = index;
+        token = pNode->ident;
+        
+        pHb->used += nodeSize;
+        eRc = szHash_AddA(this->pHashTable, (char *)pNode->data, pNode);
+        
+        // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
+        return token;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -299,10 +370,7 @@ extern "C" {
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc( this );
-        if( this == pShared ) {
-            pShared = OBJ_NIL;
-        }
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -329,6 +397,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&szTbl_Vtbl);
         
         pht = szHash_Alloc();
@@ -612,7 +681,7 @@ extern "C" {
         
         pNode->hash = hash;
         pNode->max = nodeSize - sizeof(SZTBL_NODE);
-        pNode->len = utf8StrLen;
+        pNode->len = utf8StrLen - 1;
         i = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
         eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {

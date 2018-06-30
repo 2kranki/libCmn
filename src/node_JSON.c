@@ -84,7 +84,7 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         uint32_t        cls = 0;
-        OBJ_ID          pObj = OBJ_NIL;
+        //OBJ_ID          pObj = OBJ_NIL;
         //uint8_t         *pUtf8;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
@@ -97,8 +97,8 @@ extern "C" {
             goto exit00;
         }
         
-        pObj = jsonIn_SubobjectInHash(pParser, "name");
-        if (pObj) {
+        eRc = jsonIn_SubobjectInHash(pParser, "name");
+        if (ERESULT_FAILED(eRc)) {
             pName = name_ParseObject(pParser);
             jsonIn_SubobjectEnd(pParser);
             if (pName) {
@@ -113,8 +113,8 @@ extern "C" {
             node_setClass(pObject, cls);
             
 #ifdef XYZZY
-            pObj = jsonIn_SubobjectInHash(pParser, "data");
-            if (pObj) {
+            eRc = jsonIn_SubobjectInHash(pParser, "data");
+            if (ERESULT_FAILED(eRc)) {
                 pObj = jsonIn_ParseObject(pParser);
                 jsonIn_SubobjectEnd(pParser);
                 if (pObj) {

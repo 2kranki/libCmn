@@ -3,7 +3,18 @@
  * File:   szTbl_JSON.c
  *
  * Created on 01/18/2018 from W32Str_JSON
+ *
  */
+
+/*
+ Notes:
+    1.  The hash and the table size may change between the destruction
+        and creation of the new table based on the JSON text.  So, to
+        keep the unique numbers constant, we create the JSON text in
+        unique number order and recreate the table in that same order.
+ */
+
+
 
 
 /*
@@ -52,9 +63,9 @@
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
-#include    <utf8.h>
+#include    <utf8_internal.h>
 
-//#define TRACE_FUNCTIONS 1
+#define DEBUG_JSONIN 1
 
 
 #ifdef	__cplusplus
@@ -102,8 +113,8 @@ extern "C" {
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
-     @return    a new null object if successful, otherwise, OBJ_NIL
-     @warning   Returned null object must be released.
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
      */
     SZTBL_DATA *    szTbl_ParseObject(
         JSONIN_DATA     *pParser
@@ -113,15 +124,18 @@ extern "C" {
         SZTBL_DATA      *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-#ifdef XYZZY
-        uint32_t        crc = 0;
-        uint32_t        length = 0;
+        uint32_t        count = 0;
+        uint32_t        hash = 0;
+        uint32_t        len = 0;
+        uint32_t        len2 = 0;
+        uint32_t        ident = 0;
+        uint32_t        unique = 0;
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+        NODEARRAY_DATA  *pArray;
+        NODEHASH_DATA   *pHash;
         uint32_t        i;
-        W32CHR_T        ch;
-        const
-        char            *pSrc;
-        ASTR_DATA       *pWrk;
-#endif
+        char            *pData = NULL;
         
         pInfo = obj_getInfo(szTbl_Class());
         
@@ -131,29 +145,143 @@ extern "C" {
             goto exit00;
         }
         
-#ifdef XYZZY
-        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
-        
-        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        count = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Count");
+        fprintf(stderr, "\tNode Count = %d\n", count);
 
         pObject = szTbl_New();
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        if (length && pObject) {
-            pWrk = jsonIn_FindStringNodeInHash(pParser, "data");
-            pSrc = AStr_getData(pWrk);
-            for (i=0; i<length; ++i) {
-                ch = utf8_ChrConToW32_Scan(&pSrc);
-                szTbl_AppendW32(pObject, 1, &ch);
+        if (count && pObject) {
+            pArray = jsonIn_FindArrayNodeInHash(pParser, "Entries");
+            if (count == nodeArray_getSize(pArray))
+                ;
+            else {
+                fprintf(
+                        stderr,
+                        "ERROR - JSON Count, %d, does not match array size, %d!\n",
+                        count,
+                        nodeArray_getSize(pArray)
+                );
+                goto exit00;
             }
-            if (!(crc == szTbl_getCrcIEEE(pObject))) {
-                obj_Release(pObject);
-                pObject = OBJ_NIL;
+            for(i=0; i<count; ++i) {
+                fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
+                pNode = nodeArray_Get(pArray, i+1);
+                if (OBJ_NIL == pNode) {
+                    fprintf(
+                            stderr,
+                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
+                            count,
+                            nodeArray_getSize(pArray)
+                    );
+                    goto exit00;
+                }
+                pName = node_getName(pNode);
+                if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - Node name is not valid!\n"
+                    );
+                    goto exit00;
+                }
+                pHash = node_getData(pNode);
+                if (OBJ_NIL == pHash) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Node's data is not valid!\n"
+                    );
+                    goto exit00;
+                }
+                if (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH))
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - Node's data is not a hash!\n"
+                    );
+                    goto exit00;
+                }
+                eRc = jsonIn_SubobjectFromHash(pParser, pHash);
+                hash = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Hash");
+                eRc = jsonIn_getLastError(pParser);
+                if (ERESULT_FAILED(eRc)) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Hash code for a node could not be found!\n"
+                    );
+                    goto exit00;
+                }
+                //fprintf(stderr, "\t\tHash(%d) = %u\n", i+1, hash);
+                ident = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Ident");
+                eRc = jsonIn_getLastError(pParser);
+                if (ERESULT_FAILED(eRc)) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Ident code for a node could not be found!\n"
+                    );
+                    goto exit00;
+                }
+                //fprintf(stderr, "\t\tIdent(%d) = %u\n", i+1, ident);
+                len = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Length");
+                eRc = jsonIn_getLastError(pParser);
+                if (ERESULT_FAILED(eRc)) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Length for a node could not be found!\n"
+                    );
+                    goto exit00;
+                }
+                //fprintf(stderr, "\t\tlen(%d) = %u\n", i+1, len);
+                eRc = jsonIn_SubobjectInHash(pParser, "Data");
+                if (ERESULT_FAILED(eRc)) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Data for a node could not be found!\n"
+                    );
+                    goto exit00;
+                }
+                pData = (char *)utf8_ParseObject(pParser, &len2);
+                if (OBJ_NIL == pHash) {
+                    fprintf(
+                            stderr,
+                            "ERROR - UTF-8 data for a node could not be found!\n"
+                    );
+                    goto exit00;
+                }
+                if (len == len2)
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - UTF-8 data length is possibly invalid (%d:%d)!\n",
+                            len,
+                            len2
+                    );
+                    goto exit00;
+                }
+                //fprintf(stderr, "\t\tdata(%d) = %s\n", i+1, pData);
+                unique = szTbl_StringToToken(pObject, pData);
+                if (pData) {
+                    mem_Free(pData);
+                    pData = NULL;
+                }
+                if (unique == ident)
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - UTF-8 data length is possibly invalid!\n"
+                    );
+                    goto exit00;
+                }
+                eRc = jsonIn_SubobjectEnd(pParser);
+                eRc = jsonIn_SubobjectEnd(pParser);
             }
         }
-#endif
         
         // Return to caller.
     exit00:
@@ -186,13 +314,24 @@ extern "C" {
         JSONIN_DATA     *pParser;
         ERESULT         eRc = ERESULT_SUCCESS;
         SZTBL_DATA      *pObject = OBJ_NIL;
+#ifdef DEBUG_JSONIN
+        ASTR_DATA       *pStrDebug = OBJ_NIL;
+#endif
         
         pParser = jsonIn_New();
         eRc = jsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-        
+#ifdef DEBUG_JSONIN
+        pStrDebug = nodeHash_ToDebugString(jsonIn_getHash(pParser), 0);
+        if (pStrDebug) {
+            fprintf(stderr, "%s\n\n", AStr_getData(pStrDebug));
+            obj_Release(pStrDebug);
+            pStrDebug = OBJ_NIL;
+        }
+#endif
+
         pObject = szTbl_ParseObject(pParser);
         
         
@@ -234,8 +373,8 @@ extern "C" {
     {
         //char            str[256];
         uint32_t        i;
-        uint32_t        j;
         ASTR_DATA       *pStr;
+        ASTR_DATA       *pStrWrk = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         SZTBL_NODE      *pNode;
@@ -252,60 +391,47 @@ extern "C" {
         pInfo = szTbl_Vtbl.iVtbl.pInfo;
         //FIXME: pData  = array_Ptr((ARRAY_DATA *)this, 1);
 
+        // We need to insure that the table entries are in ascending order
+        // by their unique number so that they are restored in the table
+        // properly.  Other objects such as szHash rely on this number staying
+        // constant.
+        // We do not have the ability to add specific entries
+        // with a given unique number.  Other
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
             return OBJ_NIL;
         }
-        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"", pInfo->pClassName);
-        
-        AStr_AppendPrint(pStr, ", \"Count\":%u", size);
+        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\",\n", pInfo->pClassName);
+        AStr_AppendPrint(pStr, "\t\"Count\":%u,\n", size);
         if (size) {
             AStr_AppendA(pStr, "\t\"Entries\":[\n");
-            for (i=0; i<(size - 1); ++i) {
+            for (i=0; i<size; ++i) {
                 pNode = ptrArray_GetData(this->pPtrArray, i+1);
                 if (pNode) {
                     AStr_AppendPrint(
                                      pStr,
-                                     "\t{Length:%u,\"Hash\":%u,\"Ident\":%u,\n",
+                                     "\t\t{Length:%u, \"Hash\":%u, \"Ident\":%u,\n",
                                      pNode->len,
                                      pNode->hash,
                                      pNode->ident
                                      );
                     if (pNode->len) {
-                        AStr_AppendA(pStr, "\t\t\"Data\":[");
-                        for (j=0; j<(pNode->len - 1); ++j) {
-                            AStr_AppendPrint(pStr, "%u,", pNode->data[j]);
-                        }
-                        AStr_AppendPrint(pStr, "%u", pNode->data[j]);
-                        AStr_AppendA(pStr, "]\n");
+                        pStrWrk = utf8_DataToJSON((const char *)pNode->data);
+                        AStr_AppendA(pStr, "\t\t\t\"Data\":");
+                        AStr_Append(pStr, pStrWrk);
+                        obj_Release(pStrWrk);
+                        pStrWrk = OBJ_NIL;
                     }
                     else {
-                        AStr_AppendA(pStr, "\t\t\"Data\":null");
+                        AStr_AppendA(pStr, "\t\t\t\"Data\":null");
                     }
-                    AStr_AppendA(pStr, "\t},\n");
-                }
-            }
-            pNode = ptrArray_GetData(this->pPtrArray, i+1);
-            if (pNode) {
-                AStr_AppendPrint(
-                                 pStr,
-                                 "\t{Length:%u,\"Hash\":%u,\"Ident\":%u,\n",
-                                 pNode->len,
-                                 pNode->hash,
-                                 pNode->ident
-                                 );
-                if (pNode->len) {
-                    AStr_AppendA(pStr, "\t\t\"Data\":[");
-                    for (j=0; j<(pNode->len - 1); ++j) {
-                        AStr_AppendPrint(pStr, "%u,", pNode->data[j]);
+                    if (i == (size - 1)) {
+                        AStr_AppendA(pStr, "\t\t}\n");
                     }
-                    AStr_AppendPrint(pStr, "%u", pNode->data[j]);
-                    AStr_AppendA(pStr, "]\n");
+                    else {
+                        AStr_AppendA(pStr, "\t\t},\n");
+                    }
                 }
-                else {
-                    AStr_AppendA(pStr, "\t\t\"Data\":null");
-                }
-                AStr_AppendA(pStr, "\t}\n");
             }
             AStr_AppendA(pStr, "\t]\n");
         }
