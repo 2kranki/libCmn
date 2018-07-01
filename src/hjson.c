@@ -156,7 +156,7 @@ extern "C" {
             return pNode;
         }
         
-        pNode = node_NewWithUTF8Con("array", pArray);
+        pNode = node_NewWithUTF8ConAndClass("array", 0, pArray);
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
             srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
@@ -262,7 +262,7 @@ extern "C" {
             return pNode;
         }
         
-        pNode = node_NewWithUTF8Con("hash", pHash);
+        pNode = node_NewWithUTF8ConAndClass("hash", 0, pHash);
         obj_Release(pHash);
         pHash = OBJ_NIL;
         if (pNode == OBJ_NIL) {
@@ -307,7 +307,7 @@ extern "C" {
                 
             case LEXJ_KWD_FALSE:
                 pFalse = false_New();
-                pNode = node_NewWithUTF8Con("false", pFalse);
+                pNode = node_NewWithUTF8ConAndClass("false", 0, pFalse);
                 obj_Release(pFalse);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tfalse\n");
@@ -315,7 +315,7 @@ extern "C" {
                 
             case LEXJ_KWD_NULL:
                 pNull = null_New();
-                pNode = node_NewWithUTF8Con("null", pNull);
+                pNode = node_NewWithUTF8ConAndClass("null", 0, pNull);
                 obj_Release(pNull);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tnull\n");
@@ -323,7 +323,7 @@ extern "C" {
                 
             case LEXJ_KWD_TRUE:
                 pTrue = true_New();
-                pNode = node_NewWithUTF8Con("true", pTrue);
+                pNode = node_NewWithUTF8ConAndClass("true", 0, pTrue);
                 obj_Release(pTrue);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\ttrue\n");
@@ -381,7 +381,7 @@ extern "C" {
         
         if (pStr) {
             TRC_OBJ(this, "\tname: \"%s\"\n", AStr_getData(pStr));
-            pNode = node_NewWithUTF8Con("name", pStr);
+            pNode = node_NewWithUTF8ConAndClass("name", 0, pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -453,7 +453,7 @@ extern "C" {
                     AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tinteger: \"%s\"\n", AStr_getData(pStr));
-                pNode = node_NewWithUTF8Con("integer", pStr);
+                pNode = node_NewWithUTF8ConAndClass("integer", 0, pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
@@ -466,7 +466,7 @@ extern "C" {
                     AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tfloat: \"%s\"\n", AStr_getData(pStr));
-                pNode = node_NewWithUTF8Con("float", pStr);
+                pNode = node_NewWithUTF8ConAndClass("float", 0, pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
@@ -559,7 +559,7 @@ extern "C" {
             obj_Release(pStrA);
         }
 #endif
-        pNode = node_NewWithUTF8(pszName, pData);
+        pNode = node_NewWithUTF8AndClass(pszName, 0, pData);
         mem_Free((void *)pszName);
         pszName = NULL;
         obj_Release(pData);
@@ -610,7 +610,7 @@ extern "C" {
         TRC_OBJ(this, "\tstring: (%d) \"%s\"\n", AStr_getLength(pStr), AStr_getData(pStr));
 #endif
         if (pStr) {
-            pNode = node_NewWithUTF8Con("string", pStr);
+            pNode = node_NewWithUTF8ConAndClass("string", 0, pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }

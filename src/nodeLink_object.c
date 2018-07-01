@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'szData'
-//	Generated 02/07/2018 09:15:58
+//	Class Object Metods and Tables for 'nodeLink'
+//	Generated 06/30/2018 19:10:48
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   SZDATA_IS_SINGLETON     1
+//#define   NODELINK_IS_SINGLETON     1
 
-#define			SZDATA_OBJECT_C	    1
-#include        <szData_internal.h>
+#define			NODELINK_OBJECT_C	    1
+#include        <nodeLink_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct szData_class_data_s	{
+struct nodeLink_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct szData_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct szData_class_data_s SZDATA_CLASS_DATA;
+typedef struct nodeLink_class_data_s NODELINK_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct szData_class_data_s SZDATA_CLASS_DATA;
 
 
 static
-void *          szDataClass_QueryInfo(
+void *          nodeLinkClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,18 +73,21 @@ void *          szDataClass_QueryInfo(
 
 static
 const
-OBJ_INFO        szData_Info;            // Forward Reference
+OBJ_INFO        nodeLink_Info;            // Forward Reference
 
 
 
 
 static
-bool            szDataClass_IsKindOf(
+bool            nodeLinkClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SZDATA_CLASS == classID) {
+    if (OBJ_IDENT_NODELINK_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_NODE_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -94,25 +97,25 @@ bool            szDataClass_IsKindOf(
 
 
 static
-uint16_t		szDataClass_WhoAmI(
+uint16_t		nodeLinkClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_SZDATA_CLASS;
+    return OBJ_IDENT_NODELINK_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&szData_Info,
-    szDataClass_IsKindOf,
+	&nodeLink_Info,
+    nodeLinkClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    szData_Class,
-    szDataClass_WhoAmI,
-    (P_OBJ_QUERYINFO)szDataClass_QueryInfo
+    nodeLink_Class,
+    nodeLinkClass_WhoAmI,
+    (P_OBJ_QUERYINFO)nodeLinkClass_QueryInfo
 };
 
 
@@ -122,8 +125,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-SZDATA_CLASS_DATA  szData_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SZDATA_CLASS, 0, 1},
+NODELINK_CLASS_DATA  nodeLink_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELINK_CLASS, 0, 1},
 	//0
 };
 
@@ -134,13 +137,13 @@ SZDATA_CLASS_DATA  szData_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          szDataClass_QueryInfo(
+void *          nodeLinkClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    SZDATA_CLASS_DATA *this = objId;
+    NODELINK_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -154,16 +157,40 @@ void *          szDataClass_QueryInfo(
             return this;
             break;
             
-#ifdef XYZZY  
         // Query for an address to specific data within the object.  
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
-                case 'O':
-                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
-                        return &this->pObjCatalog;
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&nodeLink_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+#ifdef XYZZY
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return nodeLink_ParseObject;
+                    }
+                    break;
+
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return nodeLinkClass_WhoAmI;
                     }
                     break;
                     
@@ -172,24 +199,6 @@ void *          szDataClass_QueryInfo(
             }
             break;
 #endif
-            
-        case OBJ_QUERYINFO_TYPE_INFO:
-            return (void *)obj_getInfo(this);
-            break;
-            
-        case OBJ_QUERYINFO_TYPE_METHOD:
-            switch (*pStr) {
-                    
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return szData_ParseObject;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
             
         default:
             break;
@@ -207,12 +216,15 @@ void *          szDataClass_QueryInfo(
 //===========================================================
 
 static
-bool            szData_IsKindOf(
+bool            nodeLink_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SZDATA == classID) {
+    if (OBJ_IDENT_NODELINK == classID) {
        return true;
+    }
+    if (OBJ_IDENT_NODE == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -223,70 +235,92 @@ bool            szData_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            szData_Dealloc(
+void            nodeLink_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          szData_Class(
+OBJ_ID          nodeLink_Class(
     void
 )
 {
-    return (OBJ_ID)&szData_ClassObj;
+    return (OBJ_ID)&nodeLink_ClassObj;
 }
 
 
 static
-uint16_t		szData_WhoAmI(
+uint16_t		nodeLink_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_SZDATA;
+    return OBJ_IDENT_NODELINK;
 }
 
 
 const
-SZDATA_VTBL     szData_Vtbl = {
+NODELINK_VTBL     nodeLink_Vtbl = {
     {
-        &szData_Info,
-        szData_IsKindOf,
-#ifdef  SZDATA_IS_SINGLETON
-        obj_RetainNull,
-        obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
-        szData_Dealloc,
-        szData_Class,
-        szData_WhoAmI,
-        (P_OBJ_QUERYINFO)szData_QueryInfo,
-        (P_OBJ_TOSTRING)szData_ToDebugString,
-        NULL,			// szData_Enable,
-        NULL,			// szData_Disable,
-        (P_OBJ_ASSIGN)szData_Assign,
-        (P_OBJ_COMPARE)szData_Compare,
-        (P_OBJ_PTR)szData_Copy,
-        NULL,           // (P_OBJ_PTR)szData_DeepCopy,
-        (P_OBJ_HASH)szData_Hash,
+        {
+            &nodeLink_Info,
+            nodeLink_IsKindOf,
+    #ifdef  NODELINK_IS_SINGLETON
+            obj_RetainNull,
+            obj_ReleaseNull,
+    #else
+            obj_RetainStandard,
+            obj_ReleaseStandard,
+    #endif
+            nodeLink_Dealloc,
+            nodeLink_Class,
+            nodeLink_WhoAmI,
+            (P_OBJ_QUERYINFO)nodeLink_QueryInfo,
+            (P_OBJ_TOSTRING)nodeLink_ToDebugString,
+            NULL,			// nodeLink_Enable,
+            NULL,			// nodeLink_Disable,
+            NULL,			// (P_OBJ_ASSIGN)nodeLink_Assign,
+            NULL,			// (P_OBJ_COMPARE)nodeLink_Compare,
+            NULL, 			// (P_OBJ_PTR)nodeLink_Copy,
+            NULL, 			// (P_OBJ_PTR)nodeLink_DeepCopy,
+            NULL 			// (P_OBJ_HASH)nodeLink_Hash,
+        },
+        node_getClass,
+        node_setClass,
+        node_getData,
+        node_setData,
+        node_getMisc1,
+        node_setMisc1,
+        node_getMisc2,
+        node_setMisc2,
+        node_getName,
+        node_getOther,
+        node_setOther,
+        node_Property,
+        node_PropertyAdd,
+        node_PropertyCount,
+        node_PropertyKeys
     },
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    //szData_IsEnabled,
- 
+    nodeLink_getIndex,
+    nodeLink_setIndex,
+    nodeLink_getLeft,
+    nodeLink_setLeft,
+    nodeLink_getMiddle,
+    nodeLink_setMiddle,
+    nodeLink_getParent,
+    nodeLink_setParent,
+    nodeLink_getRight,
+    nodeLink_setRight,
 };
 
 
 
 static
 const
-OBJ_INFO        szData_Info = {
-    "szData",
-    "Static String W/ Data",
-    (OBJ_DATA *)&szData_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&szData_Vtbl
+OBJ_INFO        nodeLink_Info = {
+    "nodeLink",
+    "A Node with Integer Links",
+    (OBJ_DATA *)&nodeLink_ClassObj,
+    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_IUNKNOWN *)&nodeLink_Vtbl
 };
 
 

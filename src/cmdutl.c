@@ -410,7 +410,7 @@ extern "C" {
 #endif
         }
         
-        pNode = node_NewWithUTF8("array", pArray);
+        pNode = node_NewWithUTF8AndClass("array", 0, pArray);
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
             //FIXME: Error Fatal
@@ -940,7 +940,7 @@ extern "C" {
             return pNode;
         }
         
-        pNode = node_NewWithUTF8("hash", pHash);
+        pNode = node_NewWithUTF8AndClass("hash", 0, pHash);
         obj_Release(pHash);
         pHash = OBJ_NIL;
         if (pNode == OBJ_NIL) {
@@ -984,13 +984,13 @@ extern "C" {
         str_ToLowerW32(this->pFld);
         if (this->lenFld) {
             if (0 == utf8_StrCmpAW32("false", this->pFld)) {
-                pNode = node_NewWithUTF8("false", pFalse);
+                pNode = node_NewWithUTF8AndClass("false", 0, pFalse);
             }
             else if (0 == utf8_StrCmpAW32("null", this->pFld)) {
-                pNode = node_NewWithUTF8("null", pNull);
+                pNode = node_NewWithUTF8AndClass("null", 0, pNull);
             }
             else if (0 == utf8_StrCmpAW32("true", this->pFld)) {
-                pNode = node_NewWithUTF8("true", pTrue);
+                pNode = node_NewWithUTF8AndClass("true", 0, pTrue);
             }
             else {
                 //FIXME: Add proper error
@@ -1130,7 +1130,7 @@ extern "C" {
         if (fRc) {
             pStr = AStr_NewW32(this->pFld);
             if (pStr) {
-                pNode = node_NewWithUTF8("number", pStr);
+                pNode = node_NewWithUTF8AndClass("number", 0, pStr);
             }
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -1224,7 +1224,7 @@ extern "C" {
         }
 
         pszName = AStr_CStringA(node_getData(pName), NULL);
-        pNode = node_NewWithUTF8(pszName, pData);
+        pNode = node_NewWithUTF8AndClass(pszName, 0, pData);
         mem_Free((void *)pszName);
         pszName = NULL;
         obj_Release(pName);
@@ -1287,7 +1287,7 @@ extern "C" {
         if (fRc) {
             pStr = AStr_NewW32(this->pFld);
             if (pStr) {
-                pNode = node_NewWithUTF8("string", pStr);
+                pNode = node_NewWithUTF8AndClass("string", 0, pStr);
 #ifdef NDEBUG
 #else
                 ASTR_DATA   *pStrDbg = AStr_ToDebugString(pStr, 0);

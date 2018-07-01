@@ -366,7 +366,7 @@ extern "C" {
     //                    C l o s e  N o d e
     //---------------------------------------------------------------
     
-    NODE_DATA *     nodeScan_getCloseNode(
+    NODELINK_DATA * nodeScan_getCloseNode(
         NODESCAN_DATA   *this
     )
     {
@@ -469,7 +469,7 @@ extern "C" {
     //                    O p e n  N o d e
     //---------------------------------------------------------------
     
-    NODE_DATA *     nodeScan_getOpenNode(
+    NODELINK_DATA * nodeScan_getOpenNode(
         NODESCAN_DATA   *this
     )
     {

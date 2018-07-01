@@ -87,7 +87,7 @@ extern "C" {
         uint32_t        cls = 0;
         uint32_t        type = 0;
         int16_t         misc = 0;
-        OBJ_ID          pObj;
+        //OBJ_ID          pObj;
         uint8_t         *pUtf8;
         int64_t         integer;
         SRCLOC_DATA     *pSrc = OBJ_NIL;

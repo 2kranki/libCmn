@@ -202,36 +202,15 @@ extern "C" {
     
     
     
-    NODE_DATA *     node_NewWithUTF8(
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        NODE_DATA       *this;
-        
-        if (OBJ_NIL == pName) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Alloc( );
-        if (this) {
-            this = node_InitWithUTF8(this, pName, pData);
-        }
-        
-        return this;
-    }
-    
-    
-    
     NODE_DATA *     node_NewWithUTF8AndClass(
         const
-        char            *pName,
+        char            *pNameA,
         int32_t         cls,
         OBJ_ID          pData
     )
     {
         NODE_DATA       *this;
+        NAME_DATA       *pName = OBJ_NIL;
         
         if (OBJ_NIL == pName) {
             return OBJ_NIL;
@@ -239,9 +218,16 @@ extern "C" {
         
         this = node_Alloc( );
         if (this) {
-            this = node_InitWithUTF8(this,pName,pData);
+            this = node_Init(this);
             if (this) {
+                if (pName) {
+                    pName = name_NewUTF8(pNameA);
+                    node_setName(this, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                }
                 node_setClass(this, cls);
+                node_setData(this, pData);
             }
         }
         
@@ -249,45 +235,33 @@ extern "C" {
     }
     
     
-    NODE_DATA *     node_NewWithUTF8Con(
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        NODE_DATA       *this;
-        
-        if (OBJ_NIL == pName) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Alloc( );
-        if (this) {
-            this = node_InitWithUTF8Con(this,pName,pData);
-        }
-        
-        return this;
-    }
-    
     
     NODE_DATA *     node_NewWithUTF8ConAndClass(
         const
-        char            *pName,
+        char            *pNameA,
         int32_t         cls,
         OBJ_ID          pData
     )
     {
         NODE_DATA       *this;
-        
+        NAME_DATA       *pName = OBJ_NIL;
+
         if (OBJ_NIL == pName) {
             return OBJ_NIL;
         }
         
         this = node_Alloc( );
         if (this) {
-            this = node_InitWithUTF8Con(this,pName,pData);
+            this = node_Init(this);
             if (this) {
+                if (pName) {
+                    pName = name_NewUTF8Con(pNameA);
+                    node_setName(this, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                }
                 node_setClass(this, cls);
+                node_setData(this, pData);
             }
         }
         
@@ -304,47 +278,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    //---------------------------------------------------------------
-    //                      C h i l d  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getChild(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->leftIndex;
-    }
-    
-    
-    bool            node_setChild(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->leftIndex = value;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          C l a s s
     //---------------------------------------------------------------
@@ -474,47 +407,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      F r o m  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getFrom(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->leftIndex;
-    }
-    
-    
-    bool            node_setFrom(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->leftIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------
     
@@ -542,46 +434,6 @@ extern "C" {
         this->eRc = eRc;
         return hash;
     }
-    
-    
-    //---------------------------------------------------------------
-    //                          I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getIndex(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->index;
-    }
-    
-    
-    bool            node_setIndex(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        this->index = value;
-        
-        return true;
-    }
-    
     
     
     //---------------------------------------------------------------
@@ -621,88 +473,6 @@ extern "C" {
 #endif
         
         this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L e f t  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getLeft(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->leftIndex;
-    }
-    
-    
-    bool            node_setLeft(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->leftIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   M i d d l e  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getMiddle(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->middleIndex;
-    }
-    
-    
-    bool            node_setMiddle(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->middleIndex = value;
         
         return true;
     }
@@ -922,47 +692,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                   P a r e n t  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getParent(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->parentIndex;
-    }
-    
-    
-    bool            node_setParent(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->parentIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      P r o p e r t i e s
     //---------------------------------------------------------------
     
@@ -1001,129 +730,6 @@ extern "C" {
             obj_Release(this->pProperties);
         }
         this->pProperties = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      R i g h t  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getRight(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->rightIndex;
-    }
-    
-    
-    bool            node_setRight(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->rightIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    S i b l i n g  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getSibling(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->rightIndex;
-    }
-    
-    
-    bool            node_setSibling(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->rightIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    T o  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        node_getTo(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->rightIndex;
-    }
-    
-    
-    bool            node_setTo(
-        NODE_DATA       *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->rightIndex = value;
         
         return true;
     }
@@ -1303,7 +909,6 @@ extern "C" {
         
         // Copy other data from this object to other.
         pOther->cls = this->cls;
-        pOther->index = this->index;
         pOther->pExtra = this->pExtra;
 
         return ERESULT_SUCCESS;
@@ -1611,7 +1216,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = obj_Init( this, cbSize, OBJ_IDENT_NODE );
+        this = obj_Init(this, cbSize, OBJ_IDENT_NODE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1698,77 +1303,6 @@ extern "C" {
         
         return this;
     }
-    
-    
-    
-    NODE_DATA *     node_InitWithUTF8(
-        NODE_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        if (pName) {
-            this->pName = name_NewUTF8(pName);
-            if (OBJ_NIL == this->pName) {
-                DEBUG_BREAK();
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-        }
-        
-        node_setData(this, pData);
-        
-        return this;
-    }
-    
-    
-    
-    NODE_DATA *     node_InitWithUTF8Con(
-        NODE_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        if (pName) {
-            this->pName = name_NewUTF8Con(pName);
-            if (OBJ_NIL == this->pName) {
-                DEBUG_BREAK();
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-        }
-        
-        node_setData(this, pData);
-        
-        return this;
-    }
-    
     
     
     
@@ -2092,11 +1626,10 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(node) Name=%s class=%d index=%d misc1=%d misc2=%d\n",
+                     "{%p(node) Name=%s class=%d misc1=%d misc2=%d\n",
                      this,
                      pName,
                      node_getClass(this),
-                     node_getIndex(this),
                      node_getMisc1(this),
                      node_getMisc2(this)
             );
@@ -2104,12 +1637,6 @@ extern "C" {
         AStr_AppendA(pStr, str);
         
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        AStr_AppendPrint(pStr, "\tleft=%d middle=%d right=%d parent=%d\n",
-                         node_getLeft(this),
-                         node_getMiddle(this),
-                         node_getRight(this),
-                         node_getParent(this)
-        );
 
         if (this->pData) {
             AStr_AppendCharRepeatA(pStr, indent+3, ' ');
@@ -2226,6 +1753,8 @@ extern "C" {
     {
         if( this ) {
             if ( obj_IsKindOf(this, OBJ_IDENT_NODE) )
+                ;
+            else if ( obj_IsKindOf(this, OBJ_IDENT_NODELINK) )
                 ;
             else
                 return false;

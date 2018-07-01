@@ -84,7 +84,7 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         uint16_t        type;
-        OBJ_ID          pObj;
+        //OBJ_ID          pObj;
         int64_t         integer;
 
         pInfo = obj_getInfo(value_Class());

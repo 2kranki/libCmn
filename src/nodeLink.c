@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   szData.c
- *	Generated 02/07/2018 09:15:58
+ * File:   nodeLink.c
+ *	Generated 06/30/2018 19:10:48
  *
  */
 
@@ -41,8 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <szData_internal.h>
-#include <szTbl.h>
+#include        <nodeLink_internal.h>
+#include        <trace.h>
 
 
 
@@ -61,11 +61,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            szData_task_body(
+    void            nodeLink_task_body(
         void            *pData
     )
     {
-        //SZDATA_DATA  *this = pData;
+        //NODELINK_DATA  *this = pData;
         
     }
 #endif
@@ -81,11 +81,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SZDATA_DATA *   szData_Alloc(
+    NODELINK_DATA *     nodeLink_Alloc(
     )
     {
-        SZDATA_DATA     *this;
-        uint32_t        cbSize = sizeof(SZDATA_DATA);
+        NODELINK_DATA   *this;
+        uint32_t        cbSize = sizeof(NODELINK_DATA);
         
         // Do initialization.
         
@@ -97,70 +97,73 @@ extern "C" {
 
 
 
-    SZDATA_DATA *   szData_New(
+    NODELINK_DATA *     nodeLink_New(
     )
     {
-        SZDATA_DATA       *this;
+        NODELINK_DATA       *this;
         
-        this = szData_Alloc( );
+        this = nodeLink_Alloc( );
         if (this) {
-            this = szData_Init(this);
+            this = nodeLink_Init(this);
         } 
         return this;
     }
 
 
-    SZDATA_DATA *   szData_NewA(
+    NODELINK_DATA * nodeLink_NewWithUTF8AndClass(
         const
-        char            *pName
+        char            *pNameA,
+        int32_t         cls,
+        OBJ_ID          pData
     )
     {
-        SZDATA_DATA       *this;
+        NODELINK_DATA   *this;
+        NAME_DATA       *pName = OBJ_NIL;
         
-        this = szData_Alloc( );
+        this = nodeLink_Alloc( );
         if (this) {
-            this = szData_Init(this);
+            this = nodeLink_Init(this);
             if (this) {
-                this->token = szTbl_StringToToken(OBJ_NIL, pName);
-                if (this->token)
-                    ;
-                else {
-                    obj_Release(this);
-                    this = OBJ_NIL;
+                if (pNameA) {
+                    pName = name_NewUTF8(pNameA);
+                    node_setName((NODE_DATA *)this, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
                 }
+                node_setClass((NODE_DATA *)this, cls);
+                node_setData((NODE_DATA *)this, pData);
             }
         }
-        
         return this;
     }
+
     
-    
-    SZDATA_DATA *   szData_NewFromToken(
-        uint32_t        token
+    NODELINK_DATA * nodeLink_NewWithUTF8ConAndClass(
+        const
+        char            *pNameA,
+        int32_t         cls,
+        OBJ_ID          pData
     )
     {
-        SZDATA_DATA     *this;
-        const
-        char            *pStr;
+        NODELINK_DATA   *this;
+        NAME_DATA       *pName = OBJ_NIL;
         
-        this = szData_Alloc( );
+        this = nodeLink_Alloc( );
         if (this) {
-            this = szData_Init(this);
+            this = nodeLink_Init(this);
             if (this) {
-                pStr = szTbl_TokenToString(OBJ_NIL, token);
-                if (pStr) {
-                    this->token = token;
+                if (pNameA) {
+                    pName = name_NewUTF8Con(pNameA);
+                    node_setName((NODE_DATA *)this, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
                 }
-                else {
-                    obj_Release(this);
-                    this = OBJ_NIL;
-                }
+                node_setClass((NODE_DATA *)this, cls);
+                node_setData((NODE_DATA *)this, pData);
             }
         }
-        
         return this;
     }
-    
     
     
 
@@ -171,82 +174,121 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          C l a s s
+    //                      C h i l d  I n d e x
     //---------------------------------------------------------------
     
-    int32_t         szData_getClass(
-        SZDATA_DATA     *this
+    uint32_t        nodeLink_getChild(
+        NODELINK_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return this->cls;
+        return this->leftIndex;
     }
     
     
-    bool            szData_setClass(
-        SZDATA_DATA     *this,
-        int32_t         value
+    bool            nodeLink_setChild(
+        NODELINK_DATA   *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        this->cls = value;
+        
+        this->leftIndex = value;
+        
         return true;
     }
     
     
     
     //---------------------------------------------------------------
-    //                          D a t a
+    //                      F r o m  I n d e x
     //---------------------------------------------------------------
     
-    OBJ_ID          szData_getData(
-        SZDATA_DATA     *this
+    uint32_t        nodeLink_getFrom(
+        NODELINK_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return this->pData;
+        return this->leftIndex;
     }
     
     
-    bool            szData_setData(
-        SZDATA_DATA     *this,
-        OBJ_ID          pValue
+    bool            nodeLink_setFrom(
+        NODELINK_DATA   *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        obj_Retain(pValue);
-        if (this->pData) {
-            obj_Release(this->pData);
+        this->leftIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeLink_getIndex(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
         }
-        this->pData = pValue;
+#endif
+        
+        return this->index;
+    }
+    
+    
+    bool            nodeLink_setIndex(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        this->index = value;
         
         return true;
     }
@@ -257,15 +299,15 @@ extern "C" {
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    ERESULT         szData_getLastError(
-        SZDATA_DATA     *this
+    ERESULT         nodeLink_getLastError(
+        NODELINK_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -276,14 +318,14 @@ extern "C" {
     }
 
 
-    bool            szData_setLastError(
-        SZDATA_DATA     *this,
+    bool            nodeLink_setLastError(
+        NODELINK_DATA     *this,
         ERESULT         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -297,58 +339,322 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //                          N a m e
+    //                      L e f t  I n d e x
     //---------------------------------------------------------------
     
-    const
-    char *          szData_getName(
-        SZDATA_DATA     *this
+    uint32_t        nodeLink_getLeft(
+        NODELINK_DATA   *this
     )
     {
-        const
-        char            *pStr = NULL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        pStr = szTbl_TokenToString(OBJ_NIL, this->token);
+        return this->leftIndex;
+    }
+    
+    
+    bool            nodeLink_setLeft(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
         
-        return pStr;
+        this->leftIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   M i d d l e  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeLink_getMiddle(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->middleIndex;
+    }
+    
+    
+    bool            nodeLink_setMiddle(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->middleIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   P a r e n t  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeLink_getParent(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->parentIndex;
+    }
+    
+    
+    bool            nodeLink_setParent(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->parentIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        nodeLink_getPriority(
+        NODELINK_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        //return this->priority;
+        return 0;
     }
 
+
+    bool            nodeLink_setPriority(
+        NODELINK_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        //this->priority = value;
+
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      R i g h t  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeLink_getRight(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->rightIndex;
+    }
+    
+    
+    bool            nodeLink_setRight(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    S i b l i n g  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeLink_getSibling(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->rightIndex;
+    }
+    
+    
+    bool            nodeLink_setSibling(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        
+        return true;
+    }
+    
     
     
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  szData_getSuperVtbl(
-        SZDATA_DATA     *this
+    OBJ_IUNKNOWN *  nodeLink_getSuperVtbl(
+        NODELINK_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        szData_setLastError(this, ERESULT_SUCCESS);
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
   
 
+    //---------------------------------------------------------------
+    //                    T o  I n d e x
+    //---------------------------------------------------------------
     
+    uint32_t        nodeLink_getTo(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->rightIndex;
+    }
+    
+    
+    bool            nodeLink_setTo(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        
+        return true;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                          M e t h o d s
@@ -365,60 +671,64 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = szData__Assign(this,pOther);
+        ERESULT eRc = nodeLink__Assign(this,pOther);
      @endcode 
-     @param     this    SZDATA object pointer
-     @param     pOther  a pointer to another SZDATA object
+     @param     this    NODELINK object pointer
+     @param     pOther  a pointer to another NODELINK object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         szData_Assign(
-        SZDATA_DATA     *this,
-        SZDATA_DATA     *pOther
+    ERESULT         nodeLink_Assign(
+        NODELINK_DATA		*this,
+        NODELINK_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !szData_Validate(pOther) ) {
+        if( !nodeLink_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-        if (pOther->pData) {
-            obj_Release(pOther->pData);
-            pOther->pData = OBJ_NIL;
+#ifdef  XYZZY
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
         }
+#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        pOther->token = this->token;
-        pOther->cls = this->cls;
-        if (this->pData) {
-            if (obj_getVtbl(this->pData)->pCopy) {
-                pOther->pData = obj_getVtbl(this->pData)->pCopy(this->pData);
+#ifdef  XYZZY
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
             }
             else {
-                obj_Retain(this->pData);
-                pOther->pData = this->pData;
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
             }
         }
+#endif
 
         // Copy other data from this object to other.
         
         //goto eom;
 
         // Return to caller.
-        szData_setLastError(this, ERESULT_SUCCESS);
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
     eom:
-        return szData_getLastError(this);
+        //FIXME: Implement the assignment.        
+        nodeLink_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return nodeLink_getLastError(this);
     }
     
     
@@ -427,30 +737,39 @@ extern "C" {
     //                      C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         szData_Compare(
-        SZDATA_DATA     *this,
-        SZDATA_DATA     *pOther
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         nodeLink_Compare(
+        NODELINK_DATA     *this,
+        NODELINK_DATA     *pOther
     )
     {
         int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
         const
         char            *pStr1;
         const
         char            *pStr2;
+#endif
         
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !szData_Validate(pOther) ) {
+        if( !nodeLink_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+
+#ifdef  xyzzy        
         if (this->token == pOther->token) {
             this->eRc = eRc;
             return eRc;
@@ -459,45 +778,8 @@ extern "C" {
         pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
         pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
         i = strcmp(pStr1, pStr2);
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        this->eRc = eRc;
-        return eRc;
-    }
-    
-    
-    ERESULT         szData_CompareA(
-        SZDATA_DATA     *this,
-        const
-        char            *pOther
-    )
-    {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        const
-        char            *pStr1;
-
-#ifdef NDEBUG
-#else
-        if( !szData_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( NULL == pOther ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        i = strcmp(pStr1, pOther);
+
         
         if (i < 0) {
             eRc = ERESULT_SUCCESS_LESS_THAN;
@@ -509,7 +791,6 @@ extern "C" {
         this->eRc = eRc;
         return eRc;
     }
-    
     
     
     //---------------------------------------------------------------
@@ -520,32 +801,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        szData      *pCopy = szData_Copy(this);
+        nodeLink      *pCopy = nodeLink_Copy(this);
      @endcode 
-     @param     this    SZDATA object pointer
-     @return    If successful, a SZDATA object which must be released,
+     @param     this    NODELINK object pointer
+     @return    If successful, a NODELINK object which must be released,
                 otherwise OBJ_NIL.
-     @warning  Remember to release the returned the SZDATA object.
+     @warning  Remember to release the returned the NODELINK object.
      */
-    SZDATA_DATA *   szData_Copy(
-        SZDATA_DATA     *this
+    NODELINK_DATA * nodeLink_Copy(
+        NODELINK_DATA   *this
     )
     {
-        SZDATA_DATA     *pOther = OBJ_NIL;
+        NODELINK_DATA   *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = szData_New( );
+        pOther = nodeLink_New( );
         if (pOther) {
-            eRc = szData_Assign(this, pOther);
+            eRc = nodeLink_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -554,7 +835,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        szData_setLastError(this, ERESULT_SUCCESS);
+        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -564,11 +845,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            szData_Dealloc(
+    void            nodeLink_Dealloc(
         OBJ_ID          objId
     )
     {
-        SZDATA_DATA   *this = objId;
+        NODELINK_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -576,19 +857,11 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
-
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((SZDATA_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
-        szData_setData(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -605,15 +878,15 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         szData_Disable(
-        SZDATA_DATA		*this
+    ERESULT         nodeLink_Disable(
+        NODELINK_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -624,7 +897,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        szData_setLastError(this, ERESULT_SUCCESS);
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -634,15 +907,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         szData_Enable(
-        SZDATA_DATA		*this
+    ERESULT         nodeLink_Enable(
+        NODELINK_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -653,46 +926,21 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
 
 
     //---------------------------------------------------------------
-    //                          H a s h
-    //---------------------------------------------------------------
-    
-    uint32_t        szData_Hash(
-        SZDATA_DATA     *this
-    )
-    {
-        uint32_t        hash = 0;
-        
-#ifdef NDEBUG
-#else
-        if( !szData_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        if (this->token) {
-            hash = szTbl_TokenToHash(OBJ_NIL, this->token);
-        }
-        
-        return hash;
-    }
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SZDATA_DATA *   szData_Init(
-        SZDATA_DATA     *this
+    NODELINK_DATA * nodeLink_Init(
+        NODELINK_DATA   *this
     )
     {
-        uint32_t        cbSize = sizeof(SZDATA_DATA);
+        uint32_t        cbSize = sizeof(NODELINK_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -708,33 +956,35 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SZDATA);
+        this = (OBJ_ID)node_Init((NODE_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODELINK);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SZDATA);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODELINK); // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&szData_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeLink_Vtbl);
         
-        szData_setLastError(this, ERESULT_GENERAL_FAILURE);
+        nodeLink_setLastError(this, ERESULT_GENERAL_FAILURE);
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "szData::offsetof(eRc) = %lu\n", offsetof(SZDATA_DATA,eRc));
-        //fprintf(stderr, "szData::sizeof(SZDATA_DATA) = %lu\n", sizeof(SZDATA_DATA));
+        //fprintf(stderr, "nodeLink::offsetof(eRc) = %lu\n", offsetof(NODELINK_DATA,eRc));
+        //fprintf(stderr, "nodeLink::sizeof(NODELINK_DATA) = %lu\n", sizeof(NODELINK_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(SZDATA_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(NODELINK_DATA));
     #endif
 
         return this;
@@ -746,27 +996,27 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         szData_IsEnabled(
-        SZDATA_DATA		*this
+    ERESULT         nodeLink_IsEnabled(
+        NODELINK_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            szData_setLastError(this, ERESULT_SUCCESS_TRUE);
+            nodeLink_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        szData_setLastError(this, ERESULT_SUCCESS_FALSE);
+        nodeLink_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -783,14 +1033,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = szData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = nodeLink_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "szData", prefix,
+                        the object name, "nodeLink", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -798,13 +1048,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          szData_QueryInfo(
+    void *          nodeLink_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SZDATA_DATA     *this = objId;
+        NODELINK_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -813,7 +1063,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -822,7 +1072,7 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)szData_Class();
+                return (void *)nodeLink_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -852,28 +1102,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return szData_Disable;
+                            return nodeLink_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return szData_Enable;
+                            return nodeLink_Enable;
                         }
                         break;
 
-                    case 'P':
-                        if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                            return szData_ParseObject;
-                        }
-                        break;
-                        
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return szData_ToDebugString;
+                            return nodeLink_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return szData_ToJSON;
+                            return nodeLink_ToJSON;
                         }
                         break;
                         
@@ -883,9 +1127,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == szData_ToDebugString)
+                if (pData == nodeLink_ToDebugString)
                     return "ToDebugString";
-                if (pData == szData_ToJSON)
+                if (pData == nodeLink_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -906,54 +1150,67 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = szData_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeLink_ToDebugString(this,4);
      @endcode 
-     @param     this    SZDATA object pointer
+     @param     this    NODELINK object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     szData_ToDebugString(
-        SZDATA_DATA      *this,
+    ASTR_DATA *     nodeLink_ToDebugString(
+        NODELINK_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
+#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
+#endif
         const
         OBJ_INFO        *pInfo;
-        const
-        char            *pStrA = "";
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szData_Validate(this) ) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = szData_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        if (this->token) {
-            pStrA = szTbl_TokenToString(OBJ_NIL, this->token);
-        }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) name=(%d)%s\n",
+                    "{%p(%s)\n",
                     this,
-                    pInfo->pClassName,
-                    this->token,
-                    pStrA
+                    pInfo->pClassName
             );
+
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(
+                         pStr,
+                         "\"index\":\"%s\", "
+                         "\"leftIndex\":\"%s\", "
+                         "\"middleIndex\":\"%d\", "
+                         "\"parentIndex\":\"%d\", "
+                         "\"rightIndex\":%d\n",
+                         this->index,
+                         this->leftIndex,
+                         this->middleIndex,
+                         this->parentIndex,
+                         this->rightIndex
+                         );
         
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -964,6 +1221,7 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
+#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -975,7 +1233,7 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        szData_setLastError(this, ERESULT_SUCCESS);
+        nodeLink_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -987,15 +1245,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            szData_Validate(
-        SZDATA_DATA      *this
+    bool            nodeLink_Validate(
+        NODELINK_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SZDATA) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODELINK) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1011,7 +1269,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SZDATA_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(NODELINK_DATA)) ) {
             this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }

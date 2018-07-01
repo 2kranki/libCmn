@@ -86,8 +86,8 @@ struct nodeScan_data_s	{
     NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
     //                          // up/down members.
     NODETREE_DATA   *pTree;     // Tree associated with linearized tree list
-    NODE_DATA       *pClose;
-    NODE_DATA       *pOpen;
+    NODELINK_DATA   *pClose;
+    NODELINK_DATA   *pOpen;
 
     // ScanF Input
     ASTR_DATA       *pScanInput;

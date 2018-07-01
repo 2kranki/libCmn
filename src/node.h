@@ -101,6 +101,7 @@ extern "C" {
     typedef struct nodeEntry_data_s     NODEENTRY_DATA;
     typedef struct nodeGraph_data_s     NODEGRAPH_DATA;
     typedef struct nodeHash_data_s      NODEHASH_DATA;
+    typedef struct nodeLink_data_s      NODELINK_DATA;
     typedef struct nodeList_data_s      NODELIST_DATA;
     typedef struct nodeMatrix_data_s	NODEMATRIX_DATA;
     typedef struct nodeScan_data_s      NODESCAN_DATA;
@@ -132,10 +133,6 @@ extern "C" {
         bool            (*pSetClass)(NODE_DATA *this,int32_t value);
         OBJ_ID          (*pGetData)(NODE_DATA *this);
         bool            (*pSetData)(NODE_DATA *this,OBJ_ID pValue);
-        uint32_t        (*pGetLeft)(NODE_DATA *this);
-        bool            (*pSetLeft)(NODE_DATA *this, uint32_t value);
-        uint32_t        (*pGetMiddle)(NODE_DATA *this);
-        bool            (*pSetMiddle)(NODE_DATA *this, uint32_t value);
         uint16_t        (*pGetMisc1)(NODE_DATA *this);
         bool            (*pSetMisc1)(NODE_DATA *this,uint16_t value);
         uint16_t        (*pGetMisc2)(NODE_DATA *this);
@@ -143,10 +140,6 @@ extern "C" {
         NAME_DATA *     (*pGetName)(NODE_DATA *this);
         OBJ_ID          (*pGetOther)(NODE_DATA *this);
         bool            (*pSetOther)(NODE_DATA *this,OBJ_ID pValue);
-        uint32_t        (*pGetParent)(NODE_DATA *this);
-        bool            (*pSetParent)(NODE_DATA *this, uint32_t value);
-        uint32_t        (*pGetRight)(NODE_DATA *this);
-        bool            (*pSetRight)(NODE_DATA *this, uint32_t value);
         // Methods:
         OBJ_ID          (*pProperty)(NODE_DATA *this, const char *pName);
         ERESULT         (*pPropertyAdd)(
@@ -246,20 +239,6 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Child index property is used to point to the next child node
-     if needed.  Note that this uses the Left index internally.
-     */
-    uint32_t        node_getChild(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setChild(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
-    /*!
      Class property is used to categorize the node with some kind of
      identification if needed.
      */
@@ -293,52 +272,8 @@ extern "C" {
     );
     
     
-    /*!
-     From index property is used to point to the "From" node
-     if needed.  Note that this uses the Left index internally.
-     */
-    uint32_t        node_getFrom(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setFrom(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
     uint32_t        node_getHash(
         NODE_DATA       *this
-    );
-    
-    
-    uint32_t        node_getIndex(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setIndex(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
-    uint32_t        node_getLeft(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setLeft(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
-    uint32_t        node_getMiddle(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setMiddle(
-        NODE_DATA       *this,
-        uint32_t        value
     );
     
     
@@ -400,56 +335,8 @@ extern "C" {
     );
     
     
-    uint32_t        node_getParent(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setParent(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
     OBJHASH_DATA *  node_getProperties(
         NODE_DATA       *this
-    );
-    
-    
-    uint32_t        node_getRight(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setRight(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
-    /*!
-     Sibling index property is used to point to the next Sibling node
-     if needed.  Note that this uses the Left index internally.
-     */
-    uint32_t        node_getSibling(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setSibling(
-        NODE_DATA       *this,
-        uint32_t        value
-    );
-    
-    
-    /*!
-     To index property is used to point to the "To" node
-     if needed.  Note that this uses the Right index internally.
-     */
-    uint32_t        node_getTo(
-        NODE_DATA       *this
-    );
-    
-    bool            node_setTo(
-        NODE_DATA       *this,
-        uint32_t        value
     );
     
     
@@ -537,22 +424,6 @@ extern "C" {
     NODE_DATA *     node_InitWithName(
         NODE_DATA       *this,
         NAME_DATA       *pName,         // Retained, not copied
-        OBJ_ID          pData
-    );
-    
-    
-    NODE_DATA *     node_InitWithUTF8(
-        NODE_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-
-
-    NODE_DATA *     node_InitWithUTF8Con(
-        NODE_DATA       *this,
-        const
-        char            *pName,
         OBJ_ID          pData
     );
     

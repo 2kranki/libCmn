@@ -66,6 +66,15 @@ OBJ_INFO        szTbl_Info;            // Forward Reference
 
 
 
+static
+void *          szTblClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+
 
 static
 bool            szTbl_ClassIsKindOf(
@@ -100,7 +109,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     szTbl_Class,
-    obj_ClassWhoAmI
+    obj_ClassWhoAmI,
+    szTblClass_QueryInfo
 };
 
 
@@ -184,6 +194,77 @@ OBJ_ID          szTbl_Class(
 {
     return (OBJ_ID)&szTbl_ClassObj;
 }
+
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          szTblClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    SZTBL_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+#ifdef XYZZY
+            // Query for an address to specific data within the object.
+            // This should be used very sparingly since it breaks the
+            // object's encapsulation.
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+                    
+                case 'O':
+                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
+                        return &this->pObjCatalog;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return szTbl_ParseObject;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
 
 
 SZTBL_DATA *     szTbl_Shared(

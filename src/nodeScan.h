@@ -122,7 +122,7 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeScan_getCloseNode(
+    NODELINK_DATA * nodeScan_getCloseNode(
         NODESCAN_DATA   *this
     );
     
@@ -146,7 +146,7 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeScan_getOpenNode(
+    NODELINK_DATA * nodeScan_getOpenNode(
         NODESCAN_DATA   *this
     );
     

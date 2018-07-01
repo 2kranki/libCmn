@@ -43,6 +43,7 @@
 
 
 #include    <szTbl.h>
+#include    <jsonIn.h>
 #include    <szHash_internal.h>
 #include    <ptrArray.h>
 
@@ -133,6 +134,11 @@ struct szTbl_data_s	{
         OBJ_ID          objId
     );
 
+    
+    SZTBL_DATA *    szTbl_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
     
 #ifdef NDEBUG
 #else

@@ -196,8 +196,17 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Add() creates a new node and adds it to the hash table if the
-     * supplied key does not exist in the table.
+    /*!
+     Create a new entry in the hash table if the supplied key does not
+     exist in the table unless duplicates are allowed.  If duplicates
+     are allowed, then the entry is added in such a fashion that it will
+     always be found first.
+     @param     this        Object Pointer
+     @param     pszKey      Pointer to UTF-8 Key which is NUL-terminated
+     @param     pData       Pointer to any area to be connected to the
+                            key
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
      */
     ERESULT         szHash_AddA(
         SZHASH_DATA     *this,

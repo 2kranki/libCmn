@@ -301,7 +301,10 @@
 		C4AA73B41FE2B740001FACEC /* dec_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73A41FE2B740001FACEC /* dec_JSON.c */; };
 		C4BB273620C4387B00FE72AC /* SRecords.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273220C4387700FE72AC /* SRecords.c */; };
 		C4BB273720C4387B00FE72AC /* SRecords_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273420C4387900FE72AC /* SRecords_object.c */; };
-		C4F448F720E7E1D500C5E729 /* test_szData.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448F620E7E1D500C5E729 /* test_szData.c */; };
+		C4F448FC20E846C000C5E729 /* nodeLink_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448F820E846B900C5E729 /* nodeLink_object.c */; };
+		C4F448FD20E846C000C5E729 /* nodeLink.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448FB20E846BF00C5E729 /* nodeLink.c */; };
+		C4F448FF20E8649000C5E729 /* nodeLink_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448FE20E8648E00C5E729 /* nodeLink_JSON.c */; };
+		C4F4490120E95B6800C5E729 /* test_nodeTree.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4490020E95B6700C5E729 /* test_nodeTree.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -886,7 +889,12 @@
 		C4BB273320C4387800FE72AC /* SRecords_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRecords_internal.h; sourceTree = "<group>"; };
 		C4BB273420C4387900FE72AC /* SRecords_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SRecords_object.c; sourceTree = "<group>"; };
 		C4BB273520C4387A00FE72AC /* SRecords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRecords.h; sourceTree = "<group>"; };
-		C4F448F620E7E1D500C5E729 /* test_szData.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_szData.c; sourceTree = "<group>"; };
+		C4F448F820E846B900C5E729 /* nodeLink_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink_object.c; sourceTree = "<group>"; };
+		C4F448F920E846BC00C5E729 /* nodeLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink.h; sourceTree = "<group>"; };
+		C4F448FA20E846BE00C5E729 /* nodeLink_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink_internal.h; sourceTree = "<group>"; };
+		C4F448FB20E846BF00C5E729 /* nodeLink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink.c; sourceTree = "<group>"; };
+		C4F448FE20E8648E00C5E729 /* nodeLink_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink_JSON.c; sourceTree = "<group>"; };
+		C4F4490020E95B6700C5E729 /* test_nodeTree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_nodeTree.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -920,7 +928,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4F448F620E7E1D500C5E729 /* test_szData.c */,
+				C4F4490020E95B6700C5E729 /* test_nodeTree.c */,
 			);
 			name = testCmn;
 			path = ../../tests;
@@ -1206,6 +1214,11 @@
 				C4359AB01FC9C3D400CA858E /* nodeHash_object.c */,
 				C4359ADB1FC9C3D800CA858E /* nodeHash.c */,
 				C4359AC41FC9C3D600CA858E /* nodeHash.h */,
+				C4F448FA20E846BE00C5E729 /* nodeLink_internal.h */,
+				C4F448FE20E8648E00C5E729 /* nodeLink_JSON.c */,
+				C4F448F820E846B900C5E729 /* nodeLink_object.c */,
+				C4F448FB20E846BF00C5E729 /* nodeLink.c */,
+				C4F448F920E846BC00C5E729 /* nodeLink.h */,
 				C4359ACA1FC9C3D600CA858E /* nodeList_internal.h */,
 				C4359A7F1FC9C3CF00CA858E /* nodeList_object.c */,
 				C4359AA21FC9C3D200CA858E /* nodeList.c */,
@@ -1583,7 +1596,6 @@
 				C4359A631FC9C38800CA858E /* fbso_object.c in Sources */,
 				C43599BD1FC9C36800CA858E /* cb16_object.c in Sources */,
 				C4359B0E1FC9C3D800CA858E /* null_object.c in Sources */,
-				C4F448F720E7E1D500C5E729 /* test_szData.c in Sources */,
 				C4359C141FC9C4D900CA858E /* W32Str_object.c in Sources */,
 				C4402623202645D6009B7806 /* visitor.c in Sources */,
 				C4359BE81FC9C48400CA858E /* ternary.c in Sources */,
@@ -1616,6 +1628,7 @@
 				C4359B531FC9C42700CA858E /* prt_object.c in Sources */,
 				C4359BE11FC9C48400CA858E /* ternary_object.c in Sources */,
 				C4359B0F1FC9C3D800CA858E /* obj.c in Sources */,
+				C4F4490120E95B6800C5E729 /* test_nodeTree.c in Sources */,
 				C4359BCB1FC9C48400CA858E /* W32StrC.c in Sources */,
 				C4359BD41FC9C48400CA858E /* utf8.c in Sources */,
 				C440261C2024B8C0009B7806 /* symAttr.c in Sources */,
@@ -1805,6 +1818,7 @@
 				C4AA73771FE1D9FD001FACEC /* lex.c in Sources */,
 				C43599C91FC9C36800CA858E /* bptree_object.c in Sources */,
 				C43599CB1FC9C36800CA858E /* array_object.c in Sources */,
+				C4F448FF20E8649000C5E729 /* nodeLink_JSON.c in Sources */,
 				C43599C21FC9C36800CA858E /* cb16.c in Sources */,
 				C4AA73701FE0F671001FACEC /* token.c in Sources */,
 				C4359A5A1FC9C38800CA858E /* fileio.c in Sources */,
@@ -1844,6 +1858,7 @@
 				C43599A81FC9C36800CA858E /* blocks_object.c in Sources */,
 				C4359AF21FC9C3D800CA858E /* nodeMatrix.c in Sources */,
 				C4359B4B1FC9C42700CA858E /* prt.c in Sources */,
+				C4F448FC20E846C000C5E729 /* nodeLink_object.c in Sources */,
 				C4359AFD1FC9C3D800CA858E /* objMatrix.c in Sources */,
 				C43599B91FC9C36800CA858E /* block32_object.c in Sources */,
 				C43599B81FC9C36800CA858E /* blkdrcds16.c in Sources */,
@@ -1853,6 +1868,7 @@
 				C440261B2024B8C0009B7806 /* symAttr_object.c in Sources */,
 				C4359BF91FC9C48400CA858E /* srcLoc.c in Sources */,
 				C4359B591FC9C42700CA858E /* psxLock_object.c in Sources */,
+				C4F448FD20E846C000C5E729 /* nodeLink.c in Sources */,
 				C4359AFF1FC9C3D800CA858E /* nodeHash_object.c in Sources */,
 				C4359BE51FC9C48400CA858E /* value_object.c in Sources */,
 				C4359A431FC9C38800CA858E /* dir_object.c in Sources */,

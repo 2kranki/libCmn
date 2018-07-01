@@ -302,6 +302,8 @@ extern "C" {
         OBJ_IDENT_NODEGRAPH_CLASS,
         OBJ_IDENT_NODEHASH,             // A Hash Table of Nodes
         OBJ_IDENT_NODEHASH_CLASS,
+        OBJ_IDENT_NODELINK,             // A Node w/Links
+        OBJ_IDENT_NODELINK_CLASS,
         OBJ_IDENT_NODELIST,             // A List of Nodes
         OBJ_IDENT_NODELIST_CLASS,
         OBJ_IDENT_NODEMATRIX,

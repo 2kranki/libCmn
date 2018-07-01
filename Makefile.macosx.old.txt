@@ -853,6 +853,18 @@ $(OBJDIR)/nodeHash_object.o: $(SRCDIR)/nodeHash_object.c
 
 
 
+OBJS += $(OBJDIR)/nodeLink.o $(OBJDIR)/nodeLink_object.o
+
+
+$(OBJDIR)/nodeLink.o: $(SRCDIR)/nodeLink.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/nodeLink_object.o: $(SRCDIR)/nodeLink_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/nodeList.o $(OBJDIR)/nodeList_object.o
 
 
@@ -1645,6 +1657,12 @@ $(OBJDIR)/nodeHash_JSON.o: $(SRCDIR)/nodeHash_JSON.c
 
 
 OBJS += $(OBJDIR)/nodeHash_JSON.o
+$(OBJDIR)/nodeLink_JSON.o: $(SRCDIR)/nodeLink_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/nodeLink_JSON.o
 $(OBJDIR)/null_JSON.o: $(SRCDIR)/null_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
 

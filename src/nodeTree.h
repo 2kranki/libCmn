@@ -30,6 +30,8 @@
  *              pg 337.  Also, changed node's child and sibling indices
  *              to left and right indices respectively which mirrors
  *              Knuth's definition.
+ *  07/01/2018  Changed base node to nodeLink for all the nodes of the
+ *              tree.
  *
  * References
  *  --      Donald Knuth, "The Art of Computer Programming - Fundamental
@@ -74,6 +76,7 @@
 
 #include        <cmn_defs.h>
 #include        <node.h>
+#include        <nodeLink.h>
 #include        <szTbl.h>
 
 
@@ -127,7 +130,7 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODE_DATA *     nodeTree_getCloseNode(
+    NODELINK_DATA * nodeTree_getCloseNode(
         NODETREE_DATA   *this
     );
     
@@ -137,7 +140,7 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeTree_getOpenNode(
+    NODELINK_DATA * nodeTree_getOpenNode(
         NODETREE_DATA   *this
     );
     
@@ -170,7 +173,7 @@ extern "C" {
      @param     index   child index (0 <= index < order)
      @return    If successful, an Node object, otherwise OBJ_NIL.
      */
-    NODE_DATA *     nodeTree_Child(
+    NODELINK_DATA * nodeTree_Child(
         NODETREE_DATA  *this,
         uint32_t       parent,      // Relative to 1
         uint32_t       index,       // Relative to zero
@@ -193,7 +196,7 @@ extern "C" {
     uint32_t    nodeTree_ChildAdd(
         NODETREE_DATA   *this,
         uint32_t        parent,         // Relative to 1
-        NODE_DATA       *pNode
+        NODELINK_DATA   *pNode
     );
     
     
@@ -259,7 +262,7 @@ extern "C" {
     );
 
 
-    NODE_DATA *  nodeTree_Node(
+    NODELINK_DATA * nodeTree_Node(
         NODETREE_DATA   *this,
         uint32_t        index       // Relative to 1
     );
@@ -308,7 +311,7 @@ extern "C" {
      */
     uint32_t    nodeTree_NodeNew(
         NODETREE_DATA   *this,
-        NODE_DATA       *pNode
+        NODELINK_DATA   *pNode
     );
     
     
@@ -394,7 +397,7 @@ extern "C" {
     uint32_t    nodeTree_SiblingAdd(
         NODETREE_DATA   *this,
         uint32_t        sibling,            // Relative to 1
-        NODE_DATA       *pNode
+        NODELINK_DATA   *pNode
     );
     
     
@@ -427,7 +430,7 @@ extern "C" {
      @param     sibling current sibling node index (relative to 1)
      @return    If successful, an Node object, otherwise OBJ_NIL.
      */
-    NODE_DATA *  nodeTree_SiblingNext(
+    NODELINK_DATA * nodeTree_SiblingNext(
         NODETREE_DATA   *this,
         uint32_t        sibling         // Relative to 1
     );
@@ -516,7 +519,7 @@ extern "C" {
         void            (pVisitor)(
             OBJ_ID          ,               // Object supplied below
             NODETREE_DATA   *,              // Our Tree
-            NODE_DATA       *,              // Current Node
+            NODELINK_DATA   *,              // Current Node
             uint16_t                        // Indent level * 4
         ),
         OBJ_ID          pObject
@@ -530,7 +533,7 @@ extern "C" {
         void            (pVisitor)(
                                    OBJ_ID,              // Object supplied below
                                    NODETREE_DATA *,     // Our Tree
-                                   NODE_DATA *,         // Current Node
+                                   NODELINK_DATA *,     // Current Node
                                    uint16_t             // Indent level * 4
                                    ),
         OBJ_ID          pObject
@@ -550,7 +553,7 @@ extern "C" {
         void            (pVisitor)(
                                    OBJ_ID,              // Object supplied below
                                    NODETREE_DATA *,     // Our Tree
-                                   NODE_DATA *,         // Current Node
+                                   NODELINK_DATA *,     // Current Node
                                    uint16_t             // Indent level * 4
                                    ),
         OBJ_ID          pObject
@@ -571,7 +574,7 @@ extern "C" {
         void            (pVisitor)(
                                    OBJ_ID,             // Object supplied below
                                    NODETREE_DATA *,    // Our Tree
-                                   NODE_DATA *,        // Current Node
+                                   NODELINK_DATA *,    // Current Node
                                    uint16_t            // Indent level * 4
                                   ),
         OBJ_ID          pObject
