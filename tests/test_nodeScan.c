@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <node.h>
+#include    <nodeLink.h>
 #include    <nodeScan_internal.h>
 #include    <nodeTree.h>
 
@@ -48,14 +48,14 @@ static
 NODETREE_DATA * createTestTree01(
 )
 {
-    NODETREE_DATA    *pTree = OBJ_NIL;
-    NODE_DATA       *pNodeA = OBJ_NIL;
-    NODE_DATA       *pNodeB = OBJ_NIL;
-    NODE_DATA       *pNodeC = OBJ_NIL;
-    NODE_DATA       *pNodeD = OBJ_NIL;
-    NODE_DATA       *pNodeE = OBJ_NIL;
-    NODE_DATA       *pNodeF = OBJ_NIL;
-    NODE_DATA       *pNodeG = OBJ_NIL;
+    NODETREE_DATA   *pTree = OBJ_NIL;
+    NODELINK_DATA   *pNodeA = OBJ_NIL;
+    NODELINK_DATA   *pNodeB = OBJ_NIL;
+    NODELINK_DATA   *pNodeC = OBJ_NIL;
+    NODELINK_DATA   *pNodeD = OBJ_NIL;
+    NODELINK_DATA   *pNodeE = OBJ_NIL;
+    NODELINK_DATA   *pNodeF = OBJ_NIL;
+    NODELINK_DATA   *pNodeG = OBJ_NIL;
     uint32_t        i;
     ERESULT         eRc;
     
@@ -68,61 +68,54 @@ NODETREE_DATA * createTestTree01(
         return pTree;
     }
     
-    pNodeA = node_NewWithUTF8Con("+", OBJ_NIL);
+    pNodeA = nodeLink_NewWithUTF8ConAndClass("+", NODE_CLASS_ADD, OBJ_NIL);
     if  (OBJ_NIL == pNodeA) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_ADD);
     
-    pNodeB = node_NewWithUTF8Con("*", OBJ_NIL);
+    pNodeB = nodeLink_NewWithUTF8ConAndClass("*", NODE_CLASS_MULTIPLY, OBJ_NIL);
     if  (OBJ_NIL == pNodeB) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_MULTIPLY);
 
-    pNodeC = node_NewWithUTF8Con("a", OBJ_NIL);
+    pNodeC = nodeLink_NewWithUTF8ConAndClass("a", NODE_CLASS_VARIABLE, OBJ_NIL);
     if  (OBJ_NIL == pNodeC) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_VARIABLE);
 
-    pNodeD = node_NewWithUTF8Con("b", OBJ_NIL);
+    pNodeD = nodeLink_NewWithUTF8ConAndClass("b", NODE_CLASS_VARIABLE, OBJ_NIL);
     if  (OBJ_NIL == pNodeD) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_VARIABLE);
 
-    pNodeE = node_NewWithUTF8Con("*", OBJ_NIL);
+    pNodeE = nodeLink_NewWithUTF8ConAndClass("*", NODE_CLASS_MULTIPLY, OBJ_NIL);
     if  (OBJ_NIL == pNodeE) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_MULTIPLY);
 
-    pNodeF = node_NewWithUTF8Con("c", OBJ_NIL);
+    pNodeF = nodeLink_NewWithUTF8ConAndClass("c", NODE_CLASS_VARIABLE, OBJ_NIL);
     if  (OBJ_NIL == pNodeF) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_VARIABLE);
 
-    pNodeG = node_NewWithUTF8Con("d", OBJ_NIL);
+    pNodeG = nodeLink_NewWithUTF8ConAndClass("d", NODE_CLASS_VARIABLE, OBJ_NIL);
     if  (OBJ_NIL == pNodeG) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    node_setClass(pNodeA, NODE_CLASS_VARIABLE);
 
     fprintf(stderr, "\n\nCreate the tree:\n");
     fprintf(stderr, "Tree    Index  Sibling  Child  Parent\n");
@@ -143,19 +136,19 @@ NODETREE_DATA * createTestTree01(
         pTree = OBJ_NIL;
         return pTree;
     }
-    eRc = nodeTree_ChildrenAdd(pTree, node_getIndex(pNodeA), pNodeB, pNodeE, OBJ_NIL);
+    eRc = nodeTree_ChildrenAdd(pTree, nodeLink_getIndex(pNodeA), pNodeB, pNodeE, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    eRc = nodeTree_ChildrenAdd(pTree, node_getIndex(pNodeB), pNodeC, pNodeD, OBJ_NIL);
+    eRc = nodeTree_ChildrenAdd(pTree, nodeLink_getIndex(pNodeB), pNodeC, pNodeD, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    eRc = nodeTree_ChildrenAdd(pTree,node_getIndex(pNodeE), pNodeF, pNodeG, OBJ_NIL);
+    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeE), pNodeF, pNodeG, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;

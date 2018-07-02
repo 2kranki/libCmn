@@ -162,7 +162,7 @@ int         test_nodeHash_AddFindDelete01(
     if (pHash) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8(strings[i], OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeHash_getSize(pHash);
@@ -212,7 +212,7 @@ int         test_nodeHash_JSON01(
     if (pHash) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8(strings[i], OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeHash_getSize(pHash);

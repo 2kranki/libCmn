@@ -161,7 +161,7 @@ int         test_nodeList_AddFindDelete01(
     if (pList) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8(strings[i], OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
             eRc = nodeList_Add2Head(pList, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeList_getSize(pList);

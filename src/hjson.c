@@ -551,7 +551,7 @@ extern "C" {
         TRC_OBJ(this, "\tname: %s\n", pszName);
 #ifdef NDEBUG
 #else
-        {
+        if (obj_Trace(this)) {
             ASTR_DATA       *pStrA;
             pStrA = node_ToDebugString(pData, 8);
             TRC_OBJ(this, "\tdata:\n");

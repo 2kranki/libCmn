@@ -375,7 +375,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !name_Validate( this ) ) {
+        if( !name_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif

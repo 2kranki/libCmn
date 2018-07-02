@@ -977,10 +977,20 @@ int         test_AStr_JSON01(
     if (pObj) {
         
         pJsonStr = AStr_ToJSON(pObj);
-        fprintf(stderr, "\tJSON(\"abc\") = (%p) %s\n", pJsonStr, AStr_getData(pJsonStr));
+        fprintf(
+                stderr,
+                "\tJSON(\"abc\") = (%p) \"%s\"\n",
+                pJsonStr,
+                AStr_getData(pJsonStr)
+        );
         pJsonStrOut = AStr_NewFromJSONString(pJsonStr);
         XCTAssertFalse( (OBJ_NIL == pJsonStrOut) );
-        fprintf(stderr, "\tJSON_OUT(\"abc\") = (%p) %s\n", pJsonStrOut, AStr_getData(pJsonStrOut));
+        fprintf(
+                stderr,
+                "\tJSON_OUT(\"abc\") = (%p) \"%s\"\n",
+                pJsonStrOut,
+                AStr_getData(pJsonStrOut)
+        );
         XCTAssertTrue( (3 == AStr_getLength(pJsonStrOut)) );
         XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pJsonStrOut))) );
         XCTAssertTrue( (1 == obj_getRetainCount(pJsonStrOut)) );

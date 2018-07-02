@@ -212,7 +212,7 @@ extern "C" {
         NODE_DATA       *this;
         NAME_DATA       *pName = OBJ_NIL;
         
-        if (OBJ_NIL == pName) {
+        if (OBJ_NIL == pNameA) {
             return OBJ_NIL;
         }
         
@@ -220,7 +220,7 @@ extern "C" {
         if (this) {
             this = node_Init(this);
             if (this) {
-                if (pName) {
+                if (pNameA) {
                     pName = name_NewUTF8(pNameA);
                     node_setName(this, pName);
                     obj_Release(pName);
@@ -246,7 +246,7 @@ extern "C" {
         NODE_DATA       *this;
         NAME_DATA       *pName = OBJ_NIL;
 
-        if (OBJ_NIL == pName) {
+        if (OBJ_NIL == pNameA) {
             return OBJ_NIL;
         }
         
@@ -254,7 +254,7 @@ extern "C" {
         if (this) {
             this = node_Init(this);
             if (this) {
-                if (pName) {
+                if (pNameA) {
                     pName = name_NewUTF8Con(pNameA);
                     node_setName(this, pName);
                     obj_Release(pName);

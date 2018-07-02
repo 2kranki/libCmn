@@ -84,9 +84,7 @@ int         test_node_Utf8(
     NODE_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = node_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = node_InitWithUTF8(pObj, "abc", NULL);
+    pObj = node_NewWithUTF8AndClass("abc", 0, NULL);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -111,9 +109,7 @@ int         test_node_Utf8Con(
     NODE_DATA	    *pObj = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = node_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = node_InitWithUTF8Con( pObj, "abc", OBJ_NIL );
+    pObj = node_NewWithUTF8ConAndClass("abc", 0, OBJ_NIL);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -143,9 +139,7 @@ int         test_node_Property01(
     uint32_t        i;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = node_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = node_InitWithUTF8Con( pObj, "abc", OBJ_NIL );
+    pObj = node_NewWithUTF8ConAndClass("abc", 0, OBJ_NIL);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

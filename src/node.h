@@ -202,24 +202,10 @@ extern "C" {
     );
     
     
-    NODE_DATA *     node_NewWithUTF8(
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    
     NODE_DATA *     node_NewWithUTF8AndClass(
         const
         char            *pName,
         int32_t         cls,
-        OBJ_ID          pData
-    );
-    
-    
-    NODE_DATA *     node_NewWithUTF8Con(
-        const
-        char            *pName,
         OBJ_ID          pData
     );
     
