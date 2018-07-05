@@ -58,13 +58,12 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct  nodeHash_node_s {
         LISTDL_NODE     list;
-        uint32_t        hash;
         NODE_DATA       *pNode;
     } NODEHASH_NODE;
 #pragma pack(pop)
     
     
-    // Block Descriptor (2K)
+    // Block Descriptor
 #pragma pack(push, 1)
     typedef struct  nodeHash_block_s {
         LISTDL_NODE     list;
@@ -79,6 +78,7 @@ struct nodeHash_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
+#define NODEHASH_FLAG_DUPS  OBJ_FLAG_USER5  /* true == allow duplicates */
 
     // Common Data
     ERESULT         eRc;

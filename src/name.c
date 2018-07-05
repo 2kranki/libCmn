@@ -236,7 +236,7 @@ extern "C" {
 #endif
         
         name_setLastError(this, eRc);
-        return this->hash;
+        return name_Hash(this);
     }
     
     
@@ -348,11 +348,22 @@ extern "C" {
             DEBUG_BREAK();
             return false;
         }
+        if (pValue) {
+            if (obj_IsKindOf(this, OBJ_IDENT_ASTR))
+                ;
+            else {
+                DEBUG_BREAK();
+                return false;
+            }
+        }
 #endif
+        
         obj_Retain(pValue);
         name_ReleaseDataIfObj(this);
-        this->type = NAME_TYPE_ASTR;
-        this->pObj = pValue;
+        if (pValue) {
+            this->type = NAME_TYPE_ASTR;
+            this->pObj = pValue;
+        }
         
         return true;
     }
@@ -797,7 +808,7 @@ extern "C" {
         if (!obj_IsFlag(this, NAME_FLAG_HASH)) {
             pStr = name_getUTF8(this);
             if (pStr) {
-                this->hash = str_HashAcmA( pStr, NULL );
+                this->hash = str_HashAcmA(pStr, NULL);
                 mem_Free(pStr);
                 pStr = NULL;
                 obj_FlagOn(this, NAME_FLAG_HASH);

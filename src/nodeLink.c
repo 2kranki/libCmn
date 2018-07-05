@@ -215,6 +215,72 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          C l a s s
+    //---------------------------------------------------------------
+    
+    int32_t         nodeLink_getClass(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return node_getClass((NODE_DATA *)this);
+    }
+    
+
+    
+    //---------------------------------------------------------------
+    //                          D a t a
+    //---------------------------------------------------------------
+    
+    OBJ_ID          nodeLink_getData(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return node_getData((NODE_DATA *)this);
+    }
+
+    
+    
+    //---------------------------------------------------------------
+    //                          E x t r a
+    //---------------------------------------------------------------
+    
+    OBJ_ID          nodeLink_getExtra(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return node_getExtra((NODE_DATA *)this);
+    }
+
+    
+    
+    //---------------------------------------------------------------
     //                      F r o m  I n d e x
     //---------------------------------------------------------------
     
@@ -418,6 +484,49 @@ extern "C" {
         return true;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
+    
+    NAME_DATA *     nodeLink_getName(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return node_getName((NODE_DATA *)this);
+    }
+
+    
+    
+    //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+    
+    OBJ_ID          nodeLink_getOther(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return node_getOther((NODE_DATA *)this);
+    }
     
     
     //---------------------------------------------------------------

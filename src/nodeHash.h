@@ -164,7 +164,16 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Add() adds the node if it is not already in the hash.
+    /*!
+     Add the given node to the Hash. If duplicates are not allowed, then
+     the node's name must not exist in the Hash.  Otherwise, the node will
+     be added to the head of the Hash list effectively blocking access to
+     other nodes with the same name.  The A versions creates a node from
+     the data given before trying to add it to the Hash.
+     @param     this    Object Pointer
+     @param     pNode   Data Object Pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code is returned.
      */
     ERESULT         nodeHash_Add(
         NODEHASH_DATA   *this,
@@ -172,6 +181,29 @@ extern "C" {
     );
 
     ERESULT         nodeHash_AddA(
+        NODEHASH_DATA   *this,
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    );
+    
+
+    /*!
+     Add the given node to the Hash if it is not in the Hash. If it already
+     exists, then replace it with the new node.  The A version creates a
+     node from the data given before trying to add it to the Hash.
+     @param     this    Object Pointer
+     @param     pNode   Data Object Pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code is returned.
+     */
+    ERESULT         nodeHash_AddUpdate(
+        NODEHASH_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
+    ERESULT         nodeHash_AddUpdateA(
         NODEHASH_DATA    *this,
         const
         char            *pName,
@@ -179,12 +211,12 @@ extern "C" {
         OBJ_ID          pData
     );
     
-    
 
     /*!
      Copy the hash. Any element of the Hash that has a copy method
      will have that used to create a new object. Otherwise, the object
      is just retained and added to the new hash.
+     @param     this    Object Pointer
      @return    If successful, return a new hash table that must be released
                 otherwise return OBJ_NIL.
      */
@@ -198,26 +230,39 @@ extern "C" {
     );
     
     
+    ERESULT         nodeHash_Delete(
+        NODEHASH_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
     ERESULT         nodeHash_DeleteA(
         NODEHASH_DATA	*this,
         const
         char            *pName
     );
 
+    ERESULT         nodeHash_DeleteName(
+        NODEHASH_DATA   *this,
+        NAME_DATA       *pName
+    );
+    
 
+    NODE_DATA *     nodeHash_Find(
+        NODEHASH_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
     NODE_DATA *     nodeHash_FindA(
         NODEHASH_DATA	*this,
         const
         char            *pName
     );
     
-    
-    NODE_DATA *     nodeHash_FindW32(
-        NODEHASH_DATA	*this,
-        const
-        W32CHR_T        *pName
+    NODE_DATA *     nodeHash_FindName(
+        NODEHASH_DATA   *this,
+        NAME_DATA       *pName
     );
-    
+
     
     ERESULT         nodeHash_ForEach(
         NODEHASH_DATA	*this,
@@ -238,7 +283,7 @@ extern "C" {
      information about this object. This method can translate
      methods to strings and vice versa, return the address of the
      object information structure.
-     @param     this    NodeHash object pointer
+     @param     this    Object Pointer
      @return    NodeArray object pointer which must be released if
                 successful.  Otherwise, OBJ_NIL and object's error
                 code is set to the specific error.

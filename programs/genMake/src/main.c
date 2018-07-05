@@ -243,7 +243,10 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        const
+        char            *pKey;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -255,29 +258,39 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MACOS;
-        main_DictAddUpdate(this, "osType", "macos");
-        
+        pKey = osTypeID;
+        pStr = AStr_NewA("macos");
+        if (pStr) {
+            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
         // Set up libPath defaults
-        eRc = main_DictAddUpdate(this, "libIncludePath", "..");
+        //FIXME: eRc = main_DictAddUpdate(this, "libIncludePath", "..");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
         // Set up libPrefix default;
-        eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
+        //FIXME: eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        eRc = main_DictAddUpdate(this, "outBase", "/usr/local/lib");
+        //FIXME: eRc = main_DictAddUpdate(this, "outBase", "/usr/local/lib");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        eRc = main_DictAddUpdate(this, "tmpBase", "/TMP");
+        //FIXME: eRc = main_DictAddUpdate(this, "tmpBase", "/TMP");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
             exit(EXIT_FAILURE);
@@ -292,7 +305,7 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -304,31 +317,31 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MSC32;
-        main_DictAddUpdate(this, "osType", "msc32");
+        //FIXME: main_DictAddUpdate(this, "osType", "msc32");
         
         //FIXME: Update this!
 
         // Set up libPath defaults
-        eRc = main_DictAddUpdate(this, "libIncludePath", "..");
+        //FIXME: eRc = main_DictAddUpdate(this, "libIncludePath", "..");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
         // Set up libPrefix default;
-        eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
+        //FIXME: eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
+        //FIXME: eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
+        //FIXME: eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
             exit(EXIT_FAILURE);
@@ -343,7 +356,7 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -355,16 +368,15 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MSC64;
-        main_DictAddUpdate(this, "osType", "msc64");
+        //FIXME: main_DictAddUpdate(this, "osType", "msc64");
         
-        //FIXME: Update this!
-        eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
+        //FIXME: eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
+        //FIXME: eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
             exit(EXIT_FAILURE);
@@ -1433,6 +1445,9 @@ extern "C" {
     )
     {
         ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        const
+        char            *pKey;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1445,16 +1460,90 @@ extern "C" {
         
         eRc = main_DefaultsMacos(this);
 
-        eRc = main_DictAddUpdate(this, "makeType", "d");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'TYPE' to Dictionary\n");
-            exit(EXIT_FAILURE);
+        pKey = makeTypeID;
+        pStr = AStr_NewA("d");
+        if (pStr) {
+            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
         
-        eRc = main_DictAddUpdate(this, "resultType", "lib");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'TYPE' to Dictionary\n");
-            exit(EXIT_FAILURE);
+        pKey = resultTypeID;
+        pStr = AStr_NewA("lib");
+        if (pStr) {
+            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pKey
+                );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pKey = outBaseID;
+#if defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("/usr/local/bin");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("C:/PROGRAMS");
+#endif
+        if (pStr) {
+            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pKey
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pKey = srcBaseID;
+        pStr = AStr_NewA("./src");
+        if (pStr) {
+            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pKey
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pKey = tmpBaseID;
+#if defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("${TMPDIR}");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("${TMPDIR}");
+#endif
+        if (pStr) {
+            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pKey
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
         
        this->pOutput = textOut_NewAStr( );
@@ -1792,7 +1881,7 @@ extern "C" {
             fprintf(stderr, "Processing - %s...\n", AStr_getData(pStr));
         }
         if (appl_getDebug((APPL_DATA *)this)) {
-            eRc = main_DictAddUpdate(this, "makeType", "d");
+            //FIXME: eRc = main_DictAddUpdate(this, "makeType", "d");
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(stderr, "FATAL - Failed to add 'makeType' to Dictionary\n");
                 exit(EXIT_FAILURE);
@@ -1830,14 +1919,14 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        eRc = main_DictAddUpdate(this, "srcDir", path_getData(pArgDir));
+        //FIXME: eRc = main_DictAddUpdate(this, "srcDir", path_getData(pArgDir));
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'srcDir' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         obj_Release(pArgDir);
         pArgDir = OBJ_NIL;
-        eRc = main_DictAddUpdate(this, "srcFile", path_getData(pPath));
+        //FIXME: eRc = main_DictAddUpdate(this, "srcFile", path_getData(pPath));
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
             exit(EXIT_FAILURE);

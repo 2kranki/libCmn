@@ -19,26 +19,21 @@
 
 
 /*
-                            Dictionary Values
+                            Global Dictionary Keys
  
  * Mostly set in main::main_ParseArgsDefault, main::main_ParseArgsLong
  * and main::main_ParseArgsShort.
- 
- makeType:      "d" for debug, "r" for release
- osType:        "macosx", "win32", "win64"
- outBase:       Base Directory for output
- resultType:    "pgm" or "lib"
- srcDir:        Source File Base Drive/Directory
- srcFile:       Source File Full Path
- tmpBase:       Temporary Base Directory
- 
- 
- 
- 
- 
- 
  */
+ 
+#define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
+#define osTypeID        "osType"        /* "macosx", "win32" or "win64" */
+#define outBaseID       "outBase"       /* Base Directory for output */
+#define resultTypeID    "resultType"    /* "pgm" or "lib" */
+#define srcBaseID       "srcDir"        /* Source File Base Drive and Directory */
+#define tmpBaseID       "tmpBase"       /* Temporary File Base */
+//#define srcPathID       "srcPath"       /* Source File Full Path */ ???
 
+ 
 
 
 

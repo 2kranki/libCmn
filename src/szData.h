@@ -114,6 +114,13 @@ extern "C" {
     );
     
     
+    SZDATA_DATA *   szData_NewA_AStr(
+        const
+        char            *pName,
+        ASTR_DATA       *pStr
+    );
+    
+    
     SZDATA_DATA *   szData_NewFromJSONString(
         ASTR_DATA       *pString
     );

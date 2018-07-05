@@ -1823,7 +1823,7 @@ ASTR_DATA *     genBase_CompileRules(
 ERESULT         genBase_GenMakefile(
     GENBASE_DATA        *this,
     NODE_DATA           *pNodes,
-    SZHASH_DATA         *pDict,
+    NODEHASH_DATA       *pDict,
     DATETIME_DATA       *pDateTime,
     TEXTOUT_DATA        *pOutput
 )
@@ -2132,7 +2132,7 @@ ERESULT         genBase_GenMakefile(
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibIncludePath) && this->pDict) {
-            pLibIncludePath = szHash_FindA(this->pDict, "LibIncludePath");
+            //FIXME: pLibIncludePath = szHash_FindA(this->pDict, "LibIncludePath");
         }
         TRC_OBJ(this, "\tLibIncludePath=\"%s\"", (pLibIncludePath ? pLibIncludePath : ""));
 

@@ -306,8 +306,14 @@
 		C455775920CC0378002F9BFE /* genWIN_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C455774D20CC0377002F9BFE /* genWIN_object.c */; };
 		C455775A20CC0378002F9BFE /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C455774F20CC0377002F9BFE /* main.c */; };
 		C455775B20CC0378002F9BFE /* genWIN.c in Sources */ = {isa = PBXBuildFile; fileRef = C455775120CC0378002F9BFE /* genWIN.c */; };
-		C455775F20CC72D8002F9BFE /* test_main.c in Sources */ = {isa = PBXBuildFile; fileRef = C455775E20CC72D8002F9BFE /* test_main.c */; };
 		C455776120CC9F11002F9BFE /* test_data.c in Sources */ = {isa = PBXBuildFile; fileRef = C455776020CC9F11002F9BFE /* test_data.c */; };
+		C4F4491820EA685800C5E729 /* nodeHash_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4490E20EA685200C5E729 /* nodeHash_JSON.c */; };
+		C4F4491920EA685800C5E729 /* psxExec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491020EA685400C5E729 /* psxExec_object.c */; };
+		C4F4491A20EA685800C5E729 /* psxExec.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491220EA685500C5E729 /* psxExec.c */; };
+		C4F4491B20EA685800C5E729 /* nodeLink.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491320EA685600C5E729 /* nodeLink.c */; };
+		C4F4491C20EA685800C5E729 /* nodeLink_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491420EA685600C5E729 /* nodeLink_object.c */; };
+		C4F4491D20EA685800C5E729 /* nodeLink_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491520EA685700C5E729 /* nodeLink_JSON.c */; };
+		C4F4492320EB053500C5E729 /* test_main.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4492220EB053500C5E729 /* test_main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -904,8 +910,18 @@
 		C455775120CC0378002F9BFE /* genWIN.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = genWIN.c; sourceTree = "<group>"; };
 		C455775220CC0378002F9BFE /* genOSX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genOSX.h; sourceTree = "<group>"; };
 		C455775320CC0378002F9BFE /* genMake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genMake.h; sourceTree = "<group>"; };
-		C455775E20CC72D8002F9BFE /* test_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_main.c; sourceTree = "<group>"; };
 		C455776020CC9F11002F9BFE /* test_data.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_data.c; sourceTree = "<group>"; };
+		C4F4490E20EA685200C5E729 /* nodeHash_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeHash_JSON.c; sourceTree = "<group>"; };
+		C4F4490F20EA685300C5E729 /* nodeLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink.h; sourceTree = "<group>"; };
+		C4F4491020EA685400C5E729 /* psxExec_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_object.c; sourceTree = "<group>"; };
+		C4F4491120EA685500C5E729 /* nodeLink_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink_internal.h; sourceTree = "<group>"; };
+		C4F4491220EA685500C5E729 /* psxExec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec.c; sourceTree = "<group>"; };
+		C4F4491320EA685600C5E729 /* nodeLink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink.c; sourceTree = "<group>"; };
+		C4F4491420EA685600C5E729 /* nodeLink_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink_object.c; sourceTree = "<group>"; };
+		C4F4491520EA685700C5E729 /* nodeLink_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink_JSON.c; sourceTree = "<group>"; };
+		C4F4491620EA685700C5E729 /* psxExec_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec_internal.h; sourceTree = "<group>"; };
+		C4F4491720EA685800C5E729 /* psxExec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec.h; sourceTree = "<group>"; };
+		C4F4492220EB053500C5E729 /* test_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -940,8 +956,8 @@
 		C45573DF20CC0140002F9BFE /* genMake_Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C4F4492220EB053500C5E729 /* test_main.c */,
 				C455776020CC9F11002F9BFE /* test_data.c */,
-				C455775E20CC72D8002F9BFE /* test_main.c */,
 			);
 			name = genMake_Tests;
 			path = ../../tests;
@@ -1223,9 +1239,15 @@
 				C455755120CC01F6002F9BFE /* nodeGraph.c */,
 				C455758C20CC01FD002F9BFE /* nodeGraph.h */,
 				C455753E20CC01F4002F9BFE /* nodeHash_internal.h */,
+				C4F4490E20EA685200C5E729 /* nodeHash_JSON.c */,
 				C455756B20CC01F9002F9BFE /* nodeHash_object.c */,
 				C455754620CC01F5002F9BFE /* nodeHash.c */,
 				C455759E20CC01FF002F9BFE /* nodeHash.h */,
+				C4F4491120EA685500C5E729 /* nodeLink_internal.h */,
+				C4F4491520EA685700C5E729 /* nodeLink_JSON.c */,
+				C4F4491420EA685600C5E729 /* nodeLink_object.c */,
+				C4F4491320EA685600C5E729 /* nodeLink.c */,
+				C4F4490F20EA685300C5E729 /* nodeLink.h */,
 				C455754420CC01F4002F9BFE /* nodeList_internal.h */,
 				C455756F20CC01FA002F9BFE /* nodeList_object.c */,
 				C455754820CC01F5002F9BFE /* nodeList.c */,
@@ -1323,6 +1345,10 @@
 				C45574FE20CC01D3002F9BFE /* psxCond_object.c */,
 				C455750B20CC01D4002F9BFE /* psxCond.c */,
 				C45574E620CC01D0002F9BFE /* psxCond.h */,
+				C4F4491620EA685700C5E729 /* psxExec_internal.h */,
+				C4F4491020EA685400C5E729 /* psxExec_object.c */,
+				C4F4491220EA685500C5E729 /* psxExec.c */,
+				C4F4491720EA685800C5E729 /* psxExec.h */,
 				C455750220CC01D3002F9BFE /* psxLock_internal.h */,
 				C45574EE20CC01D1002F9BFE /* psxLock_object.c */,
 				C455751720CC01D5002F9BFE /* psxLock.c */,
@@ -1620,6 +1646,7 @@
 				C455770D20CC02C0002F9BFE /* cb32.c in Sources */,
 				C455769A20CC0299002F9BFE /* false_object.c in Sources */,
 				C45574B320CC01B6002F9BFE /* srcFiles.c in Sources */,
+				C4F4491820EA685800C5E729 /* nodeHash_JSON.c in Sources */,
 				C45574D620CC01B6002F9BFE /* szData_object.c in Sources */,
 				C455767920CC0299002F9BFE /* dbCsv_object.c in Sources */,
 				C455771020CC02C0002F9BFE /* consumer_object.c in Sources */,
@@ -1646,12 +1673,12 @@
 				C455772F20CC02C0002F9BFE /* cmdutl_object.c in Sources */,
 				C45574C420CC01B6002F9BFE /* ternary_object.c in Sources */,
 				C45573ED20CC0184002F9BFE /* xml.c in Sources */,
+				C4F4491C20EA685800C5E729 /* nodeLink_object.c in Sources */,
 				C455752420CC01D5002F9BFE /* pplex2_object.c in Sources */,
 				C45574B020CC01B6002F9BFE /* textIn.c in Sources */,
 				C455772B20CC02C0002F9BFE /* blocks.c in Sources */,
 				C45574AE20CC01B6002F9BFE /* srcFiles_object.c in Sources */,
 				C455771C20CC02C0002F9BFE /* bitMatrix.c in Sources */,
-				C455775F20CC72D8002F9BFE /* test_main.c in Sources */,
 				C455769220CC0299002F9BFE /* eResult_object.c in Sources */,
 				C45574CF20CC01B6002F9BFE /* szTbl.c in Sources */,
 				C455766A20CC0299002F9BFE /* false.c in Sources */,
@@ -1703,6 +1730,7 @@
 				C45574DF20CC01B6002F9BFE /* W32Str_JSON.c in Sources */,
 				C455775720CC0378002F9BFE /* genBase_object.c in Sources */,
 				C455768B20CC0299002F9BFE /* fileio.c in Sources */,
+				C4F4491B20EA685800C5E729 /* nodeLink.c in Sources */,
 				C455771620CC02C0002F9BFE /* block32_object.c in Sources */,
 				C45574B720CC01B6002F9BFE /* str.c in Sources */,
 				C45575AE20CC0200002F9BFE /* nodeList.c in Sources */,
@@ -1749,8 +1777,10 @@
 				C45575D420CC0200002F9BFE /* objHash_JSON.c in Sources */,
 				C45575B420CC0200002F9BFE /* msgBus.c in Sources */,
 				C45574AD20CC01B6002F9BFE /* visitor.c in Sources */,
+				C4F4492320EB053500C5E729 /* test_main.c in Sources */,
 				C45574A420CC01B6002F9BFE /* symAttr.c in Sources */,
 				C455767620CC0299002F9BFE /* i32Array.c in Sources */,
+				C4F4491920EA685800C5E729 /* psxExec_object.c in Sources */,
 				C455752F20CC01D5002F9BFE /* pplex.c in Sources */,
 				C45574C120CC01B6002F9BFE /* scanwhite.c in Sources */,
 				C455773E20CC02C0002F9BFE /* clo_object.c in Sources */,
@@ -1767,6 +1797,7 @@
 				C45574DA20CC01B6002F9BFE /* srcErrors.c in Sources */,
 				C45574D720CC01B6002F9BFE /* srcLoc_object.c in Sources */,
 				C455768120CC0299002F9BFE /* jsonOut.c in Sources */,
+				C4F4491D20EA685800C5E729 /* nodeLink_JSON.c in Sources */,
 				C455772D20CC02C0002F9BFE /* cb16_object.c in Sources */,
 				C455751820CC01D5002F9BFE /* ptrArray_object.c in Sources */,
 				C455773220CC02C0002F9BFE /* consumer.c in Sources */,
@@ -1903,6 +1934,7 @@
 				C45576A420CC0299002F9BFE /* dbCsv.c in Sources */,
 				C45575E920CC025B002F9BFE /* memOSX_object.c in Sources */,
 				C455771920CC02C0002F9BFE /* AStrArray.c in Sources */,
+				C4F4491A20EA685800C5E729 /* psxExec.c in Sources */,
 				C455749B20CC01B6002F9BFE /* utf8_object.c in Sources */,
 				C45574B520CC01B6002F9BFE /* value.c in Sources */,
 				C45574D320CC01B6002F9BFE /* srcFile_object.c in Sources */,

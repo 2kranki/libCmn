@@ -1354,7 +1354,7 @@ extern "C" {
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibIncludePath) && genBase_getDict((GENBASE_DATA *)this)) {
-            pLibIncludePath = szHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibIncludePath");
+            //FIXME: pLibIncludePath = szHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibIncludePath");
         }
         TRC_OBJ(this, "\tLibIncludePath=\"%s\"", (pLibIncludePath ? pLibIncludePath : ""));
         

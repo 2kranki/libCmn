@@ -117,6 +117,20 @@ extern "C" {
     {
         SZDATA_DATA       *this;
         
+        this = szData_NewA_AStr(pName, OBJ_NIL);
+        
+        return this;
+    }
+    
+    
+    SZDATA_DATA *   szData_NewA_AStr(
+        const
+        char            *pName,
+        ASTR_DATA       *pStr
+    )
+    {
+        SZDATA_DATA       *this;
+        
         this = szData_Alloc( );
         if (this) {
             this = szData_Init(this);
@@ -127,6 +141,9 @@ extern "C" {
                 else {
                     obj_Release(this);
                     this = OBJ_NIL;
+                }
+                if (pStr) {
+                    szData_setData(this, pStr);
                 }
             }
         }

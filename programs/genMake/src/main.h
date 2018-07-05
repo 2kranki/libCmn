@@ -183,14 +183,14 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         main_DictAddUpdate(
+    ERESULT         main_DictAddUpdateA(
         MAIN_DATA       *this,
         const
         char            *pName,
         OBJ_ID          pData
     );
     
-    ERESULT         main_DictDeleta(
+    ERESULT         main_DictDeleteA(
         MAIN_DATA       *this,
         const
         char            *pName

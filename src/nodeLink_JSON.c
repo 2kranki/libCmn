@@ -129,7 +129,7 @@ extern "C" {
         uint32_t        uint32 = 0;
         //OBJ_ID          pObj = OBJ_NIL;
         //uint8_t         *pUtf8;
-        SRCLOC_DATA     *pSrc = OBJ_NIL;
+        //SRCLOC_DATA     *pSrc = OBJ_NIL;
         NODE_DATA       *pNode = OBJ_NIL;
         
         pInfo = obj_getInfo(node_Class());

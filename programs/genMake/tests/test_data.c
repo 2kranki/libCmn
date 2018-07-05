@@ -29,7 +29,7 @@
 static
 const
 char    *pGoodJson1 = "{\n"
-"\"name\":\"libCmn\",\n"
+            "\"name\":\"libCmn\",\n"
             "\"type\":\"library\",\n"
             "\"deps\":null,\n"
             "\"headers\":null,\n"

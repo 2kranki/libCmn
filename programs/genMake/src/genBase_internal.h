@@ -79,6 +79,7 @@ struct genBase_data_s	{
     DATETIME_DATA   *pDateTime;
     TEXTOUT_DATA    *pOutput;
     NODEHASH_DATA   *pObjDirs;      // Object Directories
+    // The following are filled in from sections of the Node Tree.
     NODEHASH_DATA   *pHeaders;      // (Not Owned)
     NODEARRAY_DATA  *pLibDeps;      // (Not Owned)
     NODEHASH_DATA   *pObjects;      // (Not Owned)

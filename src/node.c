@@ -60,6 +60,7 @@ extern "C" {
         const
         char            *pDescription;
     } NODE_CLASS_DATA;
+
     
     static
     NODE_CLASS_DATA     classTable[] = {

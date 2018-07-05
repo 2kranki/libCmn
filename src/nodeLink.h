@@ -157,6 +157,16 @@ extern "C" {
     );
     
     
+    OBJ_ID          nodeLink_getData(
+        NODELINK_DATA   *this
+    );
+    
+    
+    OBJ_ID          nodeLink_getExtra(
+        NODELINK_DATA   *this
+    );
+    
+    
     /*!
      From index property is used to point to the "From" node
      if needed.  Note that this uses the Left index internally.
@@ -203,6 +213,16 @@ extern "C" {
     bool            nodeLink_setMiddle(
         NODELINK_DATA   *this,
         uint32_t        value
+    );
+    
+    
+    NAME_DATA *     nodeLink_getName(
+        NODELINK_DATA   *this
+    );
+    
+    
+    OBJ_ID          nodeLink_getOther(
+        NODELINK_DATA   *this
     );
     
     

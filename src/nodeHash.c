@@ -115,36 +115,38 @@ extern "C" {
     
     
     
+    /*!
+     Find the nodeHash which contains the name given.
+     @return    If successful, return the hash node pointer; otherwise return NULL.
+     */
     static
-    NODEHASH_NODE * nodeHash_FindNodeA(
+    NODEHASH_NODE * nodeHash_FindNodeHash(
         NODEHASH_DATA   *this,
-        uint32_t        hash,
-        const
-        char            *pKey
+        NAME_DATA       *pName
     )
     {
+        ERESULT         eRc;
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pNode;
-        int             iRc;
-        const
-        char            *pName;
+        uint32_t        hash;
         
         // Do initialization.
+        hash = name_getHash(pName);
         pNodeList = nodeHash_NodeListFromHash(this, hash);
         
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
-            if (pNode->hash == hash) {
-                pName = node_getNameUTF8(pNode->pNode);
-                iRc = utf8_StrCmp(pKey,pName);
-                mem_Free((void *)pName);
-                pName = NULL;
-                if (0 == iRc) {
+            if (node_getHash(pNode->pNode) == hash) {
+                eRc = name_Compare(pName, node_getName(pNode->pNode));
+                if (ERESULT_SUCCESS_EQUAL == eRc) {
                     return pNode;
                 }
-                if (iRc < 0) {
+#ifdef XYZZY
+                // WARNING: Entries are not sorted currently.
+                if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
                     break;
                 }
+#endif
             }
             pNode = listdl_Next(pNodeList, pNode);
         }
@@ -152,46 +154,6 @@ extern "C" {
         // Return to caller.
         return NULL;
     }
-    
-    
-    static
-    NODEHASH_NODE * nodeHash_FindNodeW32(
-        NODEHASH_DATA   *this,
-        uint32_t        hash,
-        const
-        W32CHR_T        *pKey
-    )
-    {
-        LISTDL_DATA     *pNodeList;
-        NODEHASH_NODE   *pNode;
-        int             iRc;
-        const
-        char            *pName;
-        
-        // Do initialization.
-        pNodeList = nodeHash_NodeListFromHash(this, hash);
-        
-        pNode = listdl_Head(pNodeList);
-        while ( pNode ) {
-            if (pNode->hash == hash) {
-                pName = node_getNameUTF8(pNode->pNode);
-                iRc = utf8_StrCmpAW32(pName, pKey);
-                mem_Free((void *)pName);
-                pName = NULL;
-                if (0 == iRc) {
-                    return pNode;
-                }
-                if (iRc > 0) {
-                    break;
-                }
-            }
-            pNode = listdl_Next(pNodeList, pNode);
-        }
-        
-        // Return to caller.
-        return NULL;
-    }
-    
     
     
     static
@@ -390,9 +352,6 @@ extern "C" {
     {
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry;
-        uint32_t        hash;
-        const
-        char            *pName;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -407,12 +366,8 @@ extern "C" {
         }
     #endif
 
-        pName = node_getNameUTF8(pNode);
-        hash = name_Hash(node_getName(pNode));
-        pEntry = nodeHash_FindNodeA(this, hash, pName);
-        mem_Free((void *)pName);
-        pName = NULL;
-        if (pEntry) {
+        pEntry = nodeHash_FindNodeHash(this, node_getName(pNode));
+        if (pEntry && !obj_IsFlag(this, NODEHASH_FLAG_DUPS)) {
             DEBUG_BREAK();
             return ERESULT_DATA_ALREADY_EXISTS;
         }
@@ -433,9 +388,8 @@ extern "C" {
         // Add it to the table.
         obj_Retain(pNode);
         pEntry->pNode = pNode;
-        pEntry->hash = hash;
         
-        pNodeList = nodeHash_NodeListFromHash(this, hash);
+        pNodeList = nodeHash_NodeListFromHash(this, node_getHash(pNode));
         listdl_Add2Tail(pNodeList, pEntry);
         
         ++this->size;
@@ -475,6 +429,101 @@ extern "C" {
         }
         
         eRc = nodeHash_Add(this, pNode);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeHash_AddUpdate(
+        NODEHASH_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        NODEHASH_NODE   *pEntry;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pEntry = nodeHash_FindNodeHash(this, node_getName(pNode));
+        if (pEntry) {
+            obj_Release(pEntry->pNode);
+            //pEntry->pNode = OBJ_NIL;
+            obj_Retain(pNode);
+            pEntry->pNode = pNode;
+            return ERESULT_SUCCESS;
+        }
+        
+        // Determine the entry number.
+        if (0 == listdl_Count(&this->freeList)) {
+            if ( nodeHash_AddBlock(this) )
+                ;
+            else {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+        }
+        pEntry = listdl_DeleteHead(&this->freeList);
+        if (NULL == pEntry) {
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        
+        // Add it to the table.
+        obj_Retain(pNode);
+        pEntry->pNode = pNode;
+        
+        pNodeList = nodeHash_NodeListFromHash(this, node_getHash(pNode));
+        listdl_Add2Tail(pNodeList, pEntry);
+        
+        ++this->size;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         nodeHash_AddUpdateA(
+        NODEHASH_DATA    *this,
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pName ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8AndClass(pName, cls, pData);
+        if (OBJ_NIL == pNode) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        eRc = nodeHash_AddUpdate(this, pNode);
         obj_Release(pNode);
         pNode = OBJ_NIL;
         
@@ -680,14 +729,54 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
+    ERESULT         nodeHash_Delete(
+        NODEHASH_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        NODEHASH_NODE   *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pEntry = nodeHash_FindNodeHash(this, node_getName(pNode));
+        if (NULL == pEntry) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        
+        pNodeList = nodeHash_NodeListFromHash(this, node_getHash(pNode));
+        obj_Release(pEntry->pNode);
+        pEntry->pNode = OBJ_NIL;
+        listdl_Delete(pNodeList, pEntry);
+        listdl_Add2Tail(&this->freeList, pEntry);
+        --this->size;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
     ERESULT         nodeHash_DeleteA(
         NODEHASH_DATA	*this,
         const
         char            *pName
     )
     {
+        //ERESULT         eRc;
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry = OBJ_NIL;
+        NAME_DATA       *pNameObj = OBJ_NIL;
         uint32_t        hash;
         
         // Do initialization.
@@ -703,8 +792,15 @@ extern "C" {
         }
 #endif
         
-        hash = str_HashAcmA((const char *)pName, NULL);
-        pEntry = nodeHash_FindNodeA(this, hash, pName);
+        pNameObj = name_NewUTF8(pName);
+        if(OBJ_NIL == pNameObj) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        hash = name_getHash(pNameObj);
+        pEntry = nodeHash_FindNodeHash(this, pNameObj);
+        obj_Release(pNameObj);
+        pNameObj = OBJ_NIL;
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -717,15 +813,76 @@ extern "C" {
         --this->size;
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
+    ERESULT         nodeHash_DeleteName(
+        NODEHASH_DATA   *this,
+        NAME_DATA       *pName
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        NODEHASH_NODE   *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( OBJ_NIL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pEntry = nodeHash_FindNodeHash(this, pName);
+        if (NULL == pEntry) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        
+        pNodeList = nodeHash_NodeListFromHash(this, name_getHash(pName));
+        listdl_Delete(pNodeList, pEntry);
+        listdl_Add2Tail(&this->freeList, pEntry);
+        --this->size;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
 
+    NODE_DATA *     nodeHash_Find(
+        NODEHASH_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( OBJ_NIL == pNode ) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        
+        // Return to caller.
+        return nodeHash_FindName(this, node_getName(pNode));
+    }
+    
+    
     NODE_DATA *     nodeHash_FindA(
         NODEHASH_DATA	*this,
         const
@@ -733,7 +890,7 @@ extern "C" {
     )
     {
         NODEHASH_NODE   *pEntry = OBJ_NIL;
-        uint32_t        hash;
+        NAME_DATA       *pNameObj = OBJ_NIL;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -749,27 +906,32 @@ extern "C" {
         }
     #endif
         
-        hash = str_HashAcmA((const char *)pName, NULL);
-        pEntry = nodeHash_FindNodeA(this, hash, pName);
+        pNameObj = name_NewUTF8(pName);
+        if(OBJ_NIL == pNameObj) {
+            DEBUG_BREAK();
+            this->eRc = ERESULT_OUT_OF_MEMORY;
+            return OBJ_NIL;
+        }
+        pEntry = nodeHash_FindNodeHash(this, pNameObj);
+        obj_Release(pNameObj);
+        pNameObj = OBJ_NIL;
         if (pEntry) {
             this->eRc = ERESULT_SUCCESS;
             return pEntry->pNode;
         }
-        
+
         // Return to caller.
         this->eRc = ERESULT_DATA_NOT_FOUND;
         return OBJ_NIL;
     }
 
 
-    NODE_DATA *     nodeHash_FindW32(
-        NODEHASH_DATA	*this,
-        const
-        W32CHR_T        *pName
+    NODE_DATA *     nodeHash_FindName(
+        NODEHASH_DATA   *this,
+        NAME_DATA       *pName
     )
     {
         NODEHASH_NODE   *pEntry = OBJ_NIL;
-        uint32_t        hash;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -785,8 +947,7 @@ extern "C" {
         }
 #endif
         
-        hash = str_HashAcmW32(pName, NULL);
-        pEntry = nodeHash_FindNodeW32( this, hash, pName );
+        pEntry = nodeHash_FindNodeHash(this, pName);
         if (pEntry) {
             this->eRc = ERESULT_SUCCESS;
             return pEntry->pNode;
