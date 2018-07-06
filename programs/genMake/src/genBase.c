@@ -2201,7 +2201,7 @@ ERESULT         genBase_GenMakefile(
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibInstalledPath) && this->pDict) {
-            pLibInstalledPath = szHash_FindA(this->pDict, "LibInstalledPath");
+            pLibInstalledPath = nodeHash_FindA(this->pDict, "LibInstalledPath");
         }
         TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
         
@@ -2261,7 +2261,7 @@ ERESULT         genBase_GenMakefile(
         }
 #endif
         if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
-            pLibNamePrefix = szHash_FindA(this->pDict, "LibNamePrefix");
+            pLibNamePrefix = nodeHash_FindA(this->pDict, "LibNamePrefix");
         }
         TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
         

@@ -284,16 +284,20 @@ extern "C" {
     
     
     /*!
-     Substitute environment variables into the current string using a BASH-like
-     syntax.  Variable names should have the syntax of:
+     Substitute hash values or environment variables into the current string
+     using a BASH-like syntax with the hash value having the highest priority.
+     Variable names should have the syntax of:
      '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
+     @param     pHash   optional node hash pointer where the node's data is a
+     path or astr kind object.
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-                is returned.
+     is returned.
      */
-    ERESULT         path_ExpandEnvVars(
-        PATH_DATA       *this
+    ERESULT         path_ExpandVars(
+        PATH_DATA       *this,
+        OBJ_ID          pHash
     );
     
     

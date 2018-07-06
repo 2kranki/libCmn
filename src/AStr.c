@@ -1758,16 +1758,20 @@ extern "C" {
     //---------------------------------------------------------------
     
     /*!
-     Substitute environment variables into the current string using a BASH-like
-     syntax.  Variable names should have the syntax of:
+     Substitute hash values or environment variables into the current string
+     using a BASH-like syntax with the hash value having the highest priority.
+     Variable names should have the syntax of:
      '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
+     @param     pHash   optional node hash pointer where the node's data is a
+     path or astr kind object.
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-                is returned.
+     is returned.
      */
-    ERESULT         AStr_ExpandEnvVars(
-        ASTR_DATA       *this
+    ERESULT         AStr_ExpandVars(
+        ASTR_DATA       *this,
+        OBJ_ID          pHash
     )
     {
         ERESULT         eRc;
@@ -1780,6 +1784,8 @@ extern "C" {
         ASTR_DATA       *pName = OBJ_NIL;
         const
         char            *pEnvVar = NULL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJ_ID          pData;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1787,6 +1793,14 @@ extern "C" {
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
             return false;
+        }
+        if (pHash) {
+            if(obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH))
+                ;
+            else {
+                DEBUG_BREAK();
+                return false;
+            }
         }
 #endif
         
@@ -1815,11 +1829,28 @@ extern "C" {
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
+                    if (pHash) {
+                        pNode = nodeHash_FindA(pHash, AStr_getData(pName));
+                        if (pNode) {
+                            pData = node_getData(pNode);
+                            if (obj_IsKindOf(this, OBJ_IDENT_ASTR)
+                                || obj_IsKindOf(this, OBJ_IDENT_PATH)) {
+                                pEnvVar = AStr_getData((ASTR_DATA *)pData);
+                            }
+                            if (pNode && pEnvVar) {
+                                goto expandIt;
+                            }
+                            // We did not find it in the Hash. So, fall
+                            // through to normal environment variables
+                            // search.
+                        }
+                    }
                     pEnvVar = getenv(AStr_getData(pName));
                     if (NULL == pEnvVar) {
                         obj_Release(pName);
                         return ERESULT_DATA_NOT_FOUND;
                     }
+                expandIt:
                     obj_Release(pName);
                     pName = OBJ_NIL;
                     eRc = AStr_Remove(this, i-2, len+3);
@@ -1833,14 +1864,19 @@ extern "C" {
                     pEnvVar = NULL;
                     fMore = true;
                 }
+#ifdef XYZZY
+                // Not certain that we need this.
                 else if (chr == '$') {
                     eRc = AStr_Remove(this, i, 1);
                     ++i;
                     fMore = true;
                     continue;
                 }
+#endif
                 else {
-                    return ERESULT_PARSE_ERROR;
+                    ++i;
+                    fMore = true;
+                    continue;
                 }
             }
         }

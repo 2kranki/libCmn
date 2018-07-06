@@ -1049,7 +1049,7 @@ int         test_path_ExpandEnvVars01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = path_ExpandEnvVars(pObj);
+        eRc = path_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
@@ -1088,11 +1088,11 @@ int         test_path_ExpandEnvVars02(
         eRc = AStr_AppendA(pStr, pHome);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
     }
-    pObj = path_NewA("${HOME}$$${HOME}");
+    pObj = path_NewA("${HOME}$${HOME}");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = path_ExpandEnvVars(pObj);
+        eRc = path_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );

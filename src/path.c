@@ -713,7 +713,8 @@ extern "C" {
                 break;
         }
         
-        eRc = path_ExpandEnvVars(this);
+        eRc = path_ExpandVars(this, OBJ_NIL);
+        
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -963,29 +964,12 @@ extern "C" {
     //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
     //---------------------------------------------------------------
     
-    /*!
-     Substitute environment variables into the current string using a BASH-like
-     syntax.  Variable names should have the syntax of:
-     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
-     Substitutions are not rescanned after insertion.
-     @param     this    object pointer
-     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-                is returned.
-     */
-    ERESULT         path_ExpandEnvVars(
-        PATH_DATA       *this
+    ERESULT         path_ExpandVars(
+        PATH_DATA       *this,
+        OBJ_ID          pHash
     )
     {
         ERESULT         eRc;
-        uint32_t        i = 0;
-        uint32_t        j;
-        uint32_t        len;
-        int32_t         chr;
-        bool            fMore = true;
-        //PATH_DATA       *pPath = OBJ_NIL;
-        ASTR_DATA       *pName = OBJ_NIL;
-        const
-        char            *pEnvVar = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -996,63 +980,10 @@ extern "C" {
         }
 #endif
         
-        if (0 == AStr_getLength((ASTR_DATA *)this)) {
-            return ERESULT_SUCCESS;
-        }
-        
-        // Expand Environment variables.
-        while (fMore) {
-            fMore = false;
-            eRc = AStr_CharFindNextW32((ASTR_DATA *)this, &i, '$');
-            if (ERESULT_FAILED(eRc)) {
-                break;
-            }
-            else {
-                chr = AStr_CharGetW32((ASTR_DATA *)this, i+1);
-                if (chr == '{') {
-                    i += 2;
-                    j = i;
-                    eRc = AStr_CharFindNextW32((ASTR_DATA *)this, &j, '}');
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_PARSE_ERROR;
-                    }
-                    len = j - i;
-                    eRc = AStr_Mid((ASTR_DATA *)this, i, len, &pName);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    pEnvVar = getenv(AStr_getData(pName));
-                    if (NULL == pEnvVar) {
-                        obj_Release(pName);
-                        return ERESULT_DATA_NOT_FOUND;
-                    }
-                    obj_Release(pName);
-                    pName = OBJ_NIL;
-                    eRc = AStr_Remove((ASTR_DATA *)this, i-2, len+3);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    eRc = AStr_InsertA((ASTR_DATA *)this, i-2, pEnvVar);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    pEnvVar = NULL;
-                    fMore = true;
-                }
-                else if (chr == '$') {
-                    eRc = AStr_Remove((ASTR_DATA *)this, i, 1);
-                    ++i;
-                    fMore = true;
-                    continue;
-                }
-                else {
-                    return ERESULT_PARSE_ERROR;
-                }
-            }
-        }
+        eRc = AStr_ExpandVars((ASTR_DATA *)this, pHash);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     

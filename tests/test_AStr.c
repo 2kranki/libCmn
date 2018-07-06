@@ -1108,7 +1108,7 @@ int             test_AStr_Match01(
 
 
 
-int         test_AStr_ExpandEnvVars01(
+int         test_AStr_ExpandVars01(
     const
     char        *pTestName
 )
@@ -1129,7 +1129,7 @@ int         test_AStr_ExpandEnvVars01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = AStr_ExpandEnvVars(pObj);
+        eRc = AStr_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
@@ -1146,7 +1146,7 @@ int         test_AStr_ExpandEnvVars01(
 
 
 
-int         test_AStr_ExpandEnvVars02(
+int         test_AStr_ExpandVars02(
     const
     char        *pTestName
 )
@@ -1168,11 +1168,11 @@ int         test_AStr_ExpandEnvVars02(
         eRc = AStr_AppendA(pStr, pHome);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
     }
-    pObj = AStr_NewA("${HOME}$$${HOME}");
+    pObj = AStr_NewA("${HOME}$${HOME}");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = AStr_ExpandEnvVars(pObj);
+        eRc = AStr_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
@@ -1191,8 +1191,8 @@ int         test_AStr_ExpandEnvVars02(
 
 
 TINYTEST_START_SUITE(test_AStr);
-    TINYTEST_ADD_TEST(test_AStr_ExpandEnvVars02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_AStr_ExpandEnvVars01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_ExpandVars02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_ExpandVars01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_Match01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_JSON02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_JSON01,setUp,tearDown);

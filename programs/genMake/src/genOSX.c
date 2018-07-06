@@ -1420,7 +1420,7 @@ extern "C" {
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibInstalledPath) && genBase_getDict((GENBASE_DATA *)this)) {
-            pLibInstalledPath = szHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibInstalledPath");
+            pLibInstalledPath = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibInstalledPath");
         }
         TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
         

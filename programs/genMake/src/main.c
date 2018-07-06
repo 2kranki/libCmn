@@ -261,8 +261,9 @@ extern "C" {
         pKey = osTypeID;
         pStr = AStr_NewA("macos");
         if (pStr) {
-            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
                 exit(EXIT_FAILURE);
             }
@@ -271,31 +272,54 @@ extern "C" {
         }
 
         // Set up libPath defaults
-        //FIXME: eRc = main_DictAddUpdate(this, "libIncludePath", "..");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
-            exit(EXIT_FAILURE);
+#ifdef XYZZY
+        pKey = osTypeID;
+        pStr = AStr_NewA("..");
+        if (pStr) {
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            //FIXME: eRc = main_DictAddUpdate(this, "libIncludePath", "..");
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
+                exit(EXIT_FAILURE);
+            }
         }
+#endif
         
         // Set up libPrefix default;
-        //FIXME: eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
-            exit(EXIT_FAILURE);
+        pKey = namePrefixID;
+        pStr = AStr_NewA("lib");
+        if (pStr) {
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
-        
-        //FIXME: eRc = main_DictAddUpdate(this, "outBase", "/usr/local/lib");
+
+        //FIXME: eRc = nodeHash_AddUpdateA(main_getDict(this), "outBase", "/usr/local/lib");
         if (ERESULT_FAILED(eRc) ) {
+            DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        //FIXME: eRc = main_DictAddUpdate(this, "tmpBase", "/TMP");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
-            exit(EXIT_FAILURE);
+        pKey = tmpBaseID;
+        pStr = AStr_NewA("/tmp");
+        if (pStr) {
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1070,79 +1094,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //             D i c t i o n a r y  M e t h o d s
-    //---------------------------------------------------------------
-    
-    ERESULT         main_DictAddUpdateA(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        if (nodeHash_FindA(this->pDict, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, pName);
-        }
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    ERESULT         main_DictDeleteA(
-        MAIN_DATA       *this,
-        const
-        char            *pName
-    )
-    {
-        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pDict) {
-            return eRc;
-        }
-        
-        if (nodeHash_FindA(this->pDict, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, pName);
-        }
-        else
-            eRc = ERESULT_DATA_NOT_FOUND;
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -1364,6 +1315,12 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&main_Vtbl);
         
         main_setLastError(this, ERESULT_GENERAL_FAILURE);
+        this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        if (OBJ_NIL == this->pDict) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         fRc = appl_setArgDefs((APPL_DATA *)this, cPgmArgs, pPgmArgs, 0, NULL);
         appl_setParseArgs(
                           (APPL_DATA *)this,
@@ -1463,7 +1420,7 @@ extern "C" {
         pKey = makeTypeID;
         pStr = AStr_NewA("d");
         if (pStr) {
-            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
                 exit(EXIT_FAILURE);
@@ -1475,7 +1432,7 @@ extern "C" {
         pKey = resultTypeID;
         pStr = AStr_NewA("lib");
         if (pStr) {
-            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1496,7 +1453,7 @@ extern "C" {
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1512,7 +1469,7 @@ extern "C" {
         pKey = srcBaseID;
         pStr = AStr_NewA("./src");
         if (pStr) {
-            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1533,7 +1490,7 @@ extern "C" {
         pStr = AStr_NewA("${TMPDIR}");
 #endif
         if (pStr) {
-            eRc = main_DictAddUpdateA(this, pKey, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,

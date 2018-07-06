@@ -26,6 +26,7 @@
  */
  
 #define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
+#define namePrefixID    "namePrefix"    /* normally "" or "lib" */
 #define osTypeID        "osType"        /* "macosx", "win32" or "win64" */
 #define outBaseID       "outBase"       /* Base Directory for output */
 #define resultTypeID    "resultType"    /* "pgm" or "lib" */

@@ -142,6 +142,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    NODEHASH_DATA * main_getDict(
+        MAIN_DATA       *this
+    );
+    
+    
     PATH_DATA *     main_getFilePath(
         MAIN_DATA       *this
     );
@@ -182,20 +187,6 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
-
-    ERESULT         main_DictAddUpdateA(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    ERESULT         main_DictDeleteA(
-        MAIN_DATA       *this,
-        const
-        char            *pName
-    );
-    
 
     int             main_Exec(
         MAIN_DATA		*this
