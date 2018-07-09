@@ -1,5 +1,5 @@
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 07/08/2018 10:06:14
  */
 
 
@@ -24,13 +24,13 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <nodeGraph_internal.h>
+#include    <bptIndex_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -42,9 +42,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -74,18 +74,18 @@ int         tearDown(
 
 
 
-int         test_nodeGraph_OpenClose(
+int             test_bptIndex_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    NODEGRAPH_DATA *pObj = OBJ_NIL;
+    BPTINDEX_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = nodeGraph_Alloc( );
+
+    pObj = bptIndex_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeGraph_Init( pObj );
+    pObj = bptIndex_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -95,54 +95,18 @@ int         test_nodeGraph_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-int         test_nodeGraph_Simple01(
-    const
-    char        *pTestName
-)
-{
-    NODEGRAPH_DATA *pObj = OBJ_NIL;
-    ERESULT     eRc;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = nodeGraph_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeGraph_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        eRc = nodeGraph_NodeAddA(pObj, "1", 0, OBJ_NIL);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, "2", 0, OBJ_NIL);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, "3", 0, OBJ_NIL);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, "4", 0, OBJ_NIL);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_nodeGraph);
-    TINYTEST_ADD_TEST(test_nodeGraph_Simple01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_nodeGraph_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_bptIndex);
+    TINYTEST_ADD_TEST(test_bptIndex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_nodeGraph);
+TINYTEST_MAIN_SINGLE_SUITE(test_bptIndex);
 
 
 

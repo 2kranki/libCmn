@@ -155,7 +155,7 @@ extern "C" {
     
     
     
-    NODE_DATA *     nodeArc_getInNode(
+    NODELINK_DATA * nodeArc_getInNode(
         NODEARC_DATA    *this
     )
     {
@@ -175,7 +175,7 @@ extern "C" {
     
     bool            nodeArc_setInNode(
         NODEARC_DATA    *this,
-        NODE_DATA       *pValue
+        NODELINK_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -196,7 +196,7 @@ extern "C" {
     
     
     
-    NODE_DATA *     nodeArc_getOutNode(
+    NODELINK_DATA * nodeArc_getOutNode(
         NODEARC_DATA    *this
     )
     {
@@ -216,7 +216,7 @@ extern "C" {
     
     bool            nodeArc_setOutNode(
         NODEARC_DATA    *this,
-        NODE_DATA       *pValue
+        NODELINK_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -515,8 +515,8 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEARC); // Needed for Inheritance
+        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEARC);  // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeArc_Vtbl);
         

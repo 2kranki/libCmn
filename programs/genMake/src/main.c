@@ -271,22 +271,7 @@ extern "C" {
             pStr = OBJ_NIL;
         }
 
-        // Set up libPath defaults
-#ifdef XYZZY
-        pKey = osTypeID;
-        pStr = AStr_NewA("..");
-        if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
-            //FIXME: eRc = main_DictAddUpdate(this, "libIncludePath", "..");
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
-                exit(EXIT_FAILURE);
-            }
-        }
-#endif
-        
-        // Set up libPrefix default;
+        // Set up namePrefix default;
         pKey = namePrefixID;
         pStr = AStr_NewA("lib");
         if (pStr) {
@@ -308,7 +293,7 @@ extern "C" {
         }
         
         pKey = tmpBaseID;
-        pStr = AStr_NewA("/tmp");
+        pStr = AStr_NewA("${TMPDIR}");
         if (pStr) {
             eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
@@ -330,6 +315,9 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        const
+        char            *pKey;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -341,8 +329,19 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MSC32;
-        //FIXME: main_DictAddUpdate(this, "osType", "msc32");
-        
+        pKey = osTypeID;
+        pStr = AStr_NewA("msc32");
+        if (pStr) {
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
         //FIXME: Update this!
 
         // Set up libPath defaults
@@ -381,6 +380,9 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        const
+        char            *pKey;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -392,8 +394,19 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MSC64;
-        //FIXME: main_DictAddUpdate(this, "osType", "msc64");
-        
+        pKey = osTypeID;
+        pStr = AStr_NewA("msc64");
+        if (pStr) {
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
         //FIXME: eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
@@ -1415,6 +1428,29 @@ extern "C" {
         }
 #endif
         
+        pKey = osTypeID;
+#if defined(__MACOSX_ENV__)
+        this->osType = OSTYPE_MACOS;
+        pStr = AStr_NewA("macos");
+#endif
+#if defined(__WIN32_ENV__)
+        this->osType = OSTYPE_WIN32;
+        pStr = AStr_NewA("win32");
+#endif
+#if defined(__WIN64_ENV__)
+        this->osType = OSTYPE_WIN64;
+        pStr = AStr_NewA("win64");
+#endif
+        if (pStr) {
+            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
         eRc = main_DefaultsMacos(this);
 
         pKey = makeTypeID;
@@ -1487,7 +1523,7 @@ extern "C" {
         pStr = AStr_NewA("${TMPDIR}");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("${TMPDIR}");
+        pStr = AStr_NewA("${TMP}");
 #endif
         if (pStr) {
             eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);

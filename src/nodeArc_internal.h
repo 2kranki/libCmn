@@ -61,8 +61,8 @@ struct nodeArc_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    NODE_DATA       *pOut;          // Outbound Node for this arc
-    NODE_DATA       *pIn;           // Inbound Node for this arc
+    NODELINK_DATA   *pOut;          // Outbound Node for this arc
+    NODELINK_DATA   *pIn;           // Inbound Node for this arc
     uint32_t        weight;
     bool            fAdjacent;
 

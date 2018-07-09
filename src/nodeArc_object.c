@@ -78,6 +78,9 @@ bool            nodeArc_ClassIsKindOf(
     if (OBJ_IDENT_NODEARC_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_NODE_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -127,6 +130,9 @@ bool            nodeArc_IsKindOf(
 {
     if (OBJ_IDENT_NODEARC == classID) {
        return true;
+    }
+    if (OBJ_IDENT_NODE == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

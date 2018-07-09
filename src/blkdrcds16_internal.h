@@ -120,6 +120,12 @@ struct blkdrcds16_data_s	{
 
 
     // Internal Functions
+    bool            blkdrcds16_setData(
+        BLKDRCDS16_DATA *this,
+        uint8_t         *pValue
+    );
+    
+    
     void            blkdrcds16_Dealloc(
         OBJ_ID          objId
     );

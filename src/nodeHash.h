@@ -280,9 +280,6 @@ extern "C" {
     /*!
      Return an array of all nodes in the hash sorted by name in
      ascending order.
-     information about this object. This method can translate
-     methods to strings and vice versa, return the address of the
-     object information structure.
      @param     this    Object Pointer
      @return    NodeArray object pointer which must be released if
                 successful.  Otherwise, OBJ_NIL and object's error

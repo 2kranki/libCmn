@@ -229,6 +229,30 @@ $(OBJDIR)/blocks_object.o: $(SRCDIR)/blocks_object.c
 
 
 
+OBJS += $(OBJDIR)/bptIndex.o $(OBJDIR)/bptIndex_object.o
+
+
+$(OBJDIR)/bptIndex.o: $(SRCDIR)/bptIndex.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/bptIndex_object.o: $(SRCDIR)/bptIndex_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/bptLeaf.o $(OBJDIR)/bptLeaf_object.o
+
+
+$(OBJDIR)/bptLeaf.o: $(SRCDIR)/bptLeaf.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/bptLeaf_object.o: $(SRCDIR)/bptLeaf_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/bptree.o $(OBJDIR)/bptree_object.o
 
 
@@ -1964,6 +1988,13 @@ TESTS += test_blocks
 
 test_blocks:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_blocks.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_bptLeaf
+
+test_bptLeaf:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_bptLeaf.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

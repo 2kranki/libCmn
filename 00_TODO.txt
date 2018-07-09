@@ -4,6 +4,15 @@ The following are things that are being throught about. Whether they get done or
 will depend upon time and resources.
 
 
+-- path
+    -- Need path that includes expansion of env variables and
+        '~' for $HOME
+    -- clean up of path for instance: ./abc/../ == ./
+    -- ToWin() which converts '/' to '\' and any other adjustment
+        needed to convert bash like file path to windows file
+        path.
+
+
 -- Finish JSON processing for: (See szData as an example.)
     -- Node
     -- NodeArray
@@ -267,20 +276,6 @@ The following are things that need to be followed up on:
 
 - SRC
     - Change to use FBSI or fopen w/setvbuf or memory buffer
-
-
-
-- path
-    - Need path that includes expansion of env variables and
-    '~' for $HOME
-    - clean up of path for instance: ./abc/../ == ./
-    - make path inherit from bstr or just add methods to bstr and
-      forget path
-
-
-
-- bstr
-    - upgrade to UTF-8 support
 
 
 

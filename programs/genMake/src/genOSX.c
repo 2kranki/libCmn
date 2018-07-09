@@ -1335,6 +1335,7 @@ extern "C" {
         ERESULT         eRc;
         PATH_DATA       *pPath =  OBJ_NIL;
         ASTR_DATA       *pFullName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
         TRC_OBJ(this, "genOSX_LibIncludePath(\"%s\", %s", pName);
@@ -1354,7 +1355,8 @@ extern "C" {
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibIncludePath) && genBase_getDict((GENBASE_DATA *)this)) {
-            //FIXME: pLibIncludePath = szHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibIncludePath");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibIncludePath");
+            pLibIncludePath = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibIncludePath=\"%s\"", (pLibIncludePath ? pLibIncludePath : ""));
         
@@ -1401,6 +1403,7 @@ extern "C" {
         ERESULT         eRc;
         PATH_DATA       *pPath =  OBJ_NIL;
         ASTR_DATA       *pFullName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
         TRC_OBJ(this, "genOSX_LibInstalledPath(\"%s\", %s", pName);
@@ -1420,7 +1423,8 @@ extern "C" {
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibInstalledPath) && genBase_getDict((GENBASE_DATA *)this)) {
-            pLibInstalledPath = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibInstalledPath");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibInstalledPath");
+            pLibInstalledPath = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
         
@@ -1464,7 +1468,8 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pFullName = OBJ_NIL;
-        
+        NODE_DATA       *pNode = OBJ_NIL;
+
         // Do initialization.
         TRC_OBJ(this, "genOSX_LibName(\"%s\", %s", pName);
 #ifdef NDEBUG
@@ -1476,7 +1481,8 @@ extern "C" {
         }
 #endif
         if ((OBJ_NIL == pLibNamePrefix) && genBase_getDict((GENBASE_DATA *)this)) {
-            pLibNamePrefix = szHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibNamePrefix");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibNamePrefix");
+            pLibNamePrefix = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
         
@@ -1642,11 +1648,13 @@ extern "C" {
                       "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
         );
         if (genBase_getLibDeps((GENBASE_DATA *)this)) {
+            const
             char            *pLibIncludePrefix;
-            pLibIncludePrefix = szHash_FindA(
-                                        genBase_getDict((GENBASE_DATA *)this),
-                                        "libIncludePrefix"
-                                );
+            pNode = nodeHash_FindA(
+                            genBase_getDict((GENBASE_DATA *)this),
+                            "libIncludePrefix"
+                    );
+            pLibIncludePrefix = AStr_getData(node_getData(pNode));
             iMax = nodeArray_getSize(genBase_getLibDeps((GENBASE_DATA *)this));
             for (i=0; i<iMax; ++i) {
                 pNode = nodeArray_Get(genBase_getLibDeps((GENBASE_DATA *)this), i+1);

@@ -62,9 +62,9 @@ struct nodeGraph_data_s	{
 
     // Common Data
     ERESULT         eRc;
-    NODEARRAY_DATA  *pNodes;          // Table of Nodes
+    NODEHASH_DATA   *pNodes;          // Set of Nodes
     OBJARRAY_DATA   *pArcs;
-    uint8_t         fDirected;
+    uint8_t         fUndirected;
     uint8_t         rsvd8[3];
 
 };

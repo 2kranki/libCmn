@@ -142,6 +142,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint8_t *       blkdrcds16_getData(
+        BLKDRCDS16_DATA *this
+    );
+    
+    
     ERESULT         blkdrcds16_getLastError(
         BLKDRCDS16_DATA	*this
     );

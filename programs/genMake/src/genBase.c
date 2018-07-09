@@ -2179,6 +2179,7 @@ ERESULT         genBase_GenMakefile(
         ERESULT         eRc;
         PATH_DATA       *pPath =  OBJ_NIL;
         ASTR_DATA       *pFullName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
         TRC_OBJ(
@@ -2201,7 +2202,8 @@ ERESULT         genBase_GenMakefile(
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibInstalledPath) && this->pDict) {
-            pLibInstalledPath = nodeHash_FindA(this->pDict, "LibInstalledPath");
+            pNode = nodeHash_FindA(this->pDict, "LibInstalledPath");
+            pLibInstalledPath = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
         
@@ -2245,6 +2247,7 @@ ERESULT         genBase_GenMakefile(
     {
         ERESULT         eRc;
         ASTR_DATA       *pFullName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
 
         // Do initialization.
         TRC_OBJ(
@@ -2261,7 +2264,8 @@ ERESULT         genBase_GenMakefile(
         }
 #endif
         if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
-            pLibNamePrefix = nodeHash_FindA(this->pDict, "LibNamePrefix");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibNamePrefix");
+            pLibNamePrefix = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
         

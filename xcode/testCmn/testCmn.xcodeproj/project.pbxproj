@@ -10,6 +10,11 @@
 		C40DEA642071BB21007CE920 /* md5ChkSum_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA612071BB1F007CE920 /* md5ChkSum_object.c */; };
 		C40DEA652071BB21007CE920 /* md5ChkSum.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA622071BB20007CE920 /* md5ChkSum.c */; };
 		C40DEA6A20725C5E007CE920 /* md5_plumb.c in Sources */ = {isa = PBXBuildFile; fileRef = C40DEA6820725C5C007CE920 /* md5_plumb.c */; };
+		C41D590620F24D77009F2F0E /* bptLeaf_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C41D590320F24D71009F2F0E /* bptLeaf_object.c */; };
+		C41D590720F24D77009F2F0E /* bptLeaf.c in Sources */ = {isa = PBXBuildFile; fileRef = C41D590520F24D75009F2F0E /* bptLeaf.c */; };
+		C41D590B20F2528A009F2F0E /* test_bptIndex.c in Sources */ = {isa = PBXBuildFile; fileRef = C41D590A20F25289009F2F0E /* test_bptIndex.c */; };
+		C41D591020F252CD009F2F0E /* bptIndex.c in Sources */ = {isa = PBXBuildFile; fileRef = C41D590C20F252C5009F2F0E /* bptIndex.c */; };
+		C41D591120F252CD009F2F0E /* bptIndex_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C41D590D20F252C8009F2F0E /* bptIndex_object.c */; };
 		C42122F71FE5B3F400F45294 /* compiler_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C42122F51FE5B3F200F45294 /* compiler_object.c */; };
 		C42122F81FE5B3F400F45294 /* compiler.c in Sources */ = {isa = PBXBuildFile; fileRef = C42122F61FE5B3F300F45294 /* compiler.c */; };
 		C42122FD1FE5B42700F45294 /* parser_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C42122F91FE5B42300F45294 /* parser_object.c */; };
@@ -262,7 +267,6 @@
 		C440262C202B4252009B7806 /* szData.c in Sources */ = {isa = PBXBuildFile; fileRef = C4402629202B4250009B7806 /* szData.c */; };
 		C440262E202B5108009B7806 /* szData_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C440262D202B5106009B7806 /* szData_JSON.c */; };
 		C45DABA920D961BC009F0FC6 /* nodeHash_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C45DABA820D961BB009F0FC6 /* nodeHash_JSON.c */; };
-		C45EEB7220EF8ECB00B2BB87 /* test_path.c in Sources */ = {isa = PBXBuildFile; fileRef = C45EEB7120EF8ECA00B2BB87 /* test_path.c */; };
 		C4669B771FEB36C30048FC14 /* null_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4669B761FEB36C10048FC14 /* null_JSON.c */; };
 		C4669B7C1FEBC7910048FC14 /* jsonIn_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4669B791FEBC78F0048FC14 /* jsonIn_object.c */; };
 		C4669B7D1FEBC7910048FC14 /* jsonIn.c in Sources */ = {isa = PBXBuildFile; fileRef = C4669B7B1FEBC7900048FC14 /* jsonIn.c */; };
@@ -326,6 +330,15 @@
 		C40DEA632071BB21007CE920 /* md5ChkSum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5ChkSum.h; sourceTree = "<group>"; };
 		C40DEA6820725C5C007CE920 /* md5_plumb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5_plumb.c; sourceTree = "<group>"; };
 		C40DEA6920725C5D007CE920 /* md5_plumb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5_plumb.h; sourceTree = "<group>"; };
+		C41D590220F24D6E009F2F0E /* bptLeaf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bptLeaf.h; sourceTree = "<group>"; };
+		C41D590320F24D71009F2F0E /* bptLeaf_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bptLeaf_object.c; sourceTree = "<group>"; };
+		C41D590420F24D73009F2F0E /* bptLeaf_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bptLeaf_internal.h; sourceTree = "<group>"; };
+		C41D590520F24D75009F2F0E /* bptLeaf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bptLeaf.c; sourceTree = "<group>"; };
+		C41D590A20F25289009F2F0E /* test_bptIndex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_bptIndex.c; sourceTree = "<group>"; };
+		C41D590C20F252C5009F2F0E /* bptIndex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bptIndex.c; sourceTree = "<group>"; };
+		C41D590D20F252C8009F2F0E /* bptIndex_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bptIndex_object.c; sourceTree = "<group>"; };
+		C41D590E20F252CA009F2F0E /* bptIndex_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bptIndex_internal.h; sourceTree = "<group>"; };
+		C41D590F20F252CC009F2F0E /* bptIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bptIndex.h; sourceTree = "<group>"; };
 		C42122F31FE5B3F000F45294 /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
 		C42122F41FE5B3F100F45294 /* compiler_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler_internal.h; sourceTree = "<group>"; };
 		C42122F51FE5B3F200F45294 /* compiler_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compiler_object.c; sourceTree = "<group>"; };
@@ -824,7 +837,6 @@
 		C440262A202B4251009B7806 /* szData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = szData.h; sourceTree = "<group>"; };
 		C440262D202B5106009B7806 /* szData_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = szData_JSON.c; sourceTree = "<group>"; };
 		C45DABA820D961BB009F0FC6 /* nodeHash_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeHash_JSON.c; sourceTree = "<group>"; };
-		C45EEB7120EF8ECA00B2BB87 /* test_path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_path.c; sourceTree = "<group>"; };
 		C4669B761FEB36C10048FC14 /* null_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_JSON.c; sourceTree = "<group>"; };
 		C4669B781FEBC78D0048FC14 /* jsonIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsonIn.h; sourceTree = "<group>"; };
 		C4669B791FEBC78F0048FC14 /* jsonIn_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsonIn_object.c; sourceTree = "<group>"; };
@@ -928,7 +940,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C45EEB7120EF8ECA00B2BB87 /* test_path.c */,
+				C41D590A20F25289009F2F0E /* test_bptIndex.c */,
 			);
 			name = testCmn;
 			path = ../../tests;
@@ -996,6 +1008,14 @@
 				C43599521FC9C36200CA858E /* blocks_object.c */,
 				C435996C1FC9C36400CA858E /* blocks.c */,
 				C43599661FC9C36300CA858E /* blocks.h */,
+				C41D590E20F252CA009F2F0E /* bptIndex_internal.h */,
+				C41D590D20F252C8009F2F0E /* bptIndex_object.c */,
+				C41D590C20F252C5009F2F0E /* bptIndex.c */,
+				C41D590F20F252CC009F2F0E /* bptIndex.h */,
+				C41D590420F24D73009F2F0E /* bptLeaf_internal.h */,
+				C41D590320F24D71009F2F0E /* bptLeaf_object.c */,
+				C41D590520F24D75009F2F0E /* bptLeaf.c */,
+				C41D590220F24D6E009F2F0E /* bptLeaf.h */,
 				C435995F1FC9C36300CA858E /* bptree_internal.h */,
 				C43599911FC9C36700CA858E /* bptree_object.c */,
 				C435995A1FC9C36200CA858E /* bptree.c */,
@@ -1609,6 +1629,7 @@
 				C4359AED1FC9C3D800CA858E /* objEnum.c in Sources */,
 				C4359A401FC9C38800CA858E /* csv.c in Sources */,
 				C4359A411FC9C38800CA858E /* hash32.c in Sources */,
+				C41D591120F252CD009F2F0E /* bptIndex_object.c in Sources */,
 				C4359BFB1FC9C48400CA858E /* u12Array_object.c in Sources */,
 				C4359A581FC9C38800CA858E /* execArray_object.c in Sources */,
 				C4359C211FC9D25300CA858E /* cmn_osx.c in Sources */,
@@ -1624,6 +1645,7 @@
 				C4359B551FC9C42700CA858E /* psxMutex_object.c in Sources */,
 				C4359BDB1FC9C48400CA858E /* scanhex32.c in Sources */,
 				C440262E202B5108009B7806 /* szData_JSON.c in Sources */,
+				C41D590620F24D77009F2F0E /* bptLeaf_object.c in Sources */,
 				C4359B131FC9C3D800CA858E /* path.c in Sources */,
 				C4359B531FC9C42700CA858E /* prt_object.c in Sources */,
 				C4359BE11FC9C48400CA858E /* ternary_object.c in Sources */,
@@ -1656,6 +1678,7 @@
 				C42123411FE82A8C00F45294 /* pplex_object.c in Sources */,
 				C4AA73AE1FE2B740001FACEC /* lexj.c in Sources */,
 				C49ADDA22010E0250056FADD /* symEntry_JSON.c in Sources */,
+				C41D591020F252CD009F2F0E /* bptIndex.c in Sources */,
 				C4359B571FC9C42700CA858E /* rrds32_object.c in Sources */,
 				C4359BCC1FC9C48400CA858E /* value.c in Sources */,
 				C42122F71FE5B3F400F45294 /* compiler_object.c in Sources */,
@@ -1689,6 +1712,7 @@
 				C43599B11FC9C36800CA858E /* bitSet.c in Sources */,
 				C4359BED1FC9C48400CA858E /* textIn_object.c in Sources */,
 				C4359B081FC9C3D800CA858E /* listdl.c in Sources */,
+				C41D590B20F2528A009F2F0E /* test_bptIndex.c in Sources */,
 				C4359BEB1FC9C48400CA858E /* true_object.c in Sources */,
 				C4359A5B1FC9C38800CA858E /* fbsi.c in Sources */,
 				C43599C01FC9C36800CA858E /* btp.c in Sources */,
@@ -1749,7 +1773,6 @@
 				C421233E1FE82A8C00F45294 /* pplex3_object.c in Sources */,
 				C4359C201FC9D25300CA858E /* memOSX_object.c in Sources */,
 				C4359B031FC9C3D800CA858E /* nodeTree_object.c in Sources */,
-				C45EEB7220EF8ECB00B2BB87 /* test_path.c in Sources */,
 				C43599B61FC9C36800CA858E /* bitMatrix.c in Sources */,
 				C4359A6F1FC9C38800CA858E /* dbField_object.c in Sources */,
 				C4359AE61FC9C3D800CA858E /* objArray.c in Sources */,
@@ -1805,6 +1828,7 @@
 				C4359A5E1FC9C38800CA858E /* greg_object.c in Sources */,
 				C4359BEF1FC9C48400CA858E /* true.c in Sources */,
 				C4359A4F1FC9C38800CA858E /* false.c in Sources */,
+				C41D590720F24D77009F2F0E /* bptLeaf.c in Sources */,
 				C42123111FE7BE2200F45294 /* macro_object.c in Sources */,
 				C4359AE01FC9C3D800CA858E /* msgData.c in Sources */,
 				C4359B491FC9C42700CA858E /* psxSem.c in Sources */,

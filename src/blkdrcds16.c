@@ -167,6 +167,43 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    uint8_t *       blkdrcds16_getData(
+        BLKDRCDS16_DATA *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blkdrcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        blkdrcds16_setLastError(this, ERESULT_SUCCESS);
+        return (uint8_t *)this->pBlock;
+    }
+    
+    
+    bool            blkdrcds16_setData(
+        BLKDRCDS16_DATA *this,
+        uint8_t         *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blkdrcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pBlock = (DATA_BLOCK *)pValue;
+        
+        return true;
+    }
+    
+    
+
     ERESULT         blkdrcds16_getLastError(
         BLKDRCDS16_DATA *this
     )
@@ -187,7 +224,7 @@ extern "C" {
 
 
     bool            blkdrcds16_setLastError(
-        BLKDRCDS16_DATA     *this,
+        BLKDRCDS16_DATA *this,
         ERESULT         value
     )
     {

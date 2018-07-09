@@ -7,16 +7,14 @@
  * Program
  *			B-Plus Tree (bptree)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate bptree to run things without complications
- *          of interfering with the main bptree. A bptree may be 
- *          called a bptree on other O/S's.
+ *			This object provides support for a B+ Tree.  The tree
+ *          consists of Leaf blocks(bptLeaf) and Index blocks
+ *          (bptIndex).  The Leaf blocks consist of a doubly-linked
+ *          list of all keys in the B+ Tree.  The index blocks
+ *          provide the intermediate index down to the leaf level.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal bptree. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	03/05/2017 Generated
@@ -75,6 +73,7 @@ extern "C" {
     //****************************************************************
 
 
+    typedef uint32_t                BPTREE_INDEX;
     typedef struct bptree_data_s	BPTREE_DATA;    // Inherits from OBJ.
 
     typedef struct bptree_vtbl_s	{

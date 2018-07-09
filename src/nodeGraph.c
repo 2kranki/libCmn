@@ -121,7 +121,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     OBJARRAY_DATA * nodeGraph_getArcs(
-        NODEGRAPH_DATA     *this
+        NODEGRAPH_DATA  *this
     )
     {
         
@@ -156,43 +156,6 @@ extern "C" {
         }
         this->pArcs = pValue;
         
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       D i r e c t e d
-    //---------------------------------------------------------------
-    
-    bool            nodeGraph_getDirected(
-        NODEGRAPH_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeGraph_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->fDirected ? true : false;
-    }
-    
-    bool            nodeGraph_setDirected(
-        NODEGRAPH_DATA  *this,
-        bool            fValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeGraph_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        //this->priority = value;
         return true;
     }
     
@@ -246,7 +209,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     uint16_t        nodeGraph_getPriority(
-        NODEGRAPH_DATA     *this
+        NODEGRAPH_DATA  *this
     )
     {
 
@@ -263,7 +226,7 @@ extern "C" {
     }
 
     bool            nodeGraph_setPriority(
-        NODEGRAPH_DATA     *this,
+        NODEGRAPH_DATA  *this,
         uint16_t        value
     )
     {
@@ -284,7 +247,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     uint32_t        nodeGraph_getSize(
-        NODEGRAPH_DATA       *this
+        NODEGRAPH_DATA  *this
     )
     {
 #ifdef NDEBUG
@@ -298,6 +261,43 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                       U n d i r e c t e d
+    //---------------------------------------------------------------
+    
+    bool            nodeGraph_getUndirected(
+        NODEGRAPH_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->fUndirected ? true : false;
+    }
+    
+    bool            nodeGraph_setUndirected(
+        NODEGRAPH_DATA  *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->fUndirected = fValue;
+        return true;
+    }
+    
+    
+    
 
     
 
@@ -431,6 +431,10 @@ extern "C" {
             obj_Release(this->pArcs);
             this->pArcs = OBJ_NIL;
         }
+        if (this->pNodes) {
+            obj_Release(this->pNodes);
+            this->pNodes = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -537,8 +541,12 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeGraph_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pNodes = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        if (OBJ_NIL == this->pNodes) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -586,29 +594,117 @@ extern "C" {
     //                      N o d e  A d d
     //---------------------------------------------------------------
     
-    uint32_t        nodeGraph_NodeAdd(
+    ERESULT         nodeGraph_NodeAdd(
         NODEGRAPH_DATA  *this,
-        NODE_DATA       *pNode              // [in] node pointer
+        NODELINK_DATA   *pNode              // [in] node pointer
     )
     {
-        uint32_t        index = 0;
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #ifdef NDEBUG
 #else
         if( !nodeGraph_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        this->eRc = nodeArray_AppendNode(this->pNodes, pNode, &index);
+        this->eRc = nodeHash_Add(this->pNodes, (NODE_DATA *)pNode);
         
         // Return to caller.
-        return index;
+        return this->eRc;
+    }
+    
+    
+    ERESULT         nodeGraph_NodeAddA(
+        NODEGRAPH_DATA  *this,
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
+    {
+        
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        BREAK_NULL(this->pNodes);
+#endif
+        
+        this->eRc = nodeHash_AddA(this->pNodes, pName, cls, (void *)pData);
+
+        // Return to caller.
+        return this->eRc;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                      N o d e  F i n d
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeGraph_NodeFindA(
+        NODEGRAPH_DATA  *this,
+        const
+        char            *pNameA
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return pNode;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(this->pNodes, pNameA);
+        this->eRc = nodeHash_getLastError(this->pNodes);
+
+        // Return to caller.
+        return pNode;
+    }
+    
+
+    
+    //---------------------------------------------------------------
+    //                              N o d e s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * nodeGraph_Nodes(
+        NODEGRAPH_DATA  *this
+    )
+    {
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeGraph_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        
+        pArray = nodeHash_Nodes(this->pNodes);
+        this->eRc = nodeHash_getLastError(this->pNodes);
+        
+        // Return to caller.
+        return pArray;
     }
     
     

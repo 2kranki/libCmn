@@ -19,6 +19,28 @@
  *	07/17/2017 Generated
  */
 
+/***
+                        Directory Structures
+ 
+ Output:
+    library: ${outBase}/${osType}/${libPrefix}${libName}.${'a' or 'lib'}
+    include: ${outBase}/${osType}/include/xxx.h
+ 
+    This structure is also assumed for include purposes from the "lib_deps"
+    section.
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ ***/
+
+
+
 
 /*
  This is free and unencumbered software released into the public domain.

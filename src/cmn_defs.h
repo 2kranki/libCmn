@@ -177,6 +177,10 @@ extern "C" {
         OBJ_IDENT_BLOCK32_CLASS,
         OBJ_IDENT_BLOCKS,               // A list of Data Blocks
         OBJ_IDENT_BLOCKS_CLASS,
+        OBJ_IDENT_BPTINDEX,             // B-Plus Index Node
+        OBJ_IDENT_BPTINDEX_CLASS,
+        OBJ_IDENT_BPTLEAF,              // B-Plus Leaf Node
+        OBJ_IDENT_BPTLEAF_CLASS,
         OBJ_IDENT_BPTREE,               // B-Plus Tree Index
         OBJ_IDENT_BPTREE_CLASS,
         OBJ_IDENT_BSTR,                 // Basic String

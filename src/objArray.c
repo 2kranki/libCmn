@@ -324,7 +324,6 @@ extern "C" {
         uint32_t        i;
         uint32_t        iMax;
         ARRAY_ENTRY     *pEntry;
-        OBJ_IUNKNOWN    *pVtbl;
         OBJ_ID          pItem;
 
         // Do initialization.
@@ -347,13 +346,7 @@ extern "C" {
             pEntry = array_Ptr(this->pArray, (i + 1));
             if (pEntry && pEntry->pObj) {
                 pItem = pEntry->pObj;
-                pVtbl = obj_getVtbl(pItem);
-                if (pVtbl->pCopy) {
-                    pItem = pVtbl->pCopy(pItem);
-                }
-                else {
-                    obj_Retain(pItem);
-                }
+                obj_Retain(pItem);
                 array_AppendData(pOther->pArray, 1, &pItem);
             }
         }

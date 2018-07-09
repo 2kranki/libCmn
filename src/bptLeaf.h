@@ -1,28 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//         A Graph of Nodes (nodeGraph) Header
+//          BPTLEAF Console Transmit Task (bptLeaf) Header
 //****************************************************************
 /*
  * Program
- *			A Graph of Nodes (nodeGraph)
+ *			Separate bptLeaf (bptLeaf)
  * Purpose
- *			This object provides a directed graph of Nodes. A Graph
- *          consists of a set of Nodes with Arcs defining the
- *          relationship between the various nodes.
+ *			This object provides a standardized way of handling
+ *          a separate bptLeaf to run things without complications
+ *          of interfering with the main bptLeaf. A bptLeaf may be 
+ *          called a bptLeaf on other O/S's.
  *
  * Remarks
- *	1.      "Acyclic" means that there are no cycles within the graph
- *          (ie no arcs form loops) and is a characterisitic of Trees
- *          and Forests.
- *  2.      If the graph is "directed" (default), it is a graph in
- *          which each arc denotes a one-way connection. An "undirected"
- *          graph is one in which each arc denotes a two-way connection
- *          between the two nodes. This property must be set prior to
- *          adding any arcs to the graph.
+ *	1.      None
  *
  * History
- *	07/14/2016 Generated
+ *	07/08/2018 Generated
  */
 
 
@@ -59,13 +53,11 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <nodeLink.h>
-#include        <nodeHash.h>
-#include        <objArray.h>
+#include        <bptree.h>
 
 
-#ifndef         NODEGRAPH_H
-#define         NODEGRAPH_H
+#ifndef         BPTLEAF_H
+#define         BPTLEAF_H
 
 
 
@@ -79,16 +71,16 @@ extern "C" {
     //****************************************************************
 
 
-    // NODEGRAPH_DATA is defined in node.h
+    typedef struct bptLeaf_data_s	BPTLEAF_DATA;    // Inherits from OBJ.
 
-    typedef struct nodeGraph_vtbl_s	{
+    typedef struct bptLeaf_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeGraph_object.c.
+        // method names to the vtbl definition in bptLeaf_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEGRAPH_DATA *);
-    } NODEGRAPH_VTBL;
+        //bool        (*pIsEnabled)(BPTLEAF_DATA *);
+    } BPTLEAF_VTBL;
 
 
 
@@ -105,14 +97,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to nodeGraph object if successful, otherwise OBJ_NIL.
+     @return    pointer to bptLeaf object if successful, otherwise OBJ_NIL.
      */
-    NODEGRAPH_DATA * nodeGraph_Alloc(
+    BPTLEAF_DATA *  bptLeaf_Alloc(
         void
     );
     
     
-    NODEGRAPH_DATA * nodeGraph_New(
+    OBJ_ID          bptLeaf_Class(
+        void
+    );
+    
+    
+    BPTLEAF_DATA *     bptLeaf_New(
         void
     );
     
@@ -122,86 +119,51 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    /*!
-     Arcs property is an array of all the arcs in the graph. If this
-     is a directed graph, then the arcs are one way.  Otherwise, the
-     arcs represent a two-way connection.  All objects within the
-     array should be the Node Arc object.
-     */
-    OBJARRAY_DATA * nodeGraph_getArcs(
-        NODEGRAPH_DATA     *this
+    ERESULT     bptLeaf_getLastError(
+        BPTLEAF_DATA		*this
     );
-    
-    
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    uint32_t        nodeGraph_ArcAdd(
-        NODEGRAPH_DATA  *this,
-        NODELINK_DATA   *pFrom,             // [in] From Node
-        NODELINK_DATA   *pTo,               // [in] To Node
-        const
-        char            *pName              // [in] Optional Name or NULL
-    );
-    
-    
-    NODEGRAPH_DATA * nodeGraph_Init(
-        NODEGRAPH_DATA  *this
+    ERESULT     bptLeaf_Disable(
+        BPTLEAF_DATA		*this
     );
 
 
-    ERESULT         nodeGraph_NodeAdd(
-        NODEGRAPH_DATA  *this,
-        NODELINK_DATA   *pNode              // [in] node pointer
+    ERESULT     bptLeaf_Enable(
+        BPTLEAF_DATA		*this
     );
 
-    ERESULT         nodeGraph_NodeAddA(
-        NODEGRAPH_DATA  *this,
-        const
-        char            *pName,
-        int32_t         cls,
-        OBJ_ID          pData
+   
+    BPTLEAF_DATA *   bptLeaf_Init(
+        BPTLEAF_DATA     *this
     );
 
-    
-    NODE_DATA *     nodeGraph_FindA(
-        NODEGRAPH_DATA  *this,
-        const
-        char            *pName
-    );
 
-    
-    /*!
-     Return an array of all nodes in the graph sorted by name in
-     ascending order.
-     @param     this    Object Pointer
-     @return    NodeArray object pointer which must be released if
-                successful.  Otherwise, OBJ_NIL and object's error
-                code is set to the specific error.
-     @warning   Remember to release the returned object.
-     */
-    NODEARRAY_DATA * nodeGraph_Nodes(
-        NODEGRAPH_DATA  *this
+    ERESULT     bptLeaf_IsEnabled(
+        BPTLEAF_DATA		*this
     );
     
-    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = nodeGraph_ToDebugString(pObj,4);
-     @endcode
-     @param     this    nodeGraph object pointer
+     @code 
+        ASTR_DATA      *pDesc = bptLeaf_ToDebugString(this,4);
+     @endcode 
+     @param     this    BPTLEAF object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    nodeGraph_ToDebugString(
-        NODEGRAPH_DATA  *this,
+    ASTR_DATA *    bptLeaf_ToDebugString(
+        BPTLEAF_DATA     *this,
         int             indent
     );
     
@@ -212,5 +174,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* NODEGRAPH_H */
+#endif	/* BPTLEAF_H */
 

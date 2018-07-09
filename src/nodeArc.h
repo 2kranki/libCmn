@@ -1,22 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEARC Console Transmit Task (nodeArc) Header
+//          Node Graph Arc (nodeArc) Header
 //****************************************************************
 /*
  * Program
- *			Separate nodeArc (nodeArc)
+ *			Node Graph Arc (nodeArc)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate nodeArc to run things without complications
- *          of interfering with the main nodeArc. A nodeArc may be 
- *          called a nodeArc on other O/S's.
+ *			An Node Arc is used to show the relationship between
+ *          two nodes in a graph.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal nodeArc. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	07/14/2016 Generated
@@ -56,7 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <node.h>
+#include        <nodeLink.h>
 
 
 #ifndef         NODEARC_H
@@ -126,23 +121,23 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeArc_getInNode(
+    NODELINK_DATA * nodeArc_getInNode(
         NODEARC_DATA    *this
     );
 
     bool            nodeArc_setInNode(
         NODEARC_DATA    *this,
-        NODE_DATA       *pValue
+        NODELINK_DATA   *pValue
     );
     
     
-    NODE_DATA *     nodeArc_getOutNode(
+    NODELINK_DATA * nodeArc_getOutNode(
         NODEARC_DATA    *this
     );
     
     bool            nodeArc_setOutNode(
         NODEARC_DATA    *this,
-        NODE_DATA       *pValue
+        NODELINK_DATA   *pValue
     );
     
     
