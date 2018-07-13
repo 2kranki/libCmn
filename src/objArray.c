@@ -226,7 +226,7 @@ extern "C" {
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pObject);
-            this->eRc = array_getLastError(this->pArray);
+            this->eRc = obj_getLastError(this->pArray);
             return this->eRc;
         }
         if (pIndex) {

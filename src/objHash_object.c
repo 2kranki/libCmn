@@ -64,6 +64,14 @@ const
 OBJ_INFO        objHash_Info;            // Forward Reference
 
 
+static
+void *          objHashClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
 
 
 static
@@ -99,7 +107,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     objHash_Class,
-    obj_ClassWhoAmI
+    obj_ClassWhoAmI,
+    (P_OBJ_QUERYINFO)objHashClass_QueryInfo,
 };
 
 
@@ -114,6 +123,83 @@ OBJHASH_CLASS_DATA  objHash_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJHASH_CLASS, 0, 1},
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          objHashClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    OBJHASH_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+            // Query for an address to specific data within the object.
+            // This should be used very sparingly since it breaks the
+            // object's encapsulation.
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+                    
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&objHash_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+#ifdef XYZZY
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return nodeLink_ParseObject;
+                    }
+                    break;
+                    
+                case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return nodeLinkClass_WhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
 
 
 
@@ -184,7 +270,7 @@ static
 const
 OBJ_INFO        objHash_Info = {
     "objHash",
-    "Object Hash",
+    "Object Hash Table",
     (OBJ_DATA *)&objHash_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };

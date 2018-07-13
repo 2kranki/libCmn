@@ -80,6 +80,7 @@ struct objHash_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;     // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
@@ -89,9 +90,9 @@ struct objHash_data_s	{
     LISTDL_DATA     freeList;       // Free Node Linked List
     LISTDL_DATA     blocks;
     uint16_t        cBlock;         // Number of Nodes per Block
-    uint16_t        cHash;
+    uint16_t        cHash;          // Number of Hash Buckets
     LISTDL_DATA     *pHash;         // Main Hash Table
-    uint8_t         fDups;
+    uint8_t         fDups;          // true == Allow Duplicate Names
     uint8_t         rsvd8[3];
 
     ARRAY_DATA      *pScope;

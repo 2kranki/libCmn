@@ -129,6 +129,14 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Append the given string to the array and return its index.
+     @param     this    Object Pointer
+     @param     pObject String Object to be added
+     @param     pIndex  (Optional) Index Pointer
+     @return    If successful, ERESULT_SUCCESS and the index in pIndex
+                if it is not NULL.  Otherwise, an ERESULT_* error.
+     */
     ERESULT         AStrArray_AppendStr(
         ASTRARRAY_DATA	*this,
         ASTR_DATA       *pObject,

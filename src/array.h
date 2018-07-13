@@ -123,11 +123,6 @@ extern "C" {
     );
     
     
-    ERESULT         array_getLastError(
-        ARRAY_DATA		*this
-    );
-
-
     uint32_t        array_getSize(
         ARRAY_DATA      *this
     );

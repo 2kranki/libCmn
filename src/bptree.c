@@ -340,6 +340,37 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    B l o c k  N e w
+    //---------------------------------------------------------------
+    
+    ERESULT         bptree_BlockNew(
+        BPTREE_DATA     *this,
+        uint8_t         *pBlock,
+        uint32_t        *pBlockIndex
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !bptree_Validate(this) ) {
+            DEBUG_BREAK();
+            return bptree_getLastError(this);
+        }
+#endif
+        
+        //obj_Enable(this);
+        
+        // Put code here...
+        
+        // Return to caller.
+        bptree_setLastError(this, ERESULT_SUCCESS);
+        return bptree_getLastError(this);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     

@@ -130,8 +130,8 @@ extern	"C" {
 #define OBJ_FLAG_USER6      13
 #define OBJ_FLAG_USER7      14
 #define OBJ_FLAG_USER8      15              /* Last User Useable flag */
-
-        uint16_t		cbRetainCount;
+        int16_t         eRc;            /* Last Error Code */
+        uint32_t		cbRetainCount;
         union {
             uint32_t        cbMisc;
             struct {
@@ -333,6 +333,16 @@ extern	"C" {
     const
     OBJ_INFO *      obj_getInfo(
         OBJ_ID          objId
+    );
+    
+    
+    int16_t         obj_getLastError(
+        OBJ_ID          objId
+    );
+    
+    bool            obj_setLastError(
+        OBJ_ID          objId,
+        int16_t         value
     );
     
     

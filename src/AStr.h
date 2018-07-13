@@ -575,6 +575,25 @@ extern "C" {
     
     
     /*!
+     Create an array of strings from this string which are delimited by the
+     given character. If the character is not found in this string, then
+     OBJ_NIL is returned.
+     @param     this    object pointer
+     @param     chr     deliminating character
+     @return    If the character is not found in this string or some other error
+                condition occurs, then OBJ_NIL is returned. If successful, an
+                array of AStr objects which must be released is returned. The
+                deliminating character is not included.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTRARRAY_DATA * AStr_SplitOnCharW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        chr
+    );
+    
+    
+    /*!
      Convert this string to a constant string object.
      @param     this    object pointer
      @return    If successful, an AStrC object which must be released,

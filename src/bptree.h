@@ -122,13 +122,15 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     bptree_Disable(
-        BPTREE_DATA		*this
+    ERESULT         bptree_BlockNew(
+        BPTREE_DATA     *this,
+        uint8_t         *pBlock,
+        uint32_t        *pBlockIndex
     );
 
 
-    ERESULT     bptree_Enable(
-        BPTREE_DATA		*this
+    ERESULT         bptree_Enable(
+        BPTREE_DATA	    *this
     );
 
    
@@ -137,7 +139,7 @@ extern "C" {
     );
 
 
-    ERESULT     bptree_IsEnabled(
+    ERESULT         bptree_IsEnabled(
         BPTREE_DATA		*this
     );
     

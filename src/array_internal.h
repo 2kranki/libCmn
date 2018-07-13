@@ -66,7 +66,6 @@ struct array_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        fZeroNew;   // Zero new space added
     uint16_t        elemSize;   // Element Size
     uint32_t        size;       // Controlled by User
@@ -96,12 +95,6 @@ struct array_data_s	{
     );
     
     
-   bool             array_setLastError(
-        ARRAY_DATA      *this,
-        ERESULT         value
-    );
-
-
     uint32_t        array_getMax(
         ARRAY_DATA     *this
     );

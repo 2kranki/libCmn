@@ -114,7 +114,7 @@ extern "C" {
     
     
     GENOSX_DATA *   genOSX_New(
-        void
+        NODEHASH_DATA   *pDict
     );
     
     
@@ -123,13 +123,13 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    SZHASH_DATA *   genOSX_getDict(
+    NODEHASH_DATA * genOSX_getDict(
         GENOSX_DATA     *this
     );
     
     bool            genOSX_setDict(
         GENOSX_DATA     *this,
-        SZHASH_DATA     *pValue
+        NODEHASH_DATA   *pValue
     );
 
     

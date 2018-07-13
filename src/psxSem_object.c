@@ -115,7 +115,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 PSXSEM_CLASS_DATA  psxSem_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PSXSEM_CLASS, 0, 1, {0}},
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PSXSEM_CLASS, 0, 1},
 	//0
 };
 

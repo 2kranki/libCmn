@@ -325,14 +325,18 @@ extern "C" {
 
 
     GENOSX_DATA *     genOSX_New(
-        void
+        NODEHASH_DATA   *pDict
     )
     {
-        GENOSX_DATA       *this;
+        GENOSX_DATA     *this;
+        ERESULT         eRc;
         
         this = genOSX_Alloc( );
         if (this) {
             this = genOSX_Init(this);
+            if (this) {
+                eRc = genBase_setDict((GENBASE_DATA *)this, pDict);
+            }
         } 
         return this;
     }
@@ -345,6 +349,54 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                  D i c t i o n a r y
+    //---------------------------------------------------------------
+    
+    NODEHASH_DATA * genOSX_getDict(
+        GENOSX_DATA     *this
+    )
+    {
+        NODEHASH_DATA   *pDict;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pDict = genBase_getDict((GENBASE_DATA *)this);
+
+        genOSX_setLastError(this, genBase_getLastError((GENBASE_DATA *)this));
+        return pDict;
+    }
+    
+    
+    bool            genOSX_setDict(
+        GENOSX_DATA     *this,
+        NODEHASH_DATA   *pValue
+    )
+    {
+        bool            iRc;
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        iRc = genBase_setDict((GENBASE_DATA *)this, pValue);
+        
+        genOSX_setLastError(this, genBase_getLastError((GENBASE_DATA *)this));
+        return iRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
@@ -1166,10 +1218,10 @@ extern "C" {
      @warning  Remember to release the returned the GENOSX object.
      */
     GENOSX_DATA *     genOSX_Copy(
-        GENOSX_DATA       *this
+        GENOSX_DATA     *this
     )
     {
-        GENOSX_DATA       *pOther = OBJ_NIL;
+        GENOSX_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -1181,7 +1233,7 @@ extern "C" {
         }
 #endif
         
-        pOther = genOSX_New( );
+        pOther = genOSX_New(genOSX_getDict(this));
         if (pOther) {
             eRc = genOSX_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {

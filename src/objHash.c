@@ -66,7 +66,7 @@ extern "C" {
     );
     
     static
-    OBJHASH_NODE *  objHash_FindUnique(
+    OBJHASH_NODE *  objHash_FindUniqueInt(
         OBJHASH_DATA    *this,
         uint32_t        index
     );
@@ -161,7 +161,7 @@ extern "C" {
             }
             else {
                 for (;;) {
-                    pNodeScope = objHash_FindUnique(this, next);
+                    pNodeScope = objHash_FindUniqueInt(this, next);
                     if (OBJ_NIL == pNodeScope) {
                         DEBUG_BREAK();
                         break;
@@ -220,7 +220,7 @@ extern "C" {
     
     
     static
-    OBJHASH_NODE *  objHash_FindUnique(
+    OBJHASH_NODE *  objHash_FindUniqueInt(
         OBJHASH_DATA    *this,
         uint32_t        index
     )
@@ -232,6 +232,8 @@ extern "C" {
 
         // Do initialization.
         
+        // Since we have no other index, we must search
+        // the entire hash until we find the object.
         for (hash=0; hash<this->cHash; ++hash) {
             pNodeList = &this->pHash[hash];
             pNode = listdl_Head(pNodeList);
@@ -673,7 +675,10 @@ extern "C" {
             this->pScope = OBJ_NIL;
         }
         
-        obj_Dealloc(this);
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = NULL;
 
         // Return to caller.
@@ -789,7 +794,7 @@ extern "C" {
         }
 #endif
         
-        pNode = objHash_FindUnique(this, index);
+        pNode = objHash_FindUniqueInt(this, index);
         if (pNode) {
             pReturn = objHash_DeleteNode(this, pNode);
         }
@@ -900,7 +905,7 @@ extern "C" {
         }
 #endif
 
-        pNode = objHash_FindUnique(this, index);
+        pNode = objHash_FindUniqueInt(this, index);
         if (pNode) {
             return pNode->pObject;
         }
@@ -936,6 +941,7 @@ extern "C" {
         }
         //obj_setSize(cbp, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_OBJHASH);
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objHash_Vtbl);
         
         this->cHash = cHash;
@@ -964,7 +970,12 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+#ifdef __APPLE__
+        //fprintf(stderr, "objHash::offsetof(eRc) = %lu\n", offsetof(OBJHASH_DATA,eRc));
+        //fprintf(stderr, "objHash::sizeof(OBJHASH_DATA) = %lu\n", sizeof(OBJHASH_DATA));
+#endif
+        BREAK_NOT_BOUNDARY4(&this->eRc);
+        BREAK_NOT_BOUNDARY4(sizeof(OBJHASH_DATA));
     #endif
 
         return this;
@@ -1106,7 +1117,7 @@ extern "C" {
         
         array_Get(this->pScope, this->scopeLvl, 1, &curIndex);
         while (curIndex) {
-            pNode = objHash_FindUnique(this, curIndex);
+            pNode = objHash_FindUniqueInt(this, curIndex);
             if (OBJ_NIL == pNode) {
                 DEBUG_BREAK();
                 return ERESULT_GENERAL_FAILURE;
@@ -1194,7 +1205,7 @@ extern "C" {
         }
         
         while (next) {
-            pNode = objHash_FindUnique(this, next);
+            pNode = objHash_FindUniqueInt(this, next);
             if (NULL == pNode) {
                 break;
             }

@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <AStrArray.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <AStr_internal.h>
@@ -1140,7 +1141,7 @@ int         test_AStr_ExpandVars01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
@@ -1183,7 +1184,45 @@ int         test_AStr_ExpandVars02(
     obj_Release(pStr);
     pStr = NULL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStr_SplitOn01(
+    const
+    char            *pTestName
+)
+{
+    ASTR_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+    //int             len = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = AStr_New();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pArray = AStr_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        eRc = obj_getLastError(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == AStrArray_getSize(pArray)) );
+        
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
@@ -1191,6 +1230,7 @@ int         test_AStr_ExpandVars02(
 
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_SplitOn01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_ExpandVars02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_ExpandVars01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_Match01,setUp,tearDown);

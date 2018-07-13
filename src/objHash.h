@@ -25,7 +25,8 @@
  *	1.      The objects added to this table must support the
  *          compare() and hash() methods. The compare() method
  *          must be able to compare its object against any
- *          other object in the table.
+ *          other object in the table.  These methods are
+ *          part of the common VTBL for each object.
  *
  * History
  *  01/31/2018  Added the ability to have duplicate symbols

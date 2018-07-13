@@ -1248,7 +1248,7 @@ extern "C" {
         switch (this->osType) {
                 
             case OSTYPE_MACOS:
-                this->pGen = (OBJ_ID)genOSX_New( );
+                this->pGen = (OBJ_ID)genOSX_New(this->pDict);
                 if (this->pGen) {
                     if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
                         obj_TraceSet(this->pGen, true);

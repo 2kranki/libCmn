@@ -383,7 +383,6 @@ extern	"C" {
     
     
     
-
     uint16_t        obj_getIdent(
         OBJ_ID          objId
     )
@@ -431,6 +430,30 @@ extern	"C" {
             return NULL;
         }
         return this->pVtbl->pInfo;
+    }
+    
+    
+    
+    int16_t         obj_getLastError(
+        void            *pVoid
+    )
+    {
+        OBJ_DATA        *this = pVoid;
+        
+        return this->eRc;
+    }
+    
+    
+    bool            obj_setLastError(
+        OBJ_ID          objId,
+        int16_t         value
+    )
+    {
+        OBJ_DATA        *this = objId;
+        
+        this->eRc = value;
+        
+        return true;
     }
     
     

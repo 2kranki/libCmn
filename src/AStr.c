@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include    <AStr_internal.h>
 #include    <ascii.h>
+#include    <AStrArray.h>
 #include    <AStrC.h>
 #include    <crc.h>
 #include    <dec.h>
@@ -2513,6 +2514,113 @@ extern "C" {
         return ERESULT_OUT_OF_RANGE;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                     S p l i t  O n
+    //---------------------------------------------------------------
+    
+    ASTRARRAY_DATA * AStr_SplitOnCharW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        chr
+    )
+    {
+        ERESULT         eRc;
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        uint32_t        i = 1;
+        uint32_t        iMax;
+        uint32_t        start;
+        uint32_t        index = 1;
+        uint32_t        len;
+        ASTR_DATA       *pWrkStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+
+        iMax = AStr_getLength(this);
+        pArray = AStrArray_New( );
+        if (OBJ_NIL == pArray) {
+            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+
+        while (index < iMax) {
+            
+            index = i;
+            start = index;
+            eRc = AStr_CharFindNextW32(this, &index, chr);
+            if (ERESULT_FAILED(eRc)) {
+                // index is unreliable.
+                index = iMax;
+                len = index - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    eRc = AStr_Mid(this, start, len, &pWrkStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = AStr_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = AStrArray_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    obj_setLastError(this, eRc);
+                    return OBJ_NIL;
+                }
+            }
+            else {
+                len = index - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    eRc = AStr_Mid(this, start, len, &pWrkStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = AStr_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = AStrArray_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    obj_setLastError(this, eRc);
+                    return OBJ_NIL;
+                }
+            }
+        }
+        
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return pArray;
+    }
+
     
     
     //---------------------------------------------------------------

@@ -1,7 +1,7 @@
 {
     "name":"libCmn",
     "type":"library",
-    "deps":null,                    // An array of library names without "lib"
+    "deps":null,                    // An array of library names without "lib" prefix
     "headers": {
         "private":
         [
