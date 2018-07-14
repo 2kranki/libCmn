@@ -2552,15 +2552,17 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        while (index < iMax) {
+        while (i < (iMax + 1)) {
             
+            // We have to use i to store the current index since index
+            // get clobbered if the character is not found.
             index = i;
             start = index;
             eRc = AStr_CharFindNextW32(this, &index, chr);
             if (ERESULT_FAILED(eRc)) {
                 // index is unreliable.
-                index = iMax;
-                len = index - start;
+                i = iMax + 1;
+                len = i - start;
                 pWrkStr = OBJ_NIL;
                 if (len) {
                     eRc = AStr_Mid(this, start, len, &pWrkStr);
@@ -2588,6 +2590,7 @@ extern "C" {
                 }
             }
             else {
+                i = index + 1;
                 len = index - start;
                 pWrkStr = OBJ_NIL;
                 if (len) {

@@ -69,7 +69,6 @@ struct node_data_s	{
     // obj's misc2 is used for our misc property.
 
     // Common Data
-    ERESULT         eRc;
     int32_t         cls;
     int32_t         type;
     NAME_DATA       *pName;

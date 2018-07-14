@@ -293,6 +293,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -331,6 +332,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -376,6 +378,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -432,52 +435,9 @@ extern "C" {
             eRc = ERESULT_SUCCESS;
         }
         
-        this->eRc = eRc;
+        obj_setLastError(this, eRc);
         return hash;
     }
-    
-    
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         node_getLastError(
-        NODE_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            node_setLastError(
-        NODE_DATA       *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !node_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
     
     
     //---------------------------------------------------------------
@@ -494,6 +454,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -529,6 +490,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -568,6 +530,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -585,6 +548,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -604,6 +568,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return NULL;
         }
 #endif
         
@@ -661,6 +626,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -706,6 +672,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -751,6 +718,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -767,6 +735,7 @@ extern "C" {
 #else
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
         this->type = value;
@@ -1055,7 +1024,7 @@ extern "C" {
         
         pOther = node_New( );
         if (OBJ_NIL == pOther) {
-            node_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -1065,7 +1034,7 @@ extern "C" {
                 pData = obj_getVtbl(this->pData)->pDeepCopy(this->pData);
             }
             else {
-                node_setLastError(this, ERESULT_GENERAL_FAILURE);
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
@@ -1076,12 +1045,12 @@ extern "C" {
                 pData = obj_getVtbl(this->pName)->pDeepCopy(this->pName);
             }
             else {
-                node_setLastError(this, ERESULT_GENERAL_FAILURE);
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
         else {
-            node_setLastError(this, ERESULT_GENERAL_FAILURE);
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
 
@@ -1110,7 +1079,7 @@ extern "C" {
         }
         
         // Return to caller.
-        //obj_Release(pOther);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1138,7 +1107,7 @@ extern "C" {
         
         pData = node_getData(this);
         if (OBJ_NIL == pData) {
-            node_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return pArray;
         }
         
@@ -1148,14 +1117,14 @@ extern "C" {
         else if (obj_IsKindOf(pData,OBJ_IDENT_NODEARRAY)) {
             pArray = nodeArray_Copy((NODEARRAY_DATA *)pData);
             if (pArray) {
-                node_setLastError(this, ERESULT_SUCCESS);
+                obj_setLastError(this, ERESULT_SUCCESS);
             }
             else {
-                node_setLastError(this, ERESULT_DATA_ERROR);
+                obj_setLastError(this, ERESULT_DATA_ERROR);
             }
         }
         else {
-            node_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
         }
 
         // Return to caller.
@@ -1235,6 +1204,7 @@ extern "C" {
         BREAK_NOT_BOUNDARY4(&this->pProperties);
 #endif
 
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this;
     }
 
@@ -1404,29 +1374,29 @@ extern "C" {
         if (OBJ_NIL == this->pProperties) {
             this->pProperties = objHash_New(OBJHASH_TABLE_SIZE_XXXSMALL);
             if (OBJ_NIL == this->pProperties) {
-                this->eRc = ERESULT_OUT_OF_MEMORY;
+                eRc = ERESULT_OUT_OF_MEMORY;
                 goto eom;
             }
         }
         
         pSzData = szData_NewA(pName);
         if (pSzData == OBJ_NIL) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
+            eRc = ERESULT_OUT_OF_MEMORY;
             goto eom;
         }
         szData_setData(pSzData, pData);
         eRc = objHash_Add(this->pProperties, pSzData, NULL);
         if (ERESULT_FAILED(eRc)) {
-            this->eRc = eRc;
             goto eom;
         }
         obj_Release(pSzData);
         pSzData = OBJ_NIL;
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        eRc = ERESULT_SUCCESS;
     eom:
-        return this->eRc;
+        obj_setLastError(this, eRc);
+        return eRc;
     }
     
     

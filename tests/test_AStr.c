@@ -1228,8 +1228,200 @@ int         test_AStr_SplitOn01(
 
 
 
+int         test_AStr_SplitOn02(
+    const
+    char            *pTestName
+)
+{
+    ASTR_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+    //int             len = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = AStr_NewA("123");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pArray = AStr_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        eRc = obj_getLastError(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
+        pStr = AStrArray_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "123")) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStr_SplitOn03(
+    const
+    char            *pTestName
+)
+{
+    ASTR_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "1/2/3/4/5";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = AStr_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pArray = AStr_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        eRc = obj_getLastError(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", AStrArray_getSize(pArray));
+        XCTAssertTrue( (5 == AStrArray_getSize(pArray)) );
+        pStr = AStrArray_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "1")) );
+        pStr = AStrArray_Get(pArray, 2);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "2")) );
+        pStr = AStrArray_Get(pArray, 3);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "3")) );
+        pStr = AStrArray_Get(pArray, 4);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "4")) );
+        pStr = AStrArray_Get(pArray, 5);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "5")) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStr_SplitOn04(
+    const
+    char            *pTestName
+                                )
+{
+    ASTR_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "1/";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = AStr_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pArray = AStr_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        eRc = obj_getLastError(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", AStrArray_getSize(pArray));
+        XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
+        pStr = AStrArray_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "1")) );
+        
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStr_SplitOn05(
+    const
+    char            *pTestName
+)
+{
+    ASTR_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "/";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = AStr_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pArray = AStr_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        eRc = obj_getLastError(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", AStrArray_getSize(pArray));
+        XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
+        pStr = AStrArray_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == AStr_getLength(pStr)) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_SplitOn05,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_SplitOn04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_SplitOn03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_SplitOn02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_ExpandVars02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_ExpandVars01,setUp,tearDown);

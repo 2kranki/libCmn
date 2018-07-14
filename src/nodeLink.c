@@ -187,6 +187,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -228,6 +229,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -250,6 +252,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -272,6 +275,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -294,6 +298,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -335,6 +340,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -351,6 +357,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
         
@@ -361,49 +368,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeLink_getLastError(
-        NODELINK_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            nodeLink_setLastError(
-        NODELINK_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     //---------------------------------------------------------------
     //                      L e f t  I n d e x
     //---------------------------------------------------------------
@@ -418,6 +382,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -459,6 +424,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -500,6 +466,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -522,6 +489,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -543,6 +511,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -588,14 +557,14 @@ extern "C" {
         }
 #endif
 
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
     bool            nodeLink_setPriority(
-        NODELINK_DATA     *this,
+        NODELINK_DATA   *this,
         uint16_t        value
     )
     {
@@ -609,7 +578,7 @@ extern "C" {
 
         //this->priority = value;
 
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -629,6 +598,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -670,6 +640,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -711,12 +682,12 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return OBJ_NIL;
         }
 #endif
 
         
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -736,6 +707,7 @@ extern "C" {
 #else
         if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -833,11 +805,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        nodeLink_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return nodeLink_getLastError(this);
+        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return obj_getLastError(this);
     }
     
     
@@ -897,7 +869,7 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        this->eRc = eRc;
+        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -944,7 +916,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1006,7 +978,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1035,7 +1007,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1077,7 +1049,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeLink_Vtbl);
         
-        nodeLink_setLastError(this, ERESULT_GENERAL_FAILURE);
+        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -1089,10 +1061,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "nodeLink::offsetof(eRc) = %lu\n", offsetof(NODELINK_DATA,eRc));
         //fprintf(stderr, "nodeLink::sizeof(NODELINK_DATA) = %lu\n", sizeof(NODELINK_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(NODELINK_DATA));
     #endif
 
@@ -1120,12 +1090,12 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            nodeLink_setLastError(this, ERESULT_SUCCESS_TRUE);
+            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        nodeLink_setLastError(this, ERESULT_SUCCESS_FALSE);
+        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1342,7 +1312,7 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        nodeLink_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1379,12 +1349,12 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(NODELINK_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

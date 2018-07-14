@@ -191,11 +191,6 @@ extern "C" {
     );
     
 
-    ERESULT         nodeLink_getLastError(
-        NODELINK_DATA   *this
-    );
-
-
     uint32_t        nodeLink_getLeft(
         NODELINK_DATA   *this
     );

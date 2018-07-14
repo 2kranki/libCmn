@@ -61,7 +61,6 @@ struct name_data_s	{
 #define NAME_FLAG_HASH  OBJ_FLAG_USER1  /* Hash is initialized. */
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        type;               /* Type in union below*/
     uint16_t        rsvd;
     union {
@@ -83,12 +82,6 @@ struct name_data_s	{
 
 
     // Internal Functions
-    bool            name_setLastError(
-        NAME_DATA       *this,
-        ERESULT         value
-    );
-    
-    
     void            name_Dealloc(
         OBJ_ID          objId
     );

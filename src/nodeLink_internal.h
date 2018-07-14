@@ -68,7 +68,6 @@ struct nodeLink_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
 
     // Indices
     uint32_t        index;
@@ -93,12 +92,6 @@ struct nodeLink_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            nodeLink_setLastError(
-        NODELINK_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  nodeLink_getSuperVtbl(
         NODELINK_DATA     *this

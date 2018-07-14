@@ -210,7 +210,7 @@ extern "C" {
                 break;
         }
         
-        name_setLastError(this, eRc);
+        obj_setLastError(this, eRc);
         return value;
     }
     
@@ -235,51 +235,8 @@ extern "C" {
         }
 #endif
         
-        name_setLastError(this, eRc);
+        obj_setLastError(this, eRc);
         return name_Hash(this);
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         name_getLastError(
-        NAME_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !name_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            name_setLastError(
-        NAME_DATA       *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !name_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
     }
     
     
@@ -765,7 +722,7 @@ extern "C" {
                 pOther->pChrs = str_DupA(this->pChrs);
                 if (NULL == pOther->pChrs) {
                     DEBUG_BREAK();
-                    name_setLastError(this, ERESULT_GENERAL_FAILURE);
+                    obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                     obj_Release(pOther);
                     return OBJ_NIL;
                 }
@@ -777,7 +734,7 @@ extern "C" {
                 
             default:
                 DEBUG_BREAK();
-                name_setLastError(this, ERESULT_GENERAL_FAILURE);
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 obj_Release(pOther);
                 return OBJ_NIL;
                 

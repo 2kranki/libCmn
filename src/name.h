@@ -164,11 +164,6 @@ extern "C" {
     );
     
     
-    ERESULT         name_getLastError(
-        NAME_DATA     *this
-    );
-    
-    
     /*!
      Get the name value as an AStr object.
      @return    If successful, an AStr object which must be released,
