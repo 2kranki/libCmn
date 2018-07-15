@@ -167,6 +167,7 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -206,6 +207,7 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
         
@@ -230,6 +232,7 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -446,6 +449,7 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -531,7 +535,7 @@ extern "C" {
         
         // Return to caller.
         obj_Release(pOther);
-        return( OBJ_NIL );
+        return OBJ_NIL;
     }
     
     
@@ -576,7 +580,7 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
 #endif
         
@@ -600,7 +604,7 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
 #endif
         
@@ -741,13 +745,13 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return OBJ_NIL;
         }
 #ifdef NDEBUG
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
 #endif
         
@@ -768,13 +772,13 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return OBJ_NIL;
         }
 #ifdef NDEBUG
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
 #endif
         
@@ -816,7 +820,7 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&cbp->thread);
+        //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
         return this;
@@ -829,10 +833,10 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeArray_InsertAfter(
-                                          NODEARRAY_DATA	*this,
-                                          uint32_t        index,
-                                          NODE_DATA       *pObject
-                                          )
+        NODEARRAY_DATA	*this,
+        uint32_t        index,
+        NODE_DATA       *pObject
+    )
     {
         ERESULT         eRc;
         
@@ -926,13 +930,13 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #ifdef NDEBUG
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -1057,10 +1061,13 @@ extern "C" {
         }
         else
             return false;
-        if( !(obj_getSize(this) >= sizeof(NODEARRAY_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODEARRAY_DATA)) ) {
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
+        }
 
         // Return to caller.
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif
@@ -1090,7 +1097,8 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
+;
         }
         BREAK_NULL(this->pArray);
 #endif

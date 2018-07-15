@@ -129,11 +129,6 @@ extern "C" {
     );
     
     
-    ERESULT         symAttr_getLastError(
-        SYMATTR_DATA    *this
-    );
-
-
     int32_t         symAttr_getType(
         SYMATTR_DATA    *this
     );

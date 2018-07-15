@@ -87,7 +87,6 @@ struct symTable_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     OBJHASH_DATA    *pEntries;
     
 };
@@ -106,12 +105,6 @@ struct symTable_data_s	{
     void            symTable_Dealloc(
         OBJ_ID          objId
     );
-
-    bool            symTable_setLastError(
-        SYMTABLE_DATA     *this,
-        ERESULT         value
-    );
-
 
     void *          symTable_QueryInfo(
         OBJ_ID          objId,

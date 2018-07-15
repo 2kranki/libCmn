@@ -173,7 +173,6 @@ struct symAttr_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pStr;
@@ -200,12 +199,6 @@ struct symAttr_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            symAttr_setLastError(
-        SYMATTR_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  symAttr_getSuperVtbl(
         SYMATTR_DATA     *this

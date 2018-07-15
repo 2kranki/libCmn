@@ -234,49 +234,6 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeHash_getLastError(
-        NODEHASH_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeHash_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            nodeHash_setLastError(
-        NODEHASH_DATA   *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeHash_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -290,6 +247,7 @@ extern "C" {
 #else
         if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
 
@@ -306,6 +264,7 @@ extern "C" {
 #else
         if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
         //cbp->priority = value;
@@ -326,6 +285,7 @@ extern "C" {
 #else
         if( !nodeHash_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         return this->size;
@@ -873,7 +833,7 @@ extern "C" {
         }
         if( OBJ_NIL == pNode ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -901,7 +861,7 @@ extern "C" {
         }
         if( OBJ_NIL == pName ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
     #endif
@@ -909,19 +869,19 @@ extern "C" {
         pNameObj = name_NewUTF8(pName);
         if(OBJ_NIL == pNameObj) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_OUT_OF_MEMORY;
+            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         pEntry = nodeHash_FindNodeHash(this, pNameObj);
         obj_Release(pNameObj);
         pNameObj = OBJ_NIL;
         if (pEntry) {
-            this->eRc = ERESULT_SUCCESS;
+            obj_setLastError(this, ERESULT_SUCCESS);
             return pEntry->pNode;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
 
@@ -942,19 +902,19 @@ extern "C" {
         }
         if( OBJ_NIL == pName ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
         
         pEntry = nodeHash_FindNodeHash(this, pName);
         if (pEntry) {
-            this->eRc = ERESULT_SUCCESS;
+            obj_setLastError(this, ERESULT_SUCCESS);
             return pEntry->pNode;
         }
         
         // Return to caller.
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
     
@@ -1106,7 +1066,7 @@ extern "C" {
         nodeArray_SortAscending(pKeys);
         
         // Return to caller.
-        nodeHash_setLastError(this, eRc);
+        obj_setLastError(this, eRc);
         return pKeys;
     }
     
@@ -1272,10 +1232,13 @@ extern "C" {
         }
         else
             return false;
-        if( !(obj_getSize(this) >= sizeof(NODEHASH_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODEHASH_DATA)) ) {
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
+        }
 
         // Return to caller.
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

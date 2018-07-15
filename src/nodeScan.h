@@ -141,11 +141,6 @@ extern "C" {
     );
     
     
-    ERESULT         nodeScan_getLastError(
-        NODESCAN_DATA   *this
-    );
-    
-    
     NODELINK_DATA * nodeScan_getOpenNode(
         NODESCAN_DATA   *this
     );

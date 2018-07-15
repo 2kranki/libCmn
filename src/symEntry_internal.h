@@ -156,7 +156,6 @@ struct symEntry_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     SYM_ENTRY       *pEntry;
     SYMATTR_DATA    *pAttr;
 
@@ -173,12 +172,6 @@ struct symEntry_data_s	{
 
 
     // Internal Functions
-    bool            symEntry_setLastError(
-        SYMENTRY_DATA   *this,
-        ERESULT         value
-    );
-
-
     bool            symEntry_setName(
         SYMENTRY_DATA   *this,
         const

@@ -131,11 +131,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     symTable_getLastError(
-        SYMTABLE_DATA   *this
-    );
-
-
     uint32_t        symTable_getSize(
         SYMTABLE_DATA   *this
     );

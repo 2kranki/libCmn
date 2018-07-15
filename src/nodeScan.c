@@ -423,49 +423,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeScan_getLastError(
-        NODESCAN_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeScan_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            nodeScan_setLastError(
-        NODESCAN_DATA   *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeScan_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                    O p e n  N o d e
     //---------------------------------------------------------------
     
@@ -501,6 +458,7 @@ extern "C" {
 #else
         if( !nodeScan_Validate(this) ) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
         
@@ -637,7 +595,7 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
 #endif
@@ -648,7 +606,7 @@ extern "C" {
             ;
         else {
             this->index = 1;
-            this->eRc = ERESULT_EOF_ERROR;
+            obj_setLastError(this, ERESULT_EOF_ERROR);
             return OBJ_NIL;
         }
         pNode = nodeArray_Get(this->pArray, this->index);
@@ -680,14 +638,14 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
         if (num > 0)
             ;
         else {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -696,12 +654,13 @@ extern "C" {
         if (idx <= nodeArray_getSize(this->pArray))
             ;
         else {
-            this->eRc = ERESULT_EOF_ERROR;
+            obj_setLastError(this, ERESULT_EOF_ERROR);
             return OBJ_NIL;
         }
         pNode = nodeArray_Get(this->pArray, idx);
         
         // Return to caller.
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pNode;
     }
     
@@ -731,7 +690,7 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
 #endif
@@ -744,11 +703,13 @@ extern "C" {
             mem_Free((void *)pName);
             if( 0 == cmp ) {
                 (void)nodeScan_InputAdvance(this, 1);
+                obj_setLastError(this, ERESULT_SUCCESS);
                 return pNode;
             }
         }
         
         // Return to caller.
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
     
@@ -774,7 +735,7 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
 #endif
@@ -783,19 +744,19 @@ extern "C" {
         if (this->index < nodeArray_getSize(this->pArray))
             ;
         else {
-            this->eRc = ERESULT_EOF_ERROR;
+            obj_setLastError(this, ERESULT_EOF_ERROR);
             return OBJ_NIL;
         }
 
         pNode = nodeArray_Get(this->pArray, this->index);
         if( pNode && ((cls == node_getClass(pNode)) || (cls == NODE_CLASS_ANY)) ) {
             (void)nodeScan_InputAdvance(this, 1);
-            this->eRc = ERESULT_SUCCESS;
+            obj_setLastError(this, ERESULT_SUCCESS);
             return pNode;
         }
         
         // Return to caller.
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
     
@@ -822,7 +783,7 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
         if (NULL == pSet) {
@@ -835,7 +796,7 @@ extern "C" {
         while (*pSet) {
             pNode = nodeScan_MatchClass(this, *pSet);
             if(pNode) {
-                this->eRc = ERESULT_SUCCESS;
+                obj_setLastError(this, ERESULT_SUCCESS);
                 this->start = start;
                 return pNode;
             }
@@ -843,7 +804,7 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
     
@@ -884,12 +845,12 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
         if (NULL == pRegex) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -925,7 +886,7 @@ extern "C" {
                 startIndex = this->index;
                 pNodeStart = nodeArray_Get(this->pArray, this->index);
                 if (OBJ_NIL == pNodeStart) {
-                    this->eRc = ERESULT_GENERAL_FAILURE;
+                    obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                     return OBJ_NIL;
                 }
             }
@@ -933,12 +894,12 @@ extern "C" {
                 stopRegex = curRegex;
             }
             if (0 == stopRegex) {
-                this->eRc = ERESULT_INVALID_DATA;
+                obj_setLastError(this, ERESULT_INVALID_DATA);
                 return OBJ_NIL;
             }
             pNode = nodeScan_ScanClassUntil(this, stopRegex);
             if (OBJ_NIL == pNode) {
-                this->eRc = ERESULT_DATA_NOT_FOUND;
+                obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
                 return OBJ_NIL;
             }
             if (fKleene) {
@@ -957,7 +918,7 @@ extern "C" {
                     stopRegex = *(pIdxRegex + 1);
                     pNode = nodeScan_ScanClassUntil(this, stopRegex);
                     if (OBJ_NIL == pNode) {
-                        this->eRc = ERESULT_DATA_NOT_FOUND;
+                        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
                         return OBJ_NIL;
                     }
                 }
@@ -965,6 +926,7 @@ extern "C" {
                     stopRegex = curRegex;
                 pNode = nodeArray_Get(this->pArray, 1);
                 if(pNode) {
+                    obj_setLastError(this, ERESULT_SUCCESS);
                     return pNode;
                 }
                 ++pIdxRegex;
@@ -972,7 +934,7 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
     
@@ -1079,16 +1041,16 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
         if (0 == cls) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
         if (cls == NODE_CLASS_KLEENE) {
-            this->eRc = ERESULT_INVALID_DATA;
+            obj_setLastError(this, ERESULT_INVALID_DATA);
             return OBJ_NIL;
         }
 #endif
@@ -1097,29 +1059,29 @@ extern "C" {
             ;
         else {
             DEBUG_BREAK();
-            this->eRc = ERESULT_EOF_ERROR;
+            obj_setLastError(this, ERESULT_EOF_ERROR);
             return OBJ_NIL;
         }
         
         while (this->index <= nodeArray_getSize(this->pArray)) {
             pNode = nodeArray_Get(this->pArray, this->index);
             if (OBJ_NIL == pNode) {
-                this->eRc = ERESULT_GENERAL_FAILURE;
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return 0;
             }
             if (cls == NODE_CLASS_ANY) {
-                this->eRc = ERESULT_SUCCESS;
+                obj_setLastError(this, ERESULT_SUCCESS);
                 return pNode;
             }
             curClass = node_getClass(pNode);
             if (cls == curClass) {
-                this->eRc = ERESULT_SUCCESS;
+                obj_setLastError(this, ERESULT_SUCCESS);
                 return pNode;
             }
             (void)nodeScan_InputAdvance(this, 1);
         }
         
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return 0;
     }
     
@@ -1143,7 +1105,7 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_DATA_MISSING;
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
 #endif
@@ -1151,11 +1113,11 @@ extern "C" {
         this->index = 1;
         pNode = nodeArray_Get(this->pArray, this->index);
         if (OBJ_NIL == pNode) {
-            this->eRc = ERESULT_GENERAL_FAILURE;
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
         
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pNode;
     }
     
@@ -1230,10 +1192,13 @@ extern "C" {
         }
         else
             return false;
-        if( !(obj_getSize(this) >= sizeof(NODESCAN_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODESCAN_DATA)) ) {
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
+        }
 
         // Return to caller.
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

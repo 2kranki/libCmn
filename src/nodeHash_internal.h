@@ -81,7 +81,6 @@ struct nodeHash_data_s	{
 #define NODEHASH_FLAG_DUPS  OBJ_FLAG_USER5  /* true == allow duplicates */
 
     // Common Data
-    ERESULT         eRc;
     uint32_t        size;
     uint32_t        unique;
 
@@ -101,12 +100,6 @@ struct nodeHash_data_s	{
 
 
     // Internal Functions
-    bool            nodeHash_setLastError(
-        NODEHASH_DATA   *this,
-        ERESULT         value
-    );
-    
-    
     void            nodeHash_Dealloc(
         OBJ_ID          objId
     );

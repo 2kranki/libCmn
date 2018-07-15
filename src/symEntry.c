@@ -144,7 +144,7 @@ extern "C" {
         }
 #endif
         
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pAttr;
     }
     
@@ -168,7 +168,7 @@ extern "C" {
         }
         this->pAttr = pValue;
         
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -193,10 +193,11 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pEntry->cls;
     }
     
@@ -215,13 +216,13 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
         this->pEntry->cls = value;
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -247,56 +248,17 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
         hash = szTbl_TokenToHash(OBJ_NIL, this->pEntry->nameToken);
 
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return hash;
     }
     
     
-    ERESULT         symEntry_getLastError(
-        SYMENTRY_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            symEntry_setLastError(
-        SYMENTRY_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------
@@ -319,13 +281,13 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return NULL;
         }
 
         pStr = szTbl_TokenToString(OBJ_NIL, this->pEntry->nameToken);
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -346,14 +308,14 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return NULL;
         }
 
         token = szTbl_StringToToken(OBJ_NIL, pValue);
         this->pEntry->nameToken = token;
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -371,7 +333,7 @@ extern "C" {
         }
 #endif
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
     
@@ -396,10 +358,11 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pEntry->nameToken;
     }
     
@@ -418,13 +381,13 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
         this->pEntry->nameToken = value;
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -449,7 +412,7 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
@@ -471,13 +434,13 @@ extern "C" {
 #endif
         if (NULL == this->pEntry) {
             DEBUG_BREAK();
-            symEntry_setLastError(this, ERESULT_DATA_MISSING);
+            obj_setLastError(this, ERESULT_DATA_MISSING);
             return -1;
         }
         
         this->pEntry->type = value;
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -577,11 +540,11 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return symEntry_getLastError(this);
+            return obj_getLastError(this);
         }
         if( !symEntry_Validate(pOther) ) {
             DEBUG_BREAK();
-            return symEntry_getLastError(pOther);
+            return obj_getLastError(pOther);
         }
 #endif
 
@@ -612,11 +575,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
     //eom:
         //FIXME: Implement the assignment.        
-        symEntry_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return symEntry_getLastError(this);
+        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return obj_getLastError(this);
     }
     
     
@@ -663,7 +626,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -725,14 +688,14 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            symEntry_setLastError(this, ERESULT_INVALID_OBJECT);
-            return symEntry_getLastError(this);
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return obj_getLastError(this);
         }
     #ifdef NDEBUG
     #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return symEntry_getLastError(this);
+            return obj_getLastError(this);
         }
     #endif
 
@@ -741,8 +704,8 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return symEntry_getLastError(this);
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return obj_getLastError(this);
     }
 
 
@@ -761,7 +724,7 @@ extern "C" {
     #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return symEntry_getLastError(this);
+            return obj_getLastError(this);
         }
     #endif
         
@@ -770,8 +733,8 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        symEntry_setLastError(this, ERESULT_SUCCESS);
-        return symEntry_getLastError(this);
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return obj_getLastError(this);
     }
 
 
@@ -812,7 +775,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&symEntry_Vtbl);
         
-        symEntry_setLastError(this, ERESULT_GENERAL_FAILURE);
+        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         this->pEntry = mem_Calloc(1, sizeof(SYM_ENTRY));
 
@@ -826,6 +789,7 @@ extern "C" {
         //BREAK_NOT_BOUNDARY4(&this->thread);
     #endif
 
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this;
     }
 
@@ -845,18 +809,18 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return symEntry_getLastError(this);
+            return obj_getLastError(this);
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            symEntry_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return symEntry_getLastError(this);
+            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
+            return obj_getLastError(this);
         }
         
         // Return to caller.
-        symEntry_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return symEntry_getLastError(this);
+        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
+        return obj_getLastError(this);
     }
     
     
@@ -1008,7 +972,7 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(symEntry)}\n", this);
         AStr_AppendA(pStr, str);
         
-        symEntry_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1045,12 +1009,12 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SYMENTRY_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

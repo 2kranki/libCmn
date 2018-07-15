@@ -165,11 +165,6 @@ extern "C" {
     );
     
     
-    ERESULT         symEntry_getLastError(
-        SYMENTRY_DATA	*this
-    );
-
-
     const
     char *          symEntry_getName(
         SYMENTRY_DATA   *this

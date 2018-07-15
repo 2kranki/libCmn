@@ -109,45 +109,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT         symTable_getLastError(
-        SYMTABLE_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symTable_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            symTable_setLastError(
-        SYMTABLE_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symTable_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     uint16_t        symTable_getPriority(
         SYMTABLE_DATA     *this
     )
@@ -162,7 +123,7 @@ extern "C" {
         }
 #endif
 
-        symTable_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -182,7 +143,7 @@ extern "C" {
 
         //this->priority = value;
 
-        symTable_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -200,7 +161,7 @@ extern "C" {
         }
 #endif
 
-        symTable_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return objHash_getSize(this->pEntries);
     }
 
@@ -240,7 +201,7 @@ extern "C" {
         eRc = objHash_Add(this->pEntries, pObject, NULL);
         
         // Return to caller.
-        this->eRc = eRc;
+        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -274,11 +235,11 @@ extern "C" {
 #else
         if( !symTable_Validate(this) ) {
             DEBUG_BREAK();
-            return symTable_getLastError(this);
+            return obj_getLastError(this);
         }
         if( !symTable_Validate(pOther) ) {
             DEBUG_BREAK();
-            return symTable_getLastError(pOther);
+            return obj_getLastError(pOther);
         }
 #endif
 
@@ -309,11 +270,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        symTable_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
     //eom:
         //FIXME: Implement the assignment.        
-        symTable_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return symTable_getLastError(this);
+        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return obj_getLastError(this);
     }
     
     
@@ -362,7 +323,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        symTable_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -430,7 +391,7 @@ extern "C" {
         pReturn = objHash_Delete(this->pEntries, pObject);
         
         // Return to caller.
-        this->eRc = objHash_getLastError(this->pEntries);
+        obj_setLastError(this, objHash_getLastError(this->pEntries));
         return pReturn;
     }
     
@@ -453,7 +414,7 @@ extern "C" {
         eRc = objHash_DeleteAll(this->pEntries);
         
         // Return to caller.
-        this->eRc = eRc;
+        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -468,7 +429,7 @@ extern "C" {
     )
     {
         OBJENUM_DATA    *pEnum = OBJ_NIL;
-        //ERESULT         eRc;
+        ERESULT         eRc;
         
         // Do initialization.
         if (NULL == this) {
@@ -484,12 +445,13 @@ extern "C" {
         
         pEnum = objHash_Enum(this->pEntries);
         if (OBJ_NIL == pEnum) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
+            eRc = ERESULT_OUT_OF_MEMORY;
+            obj_setLastError(this, eRc);
             return OBJ_NIL;
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pEnum;
     }
     
@@ -518,7 +480,7 @@ extern "C" {
         pReturn = objHash_Find(this->pEntries, pObject);
         
         // Return to caller.
-        this->eRc = objHash_getLastError(this->pEntries);
+        obj_setLastError(this, objHash_getLastError(this->pEntries));
         return pReturn;
     }
     
@@ -561,7 +523,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&symTable_Vtbl);
         
-        symTable_setLastError(this, ERESULT_GENERAL_FAILURE);
+        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
 
         this->pEntries = objHash_New(cHash);
         if (OBJ_NIL == this->pEntries) {
@@ -727,7 +689,7 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(symTable)}\n", this);
         AStr_AppendA(pStr, str);
         
-        symTable_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -764,12 +726,12 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SYMTABLE_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

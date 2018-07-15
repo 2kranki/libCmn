@@ -135,11 +135,6 @@ extern "C" {
     );
     
     
-    ERESULT         nodeTree_getLastError(
-        NODETREE_DATA   *this
-    );
-    
-    
     NODELINK_DATA * nodeTree_getOpenNode(
         NODETREE_DATA   *this
     );

@@ -62,7 +62,6 @@ struct nodeTree_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    ERESULT         eRc;
     OBJARRAY_DATA   *pArray;        // Root is always at 1
     NODEHASH_DATA   *pProperties;
     uint32_t        size;           // Maximum number of elements
@@ -90,11 +89,6 @@ struct nodeTree_data_s	{
     bool            nodeTree_setDownNode(
         NODETREE_DATA   *cbp,
         NODE_DATA       *pValue
-    );
-    
-    bool            nodeTree_setLastError(
-        NODETREE_DATA   *this,
-        ERESULT         value
     );
     
     bool            nodeTree_setUpNode(

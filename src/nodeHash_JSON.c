@@ -544,7 +544,7 @@ extern "C" {
             }
         }
         if (!fRc) {
-            this->eRc = ERESULT_DATA_ERROR;
+            obj_setLastError(this, ERESULT_DATA_ERROR);
             return OBJ_NIL;
         }
         

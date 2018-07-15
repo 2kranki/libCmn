@@ -133,6 +133,7 @@ extern "C" {
     {
         NODELINK_DATA   *pNode;
         uint32_t        childIndex;
+        ERESULT         eRc;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -148,13 +149,13 @@ extern "C" {
             childIndex = nodeLink_getChild(pNode);
             if (childIndex) {
                 nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
-                this->eRc = nodeTree_UpDownNodePost(
+                eRc = nodeTree_UpDownNodePost(
                                                    this,
                                                    childIndex,
                                                    pArray
                 );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
                 nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
             }
@@ -163,19 +164,19 @@ extern "C" {
             // Follow Sibling chain.
             childIndex = nodeLink_getSibling(pNode);
             if (childIndex) {
-                this->eRc = nodeTree_UpDownNodePost(
+                eRc = nodeTree_UpDownNodePost(
                                                    this,
                                                    childIndex,
                                                    pArray
                                                    );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
         }
 
         // Return to caller.
-        return true;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -199,13 +200,14 @@ extern "C" {
         NODELINK_DATA   *pEntry;
         NODELINK_DATA   *pChild;
         uint32_t        childIndex;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -217,9 +219,9 @@ extern "C" {
                 nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
                 pChild = objArray_Get(this->pArray, childIndex);
                 if (pChild) {
-                    nodeTree_UpDownNodePre(this, childIndex, pArray);
-                    if (ERESULT_FAILED(this->eRc)) {
-                        return this->eRc;
+                    eRc = nodeTree_UpDownNodePre(this, childIndex, pArray);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
                     }
                 }
                 nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
@@ -228,17 +230,16 @@ extern "C" {
             if (childIndex) {
                 pChild = objArray_Get(this->pArray, childIndex);
                 if (pChild) {
-                    nodeTree_UpDownNodePre(this, childIndex, pArray);
-                    if (ERESULT_FAILED(this->eRc)) {
-                        return this->eRc;
+                    eRc = nodeTree_UpDownNodePre(this, childIndex, pArray);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
                     }
                 }
             }
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -263,13 +264,14 @@ extern "C" {
     {
         NODELINK_DATA   *pEntry;
         uint32_t        childIndex;
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -278,15 +280,15 @@ extern "C" {
             // Follow Child chain.
             childIndex = nodeLink_getChild(pEntry);
             if (childIndex) {
-                this->eRc = nodeTree_NodeInorder(
+                eRc = nodeTree_NodeInorder(
                                                    this,
                                                    pVisitor,
                                                    pObject,
                                                    childIndex,
                                                    indent
                                                    );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
             // visit current node.
@@ -297,15 +299,15 @@ extern "C" {
                 DEBUG_BREAK();
             }
             if (childIndex) {
-                this->eRc = nodeTree_NodeInorder(
+                eRc = nodeTree_NodeInorder(
                                                    this,
                                                    pVisitor,
                                                    pObject,
                                                    childIndex,
                                                    indent
                                                    );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
             // Follow Sibling chain.
@@ -313,7 +315,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -337,13 +339,14 @@ extern "C" {
     {
         NODELINK_DATA   *pNode;
         uint32_t        childIndex;
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -352,15 +355,15 @@ extern "C" {
             // Follow Child chain.
             childIndex = nodeLink_getChild(pNode);
             if (childIndex) {
-                this->eRc = nodeTree_NodePostorder(
+                eRc = nodeTree_NodePostorder(
                                                   this,
                                                   pVisitor,
                                                   pObject,
                                                   childIndex,
                                                   indent
                                                   );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
             // visit current node.
@@ -368,21 +371,21 @@ extern "C" {
             // Follow Sibling chain.
             childIndex = nodeLink_getSibling(pNode);
             if (childIndex) {
-                this->eRc = nodeTree_NodePostorder(
+                eRc = nodeTree_NodePostorder(
                                                   this,
                                                   pVisitor,
                                                   pObject,
                                                   childIndex,
                                                   indent
                                                   );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
         }
         
         // Return to caller.
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -414,13 +417,14 @@ extern "C" {
     {
         NODELINK_DATA   *pNode;
         uint32_t        childIndex;
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -431,35 +435,35 @@ extern "C" {
             // Follow Child chain.
             childIndex = nodeLink_getChild(pNode);
             if (childIndex) {
-                this->eRc = nodeTree_NodePreorder(
+                eRc = nodeTree_NodePreorder(
                                                   this,
                                                   pVisitor,
                                                   pObject,
                                                   childIndex,
                                                   indent+1
                                                   );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
             // Follow Sibling chain.
             childIndex = nodeLink_getSibling(pNode);
             if (childIndex) {
-                this->eRc = nodeTree_NodePreorder(
+                eRc = nodeTree_NodePreorder(
                                         this,
                                         pVisitor,
                                         pObject,
                                         childIndex,
                                         indent
                             );
-                if (ERESULT_FAILED(this->eRc)) {
-                    return this->eRc;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
                 }
             }
         }
         
         // Return to caller.
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -595,42 +599,8 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                    R o o t  I n d e x
     //---------------------------------------------------------------
-    
-    ERESULT         nodeTree_getLastError(
-        NODETREE_DATA   *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        return this->eRc;
-    }
-    
-    
-    bool            nodeTree_setLastError(
-        NODETREE_DATA   *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
     
     uint32_t        nodeTree_getRootIndex(
         NODETREE_DATA   *this
@@ -722,12 +692,12 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
         if( !(parent > 0) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -753,7 +723,7 @@ extern "C" {
         if (pIndex) {
             *pIndex = childIndex;
         }
-        this->eRc = objArray_getLastError(this->pArray);
+        obj_setLastError(this, objArray_getLastError(this->pArray));
         return pNodeReturn;
     }
     
@@ -772,23 +742,24 @@ extern "C" {
         NODELINK_DATA   *pParent;
         NODELINK_DATA   *pChild;
         uint32_t        index = 0;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return 0;
         }
         if( !(parent <= objArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if( pNode == OBJ_NIL ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -800,16 +771,16 @@ extern "C" {
         if (parent == 0) {
             if( !(objArray_getSize(this->pArray) == 0) ) {
                 DEBUG_BREAK();
-                this->eRc = ERESULT_DATA_ALREADY_EXISTS;
+                obj_setLastError(this, ERESULT_DATA_ALREADY_EXISTS);
                 return 0;
             }
-            this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-            if (!ERESULT_FAILED(this->eRc)) {
+            eRc = objArray_AppendObj(this->pArray, pNode, &index);
+            if (!ERESULT_FAILED(eRc)) {
                 nodeLink_setIndex(pNode, index);
             }
             else {
                 DEBUG_BREAK();
-                this->eRc = ERESULT_GENERAL_FAILURE;
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return 0;
             }
             goto eom;
@@ -819,8 +790,8 @@ extern "C" {
         if (pParent) {
             index = nodeLink_getChild(pParent);
             if (index == 0) {     // No children
-                this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-                if (!ERESULT_FAILED(this->eRc)) {
+                eRc = objArray_AppendObj(this->pArray, pNode, &index);
+                if (!ERESULT_FAILED(eRc)) {
                     nodeLink_setChild(pParent, index);
                     nodeLink_setIndex(pNode, index);
                     nodeLink_setParent(pNode, parent);
@@ -831,8 +802,8 @@ extern "C" {
                 for (;;) {
                     pChild = objArray_Get(this->pArray, index);
                     if (nodeLink_getSibling(pChild) == 0) {  // End of Sibling Chain
-                        this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-                        if (!ERESULT_FAILED(this->eRc)) {
+                        eRc = objArray_AppendObj(this->pArray, pNode, &index);
+                        if (!ERESULT_FAILED(eRc)) {
                             nodeLink_setSibling(pChild, index);
                             nodeLink_setIndex(pNode, index);
                             nodeLink_setParent(pNode, parent);
@@ -870,17 +841,17 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return 0;
         }
         if( !(parent <= objArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if (parent == 0) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -904,7 +875,7 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
     //eom:
         return count;
     }
@@ -924,13 +895,14 @@ extern "C" {
         va_list         pList;
         NODELINK_DATA   *pChild;
         uint32_t        nodeIndex;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -940,7 +912,8 @@ extern "C" {
             if (pChild) {
                 nodeIndex = nodeTree_ChildAdd(this, parent, pChild);
                 if (nodeIndex == 0) {
-                    return this->eRc;
+                    eRc = obj_getLastError(this);
+                    return eRc;
                 }
             }
             else
@@ -948,7 +921,8 @@ extern "C" {
         }
         
         // Return to caller.
-        return this->eRc;
+        eRc = obj_getLastError(this);
+        return eRc;
     }
     
     
@@ -968,40 +942,36 @@ extern "C" {
         NODELINK_DATA   *pChildLast = OBJ_NIL;
         NODELINK_DATA   *pEntry;
         NODELINK_DATA   *pParent;
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( !((parent > 0) && (parent <= objArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         if( !((index > 0) && (index <= objArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
         pEntry = nodeTree_Node(this, index);
         if (pEntry == OBJ_NIL) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         
         pParent = nodeTree_Node(this, parent);
         if (pParent == OBJ_NIL) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         if (0 == nodeLink_getChild(pParent)) {     // No children to move
-            this->eRc = ERESULT_SUCCESS;
-            return this->eRc;
+            return ERESULT_SUCCESS;
         }
         
         // Find last child if any of where to add the children.
@@ -1041,9 +1011,9 @@ extern "C" {
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        eRc = ERESULT_SUCCESS;
     //eom:
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -1149,13 +1119,13 @@ extern "C" {
         }
         if( !((index > 0) && (index <= objArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return pNode;
         }
 #endif
         
         pNode = objArray_Get(this->pArray, index);
-        this->eRc = objArray_getLastError(this->pArray);
+        obj_setLastError(this, objArray_getLastError(this->pArray));
         
         return pNode;
     }
@@ -1176,21 +1146,20 @@ extern "C" {
         NODELINK_DATA   *pChild;
         uint32_t        idxParent;
         uint32_t        idxChild;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
-            return 0;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         pEntry = nodeTree_Node(this, index);
         if (pEntry == OBJ_NIL) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            goto eom;
+            return ERESULT_INVALID_PARAMETER;
         }
         BREAK_FALSE((obj_getRetainCount(pEntry) ==  1));
         idxParent = nodeLink_getParent(pEntry);
@@ -1221,8 +1190,8 @@ extern "C" {
             if (idxChild) {
                 pChild = nodeTree_Node(this, idxChild);
                 if (pChild) {
-                    this->eRc = nodeTree_NodeDelete(this, idxChild);
-                    if (ERESULT_FAILED(this->eRc)) {
+                    eRc = nodeTree_NodeDelete(this, idxChild);
+                    if (ERESULT_FAILED(eRc)) {
                         break;
                     }
                 }
@@ -1240,13 +1209,13 @@ extern "C" {
         //          re-translate the entire tree.
         
         // Return to caller.
-        if (ERESULT_FAILED(this->eRc)) {
+        if (ERESULT_FAILED(eRc)) {
         }
         else {
-            this->eRc = ERESULT_SUCCESS;
+            eRc = ERESULT_SUCCESS;
         }
     eom:
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -1264,19 +1233,18 @@ extern "C" {
         NODELINK_DATA   *pParent;
         NODELINK_DATA   *pEntry;
         NODELINK_DATA   *pChild;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
-            return 0;
+            return ERESULT_INVALID_OBJECT;
         }
         if( !(parent <= objArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return 0;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -1284,13 +1252,12 @@ extern "C" {
         if (pParent) {
             pEntry = objArray_Get(this->pArray, index);
             if (pEntry == OBJ_NIL) {
-                this->eRc = ERESULT_INVALID_PARAMETER;
-                goto eom;
+                return ERESULT_INVALID_PARAMETER;
             }
             if (nodeLink_getChild(pParent) == 0) {     // No children
                 nodeLink_setChild(pParent, index);
                 nodeLink_setParent(pEntry, parent);
-                this->eRc = ERESULT_SUCCESS;
+                eRc = ERESULT_SUCCESS;
             }
             else {   // Parent has children, so add to end of child's sibling chain.
                 pChild = objArray_Get(this->pArray, nodeLink_getChild(pParent));
@@ -1302,20 +1269,20 @@ extern "C" {
                 if (pChild) {
                     nodeLink_setSibling(pChild, index);
                     nodeLink_setParent(pEntry, parent);
-                    this->eRc = ERESULT_SUCCESS;
+                    eRc = ERESULT_SUCCESS;
                 }
                 else {
-                    this->eRc = ERESULT_GENERAL_FAILURE;
+                    eRc = ERESULT_GENERAL_FAILURE;
                 }
             }
         }
         else {
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            eRc = ERESULT_INVALID_PARAMETER;
         }
         
         // Return to caller.
     eom:
-        return this->eRc;
+        return eRc;
     }
 
     
@@ -1330,6 +1297,7 @@ extern "C" {
     )
     {
         uint32_t        index = 0;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1340,18 +1308,18 @@ extern "C" {
         }
         if( pNode == OBJ_NIL ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
         
-        this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-        if (!ERESULT_FAILED(this->eRc)) {
+        eRc = objArray_AppendObj(this->pArray, pNode, &index);
+        if (!ERESULT_FAILED(eRc)) {
             nodeLink_setIndex(pNode, index);
-            this->eRc = ERESULT_SUCCESS;
+            obj_setLastError(this, ERESULT_SUCCESS);
         }
         else {
-            this->eRc = ERESULT_GENERAL_FAILURE;
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         }
         
         // Return to caller.
@@ -1370,6 +1338,7 @@ extern "C" {
         //NODEENTRY_DATA  *pEntry;
         uint32_t        index = 0;
         NODELINK_DATA   *pNode;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1383,17 +1352,17 @@ extern "C" {
         pNode = nodeLink_NewWithUTF8ConAndClass(pName, cls, pData);
         if( pNode == OBJ_NIL ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 
-        this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-        if (!ERESULT_FAILED(this->eRc)) {
+        eRc = objArray_AppendObj(this->pArray, pNode, &index);
+        if (!ERESULT_FAILED(eRc)) {
             nodeLink_setIndex(pNode, index);
-            this->eRc = ERESULT_SUCCESS;
+            obj_setLastError(this, ERESULT_SUCCESS);
         }
         else {
-            this->eRc = ERESULT_GENERAL_FAILURE;
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         }
         
         obj_Release(pNode);
@@ -1426,7 +1395,7 @@ extern "C" {
         }
         if( index == 0 ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1434,10 +1403,10 @@ extern "C" {
         pEntry = objArray_Get(this->pArray, index);
         if (pEntry) {
             parent = nodeLink_getParent(pEntry);
-            this->eRc = ERESULT_SUCCESS;
+            obj_setLastError(this, ERESULT_SUCCESS);
         }
         else {
-            this->eRc = ERESULT_DATA_NOT_FOUND;
+            obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         }
         
         // Return to caller.
@@ -1458,18 +1427,18 @@ extern "C" {
         NODELINK_DATA   *pEntry;
         NODEARRAY_DATA  *pNodes = OBJ_NIL;
         uint32_t        i;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( OBJ_NIL == ppNodes ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -1477,8 +1446,8 @@ extern "C" {
         for (i=0; i<objArray_getSize(this->pArray); ++i) {
             pEntry = objArray_Get(this->pArray, i+1);
             if ( pEntry ) {
-                this->eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
-                if (ERESULT_FAILED(this->eRc)) {
+                eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
+                if (ERESULT_FAILED(eRc)) {
                     obj_Release(pNodes);
                     pNodes = OBJ_NIL;
                     goto eom;
@@ -1488,12 +1457,12 @@ extern "C" {
         nodeArray_SortAscending(pNodes);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        eRc = ERESULT_SUCCESS;
     eom:
         if (ppNodes) {
             *ppNodes = pNodes;
         }
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -1515,7 +1484,7 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -1524,8 +1493,7 @@ extern "C" {
         printf("\n\n\n");
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1615,7 +1583,7 @@ extern "C" {
 #else
         if( !nodeTree_Validate( this ) ) {
             DEBUG_BREAK();
-            return false;
+            return 0;
         }
 #endif
         if (this->pProperties) {
@@ -1671,23 +1639,24 @@ extern "C" {
         //NODELINK_DATA   *pParent;
         NODELINK_DATA   *pSibling;
         uint32_t        index = 0;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
         if( !(sibling <= objArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if( pNode == OBJ_NIL ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1699,16 +1668,16 @@ extern "C" {
         if (sibling == 0) {
             if( !(objArray_getSize(this->pArray) == 0) ) {
                 DEBUG_BREAK();
-                this->eRc = ERESULT_DATA_ALREADY_EXISTS;
+                obj_setLastError(this, ERESULT_DATA_ALREADY_EXISTS);
                 return 0;
             }
-            this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-            if (!ERESULT_FAILED(this->eRc)) {
+            eRc = objArray_AppendObj(this->pArray, pNode, &index);
+            if (!ERESULT_FAILED(eRc)) {
                 nodeLink_setIndex(pNode, index);
             }
             else {
                 DEBUG_BREAK();
-                this->eRc = ERESULT_GENERAL_FAILURE;
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return 0;
             }
             goto eom;
@@ -1718,8 +1687,8 @@ extern "C" {
         if (pSibling) {
             index = nodeLink_getSibling(pSibling);
             if (index == 0) {     // No siblings
-                this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-                if (!ERESULT_FAILED(this->eRc)) {
+                eRc = objArray_AppendObj(this->pArray, pNode, &index);
+                if (!ERESULT_FAILED(eRc)) {
                     nodeLink_setSibling(pSibling, index);
                     nodeLink_setIndex(pNode, index);
                     nodeLink_setParent(pNode, nodeLink_getParent(pSibling));
@@ -1730,8 +1699,8 @@ extern "C" {
                 for (;;) {
                     pSibling = objArray_Get(this->pArray, index);
                     if (nodeLink_getSibling(pSibling) == 0) {  // End of Sibling Chain
-                        this->eRc = objArray_AppendObj(this->pArray, pNode, &index);
-                        if (!ERESULT_FAILED(this->eRc)) {
+                        eRc = objArray_AppendObj(this->pArray, pNode, &index);
+                        if (!ERESULT_FAILED(eRc)) {
                             nodeLink_setSibling(pSibling, index);
                             nodeLink_setIndex(pNode, index);
                             nodeLink_setParent(pNode, nodeLink_getParent(pSibling));
@@ -1745,6 +1714,7 @@ extern "C" {
         
         // Return to caller.
     eom:
+        obj_setLastError(this, eRc);
         return index;
     }
     
@@ -1767,17 +1737,17 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
         if( !(node <= objArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if (node == 0) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1801,7 +1771,7 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         //eom:
         return count;
     }
@@ -1826,26 +1796,26 @@ extern "C" {
     #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
         if( !(sibling && (sibling <= objArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
     #endif
-        this->eRc = ERESULT_GENERAL_FAILURE;
+        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         
         pSibling = objArray_Get(this->pArray, sibling);
         if (pSibling) {
             childIndex = nodeLink_getChild(pSibling);
             if (childIndex == 0) {     // No children
-                this->eRc = ERESULT_DATA_OUT_OF_RANGE;
+                obj_setLastError(this, ERESULT_DATA_OUT_OF_RANGE);
             }
             else {
                 pEntry = objArray_Get(this->pArray, childIndex);
-                this->eRc = ERESULT_SUCCESS;
+                obj_setLastError(this, ERESULT_SUCCESS);
             }
         }
         
@@ -1875,7 +1845,7 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -1885,7 +1855,7 @@ extern "C" {
             if (pNodeList) {
                 nodeIndex = nodeTree_SiblingAdd(this, node, pNodeList);
                 if (nodeIndex == 0) {
-                    return this->eRc;
+                    return obj_getLastError(this);
                 }
             }
             else
@@ -1893,7 +1863,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return this->eRc;
+        return obj_getLastError(this);
     }
     
     
@@ -1980,7 +1950,7 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
 #endif
 
@@ -2046,17 +2016,16 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
         if( !(parent && (parent <= objArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if( pTree == OBJ_NIL ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -2068,8 +2037,7 @@ extern "C" {
         
         // Return to caller.
     //eom:
-        this->eRc = ERESULT_NOT_IMPLEMENTED; //FIXME: REMOVE THIS!
-        return this->eRc;
+        return ERESULT_NOT_IMPLEMENTED;     //FIXME: REMOVE THIS!
     }
     
     
@@ -2081,10 +2049,9 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            nodeTree_Validate(
-        NODETREE_DATA      *this
+        NODETREE_DATA   *this
     )
     {
-        this->eRc = ERESULT_INVALID_OBJECT;
         if(this) {
             if ( obj_IsKindOf(this,OBJ_IDENT_NODETREE) )
                 ;
@@ -2093,11 +2060,13 @@ extern "C" {
         }
         else
             return false;
-        if( !(obj_getSize(this) >= sizeof(NODETREE_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODETREE_DATA)) ) {
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
+        }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif
@@ -2125,13 +2094,13 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -2228,20 +2197,18 @@ extern "C" {
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         pQueue = objList_New();
         if (pQueue == OBJ_NIL) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_OUT_OF_MEMORY;
-            return this->eRc;
+            return ERESULT_OUT_OF_MEMORY;
         }
         
         pEntry = objArray_Get(this->pArray, 1);    // Get the root.
         if (pEntry == OBJ_NIL) {
-            this->eRc = ERESULT_SUCCESS;
-            return this->eRc;
+            return ERESULT_SUCCESS;
         }
         objList_Add2Head(pQueue, pEntry);
         while (objList_getSize(pQueue)) {
@@ -2268,8 +2235,7 @@ extern "C" {
         pQueue = OBJ_NIL;
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2292,20 +2258,20 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         nodeTree_NodeInorder(this, pVisitor, pObject, 1, 0);
         
         // Return to caller.
-        return true;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2328,20 +2294,20 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         nodeTree_NodePostorder(this, pVisitor, pObject, 1, 0);
         
         // Return to caller.
-        return true;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2364,20 +2330,20 @@ extern "C" {
         
         // Do initialization.
         if (NULL == this) {
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #ifdef NDEBUG
 #else
         if( !nodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         nodeTree_NodePreorder(this, pVisitor, pObject, 1, 0);
         
         // Return to caller.
-        return true;
+        return ERESULT_SUCCESS;
     }
     
     

@@ -144,11 +144,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         nodeHash_getLastError(
-        NODEHASH_DATA   *this
-    );
-    
-    
     /* Size() returns the current number of used entries.
      * Returns:
      *		Current Number of Entries in the Hash

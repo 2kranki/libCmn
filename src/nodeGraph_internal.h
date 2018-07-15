@@ -61,7 +61,6 @@ struct nodeGraph_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     NODEHASH_DATA   *pNodes;          // Set of Nodes
     OBJARRAY_DATA   *pArcs;
     uint8_t         fUndirected;

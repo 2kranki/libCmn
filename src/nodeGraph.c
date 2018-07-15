@@ -162,49 +162,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeGraph_getLastError(
-        NODEGRAPH_DATA  *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeGraph_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            nodeGraph_setLastError(
-        NODEGRAPH_DATA  *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeGraph_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       P r i o r i t y
     //---------------------------------------------------------------
     
@@ -599,6 +556,7 @@ extern "C" {
         NODELINK_DATA   *pNode              // [in] node pointer
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
         if (NULL == this) {
@@ -612,10 +570,10 @@ extern "C" {
         }
 #endif
         
-        this->eRc = nodeHash_Add(this->pNodes, (NODE_DATA *)pNode);
+        eRc = nodeHash_Add(this->pNodes, (NODE_DATA *)pNode);
         
         // Return to caller.
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -627,7 +585,8 @@ extern "C" {
         OBJ_ID          pData
     )
     {
-        
+        ERESULT         eRc;
+
         // Do initialization.
         if (NULL == this) {
             return ERESULT_INVALID_OBJECT;
@@ -641,10 +600,10 @@ extern "C" {
         BREAK_NULL(this->pNodes);
 #endif
         
-        this->eRc = nodeHash_AddA(this->pNodes, pName, cls, (void *)pData);
+        eRc = nodeHash_AddA(this->pNodes, pName, cls, (void *)pData);
 
         // Return to caller.
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -659,6 +618,7 @@ extern "C" {
         char            *pNameA
     )
     {
+        ERESULT         eRc;
         NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
@@ -672,7 +632,7 @@ extern "C" {
 #endif
         
         pNode = nodeHash_FindA(this->pNodes, pNameA);
-        this->eRc = nodeHash_getLastError(this->pNodes);
+        eRc = obj_getLastError(this->pNodes);
 
         // Return to caller.
         return pNode;
@@ -701,7 +661,7 @@ extern "C" {
 #endif
         
         pArray = nodeHash_Nodes(this->pNodes);
-        this->eRc = nodeHash_getLastError(this->pNodes);
+        obj_setLastError(this, obj_getLastError(this->pNodes));
         
         // Return to caller.
         return pArray;
@@ -782,10 +742,13 @@ extern "C" {
         }
         else
             return false;
-        if( !(obj_getSize(this) >= sizeof(NODEGRAPH_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(NODEGRAPH_DATA)) ) {
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
+        }
 
         // Return to caller.
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif
