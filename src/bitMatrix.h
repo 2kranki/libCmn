@@ -191,7 +191,7 @@ extern "C" {
     );
     
     
-    // Matrix(Product) = Matrix(cbp) X Matrix(pOther)
+    // Matrix(Product) = Matrix(this) X Matrix(pOther)
     // (Must be N X N matrices and all the same size!)
     BITMATRIX_DATA * bitMatrix_Product(
         BITMATRIX_DATA	*this,
@@ -212,6 +212,12 @@ extern "C" {
     );
 
     
+    /*!
+     Create a string that describes this object and the
+     objects within it.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
     ASTR_DATA *     bitMatrix_ToDebugString(
         BITMATRIX_DATA	*this,
         int             indent

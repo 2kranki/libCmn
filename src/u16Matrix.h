@@ -1,16 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          U16MATRIX Console Transmit Task (u16Matrix) Header
+//          Unsigned 16-bit element Matrix (u16Matrix) Header
 //****************************************************************
 /*
  * Program
- *				Separate u16Matrix (u16Matrix)
+ *				Unsigned 16-bit element Matrix (u16Matrix)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate u16Matrix to run things without complications
- *              of interfering with the main u16Matrix. A u16Matrix may be 
- *              called a u16Matrix on other O/S's.
+ *				This object provides an unsigned 16-bit element Matrix.
  *
  * Remarks
  *	1.      A matrix of M X N size has M rows (height) and N columns (width).

@@ -113,16 +113,20 @@ extern "C" {
         void
     );
     
+    BPTLEAF_DATA *  bptLeaf_NewWithSize(
+        uint16_t        size
+    );
     
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     bptLeaf_getLastError(
-        BPTLEAF_DATA		*this
+    uint16_t        bptLeaf_getSize(
+        BPTLEAF_DATA    *this
     );
-
+    
 
 
     
@@ -130,23 +134,31 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     bptLeaf_Disable(
-        BPTLEAF_DATA		*this
+    ERESULT         bptLeaf_AddA(
+        BPTLEAF_DATA    *this,
+        uint16_t        keyLen,
+        const
+        char            *pKey,
+        uint16_t        dataLen,
+        uint8_t         *pData
     );
 
 
-    ERESULT     bptLeaf_Enable(
-        BPTLEAF_DATA		*this
+    ERESULT         bptLeaf_FindA(
+        BPTLEAF_DATA	*this,
+        uint16_t        keyLen,
+        const
+        char            *pKey
     );
 
    
-    BPTLEAF_DATA *   bptLeaf_Init(
+    BPTLEAF_DATA *  bptLeaf_Init(
         BPTLEAF_DATA     *this
     );
 
 
-    ERESULT     bptLeaf_IsEnabled(
-        BPTLEAF_DATA		*this
+    ERESULT         bptLeaf_IsEnabled(
+        BPTLEAF_DATA	*this
     );
     
  

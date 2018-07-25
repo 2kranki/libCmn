@@ -496,8 +496,9 @@ extern "C" {
                     break;
                 }
             }
-            else if (dbCsv_ParseSEP(this)) {
+            else if (chr == this->fieldSeparator) {
                 dbCsv_AppendCharW32ToString(this, this->fieldSeparator);
+                srcFile_InputAdvance(this->pSrc, 1);
             }
             else if ((chr == '\f') || (chr == '\n') || (chr == '\r') || (chr == '\t')) {
                 dbCsv_AppendCharW32ToString(this, chr);

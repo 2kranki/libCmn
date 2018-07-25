@@ -104,7 +104,7 @@ extern "C" {
     );
     
     
-    OBJ_ID          bptIndex_Class(
+    OBJ_ID              bptIndex_Class(
         void
     );
     
@@ -118,10 +118,6 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
-
-    ERESULT     bptIndex_getLastError(
-        BPTINDEX_DATA		*this
-    );
 
 
 

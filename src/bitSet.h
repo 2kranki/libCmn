@@ -112,13 +112,13 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint16_t        bitSet_getSize(
-        BITSET_DATA     *cbp
+        BITSET_DATA     *this
     );
     
     
     // Number of 32-bit elements used in bitset
     uint16_t        bitSet_getSizeUsed(
-        BITSET_DATA     *cbp
+        BITSET_DATA     *this
     );
     
     
@@ -128,9 +128,9 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // cbp = pOther;
+    // this = pOther;
     ERESULT         bitSet_Assign(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     );
     
@@ -138,42 +138,42 @@ extern "C" {
     // Returns ERESULT_SUCCESSFUL_COMPLETION if the Other set is fully
     // contained within our set.
     ERESULT         bitSet_Contains(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     );
     
     
     BITSET_DATA *   bitSet_Copy(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     );
     
     
     bool            bitSet_Get(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         uint16_t        index
     );
 
 
     BITSET_DATA *   bitSet_Init(
-        BITSET_DATA     *cbp
+        BITSET_DATA     *this
     );
 
 
-    // cbp = cbp & pOther;
+    // this = this & pOther;
     ERESULT         bitSet_Intersect(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     );
     
     
-    // cbp = -cbp;
+    // this = -this;
     ERESULT         bitSet_Invert(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     );
     
     
     ERESULT         bitSet_IsEmpty(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     );
     
     
@@ -182,35 +182,35 @@ extern "C" {
     // returns ERESULT_SUCCESS_FALSE. Note:
     // both are successful result codes.
     ERESULT         bitSet_IsEqual(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     );
     
     
     ERESULT         bitSet_Set(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         uint16_t        index,
         bool            value
     );
     
     
     ERESULT         bitSet_SetEmpty(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     );
     
     
-    // cbp = cbp - pOther;
+    // this = this - pOther;
     // which is the same as:
-    // cbp = cbp & ^pOther;
+    // this = this & ^pOther;
     ERESULT         bitSet_Subtract(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     );
     
     
     // The string returned must be obj_Release()'d.
     ASTR_DATA *     bitSet_ToDataString(
-        BITSET_DATA     *cbp
+        BITSET_DATA     *this
     );
     
     
@@ -221,7 +221,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     bitSet_ToDebugString(
-        BITSET_DATA     *cbp,
+        BITSET_DATA     *this,
         int             indent
     );
     
@@ -233,18 +233,18 @@ extern "C" {
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     bitSet_ToUint32String(
-        BITSET_DATA     *cbp,
+        BITSET_DATA     *this,
         const
         char            *pName
     );
     
     
-    // cbp = cbp | pOther;
+    // this = this | pOther;
     // Returns:
     //      ERESULT_SUCCESSFUL_COMPLETION (if nothing changed)
     //      ERESULT_DATA_CHANGED (if bitset changed)
     ERESULT         bitSet_Union(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     );
     

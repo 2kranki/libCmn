@@ -238,6 +238,17 @@ extern "C" {
     );
     
     
+    /*!
+     Get the address of an array element.
+     @return:   If successful, the address of the array element. Otherwise,
+                NULL.
+     */
+    void *          array_GetAddrOf(
+        ARRAY_DATA      *this,
+        uint32_t        offset              // in elements (relative to 1)
+    );
+    
+    
     ARRAY_DATA *    array_Init(
         ARRAY_DATA      *this
     );
@@ -258,7 +269,7 @@ extern "C" {
     
     
     /*!
-     Make room for data, but don't add data.
+     Make room for data at the given offset, but don't add data.
      @param     this    ARRAY object pointer
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error

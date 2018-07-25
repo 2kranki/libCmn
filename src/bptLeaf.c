@@ -110,7 +110,24 @@ extern "C" {
     }
 
 
+    BPTLEAF_DATA *  bptLeaf_NewWithSize(
+        uint16_t        size
+    )
+    {
+        BPTLEAF_DATA       *this;
+        
+        this = bptLeaf_Alloc( );
+        if (this) {
+            this = bptLeaf_Init(this);
+            if (this) {
+                bptLeaf_setSize(this, size);
+            }
+        }
+        return this;
+    }
 
+    
+    
     
 
     //===============================================================
@@ -118,31 +135,31 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                           D a t a
     //---------------------------------------------------------------
     
-    ERESULT         bptLeaf_getLastError(
-        BPTLEAF_DATA     *this
+    ARRAY_DATA *    bptLeaf_getData(
+        BPTLEAF_DATA    *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !bptLeaf_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
 #endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return this->pData;
     }
-
-
-    bool            bptLeaf_setLastError(
-        BPTLEAF_DATA     *this,
-        ERESULT         value
+    
+    
+    bool            bptLeaf_setData(
+        BPTLEAF_DATA    *this,
+        ARRAY_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -153,13 +170,17 @@ extern "C" {
         }
 #endif
         
-        this->eRc = value;
+        obj_Retain(pValue);
+        if (this->pData) {
+            obj_Release(this->pData);
+        }
+        this->pData = pValue;
         
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
-
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -178,7 +199,7 @@ extern "C" {
         }
 #endif
 
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -199,7 +220,7 @@ extern "C" {
 
         //this->priority = value;
 
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -209,7 +230,7 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        bptLeaf_getSize(
+    uint16_t        bptLeaf_getSize(
         BPTLEAF_DATA       *this
     )
     {
@@ -221,38 +242,14 @@ extern "C" {
         }
 #endif
 
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
-        return 0;
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return this->size;
     }
 
-
-
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
     
-    ASTR_DATA * bptLeaf_getStr(
-        BPTLEAF_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !bptLeaf_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
-        return this->pStr;
-    }
-    
-    
-    bool        bptLeaf_setStr(
-        BPTLEAF_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            bptLeaf_setSize(
+        BPTLEAF_DATA    *this,
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
@@ -262,19 +259,15 @@ extern "C" {
             return false;
         }
 #endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
         
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        this->size = value;
+        
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -294,7 +287,7 @@ extern "C" {
 #endif
 
         
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -370,11 +363,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        bptLeaf_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return bptLeaf_getLastError(this);
+        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return obj_getLastError(this);
     }
     
     
@@ -417,7 +410,6 @@ extern "C" {
 
 #ifdef  xyzzy        
         if (this->token == pOther->token) {
-            this->eRc = eRc;
             return eRc;
         }
         
@@ -434,7 +426,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        this->eRc = eRc;
         return eRc;
     }
     
@@ -454,11 +445,11 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the BPTLEAF object.
      */
-    BPTLEAF_DATA *     bptLeaf_Copy(
-        BPTLEAF_DATA       *this
+    BPTLEAF_DATA *  bptLeaf_Copy(
+        BPTLEAF_DATA    *this
     )
     {
-        BPTLEAF_DATA       *pOther = OBJ_NIL;
+        BPTLEAF_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -481,7 +472,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -515,7 +506,7 @@ extern "C" {
         }
 #endif
 
-        bptLeaf_setStr(this, OBJ_NIL);
+        bptLeaf_setData(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -551,7 +542,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -580,7 +571,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -622,7 +613,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&bptLeaf_Vtbl);
         
-        bptLeaf_setLastError(this, ERESULT_GENERAL_FAILURE);
+        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -634,10 +625,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "bptLeaf::offsetof(eRc) = %lu\n", offsetof(BPTLEAF_DATA,eRc));
         fprintf(stderr, "bptLeaf::sizeof(BPTLEAF_DATA) = %lu\n", sizeof(BPTLEAF_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(BPTLEAF_DATA));
     #endif
 
@@ -665,12 +654,12 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            bptLeaf_setLastError(this, ERESULT_SUCCESS_TRUE);
+            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        bptLeaf_setLastError(this, ERESULT_SUCCESS_FALSE);
+        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -871,7 +860,7 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -905,7 +894,7 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        bptLeaf_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -942,12 +931,12 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(BPTLEAF_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

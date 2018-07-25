@@ -80,6 +80,7 @@ extern "C" {
     );
 
 
+    static
     APPL_CLO        pPgmArgs[] = {
         {
             0,

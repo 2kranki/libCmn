@@ -679,6 +679,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
+        //fprintf(stderr, "symAttr::sizeof(SYM_ATTR) = %lu\n", sizeof(SYM_ATTR));
         //fprintf(stderr, "symAttr::sizeof(SYMATTR_DATA) = %lu\n", sizeof(SYMATTR_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SYMATTR_DATA));

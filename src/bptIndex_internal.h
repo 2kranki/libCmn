@@ -40,6 +40,7 @@
 
 
 #include    <bptIndex.h>
+#include    <array.h>
 #include    <jsonIn.h>
 
 
@@ -58,7 +59,10 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct bptIndex_cmn_s    {
         BPTREE_INDEX    parent;         // Parent Block Number
+        BPTREE_INDEX    prev;           // Previous Block Number
+        BPTREE_INDEX    next;           // Next Block Number
         BPTREE_INDEX    left;           // Left (Less Than) Block Number
+        uint16_t        cKeys;          // Number of Keys in block
     } BPTINDEX_CMN;
 #pragma pack(pop)
     
@@ -84,10 +88,9 @@ struct bptIndex_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
-    ASTR_DATA       *pStr;
+    ARRAY_DATA      *pData;
 
     volatile
     int32_t         numRead;
@@ -110,12 +113,6 @@ struct bptIndex_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            bptIndex_setLastError(
-        BPTINDEX_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  bptIndex_getSuperVtbl(
         BPTINDEX_DATA     *this

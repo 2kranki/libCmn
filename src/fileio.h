@@ -263,6 +263,11 @@ extern "C" {
     );
     
     
+    /*!
+     Get the size of the file in bytes.
+     @param     this    object pointer
+     @return    If successful, size of the file; otherwise -1.
+     */
     size_t          fileio_Size(
         FILEIO_DATA     *this
     );

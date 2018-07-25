@@ -74,7 +74,7 @@ extern "C" {
         uint16_t        size            // set size (in bits)
     )
     {
-        BITSET_DATA     *cbp;
+        BITSET_DATA     *this;
         uint32_t        cbSize = sizeof(BITSET_DATA);
         uint16_t        alloc;
         
@@ -88,12 +88,12 @@ extern "C" {
             return OBJ_NIL;
         }
         cbSize += (alloc / 8);
-        cbp = obj_Alloc( cbSize );
-        obj_setMisc1(cbp, size);
-        obj_setMisc2(cbp, alloc);
+        this = obj_Alloc( cbSize );
+        obj_setMisc1(this, size);
+        obj_setMisc2(this, alloc);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
 
 
@@ -102,14 +102,14 @@ extern "C" {
         uint16_t        size
     )
     {
-        BITSET_DATA     *cbp;
+        BITSET_DATA     *this;
         //ERESULT         eRc;
         
-        cbp = bitSet_Alloc( size );
-        cbp = bitSet_Init(cbp);
+        this = bitSet_Alloc( size );
+        this = bitSet_Init(this);
         
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -155,31 +155,31 @@ extern "C" {
 
 
     uint16_t        bitSet_getSize(
-        BITSET_DATA       *cbp
+        BITSET_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
-        return cbp->xMax;
+        return this->xMax;
     }
 
 
 
     uint16_t        bitSet_getSizeUsed(
-        BITSET_DATA       *cbp
+        BITSET_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
-        return cbp->cElems;
+        return this->cElems;
     }
     
     
@@ -197,18 +197,18 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         bitSet_Assign(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
-                                     )
+    )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -216,7 +216,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( cbp->xMax == pOther->xMax )
+        if( this->xMax == pOther->xMax )
             ;
         else {
             DEBUG_BREAK();
@@ -224,10 +224,10 @@ extern "C" {
         }
 #endif
         
-        for (i=0; i<cbp->cElems; ++i) {
-            j = cbp->elems[i];
-            cbp->elems[i] = pOther->elems[i];
-            if (j != cbp->elems[i]) {
+        for (i=0; i<this->cElems; ++i) {
+            j = this->elems[i];
+            this->elems[i] = pOther->elems[i];
+            if (j != this->elems[i]) {
                 eRc = ERESULT_SUCCESS_DATA_CHANGED;
             }
         }
@@ -243,7 +243,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         bitSet_Contains(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     )
     {
@@ -253,7 +253,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -261,7 +261,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( cbp->xMax == pOther->xMax )
+        if( this->xMax == pOther->xMax )
             ;
         else {
             DEBUG_BREAK();
@@ -269,7 +269,7 @@ extern "C" {
         }
 #endif
         
-        pWork = bitSet_Copy(cbp);
+        pWork = bitSet_Copy(this);
         if (OBJ_NIL == pWork) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
@@ -290,7 +290,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     BITSET_DATA *   bitSet_Copy(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     )
     {
         BITSET_DATA     *pOther;
@@ -299,20 +299,20 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
 
-        pOther = bitSet_Alloc(cbp->xMax);
+        pOther = bitSet_Alloc(this->xMax);
         pOther = bitSet_Init(pOther);
         if (OBJ_NIL == pOther) {
             return OBJ_NIL;
         }
         
-        for (i=0; i<cbp->cElems; ++i) {
-            pOther->elems[i] = cbp->elems[i];
+        for (i=0; i<this->cElems; ++i) {
+            pOther->elems[i] = this->elems[i];
         }
         
         // Return to caller.
@@ -329,22 +329,22 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        BITSET_DATA   *cbp = objId;
+        BITSET_DATA     *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        obj_Dealloc( cbp );
-        cbp = NULL;
+        obj_Dealloc( this );
+        this = NULL;
 
         // Return to caller.
     }
@@ -356,7 +356,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            bitSet_Element(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         uint16_t        index
     )
     {
@@ -367,11 +367,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return fRc;
         }
-        if ((index-1) < cbp->xMax)
+        if ((index-1) < this->xMax)
             ;
         else {
             DEBUG_BREAK();
@@ -385,7 +385,7 @@ extern "C" {
         //j = (32-1) - (index % 32);	    /* horizontal - bit */
         j = (32-1) - (index & 0x1F);
         
-        if ( cbp->elems[i] & (1 << j) ) {
+        if ( this->elems[i] & (1 << j) ) {
             fRc = true;
         }
         
@@ -400,7 +400,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            bitSet_Get(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         uint16_t        index
     )
     {
@@ -411,11 +411,11 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return fRc;
         }
-        if ((index-1) < cbp->xMax)
+        if ((index-1) < this->xMax)
             ;
         else {
             DEBUG_BREAK();
@@ -429,7 +429,7 @@ extern "C" {
         //j = (32-1) - (index % 32);	    /* horizontal - bit */
         j = (32-1) - (index & 0x1F);
         
-        if ( cbp->elems[i] & (1 << j) ) {
+        if ( this->elems[i] & (1 << j) ) {
             fRc = true;
         }
         
@@ -481,7 +481,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         bitSet_Intersect(
-        BITSET_DATA		*cbp,
+        BITSET_DATA		*this,
         BITSET_DATA		*pOther
     )
     {
@@ -492,7 +492,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -500,7 +500,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( cbp->xMax == pOther->xMax )
+        if( this->xMax == pOther->xMax )
             ;
         else {
             DEBUG_BREAK();
@@ -508,10 +508,10 @@ extern "C" {
         }
 #endif
         
-        for (i=0; i<cbp->cElems; ++i) {
-            j = cbp->elems[i];
-            cbp->elems[i] &= pOther->elems[i];
-            if (j != cbp->elems[i]) {
+        for (i=0; i<this->cElems; ++i) {
+            j = this->elems[i];
+            this->elems[i] &= pOther->elems[i];
+            if (j != this->elems[i]) {
                 eRc = ERESULT_SUCCESS_DATA_CHANGED;
             }
         }
@@ -527,7 +527,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         bitSet_Invert(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     )
     {
         uint32_t        i;
@@ -535,18 +535,18 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        for (i=0; i<cbp->cElems; ++i) {
-            cbp->elems[i] = ~cbp->elems[i];
+        for (i=0; i<this->cElems; ++i) {
+            this->elems[i] = ~this->elems[i];
         }
 
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -556,7 +556,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         bitSet_IsEmpty(
-        BITSET_DATA		*cbp
+        BITSET_DATA		*this
     )
     {
         uint32_t        i;
@@ -564,14 +564,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !bitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        for (i=0; i<cbp->cElems; ++i) {
-            if (cbp->elems[i]) {
+        for (i=0; i<this->cElems; ++i) {
+            if (this->elems[i]) {
                 return ERESULT_SUCCESS_FALSE;
             }
         }

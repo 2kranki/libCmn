@@ -40,6 +40,7 @@
 
 
 #include    <bptLeaf.h>
+#include    <array.h>
 #include    <jsonIn.h>
 
 
@@ -59,15 +60,16 @@ extern "C" {
         BPTREE_INDEX    parent;         // Parent Block Number
         BPTREE_INDEX    prev;           // Previous Block Number
         BPTREE_INDEX    next;           // Next Block Number
+        uint16_t        cKeys;          // Number of Keys in block
     } BPTLEAF_CMN;
 #pragma pack(pop)
     
 
 #pragma pack(push, 1)
     typedef struct bptLeaf_key_s    {
-        uint16_t        len;            // Key Length
-        BPTREE_INDEX    data;           // Data Block Number
-        uint8_t         key[0];
+        uint16_t        keyLen;         // Key Length
+        uint16_t        dataLen;        // Key Length
+        uint8_t         key[0];         // Key followed by data
     } BPTLEAF_KEY;
 #pragma pack(pop)
     
@@ -85,10 +87,9 @@ struct bptLeaf_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
-    uint16_t        size;		    // maximum number of elements
+    uint16_t        size;		    // block size
     uint16_t        reserved;
-    ASTR_DATA       *pStr;
+    ARRAY_DATA      *pData;
 
     volatile
     int32_t         numRead;
@@ -112,12 +113,12 @@ struct bptLeaf_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            bptLeaf_setLastError(
-        BPTLEAF_DATA     *this,
-        ERESULT         value
+    bool            bptLeaf_setSize(
+        BPTLEAF_DATA    *this,
+        uint16_t        value
     );
-
-
+    
+    
     OBJ_IUNKNOWN *  bptLeaf_getSuperVtbl(
         BPTLEAF_DATA     *this
     );

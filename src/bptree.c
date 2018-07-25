@@ -118,28 +118,31 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT         bptree_getLastError(
+    //---------------------------------------------------------------
+    //                   B l o c k  S i z e
+    //---------------------------------------------------------------
+    
+    uint16_t        bptree_getBlockSize(
         BPTREE_DATA     *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !bptree_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return 0;
         }
 #endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return this->blockSize;
     }
-
-
-    bool            bptree_setLastError(
+    
+    bool            bptree_setBlockSize(
         BPTREE_DATA     *this,
-        ERESULT         value
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
@@ -150,13 +153,18 @@ extern "C" {
         }
 #endif
         
-        this->eRc = value;
+        this->blockSize = value;
         
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
-
+    
+    //---------------------------------------------------------------
+    //                       P r i o r i t y
+    //---------------------------------------------------------------
+    
     uint16_t        bptree_getPriority(
         BPTREE_DATA     *this
     )
@@ -171,7 +179,7 @@ extern "C" {
         }
 #endif
 
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -191,7 +199,7 @@ extern "C" {
 
         //this->priority = value;
 
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -209,7 +217,7 @@ extern "C" {
         }
 #endif
 
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -230,7 +238,7 @@ extern "C" {
         }
 #endif
         
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
@@ -254,7 +262,7 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -295,11 +303,11 @@ extern "C" {
 #else
         if( !bptree_Validate(this) ) {
             DEBUG_BREAK();
-            return bptree_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
         if( !bptree_Validate(pOther) ) {
             DEBUG_BREAK();
-            return bptree_getLastError(pOther);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -330,11 +338,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
     //eom:
         //FIXME: Implement the assignment.        
-        bptree_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return bptree_getLastError(this);
+        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
+        return obj_getLastError(this);
     }
     
     
@@ -355,7 +363,7 @@ extern "C" {
 #else
         if( !bptree_Validate(this) ) {
             DEBUG_BREAK();
-            return bptree_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -364,8 +372,8 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        bptree_setLastError(this, ERESULT_SUCCESS);
-        return bptree_getLastError(this);
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return obj_getLastError(this);
     }
     
     
@@ -412,7 +420,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -469,14 +477,13 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            bptree_setLastError(this, ERESULT_INVALID_OBJECT);
-            return bptree_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
         if( !bptree_Validate(this) ) {
             DEBUG_BREAK();
-            return bptree_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -485,8 +492,8 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        bptree_setLastError(this, ERESULT_SUCCESS);
-        return bptree_getLastError(this);
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return obj_getLastError(this);
     }
 
 
@@ -505,7 +512,7 @@ extern "C" {
     #else
         if( !bptree_Validate(this) ) {
             DEBUG_BREAK();
-            return bptree_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
         
@@ -514,8 +521,8 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        bptree_setLastError(this, ERESULT_SUCCESS);
-        return bptree_getLastError(this);
+        obj_setLastError(this, ERESULT_SUCCESS);
+        return obj_getLastError(this);
     }
 
 
@@ -556,7 +563,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&bptree_Vtbl);
         
-        bptree_setLastError(this, ERESULT_GENERAL_FAILURE);
+        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -589,18 +596,16 @@ extern "C" {
 #else
         if( !bptree_Validate(this) ) {
             DEBUG_BREAK();
-            return bptree_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            bptree_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return bptree_getLastError(this);
+            return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        bptree_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return bptree_getLastError(this);
+        return ERESULT_SUCCESS_FALSE;
     }
     
     
@@ -675,7 +680,7 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(bptree)}\n", this);
         AStr_AppendA(pStr, str);
         
-        bptree_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -707,12 +712,12 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(BPTREE_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

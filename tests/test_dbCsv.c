@@ -382,11 +382,17 @@ int         test_dbCsv_Input03(
     OBJARRAY_DATA   *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
+    ERESULT         eRc;
     
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pPath = path_NewA("/Users/bob/Support/testFiles/csv_e360_opcodes.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = path_IsFile(pPath);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "Warning: %s missing, test skipped.\n", path_getData(pPath));
+        return 1;
+    }
     
     pObj = dbCsv_NewFromPath(pPath, 4);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -438,10 +444,106 @@ int         test_dbCsv_Input03(
 
 
 
+int         test_dbCsv_Input04(
+    const
+    char        *pTestName
+)
+{
+    DBCSV_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    uint32_t        i;
+    uint32_t        iMax;
+    uint32_t        j;
+    uint32_t        jMax;
+    OBJARRAY_DATA   *pRecord;
+    OBJARRAY_DATA   *pRecords;
+    ASTR_DATA       *pField;
+    
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pStr = AStr_NewA("a, \"d,e,f\"\n");
+    XCTAssertFalse( (OBJ_NIL == pStr) );
+    pPath = path_NewA("abc");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    
+    pObj = dbCsv_NewFromAStr( pStr, pPath, 4 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pRecords = dbCsv_ParseFile(pObj);
+        XCTAssertFalse( (OBJ_NIL == pRecords) );
+        if (pRecords) {
+            pField = objArray_ToDebugString(pRecords, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pField));
+            obj_Release(pField);
+            pField = OBJ_NIL;
+            iMax = objArray_getSize(pRecords);
+            for (i=1; i<=iMax; ++i) {
+                pRecord = objArray_Get(pRecords,i);
+                XCTAssertFalse( (OBJ_NIL == pRecord) );
+                if (pRecord) {
+                    jMax = objArray_getSize(pRecord);
+                    for (j=1; j<=jMax; ++j) {
+                        pField = objArray_Get(pRecord,j);
+                        XCTAssertFalse( (OBJ_NIL == pField) );
+                        if (pField) {
+                            fprintf(
+                                    stderr,
+                                    "line %d, field %d, %s\n",
+                                    i,
+                                    j,
+                                    AStr_getData(pField)
+                                    );
+                        }
+                        switch (i) {
+                            case 1:
+                                switch (j) {
+                                    case 1:
+                                        XCTAssertTrue( (0 == strcmp("a",AStr_getData(pField))) );
+                                        break;
+                                        
+                                    case 2:
+                                        XCTAssertTrue( (0 == strcmp("d,e,f",AStr_getData(pField))) );
+                                        break;
+                                        
+                                    default:
+                                        break;
+                                }
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        obj_Release(pRecords);
+        pRecords = OBJ_NIL;
+    }
+    obj_Release(pObj);
+    pObj = OBJ_NIL;
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 
 
 TINYTEST_START_SUITE(test_dbCsv);
+    TINYTEST_ADD_TEST(test_dbCsv_Input04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbCsv_Input03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbCsv_Input02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbCsv_Input01,setUp,tearDown);

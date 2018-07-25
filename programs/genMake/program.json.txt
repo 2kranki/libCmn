@@ -15,6 +15,7 @@
     ],
     "objects":
     {
+        "genBase":["genMake"],
         "genOSX":["genMake"],
         "genWIN":["genMake"],
         "main":["genMake"]
@@ -29,6 +30,7 @@
     },
     "tests":
     {
+        "test_genBase.c":null,
         "test_genOSX.c":null,
         "test_genWIN.c":null,
         "test_main.c":null

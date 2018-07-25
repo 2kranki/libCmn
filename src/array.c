@@ -943,7 +943,39 @@ extern "C" {
     }
     
     
+    void *          array_GetAddrOf(
+        ARRAY_DATA      *this,
+        uint32_t        offset              // in elements (relative to 1)
+    )
+    {
+        void            *pVoid = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return pVoid;
+        }
+        // Check parameters.
+        if( offset && (offset <= this->max) )
+            ;
+        else {
+            return pVoid;
+        }
+#endif
+        
+        // Copy in given elements.
+        if (this->pArray) {
+            pVoid = this->pArray + array_OffsetOf(this, offset);
+        }
+        
+        // Return to caller.
+        return pVoid;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

@@ -294,6 +294,10 @@ extern "C" {
         NODE_DATA       *this
     );
     
+    /*!
+     @return    If successful, an non-zero integer which is derived from
+                the Node's Name object, otherwise 0.
+     */
     uint64_t        node_getNameInt(
         NODE_DATA       *this
     );

@@ -111,11 +111,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         bptree_getLastError(
+    uint16_t        bptree_getBlockSize(
         BPTREE_DATA     *this
     );
-
-
+    
+    
 
     
     //---------------------------------------------------------------

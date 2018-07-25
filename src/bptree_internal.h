@@ -65,9 +65,8 @@ struct bptree_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        size;		/* maximum number of elements           */
-    uint16_t        reserved;
+    uint16_t        blockSize;
     ASTR_DATA       *pStr;
 
     volatile
@@ -88,16 +87,15 @@ struct bptree_data_s	{
 
 
     // Internal Functions
+    bool            bptree_setBlockSize(
+        BPTREE_DATA     *this,
+        uint16_t        value
+    );
+    
+    
     void            bptree_Dealloc(
         OBJ_ID          objId
     );
-
-    bool            bptree_setLastError(
-        BPTREE_DATA     *this,
-        ERESULT         value
-    );
-
-
 
 
 #ifdef NDEBUG

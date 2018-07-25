@@ -79,7 +79,7 @@ struct bitSet_data_s	{
 #ifdef NDEBUG
 #else
     bool			bitSet_Validate(
-        BITSET_DATA       *cbp
+        BITSET_DATA       *this
     );
 #endif
 

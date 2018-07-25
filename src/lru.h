@@ -13,7 +13,7 @@
  *          These routines intercept the normal read/write process.
  *          First, the using object must give this object the physical
  *          read and/or write routines. Second, it must then call
- *          the routines provides by this object which will utilize
+ *          the routines provided by this object which will utilize
  *          the LRU buffering only calling the physical routines
  *          when physical reads or writes must be performed.
  *

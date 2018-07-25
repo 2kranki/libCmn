@@ -86,7 +86,7 @@ extern "C" {
         SYM_PRIMITIVE_LONGLONG_UNSIGNED,
         SYM_PRIMITIVE_STRUCT,
         SYM_PRIMITIVE_UNION,
-        SYM_PRIMITIVE_VOID,
+        SYM_PRIMITIVE_VOID
     } SYM_PRIMITIVE;
     
     
@@ -100,7 +100,7 @@ extern "C" {
         SYM_STORAGE_SPROTO,         // ???
         SYM_STORAGE_STATIC,         // static identifiers in global context
         SYM_STORAGE_STATIC_LOCAL,   // static identifiers in local context
-        SYM_STORAGE_STRUCT,
+        SYM_STORAGE_STRUCT
     } SYM_STORAGE;
     
     
@@ -112,7 +112,7 @@ extern "C" {
         SYM_TYPE_MACRO,
         SYM_TYPE_STRUCT,
         SYM_TYPE_UNION,
-        SYM_TYPE_VARIABLE,
+        SYM_TYPE_VARIABLE
     } SYM_TYPE;
     
     
@@ -121,8 +121,8 @@ extern "C" {
         uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        flags;
         uint32_t        nameHash;
-        char            name[129];
-        char            genName[64];        // Generated External Name
+        char            name[129];          // Name with trailing NUL
+        char            genName[65];        // Generated External Name with trailing NUL
         uint32_t        nameToken;          // szTbl Token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
