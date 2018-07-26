@@ -1995,6 +1995,127 @@ extern "C" {
     }
     
     
+    bool            appl_SetupFromStr(
+        APPL_DATA       *this,
+        char            *pCmdStr
+)
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint16_t        cbSize;
+        int             Num = 0;
+        char            *pCurCmd;
+        char            quote;
+        int             cArg = 1;
+        char            **pArgV = NULL;
+        ASTRARRAY_DATA  *pArgs;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(NULL == pCmdStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        // Set up to scan the parameters.
+        pArgs = AStrArray_New( );
+        if(NULL == pArgs) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // Set program defaults here;
+        this->fDebug = 0;
+        this->fForce = 0;
+        this->iVerbose = 0;
+        if (this->pParseArgsDefaults) {
+            eRc = this->pParseArgsDefaults(this->pObjPrs);
+        }
+        
+        // Reset any prior parse data.
+        appl_setArgs(this, OBJ_NIL);
+        appl_setProgramPath(this, OBJ_NIL);
+        appl_setEnv(this, OBJ_NIL);
+        
+        
+        // Analyze input string to calculate array needed.
+#ifdef XYZZY
+        this->cArg = 1;
+        //TODO: cbSize = 2 * sizeof(char *);
+        this->ppArg = (char **)mem_Malloc( cbSize );
+#ifdef XYZZY
+        if( this->ppArg ) {
+            this->flags |= GOT_ARGV;
+        }
+        else
+            return false;
+#endif
+        *(this->ppArg) = "";     // Set program name.
+        
+        /* Scan off the each parameter.
+         */
+        while( *pCmdStr ) {
+            pCurCmd = NULL;
+            
+            // Pass over white space.
+            while( *pCmdStr && ((*pCmdStr == ' ') || (*pCmdStr == '\n')
+                                || (*pCmdStr == '\r') || (*pCmdStr == '\t')) )
+                ++pCmdStr;
+            
+            // Handle Quoted Arguments.
+            if( (*pCmdStr == '\"') || (*pCmdStr == '\'') ) {
+                quote = *pCmdStr++;
+                pCurCmd = pCmdStr;
+                while( *pCmdStr && (*pCmdStr != quote) ) {
+                    ++pCmdStr;
+                }
+                if( *pCmdStr ) {
+                    *pCmdStr = '\0';
+                    ++pCmdStr;
+                }
+            }
+            
+            // Handle Non-Quoted Arguments.
+            else if( *pCmdStr ) {
+                pCurCmd = pCmdStr;
+                // Scan until white space.
+                while( *pCmdStr && !((*pCmdStr == ' ') || (*pCmdStr == '\n')
+                                     || (*pCmdStr == '\r') || (*pCmdStr == '\t')) ) {
+                    ++pCmdStr;
+                }
+                if( *pCmdStr ) {
+                    *pCmdStr = '\0';
+                    ++pCmdStr;
+                }
+            }
+            else
+                continue;
+            
+            // Add the command to the array.
+            if( pCurCmd ) {
+                ++Num;
+                this->ppArg = (char **)mem_Realloc( this->ppArg, ((Num + 2) * sizeof(char *)) );
+                if( this->ppArg ) {
+                    this->ppArg[Num]   = pCurCmd;
+                    this->ppArg[Num+1] = NULL;
+                    ++this->cArg;
+                }
+                else
+                    return( false );
+            }
+        }
+#endif
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                       T o  S t r i n g

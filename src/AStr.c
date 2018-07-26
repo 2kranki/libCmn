@@ -140,6 +140,34 @@ extern "C" {
     
 
     
+    ASTR_DATA *     AStr_NewFromMidA(
+        const
+        char            *pszIn,
+        uint32_t        offset,
+        uint32_t        len
+    )
+    {
+        ASTR_DATA      *this;
+        ERESULT         eRc;
+        uint32_t        strlen;
+        
+        this = AStr_New( );
+        if (this) {
+            len = (uint32_t)utf8_StrLenChars(pszIn);
+            if (len) {
+                eRc = AStr_AppendMidA(this, pszIn, offset, len);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+            }
+        }
+        return this;
+    }
+    
+    
+    
     ASTR_DATA *    AStr_NewFromCharA(
         uint32_t        len,
         const
@@ -562,6 +590,75 @@ extern "C" {
             pInsert = array_Ptr(this->pData, index);
             for (i=0; i<len; ++i) {
                 *pInsert++ = *pStr++;
+            }
+            *pInsert = '\0';
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         AStr_AppendMidA(
+        ASTR_DATA        *this,
+        const
+        char            *pStr,
+        uint32_t        offset,
+        uint32_t        len
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        strlen;
+        uint32_t        byteLen;
+        int32_t         index;
+        char            *pInsert;
+        const
+        char            *pData;
+        const
+        char            *pBegin;
+        const
+        char            *pEnd;
+
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_DATA;
+        }
+#endif
+        if (0 == offset)
+            offset = 1;
+        
+        strlen = (uint32_t)utf8_StrLenChars(pStr);
+        if (0 == strlen) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        index = utf8_StrOffset(pStr, offset);
+        if (index < 0) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        pBegin = pStr + index - 1;
+        index = utf8_StrOffset(pBegin, len);
+        if (index < 0) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        pEnd = pBegin + index - 1;
+        byteLen = (uint32_t)(pEnd - pBegin) + 1;
+
+        // Insert space for the data and then copy it.
+        index = array_getSize(this->pData);
+        eRc =   array_InsertSpacing(
+                                    this->pData,
+                                    index,
+                                    byteLen
+                );
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pInsert = array_Ptr(this->pData, index);
+            for (i=0; i<byteLen; ++i) {
+                *pInsert++ = *pBegin++;
             }
             *pInsert = '\0';
         }

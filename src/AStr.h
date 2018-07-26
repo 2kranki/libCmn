@@ -102,6 +102,14 @@ extern "C" {
     );
     
     
+    ASTR_DATA *    AStr_NewFromMidA(
+        const
+        char            *pszIn,         /* [in] Variable String Pointer */
+        uint32_t        offset,
+        uint32_t        len
+    );
+    
+    
     ASTR_DATA *    AStr_NewFromCharA(
         uint32_t        len,
         const
@@ -223,6 +231,15 @@ extern "C" {
         ASTR_DATA		*this,
         const
         char            *pStr
+    );
+    
+    
+    ERESULT         AStr_AppendMidA(
+        ASTR_DATA        *this,
+        const
+        char            *pStr,
+        uint32_t        offset,
+        uint32_t        len
     );
     
     

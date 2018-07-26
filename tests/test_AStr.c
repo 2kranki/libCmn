@@ -321,6 +321,52 @@ int         test_AStr_AppendBig(
 
 
 
+int         test_AStr_AppendMid01(
+    const
+    char        *pTestName
+)
+{
+    ERESULT     eRc;
+    ASTR_DATA   *pObj = OBJ_NIL;
+    const               // 1234567890123456
+    char        *pChrs =  "abcdefghijklmnop";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = AStr_New();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    XCTAssertTrue( (0 == AStr_getLength(pObj)) );
+    if (pObj) {
+        
+        eRc = AStr_AppendMidA(pObj, pChrs, 0, 16);
+        fprintf(stderr, "pObj = \"%s\"\n", AStr_getData(pObj));
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (16 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp(pChrs, AStr_getData(pObj))) );
+        AStr_Truncate(pObj, 0);
+        
+        eRc = AStr_AppendMidA(pObj, pChrs, 0, 5);
+        fprintf(stderr, "pObj = \"%s\"\n", AStr_getData(pObj));
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (5 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcde", AStr_getData(pObj))) );
+        eRc = AStr_AppendMidA(pObj, pChrs, 6, 2);
+        fprintf(stderr, "pObj = \"%s\"\n", AStr_getData(pObj));
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (7 == AStr_getLength(pObj)) );
+        XCTAssertTrue( (0 == strcmp("abcdefg", AStr_getData(pObj))) );
+       AStr_Truncate(pObj, 0);
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_AStr_AppendPrint01(
     const
     char        *pTestName
@@ -1443,6 +1489,7 @@ TINYTEST_START_SUITE(test_AStr);
     TINYTEST_ADD_TEST(test_AStr_CharFindNext,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AssignCopy,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AppendPrint01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_AppendMid01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AppendBig,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
