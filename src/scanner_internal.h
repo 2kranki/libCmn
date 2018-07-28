@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   u8Array_internal.h
- *	Generated 08/07/2015 09:47:23
+ * File:   scanner_internal.h
+ *	Generated 07/26/2018 19:55:39
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,12 +39,12 @@
 
 
 
-#ifndef U8ARRAY_INTERNAL_H
-#define	U8ARRAY_INTERNAL_H
+#include    <scanner.h>
+#include    <jsonIn.h>
 
 
-#include        "u8Array.h"
-#include        "array_internal.h"
+#ifndef SCANNER_INTERNAL_H
+#define	SCANNER_INTERNAL_H
 
 
 
@@ -52,36 +53,79 @@ extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct u8Array_data_s	{
+struct scanner_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define U8ARRAY_FLAG_BIGENDIAN OBJ_FLAG_USER1
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        misc;
-    ARRAY_DATA      *pData;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    U8ARRAY_VTBL    u8Array_Vtbl;
+    struct scanner_class_data_s  scanner_ClassObj;
+
+    extern
+    const
+    SCANNER_VTBL         scanner_Vtbl;
 
 
 
-    // Internal Functions
-    void            u8Array_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  scanner_getSuperVtbl(
+        SCANNER_DATA     *this
+    );
+
+
+    void            scanner_Dealloc(
         OBJ_ID          objId
     );
 
+
+    SCANNER_DATA *       scanner_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          scanner_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     scanner_ToJSON(
+        SCANNER_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			u8Array_Validate(
-        U8ARRAY_DATA       *cbp
+    bool			scanner_Validate(
+        SCANNER_DATA       *this
     );
 #endif
 
@@ -91,5 +135,5 @@ struct u8Array_data_s	{
 }
 #endif
 
-#endif	/* U8ARRAY_INTERNAL_H */
+#endif	/* SCANNER_INTERNAL_H */
 

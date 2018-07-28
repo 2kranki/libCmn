@@ -110,12 +110,17 @@ extern "C" {
     )
     {
         U8ARRAY_DATA    *this;
-        
+        ERESULT         eRc;
+
         this = u8Array_Alloc( );
         if (this) {
             this = u8Array_Init(this);
             if (this) {
-                u8Array_AppendBuffer(this, size, pData);
+                eRc = u8Array_AppendBuffer(this, size, pData);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
             }
         }
         
@@ -124,7 +129,31 @@ extern "C" {
     
     
     
+    U8ARRAY_DATA *  u8Array_NewFromFile(
+        PATH_DATA       *pPath
+    )
+    {
+        U8ARRAY_DATA    *this;
+        ERESULT         eRc;
+        
+        this = u8Array_Alloc( );
+        if (this) {
+            this = u8Array_Init(this);
+            if (this) {
+                eRc = u8Array_AppendFile(this, pPath);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+            }
+        }
+        
+        return this;
+    }
     
+    
+    
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -178,7 +207,6 @@ extern "C" {
         }
 #endif
         
-        this->eRc = ERESULT_SUCCESS;
         return this->misc;
     }
     
@@ -196,7 +224,6 @@ extern "C" {
 #endif
         this->misc = value;
         
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     
@@ -1337,7 +1364,6 @@ extern "C" {
         U8ARRAY_DATA      *this
     )
     {
-        this->eRc = ERESULT_INVALID_OBJECT;
         if(this) {
             if ( obj_IsKindOf(this,OBJ_IDENT_U8ARRAY) )
                 ;
@@ -1350,7 +1376,6 @@ extern "C" {
             return false;
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

@@ -394,6 +394,10 @@ extern "C" {
         OBJ_IDENT_RRDS32,               // Relative Record Database - 32 bit Logical
         //                              //                              Record Number
         OBJ_IDENT_RRDS32_CLASS,
+        OBJ_IDENT_SCANNER,              // Tablized Command Processor
+        OBJ_IDENT_SCANNER_CLASS,
+        OBJ_IDENT_SCREEN,               // Terminal Screen Handler
+        OBJ_IDENT_SCREEN_CLASS,
         OBJ_IDENT_SIDX,                 // Simple Integer Index
         OBJ_IDENT_SIDX_CLASS,
         OBJ_IDENT_SRC,

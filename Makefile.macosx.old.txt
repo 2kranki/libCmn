@@ -1237,6 +1237,30 @@ $(OBJDIR)/rrds32_object.o: $(SRCDIR)/rrds32_object.c
 
 
 
+OBJS += $(OBJDIR)/scanner.o $(OBJDIR)/scanner_object.o
+
+
+$(OBJDIR)/scanner.o: $(SRCDIR)/scanner.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/scanner_object.o: $(SRCDIR)/scanner_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
+OBJS += $(OBJDIR)/screen.o $(OBJDIR)/screen_object.o
+
+
+$(OBJDIR)/screen.o: $(SRCDIR)/screen.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/screen_object.o: $(SRCDIR)/screen_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/sidx.o $(OBJDIR)/sidx_object.o
 
 
