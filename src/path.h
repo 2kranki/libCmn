@@ -291,7 +291,7 @@ extern "C" {
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
      @param     pHash   optional node hash pointer where the node's data is a
-     path or astr kind object.
+                        path or astr object(s).
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
      is returned.
      */

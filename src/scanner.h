@@ -135,12 +135,17 @@ extern "C" {
     );
     
     
-    bool            scanner_ScanString(
+    bool            scanner_ScanOct32(
         char            **ppCmdStr,         // NUL terminated string pointer
-        uint32_t        maxLen,
         uint32_t        *pScannedLen,       // (returned) Scanned Length
-                                            // (not including leading whitespace)
-        char            *pOutput            // Output Buffer Pointer
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
+    ASTR_DATA *     scanner_ScanStringToAStr(
+        char            **ppCmdStr,         // NUL terminated string pointer
+        uint32_t        *pScannedLen        // [out] Scanned Length
+        //                                  //      (not including leading whitespace)
     );
     
     

@@ -490,7 +490,7 @@ extern "C" {
     {
         bool                fRc = false;
         
-        if ( (w32Char >= '0') && (w32Char <= '0') ) {
+        if ( (w32Char >= '0') && (w32Char <= '9') ) {
             fRc = true;
         }
         else if ( (w32Char >= 'a') && (w32Char <= 'f') ) {

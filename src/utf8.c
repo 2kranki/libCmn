@@ -578,8 +578,9 @@ extern "C" {
         W32CHR_T        ch = -1;
         int             i = -1;
         
-        if (pSrc == NULL)
+        if ((pSrc == NULL) || (*pSrc == '\0')) {
             return 0;
+        }
         if ((pSrc[0] & 0x80) == 0) {
             ch = pSrc[0];
             i = 1;

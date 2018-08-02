@@ -221,6 +221,10 @@ extern "C" {
     );
     
     
+    /*!
+     @return:   true if w32Char is [a..f] or [A..F] or [0..9].
+                Otherwise, false is returned.
+     */
     bool                ascii_isHexW32(
         W32CHR_T            w32Char
     );

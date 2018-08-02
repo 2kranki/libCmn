@@ -411,6 +411,14 @@ extern "C" {
     );
     
     
+    /*!
+     Compare 'this' to 'pOther'.
+     @param     this    object pointer
+     @param     pOther  UTF-8 Ascii String Pointer
+     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
+                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
+                ERESULT_* error code.
+     */
     ERESULT         AStr_CompareA(
         ASTR_DATA		*this,
         const

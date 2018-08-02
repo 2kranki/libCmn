@@ -8,7 +8,7 @@
  *			Command Utilities (cmdutl)
  * Purpose
  *			This object provides a standardized way of parsing or
- *          constructing CMDUTL data.
+ *          constructing command line data.
  *
  *          cmdline : string arg*       // First string is program path
  *                  ;

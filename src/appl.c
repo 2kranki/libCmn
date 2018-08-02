@@ -78,6 +78,7 @@
 #include    <ascii.h>
 #include    <dir.h>
 #include    <misc.h>
+#include    <scanner.h>
 #include    <str.h>
 #include    <trace.h>
 
@@ -2003,6 +2004,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint16_t        cbSize;
         int             Num = 0;
+        char            *pCurChr;
         char            *pCurCmd;
         char            quote;
         int             cArg = 1;
@@ -2028,6 +2030,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
         }
+        pCurChr = pCmdStr;
 
         // Set program defaults here;
         this->fDebug = 0;
