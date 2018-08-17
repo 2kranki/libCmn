@@ -101,7 +101,7 @@ struct bitMatrix_data_s	{
     );
 
 
-    BITMATRIX_DATA *       bitMatrix_ParseObject(
+    BITMATRIX_DATA * bitMatrix_ParseObject(
         JSONIN_DATA     *pParser
     );
 

@@ -121,6 +121,17 @@ extern "C" {
     );
     
     
+    BITMATRIX_DATA * bitMatrix_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+    
+    
+    BITMATRIX_DATA * bitMatrix_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+    
+    
     /*!
      Create a new identity matrix of the given size.  The matrix must be
      square (ie xSize == ySize).

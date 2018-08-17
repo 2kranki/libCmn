@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <bitMatrix_internal.h>
 
@@ -51,7 +52,8 @@ int             tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -594,8 +596,77 @@ int             test_bitMatrix_Invert01(
 
 
 
+int             test_bitMatrix_JSON01(
+    const
+    char            *pTestName
+)
+{
+    BITMATRIX_DATA  *pObj = OBJ_NIL;
+    BITMATRIX_DATA  *pNew = OBJ_NIL;
+    ERESULT         eRc;
+    //uint32_t        x;
+    //uint32_t        y;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStrA =
+    "{\"objectType\":\"bitMatrix\",\n"
+        "\t\"xSize\":4,\n"
+        "\t\"xWords\":1,\n"
+        "\t\"ySize\":4,\n"
+        "\t\"cElems\":4,\n"
+        "\t\"Elems\":[\n"
+            "\t\t2147483648,\n"
+            "\t\t1073741824,\n"
+            "\t\t536870912,\n"
+            "\t\t268435456\n"
+        "\t]\n"
+    "}\n";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = bitMatrix_NewIdentity(4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        TINYTEST_TRUE( (4 == pObj->cElems) );
+        TINYTEST_TRUE( (1 == pObj->xWords) );
+        TINYTEST_FALSE( (NULL == pObj->pElems) );
+        
+        pStr = bitMatrix_ToJSON(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\tjson=\"%s\"\n", AStr_getData(pStr));
+        eRc = AStr_CompareA(pStr, pStrA);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        
+        pNew = bitMatrix_NewFromJSONString(pStr);
+        TINYTEST_FALSE( (OBJ_NIL == pNew) );
+        TINYTEST_TRUE( (4 == pNew->xSize) );
+        TINYTEST_TRUE( (4 == pNew->ySize) );
+        TINYTEST_TRUE( (4 == pNew->cElems) );
+        TINYTEST_TRUE( (1 == pNew->xWords) );
+        TINYTEST_FALSE( (NULL == pNew->pElems) );
+        TINYTEST_TRUE( (2147483648 == pNew->pElems[0]) );
+        TINYTEST_TRUE( (1073741824 == pNew->pElems[1]) );
+        TINYTEST_TRUE( ( 536870912 == pNew->pElems[2]) );
+        TINYTEST_TRUE( ( 268435456 == pNew->pElems[3]) );
+        obj_Release(pNew);
+        pNew = OBJ_NIL;
+
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_bitMatrix);
+    TINYTEST_ADD_TEST(test_bitMatrix_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_bitMatrix_Invert01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_bitMatrix_Inflate02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_bitMatrix_Inflate01,setUp,tearDown);

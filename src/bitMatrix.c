@@ -149,7 +149,7 @@ extern "C" {
         
         this = bitMatrix_NewSquare(xSize);
         if (this) {
-            for (i=0; i<xSize; ++i) {
+            for (i=1; i<=xSize; ++i) {
                 eRc = bitMatrix_Set(this, i, i, true);
             }
         }
@@ -1589,44 +1589,6 @@ extern "C" {
         this->ySize = ySize;
 
         return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     bitMatrix_ToJSON(
-        BITMATRIX_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !bitMatrix_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
     }
     
     

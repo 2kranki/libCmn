@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <jsonIn_internal.h>
 #include        <AStr_internal.h>
+#include        <bitMatrix_internal.h>
 #include        <dec.h>
 #include        <hex.h>
 #include        <name_internal.h>
@@ -924,7 +925,6 @@ extern "C" {
         }
         if(OBJ_NIL == pStr) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
             return ERESULT_INVALID_PARAMETER;
         }
         if (obj_Trace(this)) {
@@ -1003,6 +1003,14 @@ extern "C" {
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)AStr_ParseObject(this);
+            this->eRc = ERESULT_SUCCESS;
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(bitMatrix_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)bitMatrix_ParseObject(this);
             this->eRc = ERESULT_SUCCESS;
             return pObj;
         }
