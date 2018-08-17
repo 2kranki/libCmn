@@ -41,16 +41,18 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <cmdutl_internal.h>
-#include <ascii.h>
-#include <AStr.h>
-#include <nodeArray.h>
-#include <nodeHash.h>
-#include <srcErrors.h>
-#include <trace.h>
-#include <utf8.h>
-#include <W32Str.h>
-#include <stdio.h>
+#include        <cmdutl_internal.h>
+#include        <ascii.h>
+#include        <AStr.h>
+#include        <AStrArray.h>
+#include        <nodeArray.h>
+#include        <nodeHash.h>
+#include        <scanner.h>
+#include        <srcErrors.h>
+#include        <trace.h>
+#include        <utf8.h>
+#include        <W32Str.h>
+#include        <stdio.h>
 
 
 
@@ -285,6 +287,258 @@ extern "C" {
         
         // Return to caller.
         return chr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   P a r s e  A r g
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     cmdutl_ParseArg(
+        CMDUTL_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJ_ID          pChild = OBJ_NIL;
+        //bool            fRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        TRC_OBJ(this, "%s:\n", __func__);
+        
+        cmdutl_ParseWS(this);
+        
+        pArray = nodeArray_New( );
+        if (pArray == OBJ_NIL) {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
+            eResult_ErrorFatalFLC(
+                                  eResult_Shared(),
+                                  path_getData(this->pPath),
+                                  this->lineNo,
+                                  this->colNo,
+                                  "Out of Memory"
+                                  );
+#endif
+            return pNode;
+        }
+        
+        pChild = cmdutl_ParseValue(this);
+        if (pChild) {
+            nodeArray_AppendNode(pArray, pChild, NULL);
+            obj_Release(pChild);
+        }
+        else {
+            obj_Release(pArray);
+            return OBJ_NIL;
+        }
+        
+        for (;;) {
+            cmdutl_ParseWS(this);
+            chr = cmdutl_InputLookAhead(this, 1);
+            if( chr == ',' ) {
+                cmdutl_InputAdvance(this, 1);
+            }
+            else
+                break;
+            pChild = cmdutl_ParseValue(this);
+            if (pChild) {
+                nodeArray_AppendNode(pArray, pChild, NULL);
+                obj_Release(pChild);
+            }
+            else {
+                //FIXME: Add proper error
+#ifdef XYZZY
+                srcErrors_AddFatalFromToken(
+                                            OBJ_NIL,
+                                            pToken,
+                                            "Expecting ':'"
+                                            );
+                eResult_ErrorFatalFLC(
+                                      eResult_Shared(),
+                                      path_getData(this->pPath),
+                                      this->lineNo,
+                                      this->colNo,
+                                      "Expecting a value, but found %c(0x%02X)",
+                                      chr,
+                                      chr
+                                      );
+#endif
+            }
+        }
+        
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
+        if( chr == ']' ) {
+            cmdutl_InputAdvance(this, 1);
+        }
+        else {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
+            eResult_ErrorFatalFLC(
+                                  eResult_Shared(),
+                                  path_getData(this->pPath),
+                                  this->lineNo,
+                                  this->colNo,
+                                  "Expecting ']', but found %c(0x%02X)",
+                                  chr,
+                                  chr
+                                  );
+#endif
+        }
+        
+        pNode = node_NewWithUTF8AndClass("array", 0, pArray);
+        obj_Release(pArray);
+        if (pNode == OBJ_NIL) {
+            //FIXME: Error Fatal
+            return pNode;
+        }
+        
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                   P a r s e  A r g s
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     cmdutl_ParseArgs(
+        CMDUTL_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJ_ID          pChild = OBJ_NIL;
+        //bool            fRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        TRC_OBJ(this, "%s:\n", __func__);
+        
+        cmdutl_ParseWS(this);
+        
+        pArray = nodeArray_New( );
+        if (pArray == OBJ_NIL) {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
+            eResult_ErrorFatalFLC(
+                                  eResult_Shared(),
+                                  path_getData(this->pPath),
+                                  this->lineNo,
+                                  this->colNo,
+                                  "Out of Memory"
+                                  );
+#endif
+            return pNode;
+        }
+        
+        pChild = cmdutl_ParseValue(this);
+        if (pChild) {
+            nodeArray_AppendNode(pArray, pChild, NULL);
+            obj_Release(pChild);
+        }
+        else {
+            obj_Release(pArray);
+            return OBJ_NIL;
+        }
+        
+        for (;;) {
+            cmdutl_ParseWS(this);
+            chr = cmdutl_InputLookAhead(this, 1);
+            if( chr == ',' ) {
+                cmdutl_InputAdvance(this, 1);
+            }
+            else
+                break;
+            pChild = cmdutl_ParseValue(this);
+            if (pChild) {
+                nodeArray_AppendNode(pArray, pChild, NULL);
+                obj_Release(pChild);
+            }
+            else {
+                //FIXME: Add proper error
+#ifdef XYZZY
+                srcErrors_AddFatalFromToken(
+                                            OBJ_NIL,
+                                            pToken,
+                                            "Expecting ':'"
+                                            );
+                eResult_ErrorFatalFLC(
+                                      eResult_Shared(),
+                                      path_getData(this->pPath),
+                                      this->lineNo,
+                                      this->colNo,
+                                      "Expecting a value, but found %c(0x%02X)",
+                                      chr,
+                                      chr
+                                      );
+#endif
+            }
+        }
+        
+        cmdutl_ParseWS(this);
+        chr = cmdutl_InputLookAhead(this, 1);
+        if( chr == ']' ) {
+            cmdutl_InputAdvance(this, 1);
+        }
+        else {
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
+            eResult_ErrorFatalFLC(
+                                  eResult_Shared(),
+                                  path_getData(this->pPath),
+                                  this->lineNo,
+                                  this->colNo,
+                                  "Expecting ']', but found %c(0x%02X)",
+                                  chr,
+                                  chr
+                                  );
+#endif
+        }
+        
+        pNode = node_NewWithUTF8AndClass("array", 0, pArray);
+        obj_Release(pArray);
+        if (pNode == OBJ_NIL) {
+            //FIXME: Error Fatal
+            return pNode;
+        }
+        
+        return pNode;
     }
     
     
@@ -605,6 +859,62 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                   P a r s e  C m d S t r
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     cmdutl_ParseCmdStr(
+        CMDUTL_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+        NODE_DATA       *pNode = OBJ_NIL;
+        //OBJ_ID          pChild = OBJ_NIL;
+        //bool            fRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        TRC_OBJ(this, "%s:\n", __func__);
+        
+        cmdutl_ParseWS(this);
+        
+        pNode = cmdutl_ParseArgs(this);
+        if( OBJ_NIL == pNode ) {
+            return pNode;
+        }
+        
+        cmdutl_ParseWS(this);
+        if(!cmdutl_ParseEOF(this)) {
+            chr = cmdutl_InputLookAhead(this, 1);
+            //FIXME: Add proper error
+#ifdef XYZZY
+            srcErrors_AddFatalFromToken(
+                                        OBJ_NIL,
+                                        pToken,
+                                        "Expecting ':'"
+                                        );
+            eResult_ErrorFatalFLC(
+                                  eResult_Shared(),
+                                  path_getData(this->pPath),
+                                  this->lineNo,
+                                  this->colNo,
+                                  "Expecting EOF, but found %c(0x%02X)",
+                                  chr,
+                                  chr
+                                  );
+#endif
+        }
+        
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                   P a r s e  D i g i t  0-9
     //---------------------------------------------------------------
     
@@ -801,7 +1111,7 @@ extern "C" {
 #endif
         TRC_OBJ(this, "%s:\n", __func__);
         
-        pNode = cmdutl_ParseHash(this);
+        pNode = cmdutl_ParseArgs(this);
         if( OBJ_NIL == pNode ) {
             return pNode;
         }
@@ -1354,7 +1664,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            cmdutl_ParseWS(
-        CMDUTL_DATA       *cbp
+        CMDUTL_DATA       *this
     )
     {
         bool            fRc = false;
@@ -1363,16 +1673,16 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
         for (;;) {
-            chr = cmdutl_InputLookAhead(cbp, 1);
-            fRc = W32Str_IsWhiteSpaceW32(chr);
+            chr = cmdutl_InputLookAhead(this, 1);
+            fRc = ascii_isWhiteSpaceW32(chr);
             if( fRc ) {
-                cmdutl_InputAdvance(cbp, 1);
+                cmdutl_InputAdvance(this, 1);
             }
             else
                 break;
@@ -1411,37 +1721,106 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                C o n v e r t  A r g c  t o  W S t r
-    //---------------------------------------------------------------
-    
-    W32STR_DATA *   cmdutl_ConvertArgcToWStr(
+    ASTR_DATA *     cmdutl_ArgvToAStr(
         int             argc,
         const
         char            *argv[]
     )
     {
         int             i;
-        W32STR_DATA     *pStr = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
         ERESULT         eRc;
         
-        pStr = W32Str_New();
+        pStr = AStr_New();
         for (i=0; i<argc; ++i) {
-            eRc = W32Str_AppendA(pStr, argv[i]);
+            eRc = AStr_AppendA(pStr, argv[i]);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pStr);
                 return OBJ_NIL;
             }
-            eRc = W32Str_AppendCharW32(pStr, 1, ' ');
+            eRc = AStr_AppendCharA(pStr, ' ');
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pStr);
                 return OBJ_NIL;
             }
         }
-        eRc = W32Str_AppendCharW32(pStr, 1, '\n');
         
         // Return to caller.
         return pStr;
+    }
+    
+    
+    
+    /*! Set up an ArgC/ArgV type array given a command line string
+     excluding the program name.
+     @param     pCmdStrA    Pointer to a UTF-8 Argument character string
+     @return    If successful, an AStrArray object which must be
+     released containing the Argument Array, otherwise
+     OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStrArray object.
+     */
+    //FIXME: We need to make this aware of the Array and Hash allowed in
+    //FIXME: in parameters since they may have whitespace between elements.
+    ASTRARRAY_DATA * cmdutl_CommandStringToArray(
+        const
+        char            *pCmdStrA
+    )
+    {
+        ERESULT         eRc;
+        bool            fRc;
+        char            *pCurCmd;
+        uint32_t        cmdLen = 0;
+        char            *pCurChr;
+        ASTRARRAY_DATA  *pArgs = OBJ_NIL;
+        ASTR_DATA       *pArg = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(pCmdStrA && (utf8_StrLenA(pCmdStrA) > 0))
+            ;
+        else {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        pArgs = AStrArray_New( );
+        if (OBJ_NIL == pArgs) {
+            DEBUG_BREAK();
+            //return ERESULT_OUT_OF_MEMORY;
+            return OBJ_NIL;
+        }
+        pCurChr = (char *)pCmdStrA;
+        
+        // Set up program name argument.
+        pArg = AStr_NewA("");
+        if (pArg) {
+            eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
+            obj_Release(pArg);
+            pArg = OBJ_NIL;
+        }
+        
+        // Scan off the each parameter.
+        while( pCurChr && *pCurChr ) {
+            pCurCmd = NULL;
+            cmdLen = 0;
+            
+            // Pass over white space.
+            fRc = scanner_ScanWhite(&pCurChr, NULL);
+            
+            // Handle Quoted Arguments.
+            pArg = scanner_ScanStringToAStr(&pCurChr, NULL);
+            if (pArg) {
+                eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
+                obj_Release(pArg);
+                pArg = OBJ_NIL;
+            }
+            
+        }
+        
+        // Return to caller.
+        return pArgs;
     }
     
     
@@ -1456,9 +1835,9 @@ extern "C" {
         
         this = cmdutl_Alloc( );
         if (this) {
-            this = cmdutl_InitAStr( this, pAStr, pPath, tabSize );
+            this = cmdutl_InitAStr(this, pAStr, pPath, tabSize);
         }
-        return( this );
+        return this;
     }
     
     
@@ -1475,7 +1854,7 @@ extern "C" {
         if (this) {
             this = cmdutl_InitW32Str( this, pWStr, pPath, tabSize );
         }
-        return( this );
+        return this;
     }
     
     
@@ -1610,40 +1989,40 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        CMDUTL_DATA   *cbp = objId;
+        CMDUTL_DATA   *this = objId;
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        switch (cbp->inputType) {
+        switch (this->inputType) {
                 
             case OBJ_IDENT_FILE:
-                if (cbp->pFile) {
-                    fclose(cbp->pFile);
-                    cbp->pFile = NULL;
+                if (this->pFile) {
+                    fclose(this->pFile);
+                    this->pFile = NULL;
                 }
                 break;
                 
             case OBJ_IDENT_ASTR:
-                if (cbp->pAStr) {
-                    obj_Release(cbp->pAStr);
-                    cbp->pAStr = OBJ_NIL;
+                if (this->pAStr) {
+                    obj_Release(this->pAStr);
+                    this->pAStr = OBJ_NIL;
                 }
                 break;
                 
             case OBJ_IDENT_W32STR:
-                if (cbp->pWStr) {
-                    obj_Release(cbp->pWStr);
-                    cbp->pWStr = OBJ_NIL;
+                if (this->pWStr) {
+                    obj_Release(this->pWStr);
+                    this->pWStr = OBJ_NIL;
                 }
                 break;
                 
@@ -1651,25 +2030,28 @@ extern "C" {
                 break;
         }
         
-        cmdutl_setPath(cbp, OBJ_NIL);
+        cmdutl_setPath(this, OBJ_NIL);
         
-        if (cbp->pFld) {
-            mem_Free(cbp->pFld);
-            cbp->pFld    = NULL;
-            cbp->sizeFld = 0;
-            cbp->lenFld  = 0;
+        if (this->pFld) {
+            mem_Free(this->pFld);
+            this->pFld    = NULL;
+            this->sizeFld = 0;
+            this->lenFld  = 0;
         }
         
-        if (cbp->pInputs) {
-            mem_Free(cbp->pInputs);
-            cbp->pInputs    = NULL;
-            cbp->sizeInputs = 0;
-            cbp->curInputs  = 0;
+        if (this->pInputs) {
+            mem_Free(this->pInputs);
+            this->pInputs    = NULL;
+            this->sizeInputs = 0;
+            this->curInputs  = 0;
         }
         
-        obj_Dealloc( cbp );
-        cbp = NULL;
-
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+        
         // Return to caller.
     }
 
@@ -1736,38 +2118,38 @@ extern "C" {
      
 
     CMDUTL_DATA *   cmdutl_InitFile(
-        CMDUTL_DATA     *cbp,
+        CMDUTL_DATA     *this,
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
     {
         char            *pszFileName;
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         if (OBJ_NIL == pPath) {
             fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         
-        cbp = cmdutl_Init( cbp );
-        if (OBJ_NIL == cbp) {
+        this = cmdutl_Init(this);
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        cmdutl_setPath(cbp, pPath);
-        cbp->tabSize = tabSize;
+        cmdutl_setPath(this, pPath);
+        this->tabSize = tabSize;
         
         // Open the file.
-        cbp->inputType = OBJ_IDENT_FILE;
+        this->inputType = OBJ_IDENT_FILE;
         pszFileName = path_CStringA(pPath);
         if (pszFileName) {
-            cbp->pFile = fopen( pszFileName, "r" );
-            if (NULL == cbp->pFile) {
-                obj_Release(cbp);
+            this->pFile = fopen( pszFileName, "r" );
+            if (NULL == this->pFile) {
+                obj_Release(this);
                 return OBJ_NIL;
             }
             mem_Free(pszFileName);
@@ -1775,61 +2157,61 @@ extern "C" {
         }
         else {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         
-        return cbp;
+        return this;
     }
     
     
     
     CMDUTL_DATA *   cmdutl_InitAStr(
-        CMDUTL_DATA     *cbp,
+        CMDUTL_DATA     *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
     )
     {
         
-        if (OBJ_NIL == cbp) {
+        if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
         if (OBJ_NIL == pAStr) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             return OBJ_NIL;
         }
         obj_Retain(pAStr);
         
-        cbp = cmdutl_Init( cbp );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
+        this = cmdutl_Init(this);
+        if (OBJ_NIL == this) {
+            obj_Release(this);
             obj_Release(pAStr);
             return OBJ_NIL;
         }
         
-        cmdutl_setPath(cbp, pPath);
-        cbp->tabSize = tabSize;
+        cmdutl_setPath(this, pPath);
+        this->tabSize = tabSize;
         
         // Open the file.
-        cbp->inputType = OBJ_IDENT_ASTR;
+        this->inputType = OBJ_IDENT_ASTR;
         //obj_Retain(pSzStr);   // retained above
-        cbp->pAStr = pAStr;
-        cbp->fileOffset = 0;
+        this->pAStr = pAStr;
+        this->fileOffset = 0;
         
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( cbp ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
-            obj_Release(cbp);
+            obj_Release(this);
             obj_Release(pAStr);
             return OBJ_NIL;
         }
 #endif
         
-        return cbp;
+        return this;
     }
     
     
@@ -2038,7 +2420,7 @@ extern "C" {
         
         this->fileOffset = 0;
         cmdutl_InputAdvance(this, this->sizeInputs);
-        pNode = cmdutl_ParseFileObject(this);
+        pNode = cmdutl_ParseCmdStr(this);
         
         // Return to caller.
         return pNode;

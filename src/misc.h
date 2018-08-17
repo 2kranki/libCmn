@@ -218,25 +218,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /* Disable() terminates the misc misc.
-     */
-    bool        misc_Disable(
-        MISC_DATA		*this
-    );
-
-
-    /* Enable() starts the misc.
-     */
-    bool        misc_Enable(
-        MISC_DATA		*this
-    );
-
-
-    bool        misc_IsEnabled(
-        MISC_DATA		*this
-    );
-    
-    
     /*! 
      * Init() sets up the default TaskBody() outlined above
      * and initializes other fields needed. Init() assumes 

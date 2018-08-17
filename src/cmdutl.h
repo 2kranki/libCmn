@@ -10,7 +10,7 @@
  *			This object provides a standardized way of parsing or
  *          constructing command line data.
  *
- *          cmdline : string arg*       // First string is program path
+ *          cmdstr  : string arg*                   // First string is program path
  *                  ;
  *          arg     : ws* (name ('=' value)? | string ('=' value) | number)
  *                  ;
@@ -78,6 +78,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <AStrArray.h>
 #include        <node.h>
 #include        <false.h>
 #include        <null.h>
@@ -139,7 +140,21 @@ extern "C" {
     );
     
     
-    W32STR_DATA *   cmdutl_ConvertArgcToWStr(
+    /*! Set up an ArgC/ArgV type array given a command line string
+     excluding the program name.
+     @param     pCmdStrA    Pointer to a UTF-8 Argument character string
+     @return    If successful, an AStrArray object which must be
+                released containing the Argument Array, otherwise
+                OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStrArray object.
+     */
+    ASTRARRAY_DATA * cmdutl_CommandStringToArray(
+        const
+        char            *pCmdStrA
+    );
+    
+    
+    ASTR_DATA *     cmdutl_ArgvToWStr(
         int             argc,
         const
         char            *argv[]

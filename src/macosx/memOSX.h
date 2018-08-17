@@ -99,6 +99,15 @@ extern "C" {
     memOSX_DebugCallocAbort( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
 #endif
     
+#undef mem_CheckArea
+#if        defined(NDEBUG)
+#    define    mem_CheckArea( pData )\
+/* */
+#else
+#    define    mem_CheckArea( pData )\
+memOSX_DebugCheckArea( memOSX_Shared(), pData, __FILE__, __LINE__ )
+#endif
+    
 #undef mem_Dump
 #if		defined(NDEBUG)
 #	define	mem_Dump( )\

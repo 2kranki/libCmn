@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   bitMatrix_internal.h
- *	Generated 08/12/2018 15:05:02
+ * File:   u32Matrix_internal.h
+ *	Generated 08/12/2018 23:54:39
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <bitMatrix.h>
+#include        <u32Matrix.h>
 #include        <jsonIn.h>
 
 
-#ifndef BITMATRIX_INTERNAL_H
-#define	BITMATRIX_INTERNAL_H
+#ifndef U32MATRIX_INTERNAL_H
+#define	U32MATRIX_INTERNAL_H
 
 
 
@@ -55,35 +55,46 @@ extern "C" {
 
 
 
+    typedef struct matrix_build_s {
+        uint32_t        ySize;          // Height (Number of Rows, i)
+        uint32_t        xSize;          // Width (Number of Columns, j)
+        uint32_t        baseMax;        // Highest index allowed (m * n)
+        uint32_t        maxBase;        // Current Highest Index Used
+        uint32_t        highest;        // Highest pCheck entry used
+        int32_t         *pBase;         // Row Base Index (j) into VALUE/CHECK
+        uint32_t        *pCheck;        // Column Check for Row indexed from pBase
+        uint32_t        *pValue;        // Row and Column value given Check
+    } MATRIX_BUILD;
+    
+    
+
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct bitMatrix_data_s	{
+struct u32Matrix_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        xSize;
-    uint32_t        ySize;
-    uint32_t        xWords;         // x-axis in words
-    uint32_t        cElems;         // Size in 32-bit words
-    uint32_t        rsvd32;
-    uint32_t        *pElems;        // the array in x-axis
+    uint32_t        xSize;          // Width (x-axis, Number of Columns, i)
+    uint32_t        ySize;          // Height (y-axis, Number of Rows, j)
+    uint32_t        cElems;         // Size of Elems (ie m * n)
+    uint32_t        *pElems;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct bitMatrix_class_data_s  bitMatrix_ClassObj;
+    struct u32Matrix_class_data_s  u32Matrix_ClassObj;
 
     extern
     const
-    BITMATRIX_VTBL         bitMatrix_Vtbl;
+    U32MATRIX_VTBL         u32Matrix_Vtbl;
 
 
 
@@ -91,30 +102,37 @@ struct bitMatrix_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  bitMatrix_getSuperVtbl(
-        BITMATRIX_DATA     *this
+    OBJ_IUNKNOWN *  u32Matrix_getSuperVtbl(
+        U32MATRIX_DATA     *this
     );
 
 
-    void            bitMatrix_Dealloc(
+    void            u32Matrix_Dealloc(
         OBJ_ID          objId
     );
 
 
-    BITMATRIX_DATA *       bitMatrix_ParseObject(
+    uint32_t        u32Matrix_index(
+        U32MATRIX_DATA  *this,
+        uint32_t        x,
+        uint32_t        y
+    );
+    
+    
+    U32MATRIX_DATA * u32Matrix_ParseObject(
         JSONIN_DATA     *pParser
     );
 
 
-    void *          bitMatrix_QueryInfo(
+    void *          u32Matrix_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     bitMatrix_ToJSON(
-        BITMATRIX_DATA      *this
+    ASTR_DATA *     u32Matrix_ToJSON(
+        U32MATRIX_DATA      *this
     );
 
 
@@ -122,8 +140,8 @@ struct bitMatrix_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			bitMatrix_Validate(
-        BITMATRIX_DATA       *this
+    bool			u32Matrix_Validate(
+        U32MATRIX_DATA       *this
     );
 #endif
 
@@ -133,5 +151,5 @@ struct bitMatrix_data_s	{
 }
 #endif
 
-#endif	/* BITMATRIX_INTERNAL_H */
+#endif	/* U32MATRIX_INTERNAL_H */
 

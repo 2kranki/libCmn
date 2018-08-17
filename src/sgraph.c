@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   screen.c
- *	Generated 07/26/2018 19:52:43
+ * File:   sgraph.c
+ *	Generated 08/12/2018 14:34:38
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <screen_internal.h>
+#include        <sgraph_internal.h>
 #include        <trace.h>
 
 
@@ -61,11 +61,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            screen_task_body(
+    void            sgraph_task_body(
         void            *pData
     )
     {
-        //SCREEN_DATA  *this = pData;
+        //SGRAPH_DATA  *this = pData;
         
     }
 #endif
@@ -81,16 +81,21 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SCREEN_DATA *   screen_Alloc(
-        void
+    SGRAPH_DATA *     sgraph_Alloc(
+        uint16_t        stackSize
     )
     {
-        SCREEN_DATA     *this;
-        uint32_t        cbSize = sizeof(SCREEN_DATA);
+        SGRAPH_DATA       *this;
+        uint32_t        cbSize = sizeof(SGRAPH_DATA);
         
         // Do initialization.
         
+        if (0 == stackSize) {
+            stackSize = 256;
+        }
+        cbSize += stackSize << 2;
         this = obj_Alloc( cbSize );
+        obj_setMisc1(this, stackSize);
         
         // Return to caller.
         return this;
@@ -98,15 +103,15 @@ extern "C" {
 
 
 
-    SCREEN_DATA *   screen_New(
-        void
+    SGRAPH_DATA *     sgraph_New(
+        uint16_t        stackSize
     )
     {
-        SCREEN_DATA       *this;
+        SGRAPH_DATA       *this;
         
-        this = screen_Alloc( );
+        this = sgraph_Alloc(stackSize);
         if (this) {
-            this = screen_Init(this);
+            this = sgraph_Init(this);
         } 
         return this;
     }
@@ -120,60 +125,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                     N u m  C o l s
-    //---------------------------------------------------------------
-    
-    int             screen_getNumCols(
-        SCREEN_DATA     *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->ncols;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                     N u m  R o w s
-    //---------------------------------------------------------------
-    
-    int             screen_getNumRows(
-        SCREEN_DATA     *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->nrows;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        screen_getPriority(
-        SCREEN_DATA     *this
+    uint16_t        sgraph_getPriority(
+        SGRAPH_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -185,14 +148,14 @@ extern "C" {
     }
 
 
-    bool            screen_setPriority(
-        SCREEN_DATA     *this,
+    bool            sgraph_setPriority(
+        SGRAPH_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -210,13 +173,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        screen_getSize(
-        SCREEN_DATA       *this
+    uint32_t        sgraph_getSize(
+        SGRAPH_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -232,15 +195,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * screen_getStr(
-        SCREEN_DATA     *this
+    ASTR_DATA * sgraph_getStr(
+        SGRAPH_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -251,14 +214,14 @@ extern "C" {
     }
     
     
-    bool        screen_setStr(
-        SCREEN_DATA     *this,
+    bool        sgraph_setStr(
+        SGRAPH_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -280,15 +243,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  screen_getSuperVtbl(
-        SCREEN_DATA     *this
+    OBJ_IUNKNOWN *  sgraph_getSuperVtbl(
+        SGRAPH_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -318,27 +281,27 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = screen__Assign(this,pOther);
+        ERESULT eRc = sgraph__Assign(this,pOther);
      @endcode 
-     @param     this    SCREEN object pointer
-     @param     pOther  a pointer to another SCREEN object
+     @param     this    SGRAPH object pointer
+     @param     pOther  a pointer to another SGRAPH object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         screen_Assign(
-        SCREEN_DATA		*this,
-        SCREEN_DATA      *pOther
+    ERESULT         sgraph_Assign(
+        SGRAPH_DATA		*this,
+        SGRAPH_DATA      *pOther
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !screen_Validate(pOther) ) {
+        if( !sgraph_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -381,35 +344,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          C l e a r
-    //---------------------------------------------------------------
-    
-    ERESULT         screen_Clear(
-        SCREEN_DATA     *this
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#ifdef  SCREEN_USE_CURSES
-        clear( );
-#else
-#endif
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -419,9 +353,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         screen_Compare(
-        SCREEN_DATA     *this,
-        SCREEN_DATA     *pOther
+    ERESULT         sgraph_Compare(
+        SGRAPH_DATA     *this,
+        SGRAPH_DATA     *pOther
     )
     {
         int             i = 0;
@@ -435,11 +369,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !screen_Validate(pOther) ) {
+        if( !sgraph_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -477,32 +411,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        screen      *pCopy = screen_Copy(this);
+        sgraph      *pCopy = sgraph_Copy(this);
      @endcode 
-     @param     this    SCREEN object pointer
-     @return    If successful, a SCREEN object which must be released,
+     @param     this    SGRAPH object pointer
+     @return    If successful, a SGRAPH object which must be released,
                 otherwise OBJ_NIL.
-     @warning  Remember to release the returned the SCREEN object.
+     @warning  Remember to release the returned the SGRAPH object.
      */
-    SCREEN_DATA *     screen_Copy(
-        SCREEN_DATA       *this
+    SGRAPH_DATA *     sgraph_Copy(
+        SGRAPH_DATA       *this
     )
     {
-        SCREEN_DATA       *pOther = OBJ_NIL;
+        SGRAPH_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = screen_New( );
+        pOther = sgraph_New(obj_getSize(this));
         if (pOther) {
-            eRc = screen_Assign(this, pOther);
+            eRc = sgraph_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -521,11 +455,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            screen_Dealloc(
+    void            sgraph_Dealloc(
         OBJ_ID          objId
     )
     {
-        SCREEN_DATA   *this = objId;
+        SGRAPH_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -533,7 +467,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -541,17 +475,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SCREEN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SGRAPH_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        screen_setStr(this, OBJ_NIL);
-
-#ifdef  SCREEN_USE_CURSES
-        clear( );               // clear screen, send cursor to position (0,0)
-        refresh( );             // implement all changes since last refresh
-        endwin( );              // restore original window and leave.
-#endif
+        sgraph_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -568,15 +496,15 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         screen_Disable(
-        SCREEN_DATA		*this
+    ERESULT         sgraph_Disable(
+        SGRAPH_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -594,51 +522,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          E c h o
-    //---------------------------------------------------------------
-    
-    ERESULT         screen_Echo(
-        SCREEN_DATA     *this,
-        bool            fOn
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#ifdef  SCREEN_USE_CURSES
-        if (fOn)
-            echo( );
-        else
-            noecho( );
-#else
-#endif
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         screen_Enable(
-        SCREEN_DATA		*this
+    ERESULT         sgraph_Enable(
+        SGRAPH_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -656,45 +551,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                        G e t c h
-    //---------------------------------------------------------------
-    
-    int             screen_Getch(
-        SCREEN_DATA     *this
-    )
-    {
-        int             chr = ERR;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return chr;
-        }
-#endif
-        
-#ifdef  SCREEN_USE_CURSES
-        chr = getch( );
-#else
-#endif
-
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SCREEN_DATA *   screen_Init(
-        SCREEN_DATA       *this
+    SGRAPH_DATA *   sgraph_Init(
+        SGRAPH_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SCREEN_DATA);
+        uint32_t        cbSize = sizeof(SGRAPH_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -711,42 +575,32 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SCREEN);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SGRAPH);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SCREEN);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SGRAPH);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&screen_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&sgraph_Vtbl);
         
         obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
-#ifdef  SCREEN_USE_CURSES
-        this->pWndMain = initscr( );
-        cbreak( );              // no waiting for Enter key
-        noecho( );
-        this->nrows = getmaxy(this->pWndMain);
-        this->ncols = getmaxx(this->pWndMain);
-        clear( );               // clear screen, send cursor to position (0,0)
-        refresh( );             // implement all changes since last refresh
-#endif
-        
     #ifdef NDEBUG
     #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "screen::sizeof(SCREEN_DATA) = %lu\n", sizeof(SCREEN_DATA));
+        fprintf(stderr, "sgraph::sizeof(SGRAPH_DATA) = %lu\n", sizeof(SGRAPH_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SCREEN_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SGRAPH_DATA));
     #endif
 
         return this;
@@ -758,15 +612,15 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         screen_IsEnabled(
-        SCREEN_DATA		*this
+    ERESULT         sgraph_IsEnabled(
+        SGRAPH_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -785,61 +639,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                     P r i n t
-    //---------------------------------------------------------------
-    
-    ERESULT         screen_Print(
-        SCREEN_DATA     *this,
-        int             row,
-        int             col,
-        const
-        char            *pFormat,
-        ...
-    )
-    {
-        //ERESULT         eRc;
-        char            str[256];
-        int             size;
-        va_list         arg_ptr;
-        char            *pStr = NULL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        va_start( arg_ptr, pFormat );
-        str[0] = '\0';
-        size = vsnprintf( str, sizeof(str), pFormat, arg_ptr );
-        va_end( arg_ptr );
-        if (size >= sizeof(str)) {
-            ++size;
-            pStr = (char *)mem_Malloc(size);
-            if( pStr == NULL ) {
-                return ERESULT_INSUFFICIENT_MEMORY;
-            }
-            va_start( arg_ptr, pFormat );
-            size = vsnprintf( pStr, size, pFormat, arg_ptr );
-            va_end( arg_ptr );
-            mvaddstr(row, col, str);
-            mem_Free( pStr );
-            pStr = NULL;
-        }
-        else {
-            mvaddstr(row, col, str);
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -850,14 +649,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = screen_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = sgraph_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "screen", prefix,
+                        the object name, "sgraph", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -865,13 +664,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          screen_QueryInfo(
+    void *          sgraph_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SCREEN_DATA     *this = objId;
+        SGRAPH_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -880,7 +679,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -889,7 +688,7 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)screen_Class();
+                return (void *)sgraph_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -919,22 +718,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return screen_Disable;
+                            return sgraph_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return screen_Enable;
+                            return sgraph_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return screen_ToDebugString;
+                            return sgraph_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return screen_ToJSON;
+                            return sgraph_ToJSON;
                         }
                         break;
                         
@@ -944,9 +743,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == screen_ToDebugString)
+                if (pData == sgraph_ToDebugString)
                     return "ToDebugString";
-                if (pData == screen_ToJSON)
+                if (pData == sgraph_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -960,39 +759,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          E c h o
-    //---------------------------------------------------------------
-    
-    ERESULT         screen_RawKeyboard(
-        SCREEN_DATA     *this,
-        bool            fOn
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#ifdef  SCREEN_USE_CURSES
-        if (fOn)
-            cbreak( );
-        else
-            nocbreak( );
-#else
-#endif
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1000,16 +766,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = screen_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = sgraph_ToDebugString(this,4);
      @endcode 
-     @param     this    SCREEN object pointer
+     @param     this    SGRAPH object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     screen_ToDebugString(
-        SCREEN_DATA      *this,
+    ASTR_DATA *     sgraph_ToDebugString(
+        SGRAPH_DATA      *this,
         int             indent
     )
     {
@@ -1025,7 +791,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1041,7 +807,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    screen_getSize(this)
+                    sgraph_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -1073,19 +839,19 @@ extern "C" {
     
     
     
-    ASTR_DATA *     screen_ToJSON(
-        SCREEN_DATA      *this
+    ASTR_DATA *     sgraph_ToJSON(
+        SGRAPH_DATA      *this
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
-        if( !screen_Validate(this) ) {
+        if( !sgraph_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1113,15 +879,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            screen_Validate(
-        SCREEN_DATA      *this
+    bool            sgraph_Validate(
+        SGRAPH_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SCREEN) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_SGRAPH) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1137,7 +903,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SCREEN_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(SGRAPH_DATA)) ) {
             obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }

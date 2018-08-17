@@ -485,7 +485,6 @@ extern "C" {
     )
     {
         MISC_DATA       *this = objId;
-        bool            fRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -499,7 +498,7 @@ extern "C" {
         }
 #endif
 
-        fRc = misc_Disable(this);
+        //fRc = misc_Disable(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

@@ -31,8 +31,8 @@
  */
 
 
-#include        "obj.h"
-#include        "memOSX_internal.h"
+#include        <obj.h>
+#include        <macosx/memOSX_internal.h>
 
 
 

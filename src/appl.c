@@ -2002,13 +2002,17 @@ extern "C" {
 )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+#ifdef XYZZY
         uint16_t        cbSize;
         int             Num = 0;
+#endif
         char            *pCurChr;
+#ifdef XYZZY
         char            *pCurCmd;
         char            quote;
         int             cArg = 1;
         char            **pArgV = NULL;
+#endif
         ASTRARRAY_DATA  *pArgs;
 
         // Do initialization.

@@ -398,6 +398,8 @@ extern "C" {
         OBJ_IDENT_SCANNER_CLASS,
         OBJ_IDENT_SCREEN,               // Terminal Screen Handler
         OBJ_IDENT_SCREEN_CLASS,
+        OBJ_IDENT_SGRAPH,               // Simple Graph
+        OBJ_IDENT_SGRAPH_CLASS,
         OBJ_IDENT_SIDX,                 // Simple Integer Index
         OBJ_IDENT_SIDX_CLASS,
         OBJ_IDENT_SRC,
@@ -464,6 +466,8 @@ extern "C" {
         OBJ_IDENT_U16MATRIX_CLASS,
         OBJ_IDENT_U32ARRAY,
         OBJ_IDENT_U32ARRAY_CLASS,
+        OBJ_IDENT_U32MATRIX,
+        OBJ_IDENT_U32MATRIX_CLASS,
         OBJ_IDENT_U8ARRAY,
         OBJ_IDENT_U8ARRAY_CLASS,
         OBJ_IDENT_UINT128,
@@ -480,10 +484,12 @@ extern "C" {
         OBJ_IDENT_WAV_CLASS,
         OBJ_IDENT_W32STR,
         OBJ_IDENT_W32STR_CLASS,
-        OBJ_IDENT_W32STRARRAY,            // an Array of Wide Strings
+        OBJ_IDENT_W32STRARRAY,          // an Array of Wide Strings
         OBJ_IDENT_W32STRARRAY_CLASS,
         OBJ_IDENT_W32STRC,
         OBJ_IDENT_W32STRC_CLASS,
+        OBJ_IDENT_WISP,                 // A Lisp-like machine
+        OBJ_IDENT_WISP_CLASS,
         OBJ_IDENT_XML,
         OBJ_IDENT_XML_CLASS,
         OBJ_IDENT_OTHER_LIBS=8192,

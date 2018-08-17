@@ -1,22 +1,27 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          TEXTIN Console Transmit Task (textIn) Header
+//          A Lisp-like machine (wisp) Header
 //****************************************************************
 /*
  * Program
- *			Separate textIn (textIn)
+ *			A Lisp-like machine (wisp)
  * Purpose
- *			This object provides the means of processing an input
- *          text file from several different types of sources and
- *          tracking the source location as each character is
- *          returned.
+ *			This object provides most of what is needed to have
+ *          functional Lisp system.  It is based on the description
+ *          of Wisp in "Implementing Software for Non-Numeric
+ *          Applications" by William M. Waite, Prentice-Hall,
+ *          1973.
+ *
+ *          I created this so that I could experiment with some
+ *          of the things mentioned in the book.  Right now,
+ *          this will not be a full implementation.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/23/2017 Generated
+ *	08/04/2018 Generated
  */
 
 
@@ -53,10 +58,11 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <u32Array.h>
 
 
-#ifndef         TEXTIN_H
-#define         TEXTIN_H
+#ifndef         WISP_H
+#define         WISP_H
 
 
 
@@ -70,16 +76,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct textIn_data_s	TEXTIN_DATA;    // Inherits from OBJ.
+    typedef struct wisp_data_s	WISP_DATA;    // Inherits from OBJ.
 
-    typedef struct textIn_vtbl_s	{
+    typedef struct wisp_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in textIn_object.c.
+        // method names to the vtbl definition in wisp_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(TEXTIN_DATA *);
-    } TEXTIN_VTBL;
+        //bool        (*pIsEnabled)(WISP_DATA *);
+    } WISP_VTBL;
 
 
 
@@ -96,32 +102,31 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to textIn object if successful, otherwise OBJ_NIL.
+     @return    pointer to wisp object if successful, otherwise OBJ_NIL.
      */
-    TEXTIN_DATA *     textIn_Alloc(
+    WISP_DATA *     wisp_Alloc(
         void
     );
     
     
-    TEXTIN_DATA *     textIn_New(
+    OBJ_ID          wisp_Class(
         void
     );
     
-    TEXTIN_DATA *   textIn_NewFromAStr(
-        ASTR_DATA       *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    
+    WISP_DATA *     wisp_New(
+        void
     );
-
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     textIn_getLastError(
-        TEXTIN_DATA		*this
+    uint32_t        wisp_getSize(
+        WISP_DATA       *this
     );
-
 
 
     
@@ -129,67 +134,78 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    TEXTIN_DATA *  textIn_InitAStr(
-        TEXTIN_DATA     *this,
-        ASTR_DATA       *pStr,        // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
+    /*!
+     Construct a memory word from the two expression and append it to
+     the end of memory optionally returning the index to the word.
+     @param     this    object pointer
+     @param     e1      expression 1 which becomes the CAR.
+     @param     e2      expression 2 which becomes the CDR.
+     @param     pIndex  optional returned index to memory word
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         wisp_Cons(
+        WISP_DATA       *this,
+        uint32_t        e1,
+        uint32_t        e2,
+        uint32_t        *pIndex             // [out] Optional Word Index
     );
 
-    TEXTIN_DATA *  textIn_InitFile(
-        TEXTIN_DATA     *this,
-        FILE            *pFile,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+   
+    bool            wisp_GetAtom(
+        WISP_DATA       *this,
+        uint32_t        index
     );
     
     
-    /*! Initialize this object to read data from file using the path given.
-        Assume that file data is in UTF-8 format.
-     */
-    TEXTIN_DATA *  textIn_InitPath(
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    bool            wisp_GetBP(
+        WISP_DATA       *this,
+        uint32_t        index
+    );
+    
+    
+    uint32_t        wisp_GetCAR(
+        WISP_DATA       *this,
+        uint32_t        index
+    );
+    
+    
+    uint32_t        wisp_GetCDR(
+        WISP_DATA       *this,
+        uint32_t        index
+    );
+    
+    
+    WISP_DATA *     wisp_Init(
+        WISP_DATA       *this
     );
 
-    
-    /*! Initialize this object to read data from u8Array assuming that it is
-        UTF-8 data.
-     */
-    TEXTIN_DATA *  textIn_InitU8Array(
-        TEXTIN_DATA     *this,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    );
-    
-    TEXTIN_DATA *  textIn_InitWStr(
-        TEXTIN_DATA     *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    );
-    
 
-    /*! Get the location for the last character received.
-     */
-    ERESULT         textIn_Location(
-        TEXTIN_DATA     *this,
-        uint16_t        *pFilenameIndex,
-        size_t          *pOffset,
-        uint32_t        *pLineNo,
-        uint16_t        *pColNo
+    ERESULT         wisp_SetAtom(
+        WISP_DATA       *this,
+        uint32_t        index,
+        bool            fValue
     );
     
  
-    /*!
-     Return the next character in the file.
-     @return    If successful, ERESULT_SUCCESS and *pChar contains the next
-                character from the file, otherwise, an ERESULT_* error and
-                *pChar contains EOF(-1).
-     */
-    W32CHR_T            textIn_NextChar(
-        TEXTIN_DATA         *this
+    ERESULT         wisp_SetBP(
+        WISP_DATA       *this,
+        uint32_t        index,
+        bool            fValue
+    );
+    
+    
+    ERESULT         wisp_SetCAR(
+        WISP_DATA       *this,
+        uint32_t        index,
+        uint32_t        value
+    );
+    
+    
+    ERESULT         wisp_SetCDR(
+        WISP_DATA       *this,
+        uint32_t        index,
+        uint32_t        value
     );
     
     
@@ -197,16 +213,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = textIn_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = wisp_ToDebugString(this,4);
      @endcode 
-     @param     this    TEXTIN object pointer
+     @param     this    WISP object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    textIn_ToDebugString(
-        TEXTIN_DATA     *this,
+    ASTR_DATA *    wisp_ToDebugString(
+        WISP_DATA     *this,
         int             indent
     );
     
@@ -217,5 +233,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* TEXTIN_H */
+#endif	/* WISP_H */
 

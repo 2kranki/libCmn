@@ -1645,6 +1645,18 @@ $(OBJDIR)/wav_object.o: $(SRCDIR)/wav_object.c
 
 
 
+OBJS += $(OBJDIR)/wisp.o $(OBJDIR)/wisp_object.o
+
+
+$(OBJDIR)/wisp.o: $(SRCDIR)/wisp.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/wisp_object.o: $(SRCDIR)/wisp_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/xml.o $(OBJDIR)/xml_object.o
 
 
@@ -2845,6 +2857,13 @@ TESTS += test_wav
 
 test_wav:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wav.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_wisp
+
+test_xml:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wisp.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

@@ -149,7 +149,7 @@ extern "C" {
     {
         ASTR_DATA      *this;
         ERESULT         eRc;
-        uint32_t        strlen;
+        //uint32_t        strlen;
         
         this = AStr_New( );
         if (this) {
@@ -613,8 +613,8 @@ extern "C" {
         uint32_t        byteLen;
         int32_t         index;
         char            *pInsert;
-        const
-        char            *pData;
+        //const
+        //char            *pData;
         const
         char            *pBegin;
         const

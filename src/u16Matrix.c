@@ -1201,31 +1201,34 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
         uint32_t        i;
         uint32_t        j;
-        uint32_t        k;
+        //uint32_t        k;
         ASTR_DATA       *pStr;
-        
+        const
+        OBJ_INFO        *pInfo;
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        
+        pInfo = obj_getInfo(this);
+
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(u16Matrix) m=%d n=%d size=%d\n",
-                     this,
-                     this->m,
-                     this->n,
-                     this->cElems
-                     );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(
+                    pStr,
+                    "{%p(u16Matrix) xSize=%d ySize=%d size=%d\n",
+                    this,
+                    this->m,
+                    this->n,
+                    this->cElems
+        );
         
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent+5, ' ');
@@ -1239,21 +1242,17 @@ extern "C" {
             if (indent) {
                 AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
             }
-            j = snprintf( str, sizeof(str), "%2d |", i );
-            AStr_AppendA(pStr, str);
+            AStr_AppendPrint(pStr, "%2d |", i );
             for (j=1; j<=(this->n-1); ++j) {
-                k = snprintf( str, sizeof(str), "%2d, ", u16Matrix_Get(this, i, j) );
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(pStr, "%2d, ", u16Matrix_Get(this, i, j) );
             }
-            k = snprintf( str, sizeof(str), "%2d", u16Matrix_Get(this, i, this->n) );
-            AStr_AppendA(pStr, str);
+            AStr_AppendPrint(pStr,"%2d", u16Matrix_Get(this, i, this->n) );
             AStr_AppendA(pStr, " |\n");
         }
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        j = snprintf( str, sizeof(str), " %p}\n", this );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(pStr," %p}\n", this );
         
         return pStr;
     }

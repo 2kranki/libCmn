@@ -736,7 +736,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((index > 0) && (index <= array_getSize((ARRAY_DATA *)this)))
+        if (index && (index <= array_getSize((ARRAY_DATA *)this)))
             ;
         else {
             DEBUG_BREAK();

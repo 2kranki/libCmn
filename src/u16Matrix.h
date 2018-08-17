@@ -108,20 +108,20 @@ extern "C" {
     
     
     U16MATRIX_DATA * u16Matrix_New(
-        uint32_t        m,              // Height (Number of Rows, i)
-        uint32_t        n               // Width (Number of Columns, j)
+        uint32_t        ySize,          // Height (y-axis, Number of Rows, i)
+        uint32_t        xSize           // Width (x-axis, Number of Columns, j)
     );
     
     
     // Returns an N X N Identity Matrix.
     U16MATRIX_DATA * u16Matrix_NewIdentity(
-        uint32_t        n
+        uint32_t        xSize           // Width (x-axis, Number of Columns, j)
     );
     
     
     // Returns an N X N Zeroed Matrix.
     U16MATRIX_DATA * u16Matrix_NewSquare(
-        uint32_t        n
+        uint32_t        xSize           // Width (x-axis, Number of Columns, j)
     );
     
     
@@ -194,8 +194,8 @@ extern "C" {
     
     U16MATRIX_DATA * u16Matrix_Init(
         U16MATRIX_DATA  *this,
-        uint32_t        m,              // Height (Number of Rows, i)
-        uint32_t        n               // Width (Number of Columns, j)
+        uint32_t        ySize,          // Height (y-axis, Number of Rows, i)
+        uint32_t        xSize           // Width (x-axis, Number of Columns, j)
     );
 
 

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'bitMatrix'
-//	Generated 08/12/2018 15:05:02
+//	Class Object Metods and Tables for 'sgraph'
+//	Generated 08/12/2018 14:34:38
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   BITMATRIX_IS_SINGLETON     1
+//#define   SGRAPH_IS_SINGLETON     1
 
-#define			BITMATRIX_OBJECT_C	    1
-#include        <bitMatrix_internal.h>
+#define			SGRAPH_OBJECT_C	    1
+#include        <sgraph_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct bitMatrix_class_data_s	{
+struct sgraph_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct bitMatrix_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct bitMatrix_class_data_s BITMATRIX_CLASS_DATA;
+typedef struct sgraph_class_data_s SGRAPH_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct bitMatrix_class_data_s BITMATRIX_CLASS_DATA;
 
 
 static
-void *          bitMatrixClass_QueryInfo(
+void *          sgraphClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +73,17 @@ void *          bitMatrixClass_QueryInfo(
 
 static
 const
-OBJ_INFO        bitMatrix_Info;            // Forward Reference
+OBJ_INFO        sgraph_Info;            // Forward Reference
 
 
 
 
 static
-bool            bitMatrixClass_IsKindOf(
+bool            sgraphClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_BITMATRIX_CLASS == classID) {
+    if (OBJ_IDENT_SGRAPH_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +94,25 @@ bool            bitMatrixClass_IsKindOf(
 
 
 static
-uint16_t		bitMatrixClass_WhoAmI(
+uint16_t		sgraphClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_BITMATRIX_CLASS;
+    return OBJ_IDENT_SGRAPH_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&bitMatrix_Info,
-    bitMatrixClass_IsKindOf,
+	&sgraph_Info,
+    sgraphClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    bitMatrix_Class,
-    bitMatrixClass_WhoAmI,
-    (P_OBJ_QUERYINFO)bitMatrixClass_QueryInfo
+    sgraph_Class,
+    sgraphClass_WhoAmI,
+    (P_OBJ_QUERYINFO)sgraphClass_QueryInfo
 };
 
 
@@ -122,8 +122,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-BITMATRIX_CLASS_DATA  bitMatrix_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BITMATRIX_CLASS, 0, 1},
+SGRAPH_CLASS_DATA  sgraph_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SGRAPH_CLASS, 0, 1},
 	//0
 };
 
@@ -134,13 +134,13 @@ BITMATRIX_CLASS_DATA  bitMatrix_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          bitMatrixClass_QueryInfo(
+void *          sgraphClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    BITMATRIX_CLASS_DATA *this = objId;
+    SGRAPH_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -162,7 +162,7 @@ void *          bitMatrixClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&bitMatrix_Info;
+                        return (void *)&sgraph_Info;
                     }
                     break;
                     
@@ -181,13 +181,13 @@ void *          bitMatrixClass_QueryInfo(
                     
                 case 'P':
                     if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return bitMatrix_ParseObject;
+                        return sgraph_ParseObject;
                     }
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return bitMatrixClass_WhoAmI;
+                        return sgraphClass_WhoAmI;
                     }
                     break;
                     
@@ -213,11 +213,11 @@ void *          bitMatrixClass_QueryInfo(
 //===========================================================
 
 static
-bool            bitMatrix_IsKindOf(
+bool            sgraph_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_BITMATRIX == classID) {
+    if (OBJ_IDENT_SGRAPH == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -229,57 +229,57 @@ bool            bitMatrix_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            bitMatrix_Dealloc(
+void            sgraph_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          bitMatrix_Class(
+OBJ_ID          sgraph_Class(
     void
 )
 {
-    return (OBJ_ID)&bitMatrix_ClassObj;
+    return (OBJ_ID)&sgraph_ClassObj;
 }
 
 
 static
-uint16_t		bitMatrix_WhoAmI(
+uint16_t		sgraph_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_BITMATRIX;
+    return OBJ_IDENT_SGRAPH;
 }
 
 
 const
-BITMATRIX_VTBL     bitMatrix_Vtbl = {
+SGRAPH_VTBL     sgraph_Vtbl = {
     {
-        &bitMatrix_Info,
-        bitMatrix_IsKindOf,
-#ifdef  BITMATRIX_IS_SINGLETON
+        &sgraph_Info,
+        sgraph_IsKindOf,
+#ifdef  SGRAPH_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        bitMatrix_Dealloc,
-        bitMatrix_Class,
-        bitMatrix_WhoAmI,
-        (P_OBJ_QUERYINFO)bitMatrix_QueryInfo,
-        (P_OBJ_TOSTRING)bitMatrix_ToDebugString,
-        NULL,			// bitMatrix_Enable,
-        NULL,			// bitMatrix_Disable,
-        NULL,			// (P_OBJ_ASSIGN)bitMatrix_Assign,
-        NULL,			// (P_OBJ_COMPARE)bitMatrix_Compare,
-        NULL, 			// (P_OBJ_PTR)bitMatrix_Copy,
-        NULL, 			// (P_OBJ_PTR)bitMatrix_DeepCopy,
-        NULL 			// (P_OBJ_HASH)bitMatrix_Hash,
+        sgraph_Dealloc,
+        sgraph_Class,
+        sgraph_WhoAmI,
+        (P_OBJ_QUERYINFO)sgraph_QueryInfo,
+        (P_OBJ_TOSTRING)sgraph_ToDebugString,
+        NULL,			// sgraph_Enable,
+        NULL,			// sgraph_Disable,
+        NULL,			// (P_OBJ_ASSIGN)sgraph_Assign,
+        NULL,			// (P_OBJ_COMPARE)sgraph_Compare,
+        NULL, 			// (P_OBJ_PTR)sgraph_Copy,
+        NULL, 			// (P_OBJ_PTR)sgraph_DeepCopy,
+        NULL 			// (P_OBJ_HASH)sgraph_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //bitMatrix_IsEnabled,
+    //sgraph_IsEnabled,
  
 };
 
@@ -287,12 +287,12 @@ BITMATRIX_VTBL     bitMatrix_Vtbl = {
 
 static
 const
-OBJ_INFO        bitMatrix_Info = {
-    "bitMatrix",
-    "A Matrix of Bits",
-    (OBJ_DATA *)&bitMatrix_ClassObj,
+OBJ_INFO        sgraph_Info = {
+    "sgraph",
+    "Simple Graph",
+    (OBJ_DATA *)&sgraph_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&bitMatrix_Vtbl
+    (OBJ_IUNKNOWN *)&sgraph_Vtbl
 };
 
 

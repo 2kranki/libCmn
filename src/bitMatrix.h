@@ -1,20 +1,27 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Bit Matrix (bitMatrix) Header
+//          BITMATRIX Console Transmit Task (bitMatrix) Header
 //****************************************************************
 /*
  * Program
- *			Bit Matrix (bitMatrix)
+ *			Separate bitMatrix (bitMatrix)
  * Purpose
  *			This object provides a standardized way of handling
- *          a Bit Matrix.
+ *          a Bit Matrix. There is one bit per (x,y) address that
+ *          can be 1 or 0.  Usually, the x-axis is horizontal and
+ *          the y-axis is vertical.  The upper left-hand corner is
+ *          (0,0).
  *
  * Remarks
  *	1.      None
  *
  * History
- *	07/21/2015 Generated
+ *	07/21/2015  Generated
+ *	08/12/2018  Generated again and source merged from old bitMatrix.
+ *  08/12/2018  Changed matrix to be dynamically allocated instead
+ *              of being an extension of the object which limited
+ *              its size to less than 64k.
  */
 
 
@@ -50,8 +57,8 @@
 
 
 #include        <cmn_defs.h>
-#include        <bitSet.h>
 #include        <AStr.h>
+#include        <bitSet.h>
 #include        <u16Matrix.h>
 
 
@@ -70,17 +77,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct bitMatrix_data_s	BITMATRIX_DATA;
+    typedef struct bitMatrix_data_s	BITMATRIX_DATA;    // Inherits from OBJ.
 
     typedef struct bitMatrix_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in $P_object.c.
+        // method names to the vtbl definition in bitMatrix_object.c.
         // Properties:
         // Methods:
+        //bool        (*pIsEnabled)(BITMATRIX_DATA *);
     } BITMATRIX_VTBL;
-    
-    
 
 
 
@@ -93,9 +99,14 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to bitMatrix object if successful, otherwise OBJ_NIL.
+     */
     BITMATRIX_DATA * bitMatrix_Alloc(
-        uint16_t        x,
-        uint16_t        y
+        void
     );
     
     
@@ -104,33 +115,51 @@ extern "C" {
     );
     
     
+    BITMATRIX_DATA * bitMatrix_New(
+        uint32_t        ySize,
+        uint32_t        xSize
+    );
+    
+    
+    /*!
+     Create a new identity matrix of the given size.  The matrix must be
+     square (ie xSize == ySize).
+     @param     xSize   x-axis and y-axis size in bits
+     @return    If successful, an Identity Matrix.  Otherwise, OBJ_NIL.
+     */
+    BITMATRIX_DATA * bitMatrix_NewIdentity(
+        uint32_t        xSize
+    );
+    
+    
+    BITMATRIX_DATA * bitMatrix_NewSquare(
+        uint32_t        xSize
+    );
+    
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     bitMatrix_getLastError(
-        BITMATRIX_DATA	*this
-    );
-    
-    
-    uint16_t        bitMatrix_getXMax(
+    uint32_t        bitMatrix_getXSize(
         BITMATRIX_DATA  *this
     );
     
     
-    uint16_t        bitMatrix_getYMax(
+    uint32_t        bitMatrix_getYSize(
         BITMATRIX_DATA  *this
     );
     
     
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // cbp <- pOther
     ERESULT         bitMatrix_Assign(
         BITMATRIX_DATA	*this,
         BITMATRIX_DATA	*pOther
@@ -142,6 +171,12 @@ extern "C" {
     );
     
     
+    /*!
+     Zero all elements of the matrix.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         bitMatrix_Empty(
         BITMATRIX_DATA	*this
     );
@@ -149,29 +184,59 @@ extern "C" {
 
     ERESULT         bitMatrix_Get(
         BITMATRIX_DATA	*this,
-        uint16_t        x,
-        uint16_t        y
+        uint32_t        y,
+        uint32_t        x
     );
     
     
     BITSET_DATA *   bitMatrix_GetColumn(
         BITMATRIX_DATA	*this,
-        uint16_t        x,
-        uint16_t        y,
-        uint16_t        len
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
     );
     
     
     BITSET_DATA *   bitMatrix_GetRow(
         BITMATRIX_DATA	*this,
-        uint16_t        x,
-        uint16_t        y,
-        uint16_t        len
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
+    );
+    
+    
+    /*!
+     Increase the size of the matrix in the x-axis by the amount
+     of bits given.
+     @param     this    object pointer
+     @param     amt     number of bits to increase by
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         bitMatrix_InflateX(
+        BITMATRIX_DATA  *this,
+        uint32_t        amt
+    );
+    
+    
+    /*!
+     Increase the size of the matrix in the y-axis by the amount
+     of bits given.
+     @param     this    object pointer
+     @param     amt     number of bits to increase by
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         bitMatrix_InflateY(
+        BITMATRIX_DATA  *this,
+        uint32_t        amt
     );
     
     
     BITMATRIX_DATA * bitMatrix_Init(
-        BITMATRIX_DATA  *this
+        BITMATRIX_DATA  *this,
+        uint32_t        ySize,
+        uint32_t        xSize
     );
 
 
@@ -186,6 +251,13 @@ extern "C" {
     );
     
     
+    /*!
+     Check the matrix to see if it is empty.
+     @param     this    object pointer
+     @return    If empty, ERESULT_SUCCESS_TRUE.  If not empty,
+                ERESULT_FAILURE_FALSE.  Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         bitMatrix_IsEmpty(
         BITMATRIX_DATA	*this
     );
@@ -193,6 +265,15 @@ extern "C" {
     
     // Matrix(Product) = Matrix(this) X Matrix(pOther)
     // (Must be N X N matrices and all the same size!)
+    /*!
+     Create a new matrix which is the product of the two given
+     matrices.  The matrices must be N X N matrices and all
+     the same size.
+     @param     this    object pointer
+     @param     pOther  object pointer
+     @return    If successful, a new product matrix.  Otherwise,
+                an ERESULT_* error code.
+     */
     BITMATRIX_DATA * bitMatrix_Product(
         BITMATRIX_DATA	*this,
         BITMATRIX_DATA	*pOther
@@ -206,20 +287,26 @@ extern "C" {
     
     ERESULT         bitMatrix_Set(
         BITMATRIX_DATA	*this,
-        uint16_t        x,
-        uint16_t        y,
+        uint32_t        y,
+        uint32_t        x,
         bool            value
     );
 
     
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = bitMatrix_ToDebugString(this,4);
+     @endcode 
+     @param     this    BITMATRIX object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     bitMatrix_ToDebugString(
-        BITMATRIX_DATA	*this,
+        BITMATRIX_DATA  *this,
         int             indent
     );
     
@@ -240,6 +327,18 @@ extern "C" {
     );
     
     
+    /*!
+     Zero all elements of the matrix.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         bitMatrix_Zero(
+        BITMATRIX_DATA  *this
+    );
+    
+    
+
     
 #ifdef	__cplusplus
 }

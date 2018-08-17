@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'bitMatrix'
-//	Generated 08/12/2018 15:05:02
+//	Class Object Metods and Tables for 'wisp'
+//	Generated 08/04/2018 08:13:16
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   BITMATRIX_IS_SINGLETON     1
+//#define   WISP_IS_SINGLETON     1
 
-#define			BITMATRIX_OBJECT_C	    1
-#include        <bitMatrix_internal.h>
+#define			WISP_OBJECT_C	    1
+#include        <wisp_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct bitMatrix_class_data_s	{
+struct wisp_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct bitMatrix_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct bitMatrix_class_data_s BITMATRIX_CLASS_DATA;
+typedef struct wisp_class_data_s WISP_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct bitMatrix_class_data_s BITMATRIX_CLASS_DATA;
 
 
 static
-void *          bitMatrixClass_QueryInfo(
+void *          wispClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +73,17 @@ void *          bitMatrixClass_QueryInfo(
 
 static
 const
-OBJ_INFO        bitMatrix_Info;            // Forward Reference
+OBJ_INFO        wisp_Info;            // Forward Reference
 
 
 
 
 static
-bool            bitMatrixClass_IsKindOf(
+bool            wispClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_BITMATRIX_CLASS == classID) {
+    if (OBJ_IDENT_WISP_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +94,25 @@ bool            bitMatrixClass_IsKindOf(
 
 
 static
-uint16_t		bitMatrixClass_WhoAmI(
+uint16_t		wispClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_BITMATRIX_CLASS;
+    return OBJ_IDENT_WISP_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&bitMatrix_Info,
-    bitMatrixClass_IsKindOf,
+	&wisp_Info,
+    wispClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    bitMatrix_Class,
-    bitMatrixClass_WhoAmI,
-    (P_OBJ_QUERYINFO)bitMatrixClass_QueryInfo
+    wisp_Class,
+    wispClass_WhoAmI,
+    (P_OBJ_QUERYINFO)wispClass_QueryInfo
 };
 
 
@@ -122,8 +122,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-BITMATRIX_CLASS_DATA  bitMatrix_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BITMATRIX_CLASS, 0, 1},
+WISP_CLASS_DATA  wisp_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_WISP_CLASS, 0, 1},
 	//0
 };
 
@@ -134,13 +134,13 @@ BITMATRIX_CLASS_DATA  bitMatrix_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          bitMatrixClass_QueryInfo(
+void *          wispClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    BITMATRIX_CLASS_DATA *this = objId;
+    WISP_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -162,7 +162,7 @@ void *          bitMatrixClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&bitMatrix_Info;
+                        return (void *)&wisp_Info;
                     }
                     break;
                     
@@ -181,13 +181,13 @@ void *          bitMatrixClass_QueryInfo(
                     
                 case 'P':
                     if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return bitMatrix_ParseObject;
+                        return wisp_ParseObject;
                     }
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return bitMatrixClass_WhoAmI;
+                        return wispClass_WhoAmI;
                     }
                     break;
                     
@@ -213,11 +213,11 @@ void *          bitMatrixClass_QueryInfo(
 //===========================================================
 
 static
-bool            bitMatrix_IsKindOf(
+bool            wisp_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_BITMATRIX == classID) {
+    if (OBJ_IDENT_WISP == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -229,57 +229,57 @@ bool            bitMatrix_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            bitMatrix_Dealloc(
+void            wisp_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          bitMatrix_Class(
+OBJ_ID          wisp_Class(
     void
 )
 {
-    return (OBJ_ID)&bitMatrix_ClassObj;
+    return (OBJ_ID)&wisp_ClassObj;
 }
 
 
 static
-uint16_t		bitMatrix_WhoAmI(
+uint16_t		wisp_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_BITMATRIX;
+    return OBJ_IDENT_WISP;
 }
 
 
 const
-BITMATRIX_VTBL     bitMatrix_Vtbl = {
+WISP_VTBL     wisp_Vtbl = {
     {
-        &bitMatrix_Info,
-        bitMatrix_IsKindOf,
-#ifdef  BITMATRIX_IS_SINGLETON
+        &wisp_Info,
+        wisp_IsKindOf,
+#ifdef  WISP_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        bitMatrix_Dealloc,
-        bitMatrix_Class,
-        bitMatrix_WhoAmI,
-        (P_OBJ_QUERYINFO)bitMatrix_QueryInfo,
-        (P_OBJ_TOSTRING)bitMatrix_ToDebugString,
-        NULL,			// bitMatrix_Enable,
-        NULL,			// bitMatrix_Disable,
-        NULL,			// (P_OBJ_ASSIGN)bitMatrix_Assign,
-        NULL,			// (P_OBJ_COMPARE)bitMatrix_Compare,
-        NULL, 			// (P_OBJ_PTR)bitMatrix_Copy,
-        NULL, 			// (P_OBJ_PTR)bitMatrix_DeepCopy,
-        NULL 			// (P_OBJ_HASH)bitMatrix_Hash,
+        wisp_Dealloc,
+        wisp_Class,
+        wisp_WhoAmI,
+        (P_OBJ_QUERYINFO)wisp_QueryInfo,
+        (P_OBJ_TOSTRING)wisp_ToDebugString,
+        NULL,			// wisp_Enable,
+        NULL,			// wisp_Disable,
+        NULL,			// (P_OBJ_ASSIGN)wisp_Assign,
+        NULL,			// (P_OBJ_COMPARE)wisp_Compare,
+        NULL, 			// (P_OBJ_PTR)wisp_Copy,
+        NULL, 			// (P_OBJ_PTR)wisp_DeepCopy,
+        NULL 			// (P_OBJ_HASH)wisp_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //bitMatrix_IsEnabled,
+    //wisp_IsEnabled,
  
 };
 
@@ -287,12 +287,12 @@ BITMATRIX_VTBL     bitMatrix_Vtbl = {
 
 static
 const
-OBJ_INFO        bitMatrix_Info = {
-    "bitMatrix",
-    "A Matrix of Bits",
-    (OBJ_DATA *)&bitMatrix_ClassObj,
+OBJ_INFO        wisp_Info = {
+    "wisp",
+    "Wisp Machine",
+    (OBJ_DATA *)&wisp_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&bitMatrix_Vtbl
+    (OBJ_IUNKNOWN *)&wisp_Vtbl
 };
 
 

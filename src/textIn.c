@@ -913,12 +913,12 @@ extern "C" {
         this->type = TEXTIN_TYPE_FILE;
         pszFileName = path_CStringA(pFilePath);
         if (pszFileName) {
-            this->pFile = fopen( pszFileName, "r" );
+            this->pFile = fopen(pszFileName, "r");
             if (NULL == this->pFile) {
-                fprintf(    stderr,
+                fprintf(stderr,
                         "Fatal Error - Could not open Input File - %s.\n",
                         pszFileName
-                        );
+                );
                 obj_Release(this);
                 return OBJ_NIL;
             }

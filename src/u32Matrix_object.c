@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'bitMatrix'
-//	Generated 08/12/2018 15:05:02
+//	Class Object Metods and Tables for 'u32Matrix'
+//	Generated 08/12/2018 23:54:40
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   BITMATRIX_IS_SINGLETON     1
+//#define   U32MATRIX_IS_SINGLETON     1
 
-#define			BITMATRIX_OBJECT_C	    1
-#include        <bitMatrix_internal.h>
+#define			U32MATRIX_OBJECT_C	    1
+#include        <u32Matrix_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct bitMatrix_class_data_s	{
+struct u32Matrix_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct bitMatrix_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct bitMatrix_class_data_s BITMATRIX_CLASS_DATA;
+typedef struct u32Matrix_class_data_s U32MATRIX_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct bitMatrix_class_data_s BITMATRIX_CLASS_DATA;
 
 
 static
-void *          bitMatrixClass_QueryInfo(
+void *          u32MatrixClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +73,17 @@ void *          bitMatrixClass_QueryInfo(
 
 static
 const
-OBJ_INFO        bitMatrix_Info;            // Forward Reference
+OBJ_INFO        u32Matrix_Info;            // Forward Reference
 
 
 
 
 static
-bool            bitMatrixClass_IsKindOf(
+bool            u32MatrixClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_BITMATRIX_CLASS == classID) {
+    if (OBJ_IDENT_U32MATRIX_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +94,25 @@ bool            bitMatrixClass_IsKindOf(
 
 
 static
-uint16_t		bitMatrixClass_WhoAmI(
+uint16_t		u32MatrixClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_BITMATRIX_CLASS;
+    return OBJ_IDENT_U32MATRIX_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
-	&bitMatrix_Info,
-    bitMatrixClass_IsKindOf,
+	&u32Matrix_Info,
+    u32MatrixClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    bitMatrix_Class,
-    bitMatrixClass_WhoAmI,
-    (P_OBJ_QUERYINFO)bitMatrixClass_QueryInfo
+    u32Matrix_Class,
+    u32MatrixClass_WhoAmI,
+    (P_OBJ_QUERYINFO)u32MatrixClass_QueryInfo
 };
 
 
@@ -122,8 +122,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 const
-BITMATRIX_CLASS_DATA  bitMatrix_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BITMATRIX_CLASS, 0, 1},
+U32MATRIX_CLASS_DATA  u32Matrix_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_U32MATRIX_CLASS, 0, 1},
 	//0
 };
 
@@ -134,13 +134,13 @@ BITMATRIX_CLASS_DATA  bitMatrix_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          bitMatrixClass_QueryInfo(
+void *          u32MatrixClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    BITMATRIX_CLASS_DATA *this = objId;
+    U32MATRIX_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -162,7 +162,7 @@ void *          bitMatrixClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&bitMatrix_Info;
+                        return (void *)&u32Matrix_Info;
                     }
                     break;
                     
@@ -181,13 +181,13 @@ void *          bitMatrixClass_QueryInfo(
                     
                 case 'P':
                     if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return bitMatrix_ParseObject;
+                        return u32Matrix_ParseObject;
                     }
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return bitMatrixClass_WhoAmI;
+                        return u32MatrixClass_WhoAmI;
                     }
                     break;
                     
@@ -213,11 +213,11 @@ void *          bitMatrixClass_QueryInfo(
 //===========================================================
 
 static
-bool            bitMatrix_IsKindOf(
+bool            u32Matrix_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_BITMATRIX == classID) {
+    if (OBJ_IDENT_U32MATRIX == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -229,57 +229,57 @@ bool            bitMatrix_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            bitMatrix_Dealloc(
+void            u32Matrix_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          bitMatrix_Class(
+OBJ_ID          u32Matrix_Class(
     void
 )
 {
-    return (OBJ_ID)&bitMatrix_ClassObj;
+    return (OBJ_ID)&u32Matrix_ClassObj;
 }
 
 
 static
-uint16_t		bitMatrix_WhoAmI(
+uint16_t		u32Matrix_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_BITMATRIX;
+    return OBJ_IDENT_U32MATRIX;
 }
 
 
 const
-BITMATRIX_VTBL     bitMatrix_Vtbl = {
+U32MATRIX_VTBL     u32Matrix_Vtbl = {
     {
-        &bitMatrix_Info,
-        bitMatrix_IsKindOf,
-#ifdef  BITMATRIX_IS_SINGLETON
+        &u32Matrix_Info,
+        u32Matrix_IsKindOf,
+#ifdef  U32MATRIX_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        bitMatrix_Dealloc,
-        bitMatrix_Class,
-        bitMatrix_WhoAmI,
-        (P_OBJ_QUERYINFO)bitMatrix_QueryInfo,
-        (P_OBJ_TOSTRING)bitMatrix_ToDebugString,
-        NULL,			// bitMatrix_Enable,
-        NULL,			// bitMatrix_Disable,
-        NULL,			// (P_OBJ_ASSIGN)bitMatrix_Assign,
-        NULL,			// (P_OBJ_COMPARE)bitMatrix_Compare,
-        NULL, 			// (P_OBJ_PTR)bitMatrix_Copy,
-        NULL, 			// (P_OBJ_PTR)bitMatrix_DeepCopy,
-        NULL 			// (P_OBJ_HASH)bitMatrix_Hash,
+        u32Matrix_Dealloc,
+        u32Matrix_Class,
+        u32Matrix_WhoAmI,
+        (P_OBJ_QUERYINFO)u32Matrix_QueryInfo,
+        (P_OBJ_TOSTRING)u32Matrix_ToDebugString,
+        NULL,			// u32Matrix_Enable,
+        NULL,			// u32Matrix_Disable,
+        NULL,			// (P_OBJ_ASSIGN)u32Matrix_Assign,
+        NULL,			// (P_OBJ_COMPARE)u32Matrix_Compare,
+        NULL, 			// (P_OBJ_PTR)u32Matrix_Copy,
+        NULL, 			// (P_OBJ_PTR)u32Matrix_DeepCopy,
+        NULL 			// (P_OBJ_HASH)u32Matrix_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //bitMatrix_IsEnabled,
+    //u32Matrix_IsEnabled,
  
 };
 
@@ -287,12 +287,12 @@ BITMATRIX_VTBL     bitMatrix_Vtbl = {
 
 static
 const
-OBJ_INFO        bitMatrix_Info = {
-    "bitMatrix",
-    "A Matrix of Bits",
-    (OBJ_DATA *)&bitMatrix_ClassObj,
+OBJ_INFO        u32Matrix_Info = {
+    "u32Matrix",
+    "Matrix of uint32_t",
+    (OBJ_DATA *)&u32Matrix_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&bitMatrix_Vtbl
+    (OBJ_IUNKNOWN *)&u32Matrix_Vtbl
 };
 
 

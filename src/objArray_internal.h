@@ -67,7 +67,6 @@ struct objArray_data_s	{
     // Common Data
     ERESULT         eRc;
     ARRAY_DATA      *pArray;
-    //uint32_t        elemSize;
 
 };
 #pragma pack(pop)

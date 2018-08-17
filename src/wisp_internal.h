@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ptrArray_internal.h
- *	Generated 07/02/2015 10:57:54
+ * File:   wisp_internal.h
+ *	Generated 08/04/2018 08:13:16
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,47 +39,93 @@
 
 
 
-#ifndef PTRARRAY_INTERNAL_H
-#define	PTRARRAY_INTERNAL_H
+#include        <wisp.h>
+#include        <jsonIn.h>
 
 
-#include    <ptrArray.h>
+#ifndef WISP_INTERNAL_H
+#define	WISP_INTERNAL_H
+
+
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct ptrArray_data_s	{
+struct wisp_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        size;		// Number of elements
-    uint32_t        max;        // Number of Array Elements
-    uint8_t         **ppArray;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    U32ARRAY_DATA   *pMem;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    PTRARRAY_VTBL   ptrArray_Vtbl;
+    struct wisp_class_data_s  wisp_ClassObj;
+
+    extern
+    const
+    WISP_VTBL         wisp_Vtbl;
 
 
 
-    // Internal Functions
-    void            ptrArray_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  wisp_getSuperVtbl(
+        WISP_DATA     *this
+    );
+
+
+    void            wisp_Dealloc(
         OBJ_ID          objId
     );
 
+
+    WISP_DATA *       wisp_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          wisp_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     wisp_ToJSON(
+        WISP_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			ptrArray_Validate(
-        PTRARRAY_DATA       *cbp
+    bool			wisp_Validate(
+        WISP_DATA       *this
     );
 #endif
 
@@ -88,5 +135,5 @@ struct ptrArray_data_s	{
 }
 #endif
 
-#endif	/* PTRARRAY_INTERNAL_H */
+#endif	/* WISP_INTERNAL_H */
 

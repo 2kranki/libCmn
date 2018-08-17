@@ -208,9 +208,12 @@ extern "C" {
             this->size = 0;
         }
 
-        obj_Dealloc(this);
-        this = NULL;
-
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+        
         // Return to caller.
     }
 
@@ -469,6 +472,7 @@ extern "C" {
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
+        this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ptrArray_Vtbl);
         
     #ifdef NDEBUG

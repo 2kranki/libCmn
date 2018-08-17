@@ -41,8 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    "memOSX_internal.h"
-#include    "trace.h"
+#include    <macosx/memOSX_internal.h>
+#include    <trace.h>
 #include    <pthread.h>
 #include    <stdio.h>
 
@@ -421,13 +421,17 @@ extern "C" {
                 size = (uint32_t)pActual->cbSize;
                 if (size > 128)
                     size = 128;
-                size = size / 16;
+                if (0 == size)
+                    size = 1;
                 pBytes = pData;
-                for (i=0; i<size; ++i) {
-                    hex_putBytes16_32(64, pBytes, 2048, &pBuffer);
+                for (;;) {
+                    hex_putBytes16_32(size, pBytes, 2048, &pBuffer);
                     fprintf(stderr, "%s\n", buffer);
                     pBytes += 16;
                     pBuffer = buffer;
+                    if (size <= 16)
+                        break;
+                    size -= 16;
                 }
                 fprintf(stderr, "\n");
             }
@@ -994,6 +998,10 @@ extern "C" {
         }
         else {
             if( !memOSX_Validate( pActual->pMem ) ) {
+                fprintf(
+                        stderr,
+                        "\nWarning - Data Area did not validate!\n"
+                        );
                 memOSX_DebugDumpBlock(this,pData);
                 DEBUG_BREAK();
                 return false;
@@ -1011,6 +1019,10 @@ extern "C" {
         // Find the Area in the Block Header List.
         pActual = memOSX_DebugFind(this, pData);
         if( NULL == pActual ) {
+            fprintf(
+                    stderr,
+                    "\nWarning - Data Area was not found in Block Header List!\n"
+                    );
             memOSX_DebugDumpBlock(this, pData);
             DEBUG_BREAK();
             return false;
@@ -1020,9 +1032,13 @@ extern "C" {
         if( 0 == memcmp( pActual->check, CheckValue, sizeof(CheckValue) ) )
             ;
         else {
+            fprintf(
+                    stderr,
+                    "\nWarning - Data Area had an underrun problem!\n"
+                    );
             memOSX_DebugDumpBlock(this,pData);
             DEBUG_BREAK();
-            return( false );
+            return false;
         }
         
         // Check for Overrun.
@@ -1030,13 +1046,14 @@ extern "C" {
         if( 0 == memcmp( pTrailer, CheckValue, sizeof(CheckValue) ) )
             ;
         else {
-            memOSX_DebugDumpBlock(this,pData);
+            fprintf(stderr, "\nWarning - Data Area had an overrun problem!\n");
+            memOSX_DebugDumpBlock(this, pData);
             DEBUG_BREAK();
-            return( false );
+            return false;
         }
         
         // Return to caller.
-        return( true );
+        return true;
     }
     
     
@@ -1098,7 +1115,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !memOSX_Validate( this ) ) {
+        if( !memOSX_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }

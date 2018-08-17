@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ptrArray_internal.h
- *	Generated 07/02/2015 10:57:54
+ * File:   sgraph_internal.h
+ *	Generated 08/12/2018 14:34:38
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,47 +39,93 @@
 
 
 
-#ifndef PTRARRAY_INTERNAL_H
-#define	PTRARRAY_INTERNAL_H
+#include        <sgraph.h>
+#include        <jsonIn.h>
 
 
-#include    <ptrArray.h>
+#ifndef SGRAPH_INTERNAL_H
+#define	SGRAPH_INTERNAL_H
+
+
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct ptrArray_data_s	{
+struct sgraph_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        size;		// Number of elements
-    uint32_t        max;        // Number of Array Elements
-    uint8_t         **ppArray;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    PTRARRAY_VTBL   ptrArray_Vtbl;
+    struct sgraph_class_data_s  sgraph_ClassObj;
+
+    extern
+    const
+    SGRAPH_VTBL         sgraph_Vtbl;
 
 
 
-    // Internal Functions
-    void            ptrArray_Dealloc(
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  sgraph_getSuperVtbl(
+        SGRAPH_DATA     *this
+    );
+
+
+    void            sgraph_Dealloc(
         OBJ_ID          objId
     );
 
+
+    SGRAPH_DATA *       sgraph_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          sgraph_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     sgraph_ToJSON(
+        SGRAPH_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			ptrArray_Validate(
-        PTRARRAY_DATA       *cbp
+    bool			sgraph_Validate(
+        SGRAPH_DATA       *this
     );
 #endif
 
@@ -88,5 +135,5 @@ struct ptrArray_data_s	{
 }
 #endif
 
-#endif	/* PTRARRAY_INTERNAL_H */
+#endif	/* SGRAPH_INTERNAL_H */
 

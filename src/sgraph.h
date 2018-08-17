@@ -1,27 +1,26 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              Ternary Search Tree (ternary) Header
+//          Simple Graphe (sgraph) Header
 //****************************************************************
 /*
  * Program
- *			Ternary Search Tree (ternary)
+ *			Simple Graph (sgraph)
  * Purpose
- *			This object provides a Ternary Search Tree (TST) as
- *          defined by Robert Sedgewick and Jon Bentley. A Ternary
- *          Search Tree is similar to a Binary Tree except it has
- *          3 links instead of 2. The third link is based on an
- *          equal path.  Also, a TST stores one character at a time
- *          of the key.  So, it generally is very fast to search
- *          especially if the keys were not added inorder but randomly.
+ *			This object provides a simple generic graph that can
+ *          be used as needed.
+ *
+ *          The idea for this object came from "Modern Compiler
+ *          Implementation in C", Andrew Appel, Cambridge, 1998,
+ *          Page 230.  Internally, we use an objArray and one or
+ *          two bitMatrix(s) to base the graph on.
  *
  * Remarks
- *	1.      A Ternary Search Tree does not facilitate actually ex-
- *          tracting the words that were added to it. So, one has
- *          to add the word to the data stored in the tree if needed.
+ *	1.      New Nodes may be added to the graph at any time.  However,
+ *          nodes may not be deleted.
  *
  * History
- *	09/19/2015 Generated
+ *	08/12/2018 Generated
  */
 
 
@@ -60,8 +59,8 @@
 #include        <AStr.h>
 
 
-#ifndef         TERNARY_H
-#define         TERNARY_H
+#ifndef         SGRAPH_H
+#define         SGRAPH_H
 
 
 
@@ -75,15 +74,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ternary_data_s	TERNARY_DATA;
+    typedef struct sgraph_data_s	SGRAPH_DATA;    // Inherits from OBJ.
 
-    typedef struct ternary_vtbl_s	{
+    typedef struct sgraph_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in table_object.c.
-    } TERNARY_VTBL;
-    
-    
+        // method names to the vtbl definition in sgraph_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SGRAPH_DATA *);
+    } SGRAPH_VTBL;
 
 
 
@@ -96,18 +96,24 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the ternary including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to sgraph object if successful, otherwise OBJ_NIL.
      */
-    TERNARY_DATA *  ternary_Alloc(
+    SGRAPH_DATA *     sgraph_Alloc(
+        uint16_t    stackSize           // Stack Size in Words
+    );
+    
+    
+    OBJ_ID          sgraph_Class(
         void
     );
     
     
-    TERNARY_DATA *  ternary_New(
-        uint32_t        bufferSize
+    SGRAPH_DATA *     sgraph_New(
+        uint16_t    stackSize           // Stack Size in Words
     );
     
     
@@ -116,65 +122,48 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         ternary_getLastError(
-        TERNARY_DATA    *this
-    );
-    
-    
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool            ternary_AddW32(
-        TERNARY_DATA	*this,
-        W32CHR_T		*pName,
-        void            *pData
-    );
-    
-    
-    /*!
-     Search for the key.
-     @return    If key is found, return the data ptr, otherwise NULL.
-     */
-    void *          ternary_FindW32(
-        TERNARY_DATA	*this,
-        W32CHR_T		*pszKey
-    );
-    
-    
-    TERNARY_DATA * ternary_Init(
-        TERNARY_DATA    *this,
-        uint32_t        bufferSize
+    ERESULT     sgraph_Disable(
+        SGRAPH_DATA		*this
     );
 
 
+    ERESULT     sgraph_Enable(
+        SGRAPH_DATA		*this
+    );
+
+   
+    SGRAPH_DATA *   sgraph_Init(
+        SGRAPH_DATA     *this
+    );
+
+
+    ERESULT     sgraph_IsEnabled(
+        SGRAPH_DATA		*this
+    );
+    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-     ASTR_DATA      *pDesc = ternary_ToDebugString(this,4);
-     @endcode
-     @param     this    TERNARY_DATA object pointer
+     @code 
+        ASTR_DATA      *pDesc = sgraph_ToDebugString(this,4);
+     @endcode 
+     @param     this    SGRAPH object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ternary_ToDebugString(
-        TERNARY_DATA    *this,
+    ASTR_DATA *    sgraph_ToDebugString(
+        SGRAPH_DATA     *this,
         int             indent
-    );
-    
-    
-    ERESULT         ternaryTree_VisitPreorder(
-        TERNARY_DATA	*this,
-        void            (pVisitor)(
-                            OBJ_ID          ,       // Object supplied below
-                            void            *       // Word associated Data Ptr
-        ),
-        OBJ_ID          pObject
     );
     
     
@@ -184,5 +173,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* TERNARY_H */
+#endif	/* SGRAPH_H */
 

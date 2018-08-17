@@ -1,27 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              Ternary Search Tree (ternary) Header
+//          U32MATRIX Console Transmit Task (u32Matrix) Header
 //****************************************************************
 /*
  * Program
- *			Ternary Search Tree (ternary)
+ *			Separate u32Matrix (u32Matrix)
  * Purpose
- *			This object provides a Ternary Search Tree (TST) as
- *          defined by Robert Sedgewick and Jon Bentley. A Ternary
- *          Search Tree is similar to a Binary Tree except it has
- *          3 links instead of 2. The third link is based on an
- *          equal path.  Also, a TST stores one character at a time
- *          of the key.  So, it generally is very fast to search
- *          especially if the keys were not added inorder but randomly.
+ *			This object provides a standardized way of handling
+ *          a separate u32Matrix to run things without complications
+ *          of interfering with the main u32Matrix. A u32Matrix may be 
+ *          called a u32Matrix on other O/S's.
  *
  * Remarks
- *	1.      A Ternary Search Tree does not facilitate actually ex-
- *          tracting the words that were added to it. So, one has
- *          to add the word to the data stored in the tree if needed.
+ *	1.      None
  *
  * History
- *	09/19/2015 Generated
+ *	08/12/2018 Generated
  */
 
 
@@ -60,8 +55,8 @@
 #include        <AStr.h>
 
 
-#ifndef         TERNARY_H
-#define         TERNARY_H
+#ifndef         U32MATRIX_H
+#define         U32MATRIX_H
 
 
 
@@ -75,15 +70,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ternary_data_s	TERNARY_DATA;
+    typedef struct u32Matrix_data_s	U32MATRIX_DATA;    // Inherits from OBJ.
 
-    typedef struct ternary_vtbl_s	{
+    typedef struct u32Matrix_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in table_object.c.
-    } TERNARY_VTBL;
-    
-    
+        // method names to the vtbl definition in u32Matrix_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(U32MATRIX_DATA *);
+    } U32MATRIX_VTBL;
 
 
 
@@ -96,18 +92,35 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the ternary including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
+    /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to u32Matrix object if successful, otherwise OBJ_NIL.
      */
-    TERNARY_DATA *  ternary_Alloc(
+    U32MATRIX_DATA * u32Matrix_Alloc(
         void
     );
     
     
-    TERNARY_DATA *  ternary_New(
-        uint32_t        bufferSize
+    OBJ_ID          u32Matrix_Class(
+        void
+    );
+    
+    
+    U32MATRIX_DATA * u32Matrix_New(
+        uint32_t        ySize,
+        uint32_t        xSize
+    );
+    
+    
+    U32MATRIX_DATA * u32Matrix_NewIdentity(
+        uint32_t        xSize
+    );
+    
+    
+    U32MATRIX_DATA * u32Matrix_NewSquare(
+        uint32_t        xSize
     );
     
     
@@ -116,73 +129,77 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         ternary_getLastError(
-        TERNARY_DATA    *this
+    uint32_t        u32Matrix_getXSize(
+        U32MATRIX_DATA  *this
     );
     
     
+    uint32_t        u32Matrix_getYSize(
+        U32MATRIX_DATA  *this
+    );
+    
+    
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool            ternary_AddW32(
-        TERNARY_DATA	*this,
-        W32CHR_T		*pName,
-        void            *pData
+    uint32_t        u32Matrix_Get(
+        U32MATRIX_DATA  *this,
+        uint32_t        y,
+        uint32_t        x
     );
-    
-    
-    /*!
-     Search for the key.
-     @return    If key is found, return the data ptr, otherwise NULL.
-     */
-    void *          ternary_FindW32(
-        TERNARY_DATA	*this,
-        W32CHR_T		*pszKey
-    );
-    
-    
-    TERNARY_DATA * ternary_Init(
-        TERNARY_DATA    *this,
-        uint32_t        bufferSize
+
+   
+    U32MATRIX_DATA * u32Matrix_Init(
+        U32MATRIX_DATA  *this,
+        uint32_t        ySize,
+        uint32_t        xSize
     );
 
 
+    ERESULT         u32Matrix_Set(
+        U32MATRIX_DATA  *this,
+        uint32_t        y,
+        uint32_t        x,
+        uint16_t        value
+    );
+    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-     ASTR_DATA      *pDesc = ternary_ToDebugString(this,4);
-     @endcode
-     @param     this    TERNARY_DATA object pointer
+     @code 
+        ASTR_DATA      *pDesc = u32Matrix_ToDebugString(this,4);
+     @endcode 
+     @param     this    U32MATRIX object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ternary_ToDebugString(
-        TERNARY_DATA    *this,
+    ASTR_DATA *    u32Matrix_ToDebugString(
+        U32MATRIX_DATA  *this,
         int             indent
     );
     
     
-    ERESULT         ternaryTree_VisitPreorder(
-        TERNARY_DATA	*this,
-        void            (pVisitor)(
-                            OBJ_ID          ,       // Object supplied below
-                            void            *       // Word associated Data Ptr
-        ),
-        OBJ_ID          pObject
+    /*!
+     Set all elements of the matrix to zero.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         u32Matrix_Zero(
+        U32MATRIX_DATA *this
     );
-    
-    
 
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* TERNARY_H */
+#endif	/* U32MATRIX_H */
 

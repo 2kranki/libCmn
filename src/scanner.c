@@ -124,6 +124,7 @@ extern "C" {
      * buffer supplied. The scan will go until it hits end of line
      * the end of the string. It will copy at most maxLen characters
      * to the output.
+     NOTE: This only accepets ascii characters at this point.
      */
     bool            scanner_ScanDate(
         char            **ppCmdStr,         // NUL terminated string pointer
@@ -152,7 +153,9 @@ extern "C" {
             goto Exit00;
         }
         pCurChr = *ppCmdStr;
-        
+        //W32CHR_T        chr;
+        //int             chrLen = 0;
+
         // Scan off leading white-space.
         scanWhite( &pCurChr, NULL );
         
@@ -492,8 +495,8 @@ extern "C" {
         char            Quote = 0;
         uint32_t        hexNumber;
         ASTR_DATA       *pStr = OBJ_NIL;
-        W32CHR_T        chr;
-        int             chrLen;
+        //W32CHR_T        chr;
+        //int             chrLen;
         
         // Do initialization.
         if(NULL == ppCmdStr) {
@@ -1398,7 +1401,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;

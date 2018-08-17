@@ -418,6 +418,56 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     G e n e r a t e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     ternary_Generate(
+        TERNARY_DATA    *this
+    )
+    {
+        //int32_t         diff;
+        //TERNARY_NODE    *pNode = NULL;
+        void            *pData = NULL;
+        W32CHR_T        *pKey = NULL;
+        //ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Validate the input parameters.
+        if( NULL == pKey ) {
+            this->eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        
+        // Search the current table.
+#ifdef XYZZY
+        pNode = this->pRoot;
+        for( ;; ) {
+            if( NULL == pNode )
+                break;
+            diff = *pKey - pNode->chr;
+            if( diff == 0 ) {
+                if( *pKey == 0 ) {
+                    pData = pNode->pData;
+                    this->eRc = ERESULT_SUCCESS;
+                    goto Exit00;
+                }
+                ++pKey;
+                pNode = pNode->pEqual;
+            }
+            else if ( diff < 0 )
+                pNode = pNode->pLow;
+            else
+                pNode = pNode->pHigh;
+        }
+#endif
+        
+        // Return to caller.
+    Exit00:
+        return pData;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
