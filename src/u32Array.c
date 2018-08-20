@@ -626,6 +626,91 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        M e r g e
+    //---------------------------------------------------------------
+    
+    U32ARRAY_DATA * u32Array_Merge(
+        U32ARRAY_DATA   *this,
+        U32ARRAY_DATA   *pOther
+    )
+    {
+        U32ARRAY_DATA   *pNew;
+        U32ARRAY_DATA   *pNew2;
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        uint32_t        j;
+        uint32_t        jMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( !u32Array_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNew = u32Array_Copy(this);
+        if (OBJ_NIL == pNew) {
+            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        eRc = u32Array_SortAscending(pNew);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pNew);
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+        iMax = u32Array_getSize(pNew);
+
+        pNew2 = u32Array_Copy(pOther);
+        if (OBJ_NIL == pNew2) {
+            obj_Release(pNew);
+            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        eRc = u32Array_SortAscending(pNew);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pNew);
+            obj_Release(pNew2);
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            return OBJ_NIL;
+        }
+        jMax = u32Array_getSize(pNew2);
+
+        i = 0;
+        j = 0;
+        while (j < jMax) {
+            while ((i < u32Array_getSize(pNew)) &&(u32Array_Get(pNew, i+1) < u32Array_Get(pNew2, j+1))) {
+                ++i;
+            }
+            if (i == u32Array_getSize(pNew)) {
+                u32Array_AppendData(pNew, u32Array_Get(pNew2, j+1));
+                ++j;
+                continue;
+            }
+            if (u32Array_Get(pNew, i+1) == u32Array_Get(pNew2, j+1)) {
+                ++j;
+                continue;
+            }
+            // u32Array_Get(pNew, i+1) > u32Array_Get(pNew2, j+1)
+            u32Array_InsertData(pNew, i+1, u32Array_Get(pNew2, j+1));
+            ++j;
+        }
+        obj_Release(pNew2);
+        pNew2 = OBJ_NIL;
+        
+        return pNew;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -745,6 +830,70 @@ extern "C" {
 #endif
         
         *((uint32_t *)array_Ptr((ARRAY_DATA *)this, index)) = data;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S o r t
+    //---------------------------------------------------------------
+    
+    ERESULT         u32Array_SortAscending(
+        U32ARRAY_DATA   *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        size = array_getSize((ARRAY_DATA *)this);
+        uint32_t        *pJ0;
+        uint32_t        *pJ1;
+        uint32_t        wrk;
+
+        /*      Insertion Sort from Wikipedia
+         *
+         *  for i = 1 to length(A)
+         *      j = i
+         *      while j > 0 and A[j-1] > A[j]
+         *          swap A[j] and A[j-1]
+         *          j = j - 1
+         *      end while
+         *  end for
+         *
+         *  NOTE:   indexing is relative to zero.
+         *          adjust as necessary.
+         */
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (array_getSize((ARRAY_DATA *)this) < 2) {
+            return ERESULT_SUCCESS;
+        }
+        
+        for (i=1; i<size; ++i) {
+            j = i;
+            while (j > 0) {
+                pJ0 = (uint32_t *)array_Ptr((ARRAY_DATA *)this, j);
+                pJ1 = (uint32_t *)array_Ptr((ARRAY_DATA *)this, j+1);
+                if (*pJ0 > *pJ1)
+                    ;
+                else
+                    break;
+                wrk = *pJ0;
+                *pJ0 = *pJ1;
+                *pJ1 = wrk;
+                j = j - 1;
+            }
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;

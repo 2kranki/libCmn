@@ -40,7 +40,9 @@
 
 
 #include        <sgraph.h>
+#include        <bitMatrix.h>
 #include        <jsonIn.h>
+#include        <nodeArray.h>
 
 
 #ifndef SGRAPH_INTERNAL_H
@@ -70,11 +72,8 @@ struct sgraph_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    BITMATRIX_DATA  *pEdges;
+    NODEARRAY_DATA  *pNodes;
 
 };
 #pragma pack(pop)

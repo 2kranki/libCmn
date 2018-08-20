@@ -1680,6 +1680,12 @@ $(OBJDIR)/dec_JSON.o: $(SRCDIR)/dec_JSON.c
 
 
 
+OBJS += $(OBJDIR)/bitMatrix_JSON.o
+$(OBJDIR)/bitMatrix_JSON.o: $(SRCDIR)/bitMatrix_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/dec_JSON.o
 $(OBJDIR)/hex_JSON.o: $(SRCDIR)/hex_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<

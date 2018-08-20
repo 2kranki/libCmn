@@ -177,6 +177,7 @@
     "routines":
     [
         "AStr_JSON.c",
+        "bitMatrix_JSON.c",
         "dec_JSON.c",
         "hex_JSON.c",
         "listdl.c",

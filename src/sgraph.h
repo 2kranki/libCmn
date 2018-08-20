@@ -57,6 +57,10 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <bitMatrix.h>
+#include        <node.h>
+#include        <nodeArray.h>
+#include        <u32Array.h>
 
 
 #ifndef         SGRAPH_H
@@ -102,8 +106,8 @@ extern "C" {
      released.
      @return    pointer to sgraph object if successful, otherwise OBJ_NIL.
      */
-    SGRAPH_DATA *     sgraph_Alloc(
-        uint16_t    stackSize           // Stack Size in Words
+    SGRAPH_DATA *   sgraph_Alloc(
+        void
     );
     
     
@@ -112,8 +116,8 @@ extern "C" {
     );
     
     
-    SGRAPH_DATA *     sgraph_New(
-        uint16_t    stackSize           // Stack Size in Words
+    SGRAPH_DATA *   sgraph_New(
+        void
     );
     
     
@@ -122,6 +126,14 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    BITMATRIX_DATA * sgraph_getEdges(
+        SGRAPH_DATA     *this
+    );
+    
+    
+    NODEARRAY_DATA * sgraph_getNodes(
+        SGRAPH_DATA     *this
+    );
 
 
     
@@ -129,26 +141,129 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     sgraph_Disable(
-        SGRAPH_DATA		*this
+    uint32_t         sgraph_Degree(
+        SGRAPH_DATA     *this,
+        uint32_t        n
     );
-
-
-    ERESULT     sgraph_Enable(
-        SGRAPH_DATA		*this
+    
+    
+    /*!
+     Add an edge to the graph.
+     @param     this    object pointer
+     @param     from    From Node number (relative to 1)
+     @param     to      To Node number  (relative to 1)
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code.
+     */
+    ERESULT         sgraph_EdgeAdd(
+        SGRAPH_DATA     *this,
+        uint32_t        from,
+        uint32_t        to
     );
-
-   
+    
+    
+    ERESULT         sgraph_EdgeDelete(
+        SGRAPH_DATA     *this,
+        uint32_t        from,
+        uint32_t        to
+    );
+    
+    
+    /*!
+     Check to see if an edge exists in the graph.
+     @param     this    object pointer
+     @param     from    From Node number (relative to 1)
+     @param     to      To Node number  (relative to 1)
+     @return    If it exists, ERESULT_SUCCESS_TRUE.  Otherwise,
+                ERESULT_SUCCESS_FALSE or an ERESULT_* error code.
+     */
+    ERESULT         sgraph_EdgeExists(
+        SGRAPH_DATA     *this,
+        uint32_t        from,
+        uint32_t        to
+    );
+    
+    
     SGRAPH_DATA *   sgraph_Init(
         SGRAPH_DATA     *this
     );
 
 
-    ERESULT     sgraph_IsEnabled(
-        SGRAPH_DATA		*this
+    NODE_DATA *     sgraph_Node(
+        SGRAPH_DATA     *this,
+        uint32_t        n
     );
     
- 
+    
+    /*!
+     Add a node to the graph.
+     @param     this    object pointer
+     @param     pNode   Node object pointer to be added
+     @return    If successful, a unique number that identifies the node
+     in the graph.  Otherwise, zero.
+     */
+    uint32_t        sgraph_NodeAdd(
+        SGRAPH_DATA     *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Calculate the set of nodes that are successors or predecessors of the
+     given node in the graph.
+     @param     this    object pointer
+     @param     n       Node number (relative to 1)
+     @return    If successful, an array of node numbers which are members of
+                the set. Otherwise, OBJ_NIL.
+     */
+    U32ARRAY_DATA *  sgraph_NodeAdj(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    );
+    
+    
+    /*!
+     Calculate the number of nodes that are successors or predecessors of the
+     given node in the graph.  This is basically the size of the set calculated
+     by NodeAdj().
+     @param     this    object pointer
+     @param     n       Node number (relative to 1)
+     @return    If successful, an integer which is the size of the set.
+     */
+    uint32_t         sgraph_NodeDegree(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    );
+    
+    
+    /*!
+     Calculate the set of nodes that are predecessors of the given node in
+     the graph.
+     @param     this    object pointer
+     @param     n       Node number (relative to 1)
+     @return    If successful, an array of node numbers which are members of
+                the set. Otherwise, OBJ_NIL.
+     */
+    U32ARRAY_DATA *  sgraph_NodePred(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    );
+    
+    
+    /*!
+     Calculate the set of nodes that are successors of the given node in
+     the graph.
+     @param     this    object pointer
+     @param     n       Node number (relative to 1)
+     @return    If successful, an array of node numbers which are members of
+     the set. Otherwise, OBJ_NIL.
+     */
+    U32ARRAY_DATA *  sgraph_NodeSucc(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

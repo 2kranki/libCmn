@@ -974,6 +974,9 @@ extern "C" {
          *          j = j - 1
          *      end while
          *  end for
+         *
+         *  NOTE:   indexing is relative to zero.
+         *          adjust as necessary.
          */
         
         // Do initialization.

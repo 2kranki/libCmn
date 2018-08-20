@@ -314,7 +314,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         char            buffer[2048];
         char            *pBuffer = buffer;
-        uint32_t        i;
+        //uint32_t        i;
         uint32_t        size;
         const
         char            *pBytes;

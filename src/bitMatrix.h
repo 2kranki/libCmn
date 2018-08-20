@@ -60,6 +60,7 @@
 #include        <AStr.h>
 #include        <bitSet.h>
 #include        <u16Matrix.h>
+#include        <u32Array.h>
 
 
 #ifndef         BITMATRIX_H
@@ -200,7 +201,19 @@ extern "C" {
     );
     
     
-    BITSET_DATA *   bitMatrix_GetColumn(
+    /*!
+     Get all or part of a Column and put it into a bitset
+     (ie x stays static and y is varied from y to max of
+     y+len or ySize).
+     @param     this    object pointer
+     @param     y       Column number (relative to 1)
+     @param     x       Row number (relative to 1)
+     @param     len     number of bits to get (max of ySize),
+                        0 == ySize
+     @return    If successful, bitSet object.  Otherwise,
+                OBJ_NIL and an ERESULT_* error code is set.
+     */
+    BITSET_DATA *   bitMatrix_GetCol(
         BITMATRIX_DATA	*this,
         uint32_t        y,
         uint32_t        x,
@@ -208,8 +221,64 @@ extern "C" {
     );
     
     
+    /*!
+     Get all or part of a Column and put it into a u32Array
+     (ie x stays static and y is varied from y to max of
+     y+len or ySize).  If any bit is true, then the array
+     entry will contain a 1.  Otherwise, it will contain a
+     0.
+     @param     this    object pointer
+     @param     y       Column number (relative to 1)
+     @param     x       Row number (relative to 1)
+     @param     len     number of bits to get (max of ySize),
+                        0 == ySize
+     @return    If successful, u32Array object.  Otherwise,
+     OBJ_NIL and an ERESULT_* error code is set.
+     */
+    U32ARRAY_DATA *   bitMatrix_GetColU32(
+        BITMATRIX_DATA    *this,
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
+    );
+    
+    
+    /*!
+     Get all or part of a Row and put it into a bitset
+     (ie y stays static and x is varied from x to max of
+     x+len or xSize).
+     @param     this    object pointer
+     @param     y       Column number (relative to 1)
+     @param     x       Row number (relative to 1)
+     @param     len     number of bits to get (max of xSize),
+                        0 == xSize
+     @return    If successful, bitSet object.  Otherwise,
+                OBJ_NIL and an ERESULT_* error code is set.
+     */
     BITSET_DATA *   bitMatrix_GetRow(
         BITMATRIX_DATA	*this,
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
+    );
+    
+    
+    /*!
+     Get all or part of a Row and put it into a u32Array
+     (ie y stays static and x is varied from x to max of
+     x+len or xSize).  If any bit is true, then the array
+     entry will contain a 1.  Otherwise, it will contain a
+     0.
+     @param     this    object pointer
+     @param     y       Column number (relative to 1)
+     @param     x       Row number (relative to 1)
+     @param     len     number of bits to get (max of xSize),
+                        0 == xSize
+     @return    If successful, u32Array object.  Otherwise,
+                OBJ_NIL and an ERESULT_* error code is set.
+     */
+    U32ARRAY_DATA *   bitMatrix_GetRowU32(
+        BITMATRIX_DATA    *this,
         uint32_t        y,
         uint32_t        x,
         uint32_t        len

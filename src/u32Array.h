@@ -196,10 +196,29 @@ extern "C" {
     );
     
     
+    /*!
+     Copy and sort both arrays given and then merge the two new
+     arrays in numerical order removing duplicates.
+     @param     this    object pointer
+     @param     pOther  object pointer
+     @return    If successful, a new u32Array object which must
+                be released, otherwise OBJ_NIL.
+     */
+    U32ARRAY_DATA * u32Array_Merge(
+        U32ARRAY_DATA    *this,
+        U32ARRAY_DATA    *pOther
+    );
+    
+    
     ERESULT         u32Array_SetData(
         U32ARRAY_DATA   *this,
         uint32_t        index,
         uint32_t        data
+    );
+    
+    
+    ERESULT         u32Array_SortAscending(
+        U32ARRAY_DATA   *this
     );
     
     

@@ -81,21 +81,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SGRAPH_DATA *     sgraph_Alloc(
-        uint16_t        stackSize
+    SGRAPH_DATA *   sgraph_Alloc(
+        void
     )
     {
-        SGRAPH_DATA       *this;
+        SGRAPH_DATA     *this;
         uint32_t        cbSize = sizeof(SGRAPH_DATA);
         
         // Do initialization.
         
-        if (0 == stackSize) {
-            stackSize = 256;
-        }
-        cbSize += stackSize << 2;
         this = obj_Alloc( cbSize );
-        obj_setMisc1(this, stackSize);
         
         // Return to caller.
         return this;
@@ -103,13 +98,13 @@ extern "C" {
 
 
 
-    SGRAPH_DATA *     sgraph_New(
-        uint16_t        stackSize
+    SGRAPH_DATA *   sgraph_New(
+        void
     )
     {
         SGRAPH_DATA       *this;
         
-        this = sgraph_Alloc(stackSize);
+        this = sgraph_Alloc( );
         if (this) {
             this = sgraph_Init(this);
         } 
@@ -124,6 +119,98 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                         E d g e s
+    //---------------------------------------------------------------
+    
+    BITMATRIX_DATA * sgraph_getEdges(
+        SGRAPH_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pEdges;
+    }
+    
+    
+    bool            sgraph_setEdges(
+        SGRAPH_DATA     *this,
+        BITMATRIX_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pEdges) {
+            obj_Release(this->pEdges);
+        }
+        this->pEdges = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         N o d e s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * sgraph_getNodes(
+        SGRAPH_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pNodes;
+    }
+    
+    
+    bool        sgraph_setNodes(
+        SGRAPH_DATA     *this,
+        NODEARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pNodes) {
+            obj_Release(this->pNodes);
+        }
+        this->pNodes = pValue;
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -191,54 +278,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * sgraph_getStr(
-        SGRAPH_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !sgraph_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return this->pStr;
-    }
-    
-    
-    bool        sgraph_setStr(
-        SGRAPH_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !sgraph_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -418,11 +457,11 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the SGRAPH object.
      */
-    SGRAPH_DATA *     sgraph_Copy(
-        SGRAPH_DATA       *this
+    SGRAPH_DATA *   sgraph_Copy(
+        SGRAPH_DATA     *this
     )
     {
-        SGRAPH_DATA       *pOther = OBJ_NIL;
+        SGRAPH_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -434,7 +473,7 @@ extern "C" {
         }
 #endif
         
-        pOther = sgraph_New(obj_getSize(this));
+        pOther = sgraph_New( );
         if (pOther) {
             eRc = sgraph_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -479,8 +518,9 @@ extern "C" {
         }
 #endif
 
-        sgraph_setStr(this, OBJ_NIL);
-
+        sgraph_setEdges(this, OBJ_NIL);
+        sgraph_setNodes(this, OBJ_NIL);
+        
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -522,6 +562,80 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       E d g e  A d d
+    //---------------------------------------------------------------
+    
+    ERESULT         sgraph_EdgeAdd(
+        SGRAPH_DATA     *this,
+        uint32_t        from,
+        uint32_t        to
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (0 == from) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (0 == to) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = bitMatrix_Set(this->pEdges, from, to, true);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       E d g e  E x i s t s
+    //---------------------------------------------------------------
+    
+    ERESULT         sgraph_EdgeExists(
+        SGRAPH_DATA     *this,
+        uint32_t        from,
+        uint32_t        to
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (0 == from) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (0 == to) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = bitMatrix_Get(this->pEdges, from, to);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          E n a b l e
     //---------------------------------------------------------------
 
@@ -555,7 +669,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     SGRAPH_DATA *   sgraph_Init(
-        SGRAPH_DATA       *this
+        SGRAPH_DATA     *this
     )
     {
         uint32_t        cbSize = sizeof(SGRAPH_DATA);
@@ -589,7 +703,21 @@ extern "C" {
         obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
+        
+        this->pEdges = bitMatrix_NewSquare(1);
+        if (OBJ_NIL == this->pEdges) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
+        this->pNodes = nodeArray_New( );
+        if (OBJ_NIL == this->pNodes) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
     #ifdef NDEBUG
     #else
         if( !sgraph_Validate(this) ) {
@@ -598,7 +726,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "sgraph::sizeof(SGRAPH_DATA) = %lu\n", sizeof(SGRAPH_DATA));
+        //fprintf(stderr, "sgraph::sizeof(SGRAPH_DATA) = %lu\n", sizeof(SGRAPH_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SGRAPH_DATA));
     #endif
@@ -634,6 +762,252 @@ extern "C" {
         // Return to caller.
         obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       N o d e  A d d
+    //---------------------------------------------------------------
+    
+    uint32_t        sgraph_NodeAdd(
+        SGRAPH_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        index = 0;
+        uint32_t        amt;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = nodeArray_AppendNode(this->pNodes, pNode, &index);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        
+        // Expand the Edges matrix if needed.
+        if (index > bitMatrix_getXSize(this->pEdges)) {
+            amt = index - bitMatrix_getXSize(this->pEdges);
+            bitMatrix_InflateX(this->pEdges, amt);
+            bitMatrix_InflateY(this->pEdges, amt);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       N o d e  A d j
+    //---------------------------------------------------------------
+    
+    U32ARRAY_DATA *  sgraph_NodeAdj(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    )
+    {
+        U32ARRAY_DATA   *pSet = OBJ_NIL;
+        U32ARRAY_DATA   *pPred = OBJ_NIL;
+        U32ARRAY_DATA   *pSucc = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return pSet;
+        }
+        if ((0 == n) || (n > nodeArray_getSize(this->pNodes))) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return pSet;
+        }
+#endif
+        
+        pPred = sgraph_NodePred(this, n);
+        if (OBJ_NIL == pPred) {
+            return pSet;
+        }
+        
+        pSucc = sgraph_NodeSucc(this, n);
+        if (OBJ_NIL == pPred) {
+            obj_Release(pPred);
+            return pSet;
+        }
+        
+        // Calculate the set.
+        pSet = u32Array_Merge(pPred, pSucc);
+        if (OBJ_NIL == pSet) {
+            obj_Release(pPred);
+            obj_Release(pSucc);
+            return pSet;
+        }
+        
+        // Return to caller.
+        obj_Release(pPred);
+        obj_Release(pSucc);
+        return pSet;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       N o d e  D e g r e e
+    //---------------------------------------------------------------
+    
+    uint32_t        sgraph_NodeDegree(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    )
+    {
+        uint32_t        size = 0;
+        U32ARRAY_DATA   *pSet = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return size;
+        }
+        if ((0 == n) || (n > nodeArray_getSize(this->pNodes))) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return size;
+        }
+#endif
+        
+        pSet = sgraph_NodeAdj(this, n);
+        if (OBJ_NIL == pSet) {
+            return size;
+        }
+        
+        size = u32Array_getSize(pSet);
+        
+        // Return to caller.
+        obj_Release(pSet);
+        return size;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       N o d e  P r e d
+    //---------------------------------------------------------------
+    
+    U32ARRAY_DATA *  sgraph_NodePred(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    )
+    {
+        uint32_t        index = 0;
+        BITSET_DATA     *pBitSet = OBJ_NIL;
+        U32ARRAY_DATA   *pSet = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return pSet;
+        }
+        if ((0 == n) || (n > nodeArray_getSize(this->pNodes))) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return pSet;
+        }
+#endif
+        
+        //                                       y  x  len
+        pBitSet = bitMatrix_GetCol(this->pEdges, 1, n,  0);
+        if (OBJ_NIL == pBitSet) {
+            return pSet;
+        }
+        
+        // Calculate the set.
+        pSet = u32Array_New( );
+        if (OBJ_NIL == pSet) {
+            return pSet;
+        }
+        for (index=0; index < bitSet_getSize(pBitSet); ++index) {
+            if (bitSet_Get(pBitSet, index+1)) {
+                u32Array_AppendData(pSet, index+1);
+            }
+        }
+        
+        // Return to caller.
+        obj_Release(pBitSet);
+        pBitSet = OBJ_NIL;
+        return pSet;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       N o d e  S u c c
+    //---------------------------------------------------------------
+    
+    U32ARRAY_DATA *  sgraph_NodeSucc(
+        SGRAPH_DATA     *this,
+        uint32_t        n
+    )
+    {
+        uint32_t        index = 0;
+        BITSET_DATA     *pBitSet = OBJ_NIL;
+        U32ARRAY_DATA   *pSet = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !sgraph_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return pSet;
+        }
+        if ((0 == n) || (n > nodeArray_getSize(this->pNodes))) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return pSet;
+        }
+#endif
+        
+        //                                       y  x  len
+        pBitSet = bitMatrix_GetRow(this->pEdges, n, 1,  0);
+        if (OBJ_NIL == pBitSet) {
+            return pSet;
+        }
+        
+        // Calculate the set.
+        pSet = u32Array_New( );
+        if (OBJ_NIL == pSet) {
+            return pSet;
+        }
+        for (index=0; index < bitSet_getSize(pBitSet); ++index) {
+            if (bitSet_Get(pBitSet, index+1)) {
+                u32Array_AppendData(pSet, index+1);
+            }
+        }
+        
+        // Return to caller.
+        obj_Release(pBitSet);
+        pBitSet = OBJ_NIL;
+        return pSet;
     }
     
     

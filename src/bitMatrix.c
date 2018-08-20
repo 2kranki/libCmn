@@ -656,13 +656,11 @@ extern "C" {
         if ((x > 0) && (x <= this->xSize))
             ;
         else {
-            DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
         if ((y > 0) && (y <= this->ySize))
             ;
         else {
-            DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -682,69 +680,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      G e t  C o l u m n
+    //                      G e t  C o l
     //---------------------------------------------------------------
     
-    BITSET_DATA *   bitMatrix_GetColumn(
-        BITMATRIX_DATA  *this,
-        uint32_t        y,
-        uint32_t        x,
-        uint32_t        len
-    )
-    {
-        BITSET_DATA     *pWork = OBJ_NIL;
-        uint16_t        i;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !bitMatrix_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        if ((x > 0) && (x <= this->xSize))
-            ;
-        else {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        if ((y > 0) && (y <= this->ySize))
-            ;
-        else {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        if ((x + len - 1) <= this->xSize)
-            ;
-        else {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        pWork = bitSet_Alloc(len);
-        pWork = bitSet_Init(pWork);
-        if (OBJ_NIL == pWork) {
-            return pWork;
-        }
-        
-        for (i=0; i<len; ++i) {
-            if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, x+i, y)) {
-                bitSet_Set(pWork, i+1, true);
-            }
-        }
-        
-        // Return to caller.
-        return pWork;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      G e t  R o w
-    //---------------------------------------------------------------
-    
-    BITSET_DATA *   bitMatrix_GetRow(
+    BITSET_DATA *   bitMatrix_GetCol(
         BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x,
@@ -761,6 +700,73 @@ extern "C" {
             DEBUG_BREAK();
             return false;
         }
+#endif
+        if (0 == len)
+            len = this->ySize;
+#ifdef NDEBUG
+#else
+        if ((x > 0) && (x <= this->xSize))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((y > 0) && (y <= this->ySize))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((y + len - 1) <= this->ySize)
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pWork = bitSet_Alloc(len);
+        pWork = bitSet_Init(pWork);
+        if (OBJ_NIL == pWork) {
+            return pWork;
+        }
+        
+        for (i=0; i<len; ++i) {
+            if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, y+i, x)) {
+                bitSet_Set(pWork, i+1, true);
+            }
+            else {
+                bitSet_Set(pWork, i+1, false);
+            }
+        }
+        
+        // Return to caller.
+        return pWork;
+    }
+    
+    
+    U32ARRAY_DATA * bitMatrix_GetColU32(
+        BITMATRIX_DATA  *this,
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
+    )
+    {
+        U32ARRAY_DATA   *pWork = OBJ_NIL;
+        uint16_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !bitMatrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (0 == len)
+            len = this->ySize;
+#ifdef NDEBUG
+#else
         if ((x > 0) && (x <= this->xSize))
             ;
         else {
@@ -781,15 +787,17 @@ extern "C" {
         }
 #endif
         
-        pWork = bitSet_Alloc(len);
-        pWork = bitSet_Init(pWork);
+        pWork = u32Array_New( );
         if (OBJ_NIL == pWork) {
             return pWork;
         }
         
         for (i=0; i<len; ++i) {
-            if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, x, y+i)) {
-                bitSet_Set(pWork, i+1, true);
+            if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, y+i, x)) {
+                u32Array_AppendData(pWork, 1);
+            }
+            else {
+                u32Array_AppendData(pWork, 0);
             }
         }
         
@@ -798,7 +806,135 @@ extern "C" {
     }
     
     
+
+    //---------------------------------------------------------------
+    //                      G e t  R o w
+    //---------------------------------------------------------------
     
+    BITSET_DATA *   bitMatrix_GetRow(
+        BITMATRIX_DATA  *this,
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
+    )
+    {
+        BITSET_DATA     *pWork = OBJ_NIL;
+        uint16_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !bitMatrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        if (0 == len)
+            len = this->xSize;
+#ifdef NDEBUG
+#else
+        if ((x > 0) && (x <= this->xSize))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((y > 0) && (y <= this->ySize))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((x + len - 1) <= this->xSize)
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pWork = bitSet_Alloc(len);
+        pWork = bitSet_Init(pWork);
+        if (OBJ_NIL == pWork) {
+            return pWork;
+        }
+        
+        for (i=0; i<len; ++i) {
+            if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, y, x+i)) {
+                bitSet_Set(pWork, i+1, true);
+            }
+            else {
+                bitSet_Set(pWork, i+1, false);
+            }
+        }
+        
+        // Return to caller.
+        return pWork;
+    }
+    
+    
+    U32ARRAY_DATA * bitMatrix_GetRowU32(
+        BITMATRIX_DATA  *this,
+        uint32_t        y,
+        uint32_t        x,
+        uint32_t        len
+    )
+    {
+        U32ARRAY_DATA   *pWork = OBJ_NIL;
+        uint16_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !bitMatrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        if (0 == len)
+            len = this->xSize;
+#ifdef NDEBUG
+#else
+        if ((x > 0) && (x <= this->xSize))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((y > 0) && (y <= this->ySize))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((x + len - 1) <= this->xSize)
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pWork = u32Array_New( );
+        if (OBJ_NIL == pWork) {
+            return pWork;
+        }
+        
+        for (i=0; i<len; ++i) {
+            if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, y, x+i)) {
+                u32Array_AppendData(pWork, 1);
+            }
+            else {
+                u32Array_AppendData(pWork, 0);
+            }
+        }
+        
+        // Return to caller.
+        return pWork;
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                      I n f l a t e
     //---------------------------------------------------------------
@@ -982,10 +1118,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(BITMATRIX_DATA);
-        ERESULT         eRc;
-        uint32_t        xWords;
         uint32_t        xNew;
-        uint32_t        yNew;
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1659,12 +1792,12 @@ extern "C" {
             AStr_AppendA(pStr, "1234567890");
         }
         AStr_AppendA(pStr, "\n");
-        for (x=1; x<=this->xSize; ++x) {
+        for (y=1; y<=this->ySize; ++y) {
             if (indent) {
                 AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
             }
-            AStr_AppendPrint(pStr, "%3d |", x);
-            for (y=1; y<=this->ySize; ++y) {
+            AStr_AppendPrint(pStr, "%3d |", y);
+            for (x=1; x<=this->xSize; ++x) {
                 if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, y, x)) {
                     AStr_AppendA(pStr, "1");
                 }
