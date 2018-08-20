@@ -579,6 +579,9 @@ extern "C" {
         int             i = -1;
         
         if ((pSrc == NULL) || (*pSrc == '\0')) {
+            if (pChr) {
+                *pChr = 0;
+            }
             return 0;
         }
         if ((pSrc[0] & 0x80) == 0) {

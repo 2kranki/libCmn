@@ -1261,6 +1261,18 @@ $(OBJDIR)/screen_object.o: $(SRCDIR)/screen_object.c
 
 
 
+OBJS += $(OBJDIR)/sgraph.o $(OBJDIR)/sgraph_object.o
+
+
+$(OBJDIR)/sgraph.o: $(SRCDIR)/sgraph.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/sgraph_object.o: $(SRCDIR)/sgraph_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/sidx.o $(OBJDIR)/sidx_object.o
 
 
@@ -2635,6 +2647,13 @@ test_scanWhite:
 	$(OBJDIR)/$(@F) ./tests
 
 
+TESTS += test_sgraph
+
+test_sgraph:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_sgraph.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
 TESTS += test_sidx
 
 test_sidx:
@@ -2868,7 +2887,7 @@ test_wav:
 
 TESTS += test_wisp
 
-test_xml:
+test_wisp:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_wisp.c 
 	$(OBJDIR)/$(@F) ./tests
 

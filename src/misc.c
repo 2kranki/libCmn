@@ -317,18 +317,20 @@ extern "C" {
         int             len;
         int             lenName;
         //int             i;
-        W32CHR_T        cw;
-        W32CHR_T        mcw;
+        W32CHR_T        cw;             // Current Input Char
+        W32CHR_T        mcw;            // Current Match/Pattern Char
         W32CHR_T        mcwn;
        // W32CHR_T        ncw;
-        int             flag;
+        int             flag = 0;
         bool            fRc;
-        
+
+        // Get the next Pattern Character.
         len = utf8_Utf8ToW32(pPattern, &mcw);
         if (len == -1) {    // *** Malformed Unicode Char ***
             return false;
         }
         pPattern += len;
+        
         for (;;) {		/* Corresponding char */
             len = utf8_Utf8ToW32(pName, &cw);
             if (len == -1) {    // *** Malformed Unicode Char ***
@@ -371,10 +373,10 @@ extern "C" {
                         len = utf8_Utf8ToW32(pEquiv, NULL);
                     }
                     fRc = misc_PatternMatchA(
-                                     (pName - lenName), // Backup one char
-                                     pPattern,
-                                     (pEquiv + len),    // Optionally Advance one char
-                                     pNewname
+                                    pPattern,
+                                    (pName - lenName), // Backup one char
+                                    (pEquiv + len),    // Optionally Advance one char
+                                    pNewname
                              );
                     if ( fRc )
                         return true;
