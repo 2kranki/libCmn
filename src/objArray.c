@@ -871,6 +871,7 @@ extern "C" {
     }
     
     
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1145,7 +1146,35 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                            X c h g
+    //---------------------------------------------------------------
     
+    ERESULT         objArray_Xchg(
+        OBJARRAY_DATA   *this,
+        uint16_t        index1,         // Relative to 1
+        uint16_t        index2          // Relative to 1
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        BREAK_NULL(this->pArray);
+#endif
+        
+        eRc = array_Xchg(this->pArray, index1, index2);
+        
+        return eRc;
+    }
+    
+    
+
     
 #ifdef	__cplusplus
 }

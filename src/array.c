@@ -1574,6 +1574,60 @@ extern "C" {
 
     
     //---------------------------------------------------------------
+    //                          X c h g
+    //---------------------------------------------------------------
+    
+    ERESULT         array_Xchg(
+        ARRAY_DATA      *this,
+        uint32_t        index1,             // in elements (relative to 1)
+        uint32_t        index2              // in elements (relative to 1)
+    )
+    {
+        uint8_t         work[256];
+        uint8_t         *pWrk = work;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (0 == index1) || (index1 > this->size) ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if( (0 == index2) || (index2 > this->size) ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (this->elemSize > 256) {
+            pWrk = mem_Malloc(this->elemSize);
+            if (NULL == pWrk) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        // Exchange the elements.
+        memmove(pWrk, array_Ptr(this, index1), this->elemSize);
+        memmove(array_Ptr(this, index1), array_Ptr(this, index2), this->elemSize);
+        memmove(array_Ptr(this, index2), pWrk, this->elemSize);
+        
+        if (pWrk == work)
+            ;
+        else {
+            mem_Free(pWrk);
+            pWrk = NULL;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       Z e r o
     //---------------------------------------------------------------
     

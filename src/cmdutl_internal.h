@@ -57,19 +57,6 @@ extern "C" {
 #endif
     
     
-    typedef struct cmdutl_entry_s {
-        OBJ_ID              pArg;
-        W32STR_DATA         *pLongName;
-        W32STR_DATA         *pShortName;
-    } CMDUTL_ENTRY;
-    
-    
-    typedef struct cmdutl_ref_s {
-        OBJ_ID              pEntry;
-        OBJ_ID              pValue;
-    } CMDUTL_REF;
-    
-    
     
     
 
@@ -80,38 +67,61 @@ struct cmdutl_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
-#define OBJ_FLAG_EOF        OBJ_FLAG_USER1           /* At EOF */
+    CMDUTL_OPTION   *pOptions;
 
     // Common Data
-    SRCFILE_DATA    *pSrc;
     PATH_DATA       *pPath;
-    uint16_t        inputType;
-    union {
-        ASTR_DATA           *pAStr;
-        //FBSI_DATA           *pFbsi;
-        FILE                *pFile;
-        //U8ARRAY_DATA        *pU8Array;
-        W32STR_DATA         *pWStr;
-    };
-    uint32_t        lineNo;             // Current Line Number
-    uint16_t        colNo;              // Current Column Number
-    uint16_t        tabSize;
-    uint32_t        fileOffset;
-    NODE_DATA       *pFileObject;
-
-    // Field being built
-    uint16_t        sizeFld;            // Size of pFld including NUL
-    uint16_t        lenFld;             // Used Length in pFld excluding NUL
-    W32CHR_T        *pFld;              // Work String
-    
-    // Look-ahead Wide Char Input
-    uint16_t        sizeInputs;
-    uint16_t        curInputs;
-    W32CHR_T        *pInputs;
+    char            **argv;
+    int             permute;
+    int             optIndex;
+    W32CHR_T        optopt;
+    char            *optarg;
+    char            errmsg[64];
+    int             subopt;
 
     // ArgC/ArgV Stuff
-    int             cArg;               // Copy of Original Arguments
-    char            **ppArg;
+    int             cArgs;              // Copy of Original Arguments
+    char            **ppArgs;
+
+    // Program Options
+    uint8_t         fDebug;
+    uint8_t         fForce;
+    uint8_t         fQuiet;
+    uint8_t         rsvd8;
+    uint16_t        iVerbose;
+    uint16_t        rsvd16_1;
+    
+    // Program Arguments and Options
+    uint16_t        cOptions;
+    uint16_t        rsvd16_2;
+    ASTRARRAY_DATA  *pArgs;
+    ASTRARRAY_DATA  *pEnv;
+    uint16_t        cProgramArgs;
+    uint16_t        cGroupArgs;
+    uint32_t        nextArg;
+    PATH_DATA       *pProgramPath;
+    CMDUTL_OPTION   *pProgramArgs;
+    CMDUTL_OPTION   *pGroupArgs;
+    
+    OBJ_ID          pObjPrs;
+    ERESULT         (*pParseArgsDefaults)(OBJ_ID);
+    /*!
+     @return    If successful, ERESULT_SUCCESS_0, ERESULT_SUCCESS_1,
+     ERESULT_SUCCESS_2 or ERESULT_SUCCESS_3 to denote how
+     many parameters were used beyond the normal 1.  Otherwise,
+     an ERESULT_* error code
+     */
+    ERESULT         (*pParseArgsLong)(
+                                      OBJ_ID          this,
+                                      bool            fTrue,
+                                      ASTR_DATA       *pName,
+                                      ASTR_DATA       *pWrk,
+                                      uint32_t        index,
+                                      ASTRARRAY_DATA  *pArgs
+                                      );
+    ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
+    ERESULT         (*pParseArgsError)(OBJ_ID, int *, const char ***);
+    
 };
 #pragma pack(pop)
 
@@ -126,84 +136,12 @@ struct cmdutl_data_s	{
         CMDUTL_DATA     *cbp,
         W32CHR_T        chr
     );
+
     
     void            cmdutl_Dealloc(
         OBJ_ID          objId
     );
 
-    CMDUTL_DATA *   cmdutl_Init(
-        CMDUTL_DATA     *cbp
-    );
-    
-    W32CHR_T        cmdutl_InputAdvance(
-        CMDUTL_DATA       *cbp,
-        uint16_t        numChrs
-    );
-    
-    W32CHR_T        cmdutl_InputLookAhead(
-        CMDUTL_DATA       *cbp,
-        uint16_t        num
-    );
-    
-    ERESULT         cmdutl_InputNextChar(
-        CMDUTL_DATA       *cbp
-    );
-    
-    NODE_DATA *     cmdutl_ParseArray(
-        CMDUTL_DATA       *cbp
-    );
-    
-    W32CHR_T        cmdutl_ParseDigit0To9(
-        CMDUTL_DATA       *cbp
-    );
-    
-    W32CHR_T        cmdutl_ParseDigit1To9(
-        CMDUTL_DATA       *cbp
-    );
-    
-    W32CHR_T        cmdutl_ParseDigitHex(
-        CMDUTL_DATA       *cbp
-    );
-    
-    W32CHR_T        cmdutl_ParseDigitOctal(
-        CMDUTL_DATA       *cbp
-    );
-    
-    bool            cmdutl_ParseEOF(
-        CMDUTL_DATA       *cbp
-    );
-    
-    NODE_DATA *     cmdutl_ParseFileObject(
-        CMDUTL_DATA       *cbp
-    );
-    
-    NODE_DATA *     cmdutl_ParseHash(
-        CMDUTL_DATA       *cbp
-    );
-
-    NODE_DATA *     cmdutl_ParsePair(
-        CMDUTL_DATA       *cbp
-    );
-    
-    NODE_DATA *     cmdutl_ParseString(
-        CMDUTL_DATA       *cbp
-    );
-    
-    NODE_DATA *     cmdutl_ParseValue(
-        CMDUTL_DATA       *cbp
-    );
-    
-    W32CHR_T        cmdutl_UnicodeGetc(
-        CMDUTL_DATA       *cbp
-    );
-    
-    NODE_DATA *     cmdutl_ParseValue(
-        CMDUTL_DATA       *cbp
-    );
-    
-    bool            cmdutl_ParseWS(
-        CMDUTL_DATA       *cbp
-    );
     
 #ifdef NDEBUG
 #else

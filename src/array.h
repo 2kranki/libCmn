@@ -318,6 +318,13 @@ extern "C" {
     );
     
     
+    ERESULT         array_Xchg(
+        ARRAY_DATA      *this,
+        uint32_t        offset1,            // in elements (relative to 1)
+        uint32_t        offset2             // in elements (relative to 1)
+    );
+    
+    
     /*!
      Zeroes the data in the array and adjust array size if needed.
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*

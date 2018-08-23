@@ -349,6 +349,18 @@ $(OBJDIR)/cloOpt_object.o: $(SRCDIR)/cloOpt_object.c
 
 
 
+OBJS += $(OBJDIR)/cloprs.o $(OBJDIR)/cloprs_object.o
+
+
+$(OBJDIR)/cloprs.o: $(SRCDIR)/cloprs.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+$(OBJDIR)/cloprs_object.o: $(SRCDIR)/cloprs_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/cmdutl.o $(OBJDIR)/cmdutl_object.o
 
 
@@ -2105,6 +2117,13 @@ TESTS += test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
+	$(OBJDIR)/$(@F) ./tests
+
+
+TESTS += test_cloprs
+
+test_cloprs:
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloprs.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

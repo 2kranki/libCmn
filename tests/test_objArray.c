@@ -247,6 +247,20 @@ int         test_objArray_GetPut01(
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
+        eRc = objArray_Xchg(pObj, 1, 7);
+        fprintf(stderr, "\n\n\n\tAfter Xchg Array:\n");
+        for (i=0; i<num; ++i) {
+            pStr = objArray_Get(pObj, i+1);
+            fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
+        }
+        
+        eRc = objArray_Xchg(pObj, 1, 7);
+        fprintf(stderr, "\n\n\nCurrent array:\n");
+        pStr = objArray_ToDebugString(pObj, 0);
+        fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
         fprintf(stderr, "Now creating a copy of the array!\n");
         pObj2 = objArray_Copy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );

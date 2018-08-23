@@ -5,6 +5,63 @@
  *
  */
 
+/***
+ Pass 1:
+
+ We parsed the arguments without knowing anything about them.  This causes the need
+ for delimiters such as '=' to attach values to options which is non-standard.  In
+ parsing this, we end up with a nodeHash hierarchy which must then be parsed by the
+ program.  So, we are parsing the arguments two times.
+ 
+ *          cmdstr  : string (ws | arg)*            // First string is program path
+ *                  ;
+ *          arg     : name ('=' value)?
+ *                  | string ('=' value)?
+ *                  | array
+ *                  | number
+ *                  ;
+ *          value   : name | string | number | array
+ *                  ;
+ *          array   : '[' ws* value (',' ws* value)* ws* ']'
+ *                  ;
+ *          name    : [a-zA-Z][a-zA-Z0-9_]*
+ *                  ;
+ *          ws      : ' ' | '\b' | '\f' | '\n' | '\r' | '\t'
+ *                  ;
+ *          string  : '"' string_chars* '"'
+ *                  ;
+ *          string_chars
+ *                  : [\b\f\n\r\t\\\/ !]
+ *                  | [#-~]
+ *                  | '\\' '"'
+ *                  | '\\' ('u'|'U') hexdigit*
+ *                  | '\\' '\\'
+ *                  ;
+ *          number  : ('-')? [1-9][0-9]* ('.' [0-9]+)? exp?
+ *                  | [0]([xX][0-9a-fA-F]*
+ *                  | [0][0-7]*
+ *                  ;
+ *          exp     : ('e' | 'E') ('-' | '+')? [0-9]+
+ *                  ;
+ *
+
+ 
+ Pass 2:
+ 
+ We tried parsing the arguments by having exits at different parse points.  This worked
+ fair, but requires the exits to be able to communicate back about whether an option
+ has an argument or not.  Also, we had to parse the short and long options separately.
+ This became very clumsy to implement.
+ 
+ 
+ Pass 3:
+ 
+ optparse is a public domain package which we have altered substantially to be only driven
+ 
+ ***/
+
+
+
  
 /*
  This is free and unencumbered software released into the public domain.
@@ -62,6 +119,8 @@ extern "C" {
     
 
     
+    
+    
 
 
  
@@ -69,1629 +128,173 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    /* ParseCmdStr() sets up an ArgC/ArgV type array given
-     * a command line string.
-     */
-#ifdef XYZZY
     static
-    bool			cmdutl_ParseCmdStr(
-        CMDUTL_DATA		*this,
-        char            *pCmdStr
-    )
-    {
-        uint16_t        cbSize;
-        int             Num = 0;
-        char            *pCurCmd;
-        char            quote;
-        
-        // Do initialization.
-        if( pCmdStr == NULL )
-            return( false );
-        
-        // Analyze input string to calculate array needed.
-        this->cArg = 1;
-        //TODO: cbSize = 2 * sizeof(char *);
-        this->ppArg = (char **)mem_Malloc( cbSize );
-#ifdef XYZZY
-        if( this->ppArg ) {
-            this->flags |= GOT_ARGV;
-        }
-        else
-            return false;
-#endif
-        *(this->ppArg) = "";     // Set program name.
-        
-        /* Scan off the each parameter.
-         */
-        while( *pCmdStr ) {
-            pCurCmd = NULL;
-            
-            // Pass over white space.
-            while( *pCmdStr && ((*pCmdStr == ' ') || (*pCmdStr == '\n')
-                                || (*pCmdStr == '\r') || (*pCmdStr == '\t')) )
-                ++pCmdStr;
-            
-            // Handle Quoted Arguments.
-            if( (*pCmdStr == '\"') || (*pCmdStr == '\'') ) {
-                quote = *pCmdStr++;
-                pCurCmd = pCmdStr;
-                while( *pCmdStr && (*pCmdStr != quote) ) {
-                    ++pCmdStr;
-                }
-                if( *pCmdStr ) {
-                    *pCmdStr = '\0';
-                    ++pCmdStr;
-                }
-            }
-            
-            // Handle Non-Quoted Arguments.
-            else if( *pCmdStr ) {
-                pCurCmd = pCmdStr;
-                // Scan until white space.
-                while( *pCmdStr && !((*pCmdStr == ' ') || (*pCmdStr == '\n')
-                                     || (*pCmdStr == '\r') || (*pCmdStr == '\t')) ) {
-                    ++pCmdStr;
-                }
-                if( *pCmdStr ) {
-                    *pCmdStr = '\0';
-                    ++pCmdStr;
-                }
-            }
-            else
-                continue;
-            
-            // Add the command to the array.
-            if( pCurCmd ) {
-                ++Num;
-                this->ppArg = (char **)mem_Realloc( this->ppArg, ((Num + 2) * sizeof(char *)) );
-                if( this->ppArg ) {
-                    this->ppArg[Num]   = pCurCmd;
-                    this->ppArg[Num+1] = NULL;
-                    ++this->cArg;
-                }
-                else
-                    return( false );
-            }
-        }
-        
-        // Return to caller.
-        return true;
-    }
-#endif
-    
-    
-    
-    // Returns the next character from the file as a positive number.
-    // If the character returned is negative then it is an ERESULT code.
-    W32CHR_T        cmdutl_UnicodeGetc(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        wrkChr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        switch (this->inputType) {
-                
-            case OBJ_IDENT_ASTR:
-                wrkChr = AStr_CharGetW32(this->pAStr, ++this->fileOffset);
-                if(EOF == wrkChr) {
-                    obj_FlagSet(this, OBJ_FLAG_EOF, true);
-                    return EOF; //ERESULT_EOF_ERROR;
-                }
-                break;
-                
-            case OBJ_IDENT_FILE:
-                wrkChr = fgetwc( this->pFile);
-                if( wrkChr == EOF ) {
-                    if( feof(this->pFile) ) {
-                        obj_FlagSet(this, OBJ_FLAG_EOF, true);
-                        return EOF; //ERESULT_EOF_ERROR;
-                    }
-                    else
-                        obj_FlagSet(this, OBJ_FLAG_EOF, true);
-                        return EOF; //ERESULT_READ_ERROR;
-                }
-                break;
-                
-#ifdef XYZZY
-            case OBJ_IDENT_FBSI:
-                eRc = fbsi_Getwc(this->pFbsi, &wrkChr );
-                if (ERESULT_FAILURE(eRc)) {
-                    chr = EOF;
-                }
-                break;
-#endif
-                
-#ifdef XYZZY
-            case OBJ_IDENT_U8ARRAY:
-                eRc = srcFile_u8ArrayGetc(this, &wrkChr);
-                if (ERESULT_FAILURE(eRc)) {
-                    chr = EOF;
-                }
-                break;
-#endif
-                
-            case OBJ_IDENT_W32STR:
-                wrkChr = W32Str_CharGetW32(this->pWStr, ++this->fileOffset );
-                break;
-                
-            default:
-                wrkChr = EOF;
-                break;
-        }
-        
-        if( (wrkChr >= ' ') && (wrkChr < ASCII_DEL) )
-            ;
-        else if( (wrkChr == ASCII_LF) || (wrkChr == ASCII_CR) )
-            ;
-        else if( wrkChr == ASCII_CPM_EOF ) {
-            while ((wrkChr = fgetwc(this->pFile)) != EOF) {
-            }
-            obj_FlagSet(this, OBJ_FLAG_EOF, true);
-            return ERESULT_EOF_ERROR;
-        }
-        else if( wrkChr == ASCII_TAB )
-            ;
-        else if (wrkChr > 128)
-            ;
-        else {
-            return ERESULT_INVALID_DATA;
-        }
-        
-        // Return to caller.
-        return wrkChr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  A l p h a  a-z A-Z
-    //---------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_ParseAlpha(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        
-        if( (chr >= 'a') && (chr <= 'z') ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 1);
-            chr -= '0';
-        }
-        else if( (chr >= 'A') && (chr <= 'Z') ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 1);
-            chr -= '0';
-        }
-        else {
-            chr = -1;
-        }
-        
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  A r g
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseArg(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        OBJ_ID          pChild = OBJ_NIL;
-        //bool            fRc;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        cmdutl_ParseWS(this);
-        
-        pArray = nodeArray_New( );
-        if (pArray == OBJ_NIL) {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  path_getData(this->pPath),
-                                  this->lineNo,
-                                  this->colNo,
-                                  "Out of Memory"
-                                  );
-#endif
-            return pNode;
-        }
-        
-        pChild = cmdutl_ParseValue(this);
-        if (pChild) {
-            nodeArray_AppendNode(pArray, pChild, NULL);
-            obj_Release(pChild);
-        }
-        else {
-            obj_Release(pArray);
-            return OBJ_NIL;
-        }
-        
-        for (;;) {
-            cmdutl_ParseWS(this);
-            chr = cmdutl_InputLookAhead(this, 1);
-            if( chr == ',' ) {
-                cmdutl_InputAdvance(this, 1);
-            }
-            else
-                break;
-            pChild = cmdutl_ParseValue(this);
-            if (pChild) {
-                nodeArray_AppendNode(pArray, pChild, NULL);
-                obj_Release(pChild);
-            }
-            else {
-                //FIXME: Add proper error
-#ifdef XYZZY
-                srcErrors_AddFatalFromToken(
-                                            OBJ_NIL,
-                                            pToken,
-                                            "Expecting ':'"
-                                            );
-                eResult_ErrorFatalFLC(
-                                      eResult_Shared(),
-                                      path_getData(this->pPath),
-                                      this->lineNo,
-                                      this->colNo,
-                                      "Expecting a value, but found %c(0x%02X)",
-                                      chr,
-                                      chr
-                                      );
-#endif
-            }
-        }
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == ']' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  path_getData(this->pPath),
-                                  this->lineNo,
-                                  this->colNo,
-                                  "Expecting ']', but found %c(0x%02X)",
-                                  chr,
-                                  chr
-                                  );
-#endif
-        }
-        
-        pNode = node_NewWithUTF8AndClass("array", 0, pArray);
-        obj_Release(pArray);
-        if (pNode == OBJ_NIL) {
-            //FIXME: Error Fatal
-            return pNode;
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  A r g s
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseArgs(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        OBJ_ID          pChild = OBJ_NIL;
-        //bool            fRc;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        cmdutl_ParseWS(this);
-        
-        pArray = nodeArray_New( );
-        if (pArray == OBJ_NIL) {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  path_getData(this->pPath),
-                                  this->lineNo,
-                                  this->colNo,
-                                  "Out of Memory"
-                                  );
-#endif
-            return pNode;
-        }
-        
-        pChild = cmdutl_ParseValue(this);
-        if (pChild) {
-            nodeArray_AppendNode(pArray, pChild, NULL);
-            obj_Release(pChild);
-        }
-        else {
-            obj_Release(pArray);
-            return OBJ_NIL;
-        }
-        
-        for (;;) {
-            cmdutl_ParseWS(this);
-            chr = cmdutl_InputLookAhead(this, 1);
-            if( chr == ',' ) {
-                cmdutl_InputAdvance(this, 1);
-            }
-            else
-                break;
-            pChild = cmdutl_ParseValue(this);
-            if (pChild) {
-                nodeArray_AppendNode(pArray, pChild, NULL);
-                obj_Release(pChild);
-            }
-            else {
-                //FIXME: Add proper error
-#ifdef XYZZY
-                srcErrors_AddFatalFromToken(
-                                            OBJ_NIL,
-                                            pToken,
-                                            "Expecting ':'"
-                                            );
-                eResult_ErrorFatalFLC(
-                                      eResult_Shared(),
-                                      path_getData(this->pPath),
-                                      this->lineNo,
-                                      this->colNo,
-                                      "Expecting a value, but found %c(0x%02X)",
-                                      chr,
-                                      chr
-                                      );
-#endif
-            }
-        }
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == ']' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  path_getData(this->pPath),
-                                  this->lineNo,
-                                  this->colNo,
-                                  "Expecting ']', but found %c(0x%02X)",
-                                  chr,
-                                  chr
-                                  );
-#endif
-        }
-        
-        pNode = node_NewWithUTF8AndClass("array", 0, pArray);
-        obj_Release(pArray);
-        if (pNode == OBJ_NIL) {
-            //FIXME: Error Fatal
-            return pNode;
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  A r r a y
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseArray(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        OBJ_ID          pChild = OBJ_NIL;
-        //bool            fRc;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == '[' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            return OBJ_NIL;
-        }
-        
-        pArray = nodeArray_New( );
-        if (pArray == OBJ_NIL) {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                path_getData(this->pPath),
-                this->lineNo,
-                this->colNo,
-                "Out of Memory"
-            );
-#endif
-            return pNode;
-        }
-        
-        pChild = cmdutl_ParseValue(this);
-        if (pChild) {
-            nodeArray_AppendNode(pArray, pChild, NULL);
-            obj_Release(pChild);
-        }
-        else {
-            obj_Release(pArray);
-            return OBJ_NIL;
-        }
-        
-        for (;;) {
-            cmdutl_ParseWS(this);
-            chr = cmdutl_InputLookAhead(this, 1);
-            if( chr == ',' ) {
-                cmdutl_InputAdvance(this, 1);
-            }
-            else
-                break;
-            pChild = cmdutl_ParseValue(this);
-            if (pChild) {
-                nodeArray_AppendNode(pArray, pChild, NULL);
-                obj_Release(pChild);
-            }
-            else {
-                //FIXME: Add proper error
-#ifdef XYZZY
-                srcErrors_AddFatalFromToken(
-                                            OBJ_NIL,
-                                            pToken,
-                                            "Expecting ':'"
-                                            );
-                eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                    path_getData(this->pPath),
-                    this->lineNo,
-                    this->colNo,
-                    "Expecting a value, but found %c(0x%02X)",
-                    chr,
-                    chr
-                );
-#endif
-            }
-        }
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == ']' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                path_getData(this->pPath),
-                this->lineNo,
-                this->colNo,
-                "Expecting ']', but found %c(0x%02X)",
-                chr,
-                chr
-            );
-#endif
-        }
-        
-        pNode = node_NewWithUTF8AndClass("array", 0, pArray);
-        obj_Release(pArray);
-        if (pNode == OBJ_NIL) {
-            //FIXME: Error Fatal
-            return pNode;
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    P a r s e  C h a r s
-    //---------------------------------------------------------------
-    
-    // The first character of the name has already been parsed, but
-    // not advanced. So, we just keep accumulating the proper letters
-    // until there are no more that are acceptable.
-    
-    bool            cmdutl_ParseChrCon(
-        CMDUTL_DATA     *this,
-        W32CHR_T        ending
-    )
-    {
-        W32CHR_T        chr;
-        uint32_t        i;
-        W32CHR_T        wrk;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        if (chr == ending) {
-            return false;
-        }
-        if ( chr == '\\') {
-            chr = cmdutl_InputAdvance(this, 1);
-            switch (chr) {
-                    
-#ifdef XYZZY
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                    cmdutl_AppendCharToField(this, chr);
-                    cmdutl_InputAdvance(this, 1);
-                    for (i=0; i<2; ++i) {
-                        wrk = 0;
-                        chr = cmdutl_ParseDigitOctal(this);
-                        if (chr >= 0) {
-                            wrk = (wrk << 3) | chr;
-                        }
-                        else {
-                            chr = cmdutl_InputLookAhead(this, 1);
-                            eResult_ErrorFatalFLC(
-                                eResult_Shared(),
-                                path_getData(this->pPath),
-                                this->lineNo,
-                                this->colNo,
-                                "Invalid octal char, %c(0x%02X)",
-                                chr,
-                                chr
-                            );
-                        }
-                    }
-                    return true;
-#endif
-                    
-                case 'b':
-                    cmdutl_AppendCharToField(this, '\b');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case 'f':
-                    cmdutl_AppendCharToField(this, '\f');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case 'n':
-                    cmdutl_AppendCharToField(this, '\n');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case 'r':
-                    cmdutl_AppendCharToField(this, '\r');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case 't':
-                    cmdutl_AppendCharToField(this, '\t');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-
-#ifdef XYZZY
-                case 'v':
-                    cmdutl_AppendCharToField(this, '\v');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-#endif
-                    
-                case '\\':
-                    cmdutl_AppendCharToField(this, '\\');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case '/':
-                    cmdutl_AppendCharToField(this, '/');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case '\'':
-                    cmdutl_AppendCharToField(this, '\'');
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case '"':
-                    cmdutl_AppendCharToField(this, chr);
-                    cmdutl_InputAdvance(this, 1);
-                    return true;
-                    
-                case 'u':
-                    cmdutl_AppendCharToField(this, chr);
-                    cmdutl_InputAdvance(this, 1);
-                    for (i=0; i<4; ++i) {
-                        wrk = 0;
-                        chr = cmdutl_ParseDigitHex(this);
-                        if (chr >= 0) {
-                            wrk = (wrk << 4) | chr;
-                        }
-                        else {
-                            chr = cmdutl_InputLookAhead(this, 1);
-                            //FIXME: Add proper error
-#ifdef XYZZY
-                            srcErrors_AddFatalFromToken(
-                                                        OBJ_NIL,
-                                                        pToken,
-                                                        "Expecting ':'"
-                                                        );
-                            eResult_ErrorFatalFLC(
-                                eResult_Shared(),
-                                path_getData(this->pPath),
-                                this->lineNo,
-                                this->colNo,
-                                "Invalid hexadecimal char, %c(0x%02X)",
-                                chr,
-                                chr
-                            );
-#endif
-                        }
-                    }
-                    break;
-                    
-                default:
-                    chr = cmdutl_InputLookAhead(this, 1);
-                    //FIXME: Add proper error
-#ifdef XYZZY
-                    srcErrors_AddFatalFromToken(
-                                                OBJ_NIL,
-                                                pToken,
-                                                "Expecting ':'"
-                                                );
-                    eResult_ErrorFatalFLC(
-                                          eResult_Shared(),
-                                          path_getData(this->pPath),
-                                          this->lineNo,
-                                          this->colNo,
-                                          "Invalid char after \\, %c(0x%02X)",
-                                          chr,
-                                          chr
-                    );
-#endif
-                    break;
-            }
-        }
-        else {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 1);
-        }
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  C m d S t r
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseCmdStr(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODE_DATA       *pNode = OBJ_NIL;
-        //OBJ_ID          pChild = OBJ_NIL;
-        //bool            fRc;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        cmdutl_ParseWS(this);
-        
-        pNode = cmdutl_ParseArgs(this);
-        if( OBJ_NIL == pNode ) {
-            return pNode;
-        }
-        
-        cmdutl_ParseWS(this);
-        if(!cmdutl_ParseEOF(this)) {
-            chr = cmdutl_InputLookAhead(this, 1);
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                                  eResult_Shared(),
-                                  path_getData(this->pPath),
-                                  this->lineNo,
-                                  this->colNo,
-                                  "Expecting EOF, but found %c(0x%02X)",
-                                  chr,
-                                  chr
-                                  );
-#endif
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  D i g i t  0-9
-    //---------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_ParseDigit0To9(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        
-        if( (chr >= '0') && (chr <= '9') ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 1);
-            chr -= '0';
-        }
-        else {
-            chr = -1;
-        }
-        
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  D i g i t  1-9
-    //---------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_ParseDigit1To9(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        
-        if( (chr >= '1') && (chr <= '9') ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 1);
-            chr -= '0';
-        }
-        else {
-            chr = -1;
-        }
-        
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  D i g i t  H e x
-    //---------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_ParseDigitHex(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        
-        if( (chr >= '0') && (chr <= '9') ) {
-            cmdutl_InputAdvance(this, 1);
-            chr -= '0';
-        }
-        else if( (chr >= 'A') && (chr <= 'F') ) {
-            cmdutl_InputAdvance(this, 1);
-            chr = chr - 'A' + 10;
-        }
-        else if( (chr >= 'a') && (chr <= 'f') ) {
-            cmdutl_InputAdvance(this, 1);
-            chr = chr - 'a' + 10;
-        }
-        else {
-            chr = -1;
-        }
-        
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  D i g i t  O c t a l
-    //---------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_ParseDigitOctal(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        
-        if( (chr >= '0') && (chr <= '7') ) {
-            cmdutl_InputAdvance(this, 1);
-            chr -= '0';
-        }
-        else {
-            chr = -1;
-        }
-        
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  E O F
-    //---------------------------------------------------------------
-    
-    bool            cmdutl_ParseEOF(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if (chr < 0) {
-            cmdutl_InputAdvance(this, 1);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //               P a r s e  F i l e  O b j e c t
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseFileObject(
-        CMDUTL_DATA       *this
-    )
-    {
-        W32CHR_T        chr;
-        NODE_DATA       *pNode;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        pNode = cmdutl_ParseArgs(this);
-        if( OBJ_NIL == pNode ) {
-            return pNode;
-        }
-        
-        cmdutl_ParseWS(this);
-        if(!cmdutl_ParseEOF(this)) {
-            chr = cmdutl_InputLookAhead(this, 1);
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                path_getData(this->pPath),
-                this->lineNo,
-                this->colNo,
-                "Expecting EOF, but found %c(0x%02X)",
-                chr,
-                chr
-            );
-#endif
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  H a s h
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseHash(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODE_DATA       *pNode = OBJ_NIL;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
-        NODE_DATA       *pChild;
-        ERESULT         eRc;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == '{' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            return pNode;
-        }
-        
-        pHash = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
-        if (pHash == OBJ_NIL) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        pChild = cmdutl_ParsePair(this);
-        if (pChild) {
-            eRc = nodeHash_Add(pHash, pChild);
-            obj_Release(pChild);
-            pChild = OBJ_NIL;
-            for (;;) {
-                cmdutl_ParseWS(this);
-                chr = cmdutl_InputLookAhead(this, 1);
-                if( chr == ',' ) {
-                    cmdutl_InputAdvance(this, 1);
-                }
-                else
-                    break;
-                pChild = cmdutl_ParsePair(this);
-                if (pChild) {
-                    eRc = nodeHash_Add(pHash, pChild);
-                    obj_Release(pChild);
-                    pChild = OBJ_NIL;
-                }
-                else {
-                    //FIXME: Add proper error
-#ifdef XYZZY
-                    srcErrors_AddFatalFromToken(
-                                                OBJ_NIL,
-                                                pToken,
-                                                "Expecting ':'"
-                                                );
-                    eResult_ErrorFatalFLC(
-                        eResult_Shared(),
-                        path_getData(this->pPath),
-                        this->lineNo,
-                        this->colNo,
-                        "Expecting a value, but found %c(0x%02X)",
-                        chr,
-                        chr
-                    );
-#endif
-                }
-            }
-        }
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == '}' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                path_getData(this->pPath),
-                this->lineNo,
-                this->colNo,
-                "Expecting '}', but found %c(0x%02X)",
-                chr,
-                chr
-            );
-#endif
-            obj_Release(pNode);
-            pNode = OBJ_NIL;
-            return pNode;
-        }
-        
-        pNode = node_NewWithUTF8AndClass("hash", 0, pHash);
-        obj_Release(pHash);
-        pHash = OBJ_NIL;
-        if (pNode == OBJ_NIL) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  K e y  W o r d
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseKeyWord(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODE_DATA       *pNode = OBJ_NIL;
-        FALSE_DATA      *pFalse = false_New();
-        NULL_DATA       *pNull = null_New();
-        TRUE_DATA       *pTrue = true_New();
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this,"%s:\n", __func__);
-        this->lenFld = 0;
-        this->pFld[0] = 0;
-        
-        cmdutl_ParseWS(this);
-        while ((chr=cmdutl_ParseAlpha(this)) > 0) {
-        }
-        str_ToLowerW32(this->pFld);
-        if (this->lenFld) {
-            if (0 == utf8_StrCmpAW32("false", this->pFld)) {
-                pNode = node_NewWithUTF8AndClass("false", 0, pFalse);
-            }
-            else if (0 == utf8_StrCmpAW32("null", this->pFld)) {
-                pNode = node_NewWithUTF8AndClass("null", 0, pNull);
-            }
-            else if (0 == utf8_StrCmpAW32("true", this->pFld)) {
-                pNode = node_NewWithUTF8AndClass("true", 0, pTrue);
-            }
-            else {
-                //FIXME: Add proper error
-#ifdef XYZZY
-                srcErrors_AddFatalFromToken(
-                                            OBJ_NIL,
-                                            pToken,
-                                            "Expecting ':'"
-                                            );
-                eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                    path_getData(this->pPath),
-                    this->lineNo,
-                    this->colNo,
-                    "Expecting false, null or true, but found %c(0x%02X)",
-                    chr,
-                    chr
-                );
-#endif
-            }
-        }
-        
-        obj_Release(pFalse);
-        obj_Release(pNull);
-        obj_Release(pTrue);
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  N u m b e r
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseNumber(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODE_DATA       *pNode = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        bool            fRc = false;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        this->lenFld = 0;
-        this->pFld[0] = 0;
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == '-' ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 4);
-        }
-        if( chr == '0' ) {
-            cmdutl_AppendCharToField(this, chr);
-            chr = cmdutl_InputAdvance(this, 4);
-            fRc = true;
-        }
-        else if ( cmdutl_ParseDigit1To9(this) >= 0) {
-            while (cmdutl_ParseDigit0To9(this) >= 0) {
-            }
-            fRc = true;
-        }
-        
-        if (!fRc) {
-            return OBJ_NIL;
-        }
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == '.' ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 4);
-            if (cmdutl_ParseDigit0To9(this) > 0)
-                ;
-            else {
-                //FIXME: Add proper error
-#ifdef XYZZY
-                srcErrors_AddFatalFromToken(
-                                            OBJ_NIL,
-                                            pToken,
-                                            "Expecting ':'"
-                                            );
-                eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                    path_getData(this->pPath),
-                    this->lineNo,
-                    this->colNo,
-                    "Expecting 0-9, but found %c(0x%02X)",
-                    chr,
-                    chr
-                );
-#endif
-            }
-            while (cmdutl_ParseDigit0To9(this) > 0) {
-            }
-        }
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( (chr == 'e') || (chr == 'E') ) {
-            cmdutl_AppendCharToField(this, chr);
-            cmdutl_InputAdvance(this, 4);
-            if( (chr == '-') || (chr == '+') ) {
-                cmdutl_AppendCharToField(this, chr);
-                cmdutl_InputAdvance(this, 4);
-            }
-            if (cmdutl_ParseDigit0To9(this) > 0)
-                ;
-            else {
-                //FIXME: Add proper error
-#ifdef XYZZY
-                srcErrors_AddFatalFromToken(
-                                            OBJ_NIL,
-                                            pToken,
-                                            "Expecting ':'"
-                                            );
-                eResult_ErrorFatalFLC(
-                    eResult_Shared(),
-                    path_getData(this->pPath),
-                    this->lineNo,
-                    this->colNo,
-                    "Expecting 0-9, but found %c(0x%02X)",
-                    chr,
-                    chr
-                );
-#endif
-            }
-            while (cmdutl_ParseDigit0To9(this) > 0) {
-            }
-        }
-
-        if (fRc) {
-            pStr = AStr_NewW32(this->pFld);
-            if (pStr) {
-                pNode = node_NewWithUTF8AndClass("number", 0, pStr);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //          P a r s e  N a m e - V a l u e  P a i r
-    //---------------------------------------------------------------
-    
-    // We scan the Name as a string and return a node with the name
-    // being that string and the value being the data portion of the
-    // node.
-    
-    NODE_DATA *     cmdutl_ParsePair(
-        CMDUTL_DATA     *this
-    )
-    {
-        W32CHR_T        chr;
-        NODE_DATA       *pData = OBJ_NIL;
-        NODE_DATA       *pName = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
+    int             cmdutl_is_dashdash(
         const
-        char            *pszName;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        
-        pName = cmdutl_ParseString(this);
-        if (pName == OBJ_NIL) {
-            return OBJ_NIL;
-        }
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if( chr == ':' ) {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                path_getData(this->pPath),
-                this->lineNo,
-                this->colNo,
-                "Expecting ':', but found %c(0x%02X)",
-                chr,
-                chr
-            );
-#endif
-            obj_Release(pNode);
-            pNode = OBJ_NIL;
-            return OBJ_NIL;
-        }
-
-        pData = cmdutl_ParseValue(this);
-        if (pData == OBJ_NIL) {
-            //FIXME: Add proper error
-#ifdef XYZZY
-            srcErrors_AddFatalFromToken(
-                                        OBJ_NIL,
-                                        pToken,
-                                        "Expecting ':'"
-                                        );
-            eResult_ErrorFatalFLC(
-                eResult_Shared(),
-                path_getData(this->pPath),
-                this->lineNo,
-                this->colNo,
-                "Expecting a \"value\""
-            );
-#endif
-            obj_Release(pName);
-            return OBJ_NIL;
-        }
-
-        pszName = AStr_CStringA(node_getData(pName), NULL);
-        pNode = node_NewWithUTF8AndClass(pszName, 0, pData);
-        mem_Free((void *)pszName);
-        pszName = NULL;
-        obj_Release(pName);
-        pName = OBJ_NIL;
-        obj_Release(pData);
-        pData = OBJ_NIL;
-
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  S t r i n g
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseString(
-        CMDUTL_DATA     *this
+        char            *arg
     )
     {
-        bool            fRc = false;
-        W32CHR_T        chr;
-        NODE_DATA       *pNode = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
-        this->lenFld = 0;
-        this->pFld[0] = 0;
-        
-        cmdutl_ParseWS(this);
-        chr = cmdutl_InputLookAhead(this, 1);
-        if (chr == '"') {
-            cmdutl_InputAdvance(this, 1);
-        }
-        else
-            return false;
-        
-        for (;;) {
-            if (cmdutl_ParseChrCon(this,'"')) {
-                // Do something, maybe!
-            }
-            else {
-                break;
-            }
-        }
-        
-        chr = cmdutl_InputLookAhead(this, 1);
-        if (chr == '"') {
-            cmdutl_InputAdvance(this, 1);
-            fRc = true;
-        }
-        
-        if (fRc) {
-            pStr = AStr_NewW32(this->pFld);
-            if (pStr) {
-                pNode = node_NewWithUTF8AndClass("string", 0, pStr);
-#ifdef NDEBUG
-#else
-                ASTR_DATA   *pStrDbg = AStr_ToDebugString(pStr, 0);
-                TRC_OBJ(this, "\tstring: %s\n", AStr_getData(pStrDbg));
-                obj_Release(pStrDbg);
-#endif
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        return pNode;
+        return arg != NULL && arg[0] == '-' && arg[1] == '-' && arg[2] == '\0';
     }
+
     
     
-    
-    //---------------------------------------------------------------
-    //                   P a r s e  V a l u e
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseValue(
-        CMDUTL_DATA       *cbp
+    static
+    int             cmdutl_is_shortopt(
+        const
+        char            *arg
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
-        //bool            fRc;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate( cbp ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        pNode = cmdutl_ParseHash(cbp);
-        if (pNode) {
-            return pNode;
-        }
-        pNode = cmdutl_ParseArray(cbp);
-        if (pNode) {
-            return pNode;
-        }
-        pNode = cmdutl_ParseString(cbp);
-        if (pNode) {
-            return pNode;
-        }
-        pNode = cmdutl_ParseNumber(cbp);
-        if (pNode) {
-            return pNode;
-        }
-        pNode = cmdutl_ParseKeyWord(cbp);
-        if (pNode) {
-            return pNode;
-        }
-        
-        return OBJ_NIL;
+        return arg != NULL && arg[0] == '-' && arg[1] != '-' && arg[1] != '\0';
     }
+
     
     
-    
-    //---------------------------------------------------------------
-    //               P a r s e  W h i t e  S p a c e
-    //---------------------------------------------------------------
-    
-    bool            cmdutl_ParseWS(
-        CMDUTL_DATA       *this
+    static
+    int             cmdutl_is_longopt(
+        const
+        char            *arg
     )
     {
-        bool            fRc = false;
-        W32CHR_T        chr;
+        return arg != NULL && arg[0] == '-' && arg[1] == '-' && arg[2] != '\0';
+    }
+
+    
+    
+    static
+    void            cmdutl_permute(
+        CMDUTL_DATA     *this,
+        int             index
+    )
+    {
+        char            *nonoption = this->argv[index];
+        int             i;
         
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
+        for (i = index; i < this->optIndex - 1; i++) {
+            this->argv[i] = this->argv[i + 1];
         }
-#endif
-        
-        for (;;) {
-            chr = cmdutl_InputLookAhead(this, 1);
-            fRc = ascii_isWhiteSpaceW32(chr);
-            if( fRc ) {
-                cmdutl_InputAdvance(this, 1);
-            }
-            else
-                break;
-        }
-        
-        return fRc;
+        this->argv[this->optIndex - 1] = nonoption;
     }
     
+
+    static
+    int             cmdutl_argtype(
+        const
+        char            *optstring,
+        char            c
+    )
+    {
+        int             count = CMDUTL_ARG_OPTION_NONE;
+        if (c == ':')
+            return -1;
+        for (; *optstring && c != *optstring; optstring++);
+        if (!*optstring)
+            return -1;
+        if (optstring[1] == ':')
+            count += optstring[2] == ':' ? 2 : 1;
+        return count;
+    }
+
     
+    
+    static
+    bool            cmdutl_longopts_end(
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             i
+    )
+    {
+        return (NULL == pOptions[i].pLongName) && (0 == pOptions[i].shortName);
+    }
+
+    
+    
+    static
+    void            cmdutl_from_long(
+        const
+        CMDUTL_OPTION   *pOptions,
+        char            *optstring
+    )
+    {
+        char            *p = optstring;
+        int             i;
+        
+        for (i = 0; !cmdutl_longopts_end(pOptions, i); i++) {
+            if (pOptions[i].shortName) {
+                int             a;
+                *p++ = pOptions[i].shortName;
+                for (a = 0; a < (int)pOptions[i].argOption; a++)
+                    *p++ = ':';
+            }
+        }
+        *p = '\0';
+    }
+
+    
+    
+    /* Unlike strcmp(), handles options containing "=". */
+    static
+    int             cmdutl_longopts_match(
+        const
+        char            *pLongName,
+        const
+        char            *option
+    )
+    {
+        const
+        char            *a = option;
+        const
+        char            *n = pLongName;
+        
+        if (pLongName == 0)
+            return 0;
+        for (; *a && *n && *a != '='; a++, n++)
+            if (*a != *n)
+                return 0;
+        return *n == '\0' && (*a == '\0' || *a == '=');
+    }
+
+    
+    
+    /* Return the part after "=", or NULL. */
+    static
+    char *          cmdutl_longopts_arg(
+        char            *option
+    )
+    {
+        // Find '=' within option if it exists.
+        for (; *option && *option != '='; option++)
+            ;
+        
+        if (*option == '=')
+            return option + 1;
+        
+        return NULL;
+    }
+    
+    static
+    int             cmdutl_long_fallback(
+        CMDUTL_DATA     *this,
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             *longindex
+    )
+    {
+        int             result;
+        char            optstring[96 * 3 + 1];  /* 96 ASCII printable characters */
+        cmdutl_from_long(pOptions, optstring);
+        result = cmdutl_Parse(this, optstring);
+        if (longindex != 0) {
+            *longindex = -1;
+            if (result != -1) {
+                int i;
+                for (i = 0; !cmdutl_longopts_end(pOptions, i); i++)
+                    if (pOptions[i].shortName == this->optopt)
+                        *longindex = i;
+            }
+        }
+        return result;
+    }
     
 
 
@@ -1825,37 +428,21 @@ extern "C" {
     
     
     
-    CMDUTL_DATA *   cmdutl_NewAStr(
-        ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pPath,         // Program Path (Arg[0])
-        uint16_t		tabSize         // Tab Spacing if any
+    CMDUTL_DATA *   cmdutl_New(
+        int             cArgs,
+        char            **ppArgs
     )
     {
         CMDUTL_DATA       *this;
         
         this = cmdutl_Alloc( );
         if (this) {
-            this = cmdutl_InitAStr(this, pAStr, pPath, tabSize);
+            this = cmdutl_Init(this, cArgs, ppArgs);
         }
         return this;
     }
     
     
-    
-    CMDUTL_DATA *   cmdutl_NewW32Str(
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pPath,         // Program Path (Arg[0])
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        CMDUTL_DATA     *this;
-        
-        this = cmdutl_Alloc( );
-        if (this) {
-            this = cmdutl_InitW32Str( this, pWStr, pPath, tabSize );
-        }
-        return this;
-    }
     
     
     
@@ -1949,16 +536,38 @@ extern "C" {
     //===============================================================
 
 
-    //--------------------------------------------------------------
-    //           A p p e n d  T o k e n  T o  S t r i n g
-    //--------------------------------------------------------------
-    
-    ERESULT         cmdutl_AppendCharToField(
-        CMDUTL_DATA    *this,
-        W32CHR_T       chr
+    char *          cmdutl_Arg(
+        CMDUTL_DATA    *this
     )
     {
+        char            *option = this->argv[this->optIndex];
         
+        this->subopt = 0;
+        
+        if (option != 0)
+            this->optIndex++;
+        
+        return option;
+    }
+
+    
+    
+    //--------------------------------------------------------------
+    //                  B u i l d  E r r o r  M s g
+    //--------------------------------------------------------------
+    
+    ERESULT         cmdutl_BuildErrorMsg(
+        CMDUTL_DATA    *this,
+        const
+        char            *pMsg,
+        const
+        char            *pData
+    )
+    {
+        uint32_t        p = 0;
+        const
+        char            *sep = " -- '";
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1968,15 +577,17 @@ extern "C" {
         }
 #endif
         
-        if ((this->lenFld + 1) < this->sizeFld) {
-            this->pFld[this->lenFld++] = chr;
-            this->pFld[this->lenFld] = '\0';
-        }
-        else
-            return ERESULT_DATA_TOO_BIG;
-        
+        while (*pMsg)
+            this->errmsg[p++] = *pMsg++;
+        while (*sep)
+            this->errmsg[p++] = *sep++;
+        while (p < sizeof(this->errmsg) - 2 && *pData)
+            this->errmsg[p++] = *pData++;
+        this->errmsg[p++] = '\'';
+        this->errmsg[p++] = '\0';
+
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -2003,48 +614,7 @@ extern "C" {
         }
 #endif
 
-        switch (this->inputType) {
-                
-            case OBJ_IDENT_FILE:
-                if (this->pFile) {
-                    fclose(this->pFile);
-                    this->pFile = NULL;
-                }
-                break;
-                
-            case OBJ_IDENT_ASTR:
-                if (this->pAStr) {
-                    obj_Release(this->pAStr);
-                    this->pAStr = OBJ_NIL;
-                }
-                break;
-                
-            case OBJ_IDENT_W32STR:
-                if (this->pWStr) {
-                    obj_Release(this->pWStr);
-                    this->pWStr = OBJ_NIL;
-                }
-                break;
-                
-            default:
-                break;
-        }
-        
         cmdutl_setPath(this, OBJ_NIL);
-        
-        if (this->pFld) {
-            mem_Free(this->pFld);
-            this->pFld    = NULL;
-            this->sizeFld = 0;
-            this->lenFld  = 0;
-        }
-        
-        if (this->pInputs) {
-            mem_Free(this->pInputs);
-            this->pInputs    = NULL;
-            this->sizeInputs = 0;
-            this->curInputs  = 0;
-        }
         
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -2061,8 +631,10 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    CMDUTL_DATA *     cmdutl_Init(
-        CMDUTL_DATA       *this
+    CMDUTL_DATA *   cmdutl_Init(
+        CMDUTL_DATA     *this,
+        int             cArgs,
+        char            **ppArgs
     )
     {
         uint32_t        cbSize;
@@ -2082,26 +654,16 @@ extern "C" {
         //obj_setIdent((OBJ_ID)cbp, OBJ_IDENT_CMDUTL);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&cmdutl_Vtbl);
-        obj_FlagSet(this, OBJ_FLAG_EOF, false);
 
-        this->sizeFld = CMDUTL_FIELD_MAX;
-        this->pFld = mem_Calloc(this->sizeFld, sizeof(int32_t));
-        if (this->pFld == NULL) {
-            this->sizeFld = 0;
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
+        this->permute = 1;
+        this->optIndex = 1;
+        this->subopt = 0;
+        this->optarg = 0;
+        this->errmsg[0] = '\0';
         
-        this->sizeInputs = 5;
-        this->pInputs = mem_Calloc(this->sizeInputs, sizeof(int32_t));
-        if (this->pInputs == NULL) {
-            this->sizeInputs = 0;
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
+        this->cArgs  = cArgs;
+        this->ppArgs = ppArgs;
+
     #ifdef NDEBUG
     #else
         if( !cmdutl_Validate(this) ) {
@@ -2117,239 +679,21 @@ extern "C" {
 
      
 
-    CMDUTL_DATA *   cmdutl_InitFile(
+    
+    //---------------------------------------------------------------
+    //                          L o n g
+    //---------------------------------------------------------------
+    
+    int             cmdutl_Long(
         CMDUTL_DATA     *this,
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             *longindex
     )
     {
-        char            *pszFileName;
+        int             i;
+        char            *option = this->argv[this->optIndex];
         
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pPath) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this = cmdutl_Init(this);
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        cmdutl_setPath(this, pPath);
-        this->tabSize = tabSize;
-        
-        // Open the file.
-        this->inputType = OBJ_IDENT_FILE;
-        pszFileName = path_CStringA(pPath);
-        if (pszFileName) {
-            this->pFile = fopen( pszFileName, "r" );
-            if (NULL == this->pFile) {
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-            mem_Free(pszFileName);
-            pszFileName = NULL;
-        }
-        else {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        return this;
-    }
-    
-    
-    
-    CMDUTL_DATA *   cmdutl_InitAStr(
-        CMDUTL_DATA     *this,
-        ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pAStr) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        obj_Retain(pAStr);
-        
-        this = cmdutl_Init(this);
-        if (OBJ_NIL == this) {
-            obj_Release(this);
-            obj_Release(pAStr);
-            return OBJ_NIL;
-        }
-        
-        cmdutl_setPath(this, pPath);
-        this->tabSize = tabSize;
-        
-        // Open the file.
-        this->inputType = OBJ_IDENT_ASTR;
-        //obj_Retain(pSzStr);   // retained above
-        this->pAStr = pAStr;
-        this->fileOffset = 0;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            obj_Release(pAStr);
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this;
-    }
-    
-    
-    CMDUTL_DATA *   cmdutl_InitW32Str(
-        CMDUTL_DATA     *cbp,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == cbp) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pWStr) {
-            DEBUG_BREAK();
-            obj_Release(cbp);
-            return OBJ_NIL;
-        }
-        obj_Retain(pWStr);
-        
-        cbp = cmdutl_Init( cbp );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
-            obj_Release(pWStr);
-            return OBJ_NIL;
-        }
-        
-        cmdutl_setPath(cbp, pPath);
-        cbp->tabSize = tabSize;
-        
-        // Open the file.
-        cbp->inputType = OBJ_IDENT_W32STR;
-        //obj_Retain(pWStr);    // retained above
-        cbp->pWStr = pWStr;
-        cbp->fileOffset = 0;
-        
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate( cbp ) ) {
-            DEBUG_BREAK();
-            obj_Release(cbp);
-            obj_Release(pWStr);
-            return OBJ_NIL;
-        }
-#endif
-        
-        return cbp;
-    }
-    
-    
-    
-    //--------------------------------------------------------------
-    //                  I n p u t  A d v a n c e
-    //--------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_InputAdvance(
-        CMDUTL_DATA     *cbp,
-        uint16_t        numChrs
-    )
-    {
-        uint32_t        i;
-        W32CHR_T        chr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate( cbp ) ) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        
-        // Shift inputs.
-        for (i=0; i<numChrs; ++i) {
-            cmdutl_InputNextChar(cbp);
-        }
-        
-        chr = cbp->pInputs[cbp->curInputs];
-        if (chr) {
-            switch (chr) {
-                    
-                case '\b':
-                    if (cbp->colNo) {
-                        --cbp->colNo;
-                    }
-                    break;
-                    
-                case '\f':
-                case '\n':
-                    ++cbp->lineNo;
-                    break;
-                    
-                case '\r':
-                    cbp->colNo = 0;
-                    break;
-                    
-                case '\t':
-                    if( cbp->tabSize ) {
-                        chr = ' ';
-                        if( ((cbp->colNo-1) % cbp->tabSize) )
-                            cbp->colNo += ((cbp->colNo-1) % cbp->tabSize);
-                        else
-                            cbp->colNo += cbp->tabSize;
-                    }
-                    else {
-                        ++cbp->colNo;
-                    }
-                    break;
-                    
-                default:
-                    if (chr) {
-                        ++cbp->colNo;
-                    }
-                    break;
-            }
-        }
-        
-        // Return to caller.
-        return chr;
-    }
-    
-    
-    
-    //--------------------------------------------------------------
-    //               I n p u t  L o o k  A h e a d
-    //--------------------------------------------------------------
-    
-    W32CHR_T        cmdutl_InputLookAhead(
-        CMDUTL_DATA     *this,
-        uint16_t        num
-    )
-    {
-        uint16_t        idx;
-        W32CHR_T        chr;
-        
-        // Do initialization.
 #ifdef NDEBUG
 #else
         if( !cmdutl_Validate(this) ) {
@@ -2358,74 +702,146 @@ extern "C" {
         }
 #endif
         
-        idx = (this->curInputs + num - 1) % this->sizeInputs;
-        chr = this->pInputs[idx];
+        if (option == 0) {
+            return -1;
+        } else if (cmdutl_is_dashdash(option)) {
+            this->optIndex++; /* consume "--" */
+            return -1;
+        } else if (cmdutl_is_shortopt(option)) {
+            return cmdutl_long_fallback(this, pOptions, longindex);
+        } else if (!cmdutl_is_longopt(option)) {
+            if (this->permute) {
+                int index = this->optIndex++;
+                int r = cmdutl_Long(this, pOptions, longindex);
+                cmdutl_permute(this, index);
+                this->optIndex--;
+                return r;
+            } else {
+                return -1;
+            }
+        }
         
-        // Return to caller.
-        return chr;
+        /* Parse as long option. */
+        this->errmsg[0] = '\0';
+        this->optopt = 0;
+        this->optarg = 0;
+        option += 2; /* skip "--" */
+        this->optIndex++;
+        for (i = 0; !cmdutl_longopts_end(pOptions, i); i++) {
+            const char *name = pOptions[i].pLongName;
+            if (cmdutl_longopts_match(name, option)) {
+                char *arg;
+                if (longindex)
+                    *longindex = i;
+                this->optopt = pOptions[i].shortName;
+                arg = cmdutl_longopts_arg(option);
+                if (pOptions[i].argOption == CMDUTL_ARG_OPTION_NONE && arg != 0) {
+                    return cmdutl_BuildErrorMsg(this, "option takes no arguments", name);
+                } if (arg != 0) {
+                    this->optarg = arg;
+                } else if (pOptions[i].argOption == CMDUTL_ARG_OPTION_REQUIRED) {
+                    this->optarg = this->argv[this->optIndex];
+                    if (this->optarg == 0)
+                        return cmdutl_BuildErrorMsg(this, "option requires an argument", name);
+                    else
+                        this->optIndex++;
+                }
+                return this->optopt;
+            }
+        }
+        return cmdutl_BuildErrorMsg(this, "invalid option", option);
     }
+
     
     
+    //---------------------------------------------------------------
+    //                          P a r s e
+    //---------------------------------------------------------------
     
-    
-    //--------------------------------------------------------------
-    //                  I n p u t  N e x t  C h a r
-    //--------------------------------------------------------------
-    
-    ERESULT         cmdutl_InputNextChar(
-        CMDUTL_DATA     *this
+    int             cmdutl_Parse(
+        CMDUTL_DATA     *this,
+        const
+        char            *optstring
     )
     {
-        W32CHR_T        chr;
+        int             type;
+        char            *next;
+        char            *option = this->argv[this->optIndex];
         
-        // Do initialization.
 #ifdef NDEBUG
 #else
         if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return -1;
         }
 #endif
         
-        // Add the next char to the queue.
-        chr = cmdutl_UnicodeGetc(this);
-        this->pInputs[this->curInputs] = chr;
-        this->curInputs = (this->curInputs + 1) % this->sizeInputs;
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      P a r s e  F i l e
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     cmdutl_ParseFile(
-        CMDUTL_DATA		*this
-    )
-    {
-        NODE_DATA       *pNode = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
+        this->errmsg[0] = '\0';
+        this->optopt = 0;
+        this->optarg = 0;
+        if (option == NULL) {
+            return -1;
+        } else if (cmdutl_is_dashdash(option)) {
+            this->optIndex++; /* consume "--" */
+            return -1;
+        } else if (!cmdutl_is_shortopt(option)) {
+            if (this->permute) {
+                int index = this->optIndex++;
+                int r = cmdutl_Parse(this, optstring);
+                cmdutl_permute(this, index);
+                this->optIndex--;
+                return r;
+            } else {
+                return -1;
+            }
         }
-#endif
-        TRC_OBJ(this, "%s:\n", __func__);
+        option += this->subopt + 1;
+        this->optopt = option[0];
+        type = cmdutl_argtype(optstring, option[0]);
+        next = this->argv[this->optIndex + 1];
+        switch (type) {
+            case -1: {
+                char str[2] = {0, 0};
+                str[0] = option[0];
+                this->optIndex++;
+                return cmdutl_BuildErrorMsg(this, "invalid option", str);
+            }
+            case CMDUTL_ARG_OPTION_NONE:
+                if (option[1]) {
+                    this->subopt++;
+                } else {
+                    this->subopt = 0;
+                    this->optIndex++;
+                }
+                return option[0];
+            case CMDUTL_ARG_OPTION_REQUIRED:
+                this->subopt = 0;
+                this->optIndex++;
+                if (option[1]) {
+                    this->optarg = option + 1;
+                } else if (next != 0) {
+                    this->optarg = next;
+                    this->optIndex++;
+                } else {
+                    char str[2] = {0, 0};
+                    str[0] = option[0];
+                    this->optarg = 0;
+                    return cmdutl_BuildErrorMsg(this, "option requires an argument", str);
+                }
+                return option[0];
+            case CMDUTL_ARG_OPTION_OPTIONAL:
+                this->subopt = 0;
+                this->optIndex++;
+                if (option[1])
+                    this->optarg = option + 1;
+                else
+                    this->optarg = 0;
+                return option[0];
+        }
         
-        this->fileOffset = 0;
-        cmdutl_InputAdvance(this, this->sizeInputs);
-        pNode = cmdutl_ParseCmdStr(this);
-        
-        // Return to caller.
-        return pNode;
+        return 0;
     }
-    
+
     
     
     //---------------------------------------------------------------

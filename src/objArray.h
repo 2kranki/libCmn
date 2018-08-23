@@ -324,6 +324,19 @@ extern "C" {
     );
     
     
+    /*!
+     Exchange the two array entries specified.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         objArray_Xchg(
+        OBJARRAY_DATA   *this,
+        uint16_t        index1,         // Relative to 1
+        uint16_t        index2          // Relative to 1
+    );
+    
+    
 
     
 #ifdef	__cplusplus

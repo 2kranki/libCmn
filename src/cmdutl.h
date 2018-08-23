@@ -10,15 +10,18 @@
  *			This object provides a standardized way of parsing or
  *          constructing command line data.
  *
- *          cmdstr  : string arg*                   // First string is program path
+ *          cmdstr  : string (ws | arg)*            // First string is program path
  *                  ;
- *          arg     : ws* (name ('=' value)? | string ('=' value) | number)
+ *          arg     : name ('=' value)?
+ *                  | string ('=' value)?
+ *                  | array
+ *                  | number
  *                  ;
- *          object  : '{' ws* value (',' ws* value)* ws* '}'
+ *          value   : name | string | number | array
  *                  ;
- *          value   : name | string | number
+ *          array   : '[' ws* value (',' ws* value)* ws* ']'
  *                  ;
- *          name    : [a-zA-Z][a-zA-Z0-9_]
+ *          name    : [a-zA-Z][a-zA-Z0-9_]*
  *                  ;
  *          ws      : ' ' | '\b' | '\f' | '\n' | '\r' | '\t'
  *                  ;
@@ -32,11 +35,13 @@
  *                  | '\\' '\\'
  *                  ;
  *          number  : ('-')? [1-9][0-9]* ('.' [0-9]+)? exp?
+ *                  | [0]([xX][0-9a-fA-F]*
+ *                  | [0][0-7]*
  *                  ;
  *          exp     : ('e' | 'E') ('-' | '+')? [0-9]+
  *                  ;
  *
- *      Arrays returned are node children and objects are hashes.
+ *
  *
  * Remarks
  *	1.      None
@@ -122,7 +127,31 @@ extern "C" {
     } CMDUTL_VTBL;
     
     
+    typedef enum cmdutl_arg_e {
+        CMDUTL_ARG_OPTION_UNKNOWN=0,
+        CMDUTL_ARG_OPTION_NONE,
+        CMDUTL_ARG_OPTION_OPTIONAL,
+        CMDUTL_ARG_OPTION_REQUIRED,
+    }   CMDUTIL_ARG_OPTION;
     
+    
+    typedef enum cmdutl_arg_type_e {
+        CMDUTL_ARG_TYPE_UNKNOWN=0,
+        CMDUTL_ARG_TYPE_ARRAY,
+        CMDUTL_ARG_TYPE_INTEGER,
+        CMDUTL_ARG_TYPE_NONE,
+        CMDUTL_ARG_TYPE_STRING
+    }   CMDUTIL_ARG_TYPE;
+    
+    
+    typedef struct cmdutl_option_s {
+        W32CHR_T        shortName;          // "-" option_name
+        char            *pLongName;         // "--" option_name
+        uint16_t        argOption;          // See CMDUTIL_ARG_OPTION above.
+        uint16_t        argType;            // See CMDUTIL_ARG_TYPE above.
+        int             *pFlag;             // ???
+        int             initValue;          // ???
+    } CMDUTL_OPTION;
         
 
 
@@ -154,7 +183,15 @@ extern "C" {
     );
     
     
-    ASTR_DATA *     cmdutl_ArgvToWStr(
+    /*! Convert an ArgC/ArgV array to a command line string.
+     @param     argc        Number of arguments in argv
+     @param     argv        Pointer to an array of UTF-8 Arguments
+     @return    If successful, an AStr object which must be
+                released containing the Argument Array as a string.
+                Otherwise, OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     cmdutl_ArgvToAStr(
         int             argc,
         const
         char            *argv[]
@@ -202,29 +239,25 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    CMDUTL_DATA *     cmdutl_InitFile(
+    CMDUTL_DATA *     cmdutl_Init(
         CMDUTL_DATA     *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize                 // Tab Spacing if any
-    );
-    
-    CMDUTL_DATA *     cmdutl_InitAStr(
-        CMDUTL_DATA     *this,
-        ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    );
-    
-    CMDUTL_DATA *     cmdutl_InitW32Str(
-        CMDUTL_DATA     *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
+        int             cArgs,
+        char            **ppArgs
     );
     
     
-    NODE_DATA *     cmdutl_ParseFile(
-        CMDUTL_DATA		*this
+    int             cmdutl_Long(
+        CMDUTL_DATA     *this,
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             *longindex
+    );
+    
+    
+    int             cmdutl_Parse(
+        CMDUTL_DATA     *this,
+        const
+        char            *optstring
     );
     
     

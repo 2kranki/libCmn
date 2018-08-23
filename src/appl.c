@@ -2064,8 +2064,7 @@ extern "C" {
 #endif
         *(this->ppArg) = "";     // Set program name.
         
-        /* Scan off the each parameter.
-         */
+        // Scan off the each parameter.
         while( *pCmdStr ) {
             pCurCmd = NULL;
             
