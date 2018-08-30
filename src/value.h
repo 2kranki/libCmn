@@ -17,7 +17,8 @@
  *          saved to JSON. It should not contain any pointers since
  *          those will probably be meaningless when the data is
  *          restored.  Also, you may be faced with little-endian
- *          vs big-endian systems if you are not careful.
+ *          vs big-endian translation which this object does not
+ *          do.
  *
  * History
  *	08/26/2017 Generated

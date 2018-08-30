@@ -3,6 +3,10 @@
  * File:   cloprs.c
  *	Generated 08/22/2018 12:43:41
  *
+ * Note:
+ *  1.  Part of this code comes from optparse, a public domain getopt_long()
+ *      parser.  Google "optparse" for more details.
+ *
  */
 
  
@@ -62,7 +66,34 @@ extern "C" {
     ****************************************************************/
 
     static
-    int             cloprs_is_dashdash(
+    int             cloprs_Error(
+        CLOPRS_DATA     *this,
+        const
+        char            *pMsg,
+        const
+        char            *pData
+    )
+    {
+        unsigned        p = 0;
+        unsigned        e = 0;
+        const
+        char            *sep = " -- '";
+
+        e =  sizeof(this->errmsg) - 2;
+        while (*pMsg && (p < e))
+            this->errmsg[p++] = *pMsg++;
+        while (*sep && (p < e))
+            this->errmsg[p++] = *sep++;
+        while (p < sizeof(this->errmsg) - 2 && *pData && (p < e))
+            this->errmsg[p++] = *pData++;
+        this->errmsg[p++] = '\'';
+        this->errmsg[p++] = '\0';
+        
+        return '?';
+    }
+    
+    static
+    int             cloprs_isDashDash(
         const
         char            *pArg
     )
@@ -73,7 +104,7 @@ extern "C" {
     
     
     static
-    int             cloprs_is_shortopt(
+    int             cloprs_isShortOpt(
         const
         char            *pArg
     )
@@ -84,7 +115,7 @@ extern "C" {
     
     
     static
-    int             cloprs_is_longopt(
+    int             cloprs_isLongOpt(
         const
         char            *pArg
     )
@@ -152,25 +183,12 @@ extern "C" {
 #endif
         
         // Search Group Args.
-        if (this->cGroupArgs && this->pGroupArgs) {
-            for (i=0; i<this->cGroupArgs; ++i) {
-                if (this->pGroupArgs[i].pArgLong) {
-                    iRc = str_Compare(pLong, this->pGroupArgs[i].pArgLong);
+        if (this->cArgDefns) {
+            for (i=0; i<this->cArgDefns; ++i) {
+                if (this->pArgDefns[i]->pArgLong) {
+                    iRc = str_Compare(pLong, this->pArgDefns[i]->pArgLong);
                     if (0 == iRc) {
-                        pClo = &this->pGroupArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        // Search Program Args.
-        if (this->cProgramArgs && this->pProgramArgs) {
-            for (i=0; i<this->cProgramArgs; ++i) {
-                if (this->pProgramArgs[i].pArgLong) {
-                    iRc = str_Compare(pLong, this->pProgramArgs[i].pArgLong);
-                    if (0 == iRc) {
-                        pClo = &this->pProgramArgs[i];
+                        pClo = this->pArgDefns[i];
                         return pClo;
                     }
                 }
@@ -201,25 +219,12 @@ extern "C" {
 #endif
         
         // Search Group Args.
-        if (this->cGroupArgs && this->pGroupArgs) {
-            for (i=0; i<this->cGroupArgs; ++i) {
-                if (this->pGroupArgs[i].argChr) {
-                    iRc = chr - this->pGroupArgs[i].argChr;
+        if (this->cArgDefns) {
+            for (i=0; i<this->cArgDefns; ++i) {
+                if (this->pArgDefns[i]->argChr) {
+                    iRc = chr - this->pArgDefns[i]->argChr;
                     if (0 == iRc) {
-                        pClo = &this->pGroupArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        // Search Program Args.
-        if (this->cProgramArgs && this->pProgramArgs) {
-            for (i=0; i<this->cProgramArgs; ++i) {
-                if (this->pProgramArgs[i].argChr) {
-                    iRc = chr - this->pProgramArgs[i].argChr;
-                    if (0 == iRc) {
-                        pClo = &this->pProgramArgs[i];
+                        pClo = this->pArgDefns[i];
                         return pClo;
                     }
                 }
@@ -456,36 +461,6 @@ extern "C" {
             obj_Release(this->pArgs);
         }
         this->pArgs = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          A r g  D e f s
-    //---------------------------------------------------------------
-    
-    bool            cloprs_setArgDefs(
-        CLOPRS_DATA     *this,
-        uint16_t        cProgramArgs,
-        CLO_OPTION      *pProgramArgs,
-        uint16_t        cGroupArgs,
-        CLO_OPTION      *pGroupArgs
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !cloprs_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->cProgramArgs = cProgramArgs;
-        this->pProgramArgs = pProgramArgs;
-        this->cGroupArgs = cGroupArgs;
-        this->pGroupArgs = pGroupArgs;
         
         return true;
     }

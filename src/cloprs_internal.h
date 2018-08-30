@@ -76,12 +76,11 @@ struct cloprs_data_s	{
     uint16_t        rsvd16_2;
     ASTRARRAY_DATA  *pArgs;
     ASTRARRAY_DATA  *pEnv;
-    uint16_t        cProgramArgs;
-    uint16_t        cGroupArgs;
     uint32_t        nextArg;
     PATH_DATA       *pProgramPath;
-    CLO_OPTION      *pProgramArgs;
-    CLO_OPTION      *pGroupArgs;
+    CLO_OPTION      *pArgDefns[64];
+    uint32_t        cArgDefns;
+    char            errmsg[80];
     
     OBJ_ID          pObjPrs;
     /*!

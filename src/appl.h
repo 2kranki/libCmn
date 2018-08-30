@@ -181,9 +181,9 @@ extern "C" {
     bool            appl_setArgDefs(
         APPL_DATA       *this,
         uint16_t        cProgramArgs,
-        APPL_CLO        *pProgramArgs,
+        CLO_OPTION      *pProgramArgs,
         uint16_t        cGroupArgs,
-        APPL_CLO        *pGroupArgs
+        CLO_OPTION      *pGroupArgs
     );
     
     

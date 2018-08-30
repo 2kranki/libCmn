@@ -70,58 +70,25 @@ struct cmdutl_data_s	{
     CMDUTL_OPTION   *pOptions;
 
     // Common Data
-    PATH_DATA       *pPath;
-    char            **argv;
-    int             permute;
+    PATH_DATA       *pPath;             // Program Path
+    char            **ppArgV;
+    bool            fPermute;
     int             optIndex;
     W32CHR_T        optopt;
-    char            *optarg;
+    char            *pOptArg;
     char            errmsg[64];
     int             subopt;
 
     // ArgC/ArgV Stuff
-    int             cArgs;              // Copy of Original Arguments
-    char            **ppArgs;
+    ASTRARRAY_DATA  *pSavedArgs;
+    OBJ_ID          pObj;
 
-    // Program Options
-    uint8_t         fDebug;
-    uint8_t         fForce;
-    uint8_t         fQuiet;
-    uint8_t         rsvd8;
-    uint16_t        iVerbose;
-    uint16_t        rsvd16_1;
-    
     // Program Arguments and Options
     uint16_t        cOptions;
     uint16_t        rsvd16_2;
-    ASTRARRAY_DATA  *pArgs;
-    ASTRARRAY_DATA  *pEnv;
-    uint16_t        cProgramArgs;
-    uint16_t        cGroupArgs;
     uint32_t        nextArg;
-    PATH_DATA       *pProgramPath;
-    CMDUTL_OPTION   *pProgramArgs;
-    CMDUTL_OPTION   *pGroupArgs;
-    
-    OBJ_ID          pObjPrs;
-    ERESULT         (*pParseArgsDefaults)(OBJ_ID);
-    /*!
-     @return    If successful, ERESULT_SUCCESS_0, ERESULT_SUCCESS_1,
-     ERESULT_SUCCESS_2 or ERESULT_SUCCESS_3 to denote how
-     many parameters were used beyond the normal 1.  Otherwise,
-     an ERESULT_* error code
-     */
-    ERESULT         (*pParseArgsLong)(
-                                      OBJ_ID          this,
-                                      bool            fTrue,
-                                      ASTR_DATA       *pName,
-                                      ASTR_DATA       *pWrk,
-                                      uint32_t        index,
-                                      ASTRARRAY_DATA  *pArgs
-                                      );
-    ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
-    ERESULT         (*pParseArgsError)(OBJ_ID, int *, const char ***);
-    
+    CMDUTL_OPTION   *pOptDefns;
+        
 };
 #pragma pack(pop)
 
@@ -138,10 +105,86 @@ struct cmdutl_data_s	{
     );
 
     
+    int             cmdutl_Argtype(
+        const
+        char            *optstring,
+        char            c
+    );
+    
+    
+    int             cmdutl_CreateErrorMsg(
+        CMDUTL_DATA     *this,
+        const
+        char            *pMsg,
+        const
+        char            *pData
+    );
+    
+    
     void            cmdutl_Dealloc(
         OBJ_ID          objId
     );
 
+    
+    int             cmdutl_IsDashDash(
+        const
+        char            *arg
+    );
+    
+    
+    int             cmdutl_IsLongOpt(
+        const
+        char            *arg
+    );
+    
+    
+    int             cmdutl_IsShortOpt(
+        const
+        char            *arg
+    );
+    
+    
+    char *          cmdutl_LongOptsArg(
+        char            *option
+    );
+    
+    
+    bool            cmdutl_LongOptsEnd(
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             i
+    );
+    
+    
+    int             cmdutl_LongOptsFallback(
+        CMDUTL_DATA     *this,
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             *pLongIndex
+    );
+    
+    
+    int             cmdutl_LongOptsMatch(
+        const
+        char            *pLongName,
+        const
+        char            *option
+    );
+    
+    
+    bool            cmdutl_OptstringFromLongOptions(
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             len,
+        char            *pOptstring
+    );
+    
+    
+    void            cmdutl_Permute(
+        CMDUTL_DATA     *this,
+        int             index
+    );
+    
     
 #ifdef NDEBUG
 #else

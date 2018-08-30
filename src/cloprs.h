@@ -92,8 +92,9 @@ extern "C" {
     } CLO_ARG_CLASS;
     
     typedef enum clo_arg_type_e {
-        CLO_ARG_NONE=0,             // No Argument for this option
-        CLO_ARG_BOOL=1,             // uint8_t - 0 or 1 (No other parameters)
+        //CLO_ARG_UNKNOWN=0,
+        CLO_ARG_ARRAY=1,            // Object Array of Numbers, Paths or Strings parameter
+        CLO_ARG_BOOL,               // uint8_t - 0 or 1 (No other parameters)
         CLO_ARG_EXEC,               // Execute given routine w/o parameter
         CLO_ARG_EXEC_PARM,          // Execute given routine w/parameter (either
         //                          // from '=' or following parameter
@@ -101,17 +102,18 @@ extern "C" {
         //                          // associated value (default is 0). This
         //                          // should be used for boolean parameters as
         //                          // well as integer parameters such as Verbose
-        //                          // and no argument is expected.
+        //                          // and when no argument is expected.
         CLO_ARG_NUMBER,             // Number object parameter
         CLO_ARG_PATH,               // Path object parameter
         CLO_ARG_STRING,             // AStr object parameter
     } CLO_ARG_TYPE;
+
     
     typedef struct clo_option_s    {
-        W32CHR_T        argChr;             // UTF-8 Argument Character (optional)
-        //                                  // (Use 0 if not needed.)
         const
         char            *pArgLong;          // UTF-8 Long Argument Name (required)
+        W32CHR_T        argChr;             // UTF-8 Argument Character (optional)
+        //                                  // (Use 0 if not needed.)
         uint16_t        cls;                // Argument Class (See CLO_ARG_CLASS above.)
         uint16_t        type;               // Argument Type (See CLO_ARG_TYPE above.)
         uint32_t        offset;             // Offset of Argument Data

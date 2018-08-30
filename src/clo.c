@@ -439,7 +439,7 @@ extern "C" {
 
 
 
-    ASTR_DATA *     clo_ConstructProgramLine(
+    ASTR_DATA *     clo_ArgvToAStr(
         int             cArgs,
         const
         char            **ppArgs
@@ -1147,6 +1147,7 @@ extern "C" {
         uint16_t        cbSize;
         int             Num = 0;
         char            *pCurCmd;
+        int             cCurCmd = 0;
         char            quote;
 #endif
         
@@ -1170,6 +1171,7 @@ extern "C" {
 
 
 #ifdef XYZZY
+        // NOTE -- We dont need this if we use an AStrArray.
         // Analyze input string to calculate array needed.
         this->cArg = 1;
         //TODO: cbSize = 2 * sizeof(char *);
@@ -1180,7 +1182,9 @@ extern "C" {
         else
             return false;
         *(this->ppArg) = "";     // Set program name.
-        
+#endif
+
+#ifdef XYZZY
         /* Scan off the each parameter.
          */
         while( *pCmdLineA ) {
@@ -1195,8 +1199,25 @@ extern "C" {
             if( (*pCmdStr == '\"') || (*pCmdStr == '\'') ) {
                 quote = *pCmdStr++;
                 pCurCmd = pCmdStr;
+                cCurCmd = 0;
+                for (;;) {
+                    if ('\0' == *pCmdStr) {     // End of String
+                        break;
+                    }
+                    if ('\\' == *pCmdStr) {
+                        if (*(pCmdStr + 1) == quote) {
+                            cCurCmd += 2;
+                            pCmdStr += 2;
+                            continue;
+                        }
+                        cCurCmd += 2;
+                        pCmdStr += 2;
+                        continue;
+                    }
+                }
                 while( *pCmdStr && (*pCmdStr != quote) ) {
                     ++pCmdStr;
+                    ++cCmdStr;
                 }
                 if( *pCmdStr ) {
                     *pCmdStr = '\0';

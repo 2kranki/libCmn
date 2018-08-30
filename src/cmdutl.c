@@ -13,37 +13,51 @@
  parsing this, we end up with a nodeHash hierarchy which must then be parsed by the
  program.  So, we are parsing the arguments two times.
  
- *          cmdstr  : string (ws | arg)*            // First string is program path
- *                  ;
- *          arg     : name ('=' value)?
- *                  | string ('=' value)?
- *                  | array
- *                  | number
- *                  ;
- *          value   : name | string | number | array
- *                  ;
- *          array   : '[' ws* value (',' ws* value)* ws* ']'
- *                  ;
- *          name    : [a-zA-Z][a-zA-Z0-9_]*
- *                  ;
- *          ws      : ' ' | '\b' | '\f' | '\n' | '\r' | '\t'
- *                  ;
- *          string  : '"' string_chars* '"'
- *                  ;
- *          string_chars
- *                  : [\b\f\n\r\t\\\/ !]
- *                  | [#-~]
- *                  | '\\' '"'
- *                  | '\\' ('u'|'U') hexdigit*
- *                  | '\\' '\\'
- *                  ;
- *          number  : ('-')? [1-9][0-9]* ('.' [0-9]+)? exp?
- *                  | [0]([xX][0-9a-fA-F]*
- *                  | [0][0-7]*
- *                  ;
- *          exp     : ('e' | 'E') ('-' | '+')? [0-9]+
- *                  ;
- *
+ cmdstr : string (ws | arg)*            // First string is program path
+        ;
+ arg    : name ('=' value)?
+        | string ('=' value)?
+        | array
+        | number
+        ;
+ 
+ value  : name
+        | string
+        | number
+        | array
+        ;
+ 
+ array  : '[' ws* value (',' ws* value)* ws* ']'
+        ;
+ 
+ name   : [a-zA-Z][a-zA-Z0-9_]*
+        ;
+ 
+ ws     : ' '
+        | '\b'
+        | '\f'
+        | '\n'
+        | '\r'
+        | '\t'
+        ;
+ 
+ string : '"' string_chars* '"'
+        ;
+ 
+ strchr : [\b\f\n\r\t\\\/ !]
+        | [#-~]
+        | '\\' '"'
+        | '\\' ('u'|'U') hexdigit*
+        | '\\' '\\'
+        ;
+ 
+ number : ('-')? [1-9][0-9]* ('.' [0-9]+)? numexp?      // Decimal or Float
+        | [0]([xX][0-9a-fA-F]*                          // Hexadecimal
+        | [0][0-7]*                                     // Octal
+        ;
+ numexp : ('e' | 'E') ('-' | '+')? [0-9]+
+        ;
+
 
  
  Pass 2:
@@ -128,8 +142,33 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    int             cmdutl_is_dashdash(
+    int             cmdutl_CreateErrorMsg(
+        CMDUTL_DATA     *this,
+        const
+        char            *pMsg,
+        const
+        char            *pData
+    )
+    {
+        unsigned        p = 0;
+        unsigned        e = sizeof(this->errmsg) - 2;
+        const
+        char            *sep = " -- '";
+        
+        while (*pMsg && (p < e))
+            this->errmsg[p++] = *pMsg++;
+        while (*sep && (p < e))
+            this->errmsg[p++] = *sep++;
+        while (p < sizeof(this->errmsg) - 2 && *pData && (p < e))
+            this->errmsg[p++] = *pData++;
+        this->errmsg[p++] = '\'';
+        this->errmsg[p++] = '\0';
+        return '?';
+    }
+    
+
+    
+    int             cmdutl_IsDashDash(
         const
         char            *arg
     )
@@ -139,8 +178,7 @@ extern "C" {
 
     
     
-    static
-    int             cmdutl_is_shortopt(
+    int             cmdutl_IsShortOpt(
         const
         char            *arg
     )
@@ -150,35 +188,33 @@ extern "C" {
 
     
     
-    static
-    int             cmdutl_is_longopt(
+    int             cmdutl_IsLongOpt(
         const
-        char            *arg
+        char            *pArg
     )
     {
-        return arg != NULL && arg[0] == '-' && arg[1] == '-' && arg[2] != '\0';
+        return pArg != NULL && pArg[0] == '-' && pArg[1] == '-' && pArg[2] != '\0';
     }
 
     
     
-    static
-    void            cmdutl_permute(
+    void            cmdutl_Permute(
         CMDUTL_DATA     *this,
         int             index
     )
     {
-        char            *nonoption = this->argv[index];
+        char            *nonoption = this->ppArgV[index];
         int             i;
         
         for (i = index; i < this->optIndex - 1; i++) {
-            this->argv[i] = this->argv[i + 1];
+            this->ppArgV[i] = this->ppArgV[i + 1];
         }
-        this->argv[this->optIndex - 1] = nonoption;
+        this->ppArgV[this->optIndex - 1] = nonoption;
     }
     
 
-    static
-    int             cmdutl_argtype(
+    
+    int             cmdutl_Argtype(
         const
         char            *optstring,
         char            c
@@ -187,7 +223,8 @@ extern "C" {
         int             count = CMDUTL_ARG_OPTION_NONE;
         if (c == ':')
             return -1;
-        for (; *optstring && c != *optstring; optstring++);
+        for (; *optstring && c != *optstring; optstring++)
+            ;
         if (!*optstring)
             return -1;
         if (optstring[1] == ':')
@@ -197,8 +234,7 @@ extern "C" {
 
     
     
-    static
-    bool            cmdutl_longopts_end(
+    bool            cmdutl_LongOptsEnd(
         const
         CMDUTL_OPTION   *pOptions,
         int             i
@@ -207,46 +243,65 @@ extern "C" {
         return (NULL == pOptions[i].pLongName) && (0 == pOptions[i].shortName);
     }
 
+
     
-    
-    static
-    void            cmdutl_from_long(
+   /*! Construct the getopt() option string from the given Long Option Table.
+    @param     pOptions     Option Table with last entry having NULL and 0
+                            for Long and Short names respectively
+    @param      pOptstring  an output area for the getopt-like string
+    @return:    true if successful, otherwise false
+    */
+    bool            cmdutl_OptstringFromLongOptions(
         const
         CMDUTL_OPTION   *pOptions,
-        char            *optstring
+        int             len,
+        char            *pOptstring
     )
     {
-        char            *p = optstring;
+        char            *p = pOptstring;
         int             i;
         
-        for (i = 0; !cmdutl_longopts_end(pOptions, i); i++) {
-            if (pOptions[i].shortName) {
+        for (i = 0; !cmdutl_LongOptsEnd(pOptions, i); i++) {
+            if (pOptions[i].shortName && ascii_isAlphanumericA(pOptions[i].shortName)) {
                 int             a;
                 *p++ = pOptions[i].shortName;
-                for (a = 0; a < (int)pOptions[i].argOption; a++)
+                --len;
+                if (len == 0) {
+                    return false;
+                }
+                for (a = 0; a < (int)pOptions[i].argOption; a++) {
                     *p++ = ':';
+                    --len;
+                    if (len == 0) {
+                        return false;
+                    }
+                }
             }
         }
         *p = '\0';
+        --len;
+        if (len == 0) {
+            return false;
+        }
+        return true;
     }
 
     
     
     /* Unlike strcmp(), handles options containing "=". */
-    static
-    int             cmdutl_longopts_match(
+    int             cmdutl_LongOptsMatch(
         const
         char            *pLongName,
         const
-        char            *option
+        char            *pOption
     )
     {
         const
-        char            *a = option;
+        char            *a = pOption;
         const
         char            *n = pLongName;
         
-        if (pLongName == 0)
+        if (pLongName == NULL)
             return 0;
         for (; *a && *n && *a != '='; a++, n++)
             if (*a != *n)
@@ -257,40 +312,50 @@ extern "C" {
     
     
     /* Return the part after "=", or NULL. */
-    static
-    char *          cmdutl_longopts_arg(
-        char            *option
+    char *          cmdutl_LongOptsArg(
+        char            *pOption
     )
     {
         // Find '=' within option if it exists.
-        for (; *option && *option != '='; option++)
+        for (; *pOption && *pOption != '='; pOption++)
             ;
         
-        if (*option == '=')
-            return option + 1;
+        if (*pOption == '=')
+            return pOption + 1;
         
         return NULL;
     }
+
     
-    static
-    int             cmdutl_long_fallback(
+    
+    int             cmdutl_LongOptsFallback(
         CMDUTL_DATA     *this,
         const
         CMDUTL_OPTION   *pOptions,
-        int             *longindex
+        int             *pLongIndex
     )
     {
         int             result;
-        char            optstring[96 * 3 + 1];  /* 96 ASCII printable characters */
-        cmdutl_from_long(pOptions, optstring);
+        char            optstring[(96 * 3) + 1];  /* 96 ASCII printable characters */
+        bool            fRc;
+        
+        // Convert the long option table into a getopt option string.
+        fRc = cmdutl_OptstringFromLongOptions(pOptions, ((96 * 3) + 1), optstring);
+        if (!fRc) {
+            return '?';
+        }
+        
+        // Now try to find the option using the option string.
         result = cmdutl_Parse(this, optstring);
-        if (longindex != 0) {
-            *longindex = -1;
+        if (pLongIndex != NULL) {
+            *pLongIndex = -1;
             if (result != -1) {
+                // Found short name. Now translate optstring index into
+                // Options Table index.
                 int i;
-                for (i = 0; !cmdutl_longopts_end(pOptions, i); i++)
+                for (i = 0; !cmdutl_LongOptsEnd(pOptions, i); i++)
                     if (pOptions[i].shortName == this->optopt)
-                        *longindex = i;
+                        *pLongIndex = i;
             }
         }
         return result;
@@ -299,6 +364,8 @@ extern "C" {
 
 
 
+    
+    
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -453,6 +520,54 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //--------------------------------------------------------------
+    //                          A r g V
+    //--------------------------------------------------------------
+    
+    ASTRARRAY_DATA *    cmdutl_getArgV(
+        CMDUTL_DATA         *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pSavedArgs;
+    }
+    
+    
+    bool            cmdutl_setArgV(
+        CMDUTL_DATA     *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pSavedArgs) {
+            obj_Release(this->pSavedArgs);
+        }
+        this->pSavedArgs = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //--------------------------------------------------------------
+    //                          P a t h
+    //--------------------------------------------------------------
+    
     PATH_DATA *     cmdutl_getPath(
         CMDUTL_DATA       *this
     )
@@ -461,7 +576,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( this ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -477,7 +592,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( this ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -493,6 +608,49 @@ extern "C" {
     
     
     
+    //--------------------------------------------------------------
+    //                      P e r m u t e
+    //--------------------------------------------------------------
+    
+    bool            cmdutl_getPermute(
+        CMDUTL_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->fPermute;
+    }
+    
+    
+    bool            cmdutl_setPermute(
+        CMDUTL_DATA     *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->fPermute = fValue;
+        
+        return true;
+    }
+    
+    
+    
+    //--------------------------------------------------------------
+    //                      P r i o r i t y
+    //--------------------------------------------------------------
+    
     uint16_t        cmdutl_getPriority(
         CMDUTL_DATA     *this
     )
@@ -501,7 +659,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( this ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -518,7 +676,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !cmdutl_Validate( this ) ) {
+        if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -540,7 +698,7 @@ extern "C" {
         CMDUTL_DATA    *this
     )
     {
-        char            *option = this->argv[this->optIndex];
+        char            *option = this->ppArgV[this->optIndex];
         
         this->subopt = 0;
         
@@ -550,46 +708,6 @@ extern "C" {
         return option;
     }
 
-    
-    
-    //--------------------------------------------------------------
-    //                  B u i l d  E r r o r  M s g
-    //--------------------------------------------------------------
-    
-    ERESULT         cmdutl_BuildErrorMsg(
-        CMDUTL_DATA    *this,
-        const
-        char            *pMsg,
-        const
-        char            *pData
-    )
-    {
-        uint32_t        p = 0;
-        const
-        char            *sep = " -- '";
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !cmdutl_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_DATA;
-        }
-#endif
-        
-        while (*pMsg)
-            this->errmsg[p++] = *pMsg++;
-        while (*sep)
-            this->errmsg[p++] = *sep++;
-        while (p < sizeof(this->errmsg) - 2 && *pData)
-            this->errmsg[p++] = *pData++;
-        this->errmsg[p++] = '\'';
-        this->errmsg[p++] = '\0';
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
     
     
     //---------------------------------------------------------------
@@ -615,6 +733,10 @@ extern "C" {
 #endif
 
         cmdutl_setPath(this, OBJ_NIL);
+        if (this->pSavedArgs) {
+            obj_Release(this->pSavedArgs);
+            this->pSavedArgs = OBJ_NIL;
+        }
         
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -655,14 +777,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&cmdutl_Vtbl);
 
-        this->permute = 1;
-        this->optIndex = 1;
-        this->subopt = 0;
-        this->optarg = 0;
-        this->errmsg[0] = '\0';
-        
-        this->cArgs  = cArgs;
-        this->ppArgs = ppArgs;
+        if(cmdutl_Reset(this, cArgs, ppArgs))
+            ;
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -681,18 +802,48 @@ extern "C" {
 
     
     //---------------------------------------------------------------
+    //                      I s  M o r e
+    //---------------------------------------------------------------
+    
+    bool            cmdutl_IsMore(
+        CMDUTL_DATA     *this
+    )
+    {
+        char            *pArg = NULL;
+        
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (this->ppArgV == NULL)
+            return false;
+#endif
+        
+        pArg = this->ppArgV[this->optIndex];
+        if (pArg) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          L o n g
     //---------------------------------------------------------------
     
     int             cmdutl_Long(
         CMDUTL_DATA     *this,
-        const
         CMDUTL_OPTION   *pOptions,
         int             *longindex
     )
     {
         int             i;
-        char            *option = this->argv[this->optIndex];
+        char            *pOption;
+        int             iRc;
         
 #ifdef NDEBUG
 #else
@@ -700,23 +851,35 @@ extern "C" {
             DEBUG_BREAK();
             return -1;
         }
+        if(this->ppArgV == NULL) {
+            DEBUG_BREAK();
+            return -1;
+        }
 #endif
         
-        if (option == 0) {
+        this->errmsg[0] = '\0';
+        this->optopt = 0;
+        this->pOptArg = NULL;
+        pOption = this->ppArgV[this->optIndex];
+        if (pOption == 0) {
             return -1;
-        } else if (cmdutl_is_dashdash(option)) {
-            this->optIndex++; /* consume "--" */
+        }
+        else if (cmdutl_IsDashDash(pOption)) {
+            this->optIndex++;       /* consume "--" */
             return -1;
-        } else if (cmdutl_is_shortopt(option)) {
-            return cmdutl_long_fallback(this, pOptions, longindex);
-        } else if (!cmdutl_is_longopt(option)) {
-            if (this->permute) {
-                int index = this->optIndex++;
-                int r = cmdutl_Long(this, pOptions, longindex);
-                cmdutl_permute(this, index);
+        }
+        else if (cmdutl_IsShortOpt(pOption)) {
+            return cmdutl_LongOptsFallback(this, pOptions, longindex);
+        }
+        else if (!cmdutl_IsLongOpt(pOption)) {
+            if (this->fPermute) {
+                int             index = this->optIndex++;
+                int             r = cmdutl_Long(this, pOptions, longindex);
+                cmdutl_Permute(this, index);
                 this->optIndex--;
                 return r;
-            } else {
+            }
+            else {
                 return -1;
             }
         }
@@ -724,34 +887,81 @@ extern "C" {
         /* Parse as long option. */
         this->errmsg[0] = '\0';
         this->optopt = 0;
-        this->optarg = 0;
-        option += 2; /* skip "--" */
+        this->pOptArg = NULL;
+        pOption += 2; /* skip "--" */
         this->optIndex++;
-        for (i = 0; !cmdutl_longopts_end(pOptions, i); i++) {
-            const char *name = pOptions[i].pLongName;
-            if (cmdutl_longopts_match(name, option)) {
-                char *arg;
+        for (i = 0; !cmdutl_LongOptsEnd(pOptions, i); i++) {
+            const
+            char            *name = pOptions[i].pLongName;
+            if (cmdutl_LongOptsMatch(name, pOption)) {
+                char        *pArg;
                 if (longindex)
                     *longindex = i;
                 this->optopt = pOptions[i].shortName;
-                arg = cmdutl_longopts_arg(option);
-                if (pOptions[i].argOption == CMDUTL_ARG_OPTION_NONE && arg != 0) {
-                    return cmdutl_BuildErrorMsg(this, "option takes no arguments", name);
-                } if (arg != 0) {
-                    this->optarg = arg;
-                } else if (pOptions[i].argOption == CMDUTL_ARG_OPTION_REQUIRED) {
-                    this->optarg = this->argv[this->optIndex];
-                    if (this->optarg == 0)
-                        return cmdutl_BuildErrorMsg(this, "option requires an argument", name);
+                pArg = cmdutl_LongOptsArg(pOption);
+                if (pOptions[i].argOption == CMDUTL_ARG_OPTION_NONE && (pArg != NULL)) {
+                    iRc = cmdutl_CreateErrorMsg(this, "option takes no arguments", name);
+                    return iRc;
+                }
+                if (pArg != 0) {
+                    this->pOptArg = pArg;
+                }
+                else if (pOptions[i].argOption == CMDUTL_ARG_OPTION_REQUIRED) {
+                    this->pOptArg = this->ppArgV[this->optIndex];
+                    if (this->pOptArg == NULL) {
+                        iRc = cmdutl_CreateErrorMsg(this, "option requires an argument", name);
+                        return iRc;
+                    }
                     else
                         this->optIndex++;
                 }
                 return this->optopt;
             }
         }
-        return cmdutl_BuildErrorMsg(this, "invalid option", option);
+        iRc = cmdutl_CreateErrorMsg(this, "invalid option", pOption);
+        return iRc;
     }
 
+    
+    
+    //---------------------------------------------------------------
+    //                      N e x t  A r g
+    //---------------------------------------------------------------
+    
+    char *          cmdutl_NextArg(
+        CMDUTL_DATA     *this
+    )
+    {
+        int             i;
+        int             iRc;
+        ASTRARRAY_DATA  *pArgs;
+        char            *pArg = NULL;
+        
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (this->ppArgV == NULL) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        pArg = this->ppArgV[this->optIndex];
+        this->optopt = 0;
+        this->subopt = 0;
+        if (pArg) {
+            if ('-' == *pArg) {
+                return NULL;
+            }
+            ++this->optIndex;
+        }
+        
+        return pArg;
+    }
+    
     
     
     //---------------------------------------------------------------
@@ -761,12 +971,13 @@ extern "C" {
     int             cmdutl_Parse(
         CMDUTL_DATA     *this,
         const
-        char            *optstring
+        char            *pOptString
     )
     {
         int             type;
-        char            *next;
-        char            *option = this->argv[this->optIndex];
+        char            *pNext;
+        char            *pOption;
+        int             iRc;
         
 #ifdef NDEBUG
 #else
@@ -774,74 +985,270 @@ extern "C" {
             DEBUG_BREAK();
             return -1;
         }
+        if(this->ppArgV == NULL) {
+            DEBUG_BREAK();
+            return -1;
+        }
 #endif
         
+        pOption = this->ppArgV[this->optIndex];
         this->errmsg[0] = '\0';
         this->optopt = 0;
-        this->optarg = 0;
-        if (option == NULL) {
+        this->pOptArg = NULL;
+        if (pOption == NULL) {
             return -1;
-        } else if (cmdutl_is_dashdash(option)) {
+        }
+        else if (cmdutl_IsDashDash(pOption)) {
             this->optIndex++; /* consume "--" */
             return -1;
-        } else if (!cmdutl_is_shortopt(option)) {
-            if (this->permute) {
-                int index = this->optIndex++;
-                int r = cmdutl_Parse(this, optstring);
-                cmdutl_permute(this, index);
+        }
+        else if (!cmdutl_IsShortOpt(pOption)) {
+            if (this->fPermute) {
+                int         index = this->optIndex++;
+                int         r = cmdutl_Parse(this, pOptString);
+                cmdutl_Permute(this, index);
                 this->optIndex--;
                 return r;
-            } else {
+            }
+            else {
                 return -1;
             }
         }
-        option += this->subopt + 1;
-        this->optopt = option[0];
-        type = cmdutl_argtype(optstring, option[0]);
-        next = this->argv[this->optIndex + 1];
+        pOption += this->subopt + 1;
+        this->optopt = pOption[0];
+        type = cmdutl_Argtype(pOptString, pOption[0]);
+        pNext = this->ppArgV[this->optIndex + 1];
         switch (type) {
             case -1: {
                 char str[2] = {0, 0};
-                str[0] = option[0];
+                str[0] = pOption[0];
                 this->optIndex++;
-                return cmdutl_BuildErrorMsg(this, "invalid option", str);
+                iRc = cmdutl_CreateErrorMsg(this, "invalid option", str);
+                return iRc;
             }
             case CMDUTL_ARG_OPTION_NONE:
-                if (option[1]) {
+                if (pOption[1]) {
                     this->subopt++;
-                } else {
+                }
+                else {
                     this->subopt = 0;
                     this->optIndex++;
                 }
-                return option[0];
+                return pOption[0];
             case CMDUTL_ARG_OPTION_REQUIRED:
                 this->subopt = 0;
                 this->optIndex++;
-                if (option[1]) {
-                    this->optarg = option + 1;
-                } else if (next != 0) {
-                    this->optarg = next;
-                    this->optIndex++;
-                } else {
-                    char str[2] = {0, 0};
-                    str[0] = option[0];
-                    this->optarg = 0;
-                    return cmdutl_BuildErrorMsg(this, "option requires an argument", str);
+                if (pOption[1]) {
+                    this->pOptArg = pOption + 1;
                 }
-                return option[0];
+                else if (pNext != NULL) {
+                    this->pOptArg = pNext;
+                    this->optIndex++;
+                }
+                else {
+                    char str[2] = {0, 0};
+                    str[0] = pOption[0];
+                    this->pOptArg = NULL;
+                    iRc = cmdutl_CreateErrorMsg(this, "option requires an argument", str);
+                    return iRc;
+                }
+                return pOption[0];
             case CMDUTL_ARG_OPTION_OPTIONAL:
                 this->subopt = 0;
                 this->optIndex++;
-                if (option[1])
-                    this->optarg = option + 1;
+                if (pOption[1])
+                    this->pOptArg = pOption + 1;
                 else
-                    this->optarg = 0;
-                return option[0];
+                    this->pOptArg = NULL;
+                return pOption[0];
         }
         
         return 0;
     }
 
+    
+    
+    //---------------------------------------------------------------
+    //                      P a r s e  O p t i o n s
+    //---------------------------------------------------------------
+    
+    bool            cmdutl_ParseOptions(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pDefaultOptions,
+        CMDUTL_OPTION   *pProgramOptions
+    )
+    {
+        char            *pArg = NULL;
+        bool            fRc = false;
+        int             iRc;
+        int             longIndex;
+        CMDUTL_OPTION   *pOption = NULL;
+
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+        if (this->ppArgV == NULL) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        
+        if (pOption) {
+        }
+
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      P r o c e s s  O p t i o n
+    //---------------------------------------------------------------
+    
+    bool            cmdutl_ProcessOption(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pOption
+    )
+    {
+        char            *pArg = NULL;
+        ERESULT         eRc;
+        bool            fRc = false;
+        int             iRc;
+        int             longIndex;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+        char            option[16];
+        void            *pPtr;
+
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+        if (this->ppArgV == NULL) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        
+        if (pOption) {
+            pPtr = (uint8_t *)this->pObj + pOption->offset;
+            if (0 == pOption->offset) {
+                pPtr = NULL;
+            }
+            switch (pOption->argType) {
+                case CMDUTL_TYPE_EXEC:         // Execute given routine
+                    if (pOption->pExec) {
+                        eRc = pOption->pExec(this->pObj, this->pOptArg);
+                        if (ERESULT_FAILED(eRc)) {
+                            //FIXME: appl_Usage(this, "ERROR - Execute Routine for --%s failed!", pClo->pArgLong);
+                            exit(8);
+                        }
+                    }
+                    break;
+                case CMDUTL_TYPE_BOOL:          // uint16_t - 0 or 1
+                case CMDUTL_TYPE_INCR:          // uint16_t - Every occurence increases the
+                    //                          // associated value (default is 0);
+                    if (pPtr) {
+                        *((uint16_t *)pPtr) += 1;
+                    }
+                    break;
+                case CMDUTL_TYPE_NUMBER:        // Number pointer
+                    break;
+                case CMDUTL_TYPE_PATH:          // Path pointer
+#ifdef XX
+                    if (OBJ_NIL == pData) {
+                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
+                            pData = AStrArray_Get(this->pArgs, this->nextArg);
+                            if (pData) {
+                                pData = AStr_Copy(pData);
+                                ++this->nextArg;
+                            }
+                        }
+                    }
+                    if (pData && pPtr) {
+                        *((PATH_DATA **)pPtr) = path_NewFromAStr(pData);
+                    }
+                    else {
+                        //FIXME: appl_Usage(this, "ERROR - Missing Path for --%s", pClo->pArgLong);
+                        exit(8);
+                    }
+#endif
+                    break;
+                case CMDUTL_TYPE_STRING:        // AStr pointer
+                    if (NULL == this->pOptArg) {
+                        option[0] = this->optopt;
+                        option[1] = '\0';
+                        iRc =   cmdutl_CreateErrorMsg(
+                                    this,
+                                    "option requires an argument",
+                                    option
+                                );
+                    }
+                    else {
+                        pStr = AStr_NewA(this->pOptArg);
+                    }
+                    if (pStr && pPtr) {
+                        *((ASTR_DATA **)pPtr) = pStr;
+                        pStr = OBJ_NIL;
+                    }
+                    else {
+                        //FIXME: appl_Usage(this, "ERROR - Missing Path for --%s", pClo->pArgLong);
+                        exit(8);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          R e s e t
+    //---------------------------------------------------------------
+    
+    bool            cmdutl_Reset(
+        CMDUTL_DATA     *this,
+        int             cArgs,
+        char            **ppArgs
+    )
+    {
+        int             i;
+        int             iRc;
+        ASTRARRAY_DATA  *pArgs;
+        
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fPermute = false;
+        this->optIndex = 1;
+        this->subopt = 0;
+        this->pOptArg = NULL;
+        this->errmsg[0] = '\0';
+        this->ppArgV = ppArgs;
+        
+        if (cArgs && ppArgs) {
+            pArgs = AStrArray_NewFromArgV(cArgs, (void *)ppArgs);
+            cmdutl_setArgV(this, pArgs);
+            obj_Release(pArgs);
+        }
+        
+        return true;
+    }
+    
     
     
     //---------------------------------------------------------------
@@ -905,18 +1312,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            cmdutl_Validate(
-        CMDUTL_DATA      *cbp
+        CMDUTL_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_CMDUTL) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_CMDUTL) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(CMDUTL_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(CMDUTL_DATA)) )
             return false;
 
         // Return to caller.

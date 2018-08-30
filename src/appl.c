@@ -89,67 +89,67 @@ extern "C" {
 #endif
     
 
-    APPL_CLO        defaultArgs[] = {
+    CLO_OPTION      defaultArgs[] = {
         {
-            '?',                        // Short
             NULL,                       // Long
-            APPL_ARG_PROGRAM,           // Class
-            APPL_ARG_EXEC,              // Type
+            '?',                        // Short
+            0,                          // Class
+            CLO_ARG_EXEC,               // Type
             0,                          // Offset
             (void *)appl_Help,          // Executed Routine
             "Display Help"              // Description
         },
         {
-            'd',
             "debug",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_BOOL,
+            'd',
+            0,                          // Class
+            CLO_ARG_BOOL,
             offsetof(APPL_DATA, fDebug),
             NULL,
             "Set Debug Mode"
         },
         {
-            'f',
             "force",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_BOOL,
+            'f',
+            0,                          // Class
+            CLO_ARG_BOOL,
             offsetof(APPL_DATA, fForce),
             NULL,
             "Set Force Mode"
         },
         {
-            'h',
             "help",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_EXEC,
+            'h',
+            0,                          // Class
+            CLO_ARG_EXEC,
             0,
             (void *)appl_Help,
             "Display Help"
         },
         {
-            's',
             "quiet",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_BOOL,
+            's',
+            0,                          // Class
+            CLO_ARG_BOOL,
             offsetof(APPL_DATA, fQuiet),
             NULL,
             "Set Quiet Mode"
             
         },
         {
-            's',
             "silent",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_BOOL,
+            's',
+            0,                          // Class
+            CLO_ARG_BOOL,
             offsetof(APPL_DATA, fQuiet),
             NULL,
             "Set Quiet Mode"
         },
         {
-            'v',
             "verbose",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_INCR,
+            'v',
+            0,                          // Class
+            CLO_ARG_INCR,
             offsetof(APPL_DATA, iVerbose),
             NULL,
             "Set Verbose Mode"
@@ -164,135 +164,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    //---------------------------------------------------------------
-    //               F i n d  A r g u m e n t
-    //---------------------------------------------------------------
-    
-    APPL_CLO *      appl_ArgFindLong(
-        APPL_DATA       *this,
-        const
-        char            *pLong
-    )
-    {
-        int             iRc = 0;
-        APPL_CLO        *pClo = NULL;
-        int             i = 0;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        // Search Group Args.
-        if (this->cGroupArgs && this->pGroupArgs) {
-            for (i=0; i<this->cGroupArgs; ++i) {
-                if (this->pGroupArgs[i].pArgLong) {
-                    iRc = str_Compare(pLong, this->pGroupArgs[i].pArgLong);
-                    if (0 == iRc) {
-                        pClo = &this->pGroupArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        // Search Program Args.
-        if (this->cProgramArgs && this->pProgramArgs) {
-            for (i=0; i<this->cProgramArgs; ++i) {
-                if (this->pProgramArgs[i].pArgLong) {
-                    iRc = str_Compare(pLong, this->pProgramArgs[i].pArgLong);
-                    if (0 == iRc) {
-                        pClo = &this->pProgramArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        // Search Default Args.
-        if (cDefaultArgs) {
-            for (i=0; i<cDefaultArgs; ++i) {
-                if (defaultArgs[i].pArgLong) {
-                    iRc = str_Compare(pLong, defaultArgs[i].pArgLong);
-                    if (0 == iRc) {
-                        pClo = &defaultArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        return pClo;
-    }
-    
-    
-
-    APPL_CLO *      appl_ArgFindShort(
-        APPL_DATA       *this,
-        char            chr
-    )
-    {
-        int             iRc = 0;
-        APPL_CLO        *pClo = NULL;
-        int             i = 0;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        // Search Group Args.
-        if (this->cGroupArgs && this->pGroupArgs) {
-            for (i=0; i<this->cGroupArgs; ++i) {
-                if (this->pGroupArgs[i].argChr) {
-                    iRc = chr - this->pGroupArgs[i].argChr;
-                    if (0 == iRc) {
-                        pClo = &this->pGroupArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        // Search Program Args.
-        if (this->cProgramArgs && this->pProgramArgs) {
-            for (i=0; i<this->cProgramArgs; ++i) {
-                if (this->pProgramArgs[i].argChr) {
-                    iRc = chr - this->pProgramArgs[i].argChr;
-                    if (0 == iRc) {
-                        pClo = &this->pProgramArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        // Search Default Args.
-        if (cDefaultArgs) {
-            for (i=0; i<cDefaultArgs; ++i) {
-                if (defaultArgs[i].argChr) {
-                    iRc = chr - defaultArgs[i].argChr;
-                    if (0 == iRc) {
-                        pClo = &defaultArgs[i];
-                        return pClo;
-                    }
-                }
-            }
-        }
-        
-        return pClo;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //          C o n s t r u c t  P r o g r a m  L i n e
     //---------------------------------------------------------------
@@ -455,9 +326,9 @@ extern "C" {
     bool            appl_setArgDefs(
         APPL_DATA       *this,
         uint16_t        cProgramArgs,
-        APPL_CLO        *pProgramArgs,
+        CLO_OPTION      *pProgramArgs,
         uint16_t        cGroupArgs,
-        APPL_CLO        *pGroupArgs
+        CLO_OPTION      *pGroupArgs
     )
     {
 #ifdef NDEBUG
@@ -472,6 +343,54 @@ extern "C" {
         this->pProgramArgs = pProgramArgs;
         this->cGroupArgs = cGroupArgs;
         this->pGroupArgs = pGroupArgs;
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          C l o
+    //---------------------------------------------------------------
+    
+    CLOPRS_DATA *   appl_getClo(
+        APPL_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        appl_setLastError(this, ERESULT_SUCCESS);
+        return this->pClo;
+    }
+    
+    
+    bool            appl_setClo(
+        APPL_DATA       *this,
+        CLOPRS_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pClo) {
+            obj_Release(this->pClo);
+        }
+        this->pClo = pValue;
         
         appl_setLastError(this, ERESULT_SUCCESS);
         return true;
@@ -1150,6 +1069,7 @@ extern "C" {
 #endif
 
         appl_setArgs(this, OBJ_NIL);
+        appl_setClo(this, OBJ_NIL);
         appl_setDateTime(this, OBJ_NIL);
         appl_setEnv(this, OBJ_NIL);
         appl_setProgramPath(this, OBJ_NIL);
@@ -1615,7 +1535,7 @@ extern "C" {
             }
         }
         
-        pClo = appl_ArgFindLong(this, AStr_getData(pName));
+        //FIXME: pClo = appl_ArgFindLong(this, AStr_getData(pName));
         if (NULL == pClo) {
             appl_Usage(this, "ERROR - Unknown flag - %s", AStr_getData(pName));
             exit(8);
@@ -2243,35 +2163,35 @@ extern "C" {
     void            appl_UsageArg(
         APPL_DATA       *this,
         ASTR_DATA       *pStr,              // in-out
-        APPL_CLO        *pClo
+        CLO_OPTION      *pClo
     )
     {
         ERESULT         eRc;
         int32_t         len;
         
-                eRc = AStr_Truncate(pStr, 0);
-                eRc = AStr_AppendA(pStr, "  ");
-                if (pClo->argChr) {
-                    eRc = AStr_AppendCharW32(pStr, '-');
-                    eRc = AStr_AppendCharW32(pStr, pClo->argChr);
-                }
-                if (pClo->pArgLong) {
-                    if (pClo->argChr) {
-                        eRc = AStr_AppendCharW32(pStr, ',');
-                    }
-                    eRc = AStr_AppendA(pStr, "--");
-                    eRc = AStr_AppendA(pStr, pClo->pArgLong);
-                }
-                len = 25 - AStr_getLength(pStr);
-                if (len > 0) {
-                    eRc = AStr_AppendCharRepeatW32(pStr, len, ' ');
-                }
-                else {
-                    eRc = AStr_AppendCharW32(pStr, ' ');
-                }
-                if (pClo->pDesc) {
-                    eRc = AStr_AppendA(pStr, pClo->pDesc);
-                }
+        eRc = AStr_Truncate(pStr, 0);
+        eRc = AStr_AppendA(pStr, "  ");
+        if (pClo->argChr) {
+            eRc = AStr_AppendCharW32(pStr, '-');
+            eRc = AStr_AppendCharW32(pStr, pClo->argChr);
+        }
+        if (pClo->pArgLong) {
+            if (pClo->argChr) {
+                eRc = AStr_AppendCharW32(pStr, ',');
+            }
+            eRc = AStr_AppendA(pStr, "--");
+            eRc = AStr_AppendA(pStr, pClo->pArgLong);
+        }
+        len = 25 - AStr_getLength(pStr);
+        if (len > 0) {
+            eRc = AStr_AppendCharRepeatW32(pStr, len, ' ');
+        }
+        else {
+            eRc = AStr_AppendCharW32(pStr, ' ');
+        }
+        if (pClo->pDesc) {
+            eRc = AStr_AppendA(pStr, pClo->pDesc);
+        }
     }
     
     

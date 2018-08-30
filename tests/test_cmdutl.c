@@ -184,6 +184,186 @@ int         test_cmdutl_CommandString01(
 
 
 
+int         test_cmdutl_ParseCommandLine01(
+    const
+    char        *pTestName
+)
+{
+    CMDUTL_DATA     *pObj = OBJ_NIL;
+    CMDUTL_OPTION   longDefns[5] = {
+        {"debug",   'd', CMDUTL_ARG_OPTION_NONE},
+        {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED},
+        {"help",    'h', CMDUTL_ARG_OPTION_NONE},
+        {"verbose", 'v', CMDUTL_ARG_OPTION_NONE},
+        {0, 0, 0}
+    };
+    char            *ppArgs[] = {
+        "./test",
+        "-v",
+        "-f",
+        "xyzzy",
+        "abc",
+        "def",
+        NULL
+    };
+    const
+    char            *pOptString = "df::hv";
+    int             iRc;
+    bool            fRc;
+    char            *pArg;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = cmdutl_New(6, ppArgs);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    
+    if (pObj) {
+        
+        iRc = cmdutl_Parse(pObj, pOptString);
+        XCTAssertTrue( ('v' == iRc) );
+        XCTAssertTrue( ('v' == pObj->optopt) );
+        XCTAssertTrue( (NULL == pObj->pOptArg) );
+        XCTAssertTrue( (pObj->optIndex == 2) );
+
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        iRc = cmdutl_Parse(pObj, pOptString);
+        XCTAssertTrue( ('f' == iRc) );
+        XCTAssertTrue( ('f' == pObj->optopt) );
+        XCTAssertTrue( (pObj->pOptArg) );
+        XCTAssertTrue( (0 == strcmp(pObj->pOptArg, "xyzzy")) );
+        
+        iRc = cmdutl_Parse(pObj, pOptString);
+        XCTAssertTrue( (-1 == iRc) );
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (NULL == pObj->pOptArg) );
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (pArg) );
+        XCTAssertTrue( (0 == strcmp(pArg, "abc")) );
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (pArg) );
+        XCTAssertTrue( (0 == strcmp(pArg, "def")) );
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (!fRc) );
+
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (NULL == pArg) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_cmdutl_ParseCommandLine02(
+    const
+    char        *pTestName
+)
+{
+    CMDUTL_DATA     *pObj = OBJ_NIL;
+    CMDUTL_OPTION   longDefns[5] = {
+        {"debug",   'd', CMDUTL_ARG_OPTION_NONE},
+        {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED},
+        {"help",    'h', CMDUTL_ARG_OPTION_NONE},
+        {"verbose", 'v', CMDUTL_ARG_OPTION_NONE},
+        {0, 0, 0}
+    };
+    char            *ppArgs[] = {
+        "./test",
+        "--verbose",
+        "--file",
+        "xyzzy",
+        "abc",
+        "-f",
+        "xyzzy2",
+        "def",
+        NULL
+    };
+    int             iRc;
+    bool            fRc;
+    char            *pArg;
+    int             longIndex;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = cmdutl_New(8, ppArgs);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    
+    if (pObj) {
+        
+        iRc = cmdutl_Long(pObj, longDefns, &longIndex);
+        XCTAssertTrue( ('v' == iRc) );
+        XCTAssertTrue( ('v' == pObj->optopt) );
+        XCTAssertTrue( (NULL == pObj->pOptArg) );
+        XCTAssertTrue( (pObj->optIndex == 2) );
+        XCTAssertTrue( (3 == longIndex) );
+
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        iRc = cmdutl_Long(pObj, longDefns, &longIndex);
+        XCTAssertTrue( ('f' == iRc) );
+        XCTAssertTrue( ('f' == pObj->optopt) );
+        XCTAssertTrue( (pObj->pOptArg) );
+        XCTAssertTrue( (0 == strcmp(pObj->pOptArg, "xyzzy")) );
+        XCTAssertTrue( (1 == longIndex) );
+
+        iRc = cmdutl_Long(pObj, longDefns, &longIndex);
+        XCTAssertTrue( (-1 == iRc) );
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (NULL == pObj->pOptArg) );
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (pArg) );
+        XCTAssertTrue( (0 == strcmp(pArg, "abc")) );
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        iRc = cmdutl_Long(pObj, longDefns, &longIndex);
+        XCTAssertTrue( ('f' == iRc) );
+        //XCTAssertTrue( ('f' == pObj->optopt) );
+        XCTAssertTrue( (pObj->pOptArg) );
+        XCTAssertTrue( (0 == strcmp(pObj->pOptArg, "xyzzy2")) );
+        XCTAssertTrue( (1 == longIndex) );
+
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (pArg) );
+        XCTAssertTrue( (0 == strcmp(pArg, "def")) );
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (!fRc) );
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (NULL == pArg) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_cmdutl_Input01(
     const
     char        *pTestName
@@ -288,6 +468,8 @@ int         test_cmdutl_Input01(
 
 TINYTEST_START_SUITE(test_cmdutl);
     //TINYTEST_ADD_TEST(test_cmdutl_Input01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_cmdutl_ParseCommandLine02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_cmdutl_ParseCommandLine01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_cmdutl_CommandString01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_cmdutl_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

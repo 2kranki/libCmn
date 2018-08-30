@@ -73,7 +73,9 @@ struct appl_data_s	{
     uint8_t         rsvd8;
     uint16_t        iVerbose;
     uint16_t        rsvd16_1;
-    
+    CLOPRS_DATA     *pClo;
+    CLO_OPTION      *pCloArgs[3];
+
     // Program Arguments and Options
     uint16_t        cOptions;
     uint16_t        rsvd16_2;
@@ -83,8 +85,8 @@ struct appl_data_s	{
     uint16_t        cGroupArgs;
     uint32_t        nextArg;
     PATH_DATA       *pProgramPath;
-    APPL_CLO        *pProgramArgs;
-    APPL_CLO        *pGroupArgs;
+    CLO_OPTION      *pProgramArgs;
+    CLO_OPTION      *pGroupArgs;
 
     OBJ_ID          pObjPrs;
     ERESULT         (*pParseArgsDefaults)(OBJ_ID);
@@ -151,19 +153,6 @@ struct appl_data_s	{
     );
     
     
-    APPL_CLO *      appl_ArgFindLong(
-        APPL_DATA       *this,
-        const
-        char            *pLong
-    );
-    
-    
-    APPL_CLO *      appl_ArgFindShort(
-        APPL_DATA       *this,
-        char            chr
-    );
-    
-    
     void            appl_Dealloc(
         OBJ_ID          objId
     );
@@ -207,7 +196,7 @@ struct appl_data_s	{
     void            appl_UsageArg(
         APPL_DATA       *this,
         ASTR_DATA       *pStr,              // in-out
-        APPL_CLO        *pClo
+        CLO_OPTION      *pClo
     );
     
     

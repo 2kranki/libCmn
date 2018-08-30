@@ -10,41 +10,12 @@
  *			This object provides a standardized way of parsing or
  *          constructing command line data.
  *
- *          cmdstr  : string (ws | arg)*            // First string is program path
- *                  ;
- *          arg     : name ('=' value)?
- *                  | string ('=' value)?
- *                  | array
- *                  | number
- *                  ;
- *          value   : name | string | number | array
- *                  ;
- *          array   : '[' ws* value (',' ws* value)* ws* ']'
- *                  ;
- *          name    : [a-zA-Z][a-zA-Z0-9_]*
- *                  ;
- *          ws      : ' ' | '\b' | '\f' | '\n' | '\r' | '\t'
- *                  ;
- *          string  : '"' string_chars* '"'
- *                  ;
- *          string_chars  
- *                  : [\b\f\n\r\t\\\/ !] 
- *                  | [#-~]
- *                  | '\\' '"' 
- *                  | '\\' ('u'|'U') hexdigit*
- *                  | '\\' '\\'
- *                  ;
- *          number  : ('-')? [1-9][0-9]* ('.' [0-9]+)? exp?
- *                  | [0]([xX][0-9a-fA-F]*
- *                  | [0][0-7]*
- *                  ;
- *          exp     : ('e' | 'E') ('-' | '+')? [0-9]+
- *                  ;
  *
  *
  *
  * Remarks
- *	1.      None
+ *	1.      The internals are based on a public domain version of optparse.
+ *          It has been extened to fit our environment and needs.
  *
  * History
  *	10/18/2015 Generated
@@ -84,11 +55,9 @@
 
 #include        <cmn_defs.h>
 #include        <AStrArray.h>
-#include        <node.h>
-#include        <false.h>
-#include        <null.h>
+#include        <number.h>
+#include        <objArray.h>
 #include        <path.h>
-#include        <true.h>
 #include        <AStr.h>
 
 
@@ -127,30 +96,54 @@ extern "C" {
     } CMDUTL_VTBL;
     
     
-    typedef enum cmdutl_arg_e {
+    typedef enum cmdutl_arg_option_e {
         CMDUTL_ARG_OPTION_UNKNOWN=0,
         CMDUTL_ARG_OPTION_NONE,
         CMDUTL_ARG_OPTION_OPTIONAL,
         CMDUTL_ARG_OPTION_REQUIRED,
-    }   CMDUTIL_ARG_OPTION;
+    }   CMDUTL_ARG_OPTION;
     
     
-    typedef enum cmdutl_arg_type_e {
-        CMDUTL_ARG_TYPE_UNKNOWN=0,
-        CMDUTL_ARG_TYPE_ARRAY,
-        CMDUTL_ARG_TYPE_INTEGER,
-        CMDUTL_ARG_TYPE_NONE,
-        CMDUTL_ARG_TYPE_STRING
-    }   CMDUTIL_ARG_TYPE;
+    typedef enum cmdutl_type_e {
+        CMDUTL_TYPE_UNKNOWN=0,
+        CMDUTL_TYPE_BOOL,               // uint16_t - 0 == false, > 0 == true
+        //                              // (same as CMDUTL_TYPE_INCR)
+        CMDUTL_TYPE_EXEC,               // Execute given routine
+        //                              // (with argument if available)
+        CMDUTL_TYPE_HJSON,              // Node pointer - HJSON will be used
+        //                              // to parse the Argument's parameter
+        //                              // looking for a "value" not a "hash".
+        //                              // (Argument parameter is required)
+        CMDUTL_TYPE_INCR,               // uint16_t - Every occurence increases the
+        //                              // associated value (default is 0);
+        CMDUTL_TYPE_NUMBER,             // Number pointer
+        //                              // (Argument parameter is required)
+        CMDUTL_TYPE_PATH,               // Path pointer
+        //                              // (Argument parameter is required)
+        CMDUTL_TYPE_STRING,             // AStr pointer
+        //                              // (Argument parameter is required)
+        CMDUTL_TYPE_VALUE,              // Value pointer
+        //                              // (Argument parameter is required)
+    }   CMDUTL_TYPE;
     
     
+    // Note - The end of an option table is denoted by a pLongName of NULL
+    // and a shortName of 0.
     typedef struct cmdutl_option_s {
-        W32CHR_T        shortName;          // "-" option_name
         char            *pLongName;         // "--" option_name
+        W32CHR_T        shortName;          // "-" option_name
         uint16_t        argOption;          // See CMDUTIL_ARG_OPTION above.
-        uint16_t        argType;            // See CMDUTIL_ARG_TYPE above.
-        int             *pFlag;             // ???
-        int             initValue;          // ???
+        uint16_t        argType;            // See CMDUTIL_TYPE above.
+        union {
+            uint32_t        offset;             // Option Offset
+            ERESULT         (*pExec)(           // Method to execute if APPL_ARG_EXEC
+                                OBJ_ID,
+                                const
+                                char *              // Arg Ptr if present or NULL
+            );
+        };
+        const
+        char            *pDesc;             // Option Description
     } CMDUTL_OPTION;
         
 
@@ -198,18 +191,11 @@ extern "C" {
     );
     
     
-    CMDUTL_DATA *   cmdutl_NewAStr(
-        ASTR_DATA       *pSzStr,        // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
+    CMDUTL_DATA *   cmdutl_New(
+        int             cArgs,
+        char            **ppArgs
     );
-    
-    CMDUTL_DATA *   cmdutl_NewW32Str(
-        W32STR_DATA     *pSzStr,        // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    );
-    
+
     
     
     
@@ -218,11 +204,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODEHASH_DATA * cmdutl_getFileObject(
-        CMDUTL_DATA     *this
-    );
-    
-    
     PATH_DATA *     cmdutl_getPath(
         CMDUTL_DATA     *this
     );
@@ -233,7 +214,17 @@ extern "C" {
     );
     
     
+    bool            cmdutl_getPermute(
+        CMDUTL_DATA     *this
+    );
+
+    bool            cmdutl_setPermute(
+        CMDUTL_DATA     *this,
+        bool            fValue
+    );
     
+    
+
     
     //---------------------------------------------------------------
     //                      *** Methods ***
@@ -246,11 +237,20 @@ extern "C" {
     );
     
     
+    bool            cmdutl_IsMore(
+        CMDUTL_DATA     *this
+    );
+    
+    
     int             cmdutl_Long(
         CMDUTL_DATA     *this,
-        const
         CMDUTL_OPTION   *pOptions,
         int             *longindex
+    );
+    
+    
+    char *          cmdutl_NextArg(
+        CMDUTL_DATA     *this
     );
     
     
@@ -258,6 +258,19 @@ extern "C" {
         CMDUTL_DATA     *this,
         const
         char            *optstring
+    );
+    
+    
+    bool            cmdutl_ProcessOption(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pOption
+    );
+    
+    
+    bool            cmdutl_Reset(
+        CMDUTL_DATA     *this,
+        int             cArgs,
+        char            **ppArgs
     );
     
     

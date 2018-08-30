@@ -198,7 +198,15 @@ extern "C" {
     );
     
     
-    ASTR_DATA *     clo_ConstructProgramLine(
+    /*! Convert an ArgC/ArgV array to a command line string.
+     @param     cArgs       Number of arguments in argv
+     @param     ppArgs      Pointer to an array of UTF-8 Arguments
+     @return    If successful, an AStr object which must be
+                released containing the Argument Array as a string.
+                Otherwise, OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     clo_ArgvToAStr(
         int             cArgs,
         const
         char            **ppArgs
