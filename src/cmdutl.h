@@ -16,6 +16,7 @@
  * Remarks
  *	1.      The internals are based on a public domain version of optparse.
  *          It has been extened to fit our environment and needs.
+ *          See http://github.com/skeeto/optparse for details
  *
  * History
  *	10/18/2015 Generated
@@ -130,8 +131,8 @@ extern "C" {
     // Note - The end of an option table is denoted by a pLongName of NULL
     // and a shortName of 0.
     typedef struct cmdutl_option_s {
-        char            *pLongName;         // "--" option_name
-        W32CHR_T        shortName;          // "-" option_name
+        char            *pLongName;         // "--" option_name (optional, may be NULL)
+        W32CHR_T        shortName;          // "-" option_name (required)
         uint16_t        argOption;          // See CMDUTIL_ARG_OPTION above.
         uint16_t        argType;            // See CMDUTIL_TYPE above.
         union {
@@ -204,6 +205,21 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    OBJ_ID      cmdutl_getObject(
+        CMDUTL_DATA *this
+    );
+    
+    bool        cmdutl_setObject(
+        CMDUTL_DATA *this,
+        OBJ_ID      pValue
+    );
+
+    
+    CMDUTL_OPTION * cmdutl_getOptionDefinitions(
+        CMDUTL_DATA *this
+    );
+    
+    
     PATH_DATA *     cmdutl_getPath(
         CMDUTL_DATA     *this
     );
@@ -242,13 +258,6 @@ extern "C" {
     );
     
     
-    int             cmdutl_Long(
-        CMDUTL_DATA     *this,
-        CMDUTL_OPTION   *pOptions,
-        int             *longindex
-    );
-    
-    
     char *          cmdutl_NextArg(
         CMDUTL_DATA     *this
     );
@@ -261,6 +270,41 @@ extern "C" {
     );
     
     
+    int             cmdutl_ParseLong(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pOptions,
+        int             *longindex
+    );
+    
+    
+    /*!
+     Parse and process all options up until the next argument using the
+     supplied object definitions.
+     @param     this        Object Pointer
+     @param     pDefaultOptions
+                            Pointer to CMDUTL_OPTION list ended with an
+                            entry of NULL in pLongName and 0 in shortName.
+     @param     pProgramOptions
+                            Pointer to CMDUTL_OPTION list ended with an
+                            entry of NULL in pLongName and 0 in shortName.
+     @return:   If successful, ERESULT_SUCCESS and the appropriate argument
+                processing was performed; otherwise, an ERESULT_* error code.
+     */
+    ERESULT         cmdutl_ParseOptions(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pDefaultOptions,
+        CMDUTL_OPTION   *pProgramOptions
+    );
+    
+    
+    /*!
+     After an option is found, it must be handled according to the
+     argType in the CMDUTL_OPTION.  This method does that processing.
+     @param     this        Object Pointer
+     @param     pOption     Pointer to CMDUTL_OPTION of option found
+     @return:   If successful, true and the appropriate argument processing
+                was performed; otherwise, false.
+     */
     bool            cmdutl_ProcessOption(
         CMDUTL_DATA     *this,
         CMDUTL_OPTION   *pOption
@@ -271,6 +315,25 @@ extern "C" {
         CMDUTL_DATA     *this,
         int             cArgs,
         char            **ppArgs
+    );
+    
+    
+    /*!
+     Set up the options to be used in the parsing phase from two optional sources.
+     @param     this        Object Pointer
+     @param     pDefaultOptions
+                            Pointer to CMDUTL_OPTION list ended with an
+                            entry of NULL in pLongName and 0 in shortName.
+     @param     pProgramOptions
+                            Pointer to CMDUTL_OPTION list ended with an
+                            entry of NULL in pLongName and 0 in shortName.
+     @return:   If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         cmdutl_SetupOptions(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pDefaultOptions,
+        CMDUTL_OPTION   *pProgramOptions
     );
     
     

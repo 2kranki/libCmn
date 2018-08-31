@@ -277,8 +277,6 @@
 		C4917E07210A978700FE234E /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = C4917E03210A978100FE234E /* scanner.c */; };
 		C4917E08210A978700FE234E /* scanner_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4917E04210A978300FE234E /* scanner_object.c */; };
 		C4917E0B210AACD100FE234E /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C4917E0A210AACD100FE234E /* libcurses.tbd */; };
-		C49738AD212DCB5700D72EF4 /* cloprs.c in Sources */ = {isa = PBXBuildFile; fileRef = C49738A9212DCB5300D72EF4 /* cloprs.c */; };
-		C49738AE212DCB5700D72EF4 /* cloprs_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49738AC212DCB5600D72EF4 /* cloprs_object.c */; };
 		C49ADDA22010E0250056FADD /* symEntry_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C49ADDA12010E0230056FADD /* symEntry_JSON.c */; };
 		C49ADDA42010EF360056FADD /* szTbl_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C49ADDA32010EF340056FADD /* szTbl_JSON.c */; };
 		C49ADE0B201448030056FADD /* i32Array.c in Sources */ = {isa = PBXBuildFile; fileRef = C49ADE08201447FF0056FADD /* i32Array.c */; };
@@ -865,10 +863,6 @@
 		C4917E05210A978400FE234E /* scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scanner.h; sourceTree = "<group>"; };
 		C4917E06210A978600FE234E /* scanner_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scanner_internal.h; sourceTree = "<group>"; };
 		C4917E0A210AACD100FE234E /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
-		C49738A9212DCB5300D72EF4 /* cloprs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cloprs.c; sourceTree = "<group>"; };
-		C49738AA212DCB5400D72EF4 /* cloprs_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cloprs_internal.h; sourceTree = "<group>"; };
-		C49738AB212DCB5500D72EF4 /* cloprs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cloprs.h; sourceTree = "<group>"; };
-		C49738AC212DCB5600D72EF4 /* cloprs_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cloprs_object.c; sourceTree = "<group>"; };
 		C49ADDA12010E0230056FADD /* symEntry_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = symEntry_JSON.c; sourceTree = "<group>"; };
 		C49ADDA32010EF340056FADD /* szTbl_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = szTbl_JSON.c; sourceTree = "<group>"; };
 		C49ADE07201447FD0056FADD /* i32Array_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = i32Array_internal.h; sourceTree = "<group>"; };
@@ -1072,10 +1066,6 @@
 				C43599411FC9C36100CA858E /* cfa.c */,
 				C435993C1FC9C36000CA858E /* cfa.h */,
 				C435994D1FC9C36100CA858E /* chario.h */,
-				C49738AA212DCB5400D72EF4 /* cloprs_internal.h */,
-				C49738AC212DCB5600D72EF4 /* cloprs_object.c */,
-				C49738A9212DCB5300D72EF4 /* cloprs.c */,
-				C49738AB212DCB5500D72EF4 /* cloprs.h */,
 				C435999A1FC9C36800CA858E /* cmdutl_internal.h */,
 				C435999E1FC9C36800CA858E /* cmdutl_object.c */,
 				C43599861FC9C36600CA858E /* cmdutl.c */,
@@ -1771,7 +1761,6 @@
 				C4359BEB1FC9C48400CA858E /* true_object.c in Sources */,
 				C4359A5B1FC9C38800CA858E /* fbsi.c in Sources */,
 				C4917E01210A96C200FE234E /* screen.c in Sources */,
-				C49738AE212DCB5700D72EF4 /* cloprs_object.c in Sources */,
 				C43599C01FC9C36800CA858E /* btp.c in Sources */,
 				C421236C1FE9756200F45294 /* number_JSON.c in Sources */,
 				C4359C031FC9C48400CA858E /* scandec32.c in Sources */,
@@ -1860,7 +1849,6 @@
 				C4AA73B41FE2B740001FACEC /* dec_JSON.c in Sources */,
 				C4359B501FC9C42700CA858E /* plist_object.c in Sources */,
 				C4359AEA1FC9C3D800CA858E /* objCb_object.c in Sources */,
-				C49738AD212DCB5700D72EF4 /* cloprs.c in Sources */,
 				C421233F1FE82A8C00F45294 /* pplex2_object.c in Sources */,
 				C4359B581FC9C42700CA858E /* psxMutex.c in Sources */,
 				C42123401FE82A8C00F45294 /* pplex2.c in Sources */,

@@ -325,7 +325,7 @@ $(OBJDIR)/cfa_object.o: $(SRCDIR)/cfa_object.c
 
 
 
-OBJS += $(OBJDIR)/clo.o $(OBJDIR)/clo_object.o
+#OBJS += $(OBJDIR)/clo.o $(OBJDIR)/clo_object.o
 
 
 $(OBJDIR)/clo.o: $(SRCDIR)/clo.c
@@ -337,7 +337,7 @@ $(OBJDIR)/clo_object.o: $(SRCDIR)/clo_object.c
 
 
 
-OBJS += $(OBJDIR)/cloOpt.o $(OBJDIR)/cloOpt_object.o
+#OBJS += $(OBJDIR)/cloOpt.o $(OBJDIR)/cloOpt_object.o
 
 
 $(OBJDIR)/cloOpt.o: $(SRCDIR)/cloOpt.c
@@ -349,7 +349,7 @@ $(OBJDIR)/cloOpt_object.o: $(SRCDIR)/cloOpt_object.c
 
 
 
-OBJS += $(OBJDIR)/cloprs.o $(OBJDIR)/cloprs_object.o
+#OBJS += $(OBJDIR)/cloprs.o $(OBJDIR)/cloprs_object.o
 
 
 $(OBJDIR)/cloprs.o: $(SRCDIR)/cloprs.c
@@ -2106,21 +2106,21 @@ test_cfa:
 	$(OBJDIR)/$(@F) ./tests
 
 
-TESTS += test_clo
+#TESTS += test_clo
 
 test_clo:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_clo.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
-TESTS += test_cloOpt
+#TESTS += test_cloOpt
 
 test_cloOpt:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloOpt.c 
 	$(OBJDIR)/$(@F) ./tests
 
 
-TESTS += test_cloprs
+#TESTS += test_cloprs
 
 test_cloprs:
 	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_cloprs.c 
