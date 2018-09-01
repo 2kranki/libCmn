@@ -89,12 +89,12 @@ extern "C" {
 #endif
     
 
-    CLO_OPTION      defaultArgs[] = {
+    CMDUTL_OPTION       defaultArgs[] = {
         {
             NULL,                       // Long
             '?',                        // Short
-            0,                          // Class
-            CLO_ARG_EXEC,               // Type
+            CMDUTL_ARG_OPTION_NONE,     // Class
+            CMDUTL_TYPE_EXEC,           // Type
             0,                          // Offset
             (void *)appl_Help,          // Executed Routine
             "Display Help"              // Description
@@ -102,8 +102,8 @@ extern "C" {
         {
             "debug",
             'd',
-            0,                          // Class
-            CLO_ARG_BOOL,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_BOOL,
             offsetof(APPL_DATA, fDebug),
             NULL,
             "Set Debug Mode"
@@ -111,8 +111,8 @@ extern "C" {
         {
             "force",
             'f',
-            0,                          // Class
-            CLO_ARG_BOOL,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_BOOL,
             offsetof(APPL_DATA, fForce),
             NULL,
             "Set Force Mode"
@@ -120,8 +120,8 @@ extern "C" {
         {
             "help",
             'h',
-            0,                          // Class
-            CLO_ARG_EXEC,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
             0,
             (void *)appl_Help,
             "Display Help"
@@ -129,8 +129,8 @@ extern "C" {
         {
             "quiet",
             's',
-            0,                          // Class
-            CLO_ARG_BOOL,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_BOOL,
             offsetof(APPL_DATA, fQuiet),
             NULL,
             "Set Quiet Mode"
@@ -139,8 +139,8 @@ extern "C" {
         {
             "silent",
             's',
-            0,                          // Class
-            CLO_ARG_BOOL,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_BOOL,
             offsetof(APPL_DATA, fQuiet),
             NULL,
             "Set Quiet Mode"
@@ -148,15 +148,14 @@ extern "C" {
         {
             "verbose",
             'v',
-            0,                          // Class
-            CLO_ARG_INCR,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_INCR,
             offsetof(APPL_DATA, iVerbose),
             NULL,
             "Set Verbose Mode"
         },
+        {NULL,0,0,0,0,NULL,NULL}                    // End of Table
     };
-    static
-    int             cDefaultArgs = (sizeof(defaultArgs) / sizeof(APPL_CLO));
 
 
  
@@ -200,8 +199,20 @@ extern "C" {
         return pStr;
     }
     
+
+    
+    bool            appl_OptionsEnd(
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             i
+    )
+    {
+        return (NULL == pOptions[i].pLongName) && (0 == pOptions[i].shortName);
+    }
     
     
+    
+
 
     
     /****************************************************************
@@ -229,6 +240,100 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                       F a t a l  E r r o r
+    //---------------------------------------------------------------
+    
+    void            appl_ErrorFatal(
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+        
+        va_start( argsp, fmt );
+        fprintf( stderr, "Fatal Error:  " );
+        vfprintf( stderr, fmt, argsp );
+        va_end( argsp );
+        fprintf( stderr, "\n\n\n" );
+        
+        exit( 99 );
+    }
+    
+    
+    
+    void            appl_ErrorFatalArg(
+        const
+        char            *fmt,
+        va_list         argsp
+    )
+    {
+        
+        fprintf( stderr, "Fatal Error:  " );
+        vfprintf( stderr, fmt, argsp );
+        fprintf( stderr, "\n\n\n" );
+        
+        exit( 99 );
+    }
+    
+    
+    
+    void            appl_ErrorFatalFLC(
+        const
+        char            *pFileName,
+        uint32_t        linnum,
+        uint16_t        colnum,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+        
+        va_start( argsp, fmt );
+        fprintf(
+                stderr,
+                "Fatal Error: %s line: %d col: %d  ",
+                (pFileName ? pFileName : ""),
+                linnum,
+                colnum
+                );
+        vfprintf( stderr, fmt, argsp );
+        va_end( argsp );
+        fprintf( stderr, "\n\n\n" );
+        
+        exit( 99 );
+    }
+    
+    
+    
+    void            appl_ErrorFatalFLCArg(
+        const
+        char            *pFileName,
+        uint32_t        linnum,
+        uint16_t        colnum,
+        const
+        char            *fmt,
+        va_list         argsp
+    )
+    {
+        
+        fprintf(
+                stderr,
+                "Fatal Error: %s line: %d col: %d  ",
+                (pFileName ? pFileName : ""),
+                linnum,
+                colnum
+                );
+        vfprintf( stderr, fmt, argsp );
+        fprintf( stderr, "\n\n\n" );
+        
+        exit( 99 );
+    }
+    
+    
+    
     APPL_DATA *     appl_New(
     )
     {
@@ -325,10 +430,7 @@ extern "C" {
     
     bool            appl_setArgDefs(
         APPL_DATA       *this,
-        uint16_t        cProgramArgs,
-        CLO_OPTION      *pProgramArgs,
-        uint16_t        cGroupArgs,
-        CLO_OPTION      *pGroupArgs
+        CMDUTL_OPTION   *pProgramArgs
     )
     {
 #ifdef NDEBUG
@@ -339,22 +441,18 @@ extern "C" {
         }
 #endif
         
-        this->cProgramArgs = cProgramArgs;
         this->pProgramArgs = pProgramArgs;
-        this->cGroupArgs = cGroupArgs;
-        this->pGroupArgs = pGroupArgs;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
     
     //---------------------------------------------------------------
-    //                          C l o
+    //                          C m d
     //---------------------------------------------------------------
     
-    CLOPRS_DATA *   appl_getClo(
+    CMDUTL_DATA *   appl_getCmd(
         APPL_DATA       *this
     )
     {
@@ -368,14 +466,13 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
-        return this->pClo;
+        return this->pCmd;
     }
     
     
-    bool            appl_setClo(
+    bool            appl_setCmd(
         APPL_DATA       *this,
-        CLOPRS_DATA     *pValue
+        CMDUTL_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -387,12 +484,11 @@ extern "C" {
 #endif
         
         obj_Retain(pValue);
-        if (this->pClo) {
-            obj_Release(this->pClo);
+        if (this->pCmd) {
+            obj_Release(this->pCmd);
         }
-        this->pClo = pValue;
+        this->pCmd = pValue;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -1069,7 +1165,7 @@ extern "C" {
 #endif
 
         appl_setArgs(this, OBJ_NIL);
-        appl_setClo(this, OBJ_NIL);
+        appl_setCmd(this, OBJ_NIL);
         appl_setDateTime(this, OBJ_NIL);
         appl_setEnv(this, OBJ_NIL);
         appl_setProgramPath(this, OBJ_NIL);
@@ -2163,7 +2259,7 @@ extern "C" {
     void            appl_UsageArg(
         APPL_DATA       *this,
         ASTR_DATA       *pStr,              // in-out
-        CLO_OPTION      *pClo
+        CMDUTL_OPTION   *pOption
     )
     {
         ERESULT         eRc;
@@ -2171,16 +2267,16 @@ extern "C" {
         
         eRc = AStr_Truncate(pStr, 0);
         eRc = AStr_AppendA(pStr, "  ");
-        if (pClo->argChr) {
+        if (pOption->shortName) {
             eRc = AStr_AppendCharW32(pStr, '-');
-            eRc = AStr_AppendCharW32(pStr, pClo->argChr);
+            eRc = AStr_AppendCharW32(pStr, pOption->shortName);
         }
-        if (pClo->pArgLong) {
-            if (pClo->argChr) {
+        if (pOption->pLongName) {
+            if (pOption->shortName) {
                 eRc = AStr_AppendCharW32(pStr, ',');
             }
             eRc = AStr_AppendA(pStr, "--");
-            eRc = AStr_AppendA(pStr, pClo->pArgLong);
+            eRc = AStr_AppendA(pStr, pOption->pLongName);
         }
         len = 25 - AStr_getLength(pStr);
         if (len > 0) {
@@ -2189,8 +2285,8 @@ extern "C" {
         else {
             eRc = AStr_AppendCharW32(pStr, ' ');
         }
-        if (pClo->pDesc) {
-            eRc = AStr_AppendA(pStr, pClo->pDesc);
+        if (pOption->pDesc) {
+            eRc = AStr_AppendA(pStr, pOption->pDesc);
         }
     }
     
@@ -2240,14 +2336,12 @@ extern "C" {
             this->pUsageDesc(this->pObjUsage, pOutput, this->pProgramPath);
         }
         fprintf( pOutput, "Options:\n");
-        if (cDefaultArgs) {
-            for (i=0; i<cDefaultArgs; ++i) {
-                appl_UsageArg(this, pStr, &defaultArgs[i]);
-                fprintf( pOutput, "%s\n", AStr_getData(pStr));
-            }
+        for (i=0; !appl_OptionsEnd(defaultArgs, i); ++i) {
+            appl_UsageArg(this, pStr, &defaultArgs[i]);
+            fprintf( pOutput, "%s\n", AStr_getData(pStr));
         }
-        if (this->cProgramArgs) {
-            for (i=0; i<this->cProgramArgs; ++i) {
+        if (this->pProgramArgs) {
+            for (i=0; !appl_OptionsEnd(this->pProgramArgs, i); ++i) {
                 appl_UsageArg(this, pStr, &this->pProgramArgs[i]);
                 fprintf( pOutput, "%s\n", AStr_getData(pStr));
             }

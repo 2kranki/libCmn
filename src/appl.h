@@ -66,7 +66,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrArray.h>
-#include        <cloprs.h>
+#include        <cmdutl.h>
 #include        <dateTime.h>
 #include        <node.h>
 
@@ -159,6 +159,39 @@ extern "C" {
     );
     
     
+    void            appl_ErrorFatal(
+        const
+        char            *fmt,
+        ...
+    );
+    
+    void            appl_ErrorFatalArg(
+        const
+        char            *fmt,
+        va_list         argsp
+    );
+    
+    void            appl_ErrorFatalFLC(
+        const
+        char            *pFileName,
+        uint32_t        linnum,
+        uint16_t        colnum,
+        const
+        char            *fmt,
+        ...
+    );
+    
+    void            appl_ErrorFatalFLCArg(
+        const
+        char            *pFileName,
+        uint32_t        linnum,
+        uint16_t        colnum,
+        const
+        char            *fmt,
+        va_list         argsp
+    );
+    
+
     APPL_DATA *     appl_New(
         void
     );
@@ -180,10 +213,12 @@ extern "C" {
 
     bool            appl_setArgDefs(
         APPL_DATA       *this,
-        uint16_t        cProgramArgs,
-        CLO_OPTION      *pProgramArgs,
-        uint16_t        cGroupArgs,
-        CLO_OPTION      *pGroupArgs
+        CMDUTL_OPTION   *pProgramArgs
+    );
+    
+    
+    CMDUTL_DATA *   appl_getCmd(
+        APPL_DATA       *this
     );
     
     

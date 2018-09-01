@@ -135,14 +135,12 @@ extern "C" {
         W32CHR_T        shortName;          // "-" option_name (required)
         uint16_t        argOption;          // See CMDUTIL_ARG_OPTION above.
         uint16_t        argType;            // See CMDUTIL_TYPE above.
-        union {
-            uint32_t        offset;             // Option Offset
-            ERESULT         (*pExec)(           // Method to execute if APPL_ARG_EXEC
-                                OBJ_ID,
-                                const
-                                char *              // Arg Ptr if present or NULL
-            );
-        };
+        uint32_t        offset;             // Option Offset
+        ERESULT         (*pExec)(           // Method to execute if APPL_ARG_EXEC
+                                 OBJ_ID,
+                                 const
+                                 char *              // Arg Ptr if present or NULL
+        );
         const
         char            *pDesc;             // Option Description
     } CMDUTL_OPTION;
@@ -263,17 +261,17 @@ extern "C" {
     );
     
     
-    int             cmdutl_Parse(
+    /*!
+     After an option is found, it must be handled according to the
+     argType in the CMDUTL_OPTION.  This method does that processing.
+     @param     this        Object Pointer
+     @param     pOption     Pointer to CMDUTL_OPTION of option found
+     @return:   If successful, true and the appropriate argument processing
+     was performed; otherwise, false.
+     */
+    ERESULT         cmdutl_ProcessOption(
         CMDUTL_DATA     *this,
-        const
-        char            *optstring
-    );
-    
-    
-    int             cmdutl_ParseLong(
-        CMDUTL_DATA     *this,
-        CMDUTL_OPTION   *pOptions,
-        int             *longindex
+        CMDUTL_OPTION   *pOption
     );
     
     
@@ -281,33 +279,11 @@ extern "C" {
      Parse and process all options up until the next argument using the
      supplied object definitions.
      @param     this        Object Pointer
-     @param     pDefaultOptions
-                            Pointer to CMDUTL_OPTION list ended with an
-                            entry of NULL in pLongName and 0 in shortName.
-     @param     pProgramOptions
-                            Pointer to CMDUTL_OPTION list ended with an
-                            entry of NULL in pLongName and 0 in shortName.
-     @return:   If successful, ERESULT_SUCCESS and the appropriate argument
+      @return:   If successful, ERESULT_SUCCESS and the appropriate argument
                 processing was performed; otherwise, an ERESULT_* error code.
      */
-    ERESULT         cmdutl_ParseOptions(
-        CMDUTL_DATA     *this,
-        CMDUTL_OPTION   *pDefaultOptions,
-        CMDUTL_OPTION   *pProgramOptions
-    );
-    
-    
-    /*!
-     After an option is found, it must be handled according to the
-     argType in the CMDUTL_OPTION.  This method does that processing.
-     @param     this        Object Pointer
-     @param     pOption     Pointer to CMDUTL_OPTION of option found
-     @return:   If successful, true and the appropriate argument processing
-                was performed; otherwise, false.
-     */
-    bool            cmdutl_ProcessOption(
-        CMDUTL_DATA     *this,
-        CMDUTL_OPTION   *pOption
+    ERESULT         cmdutl_ProcessOptions(
+        CMDUTL_DATA     *this
     );
     
     

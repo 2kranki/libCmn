@@ -73,20 +73,16 @@ struct appl_data_s	{
     uint8_t         rsvd8;
     uint16_t        iVerbose;
     uint16_t        rsvd16_1;
-    CLOPRS_DATA     *pClo;
-    CLO_OPTION      *pCloArgs[3];
+    CMDUTL_DATA     *pCmd;
 
     // Program Arguments and Options
     uint16_t        cOptions;
     uint16_t        rsvd16_2;
     ASTRARRAY_DATA  *pArgs;
     ASTRARRAY_DATA  *pEnv;
-    uint16_t        cProgramArgs;
-    uint16_t        cGroupArgs;
     uint32_t        nextArg;
     PATH_DATA       *pProgramPath;
-    CLO_OPTION      *pProgramArgs;
-    CLO_OPTION      *pGroupArgs;
+    CMDUTL_OPTION   *pProgramArgs;
 
     OBJ_ID          pObjPrs;
     ERESULT         (*pParseArgsDefaults)(OBJ_ID);
@@ -129,6 +125,12 @@ struct appl_data_s	{
 
 
     // Internal Functions
+    bool            appl_setCmd(
+        APPL_DATA       *this,
+        CMDUTL_DATA     *pValue
+    );
+    
+    
     bool            appl_setDebug(
         APPL_DATA       *this,
         bool            fValue
@@ -196,7 +198,7 @@ struct appl_data_s	{
     void            appl_UsageArg(
         APPL_DATA       *this,
         ASTR_DATA       *pStr,              // in-out
-        CLO_OPTION      *pClo
+        CMDUTL_OPTION   *pOption
     );
     
     

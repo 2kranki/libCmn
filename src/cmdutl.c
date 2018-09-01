@@ -565,6 +565,32 @@ extern "C" {
     
     
     //--------------------------------------------------------------
+    //                      F a t a l  E r r o r
+    //--------------------------------------------------------------
+    
+    bool            cmdutl_setFatalError(
+        CMDUTL_DATA     *this,
+        void            (*pFatalError)(
+                            const
+                            char            *fmt,
+                            ...
+        )
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        this->pFatalError = pFatalError;
+        
+        return true;
+    }
+    
+    
+    
+    //--------------------------------------------------------------
     //                       O b j e c t
     //--------------------------------------------------------------
     
@@ -851,8 +877,9 @@ extern "C" {
             DEBUG_BREAK();
             return false;
         }
-        if (this->ppArgV == NULL)
+        if (NULL == this->ppArgV) {
             return false;
+        }
 #endif
         
         pArg = this->ppArgV[this->optIndex];
@@ -881,7 +908,7 @@ extern "C" {
             DEBUG_BREAK();
             return false;
         }
-        if (this->ppArgV == NULL) {
+        if (NULL == this->ppArgV) {
             DEBUG_BREAK();
             return false;
         }
@@ -923,7 +950,7 @@ extern "C" {
             DEBUG_BREAK();
             return -1;
         }
-        if(this->ppArgV == NULL) {
+        if (NULL == this->ppArgV) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1026,7 +1053,7 @@ extern "C" {
             DEBUG_BREAK();
             return -1;
         }
-        if(this->ppArgV == NULL) {
+        if (NULL == this->ppArgV) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1103,13 +1130,12 @@ extern "C" {
     //                      P r o c e s s  O p t i o n
     //---------------------------------------------------------------
     
-    bool            cmdutl_ProcessOption(
+    ERESULT         cmdutl_ProcessOption(
         CMDUTL_DATA     *this,
         CMDUTL_OPTION   *pOption
     )
     {
         ERESULT         eRc;
-        bool            fRc = false;
         int             iRc;
         ASTR_DATA       *pStr = OBJ_NIL;
         PATH_DATA       *pPath = OBJ_NIL;
@@ -1120,17 +1146,17 @@ extern "C" {
 #else
         if( !cmdutl_Validate(this) ) {
             DEBUG_BREAK();
-            return fRc;
+            return ERESULT_INVALID_OBJECT;
         }
-        if (this->ppArgV == NULL) {
+        if (NULL == this->ppArgV) {
             DEBUG_BREAK();
-            return fRc;
+            return ERESULT_DATA_MISSING;
         }
 #endif
         
         if (pOption) {
             pPtr = (uint8_t *)this->pObj + pOption->offset;
-            if ((0 == pOption->offset) || (NULL == pPtr)) {
+            if (NULL == pPtr) {
                 return false;
             }
             switch (pOption->argType) {
@@ -1138,8 +1164,12 @@ extern "C" {
                     if (pOption->pExec) {
                         eRc = pOption->pExec(this->pObj, this->pOptArg);
                         if (ERESULT_FAILED(eRc)) {
-                            //FIXME: appl_Usage(this, "ERROR - Execute Routine for --%s failed!", pClo->pArgLong);
-                            exit(8);
+                            if (this->pFatalError) {
+                                this->pFatalError(
+                                            "ERROR - Execute Routine for --%s failed!",
+                                            pOption->pLongName
+                                );
+                            }
                         }
                     }
                     break;
@@ -1161,7 +1191,7 @@ extern "C" {
                                     "option requires an argument",
                                     option
                                 );
-                        return false;
+                        return ERESULT_DATA_MISSING;
                     }
                     else {
                         pPath = path_NewA(this->pOptArg);
@@ -1178,7 +1208,7 @@ extern "C" {
                                     "option requires an argument",
                                     option
                                 );
-                        return false;
+                        return ERESULT_DATA_MISSING;
                     }
                     else {
                         pStr = AStr_NewA(this->pOptArg);
@@ -1191,7 +1221,61 @@ extern "C" {
             }
         }
         
-        return true;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                 P r o c e s s  O p t i o n s
+    //---------------------------------------------------------------
+    
+    ERESULT         cmdutl_ProcessOptions(
+        CMDUTL_DATA     *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        bool            fRc = false;
+        int             iRc;
+        int             longIndex;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+        char            option[16];
+        void            *pPtr;
+        
+#ifdef NDEBUG
+#else
+        if( !cmdutl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->ppArgV) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        if (NULL == this->pOptDefns) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+#endif
+        
+        // Parse and process the next group of options.
+        for (;;) {
+            longIndex = -1;
+            iRc = cmdutl_ParseLong(this, this->pOptDefns, &longIndex);
+            if (-1 == iRc)
+                break;
+            if ('?' == iRc) {
+                eRc = ERESULT_KEY_NOT_FOUND;
+                break;
+            }
+            eRc = cmdutl_ProcessOption(this, &this->pOptDefns[longIndex]);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+       }
+        
+        return eRc;
     }
     
     
@@ -1257,7 +1341,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->ppArgV == NULL) {
+        if (NULL == this->ppArgV) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }

@@ -82,6 +82,11 @@ struct cmdutl_data_s	{
     // ArgC/ArgV Stuff
     ASTRARRAY_DATA  *pSavedArgs;
     OBJ_ID          pObj;
+    void            (*pFatalError)(
+        const
+        char            *fmt,
+        ...
+    );
 
     // Program Arguments and Options
     uint16_t        cOptions;
@@ -177,6 +182,20 @@ struct cmdutl_data_s	{
         CMDUTL_OPTION   *pOptions,
         int             len,
         char            *pOptstring
+    );
+    
+    
+    int             cmdutl_Parse(
+        CMDUTL_DATA     *this,
+        const
+        char            *optstring
+    );
+    
+    
+    int             cmdutl_ParseLong(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pOptions,
+        int             *longindex
     );
     
     
