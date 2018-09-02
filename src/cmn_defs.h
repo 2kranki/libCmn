@@ -196,12 +196,6 @@ extern "C" {
         OBJ_IDENT_CB32_CLASS,
         OBJ_IDENT_CFA,                  // C Fixed Array
         OBJ_IDENT_CFA_CLASS,
-        OBJ_IDENT_CLO,                  // Command Line Options
-        OBJ_IDENT_CLO_CLASS,
-        OBJ_IDENT_CLOOPT,               // A Command Line Option
-        OBJ_IDENT_CLOOPT_CLASS,
-        OBJ_IDENT_CLOPRS,               // Command Line Option Parser
-        OBJ_IDENT_CLOPRS_CLASS,
         OBJ_IDENT_CMDUTL,               // Command Utilities
         OBJ_IDENT_CMDUTL_CLASS,
         OBJ_IDENT_COMPILER,
