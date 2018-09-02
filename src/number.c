@@ -101,6 +101,27 @@ extern "C" {
     }
 
 
+    NUMBER_DATA *   number_NewA(
+        const
+        char            *pStr
+    )
+    {
+        NUMBER_DATA     *this;
+        int64_t         i64;
+        
+        this = number_Alloc( );
+        if (this) {
+            this = number_Init(this);
+            if (this) {
+                i64 = dec_getInt64A(pStr);
+                this->type = NUMBER_TYPE_INT64;
+                this->i64 = i64;
+            }
+        }
+        return this;
+    }
+    
+    
     NUMBER_DATA *   number_NewInt16(
         int16_t         value
     )

@@ -251,6 +251,12 @@ extern "C" {
     );
     
     
+    /*!
+     Check to see if there are more options or arguments left to parse.
+     @param     this        Object Pointer
+     @return:   true if there are more options or arguments to parse,
+                otherwise, false.
+     */
     bool            cmdutl_IsMore(
         CMDUTL_DATA     *this
     );

@@ -52,6 +52,8 @@
 
 #include        <test_defs.h>
 #include        <AStr.h>
+#include        <number.h>
+#include        <path.h>
 
 
 #ifndef         OBJTEST_H
@@ -68,7 +70,13 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-
+#ifdef XYZZY
+    typedef enum obj_idents_test_e {
+        OBJ_IDENT_OBJTEST=OBJ_IDENT_USER_ENTRIES,
+        OBJ_IDENT_OBJTEST_CLASS
+    } OBJ_IDENTS_TEST;
+#endif
+    
     typedef struct objTest_data_s	OBJTEST_DATA;    // Inherits from OBJ.
 
     typedef struct objTest_vtbl_s	{
@@ -112,8 +120,28 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            objTest_getArchive(
+        OBJTEST_DATA    *this
+    );
+
+    
+    NUMBER_DATA *   objTest_getArgLength(
+        OBJTEST_DATA    *this
+    );
+
+    
+    PATH_DATA *     objTest_getInPath(
+        OBJTEST_DATA    *this
+    );
+
+
     ERESULT         objTest_getLastError(
         OBJTEST_DATA	*this
+    );
+
+
+    PATH_DATA *     objTest_getOutPath(
+        OBJTEST_DATA    *this
     );
 
 

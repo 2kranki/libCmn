@@ -128,6 +128,12 @@ extern "C" {
     );
 
     
+    NUMBER_DATA *   number_NewA(
+        const
+        char            *pStr
+    );
+    
+    
     NUMBER_DATA *   number_NewInt16(
         int16_t         value
     );

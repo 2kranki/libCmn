@@ -89,7 +89,7 @@ extern "C" {
 #endif
     
 
-    CMDUTL_OPTION       defaultArgs[] = {
+    CMDUTL_OPTION       defaultOptDefns[] = {
         {
             NULL,                       // Long
             '?',                        // Short
@@ -347,12 +347,11 @@ extern "C" {
     }
     
     
-    APPL_DATA *     appl_NewFromArgV(
+    APPL_DATA *     appl_NewWithArgV(
         int             cArgs,
-        const
         char            *ppArgs[],
-        const
-        char            **ppEnv
+        char            **ppEnv,
+        CMDUTL_OPTION   *pPgmOptDefns
     )
     {
         APPL_DATA       *this;
@@ -362,7 +361,7 @@ extern "C" {
         if (this) {
             this = appl_Init(this);
             if (this) {
-                eRc = appl_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
+                eRc = appl_SetupFromArgV(this, cArgs, ppArgs, ppEnv, pPgmOptDefns);
             }
         }
         return this;
@@ -441,7 +440,7 @@ extern "C" {
         }
 #endif
         
-        this->pProgramArgs = pProgramArgs;
+        this->pPgmOptDefns = pProgramArgs;
         
         return true;
     }
@@ -1252,8 +1251,8 @@ extern "C" {
         APPL_DATA       *this
     )
     {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
+        //ERESULT         eRc;
+        //ASTR_DATA       *pStr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1264,6 +1263,7 @@ extern "C" {
         }
 #endif
         
+#ifdef XYZZY
         eRc = appl_ParseArgs(this);
         if (ERESULT_FAILED(eRc)) {
             appl_setLastError(this, eRc);
@@ -1290,6 +1290,7 @@ extern "C" {
                 }
             }
         }
+#endif
 
         // Return to caller.
         appl_setLastError(this, ERESULT_SUCCESS);
@@ -1415,15 +1416,41 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  N e x t  A r g u m e n t
+    //                       I s M o r e
     //---------------------------------------------------------------
     
-    ASTR_DATA *     appl_NextArg(
+    bool            appl_IsMore(
         APPL_DATA       *this
     )
     {
-        ASTR_DATA       *pData = OBJ_NIL;
-        ERESULT         eRc = ERESULT_DATA_MISSING;
+        bool            fRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return appl_getLastError(this);
+        }
+#endif
+        
+        fRc = cmdutl_IsMore(this->pCmd);
+        
+        // Return to caller.
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  N e x t  A r g u m e n t
+    //---------------------------------------------------------------
+    
+    char *          appl_NextArg(
+        APPL_DATA       *this
+    )
+    {
+        char            *pData = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1434,16 +1461,9 @@ extern "C" {
         }
 #endif
         
-        if (this->nextArg <= AStrArray_getSize(this->pArgs)) {
-            pData = AStrArray_Get(this->pArgs, this->nextArg);
-            if (pData) {
-                ++this->nextArg;
-                eRc = ERESULT_SUCCESS;
-            }
-        }
+        pData = cmdutl_NextArg(this->pCmd);
 
         // Return to caller.
-        appl_setLastError(this, eRc);
         return pData;
     }
     
@@ -1478,21 +1498,14 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  P a r s e  A r g u m e n t s
+    //                 P r o c e s s  O p t i o n s
     //---------------------------------------------------------------
     
-    ERESULT         appl_ParseArgs(
+    ERESULT         appl_ProcessOptions(
         APPL_DATA       *this
     )
     {
         ERESULT         eRc;
-        int             wrkArgC = 0;
-        int             i;
-#ifdef XYZZY
-        int             offset;
-        int             len;
-        char            wrkstr[64];
-#endif
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1501,296 +1514,15 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == this->pArgs) {
-            DEBUG_BREAK();
-            appl_setLastError(this, ERESULT_DATA_MISSING);
-            return ERESULT_DATA_MISSING;
-        }
-#endif
-        TRC_OBJ(this,"%s:\n", __func__);
-        wrkArgC = AStrArray_getSize(this->pArgs);
-#ifdef NDEBUG
-#else
-        if (wrkArgC < 1) {
-            DEBUG_BREAK();
-            appl_setLastError(this, ERESULT_DATA_MISSING);
-            return ERESULT_DATA_MISSING;
-        }
 #endif
 
-#ifdef NDEBUG
-#else
-        if (obj_Trace(this)) {
-            fprintf(stdout, "\tcArgs = %d\n", wrkArgC);
-            for (i=0; i<wrkArgC; ++i) {
-                ASTR_DATA           *pStr = OBJ_NIL;
-                pStr = AStrArray_Get(this->pArgs, (i+1));
-                if (pStr) {
-                    fprintf(stderr, "\targ[%d]=\"%s\"\n", i, AStr_getData(pStr));
-               }
-            }
-            fprintf(stdout, "\n");
-        }
-#endif
-        
         // Process the arguments skipping the program path.
-        while (this->nextArg <= wrkArgC) {
-            ASTR_DATA           *pStr = OBJ_NIL;
-            ASTR_DATA           *pWrk = OBJ_NIL;
-            uint32_t            len = 0;
-            pStr = AStrArray_Get(this->pArgs, this->nextArg);
-            if (pStr) {
-                len = AStr_getLength(pStr);
-                if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pStr, "--not-")) {
-                    if (6 == len) {
-                        appl_Usage(this, "ERROR - Missing flag");
-                        exit(8);
-                    }
-                    eRc = AStr_Right(pStr, (len - 6), &pWrk);
-                    if (!ERESULT_FAILED(eRc)) {
-                        eRc = appl_ParseArgsLong(this, false, pWrk);
-                        obj_Release(pWrk);
-                        pWrk = OBJ_NIL;
-                    }
-                }
-                else if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pStr, "--")) {
-                    if (2 == len) {
-                        // End of Option Scanning
-                        break;
-                    }
-                    eRc = AStr_Right(pStr, (len - 2), &pWrk);
-                    if (!ERESULT_FAILED(eRc)) {
-                        eRc = appl_ParseArgsLong(this, true, pWrk);
-                        obj_Release(pWrk);
-                        pWrk = OBJ_NIL;
-                    }
-                }
-                else if (ERESULT_SUCCESS_EQUAL == AStr_CompareLeftA(pStr, "-")) {
-                    if (1 == len) {
-                        appl_Usage(this, "ERROR - Missing flag");
-                        exit(8);
-                    }
-                }
-                else {
-                    break;
-                }
-                ++this->nextArg;
-            }
-        }
+        eRc = cmdutl_ProcessOptions(this->pCmd);
 
-        appl_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         appl_ParseArgsLong(
-        APPL_DATA       *this,
-        bool            fTrue,
-        ASTR_DATA       *pArg
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pName = OBJ_NIL;
-        ASTR_DATA       *pData = OBJ_NIL;
-        uint32_t        idxEql = 0;
-        uint32_t        len = 0;
-        APPL_CLO        *pClo = NULL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        len = AStr_getLength(pArg);
-        eRc = AStr_CharFindNextW32(pArg, &idxEql, '=');
-        if (ERESULT_FAILED(eRc)) {
-            pName = AStr_Copy(pArg);
-        }
-        else {
-            if (1 == idxEql) {
-                appl_Usage(this, "ERROR - Missing flag - %s", AStr_getData(pArg));
-                exit(8);
-            }
-            eRc = AStr_Left(pArg, (idxEql - 1), &pName);
-            if (ERESULT_FAILED(eRc)) {
-                return eRc;
-            }
-            if (idxEql < len) {
-                eRc = AStr_Right(pArg, (len - idxEql), &pData);
-                if (ERESULT_FAILED(eRc)) {
-                    obj_Release(pName);
-                    return eRc;
-                }
-            }
-            else {
-                appl_Usage(this, "ERROR - Missing data - %s", AStr_getData(pArg));
-                exit(8);
-            }
-        }
-        
-        //FIXME: pClo = appl_ArgFindLong(this, AStr_getData(pName));
-        if (NULL == pClo) {
-            appl_Usage(this, "ERROR - Unknown flag - %s", AStr_getData(pName));
-            exit(8);
-        }
-        
-        if (pClo) {
-            void            *pPtr = (uint8_t *)this + pClo->offset;
-            if (0 == pClo->offset) {
-                pPtr = NULL;
-            }
-            switch (pClo->type) {
-                case APPL_ARG_BOOL:             // uint8_t - 0 or 1
-                    if (pPtr) {
-                        if (fTrue) {
-                            *((uint8_t *)pPtr) = 1;
-                        }
-                        else {
-                            *((uint8_t *)pPtr) = 0;
-                        }
-                    }
-                    break;
-                case APPL_ARG_EXEC:             // Execute given routine
-                    break;
-                case APPL_ARG_EXEC_PARM:        // Execute given routine
-                    if (OBJ_NIL == pData) {
-                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
-                            pData = AStrArray_Get(this->pArgs, this->nextArg);
-                            if (pData) {
-                                pData = AStr_Copy(pData);
-                                ++this->nextArg;
-                            }
-                        }
-                    }
-                    break;
-                case APPL_ARG_INCR:             // uint16_t - Every occurence increases the
-                    //                          // associated value (default is 0);
-                    if (pPtr) {
-                        if (fTrue) {
-                            *((uint16_t *)pPtr) += 1;
-                        }
-                        else {
-                            *((uint16_t *)pPtr) -= 1;
-                        }
-                    }
-                    break;
-                case APPL_ARG_NUMBER:           // Number pointer
-                    break;
-                case APPL_ARG_PATH:             // Path pointer
-                    if (OBJ_NIL == pData) {
-                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
-                            pData = AStrArray_Get(this->pArgs, this->nextArg);
-                            if (pData) {
-                                pData = AStr_Copy(pData);
-                                ++this->nextArg;
-                            }
-                        }
-                    }
-                    if (pData && pPtr) {
-                        *((PATH_DATA **)pPtr) = path_NewFromAStr(pData);
-                    }
-                    else {
-                        appl_Usage(
-                                   this,
-                                   "ERROR - Missing Path for --%s",
-                                   pClo->pArgLong
-                        );
-                        exit(8);
-                    }
-                    break;
-                case APPL_ARG_STRING:           // AStr pointer
-                    if (OBJ_NIL == pData) {
-                        if (this->nextArg < AStrArray_getSize(this->pArgs)) {
-                            pData = AStrArray_Get(this->pArgs, this->nextArg);
-                            if (pData) {
-                                pData = AStr_Copy(pData);
-                                ++this->nextArg;
-                            }
-                        }
-                    }
-                    if (pData && pPtr) {
-                        *((ASTR_DATA **)pPtr) = pData;
-                        pData = OBJ_NIL;
-                    }
-                    else {
-                        appl_Usage(
-                                   this,
-                                   "ERROR - Missing Path for --%s",
-                                   pClo->pArgLong
-                                   );
-                        exit(8);
-                    }
-                    break;
-                default:
-                    break;
-            }
-            if (pClo->pExec) {
-                eRc = pClo->pExec(this, pData);
-                if (ERESULT_FAILED(eRc)) {
-                    appl_Usage(
-                               this,
-                               "ERROR - Execute Routine for --%s failed!",
-                               pClo->pArgLong
-                    );
-                    exit(8);
-                }
-            }
-        }
-
-        // Return to caller.
-        obj_Release(pName);
-        obj_Release(pData);
         return eRc;
     }
     
     
-    ERESULT         appl_ParseArgsShort(
-        APPL_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        const
-        char            *pWrk = **pppArgV + 1;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        while (*pWrk) {
-            switch(tolower(*pWrk)) {
-                case '?':
-                case 'h':
-                    appl_Usage(this, NULL);
-                    exit(4);
-                    break;
-                case 'd':
-                    ++this->fDebug;
-                    break;
-                default:
-                    if (this->pParseArgsShort) {
-                        eRc = this->pParseArgsShort(this->pObjPrs, pArgC, pppArgV);
-                    }
-            }
-            ++pWrk;
-        }
-        
-        // Return to caller.
-        return eRc;
-    }
-        
-        
-
     //---------------------------------------------------------------
     //                     P r o p e r t y  A d d
     //---------------------------------------------------------------
@@ -1953,10 +1685,9 @@ extern "C" {
     ERESULT         appl_SetupFromArgV(
         APPL_DATA       *this,
         uint16_t        cArgs,
-        const
         char            *ppArgV[],
-        const
-        char            **ppEnv
+        char            **ppEnv,
+        CMDUTL_OPTION   *pPgmOptDefns
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -1982,10 +1713,11 @@ extern "C" {
         
         // Reset any prior parse data.
         appl_setArgs(this, OBJ_NIL);
+        appl_setCmd(this, OBJ_NIL);
         appl_setProgramPath(this, OBJ_NIL);
         appl_setEnv(this, OBJ_NIL);
-
-        pArgs = AStrArray_NewFromArgV(cArgs, ppArgV);
+        
+        pArgs = AStrArray_NewFromArgV(cArgs, (const char **)ppArgV);
         if (pArgs) {
             appl_setArgs(this, pArgs);           // Reset any prior data.
             obj_Release(pArgs);
@@ -2000,14 +1732,26 @@ extern "C" {
             obj_Release(pPath);
         }
         if (ppEnv) {
-            pArgs = AStrArray_NewFromArrayA(ppEnv);
+            pArgs = AStrArray_NewFromArrayA((const char **)ppEnv);
             if (pArgs) {
                 appl_setEnv(this, pArgs);
                 obj_Release(pArgs);
             }
         }
-        this->nextArg = 2;
+        this->pPgmOptDefns = pPgmOptDefns;
 
+        this->pCmd = cmdutl_New(cArgs, ppArgV);
+        if (OBJ_NIL == this->pCmd) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        cmdutl_setObject(this->pCmd, this);
+        eRc = cmdutl_SetupOptions(this->pCmd, defaultOptDefns, pPgmOptDefns);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+        
         return eRc;
     }
     
@@ -2015,7 +1759,7 @@ extern "C" {
     bool            appl_SetupFromStr(
         APPL_DATA       *this,
         char            *pCmdStr
-)
+    )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 #ifdef XYZZY
@@ -2336,16 +2080,19 @@ extern "C" {
             this->pUsageDesc(this->pObjUsage, pOutput, this->pProgramPath);
         }
         fprintf( pOutput, "Options:\n");
-        for (i=0; !appl_OptionsEnd(defaultArgs, i); ++i) {
-            appl_UsageArg(this, pStr, &defaultArgs[i]);
+        for (i=0; !appl_OptionsEnd(defaultOptDefns, i); ++i) {
+            appl_UsageArg(this, pStr, &defaultOptDefns[i]);
             fprintf( pOutput, "%s\n", AStr_getData(pStr));
         }
+        //FIXME: Remove ifdef below
+#ifdef XYZZY
         if (this->pProgramArgs) {
             for (i=0; !appl_OptionsEnd(this->pProgramArgs, i); ++i) {
                 appl_UsageArg(this, pStr, &this->pProgramArgs[i]);
                 fprintf( pOutput, "%s\n", AStr_getData(pStr));
             }
         }
+#endif
         if (this->pUsageOptions) {
             this->pUsageOptions(this->pObjUsage, pOutput);
         }

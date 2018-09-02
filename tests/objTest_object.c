@@ -80,6 +80,9 @@ bool            objTest_ClassIsKindOf(
     if (OBJ_IDENT_OBJTEST_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_APPL_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -129,6 +132,9 @@ bool            objTest_IsKindOf(
 {
     if (OBJ_IDENT_OBJTEST == classID) {
        return true;
+    }
+    if (OBJ_IDENT_APPL == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

@@ -998,8 +998,8 @@ extern	"C" {
         }
 #ifdef NDEBUG
 #else
-        if (size >= sizeof(OBJ_DATA)) {
-        }
+        if (size >= sizeof(OBJ_DATA))
+            ;
         else {
             DEBUG_BREAK();
             return OBJ_NIL;

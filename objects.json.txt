@@ -281,6 +281,7 @@
     ],
     "tests":
     {
+        "test_appl.c":[objTest.c, objTest_object.c],
         "test_AStr.c":null,
         "test_AStrArray.c":null,
         "test_AStrC.c":null,

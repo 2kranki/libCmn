@@ -40,7 +40,10 @@
 
 
 #include    <objTest.h>
+#include    <appl_internal.h>
+#include    <number.h>
 #include    <objArray.h>
+#include    <path.h>
 #include    <psxLock.h>
 
 
@@ -64,13 +67,20 @@ extern "C" {
 struct objTest_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    APPL_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
     PSXLOCK_DATA    *pLock;
     OBJARRAY_DATA   *pArray;
+
+    // Options and Arguments
+    uint16_t        fArchive;
+    uint16_t        rsvd16;
+    NUMBER_DATA     *pArgLen;
+    PATH_DATA       *pInFilePath;      // ("-f" | "--file=")<string> or ("-f" | "--file") <string>
+    PATH_DATA       *pOutFilePath;     // ("-o" | "--out=")<string> or ("-o" | "--out") <string>
 
 };
 #pragma pack(pop)

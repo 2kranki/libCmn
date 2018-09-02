@@ -192,7 +192,7 @@ int         test_cmdutl_ParseCommandLine01(
     CMDUTL_DATA     *pObj = OBJ_NIL;
     char            *ppArgs[] = {
         "./test",
-        "-v",
+        "-vv",
         "-f",
         "xyzzy",
         "abc",
@@ -216,10 +216,18 @@ int         test_cmdutl_ParseCommandLine01(
         XCTAssertTrue( ('v' == iRc) );
         XCTAssertTrue( ('v' == pObj->optopt) );
         XCTAssertTrue( (NULL == pObj->pOptArg) );
-        XCTAssertTrue( (pObj->optIndex == 2) );
+        XCTAssertTrue( (pObj->optIndex == 1) );
+        XCTAssertTrue( (pObj->subopt == 1) );
 
         fRc = cmdutl_IsMore(pObj);
         XCTAssertTrue( (fRc) );
+        
+        iRc = cmdutl_Parse(pObj, pOptString);
+        XCTAssertTrue( ('v' == iRc) );
+        XCTAssertTrue( ('v' == pObj->optopt) );
+        XCTAssertTrue( (NULL == pObj->pOptArg) );
+        XCTAssertTrue( (pObj->optIndex == 2) );
+        XCTAssertTrue( (pObj->subopt == 0) );
         
         iRc = cmdutl_Parse(pObj, pOptString);
         XCTAssertTrue( ('f' == iRc) );
@@ -491,7 +499,7 @@ int         test_cmdutl_ParseCommandLine04(
     };
     char            *ppArgs[] = {
         "./test",
-        "--verbose",
+        "-vv",
         "--file",
         "xyzzy",
         "abc",
@@ -519,7 +527,7 @@ int         test_cmdutl_ParseCommandLine04(
         eRc = cmdutl_ProcessOptions(pObj);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (0 == options.fDebug) );
-        XCTAssertTrue( (1 == options.fVerbose) );
+        XCTAssertTrue( (2 == options.fVerbose) );
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
         XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy")) );
@@ -540,7 +548,7 @@ int         test_cmdutl_ParseCommandLine04(
         eRc = cmdutl_ProcessOptions(pObj);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (0 == options.fDebug) );
-        XCTAssertTrue( (1 == options.fVerbose) );
+        XCTAssertTrue( (2 == options.fVerbose) );
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
         XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy2")) );

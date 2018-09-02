@@ -242,32 +242,6 @@ extern "C" {
     );
 
 
-    bool            appl_setParseArgs(
-        APPL_DATA       *this,
-        OBJ_ID          pExit,
-        ERESULT         (*pValueDefaults)(OBJ_ID),
-        ERESULT         (*pValueLong)(
-                                      OBJ_ID          this,
-                                      bool            fTrue,
-                                      ASTR_DATA       *pName,
-                                      ASTR_DATA       *pWrk,
-                                      uint32_t        index,
-                                      ASTRARRAY_DATA  *pArgs
-                        ),
-        ERESULT         (*pValueShort)(
-                                       OBJ_ID, int *, const char ***
-                        )
-    );
-    
-    
-    bool            appl_setProcessArgs(
-        APPL_DATA       *this,
-        OBJ_ID          pObj,
-        ERESULT         (*pProcessInit)(OBJ_ID),
-        ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *)
-    );
-    
-    
     PATH_DATA *     appl_getProgramPath(
         APPL_DATA       *this
     );
@@ -313,7 +287,18 @@ extern "C" {
     );
 
 
-    ASTR_DATA *     appl_NextArg(
+    /*!
+     Check to see if there are more options or arguments left to parse.
+     @param     this        Object Pointer
+     @return:   true if there are more options or arguments to parse,
+                otherwise, false.
+     */
+    bool            appl_IsMore(
+        APPL_DATA       *this
+    );
+    
+    
+    char *          appl_NextArg(
         APPL_DATA       *this
     );
     
@@ -323,7 +308,7 @@ extern "C" {
     );
 
     
-    ERESULT         appl_ParseArgs(
+    ERESULT         appl_ProcessOptions(
         APPL_DATA       *this
     );
     
@@ -352,10 +337,9 @@ extern "C" {
     ERESULT         appl_SetupFromArgV(
         APPL_DATA       *this,
         uint16_t        cArgs,
-        const
         char            *ppArgV[],
-        const
-        char            **ppEnv
+        char            **ppEnv,
+        CMDUTL_OPTION   *pPgmOptDefns
     );
     
     

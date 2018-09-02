@@ -51,6 +51,48 @@ extern "C" {
     
 
     
+CMDUTL_OPTION       pPgmOpts[] = {
+    {
+        "archive",
+        'a',
+        CMDUTL_ARG_OPTION_NONE,
+        CMDUTL_TYPE_BOOL,
+        offsetof(OBJTEST_DATA, fArchive),
+        NULL,
+        "Set Archive Mode"
+    },
+    {
+        "arglength",
+        'l',
+        CMDUTL_ARG_OPTION_REQUIRED,
+        CMDUTL_TYPE_NUMBER,
+        offsetof(OBJTEST_DATA, pArgLen),
+        NULL,
+        "Set Argument Length"
+    },
+    {
+        "input",
+        'i',
+        CMDUTL_ARG_OPTION_REQUIRED,
+        CMDUTL_TYPE_PATH,
+        offsetof(OBJTEST_DATA, pInFilePath),
+        NULL,
+        "Set Input File Path"
+    },
+    {
+        "output",
+        'o',
+        CMDUTL_ARG_OPTION_REQUIRED,
+        CMDUTL_TYPE_PATH,
+        offsetof(OBJTEST_DATA, pOutFilePath),
+        NULL,
+        "Set Output File Path"
+    },
+    {NULL,0,0,0,0,NULL,NULL}                    // End of Table
+};
+
+
+
 
 
  
@@ -117,6 +159,94 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                         A r c h i v e 
+    //---------------------------------------------------------------
+    
+    bool            objTest_getArchive(
+        OBJTEST_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->fArchive;
+    }
+
+
+    bool            objTest_setArchive(
+        OBJTEST_DATA    *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fArchive = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       A r g  L e n g t h
+    //---------------------------------------------------------------
+    
+    NUMBER_DATA *   objTest_getArgLength(
+        OBJTEST_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pArgLen;
+    }
+    
+    
+    bool            objTest_setArgLength(
+        OBJTEST_DATA    *this,
+        NUMBER_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pArgLen) {
+            obj_Release(this->pArgLen);
+        }
+        this->pArgLen = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       A r r a y
     //---------------------------------------------------------------
     
@@ -134,7 +264,6 @@ extern "C" {
         }
 #endif
         
-        objTest_setLastError(this, ERESULT_SUCCESS);
         return this->pArray;
     }
     
@@ -158,7 +287,52 @@ extern "C" {
         }
         this->pArray = pValue;
         
-        objTest_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       I n  P a t h 
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     objTest_getInPath(
+        OBJTEST_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pInFilePath;
+    }
+    
+    
+    bool            objTest_setInPath(
+        OBJTEST_DATA    *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pInFilePath) {
+            obj_Release(this->pInFilePath);
+        }
+        this->pInFilePath = pValue;
+        
         return true;
     }
     
@@ -207,6 +381,52 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                       O u t  P a t h 
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     objTest_getOutPath(
+        OBJTEST_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pOutFilePath;
+    }
+    
+    
+    bool            objTest_setOutPath(
+        OBJTEST_DATA    *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objTest_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pOutFilePath) {
+            obj_Release(this->pOutFilePath);
+        }
+        this->pOutFilePath = pValue;
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -430,7 +650,10 @@ extern "C" {
         }
 #endif
 
+        objTest_setArgLength(this, OBJ_NIL);
         objTest_setArray(this, OBJ_NIL);
+        objTest_setInPath(this, OBJ_NIL);
+        objTest_setOutPath(this, OBJ_NIL);
         if (this->pLock) {
             obj_Release(this->pLock);
             this->pLock = OBJ_NIL;
@@ -529,15 +752,15 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJTEST);
+        this = (OBJ_ID)appl_Init((APPL_DATA *)this);        // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJTEST);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJTEST);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJTEST);      // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objTest_Vtbl);
         
@@ -618,7 +841,7 @@ extern "C" {
      // Return a method pointer for a string or NULL if not found.
      void        *pMethod = objTest_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode
-     @param     this    OBJTEST object pointer
+     @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                          for OBJ_QUERYINFO_TYPE_METHOD, this field points to a

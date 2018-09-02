@@ -269,7 +269,7 @@ extern "C" {
                 if (len == 0) {
                     return false;
                 }
-                for (a = 0; a < (int)pOptions[i].argOption; a++) {
+                for (a = CMDUTL_ARG_OPTION_NONE; a < (int)pOptions[i].argOption; a++) {
                     *p++ = ':';
                     --len;
                     if (len == 0) {
@@ -623,10 +623,13 @@ extern "C" {
             return false;
         }
 #endif
+
+#ifdef CMDUTL_OWNED_OBJECT
         obj_Retain(pValue);
         if (this->pObj) {
             obj_Release(this->pObj);
         }
+#endif
         this->pObj = pValue;
         
         return true;
@@ -1063,7 +1066,7 @@ extern "C" {
         this->optopt = 0;
         this->pOptArg = NULL;
         pOption = this->ppArgV[this->optIndex];
-        if (pOption == 0) {
+        if (pOption == NULL) {
             return -1;
         }
         else if (cmdutl_IsDashDash(pOption)) {
@@ -1235,13 +1238,8 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc = false;
         int             iRc;
         int             longIndex;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        PATH_DATA       *pPath = OBJ_NIL;
-        char            option[16];
-        void            *pPtr;
         
 #ifdef NDEBUG
 #else

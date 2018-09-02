@@ -1983,7 +1983,7 @@ test_W32StrC:
 TESTS += test_appl
 
 test_appl:
-	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_appl.c 
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -L$(LIBDIR) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) tests/test_appl.c tests/objTest.c tests/objTest_object.c 
 	$(OBJDIR)/$(@F) ./tests
 
 

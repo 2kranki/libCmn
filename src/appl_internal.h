@@ -66,23 +66,16 @@ struct appl_data_s	{
     DATETIME_DATA   *pDateTime;
     NODEHASH_DATA   *pProperties;
     
-    // Program Options
-    uint8_t         fDebug;
-    uint8_t         fForce;
-    uint8_t         fQuiet;
-    uint8_t         rsvd8;
-    uint16_t        iVerbose;
-    uint16_t        rsvd16_1;
-    CMDUTL_DATA     *pCmd;
-
     // Program Arguments and Options
-    uint16_t        cOptions;
-    uint16_t        rsvd16_2;
+    uint16_t        fDebug;
+    uint16_t        fForce;
+    uint16_t        fQuiet;
+    uint16_t        iVerbose;
+    CMDUTL_DATA     *pCmd;
     ASTRARRAY_DATA  *pArgs;
     ASTRARRAY_DATA  *pEnv;
-    uint32_t        nextArg;
     PATH_DATA       *pProgramPath;
-    CMDUTL_OPTION   *pProgramArgs;
+    CMDUTL_OPTION   *pPgmOptDefns;
 
     OBJ_ID          pObjPrs;
     ERESULT         (*pParseArgsDefaults)(OBJ_ID);

@@ -23,13 +23,15 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <cmdutl.h>
 #include    <trace.h>
+#include    <objTest_internal.h>
 #include    <appl_internal.h>
 
 
 typedef     struct args_s {
-    int             fArchive;
-    int             argLen;
+    uint16_t        fArchive;
+    NUMBER_DATA     *pArgLen;
     PATH_DATA       *pInFilePath;      // ("-f" | "--file=")<string> or ("-f" | "--file") <string>
     PATH_DATA       *pOutFilePath;     // ("-o" | "--out=")<string> or ("-o" | "--out") <string>
 } ARGS;
@@ -37,7 +39,7 @@ typedef     struct args_s {
 
 
 
-ARGS args = {
+ARGS                args = {
     0,                  // fArchive
     0,                  // argLen
     OBJ_NIL,            // pInFilePath
@@ -45,43 +47,46 @@ ARGS args = {
 };
 
 
-APPL_CLO        pPgmArgs1[] = {
+CMDUTL_OPTION       pPgmArgs1[] = {
     {
-        'a',
         "archive",
-        APPL_ARG_PROGRAM,
-        APPL_ARG_BOOL,
+        'a',
+        CMDUTL_ARG_OPTION_NONE,
+        CMDUTL_TYPE_BOOL,
         offsetof(ARGS, fArchive),
         NULL,
         "Set Archive Mode"
     },
     {
-        'i',
+        "arglength",
+        'l',
+        CMDUTL_ARG_OPTION_REQUIRED,
+        CMDUTL_TYPE_NUMBER,
+        offsetof(ARGS, pArgLen),
+        NULL,
+        "Set Argument Length"
+    },
+    {
         "input",
-        APPL_ARG_PROGRAM,
-        APPL_ARG_PATH,
+        'i',
+        CMDUTL_ARG_OPTION_REQUIRED,
+        CMDUTL_TYPE_PATH,
         offsetof(ARGS, pInFilePath),
         NULL,
         "Set Input File Path"
     },
     {
-        'o',
         "output",
-        APPL_ARG_PROGRAM,
-        APPL_ARG_PATH,
+        'o',
+        CMDUTL_ARG_OPTION_REQUIRED,
+        CMDUTL_TYPE_PATH,
         offsetof(ARGS, pOutFilePath),
         NULL,
         "Set Output File Path"
     },
+    {NULL,0,0,0,0,NULL,NULL}                    // End of Table
 };
-static
-int             cPgmArgs1 = (sizeof(pPgmArgs1) / sizeof(APPL_CLO));
 
-APPL_CLO        pGrpArgs1[] = {
-    {'l', "arglength", APPL_ARG_NUMBER,  0, offsetof(ARGS, argLen), NULL, "Set Argument Length"},
-};
-static
-int             cGrpArgs1 = (sizeof(pGrpArgs1) / sizeof(APPL_CLO));
 
 
 static
@@ -230,61 +235,65 @@ int         test_appl_OpenClose(
 
 
 
-int         test_appl_Args01(
+int             test_appl_Args01(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    APPL_DATA   *pObj = OBJ_NIL;
-    ERESULT     eRc;
-    bool        fRc;
-    APPL_CLO    *pClo;
-    ASTR_DATA   *pStr = OBJ_NIL;
+    OBJTEST_DATA    *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    bool            fRc;
+    NUMBER_DATA     *pNum = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    char            *pChrStr = NULL;
+    char            *ppArgs1[] = {
+        "./program_name",
+        "--debug",
+        "-v",
+        "1st_Arg",
+        "2nd_Arg",
+        NULL
+    };
+    int             cArgs1 = 5;
     
+    
+
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = appl_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = appl_Init(pObj);
+    pObj = objTest_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        pClo = appl_ArgFindLong(pObj, "help");
-        TINYTEST_FALSE( (NULL == pClo) );
-        pClo = appl_ArgFindLong(pObj, "verbose");
-        TINYTEST_FALSE( (NULL == pClo) );
-        pClo = appl_ArgFindShort(pObj, '?');
-        TINYTEST_FALSE( (NULL == pClo) );
-        pClo = appl_ArgFindShort(pObj, 'v');
-        TINYTEST_FALSE( (NULL == pClo) );
-        
-        fRc = appl_setArgDefs(pObj, cPgmArgs1, pPgmArgs1, 0, NULL);
+ 
+        eRc = appl_SetupFromArgV((APPL_DATA *)pObj, cArgs1, ppArgs1, NULL, pPgmArgs1);
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+
+        fRc = appl_IsMore((APPL_DATA *)pObj);
         TINYTEST_TRUE( (fRc) );
-        eRc = appl_SetupFromArgV(pObj, cArgs2, ppArgs2, NULL);
+        
+        eRc = appl_ProcessOptions((APPL_DATA *)pObj);
         TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
-        eRc = appl_ParseArgs(pObj);
-        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE( (1 == appl_getDebug(pObj)) );
-        pStr = appl_NextArg(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "NextArg(1) = %s\n", AStr_getData(pStr));
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "1")) );
-        pStr = appl_NextArg(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "NextArg(2) = %s\n", AStr_getData(pStr));
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "2")) );
-        pStr = appl_NextArg(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "NextArg(3) = %s\n", AStr_getData(pStr));
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "3")) );
-        pStr = appl_NextArg(pObj);
-        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (true == appl_getDebug((APPL_DATA *)pObj)) );
+        TINYTEST_TRUE( (1 == appl_getVerbose((APPL_DATA *)pObj)) );
+        TINYTEST_TRUE( (0 == objTest_getArchive(pObj)) );
+        TINYTEST_TRUE( (OBJ_NIL == objTest_getArgLength(pObj)) );
+        TINYTEST_TRUE( (OBJ_NIL == objTest_getInPath(pObj)) );
+        TINYTEST_TRUE( (OBJ_NIL == objTest_getOutPath(pObj)) );
 
+        fRc = appl_IsMore((APPL_DATA *)pObj);
+        TINYTEST_TRUE( (fRc) );
+        
+        pChrStr = appl_NextArg((APPL_DATA *)pObj);
+        TINYTEST_FALSE( (NULL == pChrStr) );
+        TINYTEST_TRUE( (0 == strcmp("1st_Arg", pChrStr)) );
 
-#ifdef XYZZY
-        appl_setProcessArgs(pObj, NULL, &processArg);
-        iRc = appl_ProcessArgs(pObj);
-        TINYTEST_TRUE( (0 == iRc) );
-#endif
+        fRc = appl_IsMore((APPL_DATA *)pObj);
+        TINYTEST_TRUE( (fRc) );
+        
+        pChrStr = appl_NextArg((APPL_DATA *)pObj);
+        TINYTEST_FALSE( (NULL == pChrStr) );
+        TINYTEST_TRUE( (0 == strcmp("2nd_Arg", pChrStr)) );
+        
+        fRc = appl_IsMore((APPL_DATA *)pObj);
+        TINYTEST_TRUE( (!fRc) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -314,7 +323,7 @@ int         test_appl_Usage01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        fRc = appl_setArgDefs(pObj, cPgmArgs1, pPgmArgs1, 0, NULL);
+        fRc = appl_setArgDefs(pObj, pPgmArgs1);
         TINYTEST_TRUE( (fRc) );
         appl_UsageNoMsg(pObj);
         

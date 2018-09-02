@@ -288,6 +288,115 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       A s s i g n
+    //---------------------------------------------------------------
+    
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+     ERESULT eRc = AStrArray_Assign(this, pOther);
+     @endcode
+     @param     this    ASTRARRAY_DATA object pointer
+     @param     pOther  a pointer to another ASTRARRAY_DATA object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         AStrArray_Assign(
+        ASTRARRAY_DATA  *this,
+        ASTRARRAY_DATA  *pOther
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !AStrArray_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Release objects and areas in other object.
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
+        }
+        
+        // Create a copy of objects and areas in this object placing
+        // them in other.
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+            }
+            else {
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
+            }
+        }
+        
+        // Copy other data from this object to other.
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     appl      *pCopy = AStrArray_Copy(this);
+     @endcode
+     @param     this    ASTRARRAY_DATA object pointer
+     @return    If successful, a ASTRARRAY_DATA object which must
+                be released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned the returned object.
+     */
+    ASTRARRAY_DATA * AStrArray_Copy(
+        ASTRARRAY_DATA  *this
+    )
+    {
+        ASTRARRAY_DATA  *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = AStrArray_New( );
+        if (pOther) {
+            eRc = AStrArray_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 

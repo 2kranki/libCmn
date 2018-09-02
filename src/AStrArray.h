@@ -144,6 +144,41 @@ extern "C" {
     );
     
     
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+     ERESULT eRc = AStrArray_Assign(this, pOther);
+     @endcode
+     @param     this    ASTRARRAY_DATA object pointer
+     @param     pOther  a pointer to another ASTRARRAY_DATA object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         AStrArray_Assign(
+        ASTRARRAY_DATA  *this,
+        ASTRARRAY_DATA  *pOther
+    );
+    
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+     appl      *pCopy = AStrArray_Copy(this);
+     @endcode
+     @param     this    ASTRARRAY_DATA object pointer
+     @return    If successful, a ASTRARRAY_DATA object which must
+     be released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned the returned object.
+     */
+    ASTRARRAY_DATA * AStrArray_Copy(
+        ASTRARRAY_DATA  *this
+    );
+    
+    
     // DeleteFromBottom() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.
