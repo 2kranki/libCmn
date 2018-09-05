@@ -101,8 +101,100 @@ int             test_genOSX_OpenClose(
 
 
 
+int             test_genOSX_Object01(
+    const
+    char            *pTestName
+)
+{
+    GENOSX_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pOutputA =
+            "OBJS += $(OBJDIR)/xyzzy.o\n\n"
+            "$(OBJDIR)/xyzzy.o: $(SRCDIR)/xyzzy.c\n"
+            "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n\n";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genOSX_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genOSX_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pStr =  genOSX_CompileRoutineStr(
+                                pObj,
+                                "xyzzy.c",      // Object class name
+                                NULL,           // Source Directory Env Name
+                                NULL,           // Object Directory Env Name
+                                NULL            // Object Make Variable
+                );
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, pOutputA)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_genOSX_Object02(
+    const
+    char            *pTestName
+)
+{
+    GENOSX_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pOutputA =
+        "OBJS += $(OBJDIR)/xyzzy.o $(OBJDIR)/xyzzy_object.o\n\n"
+        "$(OBJDIR)/xyzzy.o: $(SRCDIR)/xyzzy.c\n\n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n\n"
+        "$(OBJDIR)/xyzzy_object.o: $(SRCDIR)/xyzzy_object.c\n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<\n\n\n";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genOSX_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genOSX_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pStr =  genOSX_CompileObjectStr(
+                                        pObj,
+                                        "xyzzy",        // Object class name
+                                        NULL,           // Source Directory Env Name
+                                        NULL,           // Object Directory Env Name
+                                        NULL            // Object Make Variable
+                );
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, pOutputA)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_genOSX);
+    TINYTEST_ADD_TEST(test_genOSX_Object02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_genOSX_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

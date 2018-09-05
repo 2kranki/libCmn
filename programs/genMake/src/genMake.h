@@ -95,6 +95,8 @@ extern "C" {
 
     typedef enum main_idents_e {
         MAIN_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
+        MAIN_IDENT_DBPRS,
+        MAIN_IDENT_DBPRS_CLASS,
         MAIN_IDENT_GENBASE,
         MAIN_IDENT_GENBASE_CLASS,
         MAIN_IDENT_GENOSX,

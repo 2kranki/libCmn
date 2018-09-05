@@ -215,6 +215,62 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      G e n e r a t o r s
+    //---------------------------------------------------------------
+    
+    ERESULT         genBase_setGenerators(
+        GENBASE_DATA    *this,
+        OBJ_ID          pObj,
+        ASTR_DATA *     (*pGenCompileJson)(
+                                        OBJ_ID,
+                                        const char *,
+                                        const char *,
+                                        const char *,
+                                        const char *
+                        ),
+        ASTR_DATA *     (*pGenCompileObject)(
+                                        OBJ_ID,
+                                        const char *,
+                                        const char *,
+                                        const char *,
+                                        const char *
+                        ),
+        ASTR_DATA *     (*pGenCompileRoutine)(
+                                        OBJ_ID,
+                                        const char *,
+                                        const char *,
+                                        const char *,
+                                        const char *
+                        ),
+        ASTR_DATA *     (*pGenCompileTest)(
+                                       OBJ_ID,
+                                       const char *,
+                                       const char *,
+                                       const char *,
+                                       const char *
+                        )
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        this->pGenObj = pObj;
+        this->pGenCompileJson       = pGenCompileJson;
+        this->pGenCompileObject     = pGenCompileObject;
+        this->pGenCompileRoutine    = pGenCompileRoutine;
+        this->pGenCompileTest       = pGenCompileTest;
+
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
@@ -1486,36 +1542,146 @@ ERESULT         genBase_GenLibrary(
 
 
 
-//---------------------------------------------------------------
-//         G e n e r a t e  O b j e c t s
-//---------------------------------------------------------------
+    //---------------------------------------------------------------
+    //                      G e n e r a t e
+    //---------------------------------------------------------------
 
-ERESULT         genBase_CompileObject(
-    GENBASE_DATA    *this,
-    const
-    char            *pName
-)
-{
-    
-    // Do initialization.
+    ASTR_DATA *         genBase_GenCompileJson(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
 #ifdef NDEBUG
 #else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
+        if(!genBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if(NULL == this->pGenCompileJson) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
 #endif
+        
+        pStr = this->pGenCompileJson(this->pGenObj, pName, pSrcDir, pObjDir, pObjVar);
+        
+        // Return to caller.
+        return pStr;
+    }
     
-    //obj_Enable(this);
     
-    // Put code here...
+    ASTR_DATA *         genBase_GenCompileObject(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!genBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if(NULL == this->pGenCompileObject) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = this->pGenCompileObject(this->pGenObj, pName, pSrcDir, pObjDir, pObjVar);
+        
+        // Return to caller.
+        return pStr;
+    }
     
-    // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
-    return ERESULT_SUCCESS;
-}
-
-
+    
+    ASTR_DATA *         genBase_GenCompileRoutine(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!genBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if(NULL == this->pGenCompileRoutine) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = this->pGenCompileRoutine(this->pGenObj, pName, pSrcDir, pObjDir, pObjVar);
+        
+        // Return to caller.
+        return pStr;
+    }
+    
+    
+    ASTR_DATA *         genBase_GenCompileTest(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!genBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if(NULL == this->pGenCompileTest) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = this->pGenCompileTest(this->pGenObj, pName, pSrcDir, pObjDir, pObjVar);
+        
+        // Return to caller.
+        return pStr;
+    }
+    
+    
 ERESULT         genBase_GenObject(
     GENBASE_DATA    *this,
     NODE_DATA       *pNode
@@ -2556,7 +2722,6 @@ ERESULT         genBase_GenMakefile(
     )
     {
         ERESULT         eRc;
-        int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;

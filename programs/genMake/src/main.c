@@ -81,55 +81,63 @@ extern "C" {
 
 
     static
-    APPL_CLO        pPgmArgs[] = {
+    CMDUTL_OPTION       pPgmArgs[] = {
         {
-            0,
+            "file",
+            'F',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
+            offsetof(MAIN_DATA, pFilePath),
+            NULL,
+            "Set Input File Path"
+        },
+        {
             "libInclude",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_PATH,
+            'I',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
             0,
             (void *)main_ArgLibInclude,
             "Set Library Include Base Path"
         },
         {
-            0,
             "macos",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_EXEC,
+            'M',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
             0,
             (void *)main_ArgMacos,
             "Generate MacOS Makefile (default)"
         },
         {
-            0,
             "msc32",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_EXEC,
+            'S',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
             0,
             (void *)main_ArgMsc32,
             "Generate Msc32 Makefile"
         },
         {
-            0,
             "msc64",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_EXEC,
+            'M',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
             0,
             (void *)main_ArgMsc64,
             "Generate Msc64 Makefile"
         },
         {
-            'o',
             "out",
-            APPL_ARG_PROGRAM,
-            APPL_ARG_PATH,
+            'o',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Set Output Base Path"
         },
+        {0}
     };
-    static
-    int             cPgmArgs = (sizeof(pPgmArgs) / sizeof(APPL_CLO))- 1;
     
 
     
@@ -148,7 +156,7 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -470,9 +478,7 @@ extern "C" {
     
     MAIN_DATA *     main_NewFromArgV(
         uint16_t        cArgs,
-        const
         char            **ppArgs,
-        const
         char            **ppEnv
     )
     {
@@ -483,7 +489,13 @@ extern "C" {
         if (this) {
             this = main_Init(this);
             if (this) {
-                eRc = appl_SetupFromArgV((APPL_DATA *)this, cArgs, ppArgs, ppEnv);
+                eRc =   appl_SetupFromArgV(
+                                    (APPL_DATA *)this,
+                                           cArgs,
+                                           ppArgs,
+                                           ppEnv,
+                                           pPgmArgs
+                        );
             }
         }
         return this;
@@ -1148,9 +1160,11 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        bool            fRc;
         int             iRc;
-        ASTR_DATA       *pStr;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        char            *pChrStr;
         bool            fFile = true;
 
         // Do initialization.
@@ -1162,42 +1176,43 @@ extern "C" {
         }
     #endif
         
-        eRc = appl_ParseArgs((APPL_DATA *)this);
+        eRc = main_ParseArgsDefault(this);
         if (ERESULT_FAILED(eRc)) {
-            appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly parse command line!");
+            appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly set defaults!");
             exit(8);
         }
-        
-        if (this->pOutputPath) {
-            //FIXME: this->pOut = textOut_NewFilePath(this->pOutputPath);
-            if (OBJ_NIL == this->pOutput) {
-                fprintf(
-                        stderr,
-                        "FATAL - Could not open output file, %s!\n\n\n",
-                        path_getData(this->pOutputPath)
-                );
-                exit(12);
-            }
+
+        this->pOutput = textOut_NewAStr( );
+        if (OBJ_NIL == this->pOutput) {
+            fprintf(
+                    stderr,
+                    "FATAL - Could not open output file, %s!\n\n\n",
+                    path_getData(this->pOutputPath)
+                    );
+            exit(12);
         }
-        else {
-            this->pOutput = textOut_NewAStr( );
-            if (OBJ_NIL == this->pOutput) {
-                fprintf(
-                        stderr,
-                        "FATAL - Could not open output file, %s!\n\n\n",
-                        path_getData(this->pOutputPath)
-                        );
-                exit(12);
-            }
-            fFile = false;
-        }
+        fFile = false;
         
         for (;;) {
-            pStr = appl_NextArg((APPL_DATA *)this);
-            if (OBJ_NIL == pStr) {
+            
+            fRc = appl_IsMore((APPL_DATA *)this);
+            if (!fRc)
+                break;
+            
+            eRc = appl_ProcessOptions((APPL_DATA *)this);
+            if (ERESULT_FAILED(eRc)) {
+                appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly parse command line!");
+                exit(8);
+            }
+            
+            pChrStr = appl_NextArg((APPL_DATA *)this);
+            if (NULL == pStr) {
                 break;
             }
+            pStr = AStr_NewA(pChrStr);
             iRc = main_ProcessArg(this, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
             if (iRc) {
                 return iRc;
             }
@@ -1300,7 +1315,6 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(MAIN_DATA);
-        bool            fRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1335,20 +1349,6 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        fRc = appl_setArgDefs((APPL_DATA *)this, cPgmArgs, pPgmArgs, 0, NULL);
-        appl_setParseArgs(
-                          (APPL_DATA *)this,
-                          this,
-                          (void *)main_ParseArgsDefault,
-                          NULL, //(void *)main_ParseArgsLong,
-                          NULL  //(void *)main_ParseArgsShort
-        );
-        appl_setProcessArgs(
-                            (APPL_DATA *)this,
-                            this,
-                            (void *)main_ProcessInit,
-                            (void *)main_ProcessArg
-        );
         appl_setUsage(
                           (APPL_DATA *)this,
                           this,
@@ -1652,64 +1652,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //              P a r s e  A r g s  S h o r t
-    //---------------------------------------------------------------
-    
-    int             main_ParseArgsShort(
-        MAIN_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    )
-    {
-        const
-        char            *pWrk;
-        PATH_DATA       *pPath = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pWrk = **pppArgV;
-        switch (*pWrk) {
-                
-            case 'i':
-                ++pWrk;
-                if (*pWrk == '\0') {
-                    ++*pppArgV;
-                    --*pArgC;
-                    if (*pArgC <= 0) {
-                        appl_Usage((APPL_DATA *)this, "ERROR: --input,-i is missing the path!\n");
-                        return 99;
-                    }
-                    pPath = path_NewA(**pppArgV);
-                }
-                else {
-                    pPath = path_NewA(**pppArgV);
-                }
-                if (pPath) {
-                    main_setOutputPath(this, pPath);
-                    obj_Release(pPath);
-                }
-                break;
-        
-            default:
-                break;
-        }
-        
-        // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
-        return 0;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //              P a r s e  I n p u t  F i l e
     //---------------------------------------------------------------
     
@@ -1814,7 +1756,6 @@ extern "C" {
         
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     

@@ -71,7 +71,9 @@ extern "C" {
         const
         char            *pSrcDir,
         const
-        char            *pObjDir
+        char            *pObjDir,
+        const
+        char            *pObjVar
     )
     {
         ERESULT         eRc;
@@ -97,6 +99,9 @@ extern "C" {
         if (NULL == pObjDir) {
             pObjDir = "OBJDIR";
         }
+        if (NULL == pObjVar) {
+            pObjDir = "OBJS";
+        }
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
             return OBJ_NIL;
@@ -105,7 +110,8 @@ extern "C" {
         if (0 == strcmp(pObjDir, "OBJDIR")) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "OBJS += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n\n",
+                                     "%s += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n\n",
+                                     pObjVar,
                                      pName,
                                      pName
                     );
@@ -138,7 +144,6 @@ extern "C" {
                 );
         
         // Return to caller.
-        genOSX_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -155,7 +160,9 @@ extern "C" {
         const
         char            *pSrcDir,
         const
-        char            *pObjDir
+        char            *pObjDir,
+        const
+        char            *pObjVar
     )
     {
         ERESULT         eRc;
@@ -179,6 +186,9 @@ extern "C" {
         }
         if (NULL == pObjDir) {
             pObjDir = "OBJDIR";
+        }
+        if (NULL == pObjVar) {
+            pObjDir = "OBJS";
         }
         pPath = path_NewA(pName);
         if (OBJ_NIL == pPath) {
@@ -204,7 +214,8 @@ extern "C" {
         if (0 == strcmp(pObjDir, "OBJDIR")) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "OBJS += $(%s)/%s.o\n\n",
+                                     "%s += $(%s)/%s.o\n\n",
+                                     pObjVar,
                                      pObjDir,
                                      AStr_getData(pFileName)
                                      );
@@ -2010,7 +2021,8 @@ extern "C" {
                                                       this,
                                                       pName,
                                                       "SRCDIR",
-                                                      "OBJDIR"
+                                                      "OBJDIR",
+                                                      NULL
                                 );
                         //FIXME: fprintf(pOutput, "%s", AStr_getData(pWrk));
                         obj_Release(pWrk);
@@ -2491,7 +2503,8 @@ extern "C" {
                                                      this,
                                                      AStr_getData(pStr),
                                                      "SRCDIR",
-                                                     "OBJDIR"
+                                                     "OBJDIR",
+                                                     NULL
                                                      );
                     if (pWrk) {
 #ifdef XYZZY

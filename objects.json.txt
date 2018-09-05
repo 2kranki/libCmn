@@ -32,12 +32,11 @@
             "memWin32.h"
         ],
     }
-    "objects":
-    {
-        "appl":{"test":null},
-        "array":{"deps":["cmn"], "test":null},
-        "ascii":{"deps":["cmn","AStr"], "test":null},
-        "AStr":["cmn"],
+    "objects": {
+        "appl":{"deps":["cmn","cmdutl"]},
+        "array":{"deps":["cmn"], "test":true},
+        "ascii":{"deps":["cmn","AStr"], "test":true},
+        "AStr":{"deps":["cmn","array"],"json:true","test":true},
         "AStrArray":["cmn","AStr"],
         "AStrC":["cmn"],
         "audioCW":["cmn","AStr","audioWAV"],
@@ -173,7 +172,7 @@
     },
     "routines":
     [
-        "AStr_JSON.c",
+        #"AStr_JSON.c",
         "bitMatrix_JSON.c",
         "dec_JSON.c",
         "hex_JSON.c",

@@ -105,6 +105,32 @@ struct genOSX_data_s	{
     );
 
 
+    ASTR_DATA *     genOSX_CompileObjectStr(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    );
+    
+    
+    ASTR_DATA *     genOSX_CompileRoutineStr(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Object Class Name
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    );
+    
+    
     void            genOSX_Dealloc(
         OBJ_ID          objId
     );

@@ -115,18 +115,20 @@ int         test_main_MakeFile01(
 {
     ERESULT     eRc;
     MAIN_DATA   *pObj = OBJ_NIL;
+    char        *pArgs[] = {
+        "./makeFile01",
+        "-v",
+        NULL
+    };
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = main_Alloc( );
+    pObj = main_NewFromArgV(2, pArgs, NULL);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = main_Init( pObj );
+    pObj = main_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = main_ParseArgsDefault(pObj);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = main_ParseInputStr(pObj, pGoodJson1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = main_GenMakefile(pObj);

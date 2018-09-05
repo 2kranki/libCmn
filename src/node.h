@@ -306,7 +306,6 @@ extern "C" {
      @return    If successful, a UTF-8 string which must be freed
                 with mem_Free(), otherwise OBJ_NIL.
      */
-    const
     char *          node_getNameUTF8(
         NODE_DATA       *this
     );

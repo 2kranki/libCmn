@@ -127,7 +127,9 @@ extern "C" {
         //                              // (Argument parameter is required)
     }   CMDUTL_TYPE;
     
-    
+    // An option must have at a minimum either a short name or a long name,
+    // as well as both.  cmdutl_ProcessOption() will correctly handle these
+    // three situations.
     // Note - The end of an option table is denoted by a pLongName of NULL
     // and a shortName of 0.
     typedef struct cmdutl_option_s {
@@ -262,6 +264,12 @@ extern "C" {
     );
     
     
+    /*!
+     Return the next argument if present.
+     @param     this        Object Pointer
+     @return:   If there is another argument, return the address of it's
+                character string, otherwise, return NULL.
+     */
     char *          cmdutl_NextArg(
         CMDUTL_DATA     *this
     );

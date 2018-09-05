@@ -46,6 +46,17 @@ char    *pGoodJson1 = "{\n"
         "}\n";
 
 
+static
+const
+char    *pGoodJsonObject1 = "{\n"
+            "\"AStr\":{"
+                "\"deps\":[\"cmn\",\"array\"],"
+                "\"json\":true,"
+                "\"test\":true"
+            "}\n"
+        "}\n";
+
+
 
 
 

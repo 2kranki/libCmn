@@ -157,13 +157,35 @@ extern "C" {
     
     ERESULT         genBase_setGenerators(
         GENBASE_DATA    *this,
-        ERESULT         (*pFinal)(GENBASE_DATA *),
-        ERESULT         (*pInitial)(GENBASE_DATA *, ASTR_DATA *, NODEARRAY_DATA  *),
-        ERESULT         (*pLibrary)(GENBASE_DATA *),
-        ERESULT         (*pObjects)(GENBASE_DATA *, NODEHASH_DATA *, NODEARRAY_DATA  *),
-        ERESULT         (*pOsSpecific)(GENBASE_DATA *, NODEHASH_DATA  *),
-        ERESULT         (*pPrograms)(GENBASE_DATA *, NODEHASH_DATA  *),
-        ERESULT         (*pTests)(GENBASE_DATA *, NODEHASH_DATA *)
+        OBJ_ID          pObj,
+        ASTR_DATA *     (*pGenCompileJson)(
+                                     OBJ_ID,
+                                     const char *,
+                                     const char *,
+                                     const char *,
+                                     const char *
+                        ),
+        ASTR_DATA *     (*pGenCompileObject)(
+                                       OBJ_ID,
+                                       const char *,
+                                       const char *,
+                                       const char *,
+                                       const char *
+                        ),
+        ASTR_DATA *     (*pGenCompileRoutine)(
+                                        OBJ_ID,
+                                        const char *,
+                                        const char *,
+                                        const char *,
+                                        const char *
+                        ),
+        ASTR_DATA *     (*pGenCompileTest)(
+                                     OBJ_ID,
+                                     const char *,
+                                     const char *,
+                                     const char *,
+                                     const char *
+                        )
     );
     
     
@@ -313,6 +335,124 @@ extern "C" {
     );
     
     
+    /*!
+     Generate instructions for Make to compile a json file for an object.
+     @param     this    object pointer
+     @param     pName   object name
+     @param     pSrcDir  Optional Source Directory Path or makefile
+                        variable such as "SRCDIR".  If NULL, then "SRCDIR"
+                        will be used.
+     @param     pObjDir  Optional Object Direcotry Path or makefile
+                        variable such as "OBJDIR".  If NULL, then "OBJDIR"
+                        will be used.
+     @param     pObjVar  Optional Object Make Variable for output to be
+                        added to. If NULL, then "OBJS" will be used.
+     @return    If successful, an string object which must be released
+                containing the makefile instructions, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    
+    ASTR_DATA *     genBase_GenCompileJson(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    );
+    
+    
+    /*!
+     Generate instructions for Make to compile an object.
+     @param     this    object pointer
+     @param     pName   object name
+     @param     pSrcDir  Optional Source Directory Path or makefile
+                        variable such as "SRCDIR".  If NULL, then "SRCDIR"
+                        will be used.
+     @param     pObjDir  Optional Object Direcotry Path or makefile
+                        variable such as "OBJDIR".  If NULL, then "OBJDIR"
+                        will be used.
+     @param     pObjVar  Optional Object Make Variable for output to be
+                        added to. If NULL, then "OBJS" will be used.
+     @return    If successful, an string object which must be released
+     containing the makefile instructions, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    
+    ASTR_DATA *     genBase_GenCompileObject(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Routine Name including extension
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pObjVar
+    );
+    
+    
+    /*!
+     Generate instructions to compile a routine consisting of
+     one source file in one of several languages.
+     @param     this    object pointer
+     @param     pName   routine file name including extension
+     @param     pSrcDir  Optional Source Directory Path or makefile
+                        variable such as "SRCDIR".  If NULL, then "SRCDIR"
+                        will be used.
+     @param     pObjDir  Optional Object Direcotry Path or makefile
+                        variable such as "OBJDIR".  If NULL, then "OBJDIR"
+                        will be used.
+     @return    If successful, an string object which must be released
+                containing the makefile instructions, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    
+    ASTR_DATA *     genBase_GenCompileRoutine(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Routine Name including extension
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pSrcVar
+    );
+    
+    
+    /*!
+     Generate instructions to compile a routine consisting of
+     one source file in one of several languages.
+     @param     this    object pointer
+     @param     pName   routine file name including extension
+     @param     pSrcDir  Optional Source Directory Path or makefile
+     variable such as "SRCDIR".  If NULL, then "SRCDIR"
+     will be used.
+     @param     pObjDir  Optional Object Direcotry Path or makefile
+     variable such as "OBJDIR".  If NULL, then "OBJDIR"
+     will be used.
+     @return    If successful, an string object which must be released
+     containing the makefile instructions, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    
+    ASTR_DATA *     genBase_GenCompileTest(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,             // Routine Name including extension
+        const
+        char            *pSrcDir,
+        const
+        char            *pObjDir,
+        const
+        char            *pSrcVar
+    );
+    
+    
     ERESULT         genBase_GenMakefile(
         GENBASE_DATA        *this,
         NODE_DATA           *pNodes,
@@ -420,7 +560,6 @@ extern "C" {
     );
     
     
-#ifdef XYZZY
     /*!
      Generate instructions to compile a 'C' object consisting of
      the object source and the method source files and sent to
@@ -445,9 +584,10 @@ extern "C" {
         const
         char            *pSrcDir,
         const
-        char            *pObjDir
+        char            *pObjDir,
+        const
+        char            *pSrcVar
     );
-#endif
     
     
     /*!
@@ -473,7 +613,9 @@ extern "C" {
         const
         char            *pSrcDir,
         const
-        char            *pObjDir
+        char            *pObjDir,
+        const
+        char            *pSrcVar
         );
     
     

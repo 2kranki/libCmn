@@ -1,45 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MAIN Console Transmit Task (main) Header
+//          JSON Database Parser (dbprs) Header
 //****************************************************************
 /*
  * Program
- *			Separate main (main)
+ *			JSON Database Parser (dbprs)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate main to run things without complications
- *          of interfering with the main main. A main may be 
- *          called a main on other O/S's.
+ *			This object parses the JSON Database and its component
+ *          sections.  It then calls the appropriate generation
+ *          routines to generate the output.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	07/17/2017 Generated
+ *	09/04/2018 Generated
  */
-
-/***
-                        Directory Structures
- 
- Output:
-    library: ${outBase}/${osType}/${libPrefix}${libName}.${'a' or 'lib'}
-    include: ${outBase}/${osType}/include/xxx.h
- 
-    This structure is also assumed for include purposes from the "lib_deps"
-    section.
- 
- 
-
- 
- 
- 
- 
- 
- 
- ***/
-
-
 
 
 /*
@@ -75,15 +52,12 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
-#include        <fbso.h>
+#include        <genBase.h>
 #include        <node.h>
-#include        <path.h>
-#include        <szHash.h>
-#include        <textOut.h>
 
 
-#ifndef         MAIN_H
-#define         MAIN_H
+#ifndef         DBPRS_H
+#define         DBPRS_H
 
 
 
@@ -97,34 +71,18 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct main_data_s	MAIN_DATA;    // Inherits from APPL_DATA.
+    typedef struct dbprs_data_s	DBPRS_DATA;    // Inherits from OBJ.
 
-    typedef struct main_vtbl_s	{
+    typedef struct dbprs_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in main_object.c.
+        // method names to the vtbl definition in dbprs_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_VTBL;
+        //bool        (*pIsEnabled)(DBPRS_DATA *);
+    } DBPRS_VTBL;
 
 
-    typedef enum os_type_e {
-        OSTYPE_UNKNOWN=0,
-        OSTYPE_MACOS,
-        OSTYPE_MSC32,
-        OSTYPE_MSC64
-    } OSTYPE;
-    
-    
-    typedef enum out_type_e {
-        OUTTYPE_UNKNOW=0,
-        OUTTYPE_CLP,                // Command Line Program
-        OUTTYPE_LIB                 // Library
-    } OUTTYPE;
-    
-    
-    
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -139,21 +97,20 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to main object if successful, otherwise OBJ_NIL.
+     @return    pointer to dbprs object if successful, otherwise OBJ_NIL.
      */
-    MAIN_DATA *     main_Alloc(
+    DBPRS_DATA *    dbprs_Alloc(
         void
     );
     
     
-    MAIN_DATA *     main_New(
+    OBJ_ID          dbprs_Class(
         void
     );
     
-    MAIN_DATA *     main_NewFromArgV(
-        uint16_t        cArgs,
-        char            **ppArgs,
-        char            **ppEnv
+    
+    DBPRS_DATA *    dbprs_New(
+        void
     );
     
     
@@ -162,43 +119,18 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODEHASH_DATA * main_getDict(
-        MAIN_DATA       *this
+    GENBASE_DATA *  dbprs_getGen(
+        DBPRS_DATA     *this
     );
     
-    
-    PATH_DATA *     main_getFilePath(
-        MAIN_DATA       *this
-    );
-    
-    bool            main_setFilePath(
-        MAIN_DATA       *this,
-        PATH_DATA       *pValue
-    );
-    
-
-    ERESULT         main_getLastError(
-        MAIN_DATA		*this
+    bool            dbprs_setGen(
+        DBPRS_DATA      *this,
+        GENBASE_DATA    *pValue
     );
 
-
-    TEXTOUT_DATA *  main_getOutput(
-        MAIN_DATA       *this
-    );
     
-    bool            main_setOutput(
-        MAIN_DATA       *this,
-        TEXTOUT_DATA    *pValue
-    );
-    
-
-    PATH_DATA *     main_getOutputPath(
-        MAIN_DATA       *this
-    );
-    
-    bool            main_setOutputPath(
-        MAIN_DATA       *this,
-        PATH_DATA       *pValue
+    NODE_DATA *     dbprs_getNodes(
+        DBPRS_DATA     *this
     );
     
 
@@ -208,50 +140,60 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    int             main_Exec(
-        MAIN_DATA		*this
+    DBPRS_DATA *    dbprs_Init(
+        DBPRS_DATA     *this
     );
 
-   
+
+    ERESULT         dbprs_ParseInputFile(
+        DBPRS_DATA      *this,
+        PATH_DATA       *pPath
+    );
+    
+    
+    ERESULT         dbprs_ParseInputStr(
+        DBPRS_DATA      *this,
+        const
+        char            *pStr
+    );
+    
+    
     /*!
-     Generate a makefile given the internal nodes and the dictionary.
-     Example:
-     @code
-     ASTR_DATA      *pDesc = main_ToDebugString(this,4);
-     @endcode
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     Parse an object and generate its components
+     Node Grammar:
+        object = object_Hash | object_Array;
+        object_Array = JSON_Array of header dependencies
+        object_Hash = JSON Hash of:
+            "deps" : JSON_Array of header dependencies
+            "json" : "true" or "false" (default) // Generate JSON object compile or not
+            "test" : "true" (default) or "false" // Generate Test compile and execution
+                                                 // or not
+     @param     this    DBPRS object pointer
+     @param     pNode   Object Node Pointer
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ERESULT         main_GenMakefile(
-        MAIN_DATA       *this
-    );
-    
-    
-    MAIN_DATA *     main_Init(
-        MAIN_DATA       *this
-    );
-
-
-    int             main_Run(
-        MAIN_DATA		*this
+    ERESULT         dbprs_ParseObject(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
     );
     
     
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = main_ToDebugString(this,4);
-     @endcode
-     @param     this    MAIN object pointer
+     @code 
+        ASTR_DATA      *pDesc = dbprs_ToDebugString(this,4);
+     @endcode 
+     @param     this    DBPRS object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    main_ToDebugString(
-        MAIN_DATA     *this,
+    ASTR_DATA *    dbprs_ToDebugString(
+        DBPRS_DATA     *this,
         int             indent
     );
     
@@ -262,5 +204,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* MAIN_H */
+#endif	/* DBPRS_H */
 

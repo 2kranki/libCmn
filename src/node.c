@@ -557,7 +557,6 @@ extern "C" {
     
     
     
-    const
     char *          node_getNameUTF8(
         NODE_DATA       *this
     )
