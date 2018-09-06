@@ -166,15 +166,41 @@ extern "C" {
     /*!
      Parse an object and generate its components
      Node Grammar:
-        object = object_Hash | object_Array;
-        object_Array = JSON_Array of header dependencies
-        object_Hash = JSON Hash of:
-            "deps" : JSON_Array of header dependencies
-            "json" : "true" or "false" (default) // Generate JSON object compile or not
-            "test" : "true" (default), "false" or '[' source files ']'
-                                                // Generate Test compile and execution
-                                                // or not (optionally with extra
-                                                // compilation source files)
+     object     : '{' object_Hash '}'
+                | '[' deps ']'
+                | "null"
+                ;
+     object_Hash:
+            "deps"  : '[' deps ']'
+                    ;
+            // Generate JSON object compile or not
+            "json"  : "true"
+                    | "null"    // Same as "true"
+                    | "false" (default)
+                    ;
+            // Generate Test compile and execution or not
+            // (optionally with extra compilation source files)
+            "test"  : "true" (default)
+                    | "false"
+                    | '[' source files ']'
+                    | '{' test_Hash '}'
+                    ;
+                ;
+     test_Hash  :
+            "deps"  : '[' deps ']'
+                    ;
+            "srcs"  : '[' deps ']'
+                    ;
+                ;
+     // Additional Dependency Files must be in the same directory
+     // as the primary file that it is associated with.
+     deps       : dependencies_file_name [',' deps]
+                ;
+     // Additional Source Files must be in the same directory
+     // as the primary file that it is associated with.
+     srcs       : source_file_name [',' srcs]
+                ;
+
      @param     this    DBPRS object pointer
      @param     pNode   Object Node Pointer
      @return    If successful, an AStr object which must be released containing the

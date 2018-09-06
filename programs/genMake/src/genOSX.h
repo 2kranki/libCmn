@@ -212,6 +212,8 @@ extern "C" {
         char            *pObjDir,           // Default - "OBJDIR"
         const
         char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -229,6 +231,8 @@ extern "C" {
         char            *pObjDir,           // Default - "OBJDIR"
         const
         char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -269,6 +273,8 @@ extern "C" {
         char            *pObjDir,           // Default - "TEST_OBJ"
         const
         char            *pObjVar,           // Default - "TESTS"
+        const
+        char            *pFlgVar,
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file

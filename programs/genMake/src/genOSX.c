@@ -1228,6 +1228,8 @@ extern "C" {
         char            *pObjDir,           // Default - "OBJDIR"
         const
         char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -1303,6 +1305,8 @@ extern "C" {
         char            *pObjDir,           // Default - "OBJDIR"
         const
         char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -1359,8 +1363,8 @@ extern "C" {
                             pObjDir,
                             pObjVar,
                             NULL,
-                            pSrcDeps,
-                            pObjDeps,
+                            NULL,
+                            NULL,
                             true,
                             false
                     );
@@ -1495,7 +1499,12 @@ extern "C" {
                     if (pNode) {
                         pWrkStr = node_getData(pNode);
                         if (pWrkStr) {
-                            eRc = AStr_Append(pStr, pWrkStr);
+                            eRc =   AStr_AppendPrint(
+                                                pStr,
+                                                "$(%s)/%s ",
+                                                pSrcDir,
+                                                AStr_getData(pWrkStr)
+                                    );
                         }
                     }
                 }
@@ -1522,18 +1531,18 @@ extern "C" {
                 iMax = nodeArray_getSize(pObjDeps);
                 for (i=0; i<iMax; ++i) {
                     NODE_DATA           *pNode;
+                    const
                     char                *pStrA;
                     pNode = nodeArray_Get(pObjDeps, (i + 1));
                     if (pNode) {
-                        pStrA = node_getNameUTF8(pNode);
+                        pStrA = AStr_getData((ASTR_DATA *)node_getData(pNode));
                         if (pStrA) {
                             eRc =   AStr_AppendPrint(
                                                      pStr,
                                                      "$(%s)/%s ",
                                                      pSrcDir,
                                                      pStrA
-                                                     );
-                            mem_Free(pStrA);
+                                    );
                         }
                     }
                 }
@@ -1630,6 +1639,8 @@ extern "C" {
         char            *pObjDir,           // Default - "OBJDIR"
         const
         char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -1703,7 +1714,12 @@ extern "C" {
                 if (pNode) {
                     pWrkStr = node_getData(pNode);
                     if (pWrkStr) {
-                        eRc = AStr_Append(pStr, pWrkStr);
+                        eRc =   AStr_AppendPrint(
+                                                 pStr,
+                                                 "$(%s)/%s ",
+                                                 pSrcDir,
+                                                 AStr_getData(pWrkStr)
+                                );
                     }
                 }
             }
@@ -1719,10 +1735,11 @@ extern "C" {
             iMax = nodeArray_getSize(pObjDeps);
             for (i=0; i<iMax; ++i) {
                 NODE_DATA           *pNode;
+                const
                 char                *pStrA;
                 pNode = nodeArray_Get(pObjDeps, (i + 1));
                 if (pNode) {
-                    pStrA = node_getNameUTF8(pNode);
+                    pStrA = AStr_getData((ASTR_DATA *)node_getData(pNode));
                     if (pStrA) {
                         eRc =   AStr_AppendPrint(
                                                  pStr,
@@ -1730,7 +1747,6 @@ extern "C" {
                                                  pSrcDir,
                                                  pStrA
                                                  );
-                        mem_Free(pStrA);
                     }
                 }
             }

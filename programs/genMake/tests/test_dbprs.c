@@ -130,7 +130,7 @@ int             test_dbprs_Object01(
         "$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c \n"
         "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
         "OBJS += $(OBJDIR)/AStr.o\n\n"
-        "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c \n"
+        "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h \n"
         "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
         "OBJS += $(OBJDIR)/AStr_JSON.o\n\n"
         "$(OBJDIR)/AStr_JSON.o: $(SRCDIR)/AStr_JSON.c \n"
@@ -182,8 +182,82 @@ int             test_dbprs_Object01(
 
 
 
+int             test_dbprs_Object02(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    const
+    char            *pGoodJsonObject1 = "{\n"
+    "\"appl\":{"
+    "\"deps\":[\"cmn_defs.h\",\"cmdutl.h\"],"
+    "\"test\":{\"srcs\":[objTest.c, objTest_object.c]}"
+    "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "OBJS += $(OBJDIR)/appl_object.o\n\n"
+    "$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "OBJS += $(OBJDIR)/appl.o\n\n"
+    "$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/cmdutl.h \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "TESTS += test_appl\n\n"
+    "test_appl: $(TEST_SRC)/test_appl.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< "
+            "$(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c \n"
+    "\t$(TEST_OBJ)/$(@F)\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        
+        obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "appl");
+        TINYTEST_FALSE( (OBJ_NIL == pObj) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        eRc = dbprs_ParseObject(pObj, pNode);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_dbprs);
+    TINYTEST_ADD_TEST(test_dbprs_Object02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
