@@ -279,7 +279,10 @@ GENOSX_VTBL     genOSX_Vtbl = {
             NULL, 			// (P_OBJ_PTR)genOSX_DeepCopy,
             NULL 			// (P_OBJ_HASH)genOSX_Hash,
         },
-        NULL,               // pCompileObject
+        (void *)genOSX_GenCompileRoutine,
+        (void *)genOSX_GenCompileJson,
+        (void *)genOSX_GenCompileObject,
+        (void *)genOSX_GenCompileTest,
         (void *)genBase_GenFinal,
         (void *)genBase_GenInitial,
         (void *)genBase_GenLibrary,
@@ -288,7 +291,6 @@ GENOSX_VTBL     genOSX_Vtbl = {
         (void *)genBase_GenPrograms,
         (void *)genBase_GenRoutines,
         (void *)genBase_GenTests,
-        (void *)genBase_GenObject,
     }
     // Put other object method names below this.
     // Properties:

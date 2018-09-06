@@ -93,36 +93,6 @@ struct genBase_data_s	{
     PATH_DATA *     (*pLibObjectPath)(GENBASE_DATA *, const char *, const char *, const char *);
     OBJ_ID          pLibObj;
 
-    ASTR_DATA *     (*pGenCompileJson)(
-                        OBJ_ID,
-                        const char *,
-                        const char *,
-                        const char *,
-                        const char *
-                    );
-    ASTR_DATA *     (*pGenCompileObject)(
-                        OBJ_ID,
-                        const char *,
-                        const char *,
-                        const char *,
-                        const char *
-                    );
-    ASTR_DATA *     (*pGenCompileRoutine)(
-                        OBJ_ID,
-                        const char *,
-                        const char *,
-                        const char *,
-                        const char *
-                    );
-    ASTR_DATA *     (*pGenCompileTest)(
-                        OBJ_ID,
-                        const char *,
-                        const char *,
-                        const char *,
-                        const char *
-                    );
-    OBJ_ID          pGenObj;
-
 };
 #pragma pack(pop)
 

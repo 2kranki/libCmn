@@ -1022,154 +1022,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //  G e n e r a t e  R o u t i n e  C o m p i l a t i o n
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     genOSX_CompileRoutine(
-        GENOSX_DATA    *this,
-        const
-        char            *pName,                 // Routine File Name
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        PATH_DATA       *pPath = OBJ_NIL;
-        ASTR_DATA       *pFileName = OBJ_NIL;
-        ASTR_DATA       *pFileExt = OBJ_NIL;
-        
-        // Do initialization.
-        TRC_OBJ( this, "genBase_CompileRoutine(\"%s\", %s, %s)", pName, pSrcDir, pObjDir);
-#ifdef NDEBUG
-#else
-        if( !genOSX_Validate(this) ) {
-            DEBUG_BREAK();
-            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
-            return OBJ_NIL;
-        }
-#endif
-        if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
-        }
-        if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
-        }
-        pPath = path_NewA(pName);
-        if (OBJ_NIL == pStr) {
-            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return OBJ_NIL;
-        }
-        eRc = path_SplitFile(pPath, &pFileName, &pFileExt);
-        BREAK_NULL(pFileName);
-        BREAK_NULL(pFileExt);
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            obj_Release(pFileExt);
-            pFileExt = OBJ_NIL;
-            obj_Release(pFileName);
-            pFileName = OBJ_NIL;
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-            genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
-            return OBJ_NIL;
-        }
-        
-        eRc =   AStr_AppendPrint(
-                                 pStr,
-                                 "OBJS += $(%s)/%s.o\n\n",
-                                 pObjDir,
-                                 AStr_getData(pFileName)
-                );
-        if (AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL) {
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "$(%s)/%s.o: $(%s)/%s\n",
-                                     pObjDir,
-                                     AStr_getData(pFileName),
-                                     pSrcDir,
-                                     pName
-                                     );
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                     pObjDir
-                                     );
-        }
-        else if (AStr_CompareA(pFileExt, "asm") == ERESULT_SUCCESS_EQUAL) {
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "$(%s)/%s.o: $(%s)/%s\n",
-                                     pObjDir,
-                                     AStr_getData(pFileName),
-                                     pSrcDir,
-                                     pName
-                                     );
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "\t$(AS) $(AFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                     pObjDir
-                                     );
-        }
-        else if (AStr_CompareA(pFileExt, "s") == ERESULT_SUCCESS_EQUAL) {
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "$(%s)/%s.o: $(%s)/%s\n",
-                                     pObjDir,
-                                     AStr_getData(pFileName),
-                                     pSrcDir,
-                                     pName
-                                     );
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<\n\n",
-                                     pObjDir
-                                     );
-        }
-        else if (AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL) {
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "$(%s)/%s.o: $(SRCDIR)/%s\n",
-                                     pObjDir,
-                                     AStr_getData(pFileName),
-                                     pSrcDir,
-                                     pName
-                                     );
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $<\n\n",
-                                     pObjDir
-                                     );
-        }
-        else {
-            obj_Release(pFileExt);
-            pFileExt = OBJ_NIL;
-            obj_Release(pFileName);
-            pFileName = OBJ_NIL;
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return OBJ_NIL;
-        }
-    
-        // Return to caller.
-        obj_Release(pFileExt);
-        pFileExt = OBJ_NIL;
-        obj_Release(pFileName);
-        pFileName = OBJ_NIL;
-        obj_Release(pPath);
-        pPath = OBJ_NIL;
-        genOSX_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-
-
-
-    //---------------------------------------------------------------
     //  G e n e r a t e  C o m p i l a t i o n  R u l e s
     //---------------------------------------------------------------
     
@@ -1361,6 +1213,539 @@ extern "C" {
     }
 
 
+
+    //---------------------------------------------------------------
+    //          G e n e r a t e  C o m p i l a t i o n
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     genOSX_GenCompileJson(
+        GENOSX_DATA    *this,
+        const
+        char            *pNameA,            // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pName =  OBJ_NIL;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTR_DATA       *pWrkStr = OBJ_NIL;
+        
+        // Do initialization.
+        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if(NULL == pNameA) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        pName = AStr_NewA(pNameA);
+        if (OBJ_NIL == pName) {
+            return OBJ_NIL;
+        }
+        AStr_AppendA(pName, "_JSON.c");
+        
+        
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            obj_Release(pName);
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        
+        pWrkStr =   genOSX_GenCompileRoutine(
+                                             this,
+                                             AStr_getData(pName),
+                                             pSrcDir,
+                                             pObjDir,
+                                             pObjVar,
+                                             NULL,
+                                             pSrcDeps,
+                                             pObjDeps,
+                                             true,
+                                             false
+                                             );
+        if (pWrkStr) {
+            eRc = AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        obj_Release(pName);
+        return pStr;
+    }
+    
+    
+    ASTR_DATA *     genOSX_GenCompileObject(
+        GENOSX_DATA    *this,
+        const
+        char            *pName,             // Object Name
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTR_DATA       *pWrkStr = OBJ_NIL;
+        ASTR_DATA       *pFileName = OBJ_NIL;
+        ASTR_DATA       *pFileExt = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if(NULL == pName) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        
+        pFileName = AStr_NewA(pName);
+        if (OBJ_NIL == pFileName) {
+            DEBUG_BREAK();
+            obj_Release(pStr);
+            return OBJ_NIL;
+        }
+        
+        pFileExt = AStr_Copy(pFileName);
+        if (OBJ_NIL == pFileExt) {
+            DEBUG_BREAK();
+            obj_Release(pFileName);
+            obj_Release(pStr);
+            return OBJ_NIL;
+        }
+        eRc = AStr_AppendA(pFileExt, "_object.c");
+        pWrkStr =   genOSX_GenCompileRoutine(
+                            this,
+                            AStr_getData(pFileExt),
+                            pSrcDir,
+                            pObjDir,
+                            pObjVar,
+                            NULL,
+                            pSrcDeps,
+                            pObjDeps,
+                            true,
+                            false
+                    );
+        if (pWrkStr) {
+            eRc = AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
+        obj_Release(pFileExt);
+        pFileExt = OBJ_NIL;
+
+        eRc = AStr_AppendA(pFileName, ".c");
+        pWrkStr =   genOSX_GenCompileRoutine(
+                                             this,
+                                             AStr_getData(pFileName),
+                                             pSrcDir,
+                                             pObjDir,
+                                             pObjVar,
+                                             NULL,
+                                             pSrcDeps,
+                                             pObjDeps,
+                                             true,
+                                             false
+                    );
+        if (pWrkStr) {
+            eRc = AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        
+        
+        // Return to caller.
+        return pStr;
+    }
+    
+    
+    ASTR_DATA *     genOSX_GenCompileRoutine(
+        GENOSX_DATA    *this,
+        const
+        char            *pName,             // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,           // If present, adds another Make Flag
+                                            // variable in addition to CFLAGS
+                                            // (Default - none)
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps,          // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+        bool            fCO,                // true == compile only
+        bool            fExec               // true == execute the newly compiled
+                                            //          program
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pFileName = OBJ_NIL;
+        ASTR_DATA       *pFileExt = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+        TRC_OBJ( this, "genOSX_CompileRoutine(\"%s\")", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        if (NULL == pSrcDir) {
+            pSrcDir = "SRCDIR";
+        }
+        if (NULL == pObjDir) {
+            pObjDir = "OBJDIR";
+        }
+        if (NULL == pObjVar) {
+            pObjVar = "OBJS";
+        }
+        pPath = path_NewA(pName);
+        if (OBJ_NIL == pPath) {
+            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+        eRc = path_SplitFile(pPath, &pFileName, &pFileExt);
+        BREAK_NULL(pFileName);
+        BREAK_NULL(pFileExt);
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            obj_Release(pFileExt);
+            pFileExt = OBJ_NIL;
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+            genOSX_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            return OBJ_NIL;
+        }
+        
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "%s += $(%s)/%s.o\n\n",
+                                 pObjVar,
+                                 pObjDir,
+                                 AStr_getData(pFileName)
+                                 );
+        if ((AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL)
+            || (AStr_CompareA(pFileExt, "C") == ERESULT_SUCCESS_EQUAL)) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(%s)/%s ",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            if (pSrcDeps) {
+                iMax = nodeArray_getSize(pSrcDeps);
+                for (i=0; i<iMax; ++i) {
+                    NODE_DATA           *pNode;
+                    ASTR_DATA           *pWrkStr;
+                    pNode = nodeArray_Get(pSrcDeps, (i + 1));
+                    if (pNode) {
+                        pWrkStr = node_getData(pNode);
+                        if (pWrkStr) {
+                            eRc = AStr_Append(pStr, pWrkStr);
+                        }
+                    }
+                }
+            }
+            eRc =   AStr_AppendA(pStr, "\n");
+            if (pFlgVar) {
+                eRc =   AStr_AppendPrint(
+                                         pStr,
+                                         "\t$(CC) $(CFLAGS) %s $(%s) -o $(%s)/$(@F) $< ",
+                                         (fCO ? "-c" : ""),
+                                         pFlgVar,
+                                         pObjDir
+                                         );
+            }
+            else {
+                eRc =   AStr_AppendPrint(
+                                         pStr,
+                                         "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $< ",
+                                         (fCO ? "-c" : ""),
+                                         pObjDir
+                                         );
+            }
+            if (pObjDeps) {
+                iMax = nodeArray_getSize(pObjDeps);
+                for (i=0; i<iMax; ++i) {
+                    NODE_DATA           *pNode;
+                    char                *pStrA;
+                    pNode = nodeArray_Get(pObjDeps, (i + 1));
+                    if (pNode) {
+                        pStrA = node_getNameUTF8(pNode);
+                        if (pStrA) {
+                            eRc =   AStr_AppendPrint(
+                                                     pStr,
+                                                     "$(%s)/%s ",
+                                                     pSrcDir,
+                                                     pStrA
+                                                     );
+                            mem_Free(pStrA);
+                        }
+                    }
+                }
+            }
+        }
+        else if ((AStr_CompareA(pFileExt, "asm") == ERESULT_SUCCESS_EQUAL)
+                 || (AStr_CompareA(pFileExt, "ASM") == ERESULT_SUCCESS_EQUAL)) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(%s)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(AS) $(AFLAGS) %s -o $(%s)/$(@F) $<",
+                                     (fCO ? "-c" : ""),
+                                     pObjDir
+                                     );
+        }
+        else if ((AStr_CompareA(pFileExt, "s") == ERESULT_SUCCESS_EQUAL)
+                 || (AStr_CompareA(pFileExt, "S") == ERESULT_SUCCESS_EQUAL)) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(%s)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<",
+                                     pObjDir
+                                     );
+        }
+        else if ((AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL)
+                 || (AStr_CompareA(pFileExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "$(%s)/%s.o: $(SRCDIR)/%s\n",
+                                     pObjDir,
+                                     AStr_getData(pFileName),
+                                     pSrcDir,
+                                     pName
+                                     );
+            eRc =   AStr_AppendPrint(
+                                     pStr,
+                                     "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $<",
+                                     (fCO ? "-c" : ""),
+                                     pObjDir
+                                     );
+        }
+        else {
+            obj_Release(pFileExt);
+            pFileExt = OBJ_NIL;
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+        if (!fCO && fExec) {
+            eRc = AStr_AppendPrint(pStr, "\n\t$(%s)/$(@F)\n\n", pObjDir);
+        }
+        else {
+            eRc =   AStr_AppendA(pStr, "\n\n");
+        }
+        
+        // Return to caller.
+        obj_Release(pFileExt);
+        pFileExt = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        genOSX_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    ASTR_DATA *     genOSX_GenCompileTest(
+        GENOSX_DATA    *this,
+        const
+        char            *pNameA,            // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")", pName);
+#ifdef NDEBUG
+#else
+        if( !genOSX_Validate(this) ) {
+            DEBUG_BREAK();
+            //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if(NULL == pNameA) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+        if (NULL == pSrcDir) {
+            pSrcDir = "TEST_SRC";
+        }
+        if (NULL == pObjDir) {
+            pObjDir = "TEST_OBJ";
+        }
+        if (NULL == pObjVar) {
+            pObjVar = "TESTS";
+        }
+        pName = AStr_NewA("test_");
+        if (pName) {
+            eRc = AStr_AppendA(pName, pNameA);
+        }
+        else {
+            return OBJ_NIL;
+        }
+
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "%s += %s\n\n",
+                                 pObjVar,
+                                 AStr_getData(pName)
+                                 );
+
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "%s: $(%s)/%s.c ",
+                                 AStr_getData(pName),
+                                 pSrcDir,
+                                 AStr_getData(pName)
+                );
+        if (pSrcDeps) {
+            iMax = nodeArray_getSize(pSrcDeps);
+            for (i=0; i<iMax; ++i) {
+                NODE_DATA           *pNode;
+                ASTR_DATA           *pWrkStr;
+                pNode = nodeArray_Get(pSrcDeps, (i + 1));
+                if (pNode) {
+                    pWrkStr = node_getData(pNode);
+                    if (pWrkStr) {
+                        eRc = AStr_Append(pStr, pWrkStr);
+                    }
+                }
+            }
+        }
+        eRc =   AStr_AppendA(pStr, "\n");
+        
+        eRc =   AStr_AppendPrint(
+                                 pStr,
+                                 "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(%s)/$(@F) $< ",
+                                 pObjDir
+                );
+        if (pObjDeps) {
+            iMax = nodeArray_getSize(pObjDeps);
+            for (i=0; i<iMax; ++i) {
+                NODE_DATA           *pNode;
+                char                *pStrA;
+                pNode = nodeArray_Get(pObjDeps, (i + 1));
+                if (pNode) {
+                    pStrA = node_getNameUTF8(pNode);
+                    if (pStrA) {
+                        eRc =   AStr_AppendPrint(
+                                                 pStr,
+                                                 "$(%s)/%s ",
+                                                 pSrcDir,
+                                                 pStrA
+                                                 );
+                        mem_Free(pStrA);
+                    }
+                }
+            }
+        }
+        eRc =   AStr_AppendA(pStr, "\n");
+
+        eRc = AStr_AppendPrint(pStr, "\t$(%s)/$(@F)\n\n", pObjDir);
+
+        // Return to caller.
+        obj_Release(pName);
+        pName = OBJ_NIL;
+        return pStr;
+    }
+    
+    
 
     //---------------------------------------------------------------
     //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
@@ -2664,6 +3049,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(GENOSX_DATA);
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -2694,7 +3080,7 @@ extern "C" {
         genOSX_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pLibIncludePath = genOSX_LibIncludePath;
         this->pLibName = genOSX_LibName;
-
+        
     #ifdef NDEBUG
     #else
         if( !genOSX_Validate(this) ) {

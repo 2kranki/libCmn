@@ -314,10 +314,10 @@
 		C49738A4212BAFB000D72EF4 /* screen_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4973899212BAFAA00D72EF4 /* screen_object.c */; };
 		C49738A5212BAFB000D72EF4 /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = C497389A212BAFAB00D72EF4 /* scanner.c */; };
 		C49738A6212BAFB000D72EF4 /* sgraph_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C497389F212BAFAE00D72EF4 /* sgraph_object.c */; };
+		C4A449472140C8FA000CBC50 /* test_dbprs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A449462140C8FA000CBC50 /* test_dbprs.c */; };
 		C4A74CCD213D8BB90078DE3B /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A74CCC213D8BB80078DE3B /* libcurses.tbd */; };
 		C4A74CD4213EFE850078DE3B /* dbprs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A74CD0213EFE820078DE3B /* dbprs.c */; };
 		C4A74CD5213EFE850078DE3B /* dbprs_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A74CD3213EFE840078DE3B /* dbprs_object.c */; };
-		C4A74CD7213F2DEA0078DE3B /* test_dbprs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A74CD6213F2DE90078DE3B /* test_dbprs.c */; };
 		C4F4491820EA685800C5E729 /* nodeHash_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4490E20EA685200C5E729 /* nodeHash_JSON.c */; };
 		C4F4491920EA685800C5E729 /* psxExec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491020EA685400C5E729 /* psxExec_object.c */; };
 		C4F4491A20EA685800C5E729 /* psxExec.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491220EA685500C5E729 /* psxExec.c */; };
@@ -934,12 +934,12 @@
 		C497389E212BAFAD00D72EF4 /* scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scanner.h; sourceTree = "<group>"; };
 		C497389F212BAFAE00D72EF4 /* sgraph_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sgraph_object.c; sourceTree = "<group>"; };
 		C49738A0212BAFAF00D72EF4 /* scanner_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scanner_internal.h; sourceTree = "<group>"; };
+		C4A449462140C8FA000CBC50 /* test_dbprs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_dbprs.c; sourceTree = "<group>"; };
 		C4A74CCC213D8BB80078DE3B /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
 		C4A74CD0213EFE820078DE3B /* dbprs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbprs.c; sourceTree = "<group>"; };
 		C4A74CD1213EFE830078DE3B /* dbprs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbprs.h; sourceTree = "<group>"; };
 		C4A74CD2213EFE840078DE3B /* dbprs_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbprs_internal.h; sourceTree = "<group>"; };
 		C4A74CD3213EFE840078DE3B /* dbprs_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbprs_object.c; sourceTree = "<group>"; };
-		C4A74CD6213F2DE90078DE3B /* test_dbprs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_dbprs.c; sourceTree = "<group>"; };
 		C4F4490E20EA685200C5E729 /* nodeHash_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeHash_JSON.c; sourceTree = "<group>"; };
 		C4F4490F20EA685300C5E729 /* nodeLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink.h; sourceTree = "<group>"; };
 		C4F4491020EA685400C5E729 /* psxExec_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_object.c; sourceTree = "<group>"; };
@@ -986,7 +986,7 @@
 		C45573DF20CC0140002F9BFE /* genMake_Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C4A74CD6213F2DE90078DE3B /* test_dbprs.c */,
+				C4A449462140C8FA000CBC50 /* test_dbprs.c */,
 				C455776020CC9F11002F9BFE /* test_data.c */,
 			);
 			name = genMake_Tests;
@@ -1887,7 +1887,7 @@
 				C45575AF20CC0200002F9BFE /* obj.c in Sources */,
 				C455773520CC02C0002F9BFE /* block32.c in Sources */,
 				C45575BB20CC0200002F9BFE /* objMatrix.c in Sources */,
-				C4A74CD7213F2DEA0078DE3B /* test_dbprs.c in Sources */,
+				C4A449472140C8FA000CBC50 /* test_dbprs.c in Sources */,
 				C45574B620CC01B6002F9BFE /* scandec32.c in Sources */,
 				C455769720CC0299002F9BFE /* jsonIn.c in Sources */,
 				C45574BD20CC01B6002F9BFE /* szHash_object.c in Sources */,

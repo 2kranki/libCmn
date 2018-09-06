@@ -832,7 +832,6 @@ extern "C" {
             pObj = OBJ_NIL;
         }
         
-        
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -852,6 +851,7 @@ extern "C" {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pDeps = OBJ_NIL;
+        NODEARRAY_DATA  *pTestDeps = OBJ_NIL;
         bool            fJson = false;
         bool            fTest = true;
         char            *pName;
@@ -906,7 +906,10 @@ extern "C" {
             pHash = pData;
             pHashNode = nodeHash_FindA(pHash, "deps");
             if (pHashNode) {
-                pDeps = node_getData(pHashNode);
+                pData = node_getData(pHashNode);
+                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                    pDeps = pData;
+                }
             }
             pHashNode = nodeHash_FindA(pHash, "json");
             if (pHashNode) {
@@ -929,6 +932,13 @@ extern "C" {
                         if(obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
                             fTest = false;
                         }
+                        else if(obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
+                            fTest = true;
+                        }
+                        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                            fTest = true;
+                            pTestDeps = pData;
+                        }
                     }
                 }
             }
@@ -943,14 +953,36 @@ extern "C" {
         }
 
         if (this->pGen) {
-            pStr = genBase_GenCompileObject(this->pGen, pName, NULL, NULL, NULL);
+            if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileObject) {
+                pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileObject(
+                                    this->pGen,
+                                    pName,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    pDeps,
+                                    pTestDeps
+                        );
+            }
             if (pStr) {
                 AStr_Append(this->pStr, pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
             if (fJson) {
-                pStr = genBase_GenCompileJson(this->pGen, pName, NULL, NULL, NULL);
+                if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileJson) {
+                    pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileJson(
+                                this->pGen,
+                                pName,
+                                NULL,
+                                NULL,
+                                NULL,
+                                NULL,
+                                pDeps,
+                                pTestDeps
+                            );
+                }
                 if (pStr) {
                     AStr_Append(this->pStr, pStr);
                     obj_Release(pStr);
@@ -958,7 +990,18 @@ extern "C" {
                 }
             }
             if (fTest) {
-                pStr = genBase_GenCompileTest(this->pGen, pName, NULL, NULL, NULL);
+                if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
+                    pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
+                                    this->pGen,
+                                    pName,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    pTestDeps
+                            );
+                }
                 if (pStr) {
                     AStr_Append(this->pStr, pStr);
                     obj_Release(pStr);
@@ -1106,7 +1149,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;

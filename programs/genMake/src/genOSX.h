@@ -83,7 +83,6 @@ extern "C" {
         // method names to the vtbl definition in genOSX_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(GENOSX_DATA *);
     } GENOSX_VTBL;
 
 
@@ -200,6 +199,80 @@ extern "C" {
         SZHASH_DATA     *pDict,
         DATETIME_DATA   *pDateTime,
         TEXTOUT_DATA    *pOutput
+    );
+    
+    
+    ASTR_DATA *     genOSX_GenCompileJson(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Object Name
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    );
+    
+    
+    ASTR_DATA *     genOSX_GenCompileObject(
+        GENOSX_DATA     *this,
+        const
+        char            *pName,             // Object Name
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+);
+    
+    
+    ASTR_DATA *     genOSX_GenCompileRoutine(
+        GENOSX_DATA    *this,
+        const
+        char            *pName,             // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,           // If present, adds another Make Flag
+                                            // variable in addition to CFLAGS
+                                            // (Default - none)
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps,          // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+        bool            fCO,                // true == compile only
+        bool            fExec
+    );
+    
+    
+    ASTR_DATA *     genOSX_GenCompileTest(
+        GENOSX_DATA    *this,
+        const
+        char            *pName,             // Object Name
+        const
+        char            *pSrcDir,           // Default - "TEST_SRC"
+        const
+        char            *pObjDir,           // Default - "TEST_OBJ"
+        const
+        char            *pObjVar,           // Default - "TESTS"
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
     );
     
     

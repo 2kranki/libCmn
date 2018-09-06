@@ -23,88 +23,11 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <genOSX.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <dbprs_internal.h>
 
-
-bool        fJson;
-bool        fObject;
-bool        fRoutine;
-bool        fTest;
-
-
-
-ASTR_DATA *     doJson(
-    OBJ_ID          pObj,
-    const
-    char            *pName,
-    const
-    char            *pSrcDir,
-    const
-    char            *pObjDir,
-    const
-    char            *pObjVar
-)
-{
-    fprintf(stderr, "\tJson for %s\n", pName);
-    fJson = true;
-    return OBJ_NIL;
-}
-
-
-ASTR_DATA *     doObject(
-    OBJ_ID          pObj,
-    const
-    char            *pName,
-    const
-    char            *pSrcDir,
-    const
-    char            *pObjDir,
-    const
-    char            *pObjVar
-)
-{
-    fprintf(stderr, "\tObject for %s\n", pName);
-    fObject = true;
-    return OBJ_NIL;
-}
-
-
-ASTR_DATA *     doRoutine(
-    OBJ_ID          pObj,
-    const
-    char            *pName,
-    const
-    char            *pSrcDir,
-    const
-    char            *pObjDir,
-    const
-    char            *pObjVar
-)
-{
-    fprintf(stderr, "\tRoutine for %s\n", pName);
-    fRoutine = true;
-    return OBJ_NIL;
-}
-
-
-ASTR_DATA *     doTest(
-    OBJ_ID          pObj,
-    const
-    char            *pName,
-    const
-    char            *pSrcDir,
-    const
-    char            *pObjDir,
-    const
-    char            *pObjVar
-)
-{
-    fprintf(stderr, "\tTest for %s\n", pName);
-    fTest = true;
-    return OBJ_NIL;
-}
 
 
 
@@ -189,24 +112,39 @@ int             test_dbprs_Object01(
 )
 {
     DBPRS_DATA      *pObj = OBJ_NIL;
-    GENBASE_DATA    *pGen = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     const
-    char                *pGoodJsonObject1 = "{\n"
+    char            *pGoodJsonObject1 = "{\n"
         "\"AStr\":{"
-            "\"deps\":[\"cmn\",\"array\"],"
+            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
             "\"json\":true,"
             "\"test\":true"
         "}\n"
     "}\n";
+    const
+    char            *pOutputA =
+        "OBJS += $(OBJDIR)/AStr_object.o\n\n"
+        "$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c \n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+        "OBJS += $(OBJDIR)/AStr.o\n\n"
+        "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c \n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+        "OBJS += $(OBJDIR)/AStr_JSON.o\n\n"
+        "$(OBJDIR)/AStr_JSON.o: $(SRCDIR)/AStr_JSON.c \n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+        "TESTS += test_AStr\n\n"
+        "test_AStr: $(TEST_SRC)/test_AStr.c \n"
+        "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
+        "\t$(TEST_OBJ)/$(@F)\n\n"
+    ;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pGen = genBase_New();
+    pGen = genOSX_New(OBJ_NIL);
     TINYTEST_FALSE( (OBJ_NIL == pGen) );
-    genBase_setGenerators(pGen, OBJ_NIL, doJson, doObject, doRoutine, doTest);
     
     pObj = dbprs_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -214,11 +152,7 @@ int             test_dbprs_Object01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        fJson = false;
-        fObject = false;
-        fRoutine = false;
-        fTest = false;
-        dbprs_setGen(pObj, pGen);
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
         obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
@@ -232,10 +166,9 @@ int             test_dbprs_Object01(
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObject(pObj, pNode);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE( (fJson) );
-        TINYTEST_TRUE( (fObject) );
-        TINYTEST_TRUE( (!fRoutine) );
-        TINYTEST_TRUE( (fTest) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

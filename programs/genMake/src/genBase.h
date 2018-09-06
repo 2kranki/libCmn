@@ -85,16 +85,77 @@ extern "C" {
         // method names to the vtbl definition in genBase_object.c.
         // Properties:
         // Methods:
-        ERESULT     (*pCompileObject)(GENBASE_DATA *, const char *);
-        ERESULT     (*pGenFinal)(GENBASE_DATA *);
-        ERESULT     (*pGenInitial)(GENBASE_DATA *);
-        ERESULT     (*pGenLibrary)(GENBASE_DATA *);
-        ERESULT     (*pGenObjects)(GENBASE_DATA *);
-        ERESULT     (*pGenOSSpecific)(GENBASE_DATA *);
-        ERESULT     (*pGenPrograms)(GENBASE_DATA *);
-        ERESULT     (*pGenRoutines)(GENBASE_DATA *);
-        ERESULT     (*pGenTests)(GENBASE_DATA *);
-        ERESULT     (*pGenObject)(GENBASE_DATA *, NODE_DATA *);
+        ASTR_DATA * (*pGenCompileRoutine)(
+            OBJ_ID          this,
+            const
+            char            *pName,
+            const
+            char            *pSrcDir,
+            const
+            char            *pObjDir,
+            const
+            char            *pObjVar,
+            const
+            char            *pFlgVar,
+            NODEARRAY_DATA  *pSrcDeps,
+            NODEARRAY_DATA  *pObjDeps,
+            bool            fCO,
+            bool            fExec
+                    );
+        ASTR_DATA * (*pGenCompileJson)(
+            OBJ_ID          this,
+            const
+            char            *pName,
+            const
+            char            *pSrcDir,
+            const
+            char            *pObjDir,
+            const
+            char            *pObjVar,
+            const
+            char            *pFlgVar,
+            NODEARRAY_DATA  *pSrcDeps,
+            NODEARRAY_DATA  *pObjDeps
+        );
+        ASTR_DATA * (*pGenCompileObject)(
+            OBJ_ID          this,
+            const
+            char            *pName,
+            const
+            char            *pSrcDir,
+            const
+            char            *pObjDir,
+            const
+            char            *pObjVar,
+            const
+            char            *pFlgVar,
+            NODEARRAY_DATA  *pSrcDeps,
+            NODEARRAY_DATA  *pObjDeps
+        );
+        ASTR_DATA * (*pGenCompileTest)(
+            OBJ_ID          this,
+            const
+            char            *pName,
+            const
+            char            *pSrcDir,
+            const
+            char            *pObjDir,
+            const
+            char            *pObjVar,
+            const
+            char            *pFlgVar,
+            NODEARRAY_DATA  *pSrcDeps,
+            NODEARRAY_DATA  *pObjDeps
+        );
+        ERESULT     (*pGenFinal)(OBJ_ID);
+        ERESULT     (*pGenInitial)(OBJ_ID);
+        ERESULT     (*pGenLibrary)(OBJ_ID);
+        ERESULT     (*pGenObjects)(OBJ_ID);
+        ERESULT     (*pGenOSSpecific)(OBJ_ID);
+        ERESULT     (*pGenPrograms)(OBJ_ID);
+        ERESULT     (*pGenRoutines)(OBJ_ID);
+        ERESULT     (*pGenTests)(OBJ_ID);
+        ERESULT     (*pGenObject)(OBJ_ID, NODE_DATA *);
     } GENBASE_VTBL;
 
 
@@ -154,40 +215,6 @@ extern "C" {
         NODEHASH_DATA   *pValue
     );
 
-    
-    ERESULT         genBase_setGenerators(
-        GENBASE_DATA    *this,
-        OBJ_ID          pObj,
-        ASTR_DATA *     (*pGenCompileJson)(
-                                     OBJ_ID,
-                                     const char *,
-                                     const char *,
-                                     const char *,
-                                     const char *
-                        ),
-        ASTR_DATA *     (*pGenCompileObject)(
-                                       OBJ_ID,
-                                       const char *,
-                                       const char *,
-                                       const char *,
-                                       const char *
-                        ),
-        ASTR_DATA *     (*pGenCompileRoutine)(
-                                        OBJ_ID,
-                                        const char *,
-                                        const char *,
-                                        const char *,
-                                        const char *
-                        ),
-        ASTR_DATA *     (*pGenCompileTest)(
-                                     OBJ_ID,
-                                     const char *,
-                                     const char *,
-                                     const char *,
-                                     const char *
-                        )
-    );
-    
     
     ERESULT         genBase_getLastError(
         GENBASE_DATA    *this
@@ -332,124 +359,6 @@ extern "C" {
     ERESULT         genBase_ExpandDict(
         GENBASE_DATA    *this,
         ASTR_DATA       *pStr
-    );
-    
-    
-    /*!
-     Generate instructions for Make to compile a json file for an object.
-     @param     this    object pointer
-     @param     pName   object name
-     @param     pSrcDir  Optional Source Directory Path or makefile
-                        variable such as "SRCDIR".  If NULL, then "SRCDIR"
-                        will be used.
-     @param     pObjDir  Optional Object Direcotry Path or makefile
-                        variable such as "OBJDIR".  If NULL, then "OBJDIR"
-                        will be used.
-     @param     pObjVar  Optional Object Make Variable for output to be
-                        added to. If NULL, then "OBJS" will be used.
-     @return    If successful, an string object which must be released
-                containing the makefile instructions, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    
-    ASTR_DATA *     genBase_GenCompileJson(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir,
-        const
-        char            *pObjVar
-    );
-    
-    
-    /*!
-     Generate instructions for Make to compile an object.
-     @param     this    object pointer
-     @param     pName   object name
-     @param     pSrcDir  Optional Source Directory Path or makefile
-                        variable such as "SRCDIR".  If NULL, then "SRCDIR"
-                        will be used.
-     @param     pObjDir  Optional Object Direcotry Path or makefile
-                        variable such as "OBJDIR".  If NULL, then "OBJDIR"
-                        will be used.
-     @param     pObjVar  Optional Object Make Variable for output to be
-                        added to. If NULL, then "OBJS" will be used.
-     @return    If successful, an string object which must be released
-     containing the makefile instructions, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    
-    ASTR_DATA *     genBase_GenCompileObject(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Routine Name including extension
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir,
-        const
-        char            *pObjVar
-    );
-    
-    
-    /*!
-     Generate instructions to compile a routine consisting of
-     one source file in one of several languages.
-     @param     this    object pointer
-     @param     pName   routine file name including extension
-     @param     pSrcDir  Optional Source Directory Path or makefile
-                        variable such as "SRCDIR".  If NULL, then "SRCDIR"
-                        will be used.
-     @param     pObjDir  Optional Object Direcotry Path or makefile
-                        variable such as "OBJDIR".  If NULL, then "OBJDIR"
-                        will be used.
-     @return    If successful, an string object which must be released
-                containing the makefile instructions, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    
-    ASTR_DATA *     genBase_GenCompileRoutine(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Routine Name including extension
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir,
-        const
-        char            *pSrcVar
-    );
-    
-    
-    /*!
-     Generate instructions to compile a routine consisting of
-     one source file in one of several languages.
-     @param     this    object pointer
-     @param     pName   routine file name including extension
-     @param     pSrcDir  Optional Source Directory Path or makefile
-     variable such as "SRCDIR".  If NULL, then "SRCDIR"
-     will be used.
-     @param     pObjDir  Optional Object Direcotry Path or makefile
-     variable such as "OBJDIR".  If NULL, then "OBJDIR"
-     will be used.
-     @return    If successful, an string object which must be released
-     containing the makefile instructions, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    
-    ASTR_DATA *     genBase_GenCompileTest(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Routine Name including extension
-        const
-        char            *pSrcDir,
-        const
-        char            *pObjDir,
-        const
-        char            *pSrcVar
     );
     
     

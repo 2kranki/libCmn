@@ -273,7 +273,10 @@ GENBASE_VTBL     genBase_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    NULL,               // pCompileObject
+    NULL,               // pGenCompileRoutine
+    NULL,               // pGenCompileJson
+    NULL,               // pGenCompileObject
+    NULL,               // pGenCompileTest
     (void *)genBase_GenFinal,
     (void *)genBase_GenInitial,
     (void *)genBase_GenLibrary,
@@ -282,7 +285,6 @@ GENBASE_VTBL     genBase_Vtbl = {
     (void *)genBase_GenPrograms,
     (void *)genBase_GenRoutines,
     (void *)genBase_GenTests,
-    (void *)genBase_GenObject,
 
 };
 

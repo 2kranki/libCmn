@@ -134,6 +134,11 @@ extern "C" {
     );
     
 
+    ASTR_DATA * dbprs_getStr(
+        DBPRS_DATA     *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -166,8 +171,10 @@ extern "C" {
         object_Hash = JSON Hash of:
             "deps" : JSON_Array of header dependencies
             "json" : "true" or "false" (default) // Generate JSON object compile or not
-            "test" : "true" (default) or "false" // Generate Test compile and execution
-                                                 // or not
+            "test" : "true" (default), "false" or '[' source files ']'
+                                                // Generate Test compile and execution
+                                                // or not (optionally with extra
+                                                // compilation source files)
      @param     this    DBPRS object pointer
      @param     pNode   Object Node Pointer
      @return    If successful, an AStr object which must be released containing the
