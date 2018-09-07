@@ -40,7 +40,7 @@
 
 
 #include    <genObj.h>
-#include    <objHash.h>
+#include    <nodeHash.h>
 #include    <szData.h>
 
 
@@ -67,11 +67,10 @@ struct genObj_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;        // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
-    OBJHASH_DATA    *pHash;             // Hash of szData
+    NODEHASH_DATA   *pDict;             // Dictionary
     ASTR_DATA       *pDateTime;
     
 };
@@ -90,12 +89,6 @@ struct genObj_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            genObj_setLastError(
-        GENOBJ_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  genObj_getSuperVtbl(
         GENOBJ_DATA     *this

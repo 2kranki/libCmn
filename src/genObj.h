@@ -131,11 +131,6 @@ extern "C" {
     );
     
 
-    ERESULT     genObj_getLastError(
-        GENOBJ_DATA		*this
-    );
-
-
 
     
     //---------------------------------------------------------------
@@ -143,8 +138,50 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Add a variable to the Substitution Variables.
+     @param     this    object pointer
+     @param     pName   Pointer to a UTF-8 Character String representing the
+     variable's symbolic name
+     @param     pValue  Pointer to an AStr object representing the
+     variable's substitution value
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         genObj_DictAdd(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
+    );
+    
+    ERESULT         genObj_DictAddA(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        const
+        char            *pValue
+    );
+    
+    
+    /*!
+     Find a variable in the Substitution Variables.
+     @param     this    object pointer
+     @param     pName   Pointer to a UTF-8 Character String representing the
+     variable's symbolic name
+     @return    If successful, string associated with the variable. Otherwise,
+     an OBJ_NIL.
+     */
+    ASTR_DATA *     genObj_DictFind(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName
+    );
+    
+    
+    
+    /*!
      Generate the Internal Object Header.
-     @param     this    GENOBJ object pointer
+     @param     this    object pointer
      @param     pIncludes Pointer to a UTF-8 Character String representing the
                         additional includes that might be needed in the hearder
      @return    If successful, an ASTR_DATA object which contains the internal
@@ -170,7 +207,7 @@ extern "C" {
      make up a variable name.  If the variable name is found in the variable hash, its
      data string is substituted in the output string.  Otherwise, the variable name is
      passed through in the "${...}" form.
-     @param     this    GENOBJ object pointer
+     @param     this    object pointer
      @param     pStr    the input text string
      @return    If successful, an AStr object which must be released containing the
                 expanded text, otherwise OBJ_NIL and an appropriate ERESULT_* error
@@ -189,7 +226,7 @@ extern "C" {
      @code 
         ASTR_DATA      *pDesc = genObj_ToDebugString(this,4);
      @endcode 
-     @param     this    GENOBJ object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
@@ -201,40 +238,6 @@ extern "C" {
     );
     
     
-    /*!
-     Add a variable to the Substitution Variables.
-     @param     this    GENOBJ object pointer
-     @param     pName   Pointer to a UTF-8 Character String representing the
-                        variable's symbolic name
-     @param     pValue  Pointer to an AStr object representing the
-                        variable's substitution value
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         genObj_VarAdd(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        ASTR_DATA       *pValue
-    );
-    
-    ERESULT         genObj_VarAddA(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        const
-        char            *pValue
-    );
-    
-
-    ASTR_DATA *     genObj_VarFind(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName
-    );
-    
-    
-
     
 #ifdef	__cplusplus
 }

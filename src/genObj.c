@@ -80,6 +80,142 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    ERESULT             genObj_BuildDictObj(
+        GENOBJ_DATA         *this,
+        const
+        char                *pObjectName
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr1;
+        ASTR_DATA       *pStr2;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pDict) {
+            pStr1 = AStr_NewA(pObjectName);
+            if (OBJ_NIL == pStr1) {
+                eRc = ERESULT_OUT_OF_MEMORY;
+                goto eor;
+            }
+            eRc = nodeHash_AddA(this->pDict, "P", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            pStr2 = AStr_ToUpper(pStr1);
+            if (OBJ_NIL == pStr1) {
+                eRc = ERESULT_OUT_OF_MEMORY;
+                goto eor;
+            }
+            eRc = AStr_AppendA(pStr2, "_DATA");
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            eRc = nodeHash_AddA(this->pDict, "Q", 0, pStr2);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+            obj_Release(pStr1);
+            pStr1 = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    eor:
+        return eRc;
+    }
+    
+    
+    
+    ERESULT             genObj_BuildDictTime(
+        GENOBJ_DATA         *this,
+        const
+        char                *pObjectName
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr1;
+        //ASTR_DATA       *pStr2;
+        char            *pStrUtf8;
+        DATETIME_DATA   *pTime;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pDict) {
+            pTime = dateTime_NewCurrent();
+            pStr1 = dateTime_ToString(pTime);
+            pStrUtf8 = AStr_CStringA(pStr1,NULL);
+            obj_Release(pStr1);
+            pStrUtf8[2] = '\0';         // Month
+            pStr1 = AStr_NewA(&pStrUtf8[0]);
+            eRc = nodeHash_AddA(this->pDict, "M", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr1);
+            pStrUtf8[5] = '\0';         // Day
+            pStr1 = AStr_NewA(&pStrUtf8[3]);
+            eRc = nodeHash_AddA(this->pDict, "D", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr1);
+            pStrUtf8[10] = '\0';         // Year
+            pStr1 = AStr_NewA(&pStrUtf8[6]);
+            eRc = nodeHash_AddA(this->pDict, "Y", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr1);
+            pStrUtf8[13] = '\0';         // Hours
+            pStr1 = AStr_NewA(&pStrUtf8[11]);
+            eRc = nodeHash_AddA(this->pDict, "H", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr1);
+            pStrUtf8[16] = '\0';         // Mins
+            pStr1 = AStr_NewA(&pStrUtf8[14]);
+            eRc = nodeHash_AddA(this->pDict, "N", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr1);
+            pStrUtf8[19] = '\0';        // Secs
+            pStr1 = AStr_NewA(&pStrUtf8[17]);
+            eRc = nodeHash_AddA(this->pDict, "S", 0, pStr1);
+            if (ERESULT_FAILED(eRc)) {
+                goto eor;
+            }
+            obj_Release(pStr1);
+            mem_Free(pStrUtf8);
+            obj_Release(pTime);
+        }
+        
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    eor:
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //          C r e a t e  S p a c e d  C o m m e n t
     //---------------------------------------------------------------
@@ -168,31 +304,29 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                        D i c t i o n a r y
     //---------------------------------------------------------------
     
-    ERESULT         genObj_getLastError(
+    NODEHASH_DATA * genObj_getDict(
         GENOBJ_DATA     *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !genObj_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
         }
 #endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        
+        return this->pDict;
     }
-
-
-    bool            genObj_setLastError(
+    
+    
+    bool            genObj_setDict(
         GENOBJ_DATA     *this,
-        ERESULT         value
+        NODEHASH_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -202,14 +336,17 @@ extern "C" {
             return false;
         }
 #endif
-        
-        this->eRc = value;
+        obj_Retain(pValue);
+        if (this->pDict) {
+            obj_Release(this->pDict);
+        }
+        this->pDict = pValue;
         
         return true;
     }
     
     
-
+    
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -228,7 +365,6 @@ extern "C" {
         }
 #endif
 
-        genObj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -249,7 +385,6 @@ extern "C" {
 
         //this->priority = value;
 
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -271,7 +406,6 @@ extern "C" {
         }
 #endif
 
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -296,7 +430,6 @@ extern "C" {
 #endif
 
         
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -328,9 +461,10 @@ extern "C" {
      */
     ERESULT         genObj_Assign(
         GENOBJ_DATA		*this,
-        GENOBJ_DATA      *pOther
+        GENOBJ_DATA     *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -372,11 +506,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        genObj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return genObj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -426,8 +560,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        genObj_setLastError(this, ERESULT_SUCCESS);
-        genObj_setLastError(this, ERESULT_NOT_IMPLEMENTED); //FIXME: Remove this.
         return pOther;
     }
     
@@ -461,10 +593,7 @@ extern "C" {
         }
 #endif
 
-        if (this->pHash) {
-            obj_Release(this->pHash);
-            this->pHash = OBJ_NIL;
-        }
+        genObj_setDict(this, OBJ_NIL);
         if (this->pDateTime) {
             obj_Release(this->pDateTime);
             this->pDateTime = OBJ_NIL;
@@ -481,6 +610,180 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //         D i c t i o n a r y  M a n i p u l a t i o n
+    //---------------------------------------------------------------
+    
+    ERESULT         genObj_DictAdd(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pValueUC = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = nodeHash_AddA(this->pDict, pName, 0, pValue);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        
+        if (0 == strcmp("ClassName", pName)) {
+            if (pValue) {
+                pValueUC = AStr_ToUpper(pValue);
+                if (OBJ_NIL == pValueUC) {
+                    eRc = ERESULT_OUT_OF_MEMORY;
+                    return eRc;
+                }
+            }
+            eRc = nodeHash_AddA(this->pDict, "ClassNameUC", 0, pValueUC);
+            obj_Release(pValueUC);
+            pValueUC = OBJ_NIL;
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+        }
+        else if (0 == strcmp("SuperClassName", pName)) {
+            if (pValue) {
+                pValueUC = AStr_ToUpper(pValue);
+                if (OBJ_NIL == pValueUC) {
+                    return ERESULT_OUT_OF_MEMORY;
+                }
+            }
+            eRc = nodeHash_AddA(this->pDict, "SuperClassNameUC", 0, pValueUC);
+            obj_Release(pValueUC);
+            pValueUC = OBJ_NIL;
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         genObj_DictAddA(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        const
+        char            *pValueA
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        ASTR_DATA       *pValue = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (strlen(pName) > 64) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (pValueA) {
+            pValue = AStr_NewA(pValueA);
+            if (OBJ_NIL == pValue) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            eRc = genObj_DictAdd(this, pName, pValue);
+            obj_Release(pValue);
+            pValue = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ASTR_DATA *     genObj_DictFind(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName
+    )
+    {
+        ASTR_DATA       *pValue = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return pValue;
+        }
+        if (NULL == pName) {
+            DEBUG_BREAK();
+            return pValue;
+        }
+        if (strlen(pName) > 64) {
+            DEBUG_BREAK();
+            return pValue;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(this->pDict, pName);
+        if (pNode) {
+            pValue = node_getData(pNode);
+            BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
+        }
+        
+        // Return to caller.
+        return pValue;
+    }
+    
+    
+    ERESULT         genObj_DictUpdate(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = nodeHash_DeleteA(this->pDict, pName);
+        eRc = genObj_DictAdd(this, pName, pValue);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //               G e n e r a t e  D a t a  E n d
     //---------------------------------------------------------------
@@ -501,18 +804,17 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if (OBJ_NIL == pClassNameUC) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         if (OBJ_NIL == *ppStr) {
@@ -526,7 +828,6 @@ extern "C" {
         AStr_AppendA(*ppStr, "\n\n\n");
 
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -554,18 +855,17 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if (OBJ_NIL == pClassNameUC) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         if (OBJ_NIL == *ppStr) {
@@ -599,7 +899,6 @@ extern "C" {
         AStr_AppendA(*ppStr, "\n\n\n");
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -637,7 +936,6 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -645,15 +943,15 @@ extern "C" {
         BREAK_NULL(pOffset);
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
             obj_Release(pOffset);
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if (OBJ_NIL == pClassNameUC) {
             obj_Release(pOffset);
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         if (0 == strcmp("eRc", pName)) {
@@ -662,7 +960,7 @@ extern "C" {
             pMethodDesc = genObj_CreateSpacedComment(this, "LastError");
             if (OBJ_NIL == pMethodDesc) {
                 obj_Release(pOffset);
-                return this->eRc;
+                return ERESULT_KEY_NOT_FOUND;
             }
         }
         else {
@@ -677,7 +975,7 @@ extern "C" {
             pMethodDesc = genObj_CreateSpacedComment(this, AStr_getData(pMethodName));
             if (OBJ_NIL == pMethodDesc) {
                 obj_Release(pOffset);
-                return this->eRc;
+                return ERESULT_KEY_NOT_FOUND;
             }
             AStr_CharPutW32(pMethodName, 1, ascii_toUpperA(AStr_CharGetW32(pMethodName,1)));
         }
@@ -970,7 +1268,6 @@ extern "C" {
         pMethodName = OBJ_NIL;
 
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -996,18 +1293,17 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if (OBJ_NIL == pClassNameUC) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         if (OBJ_NIL == *ppStr) {
@@ -1041,7 +1337,6 @@ extern "C" {
         AStr_AppendA(*ppStr, "\n\n\n");
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1071,11 +1366,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
             return OBJ_NIL;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if (OBJ_NIL == pClassNameUC) {
             return OBJ_NIL;
         }
@@ -1090,7 +1385,6 @@ extern "C" {
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pStr);
             DEBUG_BREAK();
-            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
         
@@ -1098,7 +1392,6 @@ extern "C" {
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pStr);
             DEBUG_BREAK();
-            genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
         
@@ -1183,7 +1476,6 @@ extern "C" {
         AStr_AppendA(pStr, "\n\n\n");
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1207,7 +1499,6 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -1244,7 +1535,6 @@ extern "C" {
         AStr_AppendA(*ppStr, " */\n\n\n\n");
 
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1283,33 +1573,31 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
         pOffset = AStr_New();
         if (OBJ_NIL == pOffset) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
             return ERESULT_OUT_OF_MEMORY;
         }
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if ((OBJ_NIL == pClassName) || !obj_IsKindOf(pClassName, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if ((OBJ_NIL == pClassNameUC) || !obj_IsKindOf(pClassNameUC, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         pMethodDesc = genObj_CreateSpacedComment(this, pName);
         if (OBJ_NIL == pMethodDesc) {
             obj_Release(pOffset);
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         i = 40 - AStr_getLength(pMethodDesc);
@@ -1321,7 +1609,6 @@ extern "C" {
             *ppStr = AStr_New();
             if (OBJ_NIL == *ppStr) {
                 obj_Release(pOffset);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
@@ -1475,7 +1762,6 @@ extern "C" {
         pOffset = OBJ_NIL;
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1500,13 +1786,12 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
 
         if (OBJ_NIL == *ppStr) {
@@ -1520,7 +1805,6 @@ extern "C" {
         AStr_AppendPrint(*ppStr, "// End of %s\n\n\n", AStr_getData(pClassName));
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1548,18 +1832,17 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pClassName = genObj_VarFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, "ClassName");
         if (OBJ_NIL == pClassName) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_VarFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
         if (OBJ_NIL == pClassNameUC) {
-            return this->eRc;
+            return ERESULT_KEY_NOT_FOUND;
         }
         
         if (OBJ_NIL == *ppStr) {
@@ -1595,7 +1878,6 @@ extern "C" {
         AStr_AppendA(*ppStr, "\n\n\n");
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1626,7 +1908,6 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == ppStr) {
-            genObj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -1665,7 +1946,6 @@ extern "C" {
         AStr_AppendA(*ppStr, "\n\n");
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1708,9 +1988,8 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genObj_Vtbl);
         
-        genObj_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->pHash = objHash_New(OBJHASH_TABLE_SIZE_SMALL);
-        if (OBJ_NIL == this->pHash) {
+        this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        if (OBJ_NIL == this->pDict) {
             obj_Release(this);
             return OBJ_NIL;
         }
@@ -1730,10 +2009,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "genObj::offsetof(eRc) = %lu\n", offsetof(GENOBJ_DATA,eRc));
         //fprintf(stderr, "genObj::sizeof(GENOBJ_DATA) = %lu\n", sizeof(GENOBJ_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(GENOBJ_DATA));
     #endif
 
@@ -1761,12 +2038,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            genObj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        genObj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1888,18 +2163,15 @@ extern "C" {
         }
         if( marker == 0 ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
             return OBJ_NIL;
         }
         if( pStr == NULL ) {
             //DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
             return OBJ_NIL;
         }
 #endif
         pAStr = AStr_New();
         if (OBJ_NIL == pAStr) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
             return pAStr;
         }
         len = AStr_getLength(pStr);
@@ -1909,7 +2181,6 @@ extern "C" {
                 if (0 == state)
                     ;
                 else {
-                    this->eRc = ERESULT_PARSE_ERROR;
                     obj_Release(pAStr);
                     pAStr = OBJ_NIL;
                     return pAStr;
@@ -1939,7 +2210,6 @@ extern "C" {
                     if (chr == '}')
                         ;
                     else {
-                        this->eRc = ERESULT_PARSE_ERROR;
                         obj_Release(pAStr);
                         pAStr = OBJ_NIL;
                         return pAStr;
@@ -1951,7 +2221,7 @@ extern "C" {
                     
                 case 3:             // Substitute name;
                 {
-                    pData = genObj_VarFind(this, name);
+                    pData = genObj_DictFind(this, name);
                     if (pData) {
                         AStr_Append(pAStr, pData);
                     }
@@ -2075,7 +2345,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -2108,246 +2377,7 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        genObj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      A d d  V a r i a b l e
-    //---------------------------------------------------------------
-    
-    ERESULT         genObj_VarAdd(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        ASTR_DATA       *pValue
-    )
-    {
-        ASTR_DATA       *pValueUC = OBJ_NIL;
-        SZDATA_DATA     *pNode = OBJ_NIL;
-        SZDATA_DATA     *pNodeUC = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pName) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        pNode = szData_NewA(pName);
-        if (OBJ_NIL == pNode) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        szData_setData(pNode, pValue);
-        this->eRc = objHash_Add(this->pHash, pNode, NULL);
-        obj_Release(pNode);
-        pNode = OBJ_NIL;
-        if (ERESULT_FAILED(this->eRc)) {
-            return this->eRc;
-        }
-
-        
-        if (0 == strcmp("ClassName", pName)) {
-            if (pValue) {
-                pValueUC = AStr_ToUpper(pValue);
-                if (OBJ_NIL == pValueUC) {
-                    this->eRc = ERESULT_OUT_OF_MEMORY;
-                    return this->eRc;
-                }
-            }
-            pNodeUC = szData_NewA("ClassNameUC");
-            if (OBJ_NIL == pNodeUC) {
-                obj_Release(pValueUC);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return this->eRc;
-            }
-            szData_setData(pNodeUC, pValueUC);
-            obj_Release(pValueUC);
-            pValueUC = OBJ_NIL;
-            this->eRc = objHash_Add(this->pHash, pNodeUC, NULL);
-            obj_Release(pNodeUC);
-            pNodeUC = OBJ_NIL;
-        }
-        else if (0 == strcmp("SuperClassName", pName)) {
-            if (pValue) {
-                pValueUC = AStr_ToUpper(pValue);
-                if (OBJ_NIL == pValueUC) {
-                    this->eRc = ERESULT_OUT_OF_MEMORY;
-                    return this->eRc;
-                }
-            }
-            pNodeUC = szData_NewA("SuperClassNameUC");
-            if (OBJ_NIL == pNodeUC) {
-                obj_Release(pValueUC);
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return this->eRc;
-            }
-            szData_setData(pNodeUC, pValueUC);
-            obj_Release(pValueUC);
-            pValueUC = OBJ_NIL;
-            this->eRc = objHash_Add(this->pHash, pNodeUC, NULL);
-            obj_Release(pNodeUC);
-            pNodeUC = OBJ_NIL;
-        }
-        
-        // Return to caller.
-        return this->eRc;
-    }
-    
-    
-    ERESULT         genObj_VarAddA(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        const
-        char            *pValueA
-    )
-    {
-        ASTR_DATA       *pValue = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pName) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (strlen(pName) > 64) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if (pValueA) {
-            pValue = AStr_NewA(pValueA);
-            if (OBJ_NIL == pValue) {
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        this->eRc = genObj_VarAdd(this, pName, pValue);
-        
-        obj_Release(pValue);
-        pValue = OBJ_NIL;
-        
-        // Return to caller.
-        return this->eRc;
-    }
-    
-    
-
-    //---------------------------------------------------------------
-    //                  F i n d  V a r i a b l e
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     genObj_VarFind(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName
-    )
-    {
-        ASTR_DATA       *pValue = OBJ_NIL;
-        SZDATA_DATA     *pNode = OBJ_NIL;
-        SZDATA_DATA     *pNodeF = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
-            return pValue;
-        }
-        if (NULL == pName) {
-            DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return pValue;
-        }
-       if (strlen(pName) > 64) {
-            DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return pValue;
-        }
-#endif
-        
-        pNode = szData_NewA(pName);
-        if (OBJ_NIL == pNode) {
-            DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
-            return pValue;
-        }
-        
-        pNodeF = objHash_Find(this->pHash, pNode);
-        obj_Release(pNode);
-        pNode = OBJ_NIL;
-        if (pNodeF) {
-            pValue = szData_getData(pNodeF);
-            BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
-            this->eRc = ERESULT_SUCCESS;
-        }
-        else {
-            this->eRc = ERESULT_DATA_NOT_FOUND;
-        }
-
-        // Return to caller.
-        return pValue;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  U p d a t e  V a r i a b l e
-    //---------------------------------------------------------------
-    
-    ERESULT         genObj_VarUpdate(
-        GENOBJ_DATA     *this,
-        const
-        char            *pName,
-        ASTR_DATA       *pValue
-    )
-    {
-       // char            *pValueNew;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genObj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        // FIXME: Correct to use nodeHash instead of szHash.
-#ifdef XYZZY
-        this->eRc = szHash_UpdateA(this->pHash, pName, (void *)pValue);
-        if (!ERESULT_FAILED(this->eRc) && (0 == strcmp("ClassName", pName))) {
-            pValueNew = str_DupA(pValue);
-            pValueNew = str_ToUpperA((char *)pValueNew);
-            this->eRc = szHash_UpdateA(this->pHash, "ClassNameUC", (void *)pValueNew);
-            mem_Free(pValueNew);
-        }
-        else if (!ERESULT_FAILED(this->eRc) && (0 == strcmp("SuperClassName", pName))) {
-            pValueNew = str_DupA(pValue);
-            pValueNew = str_ToUpperA((char *)pValueNew);
-            this->eRc = szHash_UpdateA(this->pHash, "SuperClassNameUC", (void *)pValueNew);
-            mem_Free(pValueNew);
-        }
-#endif
-
-        // Return to caller.
-        return this->eRc;
     }
     
     
@@ -2383,12 +2413,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(GENOBJ_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

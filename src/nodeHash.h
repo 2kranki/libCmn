@@ -178,12 +178,12 @@ extern "C" {
     ERESULT         nodeHash_AddA(
         NODEHASH_DATA   *this,
         const
-        char            *pName,
+        char            *pName,             // UTF-8
         int32_t         cls,
         OBJ_ID          pData
     );
     
-
+    
     /*!
      Add the given node to the Hash if it is not in the Hash. If it already
      exists, then replace it with the new node.  The A version creates a

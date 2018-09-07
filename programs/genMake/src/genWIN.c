@@ -1013,7 +1013,7 @@ extern "C" {
             || (AStr_CompareA(pFileExt, "C") == ERESULT_SUCCESS_EQUAL)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "$(%s)/%s.obj: $(%s)/%s ",
+                                     "$(%s)\\%s.obj: $(%s)\\%s ",
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
@@ -1030,7 +1030,7 @@ extern "C" {
                         if (pWrkStr) {
                             eRc =   AStr_AppendPrint(
                                                      pStr,
-                                                     "$(%s)/%s ",
+                                                     "$(%s)\\%s ",
                                                      pSrcDir,
                                                      AStr_getData(pWrkStr)
                                                      );
@@ -1042,7 +1042,7 @@ extern "C" {
             if (pFlgVar) {
                 eRc =   AStr_AppendPrint(
                                          pStr,
-                                         "\t$(CC) $(CFLAGS) %s $(%s) /out:$(%s)/$(@F) $< ",
+                                         "\t$(CC) $(CFLAGS) %s $(%s) /Fo$(%s)\\$(@F) $< ",
                                          (fCO ? "/c" : ""),
                                          pFlgVar,
                                          pObjDir
@@ -1051,7 +1051,7 @@ extern "C" {
             else {
                 eRc =   AStr_AppendPrint(
                                          pStr,
-                                         "\t$(CC) $(CFLAGS) %s /out:$(%s)/$(@F) $< ",
+                                         "\t$(CC) $(CFLAGS) %s /out:$(%s)\\$(@F) $< ",
                                          (fCO ? "/c" : ""),
                                          pObjDir
                                          );
@@ -1068,7 +1068,7 @@ extern "C" {
                         if (pStrA) {
                             eRc =   AStr_AppendPrint(
                                                      pStr,
-                                                     "$(%s)/%s ",
+                                                     "$(%s)\\%s ",
                                                      pSrcDir,
                                                      pStrA
                                                      );
@@ -1081,7 +1081,7 @@ extern "C" {
                  || (AStr_CompareA(pFileExt, "ASM") == ERESULT_SUCCESS_EQUAL)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "$(%s)/%s.obj: $(%s)/%s\n",
+                                     "$(%s)\\%s.obj: $(%s)\\%s\n",
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
@@ -1089,7 +1089,7 @@ extern "C" {
                                      );
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "\t$(AS) $(AFLAGS) %s -o $(%s)/$(@F) $<",
+                                     "\t$(AS) $(AFLAGS) %s -o $(%s)\\$(@F) $<",
                                      (fCO ? "/c" : ""),
                                      pObjDir
                                      );
@@ -1098,7 +1098,7 @@ extern "C" {
                  || (AStr_CompareA(pFileExt, "S") == ERESULT_SUCCESS_EQUAL)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "$(%s)/%s.obj: $(%s)/%s\n",
+                                     "$(%s)/%s.obj: $(%s)\\%s\n",
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
@@ -1106,7 +1106,7 @@ extern "C" {
                                      );
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<",
+                                     "\t$(AS) $(AFLAGS) -o $(%s)\\$(@F) $<",
                                      pObjDir
                                      );
         }
@@ -1114,7 +1114,7 @@ extern "C" {
                  || (AStr_CompareA(pFileExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "$(%s)/%s.obj: $(SRCDIR)/%s\n",
+                                     "$(%s)/%s.obj: $(SRCDIR)\\%s\n",
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
@@ -1122,7 +1122,7 @@ extern "C" {
                                      );
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $<",
+                                     "\t$(CC) $(CFLAGS) %s -o $(%s)\\$(@F) $<",
                                      (fCO ? "/c" : ""),
                                      pObjDir
                                      );
@@ -1140,7 +1140,7 @@ extern "C" {
             return OBJ_NIL;
         }
         if (!fCO && fExec) {
-            eRc = AStr_AppendPrint(pStr, "\n\t$(%s)/$(@F)\n\n", pObjDir);
+            eRc = AStr_AppendPrint(pStr, "\n\t$(%s)\\$(@F)\n\n", pObjDir);
         }
         else {
             eRc = AStr_AppendA(pStr, "\n\n");
@@ -1230,7 +1230,7 @@ extern "C" {
         
         eRc =   AStr_AppendPrint(
                                  pStr,
-                                 "%s: $(%s)/%s.c ",
+                                 "%s: $(%s)\\%s.c ",
                                  AStr_getData(pName),
                                  pSrcDir,
                                  AStr_getData(pName)
@@ -1246,7 +1246,7 @@ extern "C" {
                     if (pWrkStr) {
                         eRc =   AStr_AppendPrint(
                                                  pStr,
-                                                 "$(%s)/%s ",
+                                                 "$(%s)\\%s ",
                                                  pSrcDir,
                                                  AStr_getData(pWrkStr)
                                                  );
@@ -1258,7 +1258,7 @@ extern "C" {
         
         eRc =   AStr_AppendPrint(
                                  pStr,
-                                 "\t$(CC) $(CFLAGS) $(TEST_FLGS) /out:$(%s)/$(@F) $< ",
+                                 "\t$(CC) $(CFLAGS) $(TEST_FLGS) /out:$(%s)\\$(@F) $< ",
                                  pObjDir
                 );
         if (pObjDeps) {
@@ -1273,7 +1273,7 @@ extern "C" {
                     if (pStrA) {
                         eRc =   AStr_AppendPrint(
                                                  pStr,
-                                                 "$(%s)/%s ",
+                                                 "$(%s)\\%s ",
                                                  pSrcDir,
                                                  pStrA
                                                  );
@@ -1283,7 +1283,7 @@ extern "C" {
         }
         eRc = AStr_AppendA(pStr, "\n");
         
-        eRc = AStr_AppendPrint(pStr, "\t$(%s)/$(@F)\n\n", pObjDir);
+        eRc = AStr_AppendPrint(pStr, "\t$(%s)\\$(@F)\n\n", pObjDir);
         
         // Return to caller.
         obj_Release(pName);

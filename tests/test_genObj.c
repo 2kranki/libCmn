@@ -112,7 +112,6 @@ int         test_genObj_License(
     GENOBJ_DATA     *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
-    uint32_t        crc = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -151,7 +150,7 @@ int         test_genObj_Method01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genObj_VarAddA(pObj, "ClassName", "xyzzy");
+        eRc = genObj_DictAddA(pObj, "ClassName", "xyzzy");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         // Note - if we don't supply a str, GenMethod() will create one.
@@ -217,7 +216,7 @@ int         test_genObj_Getter01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genObj_VarAddA(pObj, "ClassName", "xyzzy");
+        eRc = genObj_DictAddA(pObj, "ClassName", "xyzzy");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         fprintf(stderr, "4, \"int\", \"abc\", NULL\n");
@@ -275,14 +274,13 @@ int         test_genObj_Substitute01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genObj_VarAddA(pObj, "ClassName", "xyzzy");
+        eRc = genObj_DictAddA(pObj, "ClassName", "xyzzy");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         pStrA = "";
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
         pResult = genObj_Substitute(pObj, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_getLength(pResult)) );
         if (pResult) {
@@ -306,8 +304,6 @@ int         test_genObj_Substitute01(
         fprintf(stderr, "\tinput = OBJ_NIL\n");
         pResult = genObj_Substitute(pObj, pStr);
         TINYTEST_TRUE( (OBJ_NIL == pResult) );
-        TINYTEST_TRUE( (ERESULT_FAILED(pObj->eRc)) );
-        TINYTEST_TRUE( (OBJ_NIL == pResult) );
         if (pResult) {
             fprintf(
                     stderr,
@@ -328,7 +324,6 @@ int         test_genObj_Substitute01(
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
         pResult = genObj_Substitute(pObj, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, pStrA)) );
         TINYTEST_TRUE( (69 == AStr_getLength(pResult)) );
@@ -352,7 +347,6 @@ int         test_genObj_Substitute01(
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
         pResult = genObj_Substitute(pObj, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "Our class name is xyzzy!")) );
         TINYTEST_TRUE( (24 == AStr_getLength(pResult)) );
@@ -376,7 +370,6 @@ int         test_genObj_Substitute01(
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
         pResult = genObj_Substitute(pObj, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "Our class name is xyzzy!")) );
         TINYTEST_TRUE( (24 == AStr_getLength(pResult)) );
@@ -400,7 +393,6 @@ int         test_genObj_Substitute01(
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
         pResult = genObj_Substitute(pObj, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pResult) );
         TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "xyzzy")) );
         TINYTEST_TRUE( (5 == AStr_getLength(pResult)) );
@@ -424,7 +416,6 @@ int         test_genObj_Substitute01(
         pStr = AStr_NewA(pStrA);
         fprintf(stderr, "\tinput = \"%s\"\n", pStrA);
         pResult = genObj_Substitute(pObj, pStr);
-        TINYTEST_TRUE( (ERESULT_FAILED(pObj->eRc)) );
         TINYTEST_TRUE( (OBJ_NIL == pResult) );
         //TINYTEST_TRUE( (0 == AStr_CompareA(pResult, "xyzzy")) );
         //TINYTEST_TRUE( (5 == AStr_getLength(pResult)) );
