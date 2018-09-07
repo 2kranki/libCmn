@@ -68,7 +68,6 @@ struct genBase_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        makeType;       // Program, Library, etc
     uint16_t        osType;         // OSX, Win32, Win64, etc
@@ -109,12 +108,6 @@ struct genBase_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            genBase_setLastError(
-        GENBASE_DATA     *this,
-        ERESULT         value
-    );
-
 
     bool            genBase_setObjDirs(
         GENBASE_DATA    *this,

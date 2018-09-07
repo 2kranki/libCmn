@@ -1274,7 +1274,7 @@ extern "C" {
                 
             case OSTYPE_MSC32:
             case OSTYPE_MSC64:
-                this->pGen = genWIN_New( );
+                this->pGen = genWIN_New(this->pDict);
                 if (this->pGen) {
                     if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
                         obj_TraceSet(this->pGen, true);

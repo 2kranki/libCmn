@@ -39,7 +39,8 @@
 
 
 
-#include    <genWIN.h>
+#include        <genWIN.h>
+#include        <genBase_internal.h>
 
 
 #ifndef GENWIN_INTERNAL_H
@@ -62,11 +63,10 @@ extern "C" {
 struct genWIN_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    GENBASE_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     SZHASH_DATA     *pDict;
@@ -94,12 +94,6 @@ struct genWIN_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            genWIN_setLastError(
-        GENWIN_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  genWIN_getSuperVtbl(
         GENWIN_DATA     *this

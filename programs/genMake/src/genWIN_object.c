@@ -254,33 +254,38 @@ uint16_t		genWIN_WhoAmI(
 const
 GENWIN_VTBL     genWIN_Vtbl = {
     {
-        &genWIN_Info,
-        genWIN_IsKindOf,
-#ifdef  GENWIN_IS_SINGLETON
-        obj_RetainNull,
-        obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
-        genWIN_Dealloc,
-        genWIN_Class,
-        genWIN_WhoAmI,
-        (P_OBJ_QUERYINFO)genWIN_QueryInfo,
-        (P_OBJ_TOSTRING)genWIN_ToDebugString,
-        NULL,			// genWIN_Enable,
-        NULL,			// genWIN_Disable,
-        NULL,			// (P_OBJ_ASSIGN)genWIN_Assign,
-        NULL,			// (P_OBJ_COMPARE)genWIN_Compare,
-        NULL, 			// (P_OBJ_PTR)genWIN_Copy,
-        NULL, 			// (P_OBJ_PTR)genWIN_DeepCopy,
-        NULL 			// (P_OBJ_HASH)genWIN_Hash,
-    },
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    //genWIN_IsEnabled,
- 
+        {
+            &genWIN_Info,
+            genWIN_IsKindOf,
+    #ifdef  GENWIN_IS_SINGLETON
+            obj_RetainNull,
+            obj_ReleaseNull,
+    #else
+            obj_RetainStandard,
+            obj_ReleaseStandard,
+    #endif
+            genWIN_Dealloc,
+            genWIN_Class,
+            genWIN_WhoAmI,
+            (P_OBJ_QUERYINFO)genWIN_QueryInfo,
+            (P_OBJ_TOSTRING)genWIN_ToDebugString,
+            NULL,			// genWIN_Enable,
+            NULL,			// genWIN_Disable,
+            NULL,			// (P_OBJ_ASSIGN)genWIN_Assign,
+            NULL,			// (P_OBJ_COMPARE)genWIN_Compare,
+            NULL, 			// (P_OBJ_PTR)genWIN_Copy,
+            NULL, 			// (P_OBJ_PTR)genWIN_DeepCopy,
+            NULL 			// (P_OBJ_HASH)genWIN_Hash,
+        },
+        // Put other object method names below this.
+        // Properties:
+        // Methods:
+        (void *)genWIN_GenCompileRoutine,
+        (void *)genWIN_GenCompileJson,
+        (void *)genWIN_GenCompileObject,
+        (void *)genWIN_GenCompileTest,
+    }
+
 };
 
 
@@ -291,7 +296,7 @@ OBJ_INFO        genWIN_Info = {
     "genWIN",
     "Generate Makefile for WIN32",
     (OBJ_DATA *)&genWIN_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&genBase_ClassObj,
     (OBJ_IUNKNOWN *)&genWIN_Vtbl
 };
 

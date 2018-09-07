@@ -306,7 +306,7 @@ OBJ_INFO        genOSX_Info = {
     "genOSX",
     "Generate Makefile for OSX",
     (OBJ_DATA *)&genOSX_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&genBase_ClassObj,
     (OBJ_IUNKNOWN *)&genOSX_Vtbl
 };
 

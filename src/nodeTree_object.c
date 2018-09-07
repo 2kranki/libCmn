@@ -184,8 +184,38 @@ NODETREE_VTBL     nodeTree_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //nodeTree_IsEnabled,
- 
+    (void *)nodeTree_getCloseNode,
+    (void *)nodeTree_getOpenNode,
+    (void *)nodeTree_getRootIndex,
+    (void *)nodeTree_getSize,
+    (void *)nodeTree_Child,
+    (void *)nodeTree_ChildAdd,
+    (void *)nodeTree_ChildCount,
+    (void *)nodeTree_ChildrenAdd,
+    (void *)nodeTree_ChildrenMove,
+    (void *)nodeTree_Node,
+    (void *)nodeTree_NodeDelete,
+    (void *)nodeTree_NodeLinkChild,
+    (void *)nodeTree_NodeNew,
+    (void *)nodeTree_NodeNewUTF8,
+    (void *)nodeTree_NodeParent,
+    (void *)nodeTree_Nodes,
+    (void *)nodeTree_PrintTree,
+    (void *)nodeTree_Property,
+    (void *)nodeTree_PropertyAdd,
+    (void *)nodeTree_PropertyCount,
+    (void *)nodeTree_PropertyDelete,
+    (void *)nodeTree_Properties,
+    (void *)nodeTree_SiblingAdd,
+    (void *)nodeTree_SiblingCount,
+    (void *)nodeTree_SiblingNext,
+    (void *)nodeTree_SiblingsAdd,
+    (void *)nodeTree_ToLinearizationPost,
+    (void *)nodeTree_ToLinearizationPre,
+    (void *)nodeTree_VisitBreadthFirst,
+    (void *)nodeTree_VisitInorder,
+    (void *)nodeTree_VisitPostorder,
+    (void *)nodeTree_VisitPreorder,
 };
 
 

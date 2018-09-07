@@ -99,6 +99,74 @@ extern "C" {
         // method names to the vtbl definition in $P_object.c.
         // Properties:
         // Methods:
+        NODELINK_DATA * (*pGetCloseNode)(OBJ_ID);
+        NODELINK_DATA * (*pGetOpenNode)(OBJ_ID);
+        uint32_t        (*pGetRootIndex)(OBJ_ID);
+        uint32_t        (*pGetSize)(OBJ_ID);
+        NODELINK_DATA * (*pChild)(OBJ_ID,uint32_t,uint32_t,uint32_t);
+        uint32_t        (*pChildAdd)(OBJ_ID,uint32_t,NODELINK_DATA *);
+        uint32_t        (*pChildCount)(OBJ_ID,uint32_t);
+        ERESULT         (*pChildrenAdd)(OBJ_ID,uint32_t,...);
+        ERESULT         (*pChildrenMove)(OBJ_ID,uint32_t,uint32_t);
+        NODELINK_DATA * (*pNode)(OBJ_ID,uint32_t);
+        ERESULT         (*pNodeDelete)(OBJ_ID,uint32_t);
+        ERESULT         (*pNodeLinkChild)(OBJ_ID,uint32_t,uint32_t);
+        uint32_t        (*pNodeNew)(OBJ_ID,NODELINK_DATA *);
+        uint32_t        (*pNodeNewUTF8)(OBJ_ID,const char *,uint32_t,OBJ_ID);
+        uint32_t        (*pNodeParent)(OBJ_ID,uint32_t);
+        ERESULT         (*pNodes)(OBJ_ID,NODEARRAY_DATA **);
+        ERESULT         (*pPrintTree)(OBJ_ID);
+        NODE_DATA *     (*pProperty)(OBJ_ID,const char *);
+        ERESULT         (*pPropertyAdd)(OBJ_ID,const char *,OBJ_ID);
+        uint32_t        (*pPropertyCount)(OBJ_ID);
+        ERESULT         (*pPropertyDelete)(OBJ_ID,const char *);
+        NODEARRAY_DATA * (*pProperties)(OBJ_ID);
+        uint32_t        (*pSiblingAdd)(OBJ_ID,uint32_t,NODELINK_DATA *);
+        uint32_t        (*pSiblingCount)(OBJ_ID,uint32_t);
+        NODELINK_DATA * (*pSiblingNext)(OBJ_ID,uint32_t);
+        ERESULT         (*pSiblingsAdd)(OBJ_ID,uint32_t,...);
+        NODEARRAY_DATA * (*pToLinearizationPost)(OBJ_ID);
+        NODEARRAY_DATA * (*pToLinearizationPre)(OBJ_ID);
+        ERESULT         (*pVisitBreadthFirst)(
+            OBJ_ID,
+            void            (pVisitor)(
+                                OBJ_ID          ,
+                                NODETREE_DATA   *,
+                                NODELINK_DATA   *,
+                                uint16_t
+                            ),
+            OBJ_ID          pObject
+        );
+        ERESULT         (*pVisitInorder)(
+            OBJ_ID,
+            void            (pVisitor)(
+                                     OBJ_ID          ,
+                                     NODETREE_DATA   *,
+                                     NODELINK_DATA   *,
+                                     uint16_t
+                                     ),
+            OBJ_ID          pObject
+        );
+        ERESULT         (*pVisitPreorder)(
+            OBJ_ID,
+            void            (pVisitor)(
+                                    OBJ_ID          ,
+                                    NODETREE_DATA   *,
+                                    NODELINK_DATA   *,
+                                    uint16_t
+                                    ),
+            OBJ_ID          pObject
+        );
+        ERESULT         (*pVisitPostorder)(
+            OBJ_ID,
+            void            (pVisitor)(
+                                    OBJ_ID          ,
+                                    NODETREE_DATA   *,
+                                    NODELINK_DATA   *,
+                                    uint16_t
+                                    ),
+            OBJ_ID          pObject
+        );
     } NODETREE_VTBL;
     
     
@@ -358,12 +426,21 @@ extern "C" {
     
     ERESULT         nodeTree_PropertyAdd(
         NODETREE_DATA   *this,
-        NODE_DATA       *pData
+        const
+        char            *pName,
+        OBJ_ID          pData
     );
     
     
-    uint16_t        nodeTree_PropertyCount(
+    uint32_t        nodeTree_PropertyCount(
         NODETREE_DATA	*this
+    );
+    
+    
+    ERESULT         nodeTree_PropertyDelete(
+        NODETREE_DATA   *this,
+        const
+        char            *pName
     );
     
     
@@ -447,7 +524,7 @@ extern "C" {
     ERESULT         nodeTree_SiblingsAdd(
         NODETREE_DATA   *this,
         uint32_t        node,
-                                         ...                         // NULL Terminated list
+        ...                         // NULL Terminated list
     );
     
     

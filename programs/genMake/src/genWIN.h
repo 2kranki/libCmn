@@ -52,6 +52,7 @@
 
 
 #include        <genMake.h>
+#include        <genBase.h>
 #include        <AStr.h>
 #include        <node.h>
 #include        <nodeArray.h>
@@ -74,10 +75,10 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct genWIN_data_s	GENWIN_DATA;    // Inherits from OBJ.
+    typedef struct genWIN_data_s	GENWIN_DATA;    // Inherits from GENBASE.
 
     typedef struct genWIN_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        GENBASE_VTBL    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in genWIN_object.c.
         // Properties:
@@ -113,7 +114,7 @@ extern "C" {
     
     
     GENWIN_DATA *     genWIN_New(
-        void
+        NODEHASH_DATA   *pDict
     );
     
     
@@ -122,10 +123,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     genWIN_getLastError(
-        GENWIN_DATA		*this
-    );
-
 
 
     
@@ -133,6 +130,87 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    ASTR_DATA *     genWIN_GenCompileJson(
+        GENWIN_DATA     *this,
+        const
+        char            *pNameA,            // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    );
+    
+    
+    ASTR_DATA *     genWIN_GenCompileObject(
+        GENWIN_DATA     *this,
+        const
+        char            *pName,             // Object Name
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    );
+    
+    
+    ASTR_DATA *     genWIN_GenCompileRoutine(
+        GENWIN_DATA    *this,
+        const
+        char            *pName,             // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,           // If present, adds another Make Flag
+        // variable in addition to CFLAGS
+        // (Default - none)
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps,          // Object Dependencies (ie files to be
+        // included in the compile statement, file
+        // extension must match that of pName above)
+        bool            fCO,                // true == compile only
+        bool            fExec               // true == execute the newly compiled
+                                            //          program
+    );
+    
+    
+    ASTR_DATA *     genWIN_GenCompileTest(
+        GENWIN_DATA     *this,
+        const
+        char            *pNameA,            // Routine File Name including extension
+        const
+        char            *pSrcDir,           // Default - "SRCDIR"
+        const
+        char            *pObjDir,           // Default - "OBJDIR"
+        const
+        char            *pObjVar,           // Default - "OBJS"
+        const
+        char            *pFlgVar,
+        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
+                                            // included in the compile statement, file
+                                            // extension must match that of pName above)
+    );
+    
+    
     /*!
      Generate the Make File writing it to the output file.
      @param     this    GENWIN object pointer

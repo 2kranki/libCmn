@@ -381,7 +381,6 @@ extern "C" {
         
         pDict = genBase_getDict((GENBASE_DATA *)this);
 
-        genOSX_setLastError(this, genBase_getLastError((GENBASE_DATA *)this));
         return pDict;
     }
     
@@ -402,7 +401,6 @@ extern "C" {
         
         iRc = genBase_setDict((GENBASE_DATA *)this, pValue);
         
-        genOSX_setLastError(this, genBase_getLastError((GENBASE_DATA *)this));
         return iRc;
     }
     

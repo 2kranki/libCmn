@@ -136,7 +136,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pDateTime;
     }
     
@@ -160,7 +159,6 @@ extern "C" {
         }
         this->pDateTime = pValue;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -184,7 +182,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pDict;
     }
     
@@ -208,55 +205,11 @@ extern "C" {
         }
         this->pDict = pValue;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
     
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         genBase_getLastError(
-        GENBASE_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            genBase_setLastError(
-        GENBASE_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     //---------------------------------------------------------------
     //                      L i b D e p s
     //---------------------------------------------------------------
@@ -275,7 +228,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pLibDeps;
     }
     
@@ -305,7 +257,6 @@ extern "C" {
         
         this->pLibIncludePath = pLibIncludePath;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -335,7 +286,6 @@ extern "C" {
         
         this->pLibInstalledPath = pLibInstalledPath;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -364,7 +314,6 @@ extern "C" {
         
         this->pLibName = pLibName;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -388,7 +337,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->makeType;
     }
     
@@ -408,7 +356,6 @@ extern "C" {
         
         this->makeType = value;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -432,7 +379,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pName;
     }
     
@@ -456,7 +402,6 @@ extern "C" {
         }
         this->pName = pValue;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -480,7 +425,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pNodes;
     }
     
@@ -504,7 +448,6 @@ extern "C" {
         }
         this->pNodes = pValue;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -528,7 +471,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pObjDirs;
     }
     
@@ -552,7 +494,6 @@ extern "C" {
         }
         this->pObjDirs = pValue;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -576,7 +517,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pObjects;
     }
     
@@ -600,7 +540,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pOutput;
     }
     
@@ -624,7 +563,6 @@ extern "C" {
         }
         this->pOutput = pValue;
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -648,7 +586,6 @@ extern "C" {
         }
 #endif
 
-        genBase_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -669,7 +606,6 @@ extern "C" {
 
         //this->priority = value;
 
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -693,7 +629,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pPrograms;
     }
 
@@ -717,7 +652,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pRoutines;
     }
     
@@ -739,7 +673,6 @@ extern "C" {
         }
 #endif
 
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -764,7 +697,6 @@ extern "C" {
 #endif
 
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -788,7 +720,6 @@ extern "C" {
         }
 #endif
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return this->pTests;
     }
     
@@ -819,10 +750,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         genBase_Assign(
-        GENBASE_DATA		*this,
-        GENBASE_DATA      *pOther
+        GENBASE_DATA	*this,
+        GENBASE_DATA    *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -864,11 +796,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        genBase_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return genBase_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -911,7 +843,6 @@ extern "C" {
 
 #ifdef  xyzzy        
         if (this->token == pOther->token) {
-            this->eRc = eRc;
             return eRc;
         }
         
@@ -928,7 +859,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        this->eRc = eRc;
         return eRc;
     }
     
@@ -948,11 +878,11 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the GENMAKE object.
      */
-    GENBASE_DATA *     genBase_Copy(
-        GENBASE_DATA       *this
+    GENBASE_DATA *  genBase_Copy(
+        GENBASE_DATA    *this
     )
     {
-        GENBASE_DATA       *pOther = OBJ_NIL;
+        GENBASE_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -975,7 +905,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -1085,7 +1014,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1114,7 +1042,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1306,7 +1233,6 @@ extern "C" {
         }
         
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1393,7 +1319,6 @@ extern "C" {
 #endif
         
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1422,7 +1347,6 @@ ERESULT         genBase_GenFinal(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1451,7 +1375,6 @@ ERESULT         genBase_GenInitial(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1480,7 +1403,6 @@ ERESULT         genBase_GenLibrary(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1527,7 +1449,6 @@ ERESULT         genBase_GenObjects(
     }
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1556,7 +1477,6 @@ ERESULT         genBase_GenOSSpecific(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1583,7 +1503,6 @@ ERESULT         genBase_GenPrograms(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1612,7 +1531,6 @@ ERESULT         genBase_GenRoutines(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1641,7 +1559,6 @@ ERESULT         genBase_GenTests(
     // Put code here...
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -1680,7 +1597,7 @@ ASTR_DATA *     genBase_CompileRules(
     }
     pStr = AStr_New();
     if (OBJ_NIL == pStr) {
-        genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
+        //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
         return OBJ_NIL;
     }
     
@@ -1737,7 +1654,6 @@ ASTR_DATA *     genBase_CompileRules(
     }
 
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS);
     return pStr;
 }
 
@@ -1905,7 +1821,6 @@ ERESULT         genBase_GenMakefile(
     }
     
     // Return to caller.
-    genBase_setLastError(this, ERESULT_SUCCESS_FALSE);
     return ERESULT_SUCCESS_FALSE;
 }
 
@@ -1947,7 +1862,6 @@ ERESULT         genBase_GenMakefile(
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genBase_Vtbl);
         
-        genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pLibIncludePath = genBase_LibIncludePath;
         this->pLibName = genBase_LibName;
         
@@ -1962,7 +1876,6 @@ ERESULT         genBase_GenMakefile(
         //fprintf(stderr, "genBase::offsetof(eRc) = %lu\n", offsetof(GENBASE_DATA,eRc));
         //fprintf(stderr, "genBase::sizeof(GENBASE_DATA) = %lu\n", sizeof(GENBASE_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(GENBASE_DATA));
     #endif
 
@@ -1990,12 +1903,10 @@ ERESULT         genBase_GenMakefile(
 #endif
         
         if (obj_IsEnabled(this)) {
-            genBase_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -2054,7 +1965,6 @@ ERESULT         genBase_GenMakefile(
 #endif
         pFullName = this->pLibName(this, pName, pLibNamePrefix);
         if ( OBJ_NIL == pFullName) {
-            genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
@@ -2066,7 +1976,6 @@ ERESULT         genBase_GenMakefile(
         if (pLibIncludePath) {
             pPath = path_NewA(pLibIncludePath);
             if (OBJ_NIL == pPath) {
-                genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
@@ -2074,7 +1983,6 @@ ERESULT         genBase_GenMakefile(
         else {
             pPath = path_NewA(AStr_getData(pFullName));
             if (OBJ_NIL == pPath) {
-                genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = ERESULT_SUCCESS;
@@ -2083,7 +1991,6 @@ ERESULT         genBase_GenMakefile(
         // Return to caller.
         obj_Release(pFullName);
         pFullName = OBJ_NIL;
-        genBase_setLastError(this, eRc);
         return pPath;
     }
 
@@ -2124,7 +2031,7 @@ ERESULT         genBase_GenMakefile(
 #endif
         pFullName = this->pLibName(this, pName, pLibNamePrefix);
         if ( OBJ_NIL == pFullName) {
-            genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
@@ -2137,7 +2044,7 @@ ERESULT         genBase_GenMakefile(
         if (pLibInstalledPath) {
             pPath = path_NewA(pLibInstalledPath);
             if (OBJ_NIL == pPath) {
-                genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
@@ -2145,7 +2052,7 @@ ERESULT         genBase_GenMakefile(
         else {
             pPath = path_NewA(AStr_getData(pFullName));
             if (OBJ_NIL == pPath) {
-                genBase_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = ERESULT_SUCCESS;
@@ -2154,7 +2061,7 @@ ERESULT         genBase_GenMakefile(
         // Return to caller.
         obj_Release(pFullName);
         pFullName = OBJ_NIL;
-        genBase_setLastError(this, eRc);
+        obj_setLastError(this, eRc);
         return pPath;
     }
 
@@ -2199,7 +2106,7 @@ ERESULT         genBase_GenMakefile(
         if (pLibNamePrefix) {
             pFullName = AStr_NewA(pLibNamePrefix);
             if (OBJ_NIL == pFullName) {
-                genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
             eRc = AStr_AppendA(pFullName, pName);
@@ -2207,13 +2114,13 @@ ERESULT         genBase_GenMakefile(
         else {
             pFullName = AStr_NewA(pName);
             if (OBJ_NIL == pFullName) {
-                genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
+                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
         
         // Return to caller.
-        genBase_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return pFullName;
     }
 
@@ -2375,23 +2282,20 @@ ERESULT         genBase_GenMakefile(
         if (pLibNamePrefix) {
             pFullName = AStr_NewA(pLibNamePrefix);
             if (OBJ_NIL == pFullName) {
-                genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
-                return OBJ_NIL;
+                return ERESULT_GENERAL_FAILURE;
             }
             eRc = AStr_AppendA(pFullName, pName);
         }
         else {
             pFullName = AStr_NewA(pName);
             if (OBJ_NIL == pFullName) {
-                genBase_setLastError(this, ERESULT_GENERAL_FAILURE);
-                return OBJ_NIL;
+                return ERESULT_GENERAL_FAILURE;
             }
         }
 #endif
         
         
         // Return to caller.
-        genBase_setLastError(this, eRc);
         return eRc;
     }
     
@@ -2436,7 +2340,7 @@ ERESULT         genBase_GenMakefile(
         }
 #endif
               
-        pInfo = genBase_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -2472,7 +2376,6 @@ ERESULT         genBase_GenMakefile(
                     pInfo->pClassName
                 );
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -2505,7 +2408,6 @@ ERESULT         genBase_GenMakefile(
         
         AStr_AppendA(pStr, "}\n");
         
-        genBase_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -2542,12 +2444,12 @@ ERESULT         genBase_GenMakefile(
 
 
         if( !(obj_getSize(this) >= sizeof(GENBASE_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
+        //this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

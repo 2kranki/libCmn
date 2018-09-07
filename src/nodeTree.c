@@ -1536,11 +1536,14 @@ extern "C" {
     
     ERESULT         nodeTree_PropertyAdd(
         NODETREE_DATA   *this,
-        NODE_DATA       *pData
+        const
+        char            *pName,
+        OBJ_ID          pData
     )
     {
         ERESULT         eRc;
-        
+        NODE_DATA       *pNode = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1548,7 +1551,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pData) {
+        if (OBJ_NIL == pName) {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -1560,7 +1563,12 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_Add(this->pProperties, pData);
+        pNode = node_NewWithUTF8AndClass(pName, 0, pData);
+        if (OBJ_NIL == pNode) {
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        eRc = nodeHash_Add(this->pProperties, pNode);
+        obj_Release(pNode);
         
         // Return to caller.
         return eRc;
@@ -1572,11 +1580,11 @@ extern "C" {
     //              P r o p e r t y  C o u n t
     //---------------------------------------------------------------
     
-    uint16_t        nodeTree_PropertyCount(
+    uint32_t        nodeTree_PropertyCount(
         NODETREE_DATA	*this
     )
     {
-        uint16_t        num = 0;
+        uint32_t        num = 0;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1592,6 +1600,37 @@ extern "C" {
         
         // Return to caller.
         return num;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    P r o p e r t y  G e t
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeTree_PropertyDelete(
+        NODETREE_DATA   *this,
+        const
+        char            *pName
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_MISSING;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pProperties) {
+            eRc = nodeHash_DeleteA(this->pProperties, pName);
+        }
+        
+        // Return to caller.
+        return eRc;
     }
     
     

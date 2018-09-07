@@ -216,11 +216,6 @@ extern "C" {
     );
 
     
-    ERESULT         genBase_getLastError(
-        GENBASE_DATA    *this
-    );
-
-
     NODEARRAY_DATA * genBase_getLibDeps(
         GENBASE_DATA    *this
     );
