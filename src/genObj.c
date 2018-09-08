@@ -105,7 +105,7 @@ extern "C" {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eor;
             }
-            eRc = nodeHash_AddA(this->pDict, "P", 0, pStr1);
+            eRc = nodeHash_AddA(this->pDict, GENOBJ_CLASSNAME, 0, pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -114,11 +114,7 @@ extern "C" {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eor;
             }
-            eRc = AStr_AppendA(pStr2, "_DATA");
-            if (ERESULT_FAILED(eRc)) {
-                goto eor;
-            }
-            eRc = nodeHash_AddA(this->pDict, "Q", 0, pStr2);
+            eRc = nodeHash_AddA(this->pDict, GENOBJ_CLASSNAME_UC, 0, pStr2);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -137,9 +133,7 @@ extern "C" {
     
     
     ERESULT             genObj_BuildDictTime(
-        GENOBJ_DATA         *this,
-        const
-        char                *pObjectName
+        GENOBJ_DATA         *this
     )
     {
         ERESULT         eRc;
@@ -160,6 +154,10 @@ extern "C" {
         if (this->pDict) {
             pTime = dateTime_NewCurrent();
             pStr1 = dateTime_ToString(pTime);
+            if (OBJ_NIL == pStr1) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            eRc = nodeHash_AddA(this->pDict, GENOBJ_DATETIME, 0, pStr1);
             pStrUtf8 = AStr_CStringA(pStr1,NULL);
             obj_Release(pStr1);
             pStrUtf8[2] = '\0';         // Month
@@ -642,33 +640,33 @@ extern "C" {
             return eRc;
         }
         
-        if (0 == strcmp("ClassName", pName)) {
+        if (0 == strcmp(GENOBJ_CLASSNAME, pName)) {
             if (pValue) {
                 pValueUC = AStr_ToUpper(pValue);
                 if (OBJ_NIL == pValueUC) {
                     eRc = ERESULT_OUT_OF_MEMORY;
                     return eRc;
                 }
-            }
-            eRc = nodeHash_AddA(this->pDict, "ClassNameUC", 0, pValueUC);
-            obj_Release(pValueUC);
-            pValueUC = OBJ_NIL;
-            if (ERESULT_FAILED(eRc)) {
-                return eRc;
+                eRc = nodeHash_AddA(this->pDict, GENOBJ_CLASSNAME_UC, 0, pValueUC);
+                obj_Release(pValueUC);
+                pValueUC = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
             }
         }
-        else if (0 == strcmp("SuperClassName", pName)) {
+        else if (0 == strcmp(GENOBJ_SUPER_CLASSNAME, pName)) {
             if (pValue) {
                 pValueUC = AStr_ToUpper(pValue);
                 if (OBJ_NIL == pValueUC) {
                     return ERESULT_OUT_OF_MEMORY;
                 }
-            }
-            eRc = nodeHash_AddA(this->pDict, "SuperClassNameUC", 0, pValueUC);
-            obj_Release(pValueUC);
-            pValueUC = OBJ_NIL;
-            if (ERESULT_FAILED(eRc)) {
-                return eRc;
+                eRc = nodeHash_AddA(this->pDict, GENOBJ_SUPER_CLASSNAME_UC, 0, pValueUC);
+                obj_Release(pValueUC);
+                pValueUC = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
             }
         }
         
@@ -808,11 +806,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -859,11 +857,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -943,12 +941,12 @@ extern "C" {
         BREAK_NULL(pOffset);
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
@@ -1297,11 +1295,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -1366,11 +1364,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return OBJ_NIL;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return OBJ_NIL;
         }
@@ -1444,7 +1442,7 @@ extern "C" {
         AStr_AppendA(pStr, "\n\n\n");
         eRc = genObj_GenSection(this, &pStr, "Internal Method Forward Definitions", false);
         AStr_AppendPrint(pStr, "\tbool\t\t%s_setLastError(\n", AStr_getData(pClassName));
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", AStr_getData(pClassNameUC));
+        AStr_AppendPrint(pStr, "\t\t%s\t\t*this,\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
         AStr_AppendPrint(pStr, "\tOBJ_IUNKNOWN *\t%s_getSuperVtbl(\n", AStr_getData(pClassName));
@@ -1583,12 +1581,12 @@ extern "C" {
         }
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if ((OBJ_NIL == pClassName) || !obj_IsKindOf(pClassName, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if ((OBJ_NIL == pClassNameUC) || !obj_IsKindOf(pClassNameUC, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
@@ -1789,7 +1787,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -1836,11 +1834,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, "ClassName");
+        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, "ClassNameUC");
+        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -1959,6 +1957,7 @@ extern "C" {
         GENOBJ_DATA       *this
     )
     {
+        ERESULT         eRc;
         uint32_t        cbSize = sizeof(GENOBJ_DATA);
         DATETIME_DATA   *pDateTime = OBJ_NIL;
         
@@ -1993,6 +1992,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        eRc = genObj_BuildDictTime(this);
         
         pDateTime = dateTime_NewCurrent();
         if (pDateTime) {

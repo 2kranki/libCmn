@@ -57,8 +57,11 @@
 #define         GENOBJ_H
 
 
-#define GENOBJ_CLASSNAME        "ClassName"
-#define GENOBJ_SUPERCLASSNAME   "SuperClassName"
+#define GENOBJ_CLASSNAME            "ClassName"
+#define GENOBJ_CLASSNAME_UC         "ClassNameUC"
+#define GENOBJ_DATETIME             "DateTime"
+#define GENOBJ_SUPER_CLASSNAME      "SuperClassName"
+#define GENOBJ_SUPER_CLASSNAME_UC   "SuperClassNameUC"
 
 
 
