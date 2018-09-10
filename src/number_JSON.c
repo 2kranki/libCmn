@@ -84,6 +84,7 @@ extern "C" {
         OBJ_INFO        *pInfo;
         uint16_t        type;               // See NUMBER_TYPE;
         int64_t         integer;
+        int64_t         intIn;
 
         pInfo = obj_getInfo(number_Class());
         
@@ -93,8 +94,9 @@ extern "C" {
             goto exit00;
         }
         
-        type = (uint16_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
-        
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        type = (uint16_t)intIn;
+
         pObject = number_New();
         if (OBJ_NIL == pObject) {
             goto exit00;

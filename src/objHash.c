@@ -1241,7 +1241,7 @@ extern "C" {
         
         if (OBJ_NIL == this->pScope) {
             BREAK_NOT_ZERO(this->scopeLvl);
-            this->pScope = array_New(sizeof(uint32_t));
+            this->pScope = array_NewWithSize(sizeof(uint32_t));
             if (OBJ_NIL == this->pScope) {
                 DEBUG_BREAK();
                 this->eRc = ERESULT_OUT_OF_MEMORY;

@@ -136,7 +136,8 @@ extern "C" {
         NODEHASH_DATA   *pHash;
         uint32_t        i;
         char            *pData = NULL;
-        
+        int64_t         intIn = 0;
+
         pInfo = obj_getInfo(szTbl_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
@@ -145,7 +146,12 @@ extern "C" {
             goto exit00;
         }
         
-        count = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Count");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Count", &intIn);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - count is invalid!\n");
+            goto exit00;
+        }
+        count = (uint32_t)intIn;
         fprintf(stderr, "\tNode Count = %d\n", count);
 
         pObject = szTbl_New();
@@ -154,15 +160,25 @@ extern "C" {
         }
         
         if (count && pObject) {
-            pArray = jsonIn_FindArrayNodeInHash(pParser, "Entries");
-            if (count == nodeArray_getSize(pArray))
-                ;
+            eRc = jsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
+            if (pArray) {
+                if (count == nodeArray_getSize(pArray))
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
+                            count,
+                            nodeArray_getSize(pArray)
+                            );
+                    goto exit00;
+                }
+            }
             else {
                 fprintf(
-                        stderr,
-                        "ERROR - JSON Count, %d, does not match array size, %d!\n",
-                        count,
-                        nodeArray_getSize(pArray)
+                    stderr,
+                    "ERROR - JSON Count, %d, is present, but Entries were not found!\n",
+                    count
                 );
                 goto exit00;
             }
@@ -206,8 +222,7 @@ extern "C" {
                     goto exit00;
                 }
                 eRc = jsonIn_SubobjectFromHash(pParser, pHash);
-                hash = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Hash");
-                eRc = jsonIn_getLastError(pParser);
+                eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Hash", &intIn);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -215,9 +230,9 @@ extern "C" {
                     );
                     goto exit00;
                 }
+                hash = (uint32_t)intIn;
                 //fprintf(stderr, "\t\tHash(%d) = %u\n", i+1, hash);
-                ident = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Ident");
-                eRc = jsonIn_getLastError(pParser);
+                eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Ident", &intIn);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -225,9 +240,9 @@ extern "C" {
                     );
                     goto exit00;
                 }
+                ident = (uint32_t)intIn;
                 //fprintf(stderr, "\t\tIdent(%d) = %u\n", i+1, ident);
-                len = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "Length");
-                eRc = jsonIn_getLastError(pParser);
+                eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Length", &intIn);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -235,6 +250,7 @@ extern "C" {
                     );
                     goto exit00;
                 }
+                len = (uint32_t)intIn;
                 //fprintf(stderr, "\t\tlen(%d) = %u\n", i+1, len);
                 eRc = jsonIn_SubobjectInHash(pParser, "Data");
                 if (ERESULT_FAILED(eRc)) {

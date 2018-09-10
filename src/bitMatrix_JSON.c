@@ -135,7 +135,8 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
-        
+        int64_t         intIn;
+
         pInfo = obj_getInfo(bitMatrix_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
@@ -144,13 +145,17 @@ extern "C" {
             goto exit00;
         }
         
-        xSize = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "xSize");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "xSize", &intIn);
+        xSize = (uint32_t)intIn;
         fprintf(stderr, "\txSize = %u\n", xSize);
-        xWords = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "xWords");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "xWords", &intIn);
+        xWords = (uint32_t)intIn;
         fprintf(stderr, "\txWords = %u\n", xWords);
-        ySize = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "ySize");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "ySize", &intIn);
+        ySize = (uint32_t)intIn;
         fprintf(stderr, "\tySize = %u\n", ySize);
-        cElems = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "cElems");
+        cElems = jsonIn_FindIntegerNodeInHashA(pParser, "cElems", &intIn);
+        cElems = (uint32_t)intIn;
         fprintf(stderr, "\tcElems = %u\n", cElems);
 
         pObject = bitMatrix_New(ySize, xSize);
@@ -159,7 +164,7 @@ extern "C" {
         }
         
         if (cElems) {
-            pArray = jsonIn_FindArrayNodeInHash(pParser, "Elems");
+            eRc = jsonIn_FindArrayNodeInHashA(pParser, "Elems", &pArray);
             if (OBJ_NIL == pArray) {
                 obj_Release(pObject);
                 pObject = OBJ_NIL;

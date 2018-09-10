@@ -139,11 +139,11 @@ int             test_jsonIn_01(
             "}\n"
         "]\n"
     "}\n";
-    uint32_t        count = 0;
-    uint32_t        hash = 0;
-    uint32_t        len = 0;
+    int64_t         count = 0;
+    int64_t         hash = 0;
+    int64_t         len = 0;
     uint32_t        len2 = 0;
-    uint32_t        ident = 0;
+    int64_t         ident = 0;
     NODE_DATA       *pNode;
     NAME_DATA       *pName;
     NODEARRAY_DATA  *pArray;
@@ -167,12 +167,12 @@ int             test_jsonIn_01(
         eRc = jsonIn_ConfirmObjectType(pObj, "szTbl");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        count = (uint32_t)jsonIn_FindIntegerNodeInHash(pObj, "Count");
-        eRc = jsonIn_getLastError(pObj);
+        eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\tCount = %d\n", count);
+        fprintf(stderr, "\tCount = %lld\n", count);
 
-        pArray = jsonIn_FindArrayNodeInHash(pObj, "Entries");
+        eRc = jsonIn_FindArrayNodeInHashA(pObj, "Entries", &pArray);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE((count == nodeArray_getSize(pArray)));
 
@@ -185,18 +185,15 @@ int             test_jsonIn_01(
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE(( obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH) ));
             eRc = jsonIn_SubobjectFromHash(pObj, pHash);
-            hash = (uint32_t)jsonIn_FindIntegerNodeInHash(pObj, "Hash");
-            eRc = jsonIn_getLastError(pObj);
+            eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Hash", &hash);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            fprintf(stderr, "\t\tHash(%d) = %u\n", i+1, hash);
-            ident = (uint32_t)jsonIn_FindIntegerNodeInHash(pObj, "Ident");
-            eRc = jsonIn_getLastError(pObj);
+            fprintf(stderr, "\t\tHash(%d) = %lld\n", i+1, hash);
+            eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Ident", &ident);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            fprintf(stderr, "\t\tIdent(%d) = %u\n", i+1, ident);
-            len = (uint32_t)jsonIn_FindIntegerNodeInHash(pObj, "Length");
-            eRc = jsonIn_getLastError(pObj);
+            fprintf(stderr, "\t\tIdent(%d) = %lld\n", i+1, ident);
+            eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Length", &len);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            fprintf(stderr, "\t\tlen(%d) = %u\n", i+1, len);
+            fprintf(stderr, "\t\tlen(%d) = %lld\n", i+1, len);
             eRc = jsonIn_SubobjectInHash(pObj, "Data");
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             pData = utf8_ParseObject(pObj, &len2);

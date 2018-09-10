@@ -90,6 +90,7 @@ extern "C" {
         //OBJ_ID          pObj;
         uint8_t         *pUtf8;
         int64_t         integer;
+        int64_t         intIn;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
         
         pInfo = obj_getInfo(token_Class());
@@ -107,9 +108,12 @@ extern "C" {
             goto exit00;
         }
 
-        cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
-        misc = (int16_t)jsonIn_FindIntegerNodeInHash(pParser, "misc");
-        type = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
+        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+        cls = (uint32_t)intIn;
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+        misc = (uint16_t)intIn;
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        type = (uint32_t)intIn;
 
         switch (type) {
                 

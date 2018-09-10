@@ -107,6 +107,10 @@ extern "C" {
     
     
     AUDIOWAV_DATA *     audioWAV_New(
+        void
+    );
+    
+    AUDIOWAV_DATA *     audioWAV_NewWithParameters(
         uint8_t         numberOfChannels,
         uint32_t        samplesPerSecond,   // Normally 11025, 22050, 44100
         uint16_t        sampleSize          // Normally 8, 16, or 32
@@ -174,7 +178,12 @@ extern "C" {
     );
     
     
-    AUDIOWAV_DATA *   audioWAV_Init(
+    AUDIOWAV_DATA * audioWAV_Init(
+        AUDIOWAV_DATA   *this
+    );
+    
+    
+    AUDIOWAV_DATA *   audioWAV_InitWithParameters(
         AUDIOWAV_DATA     *this,
         uint8_t         numberOfChannels,
         uint32_t        samplesPerSecond,   // Normally 11025, 22050, 44100

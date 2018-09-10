@@ -134,6 +134,7 @@ extern "C" {
         //uint8_t         *pUtf8;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
         NAME_DATA       *pName = OBJ_NIL;
+        int64_t         intIn;
         
         pInfo = obj_getInfo(node_Class());
         
@@ -166,9 +167,11 @@ extern "C" {
             }
         }
         
-        uint32  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+        uint32  = (uint32_t)intIn;
         node_setClass(pObject, uint32);
-        int32   = (int32_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        int32   = (int32_t)intIn;
         node_setType(pObject, int32);
 
         eRc = jsonIn_SubobjectInHash(pParser, "data");

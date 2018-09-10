@@ -104,6 +104,11 @@ extern "C" {
     
     
     ARRAY_DATA *    array_New(
+        void
+    );
+    
+    
+    ARRAY_DATA *    array_NewWithSize(
         uint16_t        elemSize        // Element Size in bytes
     );
     

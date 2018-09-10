@@ -11,10 +11,27 @@
  *          node name with a pointer to the node as the data.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal nodeHash. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      Nodes are stored within the hash by their name.  If the
+ *          nodes are created for use in the JSON, parser or equivalent
+ *          environments, then their data will also be nodes and not
+ *          the direct data.
+ *
+ *          The data nodes with have names of "array", "false", "hash",
+ *          "integer", "null", "string" or "true" generally.  The data
+ *          node's data will be the actual data such as:
+ *                  "array"     == nodeArray object
+ *                  "false"     == false object
+ *                  "hash"      == nodeHash object
+ *                  "integer"   == AStr object which can be converted with AStr_ToInt64
+ *                  "null"      == null object
+ *                  "string"    == AStr object
+ *                  "true"      == true object
+ *          Therefore, you have a structure like:
+ *              node:
+ *                  name:   node name
+ *                  data:   data node object
+ *                      name:   See above. (ie "array", "false", ...)
+ *                      data:   actual data object as above (ie nodeArray, false, ...)
  *
  * History
  *	07/22/2015 Generated
@@ -253,11 +270,87 @@ extern "C" {
         char            *pName
     );
     
+    /*!
+     Find a named node array in the hash as structured in Remark #1 above.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     ppArray Pointer to a node array pointer where data is to be returned if
+                        ERESULT_SUCCESS is returned.
+     @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
+                if ppArray is non-null.  Otherwise, ERESULT_* error code.
+     */
+    ERESULT         nodeHash_FindArrayNodeInHashA(
+        NODEHASH_DATA    *this,
+        const
+        char            *pSectionA,
+        NODEARRAY_DATA  **ppArray
+    );
+    
+    
+    /*!
+     Find a named integer value in the hash as structured in Remark #1 above.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     pInt    integer pointer where data is to be returned too if
+                        succesful ERESULT is returned.
+     @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
+                if pInt is non-null, otherwise, an ERESULT_* error code.
+     */
+    ERESULT         nodeHash_FindIntegerNodeInHashA(
+        NODEHASH_DATA   *this,
+        const
+        char            *pSectionA,
+        int64_t         *pInt
+    );
+    
+    
     NODE_DATA *     nodeHash_FindName(
         NODEHASH_DATA   *this,
         NAME_DATA       *pName
     );
 
+    
+    /*!
+     Find a named node in the hash as structured in Remark #1 above.
+     @param     this    Object Pointer
+     @param     pSectionA Name of Node to be looked for
+     @param     pTypeA  Name of Data Node ("array", "false", "hash",
+                        "integer", "null", "string" or "true")
+     @param     ppData  Pointer to Data Object Pointer to be returned if
+                        ERESULT_SUCCESS is returned.
+     @return    If successful, ERESULT_SUCCESS and the actual data object
+                pointer in *ppData if ppData is non-null.  Otherwise,
+                an ERESULT_* error code.
+     @note      See Remark #1 above.
+     */
+    ERESULT         nodeHash_FindNodeInHashA(
+        NODEHASH_DATA   *this,
+        const
+        char            *pSectionA,
+        const
+        char            *pTypeA,
+        OBJ_ID          *ppData
+    );
+    
+    
+    /*!
+     Find a named string value in the Hash as structured in Remark #1.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     ppStr   Pointer to a string pointer to be returned if
+                        ERESULT_SUCCESS is returned and this pointer
+                        is non-null.
+     @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
+                if ppStr is non-null. Otherwise, an ERESULT_* error code.
+     @note      See Remark #1 above.
+     */
+    ERESULT         nodeHash_FindStringNodeInHashA(
+        NODEHASH_DATA   *this,
+        const
+        char            *pSectionA,
+        ASTR_DATA       **ppStr
+    );
+    
     
     ERESULT         nodeHash_ForEach(
         NODEHASH_DATA	*this,

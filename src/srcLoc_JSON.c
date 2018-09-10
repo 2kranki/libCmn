@@ -82,6 +82,7 @@ extern "C" {
         SRCLOC_DATA     *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
+        int64_t         intIn;
 
         pInfo = obj_getInfo(srcLoc_Class());
         
@@ -98,10 +99,13 @@ extern "C" {
             goto exit00;
         }
         
-        pObject->pData->fileIndex = (uint16_t)jsonIn_FindIntegerNodeInHash(pParser, "fileIndex");
-        pObject->pData->offset = (int64_t)jsonIn_FindIntegerNodeInHash(pParser, "offset");
-        pObject->pData->lineNo = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "lineNo");
-        pObject->pData->colNo = (uint16_t)jsonIn_FindIntegerNodeInHash(pParser, "colNo");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
+        pObject->pData->fileIndex = (uint16_t)intIn;
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->pData->offset);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
+        pObject->pData->lineNo = (uint32_t)intIn;
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
+        pObject->pData->colNo = (uint16_t)intIn;
 
         // Return to caller.
     exit00:

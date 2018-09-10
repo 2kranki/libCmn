@@ -886,6 +886,75 @@ extern "C" {
     }
 
 
+    ERESULT         nodeHash_FindArrayNodeInHashA(
+        NODEHASH_DATA    *this,
+        const
+        char            *pSectionA,
+        NODEARRAY_DATA  **ppArray
+    )
+    {
+        ERESULT         eRc;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!nodeHash_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = nodeHash_FindNodeInHashA(this, pSectionA, "array", (void **)&pArray);
+        if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pArray)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        if (obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY))
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        
+        if (ppArray)
+            *ppArray = pArray;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         nodeHash_FindIntegerNodeInHashA(
+        NODEHASH_DATA    *this,
+        const
+        char            *pSectionA,
+        int64_t         *pInt
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        int64_t         num = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = nodeHash_FindNodeInHashA(this, pSectionA, "integer", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        num = AStr_ToInt64(pData);
+        
+        if (pInt) {
+            *pInt = num;
+        }
+        return ERESULT_SUCCESS;
+    }
+    
+    
     NODE_DATA *     nodeHash_FindName(
         NODEHASH_DATA   *this,
         NAME_DATA       *pName
@@ -916,6 +985,73 @@ extern "C" {
         // Return to caller.
         obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
+    }
+    
+    
+    ERESULT         nodeHash_FindNodeInHashA(
+        NODEHASH_DATA   *this,
+        const
+        char            *pSectionA,
+        const
+        char            *pTypeA,
+        OBJ_ID          *ppData
+    )
+    {
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+        OBJ_ID          pData;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(this, pSectionA);
+        if (OBJ_NIL == pNode) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        pNode = node_getData(pNode);
+        if (OBJ_NIL == pNode) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        pName = node_getName(pNode);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, pTypeA))) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        pData = node_getData(pNode);
+        if (OBJ_NIL == pData) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        if (ppData) {
+            *ppData = pData;
+        }
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         nodeHash_FindStringNodeInHashA(
+        NODEHASH_DATA   *this,
+        const
+        char            *pSectionA,
+        ASTR_DATA       **ppStr
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData = OBJ_NIL;
+        
+        eRc = nodeHash_FindNodeInHashA(this, pSectionA, "string", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        
+        if (ppStr)
+            *ppStr = pData;
+        return ERESULT_SUCCESS;
     }
     
     

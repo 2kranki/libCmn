@@ -249,6 +249,20 @@ extern "C" {
 
 
     AUDIOWAV_DATA *     audioWAV_New(
+        void
+    )
+    {
+        AUDIOWAV_DATA       *this;
+        
+        this = audioWAV_Alloc( );
+        if (this) {
+            this = audioWAV_Init(this);
+        } 
+        return this;
+    }
+
+
+    AUDIOWAV_DATA *     audioWAV_NewWithParameters(
         uint8_t         numberOfChannels,
         uint32_t        samplesPerSecond,   // Normally 11025, 22050, 44100
         uint16_t        sampleSize          // Normally 8, 16, or 32
@@ -258,12 +272,17 @@ extern "C" {
         
         this = audioWAV_Alloc( );
         if (this) {
-            this = audioWAV_Init(this, numberOfChannels, samplesPerSecond, sampleSize);
-        } 
+            this =  audioWAV_InitWithParameters(
+                                        this,
+                                        numberOfChannels,
+                                        samplesPerSecond,
+                                        sampleSize
+                    );
+        }
         return this;
     }
-
-
+    
+    
 
     
 
@@ -711,7 +730,7 @@ extern "C" {
         }
 #endif
         
-        pOther =    audioWAV_New(
+        pOther =    audioWAV_NewWithParameters(
                             this->header.waveFormat.nChannels,
                             this->header.waveFormat.nSamplesPerSec,
                             this->header.waveFormat.wBitsPerSample
@@ -824,30 +843,27 @@ extern "C" {
     #else
         if( !audioWAV_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
         if ((numberOfChannels == 1) || (numberOfChannels == 2)) {
         }
         else {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         if ((samplesPerSecond == 11025) || (samplesPerSecond == 22050)
             || (samplesPerSecond == 44100)) {
         }
         else {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         if ((sampleSize == 8) || (sampleSize == 16) || (sampleSize == 32)) {
         }
         else {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         nBlockAlign = (numberOfChannels * ((sampleSize + 8-1) / 8));
         
@@ -869,8 +885,7 @@ extern "C" {
         this->header.dataChunk.length = 0;
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
 
 
@@ -880,38 +895,13 @@ extern "C" {
     //---------------------------------------------------------------
 
     AUDIOWAV_DATA * audioWAV_Init(
-        AUDIOWAV_DATA   *this,
-        uint8_t         numberOfChannels,
-        uint32_t        samplesPerSecond,   // Normally 11025, 22050, 44100
-        uint16_t        sampleSize          // Normally 8, 16, or 32
+        AUDIOWAV_DATA   *this
     )
     {
         uint32_t        cbSize = sizeof(AUDIOWAV_DATA);
-
+        
         
         if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        if ((numberOfChannels == 1) || (numberOfChannels == 2)) {
-        }
-        else {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        if ((samplesPerSecond == 11025) || (samplesPerSecond == 22050)
-            || (samplesPerSecond == 44100)) {
-        }
-        else {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        if ((sampleSize == 8) || (sampleSize == 16) || (sampleSize == 32)) {
-        }
-        else {
-            DEBUG_BREAK();
-            obj_Release(this);
             return OBJ_NIL;
         }
         
@@ -924,7 +914,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-
+        
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_AUDIOWAV);
         if (OBJ_NIL == this) {
@@ -937,18 +927,64 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&audioWAV_Vtbl);
         
-        audioWAV_FormatSet(this, numberOfChannels, samplesPerSecond, sampleSize);
-        this->pFrames = u8Array_New();
-
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if( !audioWAV_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         BREAK_NOT_BOUNDARY4(&this->pFrames);
-    #endif
+#endif
+        
+        return this;
+    }
+    
+    
+    AUDIOWAV_DATA * audioWAV_InitWithParameters(
+        AUDIOWAV_DATA   *this,
+        uint8_t         numberOfChannels,
+        uint32_t        samplesPerSecond,   // Normally 11025, 22050, 44100
+        uint16_t        sampleSize          // Normally 8, 16, or 32
+    )
+    {
+        uint32_t        cbSize = sizeof(AUDIOWAV_DATA);
+
+        
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        if ((numberOfChannels == 1) || (numberOfChannels == 2))
+            ;
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        if ((samplesPerSecond == 11025) || (samplesPerSecond == 22050)
+            || (samplesPerSecond == 44100))
+            ;
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        if ((sampleSize == 8) || (sampleSize == 16) || (sampleSize == 32))
+            ;
+        else {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this = audioWAV_Init(this);
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        audioWAV_FormatSet(this, numberOfChannels, samplesPerSecond, sampleSize);
+        this->pFrames = u8Array_New();
 
         return this;
     }

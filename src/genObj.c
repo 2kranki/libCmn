@@ -2309,7 +2309,7 @@ extern "C" {
         }
 #endif
               
-        pInfo = genObj_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

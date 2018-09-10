@@ -954,7 +954,7 @@ extern "C" {
         }
 #endif
               
-        pInfo = szData_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

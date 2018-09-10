@@ -115,6 +115,7 @@ extern "C" {
         OBJ_INFO        *pInfo;
         uint32_t        crc = 0;
         uint32_t        length = 0;
+        int64_t         intIn = 0;
 #ifdef XYZZY
         uint32_t        i;
         W32CHR_T        ch;
@@ -131,9 +132,11 @@ extern "C" {
             goto exit00;
         }
         
-        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        crc = (uint32_t)intIn;
         
-        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        length = (uint32_t)intIn;
 
 #ifdef XYZZY
         pObject = symEntry_New();
@@ -142,7 +145,7 @@ extern "C" {
         }
         
         if (length && pObject) {
-            pWrk = jsonIn_FindStringNodeInHash(pParser, "data");
+            eRc = jsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
             pSrc = AStr_getData(pWrk);
             for (i=0; i<length; ++i) {
                 ch = utf8_ChrConToW32_Scan(&pSrc);
@@ -258,7 +261,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pInfo = symEntry_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         //FIXME: pData  = array_Ptr((ARRAY_DATA *)this, 1);
 
         pStr = AStr_New();

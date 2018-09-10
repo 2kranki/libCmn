@@ -85,7 +85,7 @@ int         test_audioWAV_OpenClose(
     
     pObj = audioWAV_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = audioWAV_Init( pObj, 2, 22050, 8 );
+    pObj = audioWAV_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -114,7 +114,7 @@ int         test_audioWAV_Silence(
     
     pObj = audioWAV_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = audioWAV_Init(pObj, 2, 44100, 16);
+    pObj = audioWAV_InitWithParameters(pObj, 2, 44100, 16);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -149,7 +149,7 @@ int         test_audioWAV_SineWave(
     
     pObj = audioWAV_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = audioWAV_Init(pObj, 1, 11025, 16);
+    pObj = audioWAV_InitWithParameters(pObj, 1, 11025, 16);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

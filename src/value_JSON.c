@@ -86,6 +86,7 @@ extern "C" {
         uint16_t        type;
         //OBJ_ID          pObj;
         int64_t         integer;
+        int64_t         intIn;
 
         pInfo = obj_getInfo(value_Class());
         
@@ -100,7 +101,8 @@ extern "C" {
             goto exit00;
         }
 
-        type = (uint16_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        type = (uint16_t)intIn;
         pObject->type = type;
         
         switch (type) {

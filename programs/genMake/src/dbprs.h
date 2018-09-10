@@ -166,7 +166,11 @@ extern "C" {
     /*!
      Parse an object and generate its components
      Node Grammar:
-     object     : '{' object_Hash '}'
+     object     : string                // Object's Name
+                | node ':' objectData   // Node's Name == Object's Name
+                ;
+     
+     objectData : '{' object_Hash '}'
                 | '[' deps ']'
                 | "null"
                 ;
@@ -201,7 +205,7 @@ extern "C" {
      srcs       : source_file_name [',' srcs]
                 ;
 
-     @param     this    DBPRS object pointer
+     @param     this    Object Pointer
      @param     pNode   Object Node Pointer
      @return    If successful, an AStr object which must be released containing the
      description, otherwise OBJ_NIL.
@@ -214,12 +218,37 @@ extern "C" {
     
     
     /*!
+     Parse an object and generate its components
+     Node Grammar:
+     objects     : '{' objects_Hash '}'
+                 | '[' objects_Array ']'
+                 ;
+     object_Hash :
+                    objectNode (',' object_Hash)
+                 ;
+     object_Array:
+                    stringNode (',' object_Array)
+                ;
+     Note: See ParseObject() for definition of objectNode.
+     @param     this    Object Pointer
+     @param     pNode   Node Pointer whose data is an array or a hash
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseObjects(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
         ASTR_DATA      *pDesc = dbprs_ToDebugString(this,4);
      @endcode 
-     @param     this    DBPRS object pointer
+     @param     this    Object Pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.

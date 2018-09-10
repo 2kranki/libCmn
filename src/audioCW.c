@@ -588,7 +588,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&audioCW_Vtbl);
         
-        this->pWave = audioWAV_New(numberOfChannels, samplesPerSecond, sampleSize);
+        this->pWave = audioWAV_NewWithParameters(numberOfChannels, samplesPerSecond, sampleSize);
         if (OBJ_NIL == this->pWave) {
             DEBUG_BREAK();
             obj_Release(this);

@@ -86,7 +86,7 @@ extern "C" {
     );
     
     
-    OBJ_ID          AStr_Class(
+    OBJ_ID         AStr_Class(
         void
     );
     
@@ -132,7 +132,7 @@ extern "C" {
         ASTR_DATA       *pString
     );
     
-    ASTR_DATA *     AStr_NewFromJSONStringA(
+    ASTR_DATA *    AStr_NewFromJSONStringA(
         const
         char            *pString
     );

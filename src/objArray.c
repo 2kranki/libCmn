@@ -751,7 +751,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objArray_Vtbl);
         
-        this->pArray = array_New(sizeof(ARRAY_ENTRY));
+        this->pArray = array_NewWithSize(sizeof(ARRAY_ENTRY));
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);

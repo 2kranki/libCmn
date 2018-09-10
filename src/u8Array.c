@@ -893,7 +893,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u8Array_Vtbl);
         
-        this->pData = array_New(1);
+        this->pData = array_NewWithSize(1);
         if (OBJ_NIL == this->pData) {
             obj_Release(this);
             return OBJ_NIL;

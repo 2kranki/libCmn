@@ -93,6 +93,7 @@ extern "C" {
         W32CHR_T        ch;
         uint32_t        i;
         uint8_t         *pOut;
+        int64_t         intIn;
 
         pInfo = obj_getInfo(hex_Class());
         
@@ -102,17 +103,19 @@ extern "C" {
             goto exit00;
         }
         
-        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
-        
-        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
-        
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        crc = (uint32_t)intIn;
+
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        length = (uint32_t)intIn;
+
         if (length) {
             pData = mem_Malloc(length);
             if (NULL == pData) {
                 fprintf(stderr, "ERROR - Out of Memory!\n");
                 goto exit00;
             }
-            pWrk = jsonIn_FindStringNodeInHash(pParser, "data");
+            eRc = jsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
             //fprintf(stderr, "\tDATA=\"%s\"\n", AStr_getData(pWrk));
             pChr = AStr_getData(pWrk);
             pOut = pData;

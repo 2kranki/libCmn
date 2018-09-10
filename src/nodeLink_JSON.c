@@ -131,6 +131,7 @@ extern "C" {
         //uint8_t         *pUtf8;
         //SRCLOC_DATA     *pSrc = OBJ_NIL;
         NODE_DATA       *pNode = OBJ_NIL;
+        int64_t         intIn;
         
         pInfo = obj_getInfo(node_Class());
         
@@ -157,15 +158,20 @@ extern "C" {
             }
         }
         
-        uint32  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "index");
+        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "index", &intIn);
+        uint32  = (uint32_t)intIn;
         nodeLink_setIndex(pObject, uint32);
-        uint32  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "leftIndex");
+        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "leftIndex", &intIn);
+        uint32  = (uint32_t)intIn;
         nodeLink_setLeft(pObject, uint32);
-        uint32  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "middleIndex");
+        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "middleIndex", &intIn);
+        uint32  = (uint32_t)intIn;
         nodeLink_setMiddle(pObject, uint32);
-        uint32  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "parentIndex");
+        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "parentIndex", &intIn);
+        uint32  = (uint32_t)intIn;
         nodeLink_setParent(pObject, uint32);
-        uint32  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "rightIndex");
+        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "rightIndex", &intIn);
+        uint32  = (uint32_t)intIn;
         nodeLink_setRight(pObject, uint32);
 
         // Return to caller.

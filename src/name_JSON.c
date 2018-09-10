@@ -90,7 +90,8 @@ extern "C" {
         ASTR_DATA       *pWrk;
         uint8_t         *pUtf8;
         int64_t         integer;
-        
+        int64_t         intIn;
+
         pInfo = obj_getInfo(name_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
@@ -99,8 +100,9 @@ extern "C" {
             goto exit00;
         }
         
-        type = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "type");
-        
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        type = (uint32_t)intIn;
+
         switch (type) {
 
             case NAME_TYPE_ASTR:

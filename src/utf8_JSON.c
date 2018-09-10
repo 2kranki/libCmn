@@ -119,6 +119,7 @@ extern "C" {
         uint32_t        crc = 0;
         uint32_t        crc2 = 0;
         uint32_t        length = 0;
+        int64_t         intIn = 0;
         ASTR_DATA       *pWrk = OBJ_NIL;
         W32CHR_T        ch;
         const
@@ -134,9 +135,15 @@ extern "C" {
             goto exit00;
         }
         
-        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+        crc = (uint32_t)intIn;
         
-        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        length = (uint32_t)intIn;
         if (0 == length) {
             goto exit00;
         }
@@ -147,8 +154,8 @@ extern "C" {
             goto exit00;
         }
         
-        pWrk = jsonIn_FindStringNodeInHash(pParser, "data");
-        if (OBJ_NIL == pWrk) {
+        eRc = jsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pWrk)) {
             length = 0;
             goto exit00;
         }

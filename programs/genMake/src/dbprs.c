@@ -863,28 +863,28 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !dbprs_Validate(this) ) {
+        if (!dbprs_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if(OBJ_NIL == pNode) {
+        if (OBJ_NIL == pNode) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+        if (!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
         pName = node_getNameUTF8(pNode);
-        if(OBJ_NIL == pName) {
+        if (OBJ_NIL == pName) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
 
         pData = node_getData(pNode);
-        if(OBJ_NIL == pData) {
+        if (OBJ_NIL == pData) {
             DEBUG_BREAK();
             if (pName) {
                 mem_Free(pName);
@@ -893,7 +893,7 @@ extern "C" {
             return ERESULT_DATA_MISSING;
         }
         pData = node_getData(pData);
-        if(OBJ_NIL == pData) {
+        if (OBJ_NIL == pData) {
             DEBUG_BREAK();
             if (pName) {
                 mem_Free(pName);
@@ -901,12 +901,12 @@ extern "C" {
             }
             return ERESULT_DATA_MISSING;
         }
-        if(obj_IsKindOf(pData, OBJ_IDENT_NULL))
+        if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
             ;
-        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
             pDepsObj = node_getData((NODE_DATA *)pData);
         }
-        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
             NODE_DATA           *pHashNode;
             pHash = pData;
             pHashNode = nodeHash_FindA(pHash, "deps");
@@ -923,20 +923,20 @@ extern "C" {
                 if (pData) {
                     pData = node_getData(pData);
                     if (pData) {
-                        if(obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
+                        if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
                             fJson = false;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
                             fJson = true;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
                             fJson = true;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
                             fJson = true;
                             pSrcsTest = pData;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                             NODEHASH_DATA       *pHash;
                             NODE_DATA           *pHashNode;
                             pHash = pData;
@@ -975,20 +975,20 @@ extern "C" {
                 if (pData) {
                     pData = node_getData(pData);
                     if (pData) {
-                        if(obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
+                        if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
                             fTest = false;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
                             fTest = true;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
                             fTest = true;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
                             fTest = true;
                             pDepsTest = pData;
                         }
-                        else if(obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                             NODEHASH_DATA       *pHash;
                             NODE_DATA           *pHashNode;
                             pHash = pData;
@@ -1086,6 +1086,60 @@ extern "C" {
             mem_Free(pName);
             pName = NULL;
         }
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  O b j e c t s
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_ParseObjects(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+        OBJ_ID          pData = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        bool            fJson = false;
+        bool            fTest = true;
+        char            *pName;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pData = node_getData(pNode);
+        if(OBJ_NIL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        
+        if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+            pArray = pData;
+        }
+        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+            NODE_DATA           *pHashNode;
+            pHash = pData;
+        }
+        
+        // Return to caller.
         return ERESULT_SUCCESS;
     }
     

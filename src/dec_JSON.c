@@ -87,6 +87,7 @@ extern "C" {
         uint32_t        crc2 = 0;
         uint32_t        length = 0;
         uint64_t        object = 0;
+        int64_t         intIn;
         
         pInfo = obj_getInfo(dec_Class());
         
@@ -96,9 +97,11 @@ extern "C" {
             goto exit00;
         }
         
-        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
-        
-        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        crc = (uint32_t)intIn;
+
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        length = (uint32_t)intIn;
         if (length == 8) {
             ;
         }
@@ -107,8 +110,9 @@ extern "C" {
             goto exit00;
         }
 
-        object = (uint64_t)jsonIn_FindIntegerNodeInHash(pParser, "data");
-        
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "data", &intIn);
+        object = (uint64_t)intIn;
+
         pCrc = crc_New(CRC_TYPE_IEEE_32);
         if (pCrc) {
             crc2 = crc_AccumBlock(pCrc, 8, (void *)&object);

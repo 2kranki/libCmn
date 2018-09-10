@@ -85,6 +85,7 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         uint32_t        cls = 0;
+        int64_t         intIn = 0;
         OBJ_ID          pObj = OBJ_NIL;
         uint8_t         *pUtf8;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
@@ -113,7 +114,8 @@ extern "C" {
         
         // Now add this object's other fields.
         if (pObject) {
-            cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
+            eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+            cls = (uint32_t)intIn;
             szData_setClass(pObject, cls);
             
             eRc = jsonIn_SubobjectInHash(pParser, "data");

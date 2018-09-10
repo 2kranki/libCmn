@@ -68,7 +68,6 @@ struct jsonIn_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     NODEHASH_DATA   *pHash;
     OBJLIST_DATA    *pList;
     uint32_t        index;          // Current index into array.

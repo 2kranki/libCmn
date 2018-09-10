@@ -120,7 +120,8 @@ extern "C" {
         const
         char            *pSrc;
         ASTR_DATA       *pWrk;
-        
+        int64_t         intIn;
+
         pInfo = obj_getInfo(W32Str_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
@@ -129,17 +130,20 @@ extern "C" {
             goto exit00;
         }
         
-        crc = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "crc");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        crc = (uint32_t)intIn;
         
-        length = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "len");
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        length = (uint32_t)intIn;
         
+
         pObject = W32Str_New();
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
         if (length && pObject) {
-            pWrk = jsonIn_FindStringNodeInHash(pParser, "data");
+            eRc = jsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
             pSrc = AStr_getData(pWrk);
             for (i=0; i<length; ++i) {
                 ch = utf8_ChrConToW32_Scan(&pSrc);

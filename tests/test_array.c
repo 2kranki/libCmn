@@ -86,7 +86,7 @@ int         test_array_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -126,7 +126,7 @@ int         test_array_Insert01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -182,7 +182,7 @@ int         test_array_Insert02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -229,7 +229,7 @@ int         test_array_Insert03(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -277,7 +277,7 @@ int         test_array_CopyAssign01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -346,7 +346,7 @@ int         test_array_Get01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -408,7 +408,7 @@ int         test_array_Delete01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -470,7 +470,7 @@ int         test_array_Delete02(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -521,7 +521,7 @@ int         test_array_Ptr01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -564,7 +564,7 @@ int         test_array_Xchg01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = array_New(1);
+    pObj = array_NewWithSize(1);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

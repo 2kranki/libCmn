@@ -168,6 +168,20 @@ extern "C" {
 
 
     ARRAY_DATA *    array_New(
+        void
+    )
+    {
+        ARRAY_DATA       *this;
+        
+        this = array_Alloc( );
+        if (this) {
+            this = array_Init(this);
+        } 
+        return this;
+    }
+
+
+    ARRAY_DATA *    array_NewWithSize(
         uint16_t        elemSize        // Element Size in bytes
     )
     {
@@ -185,11 +199,11 @@ extern "C" {
             if (this) {
                 array_setElemSize(this, elemSize);
             }
-        } 
+        }
         return this;
     }
-
-
+    
+    
 
     
 
@@ -668,7 +682,7 @@ extern "C" {
         }
 #endif
         
-        pOther = array_New(this->elemSize);
+        pOther = array_NewWithSize(this->elemSize);
         if (pOther) {
             eRc = array_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -752,7 +766,7 @@ extern "C" {
         }
 #endif
         
-        pOther = array_New(this->elemSize);
+        pOther = array_NewWithSize(this->elemSize);
         if (OBJ_NIL == pOther) {
             obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;

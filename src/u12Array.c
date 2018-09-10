@@ -485,7 +485,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u12Array_Vtbl);
         
-        this->pArray = array_New(1);
+        this->pArray = array_NewWithSize(1);
 
     #ifdef NDEBUG
     #else

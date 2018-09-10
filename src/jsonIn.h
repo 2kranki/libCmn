@@ -159,40 +159,83 @@ extern "C" {
     );
     
     
-    NODE_DATA *     jsonIn_FindNodeInHash(
+    /*!
+     Find a named node in the JSON Hash Node tree.
+     @param     this    Object Pointer
+     @param     pSectionA Name of Node to be looked for
+     @param     pTypeA  Name of Data Node ("array", "false", "hash",
+                        "integer", "null", or "true")
+     @param     ppData  Pointer to Data Object Pointer to be returned if
+                        ERESULT_SUCCESS is returned.
+     @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
+     if pInt is non-null, otherwise, ERESULT_* error code.
+     */
+    ERESULT         jsonIn_FindNodeInHashA(
         JSONIN_DATA     *this,
         const
-        char            *pSection,
+        char            *pSectionA,
         const
-        char            *pType
+        char            *pTypeA,
+        OBJ_ID          *ppData
     );
     
     
-    NODEARRAY_DATA *    jsonIn_FindArrayNodeInHash(
+    /*!
+     Find a named node array in the JSON Hash Node tree.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     ppArray Pointer to a node array pointer where data is to be returned if
+                        ERESULT_SUCCESS is returned.
+     @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
+                if ppArray is non-null.  Otherwise, ERESULT_* error code.
+     */
+    ERESULT         jsonIn_FindArrayNodeInHashA(
         JSONIN_DATA     *this,
         const
-        char            *pSection
+        char            *pSectionA,
+        NODEARRAY_DATA  **ppArray
     );
     
     
-    int64_t         jsonIn_FindIntegerNodeInHash(
+    /*!
+     Find a named integer value in the JSON Hash Node tree.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     pInt    integer pointer where data is to be returned too if
+                        succesful ERESULT is returned.
+     @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
+                if pInt is non-null, otherwise, ERESULT_* error code.
+     */
+    ERESULT         jsonIn_FindIntegerNodeInHashA(
         JSONIN_DATA     *this,
         const
-        char            *pSection
+        char            *pSectionA,
+        int64_t         *pInt
     );
     
     
-    bool            jsonIn_FindNullNodeInHash(
+    ERESULT         jsonIn_FindNullNodeInHashA(
         JSONIN_DATA     *this,
         const
-        char            *pSection
+        char            *pSectionA
     );
     
     
-    ASTR_DATA *     jsonIn_FindStringNodeInHash(
+    /*!
+     Find a named string value in the JSON Hash Node tree.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     ppStr   Pointer to a string pointer to be returned if
+                        ERESULT_SUCCESS is returned and this pointer
+                        is non-null.
+     @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
+                if ppStr is non-null. Otherwise, an ERESULT_* error code.
+     */
+    ERESULT         jsonIn_FindStringNodeInHashA(
         JSONIN_DATA     *this,
         const
-        char            *pSection
+        char            *pSectionA,
+        ASTR_DATA       **ppStr
     );
     
     
@@ -243,7 +286,7 @@ extern "C" {
      Set up the parser to process a JSON Hash Node tree by:
      *  Pushing the current JSON tree on the internal stack.
      *  Setting up the given JSON Hash Node as the parser input.
-     @param     this    JSONIN object pointer
+     @param     this    Object Pointer
      @param     pHash   JSON Hash Node (required)
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code.
      @warning   The SubobjectEnd() method should be called once the sub-object
