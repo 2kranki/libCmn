@@ -178,10 +178,16 @@ void *          nodeLinkClass_QueryInfo(
             return (void *)obj_getInfo(this);
             break;
             
-#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return nodeLink_New;
+                    }
+                    break;
+
+#ifdef XYZZY
                 case 'P':
                     if (str_Compare("ParseObject", (char *)pStr) == 0) {
                         return nodeLink_ParseObject;
@@ -193,12 +199,12 @@ void *          nodeLinkClass_QueryInfo(
                         return nodeLinkClass_WhoAmI;
                     }
                     break;
+#endif
                     
                 default:
                     break;
             }
             break;
-#endif
             
         default:
             break;

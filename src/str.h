@@ -96,6 +96,21 @@ int             str_CompareN(
     int             len
 );
 
+/* str_Compare() compares two Input Strings to each other. If the
+ * two strings differ, the offset of that difference is returned.
+ * Returns:
+ *    -1              =    Str1 <  Str2  and offset of difference
+ *    0               =    Str1 == Str2
+ *    1               =    Str1 >  Str2  and offset of difference
+ */
+int             str_CompareSpcl(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             *pOffset
+);
+
 int             str_CompareW32(
     const
     W32CHR_T		*pszStr1,

@@ -182,6 +182,65 @@ int             str_CompareN(
 }
 
 
+int             str_CompareSpcl(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             *pOffset
+)
+{
+    int             i;
+    int             result = 0;
+    const
+    char            *pszStr;
+    
+    // Do initialization.
+    if (pOffset) {
+        *pOffset = 0;
+    }
+    pszStr = pszStr1;
+
+    //    Compare the strings.
+    for( ;; ) {
+        if( *pszStr1 )
+            ;
+        else {
+            if( *pszStr2 ) {
+                result = -1;
+            }
+            break;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1 )
+                result = 1;
+            break;
+        }
+        i = *pszStr1 - *pszStr2;
+        if( i ) {
+            if( i < 0 ) {
+                if (pOffset)
+                    *pOffset = (int)(pszStr1 - pszStr);
+                result = -1;
+            }
+            else {
+                if (pOffset)
+                    *pOffset = (int)(pszStr1 - pszStr);
+                result = 1;
+            }
+            break;
+        }
+        ++pszStr1;
+        ++pszStr2;
+    }
+    
+    // Return to caller.
+    return( result );
+}
+
+
 int             str_CompareW32(
     const
     W32CHR_T		*pszStr1,

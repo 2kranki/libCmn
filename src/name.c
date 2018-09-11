@@ -85,11 +85,25 @@ extern "C" {
         this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( this );
+        return this;
     }
 
 
 
+    NAME_DATA *     name_New(
+        void
+    )
+    {
+        NAME_DATA       *this;
+        
+        this = name_Alloc( );
+        if (this) {
+            this = name_Init(this);
+        }
+        return this;
+    }
+    
+    
     NAME_DATA *     name_NewInt(
         int64_t         value
     )
@@ -100,7 +114,7 @@ extern "C" {
         if (this) {
             this = name_InitInt(this, value);
         }
-        return( this );
+        return this;
     }
     
     
@@ -114,7 +128,7 @@ extern "C" {
         if (this) {
             this = name_InitAStr(this, pValue);
         }
-        return( this );
+        return this;
     }
     
     
@@ -129,7 +143,7 @@ extern "C" {
         if (this) {
             this = name_InitUTF8(this, pValue);
         }
-        return( this );
+        return this;
     }
 
     
@@ -144,7 +158,7 @@ extern "C" {
         if (this) {
             this = name_InitUTF8Con(this, pValue);
         }
-        return( this );
+        return this;
     }
     
     

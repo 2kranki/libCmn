@@ -42,9 +42,9 @@
 #define	U8ARRAY_INTERNAL_H
 
 
-#include        "u8Array.h"
-#include        "array_internal.h"
-
+#include        <u8Array.h>
+#include        <array_internal.h>
+#include        <jsonIn.h>
 
 
 #ifdef	__cplusplus
@@ -77,6 +77,11 @@ struct u8Array_data_s	{
     void            u8Array_Dealloc(
         OBJ_ID          objId
     );
+
+    U8ARRAY_DATA *  u8Array_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
 
 #ifdef NDEBUG
 #else

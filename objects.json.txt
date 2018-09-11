@@ -194,6 +194,7 @@
         "szData_JSON.c",
         "szTbl_JSON.c",
         "token_JSON.c",
+        "u8Array_JSON.c",
         "utf8_JSON.c",
         "value_JSON.c",
         "W32Str_JSON.c"

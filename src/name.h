@@ -110,7 +110,11 @@ extern "C" {
     );
     
     
-    NAME_DATA *     name_NewFromJSONString(
+    NAME_DATA *     name_New(
+        void
+    );
+
+      NAME_DATA *     name_NewFromJSONString(
         ASTR_DATA       *pString
     );
     

@@ -784,6 +784,42 @@ int         test_lexj_Number08(
 
 
 
+int         test_lexj_Number09(
+    const
+    char        *pTestName
+)
+{
+    LEXJ_DATA       *pLexJ = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParse = "0";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pLexJ = lexj_NewA(pStringToParse, 4, true);
+    XCTAssertFalse( (OBJ_NIL == pLexJ) );
+    if (pLexJ) {
+        
+        obj_TraceSet(pLexJ, true);
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_INTEGER == token_getClass(pToken)) );
+        pStr = token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp(pStringToParse, AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        
+        obj_Release(pLexJ);
+        pLexJ = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_lexj_String01(
     const
     char        *pTestName
@@ -1007,6 +1043,7 @@ TINYTEST_START_SUITE(test_lexj);
     TINYTEST_ADD_TEST(test_lexj_String03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_lexj_Number09,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_Number08,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_Number07,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_Number06,setUp,tearDown);

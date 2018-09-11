@@ -90,6 +90,87 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          class_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    NAME_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&name_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return name_New;
+                    }
+                    break;
+
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return name_ParseObject;
+                    }
+                    break;
+
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return obj_ClassWhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
@@ -99,7 +180,9 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     name_Class,
-    obj_ClassWhoAmI
+    obj_ClassWhoAmI,
+    class_QueryInfo,
+    NULL                        // class_ToDebugString
 };
 
 

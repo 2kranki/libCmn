@@ -105,7 +105,9 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     array_Class,
-    obj_ClassWhoAmI
+    obj_ClassWhoAmI,
+    NULL,                       // arrayClass_QueryInfo
+    NULL                        // arrayClass_ToDebugString
 };
 
 

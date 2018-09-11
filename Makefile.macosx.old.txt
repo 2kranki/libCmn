@@ -1848,6 +1848,12 @@ $(OBJDIR)/utf8_JSON.o: $(SRCDIR)/utf8_JSON.c
 
 
 
+OBJS += $(OBJDIR)/u8Array_JSON.o
+$(OBJDIR)/u8Array_JSON.o: $(SRCDIR)/u8Array_JSON.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
+
 OBJS += $(OBJDIR)/utf8_JSON.o
 $(OBJDIR)/value_JSON.o: $(SRCDIR)/value_JSON.c
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<

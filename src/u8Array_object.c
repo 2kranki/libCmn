@@ -64,11 +64,6 @@ OBJ_INFO        u8Array_Info;            // Forward Reference
 
 
 
-OBJ_ID          u8Array_Class(
-    void
-);
-
-
 
 static
 bool            u8Array_ClassIsKindOf(

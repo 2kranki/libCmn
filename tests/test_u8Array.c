@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <u8Array_internal.h>
 
@@ -51,7 +52,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
      if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -106,9 +108,38 @@ int         test_u8Array_AddGet01(
 )
 {
     U8ARRAY_DATA	*pObj = OBJ_NIL;
+    U8ARRAY_DATA    *pObjJson = OBJ_NIL;
     uint32_t        i;
     ERESULT         eRc;
+    int             iRc;
+    int             offset;
     uint8_t         data;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pJsonA =
+        "{\n"
+            "\t\"objectType\":\"u8Array\",\n"
+            "\t\"Count\":64,\n"
+            "\t\"Entries\":[\n"
+                "\t\t0,\n\t\t1,\n\t\t2,\n\t\t3,\n"
+                "\t\t4,\n\t\t5,\n\t\t6,\n\t\t7,\n"
+                "\t\t8,\n\t\t9,\n\t\t10,\n\t\t11,\n"
+                "\t\t12,\n\t\t13,\n\t\t14,\n\t\t15,\n"
+                "\t\t16,\n\t\t17,\n\t\t18,\n\t\t19,\n"
+                "\t\t20,\n\t\t21,\n\t\t22,\n\t\t23,\n"
+                "\t\t24,\n\t\t25,\n\t\t26,\n\t\t27,\n"
+                "\t\t28,\n\t\t29,\n\t\t30,\n\t\t31,\n"
+                "\t\t32,\n\t\t33,\n\t\t34,\n\t\t35,\n"
+                "\t\t36,\n\t\t37,\n\t\t38,\n\t\t39,\n"
+                "\t\t40,\n\t\t41,\n\t\t42,\n\t\t43,\n"
+                "\t\t44,\n\t\t45,\n\t\t46,\n\t\t47,\n"
+                "\t\t48,\n\t\t49,\n\t\t50,\n\t\t51,\n"
+                "\t\t52,\n\t\t53,\n\t\t54,\n\t\t55,\n"
+                "\t\t56,\n\t\t57,\n\t\t58,\n\t\t59,\n"
+                "\t\t60,\n\t\t61,\n\t\t62,\n\t\t63\n"
+            "\t]\n"
+        "}\n"
+        ;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = u8Array_Alloc( );
@@ -118,16 +149,35 @@ int         test_u8Array_AddGet01(
     if (pObj) {
         
         data = 0;
-        for (i=1; i<=64; ++i) {
+        for (i=0; i<64; ++i) {
             eRc = u8Array_AppendData(pObj, i);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         }
         
-        for (i=1; i<=64; ++i) {
-            data = u8Array_Get(pObj, i);
+        for (i=0; i<64; ++i) {
+            data = u8Array_Get(pObj, i+1);
             XCTAssertTrue( (data == i) );
         }
         
+        pStr = u8Array_ToJSON(pObj);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\tJSON=\"%s\"\n", AStr_getData(pStr));
+        iRc = str_CompareSpcl(AStr_getData(pStr), pJsonA, &offset);
+        fprintf(stderr, "\tCompare offset = %d\n", offset);
+        XCTAssertTrue( (0 == iRc) );
+        
+        pObjJson = u8Array_NewFromJSONString(pStr);
+        XCTAssertFalse( (OBJ_NIL == pObjJson) );
+        XCTAssertTrue( (64 == u8Array_getSize(pObjJson)) );
+        for (i=0; i<64; ++i) {
+            data = u8Array_Get(pObjJson, i+1);
+            XCTAssertTrue( (data == i) );
+        }
+        obj_Release(pObjJson);
+        pObjJson = OBJ_NIL;
+
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

@@ -91,6 +91,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          u8Array_Class(
+        void
+    );
+    
+    
     U8ARRAY_DATA *  u8Array_New(
         void
     );
@@ -106,6 +111,17 @@ extern "C" {
         PATH_DATA       *pPath
     );
     
+    
+    U8ARRAY_DATA *  u8Array_NewFromJSONString(
+        ASTR_DATA       *pString
+    );
+
+    
+    U8ARRAY_DATA *  u8Array_NewFromJSONStringA(
+        const
+        char            *pString
+    );
+
     
 
     
@@ -367,6 +383,11 @@ extern "C" {
     ASTR_DATA *     u8Array_ToDebugString(
         U8ARRAY_DATA    *this,
         int             indent
+    );
+
+    
+    ASTR_DATA *     u8Array_ToJSON(
+        U8ARRAY_DATA    *this
     );
 
     
