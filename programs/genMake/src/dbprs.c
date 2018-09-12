@@ -883,144 +883,151 @@ extern "C" {
             return ERESULT_DATA_MISSING;
         }
 
-        pData = node_getData(pNode);
-        if (OBJ_NIL == pData) {
-            DEBUG_BREAK();
-            if (pName) {
-                mem_Free(pName);
-                pName = NULL;
-            }
-            return ERESULT_DATA_MISSING;
-        }
-        pData = node_getData(pData);
-        if (OBJ_NIL == pData) {
-            DEBUG_BREAK();
-            if (pName) {
-                mem_Free(pName);
-                pName = NULL;
-            }
-            return ERESULT_DATA_MISSING;
-        }
-        if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
-            ;
-        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-            pDepsObj = node_getData((NODE_DATA *)pData);
-        }
-        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-            NODE_DATA           *pHashNode;
-            pHash = pData;
-            pHashNode = nodeHash_FindA(pHash, "deps");
-            if (pHashNode) {
-                pData = node_getData(pHashNode);    // Get "array" node.
-                pData = node_getData(pData);        // Get NodeArray.
-                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                    pDepsObj = pData;
-                }
-            }
-            pHashNode = nodeHash_FindA(pHash, "json");
-            if (pHashNode) {
-                pData = node_getData(pHashNode);
-                if (pData) {
-                    pData = node_getData(pData);
-                    if (pData) {
-                        if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
-                            fJson = false;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
-                            fJson = true;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
-                            fJson = true;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                            fJson = true;
-                            pSrcsTest = pData;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                            NODEHASH_DATA       *pHash;
-                            NODE_DATA           *pHashNode;
-                            pHash = pData;
-                            fJson = true;
-                            pHashNode = nodeHash_FindA(pHash, "deps");
-                            if (pHashNode) {
-                                pData = node_getData(pHashNode);    // Get "array" node.
-                                pData = node_getData(pData);        // Get NodeArray.
-                                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                    pDepsJson = pData;
-                                }
-                            }
-                            pHashNode = nodeHash_FindA(pHash, "srcs");
-                            if (pHashNode) {
-                                pData = node_getData(pHashNode);    // Get "array" node.
-                                pData = node_getData(pData);        // Get NodeArray.
-                                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                    pSrcsJson = pData;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            pHashNode = nodeHash_FindA(pHash, "srcs");
-            if (pHashNode) {
-                pData = node_getData(pHashNode);    // Get "array" node.
-                pData = node_getData(pData);        // Get NodeArray.
-                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                    pSrcsObj = pData;
-                }
-            }
-            pHashNode = nodeHash_FindA(pHash, "test");
-            if (pHashNode) {
-                pData = node_getData(pHashNode);
-                if (pData) {
-                    pData = node_getData(pData);
-                    if (pData) {
-                        if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
-                            fTest = false;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
-                            fTest = true;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
-                            fTest = true;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                            fTest = true;
-                            pDepsTest = pData;
-                        }
-                        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                            NODEHASH_DATA       *pHash;
-                            NODE_DATA           *pHashNode;
-                            pHash = pData;
-                            fTest = true;
-                            pHashNode = nodeHash_FindA(pHash, "deps");
-                            if (pHashNode) {
-                                pData = node_getData(pHashNode);    // Get "array" node.
-                                pData = node_getData(pData);        // Get NodeArray.
-                                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                    pDepsTest = pData;
-                                }
-                            }
-                            pHashNode = nodeHash_FindA(pHash, "srcs");
-                            if (pHashNode) {
-                                pData = node_getData(pHashNode);    // Get "array" node.
-                                pData = node_getData(pData);        // Get NodeArray.
-                                if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                    pSrcsTest = pData;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if (0 == strcmp(pName, "string")) {
+            mem_Free(pName);
+            //pName = NULL;
+            pName = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
         }
         else {
-            DEBUG_BREAK();
-            if (pName) {
-                mem_Free(pName);
-                pName = NULL;
+            pData = node_getData(pNode);
+            if (OBJ_NIL == pData) {
+                DEBUG_BREAK();
+                if (pName) {
+                    mem_Free(pName);
+                    pName = NULL;
+                }
+                return ERESULT_DATA_MISSING;
             }
-            return ERESULT_DATA_ERROR;
+            pData = node_getData(pData);
+            if (OBJ_NIL == pData) {
+                DEBUG_BREAK();
+                if (pName) {
+                    mem_Free(pName);
+                    pName = NULL;
+                }
+                return ERESULT_DATA_MISSING;
+            }
+            if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
+                ;
+            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                pDepsObj = node_getData((NODE_DATA *)pData);
+            }
+            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+                NODE_DATA           *pHashNode;
+                pHash = pData;
+                pHashNode = nodeHash_FindA(pHash, "deps");
+                if (pHashNode) {
+                    pData = node_getData(pHashNode);    // Get "array" node.
+                    pData = node_getData(pData);        // Get NodeArray.
+                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                        pDepsObj = pData;
+                    }
+                }
+                pHashNode = nodeHash_FindA(pHash, "json");
+                if (pHashNode) {
+                    pData = node_getData(pHashNode);
+                    if (pData) {
+                        pData = node_getData(pData);
+                        if (pData) {
+                            if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
+                                fJson = false;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
+                                fJson = true;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
+                                fJson = true;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                                fJson = true;
+                                pSrcsTest = pData;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+                                NODEHASH_DATA       *pHash;
+                                NODE_DATA           *pHashNode;
+                                pHash = pData;
+                                fJson = true;
+                                pHashNode = nodeHash_FindA(pHash, "deps");
+                                if (pHashNode) {
+                                    pData = node_getData(pHashNode);    // Get "array" node.
+                                    pData = node_getData(pData);        // Get NodeArray.
+                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                                        pDepsJson = pData;
+                                    }
+                                }
+                                pHashNode = nodeHash_FindA(pHash, "srcs");
+                                if (pHashNode) {
+                                    pData = node_getData(pHashNode);    // Get "array" node.
+                                    pData = node_getData(pData);        // Get NodeArray.
+                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                                        pSrcsJson = pData;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                pHashNode = nodeHash_FindA(pHash, "srcs");
+                if (pHashNode) {
+                    pData = node_getData(pHashNode);    // Get "array" node.
+                    pData = node_getData(pData);        // Get NodeArray.
+                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                        pSrcsObj = pData;
+                    }
+                }
+                pHashNode = nodeHash_FindA(pHash, "test");
+                if (pHashNode) {
+                    pData = node_getData(pHashNode);
+                    if (pData) {
+                        pData = node_getData(pData);
+                        if (pData) {
+                            if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
+                                fTest = false;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
+                                fTest = true;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
+                                fTest = true;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                                fTest = true;
+                                pDepsTest = pData;
+                            }
+                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+                                NODEHASH_DATA       *pHash;
+                                NODE_DATA           *pHashNode;
+                                pHash = pData;
+                                fTest = true;
+                                pHashNode = nodeHash_FindA(pHash, "deps");
+                                if (pHashNode) {
+                                    pData = node_getData(pHashNode);    // Get "array" node.
+                                    pData = node_getData(pData);        // Get NodeArray.
+                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                                        pDepsTest = pData;
+                                    }
+                                }
+                                pHashNode = nodeHash_FindA(pHash, "srcs");
+                                if (pHashNode) {
+                                    pData = node_getData(pHashNode);    // Get "array" node.
+                                    pData = node_getData(pData);        // Get NodeArray.
+                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                                        pSrcsTest = pData;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                DEBUG_BREAK();
+                if (pName) {
+                    mem_Free(pName);
+                    pName = NULL;
+                }
+                return ERESULT_DATA_ERROR;
+            }
         }
 
         if (this->pGen) {
@@ -1100,14 +1107,15 @@ extern "C" {
         NODE_DATA       *pNode
     )
     {
+        ERESULT         eRc;
         NODEHASH_DATA   *pHash = OBJ_NIL;
         OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
-        bool            fJson = false;
-        bool            fTest = true;
-        char            *pName;
+        NODE_DATA       *pNodeWrk = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
-        
+        uint32_t        i;
+        uint32_t        iMax;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1135,8 +1143,17 @@ extern "C" {
             pArray = pData;
         }
         else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-            NODE_DATA           *pHashNode;
-            pHash = pData;
+            pArray = nodeHash_Nodes(pData);
+        }
+        
+        iMax = nodeArray_getSize(pArray);
+        for(i=0; i<iMax; ++i) {
+            pNodeWrk = nodeArray_Get(pArray, (i+1));
+            if (pNodeWrk) {
+                if (obj_IsKindOf(node_getData(pNodeWrk), OBJ_IDENT_ASTR)) {
+                    eRc = dbprs_ParseObject(this, pData);
+                }
+            }
         }
         
         // Return to caller.

@@ -1003,7 +1003,7 @@ extern "C" {
         
         eRc =   AStr_AppendPrint(
                                  pStr,
-                                 "%s = $(%s) $(%s)/%s.obj\n\n",
+                                 "%s = $(%s) $(%s)\\%s.obj\n\n",
                                  pObjVar,
                                  pObjVar,
                                  pObjDir,
