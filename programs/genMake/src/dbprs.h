@@ -243,6 +243,83 @@ extern "C" {
     
     
     /*!
+     Parse an object and generate its components
+     Node Grammar:
+     object     : string                // Object's Name
+     | node ':' objectData   // Node's Name == Object's Name
+     ;
+     
+     objectData : '{' object_Hash '}'
+     | '[' deps ']'
+     | "null"
+     ;
+     object_Hash:
+     "deps"  : '[' deps ']'
+     ;
+     // Generate JSON object compile or not
+     "json"  : "true"
+     | "null"    // Same as "true"
+     | "false" (default)
+     ;
+     // Generate Test compile and execution or not
+     // (optionally with extra compilation source files)
+     "test"  : "true" (default)
+     | "false"
+     | '[' source files ']'
+     | '{' test_Hash '}'
+     ;
+     ;
+     test_Hash  :
+     "deps"  : '[' deps ']'
+     ;
+     "srcs"  : '[' deps ']'
+     ;
+     ;
+     // Additional Dependency Files must be in the same directory
+     // as the primary file that it is associated with.
+     deps       : dependencies_file_name [',' deps]
+     ;
+     // Additional Source Files must be in the same directory
+     // as the primary file that it is associated with.
+     srcs       : source_file_name [',' srcs]
+     ;
+     
+     @param     this    Object Pointer
+     @param     pNode   Object Node Pointer
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseRoutine(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Parse an object and generate its components
+     Node Grammar:
+     objects     : '{' objects_Hash '}'
+                 | '[' objects_Array ']'
+                 ;
+     object_Hash : objectNode (',' object_Hash)
+                 ;
+     object_Array: stringNode (',' object_Array)
+                 ;
+     Note: See ParseObject() for definition of objectNode.
+     @param     this    Object Pointer
+     @param     pNode   Node Pointer whose data is an array or a hash
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseRoutines(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 

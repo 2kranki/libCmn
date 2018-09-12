@@ -193,6 +193,8 @@ int             test_dbprs_Object02(
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
+    int             iRc;
+    int             offset = 0;
     const
     char            *pGoodJsonObject1 = "{\n"
     "\"appl\":{"
@@ -242,8 +244,9 @@ int             test_dbprs_Object02(
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
-        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
-        
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -345,6 +348,8 @@ int             test_dbprs_Object04(
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
+    int             iRc;
+    int             offset = 0;
     const
     char            *pGoodJsonObject1 = "{\n"
     "\"appl\":{"
@@ -394,8 +399,9 @@ int             test_dbprs_Object04(
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
-        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
-        
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -419,6 +425,8 @@ int             test_dbprs_Object05(
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     NODEARRAY_DATA  *pArray = OBJ_NIL;
+    int             iRc;
+    int             offset = 0;
     const
     char            *pGoodJsonObject1 = "[\n"
     "\"appl\""
@@ -436,8 +444,6 @@ int             test_dbprs_Object05(
     "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
     "\t$(TEST_OBJ)/$(@F)\n\n"
     ;
-    int             iRc;
-    int             offset = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -481,8 +487,148 @@ int             test_dbprs_Object05(
 
 
 
+int             test_dbprs_Routine01(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    const
+    char            *pGoodJsonObject1 = "{\n"
+        "\"listdl.c\":{"
+            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"test\":true"
+        "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "OBJS += $(OBJDIR)/listdl.o\n\n"
+    "$(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "TESTS += test_listdl\n\n"
+    "test_listdl: $(TEST_SRC)/test_listdl.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
+    "\t$(TEST_OBJ)/$(@F)\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        
+        obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "listdl.c");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        eRc = dbprs_ParseRoutine(pObj, pNode);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_dbprs_Routine02(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENWIN_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    const
+    char            *pGoodJsonObject1 = "{\n"
+    "\"listdl.c\":{"
+    "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+    "\"test\":true"
+    "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "OBJS = $(OBJS) $(OBJDIR)\\listdl.obj\n\n"
+    "$(OBJDIR)\\listdl.obj: $(SRCDIR)\\listdl.c $(SRCDIR)\\cmn_defs.h $(SRCDIR)\\array.h \n"
+    "\t$(CC) $(CFLAGS) /c /out:$(OBJDIR)\\$(@F) $< \n\n"
+    "TESTS = $(TESTS) test_listdl\n\n"
+    "test_listdl: $(TEST_SRC)\\test_listdl.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) /out:$(TEST_OBJ)\\$(@F) $< \n"
+    "\t$(TEST_OBJ)\\$(@F)\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen = genWIN_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        
+        obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "listdl.c");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        eRc = dbprs_ParseRoutine(pObj, pNode);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_dbprs);
+    TINYTEST_ADD_TEST(test_dbprs_Routine02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbprs_Routine01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object03,setUp,tearDown);

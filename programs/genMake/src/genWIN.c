@@ -1181,7 +1181,10 @@ extern "C" {
         ASTR_DATA       *pName = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
-        
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pFileName = OBJ_NIL;
+        ASTR_DATA       *pFileExt = OBJ_NIL;
+
         // Do initialization.
         TRC_OBJ(this, "genWIN_CompileObject(\"%s\")", pName);
 #ifdef NDEBUG
@@ -1212,9 +1215,18 @@ extern "C" {
         if (NULL == pObjVar) {
             pObjVar = "TESTS";
         }
+
+        pPath = path_NewA(pNameA);
+        if (OBJ_NIL == pPath) {
+            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return OBJ_NIL;
+        }
+        eRc = path_SplitFile(pPath, &pFileName, &pFileExt);
+        BREAK_NULL(pFileName);
+        //BREAK_NULL(pFileExt);
         pName = AStr_NewA("test_");
         if (pName) {
-            eRc = AStr_AppendA(pName, pNameA);
+            eRc = AStr_AppendA(pName, AStr_getData(pFileName));
         }
         else {
             return OBJ_NIL;
@@ -1286,6 +1298,12 @@ extern "C" {
         eRc = AStr_AppendPrint(pStr, "\t$(%s)\\$(@F)\n\n", pObjDir);
         
         // Return to caller.
+        obj_Release(pFileExt);
+        pFileExt = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
         obj_Release(pName);
         pName = OBJ_NIL;
         return pStr;

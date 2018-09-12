@@ -88,20 +88,25 @@ extern "C" {
         ASTR_DATA * (*pGenCompileRoutine)(
             OBJ_ID          this,
             const
-            char            *pName,
+            char            *pName,             // Routine File Name including extension
             const
-            char            *pSrcDir,
+            char            *pSrcDir,           // Default - "SRCDIR"
             const
-            char            *pObjDir,
+            char            *pObjDir,           // Default - "OBJDIR"
             const
-            char            *pObjVar,
+            char            *pObjVar,           // Default - "OBJS"
             const
-            char            *pFlgVar,
-            NODEARRAY_DATA  *pSrcDeps,
-            NODEARRAY_DATA  *pObjDeps,
-            bool            fCO,
-            bool            fExec
-                    );
+            char            *pFlgVar,           // If present, adds another Make Flag
+                                                // variable in addition to CFLAGS
+                                                // (Default - none)
+            NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
+            NODEARRAY_DATA  *pObjDeps,          // Object Dependencies (ie files to be
+                                                // included in the compile statement, file
+                                                // extension must match that of pName above)
+            bool            fCO,                // true == compile only
+            bool            fExec               // true == execute the newly compiled
+                                                //          program
+        );
         ASTR_DATA * (*pGenCompileJson)(
             OBJ_ID          this,
             const
