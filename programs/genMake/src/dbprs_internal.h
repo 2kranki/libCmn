@@ -73,6 +73,9 @@ struct dbprs_data_s	{
     ASTR_DATA       *pStr;
     NODE_DATA       *pNodes;
     GENBASE_DATA    *pGen;
+    JSONIN_DATA     *pJson;
+    uint8_t         fLib;           // true == library, false == program
+    uint8_t         rsvd8[3];
 
     volatile
     int32_t         numRead;

@@ -1080,7 +1080,7 @@ extern "C" {
     
     ERESULT         nodeArray_VisitAscending(
         NODEARRAY_DATA	*this,
-        void            (pVisitor)(
+        ERESULT         (pVisitor)(
                                    OBJ_ID,             // Object supplied below
                                    NODE_DATA *         // Current Node
                         ),
@@ -1104,9 +1104,12 @@ extern "C" {
 #endif
         
         iMax = objArray_getSize(this->pArray);
-        for (i=1; i<=iMax; ++i) {
-            pNode = objArray_Get(this->pArray, i);
-            pVisitor(pObject, pNode);
+        for (i=0; i<iMax; ++i) {
+            pNode = objArray_Get(this->pArray, (i+1));
+            eRc = pVisitor(pObject, pNode);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
         }
         
         // Return to caller.

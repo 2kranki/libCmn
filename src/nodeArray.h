@@ -248,7 +248,7 @@ extern "C" {
     
     /*!
      Find the first occurrence of a node in the array by name.
-     @return    If successful, ERESULT_SUCCESSFUL_COMPLETION is returned and
+     @return    If successful, ERESULT_SUCCESS is returned and
                 ppNode will contain the node ptr otherwise an error code
                 will be returned.
      */
@@ -310,9 +310,15 @@ extern "C" {
     );
     
     
+    /*!
+     Visit each node of the array in ascending index order.  Terminate
+     the visiting is an ERESULT_* error code is returned by the visitor.
+     @return    If successful, ERESULT_SUCCESS is returned,
+                otherwise an ERESULT_* error code.
+     */
     ERESULT         nodeArray_VisitAscending(
         NODEARRAY_DATA	*this,
-        void            (pVisitor)(
+        ERESULT         (pVisitor)(
                                    OBJ_ID,             // Object supplied below
                                    NODE_DATA *         // Current Node
                         ),

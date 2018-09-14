@@ -116,7 +116,8 @@ int             test_jsonIn_01(
     const
     char            *jsonInput = "{\n"
         "\"objectType\":\"szTbl\","
-        "\"Count\":5, \"Entries\":["
+        "\"Count\":5, "
+        "\"Entries\":["
             "{Length:3,\"Hash\":816909077,\"Ident\":1,\n"
              "\"Data\":{ \"objectType\":\"utf8\", \"len\":3, \"crc\":4123767104,\n"
                         "\"data\":\"bob\" }\n"
@@ -150,6 +151,7 @@ int             test_jsonIn_01(
     NODEHASH_DATA   *pHash;
     uint32_t        i = 0;
     uint8_t         *pData = NULL;
+    ASTR_DATA       *pStrWrk;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -161,6 +163,7 @@ int             test_jsonIn_01(
         
         pStr = AStr_NewA(jsonInput);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        obj_TraceSet(pObj, true);
         eRc = jsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
@@ -170,6 +173,10 @@ int             test_jsonIn_01(
         eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tCount = %lld\n", count);
+        pNode = nodeHash_FindA(pObj->pHash, "Count");
+        TINYTEST_FALSE( (NULL == pNode) );
+        count = jsonIn_CheckNodeDataForInteger(pObj, pNode);
+        fprintf(stderr, "\tCount from check = %lld\n", count);
 
         eRc = jsonIn_FindArrayNodeInHashA(pObj, "Entries", &pArray);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
@@ -203,6 +210,15 @@ int             test_jsonIn_01(
             if (pData) {
                 mem_Free(pData);
                 pData = NULL;
+            }
+            pNode = nodeHash_FindA(pObj->pHash, "data");
+            TINYTEST_FALSE( (NULL == pNode) );
+            pStrWrk = jsonIn_CheckNodeDataForString(pObj, pNode);
+            if (pStrWrk) {
+                fprintf(stderr, "\t\tdata from check = %s\n", AStr_getData(pStrWrk));
+            }
+            else {
+                fprintf(stderr, "\t\tdata from check = NULL\n");
             }
             eRc = jsonIn_SubobjectEnd(pObj);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );

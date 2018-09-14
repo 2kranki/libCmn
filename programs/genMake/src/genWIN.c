@@ -1218,7 +1218,6 @@ extern "C" {
 
         pPath = path_NewA(pNameA);
         if (OBJ_NIL == pPath) {
-            genOSX_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
         eRc = path_SplitFile(pPath, &pFileName, &pFileExt);

@@ -135,7 +135,7 @@ extern "C" {
     {
         JSONIN_DATA     *this;
         
-        if (OBJ_NIL == pHash) {
+        if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             return OBJ_NIL;
         }
         this = jsonIn_Alloc( );
@@ -417,6 +417,208 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //          C h e c k  F o r  S p e c i f i c  D a t a
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * jsonIn_CheckNodeDataForArray(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array"))) {
+            return OBJ_NIL;
+        }
+        
+        pArray = node_getData(pObj);
+        if ((OBJ_NIL == pArray) || !obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
+            return OBJ_NIL;
+        }
+        
+        return pArray;
+    }
+    
+    
+    NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
+            return OBJ_NIL;
+        }
+        
+        pHash = node_getData(pObj);
+        if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+            return OBJ_NIL;
+        }
+
+        return pHash;
+    }
+    
+    
+    int64_t         jsonIn_CheckNodeDataForInteger(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        int64_t         iRet = -1;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return iRet;
+        }
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return iRet;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return iRet;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
+            return iRet;
+        }
+        
+        pStr = node_getData(pObj);
+        if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            return iRet;
+        }
+        iRet = AStr_ToInt64(pStr);
+        
+        return iRet;
+    }
+    
+    
+    NULL_DATA *     jsonIn_CheckNodeDataForNull(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NULL_DATA       *pNull = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null"))) {
+            return OBJ_NIL;
+        }
+        
+        pNull = node_getData(pObj);
+        if ((OBJ_NIL == pNull) || !obj_IsKindOf(pNull, OBJ_IDENT_NULL)) {
+            return OBJ_NIL;
+        }
+        
+        return pNull;
+    }
+    
+    
+    ASTR_DATA *     jsonIn_CheckNodeDataForString(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !jsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string"))) {
+            return OBJ_NIL;
+        }
+        
+        pStr = node_getData(pObj);
+        if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            return OBJ_NIL;
+        }
+        
+        return pStr;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //              C o n f i r m  O b j e c t  T y p e
     //---------------------------------------------------------------
     
@@ -600,6 +802,44 @@ extern "C" {
     //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
+    
+    ERESULT         jsonIn_FindArrayAndVisitInHashA(
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        ERESULT         (*pVisit)(OBJ_ID, NODE_DATA *),
+        OBJ_ID          *pObj
+    )
+    {
+        ERESULT         eRc;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!jsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
+        if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pArray)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        if (obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY))
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        
+        eRc = nodeArray_VisitAscending(pArray, pVisit, pObj);
+        
+        return eRc;
+    }
+    
+    
     
     ERESULT         jsonIn_FindArrayNodeInHashA(
         JSONIN_DATA     *this,

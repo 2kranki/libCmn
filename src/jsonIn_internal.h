@@ -89,18 +89,6 @@ struct jsonIn_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            jsonIn_setHash(
-        JSONIN_DATA     *this,
-        NODEHASH_DATA   *pValue
-    );
-    
-    
-    bool            jsonIn_setLastError(
-        JSONIN_DATA     *this,
-        ERESULT         value
-    );
-
-
     OBJ_IUNKNOWN *  jsonIn_getSuperVtbl(
         JSONIN_DATA     *this
     );

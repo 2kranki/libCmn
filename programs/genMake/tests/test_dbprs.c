@@ -567,11 +567,12 @@ int             test_dbprs_Routine02(
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     const
-    char            *pGoodJsonObject1 = "{\n"
-    "\"listdl.c\":{"
-    "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
-    "\"test\":true"
-    "}\n"
+    char            *pGoodJsonObject1 =
+    "{\n"
+        "\"listdl.c\":{"
+            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"test\":true"
+        "}\n"
     "}\n";
     const
     char            *pOutputA =

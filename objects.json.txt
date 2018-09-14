@@ -1,36 +1,37 @@
 {
-    "name":"libCmn",
-    "type":"library",
-    "deps":null,                    // An array of library names without "lib" prefix
-    "headers": {
-        "private":
-        [
-            "idxblk16_internal.h",
-            "str_internal.h"
-        ],
-        "public":
-        [
-            "cmn_defs.h",
-            "chario.h",
-            "mem.h",
-            "obj.h",
-            "str.h"
-        ],
-        "test":
-        [
-            "test_defs.h",
-            "objTest.h"
-        ],
-        "macosx":
-        [
-            "cmn_osx.h",
-            "memOSX.h"
-        ],
-        "win32":
-        [
-            "cmn_win32.h",
-            "memWin32.h"
-        ],
+    "library":{
+        "name":"libCmn",
+        "deps":null,                    // An array of library names without "lib" prefix
+        "headers": {
+            "private":
+            [
+                "idxblk16_internal.h",
+                "str_internal.h"
+            ],
+            "public":
+            [
+                "cmn_defs.h",
+                "chario.h",
+                "mem.h",
+                "obj.h",
+                "str.h"
+            ],
+            "test":
+            [
+                "test_defs.h",
+                "objTest.h"
+            ],
+            "macosx":
+            [
+                "cmn_osx.h",
+                "memOSX.h"
+            ],
+            "win32":
+            [
+                "cmn_win32.h",
+                "memWin32.h"
+            ],
+        }
     }
     "objects": {
         "appl":{"deps":["cmn_defs.h","cmdutl.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},

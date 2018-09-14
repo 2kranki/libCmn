@@ -53,6 +53,7 @@
 #include        <genMake.h>
 #include        <AStr.h>
 #include        <genBase.h>
+#include        <jsonIn.h>
 #include        <node.h>
 
 
@@ -113,8 +114,9 @@ extern "C" {
         void
     );
     
-    
 
+
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
@@ -126,6 +128,16 @@ extern "C" {
     bool            dbprs_setGen(
         DBPRS_DATA      *this,
         GENBASE_DATA    *pValue
+    );
+
+    
+    JSONIN_DATA *   dbprs_getJson(
+        DBPRS_DATA     *this
+    );
+    
+    bool            dbprs_setJson(
+        DBPRS_DATA      *this,
+        JSONIN_DATA     *pValue
     );
 
     
@@ -160,6 +172,34 @@ extern "C" {
         DBPRS_DATA      *this,
         const
         char            *pStr
+    );
+    
+    
+    /*!
+     Parse the header portion of definition file and set up its components.
+     Node Grammar:
+        header  : "library" ':' '{' components '}'
+                ;
+        components
+                : "name" ':' string
+                | "deps" ':' deps
+                | "libdir" ':' string   // Path to where object library will be created
+                | "objdir" ':' string   // Path to where temporary object files will be
+                                        // created
+                ;
+     deps       : "null"
+                | '[' string* ']'       // Library dependencies as needed for gcc/clang
+                ;
+     Note: See ParseObject() for definition of objectNode.
+     @param     this    Object Pointer
+     @param     pNode   Node Pointer whose data is an array or a hash
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseLibrary(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
     );
     
     
@@ -246,43 +286,43 @@ extern "C" {
      Parse an object and generate its components
      Node Grammar:
      object     : string                // Object's Name
-     | node ':' objectData   // Node's Name == Object's Name
-     ;
+                | node ':' objectData   // Node's Name == Object's Name
+                ;
      
      objectData : '{' object_Hash '}'
-     | '[' deps ']'
-     | "null"
-     ;
+                | '[' deps ']'
+                | "null"
+                ;
      object_Hash:
-     "deps"  : '[' deps ']'
-     ;
-     // Generate JSON object compile or not
-     "json"  : "true"
-     | "null"    // Same as "true"
-     | "false" (default)
-     ;
-     // Generate Test compile and execution or not
-     // (optionally with extra compilation source files)
-     "test"  : "true" (default)
-     | "false"
-     | '[' source files ']'
-     | '{' test_Hash '}'
-     ;
-     ;
+            "deps"  : '[' deps ']'
+                    ;
+            // Generate JSON object compile or not
+             "json"  : "true"
+                     | "null"    // Same as "true"
+                     | "false" (default)
+                     ;
+             // Generate Test compile and execution or not
+             // (optionally with extra compilation source files)
+             "test"  : "true" (default)
+                     | "false"
+                     | '[' source files ']'
+                     | '{' test_Hash '}'
+                     ;
+                ;
      test_Hash  :
-     "deps"  : '[' deps ']'
-     ;
-     "srcs"  : '[' deps ']'
-     ;
-     ;
+            "deps"  : '[' deps ']'
+                    ;
+            "srcs"  : '[' deps ']'
+                    ;
+                ;
      // Additional Dependency Files must be in the same directory
      // as the primary file that it is associated with.
      deps       : dependencies_file_name [',' deps]
-     ;
+                ;
      // Additional Source Files must be in the same directory
      // as the primary file that it is associated with.
      srcs       : source_file_name [',' srcs]
-     ;
+                ;
      
      @param     this    Object Pointer
      @param     pNode   Object Node Pointer

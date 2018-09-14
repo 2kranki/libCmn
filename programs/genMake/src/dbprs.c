@@ -114,7 +114,8 @@ extern "C" {
     }
 
 
-
+    
+    
     
 
     //===============================================================
@@ -161,6 +162,52 @@ extern "C" {
             obj_Release(this->pGen);
         }
         this->pGen = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      J s o n  I n
+    //---------------------------------------------------------------
+    
+    JSONIN_DATA *   dbprs_getJson(
+        DBPRS_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pJson;
+    }
+    
+    
+    bool            dbprs_setJson(
+        DBPRS_DATA      *this,
+        JSONIN_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pJson) {
+            obj_Release(this->pJson);
+        }
+        this->pJson = pValue;
         
         return true;
     }
@@ -569,6 +616,7 @@ extern "C" {
 #endif
 
         dbprs_setGen(this, OBJ_NIL);
+        dbprs_setJson(this, OBJ_NIL);
         dbprs_setNodes(this, OBJ_NIL);
         dbprs_setStr(this, OBJ_NIL);
 
@@ -830,6 +878,74 @@ extern "C" {
             
             obj_Release(pObj);
             pObj = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  L i b r a r y
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_ParseLibrary(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODEHASH_DATA   *pHashLib = OBJ_NIL;
+        OBJ_ID          pData = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODE_DATA       *pNodeWrk = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pStrWrk = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pStrWrk = name_ToString(node_getName(pNode));
+        if (pStrWrk) {
+            eRc = AStr_CompareA(pStrWrk, "library");
+            obj_Release(pStrWrk);
+            pStrWrk = OBJ_NIL;
+            if (ERESULT_SUCCESS_EQUAL == eRc)
+                ;
+            else {
+                return ERESULT_INVALID_PARAMETER;
+            }
+        }
+        else {
+            return ERESULT_INVALID_PARAMETER;
+        }
+
+        pNodeWrk = node_getData(pNode);
+        if(OBJ_NIL == pHashLib) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        if (obj_IsKindOf(pNodeWrk, OBJ_IDENT_NODE))
+            ;
+        else {
+            return ERESULT_DATA_MISSING;
         }
         
         // Return to caller.

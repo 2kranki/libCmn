@@ -118,47 +118,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         jsonOut_getLastError(
-        JSONOUT_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !jsonOut_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            jsonOut_setLastError(
-        JSONOUT_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !jsonOut_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
     
 
     uint16_t        jsonOut_getPriority(
@@ -175,7 +134,6 @@ extern "C" {
         }
 #endif
 
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -196,7 +154,6 @@ extern "C" {
 
         //this->priority = value;
 
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -214,7 +171,6 @@ extern "C" {
         }
 #endif
 
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -234,7 +190,6 @@ extern "C" {
         }
 #endif
         
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
@@ -258,7 +213,6 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -289,10 +243,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         jsonOut_Assign(
-        JSONOUT_DATA		*this,
-        JSONOUT_DATA      *pOther
+        JSONOUT_DATA    *this,
+        JSONOUT_DATA    *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -334,11 +289,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        jsonOut_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return jsonOut_getLastError(this);
+        //FIXME: Implement the assignment.
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -385,7 +340,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -442,14 +396,13 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            jsonOut_setLastError(this, ERESULT_INVALID_OBJECT);
             return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
         if( !jsonOut_Validate(this) ) {
             DEBUG_BREAK();
-            return jsonOut_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -458,7 +411,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -487,7 +439,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -529,7 +480,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&jsonOut_Vtbl);
         
-        jsonOut_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -541,10 +491,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(JSONOUT_DATA,eRc));
-        fprintf(stderr, "sizeof(JSONOUT_DATA) = %lu\n", sizeof(JSONOUT_DATA));
+//        fprintf(stderr, "sizeof(JSONOUT_DATA) = %lu\n", sizeof(JSONOUT_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(JSONOUT_DATA));
     #endif
 
@@ -572,12 +520,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            jsonOut_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        jsonOut_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -722,7 +668,6 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(jsonOut)}\n", this);
         AStr_AppendA(pStr, str);
         
-        jsonOut_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -795,12 +740,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(JSONOUT_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

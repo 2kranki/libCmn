@@ -113,10 +113,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     jsonOut_getLastError(
-        JSONOUT_DATA		*this
-    );
-
 
 
     

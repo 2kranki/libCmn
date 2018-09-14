@@ -9,8 +9,8 @@
  * Purpose
  *			This object provides a standardized way of parsing an
  *          HJSON node tree. The support routines help the individual
- *          object's JSON parser to successfully create objects
- *          from HJSON node trees.
+ *          object's JSON parser to successfully find specific nodes
+ *          in HJSON node trees.
  *
  *          In particular, it is capable of properly parsing
  *          sub-objects within the HSON tree as well as general
@@ -62,6 +62,7 @@
 #include        <AStr.h>
 #include        <node.h>
 #include        <nodeHash.h>
+#include        <null.h>
 
 
 #ifndef         JSONIN_H
@@ -140,22 +141,83 @@ extern "C" {
         JSONIN_DATA     *this
     );
     
-    
-    ERESULT     jsonIn_getLastError(
-        JSONIN_DATA		*this
+    bool            jsonIn_setHash(
+        JSONIN_DATA     *this,
+        NODEHASH_DATA   *pValue
     );
-
-
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Check the given node's data for a node array and return it if found.
+     @param     this    Object Pointer
+     @param     pNode   the given node pointer
+     @return    If successful, the node array; otherwise OBJ_NIL.
+     */
+    NODEARRAY_DATA * jsonIn_CheckNodeDataForArray(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    );
+    
+    /*!
+     Check the given node's data for a node hash and return it if found.
+     @param     this    Object Pointer
+     @param     pNode   the given node pointer
+     @return    If successful, the node hash; otherwise OBJ_NIL.
+     */
+    NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    );
+    
+
+    int64_t         jsonIn_CheckNodeDataForInteger(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a null object and return it if found.
+     @param     this    Object Pointer
+     @param     pNode   the given node pointer
+     @return    If successful, the null object; otherwise OBJ_NIL.
+     */
+    NULL_DATA *     jsonIn_CheckNodeDataForNull(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a string and return it if found.
+     @param     this    Object Pointer
+     @param     pNode   the given node pointer
+     @return    If successful, the string; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     jsonIn_CheckNodeDataForString(
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Finds "objectType" in the highest level of the JSON Hash Node tree
+     and insures that it contains the Type provided.
+     @param     this    Object Pointer
+     @param     pTypeA  Type Name to be searched for
+     @return    If objectType contains the type name (ERESULT_SUCCESS);
+                otherwise, an ERESULT_* error code.
+     */
     ERESULT         jsonIn_ConfirmObjectType(
         JSONIN_DATA     *this,
         const
-        char            *pType
+        char            *pTypeA
     );
     
     
@@ -181,13 +243,35 @@ extern "C" {
     
     
     /*!
+     Find a named node array in the JSON Hash Node tree and apply the given
+     method to each array node.
+     @param     this        Object Pointer
+     @param     pSectionA   Name of integer value (required)
+     @param     pObj        Object Pointer for the apply method
+     @param     pVisitNode  Method Pointer to execute for each member of the array. If
+                            this method returns an ERESULT_* error, then processing is
+                            halted and that error code is returned to the caller of this
+                            method.
+     @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
+                if ppArray is non-null.  Otherwise, ERESULT_* error code.
+     */
+    ERESULT         jsonIn_FindArrayAndVisitInHashA(
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        ERESULT         (*pVisitNode)(OBJ_ID, NODE_DATA *),
+        OBJ_ID          *pObj
+    );
+    
+    
+    /*!
      Find a named node array in the JSON Hash Node tree.
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppArray Pointer to a node array pointer where data is to be returned if
-                        ERESULT_SUCCESS is returned.
+     ERESULT_SUCCESS is returned.
      @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
-                if ppArray is non-null.  Otherwise, ERESULT_* error code.
+     if ppArray is non-null.  Otherwise, ERESULT_* error code.
      */
     ERESULT         jsonIn_FindArrayNodeInHashA(
         JSONIN_DATA     *this,
