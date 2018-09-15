@@ -115,12 +115,28 @@ extern "C" {
     );
     
 
+    DBPRS_DATA *    dbprs_NewWithDictAndGen(
+        NODEHASH_DATA   *pDict,
+        GENBASE_DATA    *pGen
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    NODEHASH_DATA * dbprs_getDict(
+        DBPRS_DATA      *this
+    );
+    
+    bool            dbprs_setDict(
+        DBPRS_DATA      *this,
+        NODEHASH_DATA   *pValue
+    );
+
+    
     GENBASE_DATA *  dbprs_getGen(
         DBPRS_DATA     *this
     );

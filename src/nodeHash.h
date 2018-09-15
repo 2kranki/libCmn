@@ -366,6 +366,24 @@ extern "C" {
 
 
     /*!
+     Merge the other node hash into this one replacing nodes which have the
+     same name in each hash if requested to do so.
+     @param     this        Object Pointer
+     @param     pOther      Other hash Object Pointer which will be merged into
+                            this hash (required)
+     @param     fReplace    If true, replace existing nodes which match with
+                            the matching node from the other node hash.  If
+                            false, skip the merge of matching items.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error code.
+     */
+    ERESULT         nodeHash_Merge(
+        NODEHASH_DATA   *this,
+        NODEHASH_DATA   *pOther,
+        bool            fReplace
+    );
+    
+    
+    /*!
      Return an array of all nodes in the hash sorted by name in
      ascending order.
      @param     this    Object Pointer

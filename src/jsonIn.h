@@ -127,6 +127,51 @@ extern "C" {
     );
     
 
+    /*!
+     Check the given node's data for a node array and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the node array; otherwise OBJ_NIL.
+     */
+    NODEARRAY_DATA * jsonIn_CheckNodeDataForArray(
+        NODE_DATA       *pNode
+    );
+    
+    /*!
+     Check the given node's data for a node hash and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the node hash; otherwise OBJ_NIL.
+     */
+    NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
+         NODE_DATA       *pNode
+    );
+    
+    
+    int64_t         jsonIn_CheckNodeDataForInteger(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a null object and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the null object; otherwise OBJ_NIL.
+     */
+    NULL_DATA *     jsonIn_CheckNodeDataForNull(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a string and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     jsonIn_CheckNodeDataForString(
+        NODE_DATA       *pNode
+    );
+    
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -153,59 +198,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /*!
-     Check the given node's data for a node array and return it if found.
-     @param     this    Object Pointer
-     @param     pNode   the given node pointer
-     @return    If successful, the node array; otherwise OBJ_NIL.
-     */
-    NODEARRAY_DATA * jsonIn_CheckNodeDataForArray(
-        JSONIN_DATA     *this,
-        NODE_DATA       *pNode
-    );
-    
-    /*!
-     Check the given node's data for a node hash and return it if found.
-     @param     this    Object Pointer
-     @param     pNode   the given node pointer
-     @return    If successful, the node hash; otherwise OBJ_NIL.
-     */
-    NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
-        JSONIN_DATA     *this,
-        NODE_DATA       *pNode
-    );
-    
-
-    int64_t         jsonIn_CheckNodeDataForInteger(
-        JSONIN_DATA     *this,
-        NODE_DATA       *pNode
-    );
-    
-    
-    /*!
-     Check the given node's data for a null object and return it if found.
-     @param     this    Object Pointer
-     @param     pNode   the given node pointer
-     @return    If successful, the null object; otherwise OBJ_NIL.
-     */
-    NULL_DATA *     jsonIn_CheckNodeDataForNull(
-        JSONIN_DATA     *this,
-        NODE_DATA       *pNode
-    );
-    
-    
-    /*!
-     Check the given node's data for a string and return it if found.
-     @param     this    Object Pointer
-     @param     pNode   the given node pointer
-     @return    If successful, the string; otherwise OBJ_NIL.
-     */
-    ASTR_DATA *     jsonIn_CheckNodeDataForString(
-        JSONIN_DATA     *this,
-        NODE_DATA       *pNode
-    );
-    
-    
     /*!
      Finds "objectType" in the highest level of the JSON Hash Node tree
      and insures that it contains the Type provided.

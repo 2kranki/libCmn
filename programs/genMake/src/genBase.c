@@ -232,7 +232,30 @@ extern "C" {
     }
     
     
+    bool            genBase_setLibDeps(
+        GENBASE_DATA    *this,
+        NODEARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pLibDeps) {
+            obj_Release(this->pLibDeps);
+        }
+        this->pLibDeps = pValue;
+        
+        return true;
+    }
     
+    
+
     //---------------------------------------------------------------
     //          L i b r a r y  I n c l u d e  P a t h
     //---------------------------------------------------------------
@@ -953,12 +976,11 @@ extern "C" {
     //             D i c t i o n a r y  M e t h o d s
     //---------------------------------------------------------------
     
-    ERESULT         genBase_DictAddUpdateA(
+    ERESULT         genBase_DictAddUpdate(
         GENBASE_DATA    *this,
         const
         char            *pName,
-        const
-        char            *pData
+        OBJ_ID          pData
     )
     {
         ERESULT         eRc;
@@ -986,6 +1008,51 @@ extern "C" {
         eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
         
         // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         genBase_DictAddUpdateA(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pStr = AStr_NewA(pData);
+        if (OBJ_NIL == pStr) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        if (nodeHash_FindA(this->pDict, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, pName);
+        }
+        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        
+        // Return to caller.
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
         return eRc;
     }
     
@@ -1356,17 +1423,18 @@ ERESULT         genBase_GenFinal(
 //         G e n e r a t e  I n i t i a l  D a t a
 //---------------------------------------------------------------
 
-ERESULT         genBase_GenInitial(
+ASTR_DATA *     genBase_GenInitial(
     GENBASE_DATA    *this
 )
 {
+    ASTR_DATA       *pStr = OBJ_NIL;
     
     // Do initialization.
 #ifdef NDEBUG
 #else
     if( !genBase_Validate(this) ) {
         DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
+        return pStr;
     }
 #endif
     
@@ -1375,7 +1443,7 @@ ERESULT         genBase_GenInitial(
     // Put code here...
     
     // Return to caller.
-    return ERESULT_SUCCESS;
+    return pStr;
 }
 
 

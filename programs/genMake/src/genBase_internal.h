@@ -130,7 +130,7 @@ struct genBase_data_s	{
     );
     
     
-    ERESULT         genBase_GenInitial(
+    ASTR_DATA *     genBase_GenInitial(
         GENBASE_DATA    *this
     );
     

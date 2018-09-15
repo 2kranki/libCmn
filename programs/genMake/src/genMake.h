@@ -122,6 +122,15 @@ extern "C" {
         GENMAKE_TYPE_PGM
     } GENMAKE_TYPE;
 
+
+#define DICT_LIB_PREFIX         "lib_prefix"
+#define DICT_LIBDIR             "libdir"
+#define DICT_NAME               "name"
+#define DICT_NAME_PREFIX        "name_prefix"
+#define DICT_OBJ_PREFIX         "obj_prefix"
+#define DICT_OBJDIR             "objdir"
+
+    
     
 #ifdef XYZZY
     typedef struct exec_data_s	EXEC_DATA;    // Inherits from OBJ.

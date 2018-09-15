@@ -1069,7 +1069,7 @@ extern "C" {
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry = OBJ_NIL;
         uint32_t        i;
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
        
         // Do initialization.
 #ifdef NDEBUG
@@ -1161,6 +1161,75 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //                          M e r g e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeHash_Merge(
+        NODEHASH_DATA   *this,
+        NODEHASH_DATA   *pOther,
+        bool            fReplace
+    )
+    {
+        NODEARRAY_DATA  *pArray;
+        uint32_t        i;
+        uint32_t        iMax;
+        NODE_DATA       *pItem;
+        NODE_DATA       *pNode;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !nodeHash_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pArray = nodeHash_Nodes(pOther);
+        if (OBJ_NIL == pArray) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        iMax = nodeArray_getSize(pArray);
+        for (i=0; i<iMax; ++i) {
+            pItem = nodeArray_Get(pArray, i+1);
+            if (pItem) {
+                pNode = nodeHash_Find(this, pItem);
+                if (pNode) {
+                    if (fReplace) {
+                        eRc = nodeHash_Delete(this, pItem);
+                        if (ERESULT_FAILED(eRc)) {
+                            return eRc;
+                        }
+                        eRc = nodeHash_Add(this, pItem);
+                        if (ERESULT_FAILED(eRc)) {
+                            return eRc;
+                        }
+                    }
+                }
+                else {
+                    eRc = nodeHash_Add(this, pItem);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+        }
+        
+        // Return to caller.
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                         N o d e s
     //---------------------------------------------------------------

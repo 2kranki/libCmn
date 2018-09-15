@@ -74,6 +74,7 @@ struct dbprs_data_s	{
     NODE_DATA       *pNodes;
     GENBASE_DATA    *pGen;
     JSONIN_DATA     *pJson;
+    NODEHASH_DATA   *pDict;
     uint8_t         fLib;           // true == library, false == program
     uint8_t         rsvd8[3];
 

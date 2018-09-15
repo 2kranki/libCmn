@@ -64,7 +64,6 @@ struct main_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        makeType;       // See MAKETYPE
     uint16_t        osType;         // See OSTYPE
     //uint16_t        reserved;
@@ -134,12 +133,6 @@ struct main_data_s	{
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
-    );
-
-
-    bool            main_setLastError(
-        MAIN_DATA       *this,
-        ERESULT         value
     );
 
 

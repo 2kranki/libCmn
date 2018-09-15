@@ -2080,7 +2080,7 @@ extern "C" {
     //          G e n e r a t e  I n i t i a l  H e a d i n g
     //---------------------------------------------------------------
     
-    ERESULT         genOSX_GenInitial(
+    ASTR_DATA *     genOSX_GenInitial(
         GENOSX_DATA     *this
     )
     {
@@ -2088,45 +2088,33 @@ extern "C" {
         ASTR_DATA       *pStr;
         int             i;
         int             iMax;
+        ASTR_DATA       *pOut = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return pOut;
         }
 #endif
         
-        textOut_Print(
-                genBase_getOutput((GENBASE_DATA *)this),
-                "# Generated file do not edit!\n"
-        );
+        pOut = AStr_New( );
+        if (OBJ_NIL == pOut) {
+            return pOut;
+        }
+        
+        AStr_AppendPrint(pOut, "# Generated file do not edit!\n");
         if (genBase_getDateTime((GENBASE_DATA *)this)) {
             pStr = dateTime_ToString(genBase_getDateTime((GENBASE_DATA *)this));
-            textOut_Print(
-                          genBase_getOutput((GENBASE_DATA *)this),
-                          "# (%s)\n\n", AStr_getData(pStr)
-            );
+            AStr_AppendPrint(pOut, "# (%s)\n\n", AStr_getData(pStr));
             obj_Release(pStr);
         }
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "\n"
-        );
-        //fprintf(pOutput, "CC=clang\n");
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "LIBNAM=%s\n", AStr_getData(this->pName)
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
-        );
+        AStr_AppendPrint(pOut, "\n");
+        //AStr_AppendPrint(pOut, "CC=clang\n");
+        AStr_AppendPrint(pOut, "LIBNAM=%s\n", AStr_getData(this->pName));
+        AStr_AppendPrint(pOut, "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
+        AStr_AppendPrint(pOut, "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
         if (genBase_getLibDeps((GENBASE_DATA *)this)) {
             const
             char            *pLibIncludePrefix;
@@ -2140,16 +2128,14 @@ extern "C" {
                 pNode = nodeArray_Get(genBase_getLibDeps((GENBASE_DATA *)this), i+1);
                 if (pNode) {
                     pStr = node_getData(pNode);
-                    textOut_Print(
-                            genBase_getOutput((GENBASE_DATA *)this),
+                    AStr_AppendPrint(pOut,
                             "CFLAGS += -I../%s%s/src -I../%s%s/src/$(SYS)\n",
                             pLibIncludePrefix,
                             AStr_getData(pStr),
                             pLibIncludePrefix,
                             AStr_getData(pStr)
                             );
-                    textOut_Print(
-                            genBase_getOutput((GENBASE_DATA *)this),
+                    AStr_AppendPrint(pOut,
                             "CFLAGS_LIBS += -l%s -L$(HOME)/Support/lib/$(SYS)/%s%s\n",
                             AStr_getData(pStr),
                             pLibIncludePrefix,
@@ -2159,58 +2145,19 @@ extern "C" {
                 }
             }
         }
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "CFLAGS += -D__MACOSX_ENV__\n\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "LIBDIR = $(BASEDIR)/$(SYS)\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "SRCDIR = ./src\nSRCSYSDIR = ./src/$(SYS)\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "LIB_FILENAME=$(LIBNAM)R.a\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "OBJDIR = $(LIBDIR)/o/r\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "else   #DEBUG\nCFLAGS += -D_DEBUG \n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "LIB_FILENAME=$(LIBNAM)D.a\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "OBJDIR = $(LIBDIR)/o/d\nendif  #NDEBUG\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n"
-        );
-        textOut_Print(
-                      genBase_getOutput((GENBASE_DATA *)this),
-                      ".SUFFIXES:\n.SUFFIXES: .asm .c .o\n\n\n\n\n"
-        );
+        AStr_AppendPrint(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
+        AStr_AppendPrint(pOut, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
+        AStr_AppendPrint(pOut, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
+        AStr_AppendPrint(pOut, "LIBDIR = $(BASEDIR)/$(SYS)\n");
+        AStr_AppendPrint(pOut, "SRCDIR = ./src\nSRCSYSDIR = ./src/$(SYS)\n");
+        AStr_AppendPrint(pOut, "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n");
+        AStr_AppendPrint(pOut, "LIB_FILENAME=$(LIBNAM)R.a\n");
+        AStr_AppendPrint(pOut, "OBJDIR = $(LIBDIR)/o/r\n");
+        AStr_AppendPrint(pOut, "else   #DEBUG\nCFLAGS += -D_DEBUG \n");
+        AStr_AppendPrint(pOut, "LIB_FILENAME=$(LIBNAM)D.a\n");
+        AStr_AppendPrint(pOut, "OBJDIR = $(LIBDIR)/o/d\nendif  #NDEBUG\n");
+        AStr_AppendPrint(pOut, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n");
+        AStr_AppendPrint(pOut, ".SUFFIXES:\n.SUFFIXES: .asm .c .o\n\n\n\n\n");
 
         // Return to caller.
         genOSX_setLastError(this, ERESULT_SUCCESS);

@@ -99,7 +99,6 @@ extern "C" {
     }
 
 
-
     DBPRS_DATA *     dbprs_New(
         void
     )
@@ -114,7 +113,26 @@ extern "C" {
     }
 
 
+    DBPRS_DATA *    dbprs_NewWithDictAndGen(
+        NODEHASH_DATA   *pDict,
+        GENBASE_DATA    *pGen
+    )
+    {
+        DBPRS_DATA       *this;
+        
+        this = dbprs_Alloc( );
+        if (this) {
+            this = dbprs_Init(this);
+            if (this) {
+                dbprs_setDict(this, pDict);
+                dbprs_setGen(this, pGen);
+            }
+        }
+        return this;
+    }
     
+    
+
     
     
 
@@ -122,6 +140,52 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                  D i c t i o n a r y
+    //---------------------------------------------------------------
+    
+    NODEHASH_DATA * dbprs_getDict(
+        DBPRS_DATA      *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pDict;
+    }
+    
+    
+    bool            dbprs_setDict(
+        DBPRS_DATA      *this,
+        NODEHASH_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pDict) {
+            obj_Release(this->pDict);
+        }
+        this->pDict = pValue;
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                           G e n
     //---------------------------------------------------------------
@@ -615,6 +679,7 @@ extern "C" {
         }
 #endif
 
+        dbprs_setDict(this, OBJ_NIL);
         dbprs_setGen(this, OBJ_NIL);
         dbprs_setJson(this, OBJ_NIL);
         dbprs_setNodes(this, OBJ_NIL);
@@ -904,6 +969,7 @@ extern "C" {
         ASTR_DATA       *pStrWrk = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
+        JSONIN_DATA     *pJsonIn = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -920,6 +986,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
+        BREAK_NULL(this->pDict);
 #endif
         
         pStrWrk = name_ToString(node_getName(pNode));
@@ -937,19 +1004,51 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-        pNodeWrk = node_getData(pNode);
+        pHashLib = jsonIn_CheckNodeDataForHash(pNode);
         if(OBJ_NIL == pHashLib) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
-        if (obj_IsKindOf(pNodeWrk, OBJ_IDENT_NODE))
-            ;
-        else {
+        pJsonIn = jsonIn_NewFromHash(pHashLib);
+        if(OBJ_NIL == pHashLib) {
+            DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
         
+        genBase_DictAddUpdateA(this->pGen, DICT_NAME_PREFIX, "lib");
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_NAME_PREFIX, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, DICT_NAME_PREFIX, pStr);
+        }
+
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_NAME, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, DICT_NAME, pStr);
+        }
+        
+        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, "deps", &pArray);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_setLibDeps(this->pGen, pArray);
+        }
+        
+
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_LIBDIR, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, DICT_LIBDIR, pStr);
+        }
+        
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_OBJDIR, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, DICT_OBJDIR, pStr);
+        }
+        
+        genBase_setMakeType(this->pGen, GENMAKE_TYPE_LIB);
+        eRc = ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenInitial(this->pGen);
+        
         // Return to caller.
-        return ERESULT_SUCCESS;
+        obj_Release(pJsonIn);
+        pJsonIn = OBJ_NIL;
+        return eRc;
     }
     
     

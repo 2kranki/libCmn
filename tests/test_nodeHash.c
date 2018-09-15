@@ -184,7 +184,7 @@ int         test_nodeHash_AddFindDelete01(
         pHash = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -233,7 +233,73 @@ int         test_nodeHash_JSON01(
         pHash = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_nodeHash_Merge01(
+    const
+    char        *pTestName
+)
+{
+    NODEHASH_DATA   *pHash1;
+    NODEHASH_DATA   *pHash2;
+    NODE_DATA       *pNode;
+    NODE_DATA       *pNodeFnd;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    uint32_t        i;
+    ERESULT         eRc;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pHash1 = nodeHash_New(10);
+    XCTAssertFalse( (OBJ_NIL == pHash1) );
+    pHash2 = nodeHash_New(5);
+    XCTAssertFalse( (OBJ_NIL == pHash2) );
+    
+    for (i=0; i<10; ++i) {
+        pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+        eRc = nodeHash_Add(pHash1, pNode);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+    }
+    
+    for (i=10; i<15; ++i) {
+        pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+        eRc = nodeHash_Add(pHash2, pNode);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+    }
+    pStr = AStr_NewA("test");
+    pNode = node_NewWithUTF8ConAndClass(strings[1], 0, pStr);
+    eRc = nodeHash_Add(pHash2, pNode);
+    XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+    obj_Release(pNode);
+    pNode = OBJ_NIL;
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    
+    eRc = nodeHash_Merge(pHash1, pHash2, true);
+    XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+    i = nodeHash_getSize(pHash1);
+    XCTAssertTrue( (15 == i) );
+    pNodeFnd = nodeHash_FindA(pHash1, strings[1]);
+    XCTAssertTrue( (pNodeFnd) );
+    pStr = node_getData(pNodeFnd);
+    XCTAssertTrue( (pStr) );
+    XCTAssertTrue( (obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) );
+    XCTAssertTrue( (0 == strcmp(AStr_getData(pStr), "test")) );
+
+    obj_Release(pHash1);
+    pHash1 = OBJ_NIL;
+    obj_Release(pHash2);
+    pHash2 = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -241,6 +307,7 @@ int         test_nodeHash_JSON01(
 
 
 TINYTEST_START_SUITE(test_nodeHash);
+    TINYTEST_ADD_TEST(test_nodeHash_Merge01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_OpenClose,setUp,tearDown);

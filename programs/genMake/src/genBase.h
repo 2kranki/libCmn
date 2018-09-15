@@ -152,7 +152,7 @@ extern "C" {
             NODEARRAY_DATA  *pSrcDeps,
             NODEARRAY_DATA  *pObjDeps
         );
-        ERESULT     (*pGenFinal)(OBJ_ID);
+        ASTR_DATA * (*pGenFinal)(OBJ_ID);
         ERESULT     (*pGenInitial)(OBJ_ID);
         ERESULT     (*pGenLibrary)(OBJ_ID);
         ERESULT     (*pGenObjects)(OBJ_ID);
@@ -225,7 +225,12 @@ extern "C" {
         GENBASE_DATA    *this
     );
     
+    bool            genBase_setLibDeps(
+        GENBASE_DATA    *this,
+        NODEARRAY_DATA  *pValue
+    );
     
+
     ERESULT         genBase_setLibIncludePath(
         GENBASE_DATA    *this,
         PATH_DATA *     (*pLibIncludePath)(
@@ -337,6 +342,13 @@ extern "C" {
     /*!
      Add the given name and its data to the dictionary.
      */
+    
+    ERESULT         genBase_DictAddUpdate(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    );
     
     ERESULT         genBase_DictAddUpdateA(
         GENBASE_DATA    *this,

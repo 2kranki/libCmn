@@ -141,7 +141,7 @@ struct genOSX_data_s	{
     );
     
     
-    ERESULT         genOSX_GenInitial(
+    ASTR_DATA *     genOSX_GenInitial(
         GENOSX_DATA     *this
     );
     

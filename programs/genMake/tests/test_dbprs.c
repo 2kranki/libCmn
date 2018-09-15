@@ -177,7 +177,7 @@ int             test_dbprs_Object01(
     obj_Release(pGen);
     pGen = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -253,7 +253,7 @@ int             test_dbprs_Object02(
     obj_Release(pGen);
     pGen = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -332,7 +332,7 @@ int             test_dbprs_Object03(
     obj_Release(pGen);
     pGen = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -408,7 +408,7 @@ int             test_dbprs_Object04(
     obj_Release(pGen);
     pGen = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -481,7 +481,7 @@ int             test_dbprs_Object05(
     obj_Release(pGen);
     pGen = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -550,7 +550,7 @@ int             test_dbprs_Routine01(
     obj_Release(pGen);
     pGen = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -598,7 +598,7 @@ int             test_dbprs_Routine02(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -620,7 +620,86 @@ int             test_dbprs_Routine02(
     obj_Release(pGen);
     pGen = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_dbprs_Library01(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    NODEHASH_DATA   *pDict = OBJ_NIL;
+    const
+    char            *pGoodJsonObject =
+    "{\n"
+        "\"library\":{"
+            "\"name\":\"Test\","
+            "\"deps\":null,"
+            "\"libdir\":\"path_libdir\","
+            "\"objdir\":\"path_objdir\""
+        "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "OBJS = $(OBJS) $(OBJDIR)\\listdl.obj\n\n"
+    "$(OBJDIR)\\listdl.obj: $(SRCDIR)\\listdl.c $(SRCDIR)\\cmn_defs.h $(SRCDIR)\\array.h \n"
+    "\t$(CC) $(CFLAGS) /c /out:$(OBJDIR)\\$(@F) $< \n\n"
+    "TESTS = $(TESTS) test_listdl\n\n"
+    "test_listdl: $(TEST_SRC)\\test_listdl.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) /out:$(TEST_OBJ)\\$(@F) $< \n"
+    "\t$(TEST_OBJ)\\$(@F)\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen  = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    genBase_setDict((GENBASE_DATA *)pGen, pDict);
+
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        dbprs_setDict(pObj, pDict);
+        
+        obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "library");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        eRc = dbprs_ParseLibrary(pObj, pNode);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -628,6 +707,7 @@ int             test_dbprs_Routine02(
 
 
 TINYTEST_START_SUITE(test_dbprs);
+    TINYTEST_ADD_TEST(test_dbprs_Library01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Routine02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Routine01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object05,setUp,tearDown);

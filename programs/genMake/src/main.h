@@ -177,11 +177,6 @@ extern "C" {
     );
     
 
-    ERESULT         main_getLastError(
-        MAIN_DATA		*this
-    );
-
-
     TEXTOUT_DATA *  main_getOutput(
         MAIN_DATA       *this
     );

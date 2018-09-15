@@ -527,7 +527,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->pDict;
     }
     
@@ -551,7 +550,6 @@ extern "C" {
         }
         this->pDict = pValue;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -575,7 +573,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->pFilePath;
     }
     
@@ -599,55 +596,11 @@ extern "C" {
         }
         this->pFilePath = pValue;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
     
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         main_getLastError(
-        MAIN_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            main_setLastError(
-        MAIN_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     //---------------------------------------------------------------
     //                      M a k e  T y p e
     //---------------------------------------------------------------
@@ -666,7 +619,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->makeType;
     }
     
@@ -686,7 +638,6 @@ extern "C" {
         
         this->makeType = value;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -710,7 +661,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->pNodes;
     }
     
@@ -734,7 +684,6 @@ extern "C" {
         }
         this->pNodes = pValue;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -758,7 +707,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->osType;
     }
     
@@ -778,7 +726,6 @@ extern "C" {
         
         this->osType = value;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -802,7 +749,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->pOutput;
     }
     
@@ -826,7 +772,6 @@ extern "C" {
         }
         this->pOutput = pValue;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -850,7 +795,6 @@ extern "C" {
         }
 #endif
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return this->pOutputPath;
     }
     
@@ -874,7 +818,6 @@ extern "C" {
         }
         this->pOutputPath = pValue;
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -898,7 +841,6 @@ extern "C" {
         }
 #endif
 
-        main_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -919,7 +861,6 @@ extern "C" {
 
         //this->priority = value;
 
-        main_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -941,7 +882,6 @@ extern "C" {
         }
 #endif
 
-        main_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -974,9 +914,10 @@ extern "C" {
      */
     ERESULT         main_Assign(
         MAIN_DATA		*this,
-        MAIN_DATA      *pOther
+        MAIN_DATA       *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1018,11 +959,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        main_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return main_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -1069,7 +1010,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        main_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1130,14 +1070,13 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            main_setLastError(this, ERESULT_INVALID_OBJECT);
             return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
         if( !main_Validate(this) ) {
             DEBUG_BREAK();
-            return main_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -1146,7 +1085,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1224,7 +1162,6 @@ extern "C" {
         }
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -1300,7 +1237,6 @@ extern "C" {
         
         
         // Return to caller.
-        main_setLastError(this, eRc);
         return eRc;
     }
     
@@ -1342,7 +1278,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&main_Vtbl);
         
-        main_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
         if (OBJ_NIL == this->pDict) {
             DEBUG_BREAK();
@@ -1365,10 +1300,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(MAIN_DATA,eRc));
         //fprintf(stderr, "sizeof(MAIN_DATA) = %lu\n", sizeof(MAIN_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
     #endif
 
@@ -1396,12 +1329,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            main_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1547,7 +1478,6 @@ extern "C" {
         }
 
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1645,7 +1575,6 @@ extern "C" {
         }
 
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
     
@@ -1704,7 +1633,6 @@ extern "C" {
         
 
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1782,7 +1710,6 @@ extern "C" {
         
         
         // Return to caller.
-        main_setLastError(this, eRc);
         return eRc;
     }
     
@@ -1874,7 +1801,6 @@ extern "C" {
         eRc = main_GenMakefile(this);
         
         // Return to caller.
-        main_setLastError(this, eRc);
         return eRc;
     }
     
@@ -2062,7 +1988,6 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(main)}\n", this);
         AStr_AppendA(pStr, str);
         
-        main_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -2103,7 +2028,6 @@ extern "C" {
         );
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -2133,7 +2057,6 @@ extern "C" {
         fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -2169,7 +2092,6 @@ extern "C" {
         fprintf(pOutput, "  %s [options] input_path\n", pNameA);
         
         // Return to caller.
-        main_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -2206,12 +2128,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(MAIN_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif
