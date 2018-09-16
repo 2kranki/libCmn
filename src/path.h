@@ -400,6 +400,15 @@ extern "C" {
 
     
     /*!
+     Return the AStr component of the Path.
+     @return    If successful, the AStr component of the path, otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     path_ToAStr(
+        PATH_DATA       *this
+    );
+    
+    
+    /*!
      Create a string that escapes any internal space characters as
      needed in Bash. ' ' becomes "\ " on output.
      @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.

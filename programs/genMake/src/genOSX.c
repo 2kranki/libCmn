@@ -778,12 +778,12 @@ extern "C" {
         char            *pName              // Library Name
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         ASTR_DATA       *pStr =  OBJ_NIL;
         NODE_DATA       *pLibObjectPath = OBJ_NIL;
         NODE_DATA       *pLibObjectPrefix = OBJ_NIL;
-        OBJ_ID          pPath = OBJ_NIL;
-        OBJ_ID          pPrefix = OBJ_NIL;
+        //OBJ_ID          pPath = OBJ_NIL;
+        //OBJ_ID          pPrefix = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1940,7 +1940,12 @@ extern "C" {
             return pStr;
         }
         
-        AStr_AppendA(pStr, "\n\n.PHONY: clean\nclean:\n");
+        AStr_AppendA(pStr, "\n\n\n");
+        
+        AStr_AppendA(pStr, ".PHONY: test\n");
+        AStr_AppendA(pStr, "test: $(TESTS)\n\n");
+        
+        AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
         AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
         
         AStr_AppendA(pStr, "\n\n.PHONY: install\ninstall:\n");
@@ -1996,7 +2001,7 @@ extern "C" {
             return pOut;
         }
         
-        AStr_AppendPrint(pOut, "# Generated file do not edit!\n");
+        AStr_AppendA(pOut, "# Generated file do not edit!\n");
         if (genBase_getDateTime((GENBASE_DATA *)this)) {
             pStr = dateTime_ToString(genBase_getDateTime((GENBASE_DATA *)this));
             AStr_AppendPrint(pOut, "# (%s)\n\n", AStr_getData(pStr));
@@ -2011,8 +2016,8 @@ extern "C" {
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
-        AStr_AppendPrint(pOut, "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
-        AStr_AppendPrint(pOut, "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
+        AStr_AppendA(pOut, "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
+        AStr_AppendA(pOut, "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
         if (genBase_getLibDeps((GENBASE_DATA *)this)) {
             const
             char            *pLibIncludePrefix;
@@ -2043,19 +2048,23 @@ extern "C" {
                 }
             }
         }
-        AStr_AppendPrint(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
-        AStr_AppendPrint(pOut, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
-        AStr_AppendPrint(pOut, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
-        AStr_AppendPrint(pOut, "LIBDIR = $(BASEDIR)/$(SYS)\n");
-        AStr_AppendPrint(pOut, "SRCDIR = ./src\nSRCSYSDIR = ./src/$(SYS)\n");
-        AStr_AppendPrint(pOut, "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n");
-        AStr_AppendPrint(pOut, "LIB_FILENAME=$(LIBNAM)R.a\n");
-        AStr_AppendPrint(pOut, "OBJDIR = $(LIBDIR)/o/r\n");
-        AStr_AppendPrint(pOut, "else   #DEBUG\nCFLAGS += -D_DEBUG \n");
-        AStr_AppendPrint(pOut, "LIB_FILENAME=$(LIBNAM)D.a\n");
-        AStr_AppendPrint(pOut, "OBJDIR = $(LIBDIR)/o/d\nendif  #NDEBUG\n");
-        AStr_AppendPrint(pOut, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n");
-        AStr_AppendPrint(pOut, ".SUFFIXES:\n.SUFFIXES: .asm .c .o\n\n\n\n\n");
+        AStr_AppendA(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
+        AStr_AppendA(pOut, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
+        AStr_AppendA(pOut, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
+        AStr_AppendA(pOut, "LIBDIR = $(BASEDIR)/$(SYS)\n");
+        AStr_AppendA(pOut, "SRCDIR = ./src\nSRCSYSDIR = ./src/$(SYS)\n");
+        AStr_AppendA(pOut, "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n");
+        AStr_AppendA(pOut, "LIB_FILENAME=$(LIBNAM)R.a\n");
+        AStr_AppendA(pOut, "OBJDIR = $(LIBDIR)/o/r\n");
+        AStr_AppendA(pOut, "else   #DEBUG\nCFLAGS += -D_DEBUG \n");
+        AStr_AppendA(pOut, "LIB_FILENAME=$(LIBNAM)D.a\n");
+        AStr_AppendA(pOut, "OBJDIR = $(LIBDIR)/o/d\n");
+        AStr_AppendA(pOut, "endif  #NDEBUG\n");
+        AStr_AppendA(pOut, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n");
+        AStr_AppendA(pOut, ".SUFFIXES:\n.SUFFIXES: .asm .c .o\n\n");
+        AStr_AppendA(pOut, "OBJS = \n\n");
+        AStr_AppendA(pOut, "TESTS = \n\n");
+        AStr_AppendA(pOut, "\n\n\n\n");
 
         // Return to caller.
         return pOut;
@@ -2613,7 +2622,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(GENOSX_DATA);
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;

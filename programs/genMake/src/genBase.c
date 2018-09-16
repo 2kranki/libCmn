@@ -1455,10 +1455,10 @@ extern "C" {
         char            *pName              // Library Name
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         ASTR_DATA       *pStr =  OBJ_NIL;
-        char            *pLibObjectPath = NULL;
-        char            *pLibObjectPrefix = NULL;
+        //char            *pLibObjectPath = NULL;
+        //char            *pLibObjectPrefix = NULL;
         
         // Do initialization.
         TRC_OBJ(
@@ -1874,7 +1874,7 @@ ERESULT         genBase_GenMakefile(
     TEXTOUT_DATA        *pOutput
 )
 {
-    ERESULT             eRc;
+    ERESULT             eRc = ERESULT_SUCCESS;
     NODE_DATA           *pNode;
     NODEHASH_DATA       *pPrimaryHash = OBJ_NIL;
 
@@ -2465,7 +2465,7 @@ ERESULT         genBase_GenMakefile(
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
+        //ASTR_DATA       *pStr = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG

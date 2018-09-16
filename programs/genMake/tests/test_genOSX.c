@@ -512,9 +512,12 @@ int             test_genOSX_GenInitial01(
         "LIB_FILENAME=$(LIBNAM)D.a\n"
         "OBJDIR = $(LIBDIR)/o/d\n"
         "endif  #NDEBUG\n"
-        "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n"
+        "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
         ".SUFFIXES:\n"
-        ".SUFFIXES: .asm .c .o\n\n\n\n\n"
+        ".SUFFIXES: .asm .c .o\n\n"
+        "OBJS = \n\n"
+        "TESTS = \n\n"
+        "\n\n\n\n"
     ;
     int                 iRc;
     int                 offset = 0;
@@ -561,7 +564,11 @@ int             test_genOSX_GenFinal01(
     ASTR_DATA       *pStr = OBJ_NIL;
     const
     char            *pOutputA =
-    "\n\n.PHONY: clean\nclean:\n"
+    "\n\n\n"
+    ".PHONY: test\n"
+    "test: $(TESTS)\n\n"
+    ".PHONY: clean\n"
+    "clean:\n"
     "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
     "\n\n.PHONY: install\ninstall:\n"
     "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"

@@ -962,13 +962,9 @@ extern "C" {
     {
         ERESULT         eRc;
         NODEHASH_DATA   *pHashLib = OBJ_NIL;
-        OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNodeWrk = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pStrWrk = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
         JSONIN_DATA     *pJsonIn = OBJ_NIL;
         
         // Do initialization.
@@ -1328,11 +1324,9 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
         OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NODE_DATA       *pNodeWrk = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
 
@@ -1588,11 +1582,11 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
         OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NODE_DATA       *pNodeWrk = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
+        //ASTR_DATA       *pStr = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
         

@@ -948,7 +948,6 @@ extern "C" {
         uint16_t        sampleSize          // Normally 8, 16, or 32
     )
     {
-        uint32_t        cbSize = sizeof(AUDIOWAV_DATA);
 
         
         if (OBJ_NIL == this) {
