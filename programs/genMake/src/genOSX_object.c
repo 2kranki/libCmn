@@ -284,11 +284,11 @@ GENOSX_VTBL     genOSX_Vtbl = {
         (void *)genOSX_GenCompileObject,
         (void *)genOSX_GenCompileTest,
         (void *)genBase_GenFinal,
-        (void *)genBase_GenInitial,
+        (void *)genOSX_GenInitial,
         (void *)genBase_GenLibrary,
         (void *)genBase_GenObjects,
         (void *)genBase_GenOSSpecific,
-        (void *)genBase_GenPrograms,
+        NULL,
         (void *)genBase_GenRoutines,
         (void *)genBase_GenTests,
     }

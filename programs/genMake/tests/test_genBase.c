@@ -82,6 +82,7 @@ int             test_genBase_OpenClose(
     char            *pTestName
 )
 {
+    ERESULT         eRc = ERESULT_SUCCESS;
     GENBASE_DATA	*pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -93,12 +94,68 @@ int             test_genBase_OpenClose(
     if (pObj) {
 
         // Test something.
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_genBase_Dict01(
+    const
+    char            *pTestName
+)
+{
+    GENBASE_DATA    *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pResult = "LIBNAM=libTest\n";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genBase_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genBase_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        // Test something.
+        eRc = genBase_DictAddA(pObj, "lib_prefix", "lib");
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+        eRc = genBase_DictAddA(pObj, "name", "Test");
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+
+        pStr = AStr_NewA("LIBNAM=${lib_prefix}${name}\n");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = genBase_DictExpand(pObj, pStr);
+            fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("LIBNAM=$lib_prefix$name\n");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = genBase_DictExpand(pObj, pStr);
+            fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -106,6 +163,7 @@ int             test_genBase_OpenClose(
 
 
 TINYTEST_START_SUITE(test_genBase);
+    TINYTEST_ADD_TEST(test_genBase_Dict01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genBase_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

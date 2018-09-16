@@ -153,7 +153,7 @@ extern "C" {
             NODEARRAY_DATA  *pObjDeps
         );
         ASTR_DATA * (*pGenFinal)(OBJ_ID);
-        ERESULT     (*pGenInitial)(OBJ_ID);
+        ASTR_DATA * (*pGenInitial)(OBJ_ID);
         ERESULT     (*pGenLibrary)(OBJ_ID);
         ERESULT     (*pGenObjects)(OBJ_ID);
         ERESULT     (*pGenOSSpecific)(OBJ_ID);
@@ -343,6 +343,21 @@ extern "C" {
      Add the given name and its data to the dictionary.
      */
     
+    ERESULT         genBase_DictAdd(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    );
+    
+    ERESULT         genBase_DictAddA(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    );
+    
     ERESULT         genBase_DictAddUpdate(
         GENBASE_DATA    *this,
         const
@@ -358,7 +373,6 @@ extern "C" {
         char            *pData
     );
     
-    
     /*!
      Substitute environment variables into the current string using a BASH-like
      syntax.  Variable names should have the syntax of:
@@ -368,7 +382,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
                 is returned.
      */
-    ERESULT         genBase_ExpandDict(
+    ERESULT         genBase_DictExpand(
         GENBASE_DATA    *this,
         ASTR_DATA       *pStr
     );

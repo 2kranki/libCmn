@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <genBase_internal.h>
+#include <ascii.h>
 #include <path.h>
 #include <trace.h>
 
@@ -976,6 +977,85 @@ extern "C" {
     //             D i c t i o n a r y  M e t h o d s
     //---------------------------------------------------------------
     
+    ERESULT         genBase_DictAdd(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         genBase_DictAddA(
+        GENBASE_DATA    *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pStr = AStr_NewA(pData);
+        if (OBJ_NIL == pStr) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        
+        // Return to caller.
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        return eRc;
+    }
+    
+    
     ERESULT         genBase_DictAddUpdate(
         GENBASE_DATA    *this,
         const
@@ -1048,12 +1128,176 @@ extern "C" {
         if (nodeHash_FindA(this->pDict, pName)) {
             eRc = nodeHash_DeleteA(this->pDict, pName);
         }
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
         
         // Return to caller.
         obj_Release(pStr);
         pStr = OBJ_NIL;
         return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
+    //---------------------------------------------------------------
+    
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         genBase_DictExpand(
+        GENBASE_DATA    *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        iBegin;
+        uint32_t        len;
+        int32_t         chr;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        ASTR_DATA       *pData = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!genBase_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (0 == AStr_getLength(pStr)) {
+            return ERESULT_SUCCESS;
+        }
+        
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = AStr_CharFindNextW32(pStr, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = AStr_CharGetW32(pStr, i+1);
+                if (chr == '{') {
+                    i += 2;
+                    iBegin = i;
+                    eRc = AStr_CharFindNextW32(pStr, &i, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = i - iBegin;
+                    eRc = AStr_Mid(pStr, iBegin, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    
+                    // Find the name from the Dictionary.
+                    pNode = nodeHash_FindA(this->pDict, AStr_getData(pName));
+                    if (OBJ_NIL == pNode) {
+                        obj_Release(pName);
+                        return ERESULT_DATA_NOT_FOUND;
+                    }
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                    pData = node_getData(pNode);
+                    if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                        DEBUG_BREAK();
+                        return ERESULT_DATA_MISSING;
+                    }
+
+                    // Substitute the name from the Dictionary.
+                    eRc = AStr_Remove(pStr, iBegin-2, len+3);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    eRc = AStr_InsertA(pStr, iBegin-2, AStr_getData(pData));
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    i = iBegin - 2 + AStr_getSize(pData);
+                    pEnvVar = NULL;
+                    pData = OBJ_NIL;
+                    pNode = OBJ_NIL;
+                    fMore = true;
+                }
+                else if (chr == '$') {
+                    eRc = AStr_Remove(pStr, i, 1);
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+                else {
+                    //chr = AStr_CharGetW32(pStr, i+1);
+                    if (ascii_isLabelFirstCharW32(chr)) {
+                        ++i;
+                        iBegin = i;
+                        for (;;) {
+                            ++i;
+                            chr = AStr_CharGetW32(pStr, i);
+                            if (!ascii_isLabelCharW32(chr)) {
+                                break;
+                            }
+                        }
+                        len = i - iBegin;
+                        eRc = AStr_Mid(pStr, iBegin, len, &pName);
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                        
+                        // Find the name from the Dictionary.
+                        pNode = nodeHash_FindA(this->pDict, AStr_getData(pName));
+                        if (OBJ_NIL == pNode) {
+                            obj_Release(pName);
+                            return ERESULT_DATA_NOT_FOUND;
+                        }
+                        obj_Release(pName);
+                        pName = OBJ_NIL;
+                        pData = node_getData(pNode);
+                        if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                            DEBUG_BREAK();
+                            return ERESULT_DATA_MISSING;
+                        }
+                        
+                        // Substitute the name from the Dictionary.
+                        eRc = AStr_Remove(pStr, iBegin-1, len+1);
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                        eRc = AStr_InsertA(pStr, iBegin-1, AStr_getData(pData));
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                        i = iBegin - 1 + AStr_getSize(pData);
+                        pEnvVar = NULL;
+                        pData = OBJ_NIL;
+                        pNode = OBJ_NIL;
+                        fMore = true;
+                    }
+                    else
+                        return ERESULT_PARSE_ERROR;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1114,115 +1358,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
-    //---------------------------------------------------------------
-    
-    /*!
-     Substitute environment variables into the current string using a BASH-like
-     syntax.  Variable names should have the syntax of:
-     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
-     Substitutions are not rescanned after insertion.
-     @param     this    object pointer
-     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-     is returned.
-     */
-    ERESULT         genBase_ExpandDict(
-        GENBASE_DATA    *this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT         eRc;
-        uint32_t        i = 0;
-        uint32_t        j;
-        uint32_t        len;
-        int32_t         chr;
-        bool            fMore = true;
-        //PATH_DATA       *pPath = OBJ_NIL;
-        ASTR_DATA       *pName = OBJ_NIL;
-        NODE_DATA       *pVar = OBJ_NIL;
-        const
-        char            *pEnvVar = NULL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if(!genBase_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if(OBJ_NIL == pStr) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if (0 == AStr_getLength(pStr)) {
-            return ERESULT_SUCCESS;
-        }
-        
-        // Expand Environment variables.
-        while (fMore) {
-            fMore = false;
-            eRc = AStr_CharFindNextW32(pStr, &i, '$');
-            if (ERESULT_FAILED(eRc)) {
-                break;
-            }
-            else {
-                chr = AStr_CharGetW32(pStr, i+1);
-                if (chr == '{') {
-                    i += 2;
-                    j = i;
-                    eRc = AStr_CharFindNextW32(pStr, &j, '}');
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_PARSE_ERROR;
-                    }
-                    len = j - i;
-                    eRc = AStr_Mid(pStr, i, len, &pName);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    
-                    // Find the name from the Dictionary.
-                    pVar = nodeHash_FindA(this->pDict, AStr_getData(pName));
-                    if (OBJ_NIL == pVar) {
-                        obj_Release(pName);
-                        return ERESULT_DATA_NOT_FOUND;
-                    }
-                    obj_Release(pName);
-                    pName = OBJ_NIL;
-                    //FIXME: Get pEnvVar from node data
-                    
-                    // Substitute the name from the Dictionary.
-                    eRc = AStr_Remove(pStr, i-2, len+3);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    eRc = AStr_InsertA(pStr, i-2, pEnvVar);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    pEnvVar = NULL;
-                    fMore = true;
-                }
-                else if (chr == '$') {
-                    eRc = AStr_Remove(pStr, i, 1);
-                    ++i;
-                    fMore = true;
-                    continue;
-                }
-                else {
-                    return ERESULT_PARSE_ERROR;
-                }
-            }
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
     //---------------------------------------------------------------
@@ -1852,7 +1987,7 @@ ERESULT         genBase_GenMakefile(
         //TODO: Find O/S Specific data.
     }
     
-    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenInitial(this);
+    //FIXME: eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenInitial(this);
     if (ERESULT_FAILED(eRc)) {
         DEBUG_BREAK();
         exit(100);
@@ -1882,7 +2017,7 @@ ERESULT         genBase_GenMakefile(
         exit(102);
     }
 
-    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenFinal(this);
+    //FIXME: eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenFinal(this);
     if (ERESULT_FAILED(eRc)) {
         DEBUG_BREAK();
         exit(102);

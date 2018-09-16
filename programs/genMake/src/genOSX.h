@@ -132,11 +132,6 @@ extern "C" {
     );
 
     
-    ERESULT     genOSX_getLastError(
-        GENOSX_DATA		*this
-    );
-
-
     ERESULT         genOSX_setLibIncludePath(
         GENOSX_DATA     *this,
         PATH_DATA *     (*pLibIncludePath)(
@@ -175,15 +170,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         genOSX_DictAdd(
-        GENOSX_DATA     *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    );
-    
-    
     /*!
      Generate the Make File writing it to the output file.
      @param     this    GENOSX object pointer
@@ -213,7 +199,9 @@ extern "C" {
         const
         char            *pObjVar,           // Default - "OBJS"
         const
-        char            *pFlgVar,
+        char            *pFlgVar,           // If present, adds another Make Flag
+        //                                  // variable in addition to CFLAGS
+        //                                  // (Default - none)
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -232,7 +220,9 @@ extern "C" {
         const
         char            *pObjVar,           // Default - "OBJS"
         const
-        char            *pFlgVar,
+        char            *pFlgVar,           // If present, adds another Make Flag
+        //                                  // variable in addition to CFLAGS
+        //                                  // (Default - none)
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -252,8 +242,8 @@ extern "C" {
         char            *pObjVar,           // Default - "OBJS"
         const
         char            *pFlgVar,           // If present, adds another Make Flag
-                                            // variable in addition to CFLAGS
-                                            // (Default - none)
+        //                                  // variable in addition to CFLAGS
+        //                                  // (Default - none)
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps,          // Object Dependencies (ie files to be
                                             // included in the compile statement, file
@@ -274,7 +264,9 @@ extern "C" {
         const
         char            *pObjVar,           // Default - "TESTS"
         const
-        char            *pFlgVar,
+        char            *pFlgVar,           // If present, adds another Make Flag
+        //                                  // variable in addition to CFLAGS
+        //                                  // (Default - none)
         NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
         NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
                                             // included in the compile statement, file

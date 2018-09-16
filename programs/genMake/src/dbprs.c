@@ -1043,8 +1043,13 @@ extern "C" {
         }
         
         genBase_setMakeType(this->pGen, GENMAKE_TYPE_LIB);
-        eRc = ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenInitial(this->pGen);
-        
+        pStr = ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenInitial(this->pGen);
+        if (pStr) {
+            AStr_Append(this->pStr, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
         // Return to caller.
         obj_Release(pJsonIn);
         pJsonIn = OBJ_NIL;

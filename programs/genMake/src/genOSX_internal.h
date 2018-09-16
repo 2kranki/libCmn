@@ -67,7 +67,6 @@ struct genOSX_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pName;
@@ -93,12 +92,6 @@ struct genOSX_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            genOSX_setLastError(
-        GENOSX_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  genOSX_getSuperVtbl(
         GENOSX_DATA     *this
@@ -136,7 +129,7 @@ struct genOSX_data_s	{
     );
 
 
-    ERESULT         genOSX_GenFinal(
+    ASTR_DATA *     genOSX_GenFinal(
         GENOSX_DATA     *this
     );
     
@@ -157,11 +150,6 @@ struct genOSX_data_s	{
     
     
     ERESULT         genOSX_GenOSSpecific(
-        GENOSX_DATA     *this
-    );
-    
-    
-    ERESULT         genOSX_GenPrograms(
         GENOSX_DATA     *this
     );
     

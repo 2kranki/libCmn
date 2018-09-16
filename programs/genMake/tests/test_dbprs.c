@@ -649,13 +649,31 @@ int             test_dbprs_Library01(
     "}\n";
     const
     char            *pOutputA =
-    "OBJS = $(OBJS) $(OBJDIR)\\listdl.obj\n\n"
-    "$(OBJDIR)\\listdl.obj: $(SRCDIR)\\listdl.c $(SRCDIR)\\cmn_defs.h $(SRCDIR)\\array.h \n"
-    "\t$(CC) $(CFLAGS) /c /out:$(OBJDIR)\\$(@F) $< \n\n"
-    "TESTS = $(TESTS) test_listdl\n\n"
-    "test_listdl: $(TEST_SRC)\\test_listdl.c \n"
-    "\t$(CC) $(CFLAGS) $(TEST_FLGS) /out:$(TEST_OBJ)\\$(@F) $< \n"
-    "\t$(TEST_OBJ)\\$(@F)\n\n"
+    "# Generated file do not edit!\n\n"
+    "LIBNAM=libTest\n"
+    "SYS=macosx\n"
+    "TEMP=/tmp\n"
+    "BASEDIR = $(TEMP)/$(LIBNAM)\n\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
+    "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
+    "LIBDIR = $(BASEDIR)/$(SYS)\n"
+    "SRCDIR = ./src\n"
+    "SRCSYSDIR = ./src/$(SYS)\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBDIR)/o/r\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG \n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBDIR)/o/d\n"
+    "endif  #NDEBUG\n"
+    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n"
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .o\n\n\n\n\n"
     ;
     
     fprintf(stderr, "Performing: %s\n", pTestName);

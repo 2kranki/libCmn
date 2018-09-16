@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C40BE90F214DF11900316267 /* test_genOSX.c in Sources */ = {isa = PBXBuildFile; fileRef = C40BE90E214DF11800316267 /* test_genOSX.c */; };
 		C45573EC20CC0184002F9BFE /* xml_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C45573E920CC0184002F9BFE /* xml_object.c */; };
 		C45573ED20CC0184002F9BFE /* xml.c in Sources */ = {isa = PBXBuildFile; fileRef = C45573EB20CC0184002F9BFE /* xml.c */; };
 		C455748B20CC01B6002F9BFE /* tokenList.c in Sources */ = {isa = PBXBuildFile; fileRef = C45573EE20CC01A8002F9BFE /* tokenList.c */; };
@@ -314,7 +315,6 @@
 		C49738A4212BAFB000D72EF4 /* screen_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4973899212BAFAA00D72EF4 /* screen_object.c */; };
 		C49738A5212BAFB000D72EF4 /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = C497389A212BAFAB00D72EF4 /* scanner.c */; };
 		C49738A6212BAFB000D72EF4 /* sgraph_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C497389F212BAFAE00D72EF4 /* sgraph_object.c */; };
-		C4A449472140C8FA000CBC50 /* test_dbprs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A449462140C8FA000CBC50 /* test_dbprs.c */; };
 		C4A74CCD213D8BB90078DE3B /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A74CCC213D8BB80078DE3B /* libcurses.tbd */; };
 		C4A74CD4213EFE850078DE3B /* dbprs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A74CD0213EFE820078DE3B /* dbprs.c */; };
 		C4A74CD5213EFE850078DE3B /* dbprs_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A74CD3213EFE840078DE3B /* dbprs_object.c */; };
@@ -339,6 +339,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C40BE90E214DF11800316267 /* test_genOSX.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_genOSX.c; sourceTree = "<group>"; };
 		C45573DD20CC0140002F9BFE /* genMake_Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = genMake_Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45573E820CC0184002F9BFE /* xml_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xml_internal.h; sourceTree = "<group>"; };
 		C45573E920CC0184002F9BFE /* xml_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xml_object.c; sourceTree = "<group>"; };
@@ -934,7 +935,6 @@
 		C497389E212BAFAD00D72EF4 /* scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scanner.h; sourceTree = "<group>"; };
 		C497389F212BAFAE00D72EF4 /* sgraph_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sgraph_object.c; sourceTree = "<group>"; };
 		C49738A0212BAFAF00D72EF4 /* scanner_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scanner_internal.h; sourceTree = "<group>"; };
-		C4A449462140C8FA000CBC50 /* test_dbprs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_dbprs.c; sourceTree = "<group>"; };
 		C4A74CCC213D8BB80078DE3B /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
 		C4A74CD0213EFE820078DE3B /* dbprs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbprs.c; sourceTree = "<group>"; };
 		C4A74CD1213EFE830078DE3B /* dbprs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbprs.h; sourceTree = "<group>"; };
@@ -986,7 +986,7 @@
 		C45573DF20CC0140002F9BFE /* genMake_Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C4A449462140C8FA000CBC50 /* test_dbprs.c */,
+				C40BE90E214DF11800316267 /* test_genOSX.c */,
 				C455776020CC9F11002F9BFE /* test_data.c */,
 			);
 			name = genMake_Tests;
@@ -1769,6 +1769,7 @@
 				C455748E20CC01B6002F9BFE /* token_object.c in Sources */,
 				C45574C920CC01B6002F9BFE /* true.c in Sources */,
 				C45575B020CC0200002F9BFE /* nodeScan_object.c in Sources */,
+				C40BE90F214DF11900316267 /* test_genOSX.c in Sources */,
 				C455768020CC0299002F9BFE /* dbf_object.c in Sources */,
 				C455770E20CC02C0002F9BFE /* cb.c in Sources */,
 				C455767720CC0299002F9BFE /* dir.c in Sources */,
@@ -1887,7 +1888,6 @@
 				C45575AF20CC0200002F9BFE /* obj.c in Sources */,
 				C455773520CC02C0002F9BFE /* block32.c in Sources */,
 				C45575BB20CC0200002F9BFE /* objMatrix.c in Sources */,
-				C4A449472140C8FA000CBC50 /* test_dbprs.c in Sources */,
 				C45574B620CC01B6002F9BFE /* scandec32.c in Sources */,
 				C455769720CC0299002F9BFE /* jsonIn.c in Sources */,
 				C45574BD20CC01B6002F9BFE /* szHash_object.c in Sources */,

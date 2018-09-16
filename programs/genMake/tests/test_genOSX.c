@@ -142,6 +142,7 @@ int             test_genOSX_Object01(
                                 NULL,           // Source Directory Env Name
                                 NULL,           // Object Directory Env Name
                                 NULL,           // Object Make Variable
+                                NULL,           // Compile Flag Variable Name
                                 OBJ_NIL,
                                 OBJ_NIL
                 );
@@ -234,7 +235,7 @@ int             test_genOSX_Routine01(
                          NULL,          // Source Directory Env Name
                          NULL,          // Object Directory Env Name
                          NULL,          // Object Make Variable
-                         NULL,
+                         NULL,          // Compile Flag Variable Name
                          OBJ_NIL,       // Source Dependencies
                          OBJ_NIL,       // Object Dependencies
                          true,
@@ -284,7 +285,7 @@ int             test_genOSX_Routine02(
                                          "DIRSRC",      // Source Directory Env Name
                                          "DIROBJ",      // Object Directory Env Name
                                          "OBJV",        // Object Make Variable
-                                         NULL,
+                                         NULL,          // Compile Flag Variable Name
                                          OBJ_NIL,       // Source Dependencies
                                          OBJ_NIL,       // Object Dependencies
                                          false,
@@ -334,7 +335,7 @@ int             test_genOSX_Routine03(
                                          "DIRSRC",      // Source Directory Env Name
                                          "DIROBJ",      // Object Directory Env Name
                                          "OBJV",        // Object Make Variable
-                                         NULL,
+                                         NULL,          // Compile Flag Variable Name
                                          OBJ_NIL,       // Source Dependencies
                                          OBJ_NIL,       // Object Dependencies
                                          false,
@@ -380,13 +381,18 @@ int             test_genOSX_Routine04(
     XCTAssertFalse( (OBJ_NIL == pObjDeps) );
     for (i=0; (i<10 && strings[i]); ++i) {
         NODE_DATA       *pNode;
-        pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+        ASTR_DATA       *pStr;
+        pStr = AStr_NewA(strings[i]);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        pNode = node_NewWithUTF8ConAndClass("string", 0, pStr);
         XCTAssertFalse( (OBJ_NIL == pNode) );
         node_setClass(pNode, i+1);
         eRc = nodeArray_AppendNode(pObjDeps, pNode, &idx);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pNode);
         pNode = OBJ_NIL;
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
     }
     
     pObj = genOSX_Alloc( );
@@ -401,7 +407,7 @@ int             test_genOSX_Routine04(
                                          "DIRSRC",      // Source Directory Env Name
                                          "DIROBJ",      // Object Directory Env Name
                                          "OBJV",        // Object Make Variable
-                                         NULL,
+                                         NULL,          // Compile Flag Variable Name
                                          OBJ_NIL,       // Source Dependencies
                                          pObjDeps,      // Object Dependencies
                                          false,
@@ -454,6 +460,7 @@ int             test_genOSX_Test01(
                     NULL,           // Source Directory Env Name
                     NULL,           // Object Directory Env Name
                     NULL,           // Object Make Variable
+                    NULL,           // Compile Flag Variable Name
                     OBJ_NIL,
                     OBJ_NIL
                 );
@@ -473,8 +480,144 @@ int             test_genOSX_Test01(
 
 
 
+int             test_genOSX_GenInitial01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    GENOSX_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pOutputA =
+        "# Generated file do not edit!\n\n"
+        "LIBNAM=libTest\n"
+        "SYS=macosx\n"
+        "TEMP=/tmp\n"
+        "BASEDIR = $(TEMP)/$(LIBNAM)\n\n"
+        "CFLAGS_LIBS = \n"
+        "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
+        "CFLAGS += -D__MACOSX_ENV__\n\n"
+        "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+        "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
+        "LIBDIR = $(BASEDIR)/$(SYS)\n"
+        "SRCDIR = ./src\n"
+        "SRCSYSDIR = ./src/$(SYS)\n"
+        "ifdef  NDEBUG\n"
+        "CFLAGS += -DNDEBUG\n"
+        "LIB_FILENAME=$(LIBNAM)R.a\n"
+        "OBJDIR = $(LIBDIR)/o/r\n"
+        "else   #DEBUG\n"
+        "CFLAGS += -D_DEBUG \n"
+        "LIB_FILENAME=$(LIBNAM)D.a\n"
+        "OBJDIR = $(LIBDIR)/o/d\n"
+        "endif  #NDEBUG\n"
+        "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n"
+        ".SUFFIXES:\n"
+        ".SUFFIXES: .asm .c .o\n\n\n\n\n"
+    ;
+    int                 iRc;
+    int                 offset = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genOSX_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genOSX_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_LIB_PREFIX, "lib");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_NAME, "Test");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pStr =  genOSX_GenInitial(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=0x%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_genOSX_GenFinal01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    GENOSX_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pOutputA =
+    "\n\n.PHONY: clean\nclean:\n"
+    "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
+    "\n\n.PHONY: install\ninstall:\n"
+    "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
+    "\t-cd $(INSTALL_BASE) ; "
+    "[ ! -d $(LIBNAM)/include ] && "
+    "mkdir -p $(LIBNAM)/include/$(SYS)\n"
+    "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n"
+    "\tcp src/*.h $(INSTALLDIR)/include/\n"
+    "\tif [ -d src/$(SYS) ]; then \\\n"
+    "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n"
+    "\tfi\n\n\n"
+    ".PHONY: create_dirs\n"
+     "create_dirs:\n"
+    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)\n\n\n"
+    ".PHONY: all\n"
+    "all:  clean create_dirs $(LIBPATH)\n\n\n\n"
+    ;
+    int                 iRc;
+    int                 offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genOSX_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genOSX_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_LIB_PREFIX, "lib");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_NAME, "Test");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr =  genOSX_GenFinal(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=0x%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_genOSX);
+    TINYTEST_ADD_TEST(test_genOSX_GenFinal01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_genOSX_GenInitial01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_Routine04,setUp,tearDown);

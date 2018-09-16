@@ -739,7 +739,27 @@ extern "C" {
     }
     
     
+    bool                ascii_isLabelFirstCharW32(
+        W32CHR_T            asciiChar
+    )
+    {
+        bool                fRc = false;
+        
+        if ( asciiChar > 127 ) {
+            fRc = false;
+        }
+        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Alpha ) {
+            fRc = true;
+        }
+        else if ('_' == asciiChar) {
+            fRc = true;
+        }
+        
+        return( fRc );
+    }
     
+    
+
     //**********************************************************
     //                  L e x i c a l  C l a s s
     //**********************************************************
