@@ -60,10 +60,9 @@ struct AStrC_data_s	{
 #define ASTRC_FLAG_MALLOC OBJ_FLAG_USER1
 
     // Common Data
-    ERESULT         eRc;
-    uint32_t        len;            // Number of Unicode Chars in String
     const
     char            *pData;
+    uint32_t        len;            // Number of Unicode Chars in String
 
 };
 #pragma pack(pop)
@@ -79,12 +78,6 @@ struct AStrC_data_s	{
 
 
     // Internal Functions
-    bool            AStrC_setLastError(
-        ASTRC_DATA      *this,
-        ERESULT         value
-    );
-    
-    
     void            AStrC_Dealloc(
         OBJ_ID          objId
     );

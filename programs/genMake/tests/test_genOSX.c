@@ -530,9 +530,9 @@ int             test_genOSX_GenInitial01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_LIB_PREFIX, "lib");
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, namePrefixID, "lib");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_NAME, "Test");
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, nameID, "Test");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         pStr =  genOSX_GenInitial(pObj);
@@ -566,7 +566,7 @@ int             test_genOSX_GenFinal01(
     char            *pOutputA =
     "\n\n\n"
     ".PHONY: test\n"
-    "test: $(TESTS)\n\n"
+    "test: $(TESTS)\n\n\n"
     ".PHONY: clean\n"
     "clean:\n"
     "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
@@ -597,9 +597,9 @@ int             test_genOSX_GenFinal01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_LIB_PREFIX, "lib");
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, namePrefixID, "lib");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, DICT_NAME, "Test");
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, nameID, "Test");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         pStr =  genOSX_GenFinal(pObj);

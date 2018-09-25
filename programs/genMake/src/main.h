@@ -75,6 +75,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <dbprs.h>
 #include        <fbso.h>
 #include        <node.h>
 #include        <path.h>
@@ -177,6 +178,16 @@ extern "C" {
     );
     
 
+    uint16_t        main_getOsType(
+        MAIN_DATA       *this
+    );
+    
+    bool            main_setOsType(
+        MAIN_DATA       *this,
+        uint16_t        value
+    );
+
+    
     TEXTOUT_DATA *  main_getOutput(
         MAIN_DATA       *this
     );
@@ -197,6 +208,26 @@ extern "C" {
     );
     
 
+    uint16_t        main_getOutType(
+        MAIN_DATA       *this
+    );
+    
+    bool            main_setOutType(
+        MAIN_DATA       *this,
+        uint16_t        value
+    );
+
+    
+    DBPRS_DATA *    main_getParser(
+        MAIN_DATA       *this
+    );
+    
+    
+    ASTR_DATA *     main_getStr(
+        MAIN_DATA       *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------

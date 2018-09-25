@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C40BE90F214DF11900316267 /* test_genOSX.c in Sources */ = {isa = PBXBuildFile; fileRef = C40BE90E214DF11800316267 /* test_genOSX.c */; };
 		C45573EC20CC0184002F9BFE /* xml_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C45573E920CC0184002F9BFE /* xml_object.c */; };
 		C45573ED20CC0184002F9BFE /* xml.c in Sources */ = {isa = PBXBuildFile; fileRef = C45573EB20CC0184002F9BFE /* xml.c */; };
 		C455748B20CC01B6002F9BFE /* tokenList.c in Sources */ = {isa = PBXBuildFile; fileRef = C45573EE20CC01A8002F9BFE /* tokenList.c */; };
@@ -324,6 +323,7 @@
 		C4F4491B20EA685800C5E729 /* nodeLink.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491320EA685600C5E729 /* nodeLink.c */; };
 		C4F4491C20EA685800C5E729 /* nodeLink_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491420EA685600C5E729 /* nodeLink_object.c */; };
 		C4F4491D20EA685800C5E729 /* nodeLink_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F4491520EA685700C5E729 /* nodeLink_JSON.c */; };
+		C4FF85BD21572C3200264EE7 /* test_main.c in Sources */ = {isa = PBXBuildFile; fileRef = C4FF85BC21572C3200264EE7 /* test_main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -339,7 +339,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C40BE90E214DF11800316267 /* test_genOSX.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_genOSX.c; sourceTree = "<group>"; };
 		C45573DD20CC0140002F9BFE /* genMake_Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = genMake_Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45573E820CC0184002F9BFE /* xml_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xml_internal.h; sourceTree = "<group>"; };
 		C45573E920CC0184002F9BFE /* xml_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xml_object.c; sourceTree = "<group>"; };
@@ -950,6 +949,7 @@
 		C4F4491520EA685700C5E729 /* nodeLink_JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink_JSON.c; sourceTree = "<group>"; };
 		C4F4491620EA685700C5E729 /* psxExec_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec_internal.h; sourceTree = "<group>"; };
 		C4F4491720EA685800C5E729 /* psxExec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec.h; sourceTree = "<group>"; };
+		C4FF85BC21572C3200264EE7 /* test_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -986,7 +986,7 @@
 		C45573DF20CC0140002F9BFE /* genMake_Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C40BE90E214DF11800316267 /* test_genOSX.c */,
+				C4FF85BC21572C3200264EE7 /* test_main.c */,
 				C455776020CC9F11002F9BFE /* test_data.c */,
 			);
 			name = genMake_Tests;
@@ -1769,7 +1769,6 @@
 				C455748E20CC01B6002F9BFE /* token_object.c in Sources */,
 				C45574C920CC01B6002F9BFE /* true.c in Sources */,
 				C45575B020CC0200002F9BFE /* nodeScan_object.c in Sources */,
-				C40BE90F214DF11900316267 /* test_genOSX.c in Sources */,
 				C455768020CC0299002F9BFE /* dbf_object.c in Sources */,
 				C455770E20CC02C0002F9BFE /* cb.c in Sources */,
 				C455767720CC0299002F9BFE /* dir.c in Sources */,
@@ -1929,6 +1928,7 @@
 				C455766D20CC0299002F9BFE /* dirEntry.c in Sources */,
 				C45575BA20CC0200002F9BFE /* name.c in Sources */,
 				C45575F220CC0270002F9BFE /* lru_object.c in Sources */,
+				C4FF85BD21572C3200264EE7 /* test_main.c in Sources */,
 				C45575D020CC0200002F9BFE /* msgData.c in Sources */,
 				C455768420CC0299002F9BFE /* greg.c in Sources */,
 				C45575A620CC0200002F9BFE /* number_JSON.c in Sources */,

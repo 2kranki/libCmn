@@ -154,13 +154,6 @@ extern "C" {
         );
         ASTR_DATA * (*pGenFinal)(OBJ_ID);
         ASTR_DATA * (*pGenInitial)(OBJ_ID);
-        ERESULT     (*pGenLibrary)(OBJ_ID);
-        ERESULT     (*pGenObjects)(OBJ_ID);
-        ERESULT     (*pGenOSSpecific)(OBJ_ID);
-        ERESULT     (*pGenPrograms)(OBJ_ID);
-        ERESULT     (*pGenRoutines)(OBJ_ID);
-        ERESULT     (*pGenTests)(OBJ_ID);
-        ERESULT     (*pGenObject)(OBJ_ID, NODE_DATA *);
     } GENBASE_VTBL;
 
 

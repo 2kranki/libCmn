@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <main_internal.h>
+#include        <dbprs.h>
 #include        <genOSX.h>
 #include        <genWIN.h>
 #include        <hjson.h>
@@ -84,12 +85,12 @@ extern "C" {
     CMDUTL_OPTION       pPgmArgs[] = {
         {
             "file",
-            'F',
+            'f',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
             offsetof(MAIN_DATA, pFilePath),
             NULL,
-            "Set Input File Path"
+            "Input File Path"
         },
         {
             "libInclude",
@@ -98,7 +99,7 @@ extern "C" {
             CMDUTL_TYPE_PATH,
             0,
             (void *)main_ArgLibInclude,
-            "Set Library Include Base Path"
+            "Library Include Base Path"
         },
         {
             "macos",
@@ -134,7 +135,16 @@ extern "C" {
             CMDUTL_TYPE_PATH,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
-            "Set Output Base Path"
+            "Output File Path"
+        },
+        {
+            "dirtmp",
+            't',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
+            offsetof(MAIN_DATA, pOutputPath),
+            NULL,
+            "Temporary Directory Base Path"
         },
         {0}
     };
@@ -254,8 +264,6 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         ASTR_DATA       *pStr = OBJ_NIL;
-        const
-        char            *pKey;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -267,52 +275,6 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MACOS;
-        pKey = osTypeID;
-        pStr = AStr_NewA("macos");
-        if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-        // Set up namePrefix default;
-        pKey = namePrefixID;
-        pStr = AStr_NewA("lib");
-        if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-        //FIXME: eRc = nodeHash_AddUpdateA(main_getDict(this), "outBase", "/usr/local/lib");
-        if (ERESULT_FAILED(eRc) ) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        pKey = tmpBaseID;
-        pStr = AStr_NewA("${TMPDIR}");
-        if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -338,47 +300,7 @@ extern "C" {
 #endif
         
         this->osType = OSTYPE_MSC32;
-        pKey = osTypeID;
-        pStr = AStr_NewA("msc32");
-        if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
 
-        //FIXME: Update this!
-
-        // Set up libPath defaults
-        //FIXME: eRc = main_DictAddUpdate(this, "libIncludePath", "..");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'libIncludePath' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        // Set up libPrefix default;
-        //FIXME: eRc = main_DictAddUpdate(this, "libNamePrefix", "lib");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'libIncludePrefix' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        //FIXME: eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        //FIXME: eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -602,48 +524,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      M a k e  T y p e
-    //---------------------------------------------------------------
-    
-    uint16_t        main_getMakeType(
-        MAIN_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->makeType;
-    }
-    
-    
-    bool            main_setMakeType(
-        MAIN_DATA       *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->makeType = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          N o d e s
     //---------------------------------------------------------------
     
@@ -824,6 +704,94 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      O u t  T y p e
+    //---------------------------------------------------------------
+    
+    uint16_t        main_getOutType(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->outType;
+    }
+    
+    
+    bool            main_setOutType(
+        MAIN_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->outType = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          P a r s e r
+    //---------------------------------------------------------------
+    
+    DBPRS_DATA *    main_getParser(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pPrs;
+    }
+    
+    
+    bool            main_setParser(
+        MAIN_DATA       *this,
+        DBPRS_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pPrs) {
+            obj_Release(this->pPrs);
+        }
+        this->pPrs = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      P r i o r i t y
     //---------------------------------------------------------------
     
@@ -887,7 +855,33 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          S t r
+    //---------------------------------------------------------------
     
+    ASTR_DATA *     main_getStr(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pOutput) {
+            return OBJ_NIL;
+        }
+        
+        return textOut_getStr(this->pOutput);
+    }
+    
+    
+
     
 
     //===============================================================
@@ -1043,10 +1037,16 @@ extern "C" {
         }
 #endif
 
+        if (this->pGen) {
+            obj_Release(this->pGen);
+            this->pGen = OBJ_NIL;
+        }
         main_setDict(this, OBJ_NIL);
         main_setFilePath(this, OBJ_NIL);
         main_setNodes(this, OBJ_NIL);
+        main_setOutput(this, OBJ_NIL);
         main_setOutputPath(this, OBJ_NIL);
+        main_setParser(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1059,6 +1059,171 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //             D i c t i o n a r y  M e t h o d s
+    //---------------------------------------------------------------
+    
+    ERESULT         main_DictAdd(
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         main_DictAddA(
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pStr = AStr_NewA(pData);
+        if (OBJ_NIL == pStr) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        
+        // Return to caller.
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        return eRc;
+    }
+    
+    
+    ERESULT         main_DictAddUpdate(
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        if (nodeHash_FindA(this->pDict, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, pName);
+        }
+        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         main_DictAddUpdateA(
+        MAIN_DATA        *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pStr = AStr_NewA(pData);
+        if (OBJ_NIL == pStr) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        if (nodeHash_FindA(this->pDict, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, pName);
+        }
+        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        
+        // Return to caller.
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -1176,7 +1341,14 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        
+        ASTR_DATA       *pStr = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+        NODEHASH_DATA   *pHashWrk = OBJ_NIL;
+        GENBASE_DATA    *pGen;
+        DBPRS_DATA      *pPrs;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1192,51 +1364,164 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
-        if (OBJ_NIL == this->pOutput) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
 #endif
         
         switch (this->osType) {
                 
             case OSTYPE_MACOS:
-                this->pGen = (OBJ_ID)genOSX_New(this->pDict);
-                if (this->pGen) {
+                pGen = (OBJ_ID)genOSX_New(this->pDict);
+                if (pGen) {
                     if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
-                        obj_TraceSet(this->pGen, true);
+                        obj_TraceSet(pGen, true);
                     }
                 }
                 break;
                 
             case OSTYPE_MSC32:
             case OSTYPE_MSC64:
-                this->pGen = genWIN_New(this->pDict);
-                if (this->pGen) {
+                pGen = (OBJ_ID)genWIN_New(this->pDict);
+                if (pGen) {
                     if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
-                        obj_TraceSet(this->pGen, true);
+                        obj_TraceSet(pGen, true);
                     }
                 }
                 break;
                 
             default:
-                appl_Usage((APPL_DATA *)this, "ERROR - Failed to indicate type of makefile to generate!");
+                appl_Usage(
+                        (APPL_DATA *)this,
+                        "ERROR - Failed to indicate type of makefile to generate!\n\n\n"
+                );
                 exit(8);
         }
-        if (OBJ_NIL == this->pGen) {
+        if (OBJ_NIL == pGen) {
             fprintf(stderr, "FATAL - Could not create generator object!\n\n\n");
             exit(12);
         }
-        eRc =   genBase_GenMakefile(
-                                  this->pGen,
-                                  this->pNodes,
-                                  this->pDict,
-                                  appl_getDateTime((APPL_DATA *)this),
-                                  this->pOutput
-                );
         
+        pPrs = dbprs_NewWithDictAndGen(this->pDict, pGen);
+        if (OBJ_NIL == pPrs) {
+            fprintf(stderr, "FATAL - Could not create database parser object!\n\n\n");
+            exit(12);
+        }
+        dbprs_setNodes(pPrs, this->pNodes);
+        
+        pHash = node_getData(this->pNodes);
+        if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_DATA;
+        }
+        pNode = nodeHash_FindA(pHash, "library");
+        if (pNode) {
+            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
+            if (pHashWrk) {
+                eRc = dbprs_ParseLibrary(pPrs, pHashWrk);
+                if (ERESULT_FAILED(eRc)) {
+                    fprintf(
+                            stderr,
+                            "FATAL - Could not parse \"library\" "
+                            "node in database hash object!\n\n\n"
+                            );
+                    exit(12);
+                }
+                main_setOutType(this, OUTTYPE_LIB);
+            }
+            else {
+                fprintf(
+                        stderr,
+                        "FATAL - Found \"library\" "
+                        "node in database, but it is not a hash object!\n\n\n"
+                        );
+                exit(12);
+            }
+        }
+        else {
+            pNode = nodeHash_FindA(node_getData(this->pNodes), "program");
+            if (pNode) {
+                pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
+                if (pHashWrk) {
+                    eRc = dbprs_ParseProgram(pPrs, pHashWrk);
+                    if (ERESULT_FAILED(eRc)) {
+                        fprintf(
+                                stderr,
+                                "FATAL - Could not parse \"program\" "
+                                "node in database hash object!\n\n\n"
+                                );
+                        exit(12);
+                    }
+                    main_setOutType(this, OUTTYPE_CLP);
+                }
+                else {
+                    fprintf(
+                            stderr,
+                            "FATAL - Found \"program\" "
+                            "node in database, but it is not a hash object!\n\n\n"
+                            );
+                    exit(12);
+                }
+            }
+            else {
+                fprintf(
+                        stderr,
+                        "FATAL - Could not find \"library\" or"
+                        " \"program\" node in database hash object!\n\n\n"
+                        );
+                exit(12);
+            }
+        }
+
+        pNode = nodeHash_FindA(node_getData(this->pNodes), "objects");
+        if (pNode) {
+            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
+            if (pHashWrk) {
+                eRc = dbprs_ParseObjects(pPrs, pHashWrk);
+                if (ERESULT_FAILED(eRc)) {
+                    fprintf(
+                            stderr,
+                            "FATAL - Could not parse \"objects\" "
+                            "node in database hash object!\n\n\n"
+                            );
+                    exit(12);
+                }
+            }
+            else {
+                fprintf(
+                        stderr,
+                        "FATAL - Found \"objects\" "
+                        "node in database, but it is not a hash object!\n\n\n"
+                        );
+                exit(12);
+            }
+        }
+        
+        pNode = nodeHash_FindA(node_getData(this->pNodes), "routines");
+        if (pNode) {
+            pArray = jsonIn_CheckNodeDataForArray(pNode);
+            if (pArray) {
+                eRc = dbprs_ParseRoutines(pPrs, pArray);
+            }
+            else {
+                fprintf(
+                        stderr,
+                        "FATAL - Found \"objects\" "
+                        "node in database, but it is not an array object!\n\n\n"
+                        );
+                exit(12);
+            }
+        }
+        
+        eRc = dbprs_Finalize(pPrs);
+        
+        pStr = dbprs_getStr(pPrs);
+        if (pStr) {
+            textOut_PutA(this->pOutput, AStr_getData(pStr));
+        }
         
         // Return to caller.
+        obj_Release(pPrs);
+        pPrs = OBJ_NIL;
+        obj_Release(pGen);
+        pGen = OBJ_NIL;
         return eRc;
     }
     
@@ -1348,8 +1633,6 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr = OBJ_NIL;
-        const
-        char            *pKey;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1360,7 +1643,6 @@ extern "C" {
         }
 #endif
         
-        pKey = osTypeID;
 #if defined(__MACOSX_ENV__)
         this->osType = OSTYPE_MACOS;
         pStr = AStr_NewA("macos");
@@ -1374,10 +1656,10 @@ extern "C" {
         pStr = AStr_NewA("win64");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), osTypeID, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
                 exit(EXIT_FAILURE);
             }
             obj_Release(pStr);
@@ -1385,27 +1667,25 @@ extern "C" {
         }
         eRc = main_DefaultsMacos(this);
 
-        pKey = makeTypeID;
         pStr = AStr_NewA("d");
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), makeTypeID, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
                 exit(EXIT_FAILURE);
             }
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
-        pKey = resultTypeID;
         pStr = AStr_NewA("lib");
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), resultTypeID, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        pKey
+                        resultTypeID
                 );
                 exit(EXIT_FAILURE);
             }
@@ -1413,7 +1693,6 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-        pKey = outBaseID;
 #if defined(__MACOSX_ENV__)
         pStr = AStr_NewA("/usr/local/bin");
 #endif
@@ -1421,12 +1700,12 @@ extern "C" {
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), outBaseID, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        pKey
+                        outBaseID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -1434,15 +1713,14 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-        pKey = srcBaseID;
         pStr = AStr_NewA("./src");
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), srcBaseID, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        pKey
+                        srcBaseID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -1450,7 +1728,6 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-        pKey = tmpBaseID;
 #if defined(__MACOSX_ENV__)
         pStr = AStr_NewA("${TMPDIR}");
 #endif
@@ -1458,12 +1735,12 @@ extern "C" {
         pStr = AStr_NewA("${TMP}");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), tmpBaseID, 0, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        pKey
+                        tmpBaseID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -1482,104 +1759,6 @@ extern "C" {
     }
     
     
-    
-    //---------------------------------------------------------------
-    //              P a r s e  A r g s  L o n g
-    //---------------------------------------------------------------
-    
-    int             main_ParseArgsLong(
-        MAIN_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    )
-    {
-        ERESULT         eRc;
-        PATH_DATA       *pPath = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        // Do something.
-        if (0 == strcmp("--macosx", **pppArgV)) {
-            eRc = main_DefaultsMacos(this);
-        }
-        else if (0 == strcmp("--msc32", **pppArgV)) {
-            eRc = main_DefaultsMsc32(this);
-        }
-        else if (0 == strcmp("--msc64", **pppArgV)) {
-            eRc = main_DefaultsMsc64(this);
-        }
-        else if (0 == strncmp("--input", **pppArgV, 6)) {
-            if (*(**pppArgV+6) == '\0') {
-                ++*pppArgV;
-                --*pArgC;
-                if (*pArgC <= 0) {
-                    appl_Usage((APPL_DATA *)this, "ERROR: --file is missing the path!\n");
-                    exit(8);
-                }
-                pPath = path_NewA(**pppArgV);
-            }
-            else {
-                **pppArgV += 6;
-                if (***pppArgV == '=') {
-                    ++**pppArgV;
-                    pPath = path_NewA(**pppArgV);
-                }
-            }
-            if (pPath) {
-                eRc = path_IsFile(pPath);
-                if (ERESULT_FAILED(eRc)) {
-                    appl_Usage(
-                               (APPL_DATA *)this,
-                               "ERROR: --file's path, %s, is not a valid file!\n",
-                               **pppArgV
-                               );
-                    exit(8);
-                }
-                main_setFilePath(this, pPath);
-                obj_Release(pPath);
-            }
-        }
-        else if (0 == strncmp("--out", **pppArgV, 5)) {
-            if (*(**pppArgV+5) == '\0') {
-                ++*pppArgV;
-                --*pArgC;
-                if (*pArgC <= 0) {
-                    appl_Usage((APPL_DATA *)this, "ERROR: --out is missing the path!\n");
-                    exit(8);
-                }
-                pPath = path_NewA(**pppArgV);
-            }
-            else {
-                pPath = path_NewA(**pppArgV+6);
-            }
-            if (pPath) {
-                main_setOutputPath(this, pPath);
-                obj_Release(pPath);
-            }
-        }
-        else {
-            appl_Usage(
-                       (APPL_DATA *)this,
-                       "ERROR: Illegal option, %s!\n",
-                       **pppArgV
-            );
-            exit(8);
-        }
-
-        // Return to caller.
-        return 0;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //              P a r s e  I n p u t  F i l e
     //---------------------------------------------------------------
@@ -1592,10 +1771,8 @@ extern "C" {
         //ERESULT         eRc;
         HJSON_DATA      *pObj = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
-        //NODEHASH_DATA   *pHash;
+        NODEHASH_DATA   *pHash;
         NODE_DATA       *pFileNode;
-        //NODE_DATA       *pNode;
-        //NODEARRAY_DATA  *pArray;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1631,7 +1808,22 @@ extern "C" {
             pObj = OBJ_NIL;
         }
         
-
+        if (this->pNodes) {
+            pHash = node_getData(this->pNodes);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+        
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1640,14 +1832,15 @@ extern "C" {
     ERESULT         main_ParseInputStr(
         MAIN_DATA       *this,
         const
-        char            *pStr
+        char            *pStrA
     )
     {
         //ERESULT         eRc;
         HJSON_DATA      *pObj = OBJ_NIL;
         ASTR_DATA       *pWrk = OBJ_NIL;
         NODE_DATA       *pFileNode;
-        
+        NODEHASH_DATA   *pHash;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1655,13 +1848,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (NULL == pStr) {
+        if (NULL == pStrA) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pObj = hjson_NewA(pStr, 4);
+        pObj = hjson_NewA(pStrA, 4);
         if (pObj) {
             
             if  (appl_getDebug((APPL_DATA *)this)) {
@@ -1682,6 +1875,21 @@ extern "C" {
             pObj = OBJ_NIL;
         }
         
+        if (this->pNodes) {
+            pHash = node_getData(this->pNodes);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1925,14 +2133,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = main_ToDebugString(this,4);
-     @endcode:
-     @param:    this    MAIN object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    MAIN object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     main_ToDebugString(
         MAIN_DATA      *this,

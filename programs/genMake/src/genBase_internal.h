@@ -72,20 +72,14 @@ struct genBase_data_s	{
     uint16_t        makeType;       // Program, Library, etc
     uint16_t        osType;         // OSX, Win32, Win64, etc
     uint16_t        rsvd16;
-    ASTR_DATA       *pName;         // (Not Owned)
+    DATETIME_DATA   *pDateTime;
     NODEHASH_DATA   *pDict;
     NODE_DATA       *pNodes;
-    DATETIME_DATA   *pDateTime;
-    TEXTOUT_DATA    *pOutput;
     NODEHASH_DATA   *pObjDirs;      // Object Directories
+    TEXTOUT_DATA    *pOutput;
     // The following are filled in from sections of the Node Tree.
-    NODEHASH_DATA   *pHeaders;      // (Not Owned)
-    NODEARRAY_DATA  *pLibDeps;      // (Not Owned)
-    NODEHASH_DATA   *pObjects;      // (Not Owned)
-    NODEARRAY_DATA  *pPrograms;     // (Not Owned)
-    NODEARRAY_DATA  *pRoutines;     // (Not Owned)
-    NODEHASH_DATA   *pTests;        // (Not Owned)
-
+    NODEARRAY_DATA  *pLibDeps;
+    
     PATH_DATA *     (*pLibIncludePath)(GENBASE_DATA *, const char *, const char *, const char *);
     PATH_DATA *     (*pLibInstalledPath)(GENBASE_DATA *, const char *, const char *, const char *);
     ASTR_DATA *     (*pLibName)(GENBASE_DATA *, const char *, const char *);
@@ -131,41 +125,6 @@ struct genBase_data_s	{
     
     
     ASTR_DATA *     genBase_GenInitial(
-        GENBASE_DATA    *this
-    );
-    
-    
-    ERESULT         genBase_GenLibrary(
-        GENBASE_DATA    *this
-    );
-    
-    
-    ERESULT         genBase_GenObject(
-        GENBASE_DATA    *this,
-        NODE_DATA       *pNode
-    );
-    
-    ERESULT         genBase_GenObjects(
-        GENBASE_DATA    *this
-    );
-    
-    
-    ERESULT         genBase_GenOSSpecific(
-        GENBASE_DATA    *this
-    );
-    
-    
-    ERESULT         genBase_GenPrograms(
-        GENBASE_DATA    *this
-    );
-    
-    
-    ERESULT         genBase_GenRoutines(
-        GENBASE_DATA    *this
-    );
-    
-    
-    ERESULT         genBase_GenTests(
         GENBASE_DATA    *this
     );
     

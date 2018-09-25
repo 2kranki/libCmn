@@ -77,7 +77,6 @@ struct textOut_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        offset;         //
     uint16_t        tabSize;        //
     char            offsetChr;
@@ -106,12 +105,6 @@ struct textOut_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            textOut_setLastError(
-        TEXTOUT_DATA     *this,
-        ERESULT         value
-    );
-
 
     OBJ_IUNKNOWN *  textOut_getSuperVtbl(
         TEXTOUT_DATA     *this

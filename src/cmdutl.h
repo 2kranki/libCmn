@@ -281,7 +281,7 @@ extern "C" {
      @param     this        Object Pointer
      @param     pOption     Pointer to CMDUTL_OPTION of option found
      @return:   If successful, true and the appropriate argument processing
-     was performed; otherwise, false.
+                    was performed; otherwise, false.
      */
     ERESULT         cmdutl_ProcessOption(
         CMDUTL_DATA     *this,

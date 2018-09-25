@@ -1,24 +1,23 @@
 {
-    "name":"genMake",
-    "type":"program",
-    "lib_deps":["Cmn"],
-    "headers_private":
-    [
-        "genMake.h"
-    ],
-    "headers_public":
-    [
-    ],
-    "headers_test":
-    [
-        "test_defs.h"
-    ],
-    "objects":
-    {
-        "genBase":["genMake"],
-        "genOSX":["genMake"],
-        "genWIN":["genMake"],
-        "main":["genMake"]
+    "program":{
+        "name":"genMake",
+        "lib_deps":["Cmn"],
+        "headers_private":[
+            "genMake.h"
+        ],
+        "headers_public":[
+        ],
+        "headers_test":[
+            "test_defs.h"
+        ],
+        "main":"mainProgram.c"
+    },
+    "objects":{
+        "dbprs":{"deps":["genMake.h"], "test":null},
+        "genBase":{"deps":["genMake.h"], "test":null},
+        "genOSX":{"deps":["genMake.h"], "test":null},
+        "genWIN":{"deps":["genMake.h"], "test":null},
+        "main":{"deps":["genMake.h"], "test":null},
     },
     "routines":
     [
@@ -28,11 +27,4 @@
     },
     "win32": {
     },
-    "tests":
-    {
-        "test_genBase.c":null,
-        "test_genOSX.c":null,
-        "test_genWIN.c":null,
-        "test_main.c":null
-    }
 }

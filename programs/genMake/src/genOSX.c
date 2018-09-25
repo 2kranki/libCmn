@@ -51,8 +51,19 @@
 extern "C" {
 #endif
     
+    const
+    char        *pDirObjA = "OBJDIR";
+    const
+    char        *pDirSrcA = "SRCDIR";
+    const
+    char        *pObjNameSuffixA = "_object";
+    const
+    char        *pObjsA = "OBJS";
+    const
+    char        *pTestNamePrefixA = "test_";
+    const
+    char        *pTestsA = "TESTS";
 
-    
 
 
  
@@ -94,10 +105,10 @@ extern "C" {
         }
 #endif
         if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
+            pSrcDir = pDirSrcA;
         }
         if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
+            pObjDir = pDirObjA;
         }
         if (NULL == pObjVar) {
             pObjDir = "OBJS";
@@ -107,13 +118,16 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        if (0 == strcmp(pObjDir, "OBJDIR")) {
+        if (0 == strcmp(pObjDir, pDirObjA)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "%s += $(OBJDIR)/%s.o $(OBJDIR)/%s_object.o\n\n",
+                                     "%s += $(%s)/%s.o $(%s)/%s%s.o\n\n",
                                      pObjVar,
+                                     pDirObjA,
                                      pName,
-                                     pName
+                                     pDirObjA,
+                                     pName,
+                                     pObjNameSuffixA
                     );
         }
         eRc =   AStr_AppendPrint(
@@ -182,10 +196,10 @@ extern "C" {
         }
 #endif
          if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
+            pSrcDir = pDirSrcA;
         }
         if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
+            pObjDir = pDirObjA;
         }
         if (NULL == pObjVar) {
             pObjDir = "OBJS";
@@ -209,7 +223,7 @@ extern "C" {
         }
         TRC_OBJ(this, "genOSX_CompileRoutine(\"%s\", %s", pName);
 
-        if (0 == strcmp(pObjDir, "OBJDIR")) {
+        if (0 == strcmp(pObjDir, pDirObjA)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
                                      "%s += $(%s)/%s.o\n\n",
@@ -266,7 +280,7 @@ extern "C" {
         else if (AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "$(%s)/%s.o: $(SRCDIR)/%s\n",
+                                     "$(%s)/%s.o: $(%s)/%s\n",
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
@@ -986,10 +1000,10 @@ extern "C" {
         }
 #endif
         if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
+            pSrcDir = pDirSrcA;
         }
         if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
+            pObjDir = pDirObjA;
         }
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
@@ -1077,7 +1091,6 @@ extern "C" {
         }
 #endif
 
-        //genOSX_setBase(this, OBJ_NIL);
         //genOSX_setDict(this, OBJ_NIL);
         genOSX_setName(this, OBJ_NIL);
 
@@ -1306,13 +1319,13 @@ extern "C" {
                             true,
                             false
                     );
+        obj_Release(pFileExt);
+        pFileExt = OBJ_NIL;
         if (pWrkStr) {
             eRc = AStr_Append(pStr, pWrkStr);
             obj_Release(pWrkStr);
             pWrkStr = OBJ_NIL;
         }
-        obj_Release(pFileExt);
-        pFileExt = OBJ_NIL;
 
         eRc = AStr_AppendA(pFileName, ".c");
         pWrkStr =   genOSX_GenCompileRoutine(
@@ -1327,13 +1340,13 @@ extern "C" {
                                              true,
                                              false
                     );
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
         if (pWrkStr) {
             eRc = AStr_Append(pStr, pWrkStr);
             obj_Release(pWrkStr);
             pWrkStr = OBJ_NIL;
         }
-        obj_Release(pFileName);
-        pFileName = OBJ_NIL;
         
         
         // Return to caller.
@@ -1383,13 +1396,13 @@ extern "C" {
         }
 #endif
         if (NULL == pSrcDir) {
-            pSrcDir = "SRCDIR";
+            pSrcDir = pDirSrcA;
         }
         if (NULL == pObjDir) {
-            pObjDir = "OBJDIR";
+            pObjDir = pDirObjA;
         }
         if (NULL == pObjVar) {
-            pObjVar = "OBJS";
+            pObjVar = pObjsA;
         }
         pPath = path_NewA(pName);
         if (OBJ_NIL == pPath) {
@@ -1434,7 +1447,7 @@ extern "C" {
                     pNode = nodeArray_Get(pSrcDeps, (i + 1));
                     if (pNode) {
                         pWrkStr = node_getData(pNode);
-                        if (pWrkStr) {
+                        if (pWrkStr && obj_IsKindOf(this, OBJ_IDENT_ASTR)) {
                             eRc =   AStr_AppendPrint(
                                                 pStr,
                                                 "$(%s)/%s ",
@@ -1521,7 +1534,7 @@ extern "C" {
                  || (AStr_CompareA(pFileExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
             eRc =   AStr_AppendPrint(
                                      pStr,
-                                     "$(%s)/%s.o: $(SRCDIR)/%s\n",
+                                     "$(%s)/%s.o: $(%s)/%s\n",
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
@@ -1943,12 +1956,12 @@ extern "C" {
         AStr_AppendA(pStr, "\n\n\n");
         
         AStr_AppendA(pStr, ".PHONY: test\n");
-        AStr_AppendA(pStr, "test: $(TESTS)\n\n");
+        AStr_AppendA(pStr, "test: $(TESTS)\n\n\n");
         
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
-        AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
+        AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n");
         
-        AStr_AppendA(pStr, "\n\n.PHONY: install\ninstall:\n");
+        AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
         AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
         AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; "
                             "[ ! -d $(LIBNAM)/include ] && "
@@ -1961,7 +1974,11 @@ extern "C" {
         
         AStr_AppendA(pStr, ".PHONY: create_dirs\n");
         AStr_AppendA(pStr, "create_dirs:\n");
-        AStr_AppendA(pStr, "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)\n\n\n");
+        AStr_AppendPrint(pStr,
+                    "\t[ ! -d $(%s) ] && mkdir -p $(%s)\n\n\n",
+                     pDirObjA,
+                     pDirObjA
+        );
         
         AStr_AppendA(pStr, ".PHONY: all\n");
         AStr_AppendA(pStr, "all:  clean create_dirs $(LIBPATH)\n\n\n\n");
@@ -2009,7 +2026,7 @@ extern "C" {
         }
         AStr_AppendPrint(pOut, "\n");
         //AStr_AppendPrint(pOut, "CC=clang\n");
-        pStr = AStr_NewA("LIBNAM=${" DICT_LIB_PREFIX "}${" DICT_NAME "}\n");
+        pStr = AStr_NewA("LIBNAM=${" namePrefixID "}${" nameID "}\n");
         if (pStr) {
             eRc = genBase_DictExpand((GENBASE_DATA *)this, pStr);
             AStr_AppendPrint(pOut, AStr_getData(pStr));
@@ -2023,7 +2040,7 @@ extern "C" {
             char            *pLibIncludePrefix;
             pNode = nodeHash_FindA(
                             genBase_getDict((GENBASE_DATA *)this),
-                            DICT_LIB_PREFIX
+                            namePrefixID
                     );
             pLibIncludePrefix = AStr_getData(node_getData(pNode));
             iMax = nodeArray_getSize(genBase_getLibDeps((GENBASE_DATA *)this));
@@ -2052,18 +2069,18 @@ extern "C" {
         AStr_AppendA(pOut, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
         AStr_AppendA(pOut, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
         AStr_AppendA(pOut, "LIBDIR = $(BASEDIR)/$(SYS)\n");
-        AStr_AppendA(pOut, "SRCDIR = ./src\nSRCSYSDIR = ./src/$(SYS)\n");
+        AStr_AppendPrint(pOut, "%s = ./src\nSRCSYSDIR = ./src/$(SYS)\n", pDirSrcA);
         AStr_AppendA(pOut, "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n");
         AStr_AppendA(pOut, "LIB_FILENAME=$(LIBNAM)R.a\n");
-        AStr_AppendA(pOut, "OBJDIR = $(LIBDIR)/o/r\n");
+        AStr_AppendPrint(pOut, "%s = $(LIBDIR)/o/r\n", pDirObjA);
         AStr_AppendA(pOut, "else   #DEBUG\nCFLAGS += -D_DEBUG \n");
         AStr_AppendA(pOut, "LIB_FILENAME=$(LIBNAM)D.a\n");
-        AStr_AppendA(pOut, "OBJDIR = $(LIBDIR)/o/d\n");
+        AStr_AppendPrint(pOut, "%s = $(LIBDIR)/o/d\n", pDirObjA);
         AStr_AppendA(pOut, "endif  #NDEBUG\n");
         AStr_AppendA(pOut, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n");
         AStr_AppendA(pOut, ".SUFFIXES:\n.SUFFIXES: .asm .c .o\n\n");
-        AStr_AppendA(pOut, "OBJS = \n\n");
-        AStr_AppendA(pOut, "TESTS = \n\n");
+        AStr_AppendPrint(pOut, "%s = \n\n", pObjsA);
+        AStr_AppendPrint(pOut, "%s = \n\n", pTestsA);
         AStr_AppendA(pOut, "\n\n\n\n");
 
         // Return to caller.
@@ -2096,516 +2113,21 @@ extern "C" {
         );
         textOut_Print(
                 genBase_getOutput((GENBASE_DATA *)this),
-                "$(LIBPATH):  $(OBJS)\n"
+                "$(LIBPATH):  $(%s)\n",
+                pObjsA
         );
         textOut_Print(genBase_getOutput((GENBASE_DATA *)this),
                 "\t-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
         );
         textOut_Print(
                 genBase_getOutput((GENBASE_DATA *)this),
-                "\tar rc $(LIBPATH) $(OBJS)\n"
+                "\tar rc $(LIBPATH) $(%s)\n",
+                pObjsA
         );
         textOut_Print(
                 genBase_getOutput((GENBASE_DATA *)this),
                 "\n\n\n\n\n"
         );
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //          G e n e r a t e  O b j e c t s
-    //---------------------------------------------------------------
-    
-    ERESULT         genOSX_GenObjects(
-        GENOSX_DATA     *this
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pNode;
-        NODEHASH_DATA   *pObjects;
-        NODEARRAY_DATA  *pArray =  OBJ_NIL;
-        //ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pWrk = OBJ_NIL;
-        int             i;
-        int             iMax;
-        const
-        char            *pName;
-
-        pObjects = genBase_getObjects((GENBASE_DATA *)this);
-        if (pObjects) {
-            pArray = nodeHash_Nodes(pObjects);
-            if (OBJ_NIL == pArray) {
-            }
-            else {
-                BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
-                iMax = nodeArray_getSize(pArray);
-                for (i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(pArray, i+1);
-                    if (pNode) {
-                        pName = node_getNameUTF8(pNode);
-                        pWrk =  genOSX_CompileObjectStr(
-                                                      this,
-                                                      pName,
-                                                      "SRCDIR",
-                                                      "OBJDIR",
-                                                      NULL
-                                );
-                        //FIXME: fprintf(pOutput, "%s", AStr_getData(pWrk));
-                        obj_Release(pWrk);
-                        pWrk = OBJ_NIL;
-                        mem_Free((void *)pName);
-                    }
-                }
-            }
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //          G e n e r a t e  O / S  S p e c i f i c
-    //---------------------------------------------------------------
-    
-    ERESULT         genOSX_GenOSSpecific(
-        GENOSX_DATA     *this
-    )
-    {
-        //ERESULT         eRc;
-        NODEHASH_DATA   *pPrimaryHash = OBJ_NIL;
-        NODEHASH_DATA   *pSection = OBJ_NIL;
-        NAME_DATA       *pName;
-        NODE_DATA       *pNode;
-        NODEARRAY_DATA  *pArray =  OBJ_NIL;
-        int             i;
-        int             iMax;
-        ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrk;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genOSX_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pPrimaryHash = node_getData(genBase_getNodes((GENBASE_DATA *)this));
-        BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
-        if (pPrimaryHash) {
-            pNode = nodeHash_FindA(pPrimaryHash, "macosx");
-            if (OBJ_NIL == pNode) {
-            }
-            else {
-                pSection = node_getData(pNode);
-                if (obj_IsKindOf(pSection, OBJ_IDENT_NULL)) {
-                    pSection = OBJ_NIL;
-                }
-                else if (obj_IsKindOf(pSection, OBJ_IDENT_NODEHASH)) {
-                }
-                else {
-                    DEBUG_BREAK();
-                }
-            }
-        }
-
-        // The "macosx" section contains the sub-sections, "headers" and "sources".
-        // The "headers" need to be copied to the "macosx" subdirectory of the
-        // library header. So, the subdirectory needs to be created as well as
-        // the headers copied across.
-        
-        if (pSection) {
-            pArray = nodeHash_Nodes(pSection);
-            if (OBJ_NIL == pArray) {
-            }
-            else {
-                iMax = nodeArray_getSize(pArray);
-                for (i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(pArray, i+1);
-                    if (pNode) {
-                        pName = node_getName(pNode);
-                        pStr = name_getStrA(pName);
-                        pWrk = AStr_Copy(pStr);
-                        if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".s") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".S") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        else if (AStr_CompareRightA(pWrk, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 4));
-                        }
-#ifdef XYZZY
-                        fprintf(
-                                pOutput,
-                                "OBJS += $(OBJDIR)/%s.o\n",
-                                AStr_getData(pWrk)
-                                );
-                        fprintf(pOutput, "\n");
-                        fprintf(pOutput, "\n");
-                        fprintf(pOutput,
-                                "$(OBJDIR)/%s.o: src/$(SYS)/%s\n",
-                                AStr_getData(pWrk),
-                                AStr_getData(pStr)
-                                );
-                        if (AStr_CompareRightA(pStr, ".c") == ERESULT_SUCCESS_EQUAL) {
-                            fprintf(pOutput,
-                                    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) "
-                                    "src/$(SYS)/%s\n",
-                                    AStr_getData(pStr)
-                                    );
-                        }
-                        else if (AStr_CompareRightA(pStr, ".asm") == ERESULT_SUCCESS_EQUAL) {
-                            fprintf(pOutput,
-                                    "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) "
-                                    "src/$(SYS)/%s\n",
-                                    AStr_getData(pStr)
-                                    );
-                        }
-                        else if (AStr_CompareRightA(pStr, ".s") == ERESULT_SUCCESS_EQUAL) {
-                            fprintf(pOutput,
-                                    "\t$(AS) $(AFLAGS) -o $(OBJDIR)/$(@F) "
-                                    "src/$(SYS)/%s\n",
-                                    AStr_getData(pStr)
-                                    );
-                        }
-                        else if (AStr_CompareRightA(pStr, ".cpp") == ERESULT_SUCCESS_EQUAL) {
-                            fprintf(pOutput,
-                                    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) "
-                                    "src/$(SYS)/%s\n",
-                                    AStr_getData(pStr)
-                                    );
-                        }
-                        fprintf(pOutput, "\n");
-                        fprintf(pOutput, "\n");
-#endif
-                        obj_Release(pWrk);
-                        pWrk = OBJ_NIL;
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                    }
-                }
-            }
-#ifdef XYZZY
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-#endif
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //         G e n e r a t e  P r o g r a m s
-    //---------------------------------------------------------------
-    
-    ERESULT         genOSX_GenProgram(
-        GENOSX_DATA     *this,
-        NODEHASH_DATA   *pProgram
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pNode;
-        NODEARRAY_DATA  *pLibDeps = OBJ_NIL;
-        NODEHASH_DATA   *pObjects = OBJ_NIL;
-        NODEARRAY_DATA  *pRoutines = OBJ_NIL;
-        NODEHASH_DATA   *pTests = OBJ_NIL;
-        NODEHASH_DATA   *pMacosx = OBJ_NIL;
-        //NODEHASH_DATA   *pWin32 = OBJ_NIL;
-        ASTR_DATA       *pName = OBJ_NIL;
-        ASTR_DATA       *pDir = OBJ_NIL;
-        //DATETIME_DATA   *pDateTime = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genOSX_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pProgram) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        BREAK_FALSE((obj_IsKindOf(pProgram, OBJ_IDENT_NODEHASH)));
-        pNode = nodeHash_FindA(pProgram, "name");
-        if (NULL == pNode) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-        else {
-            pNode = node_getData(pNode);
-            pName = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pName, OBJ_IDENT_ASTR)));
-        }
-        pNode = nodeHash_FindA(pProgram, "sub_dir");
-        if (NULL == pNode) {
-            pDir = pName;
-        }
-        else {
-            pNode = node_getData(pNode);
-            pDir = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pDir, OBJ_IDENT_ASTR)));
-        }
-        pNode = nodeHash_FindA(pProgram, "lib_deps");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pLibDeps = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pLibDeps, OBJ_IDENT_NODEARRAY)));
-        }
-        pNode = nodeHash_FindA(pProgram, "objects");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pObjects = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pObjects, OBJ_IDENT_NODEHASH)));
-        }
-        pNode = nodeHash_FindA(pProgram, "routines");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pRoutines = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
-        }
-        pNode = nodeHash_FindA(pProgram, "tests");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pTests = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
-        }
-        pNode = nodeHash_FindA(pProgram, "macosx");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            pMacosx = node_getData(pNode);
-            BREAK_FALSE((obj_IsKindOf(pMacosx, OBJ_IDENT_NODEHASH)));
-        }
-        
-#ifdef XYZZY
-        //genOSX_GenInitial(this, pName, pLibDeps, pDateTime, pOutput);
-        
-        if (pObjects || pRoutines) {
-            //FIXME: fprintf(pOutput, "\n");
-            //FIXME: fprintf(pOutput, "OBJS_%s =\n", AStr_getData(pName));
-            if (pObjects) {
-                genOSX_GenObjects(this, pObjects, pOutput);
-            }
-            if (pRoutines) {
-                genOSX_GenRoutines(this, pRoutines, pOutput);
-            }
-        }
-        
-        //genOSX_GenOSSpecific(this, pMacosx, pOutput);
-        //genOSX_GenLibrary(this, pOutput);
-        //genOSX_GenTests(this, pTests, pOutput);
-        //genOSX_GenFinal(this, pOutput);
-#endif
-
-        // Return to caller.
-        return ERESULT_SUCCESS_FALSE;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //          G e n e r a t e  R o u t i n e s
-    //---------------------------------------------------------------
-    
-    ERESULT         genOSX_GenRoutines(
-        GENOSX_DATA     *this
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pNode;
-        NODEARRAY_DATA  *pRoutines =  OBJ_NIL;
-        //NODEARRAY_DATA  *pArray =  OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pWrk = OBJ_NIL;
-        int             i;
-        int             iMax;
-        //const
-        //char            *pName;
-        
-        pRoutines = genBase_getRoutines((GENBASE_DATA *)this);
-        if (pRoutines) {
-            iMax = nodeArray_getSize(pRoutines);
-            for (i=0; i<iMax; ++i) {
-                pNode = nodeArray_Get(pRoutines, i+1);
-                if (pNode) {
-                    pStr = node_getData(pNode);
-                    pWrk =  genOSX_CompileRoutineStr(
-                                                     this,
-                                                     AStr_getData(pStr),
-                                                     "SRCDIR",
-                                                     "OBJDIR",
-                                                     NULL
-                                                     );
-                    if (pWrk) {
-#ifdef XYZZY
-                        fprintf(pOutput, "%s", AStr_getData(pWrk));
-#endif
-                        obj_Release(pWrk);
-                        pWrk = OBJ_NIL;
-                    }
-#ifndef NDEBUG
-                    else {
-                        DEBUG_BREAK();
-                    }
-#endif
-                }
-            }
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //              G e n e r a t e  T e s t s
-    //---------------------------------------------------------------
-    
-    ERESULT         genOSX_GenTests(
-        GENOSX_DATA     *this
-    )
-    {
-        //ERESULT         eRc;
-        NODEHASH_DATA   *pTests =  OBJ_NIL;
-#ifdef XYZZY
-        NODE_DATA       *pNode;
-        NODEARRAY_DATA  *pArray =  OBJ_NIL;
-        NODEARRAY_DATA  *pDeps =  OBJ_NIL;
-        NODE_DATA       *pDep;
-        ASTR_DATA       *pStr;
-        int             i;
-        int             iMax;
-        int             j;
-        int             jMax;
-#endif
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genOSX_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pTests = genBase_getTests((GENBASE_DATA *)this);
-        if (pTests) {
-            //FIXME: Re-implement!
-#ifdef XYZZY
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "TESTS =\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            pArray = nodeHash_Nodes(pTests);
-            if (OBJ_NIL == pArray) {
-            }
-            else {
-                BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
-                iMax = nodeArray_getSize(pArray);
-                for (i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(pArray, i+1);
-                    if (pNode) {
-                        ASTR_DATA       *pWrk;
-                        BREAK_FALSE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
-                        pStr = name_getStrA(node_getName(pNode));
-                        pWrk = AStr_Copy(pStr);
-                        if (AStr_CompareRightA(pWrk, ".c") == ERESULT_SUCCESS_EQUAL) {
-                            AStr_Truncate(pWrk, (AStr_getLength(pWrk) - 2));
-                        }
-                        fprintf(pOutput, "TESTS += %s\n", AStr_getData(pWrk));
-                        fprintf(pOutput, "\n");
-                        fprintf(pOutput, "%s:\n", AStr_getData(pWrk));
-                        fprintf(pOutput,
-                                "\t$(CC) "
-                                "$(CFLAGS) "
-                                "$(CFLAGS_LIBS) "
-                                "-L$(LIBDIR) "
-                                "-Itests "
-                                "$(LIBPATH) "
-                                "-o $(OBJDIR)/$(@F) "
-                                "tests/%s ",
-                                AStr_getData(pStr)
-                                );
-                        pDep = node_getData(pNode);
-                        if (pDep) {
-                            BREAK_FALSE((obj_IsKindOf(pDep, OBJ_IDENT_NODE)));
-                            pDeps = node_getData(pDep);
-                        }
-                        else {
-                            pDeps = OBJ_NIL;
-                        }
-                        if (pDeps && obj_IsKindOf(pDeps, OBJ_IDENT_NODEARRAY)) {
-                            jMax = nodeArray_getSize(pDeps);
-                            for (j=0; j<jMax; ++j) {
-                                pNode = nodeArray_Get(pDeps, j+1);
-                                if (pNode) {
-                                    ASTR_DATA       *pWrk;
-                                    pWrk = node_getData(pNode);
-                                    if (pWrk && obj_IsKindOf(pWrk, OBJ_IDENT_ASTR)) {
-                                        fprintf(pOutput,
-                                                "tests/%s ",
-                                                AStr_getData(pWrk)
-                                                );
-                                    }
-                                }
-                            }
-                            obj_Release(pDeps);
-                            pDeps = OBJ_NIL;
-                        }
-                        fprintf(pOutput, "\n");
-                        fprintf(pOutput, "\t$(OBJDIR)/$(@F) ./tests\n");
-                        fprintf(pOutput, "\n");
-                        fprintf(pOutput, "\n");
-                        
-                        obj_Release(pWrk);
-                    }
-                }
-                obj_Release(pArray);
-                pArray = OBJ_NIL;
-            }
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, ".PHONY: test\n");
-            fprintf(pOutput, "test:  $(TESTS)\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-            fprintf(pOutput, "\n");
-#endif
-        }
 
         // Return to caller.
         return ERESULT_SUCCESS;

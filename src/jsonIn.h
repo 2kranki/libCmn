@@ -60,9 +60,11 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <false.h>
 #include        <node.h>
 #include        <nodeHash.h>
 #include        <null.h>
+#include        <true.h>
 
 
 #ifndef         JSONIN_H
@@ -136,6 +138,12 @@ extern "C" {
         NODE_DATA       *pNode
     );
     
+
+    FALSE_DATA *     jsonIn_CheckNodeDataForFalse(
+        NODE_DATA       *pNode
+    );
+    
+    
     /*!
      Check the given node's data for a node hash and return it if found.
      @param     pNode   the given node pointer
@@ -171,7 +179,12 @@ extern "C" {
     );
     
     
+    TRUE_DATA *     jsonIn_CheckNodeDataForTrue(
+        NODE_DATA       *pNode
+    );
     
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -222,7 +235,7 @@ extern "C" {
      @param     ppData  Pointer to Data Object Pointer to be returned if
                         ERESULT_SUCCESS is returned.
      @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
-     if pInt is non-null, otherwise, ERESULT_* error code.
+                if pInt is non-null, otherwise, ERESULT_* error code.
      */
     ERESULT         jsonIn_FindNodeInHashA(
         JSONIN_DATA     *this,
@@ -261,9 +274,9 @@ extern "C" {
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppArray Pointer to a node array pointer where data is to be returned if
-     ERESULT_SUCCESS is returned.
+                ERESULT_SUCCESS is returned.
      @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
-     if ppArray is non-null.  Otherwise, ERESULT_* error code.
+                if ppArray is non-null.  Otherwise, ERESULT_* error code.
      */
     ERESULT         jsonIn_FindArrayNodeInHashA(
         JSONIN_DATA     *this,

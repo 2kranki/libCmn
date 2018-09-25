@@ -386,52 +386,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          N a m e
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     genBase_getName(
-        GENBASE_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pName;
-    }
-    
-    
-    bool            genBase_setName(
-        GENBASE_DATA    *this,
-        ASTR_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pName) {
-            obj_Release(this->pName);
-        }
-        this->pName = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //         S c a n n e d  D a t a b a s e  N o d e s
     //---------------------------------------------------------------
     
@@ -519,29 +473,6 @@ extern "C" {
         this->pObjDirs = pValue;
         
         return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      O b j e c t s
-    //---------------------------------------------------------------
-    
-    NODEHASH_DATA * genBase_getObjects(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pObjects;
     }
     
     
@@ -635,52 +566,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                      P r o g r a m s
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * genBase_getPrograms(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pPrograms;
-    }
-
-    
-    
-    //---------------------------------------------------------------
-    //                      R o u t i n e s
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * genBase_getRoutines(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pRoutines;
-    }
-    
-    
-    
    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -726,29 +611,6 @@ extern "C" {
     
   
 
-    //---------------------------------------------------------------
-    //                      T e s t s
-    //---------------------------------------------------------------
-    
-    NODEHASH_DATA * genBase_getTests(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pTests;
-    }
-    
-    
-    
 
 
     //===============================================================
@@ -958,6 +820,7 @@ extern "C" {
 
         genBase_setDateTime(this, OBJ_NIL);
         genBase_setDict(this, OBJ_NIL);
+        genBase_setLibDeps(this, OBJ_NIL);
         genBase_setNodes(this, OBJ_NIL);
         genBase_setObjDirs(this, OBJ_NIL);
         genBase_setOutput(this, OBJ_NIL);
@@ -1160,6 +1023,8 @@ extern "C" {
         uint32_t        i = 0;
         uint32_t        iBegin;
         uint32_t        len;
+        uint32_t        lenPrefix;
+        uint32_t        lenSuffix;
         int32_t         chr;
         bool            fMore = true;
         //PATH_DATA       *pPath = OBJ_NIL;
@@ -1207,8 +1072,11 @@ extern "C" {
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
-                    
+                    lenPrefix = 2;
+                    lenSuffix = 1;
+
                     // Find the name from the Dictionary.
+                do_replace:
                     pNode = nodeHash_FindA(this->pDict, AStr_getData(pName));
                     if (OBJ_NIL == pNode) {
                         obj_Release(pName);
@@ -1223,15 +1091,19 @@ extern "C" {
                     }
 
                     // Substitute the name from the Dictionary.
-                    eRc = AStr_Remove(pStr, iBegin-2, len+3);
+                    eRc =   AStr_Remove(
+                                pStr,
+                                (iBegin - lenPrefix),
+                                (len + lenPrefix + lenSuffix)
+                            );
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
-                    eRc = AStr_InsertA(pStr, iBegin-2, AStr_getData(pData));
+                    eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStr_getData(pData));
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
-                    i = iBegin - 2 + AStr_getSize(pData);
+                    i = iBegin - lenPrefix + AStr_getSize(pData);
                     pEnvVar = NULL;
                     pData = OBJ_NIL;
                     pNode = OBJ_NIL;
@@ -1260,35 +1132,11 @@ extern "C" {
                         if (ERESULT_FAILED(eRc)) {
                             return ERESULT_OUT_OF_MEMORY;
                         }
+                        lenPrefix = 1;
+                        lenSuffix = 0;
                         
-                        // Find the name from the Dictionary.
-                        pNode = nodeHash_FindA(this->pDict, AStr_getData(pName));
-                        if (OBJ_NIL == pNode) {
-                            obj_Release(pName);
-                            return ERESULT_DATA_NOT_FOUND;
-                        }
-                        obj_Release(pName);
-                        pName = OBJ_NIL;
-                        pData = node_getData(pNode);
-                        if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
-                            DEBUG_BREAK();
-                            return ERESULT_DATA_MISSING;
-                        }
-                        
-                        // Substitute the name from the Dictionary.
-                        eRc = AStr_Remove(pStr, iBegin-1, len+1);
-                        if (ERESULT_FAILED(eRc)) {
-                            return ERESULT_OUT_OF_MEMORY;
-                        }
-                        eRc = AStr_InsertA(pStr, iBegin-1, AStr_getData(pData));
-                        if (ERESULT_FAILED(eRc)) {
-                            return ERESULT_OUT_OF_MEMORY;
-                        }
-                        i = iBegin - 1 + AStr_getSize(pData);
-                        pEnvVar = NULL;
-                        pData = OBJ_NIL;
-                        pNode = OBJ_NIL;
-                        fMore = true;
+                        goto do_replace;
+
                     }
                     else
                         return ERESULT_PARSE_ERROR;
@@ -1584,190 +1432,6 @@ ASTR_DATA *     genBase_GenInitial(
 
 
 //---------------------------------------------------------------
-//         G e n e r a t e  L i b r a r y
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenLibrary(
-    GENBASE_DATA    *this
-)
-{
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    //obj_Enable(this);
-    
-    // Put code here...
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-ERESULT         genBase_GenObjects(
-    GENBASE_DATA    *this
-)
-{
-    ERESULT         eRc;
-    NODE_DATA       *pNode;
-    NODEARRAY_DATA  *pArray =  OBJ_NIL;
-    int             i;
-    int             iMax;
-
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    if (this->pObjects) {
-        pArray = nodeHash_Nodes(this->pObjects);
-        if (OBJ_NIL == pArray) {
-        }
-        else {
-            BREAK_FALSE((obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)));
-            iMax = nodeArray_getSize(pArray);
-            for (i=0; i<iMax; ++i) {
-                pNode = nodeArray_Get(pArray, i+1);
-                if (pNode) {
-                    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenObject(this, pNode);
-                    if (ERESULT_FAILED(eRc)) {
-                        DEBUG_BREAK();
-                        exit(102);
-                    }
-                    
-                }
-            }
-        }
-    }
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-//---------------------------------------------------------------
-//         G e n e r a t e  O / S  S p e c i f i c
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenOSSpecific(
-    GENBASE_DATA    *this
-)
-{
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    //obj_Enable(this);
-    
-    // Put code here...
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-//---------------------------------------------------------------
-//         G e n e r a t e   P r o g r a m s
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenPrograms(
-    GENBASE_DATA    *this
-)
-{
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    // Put code here...
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-//---------------------------------------------------------------
-//         G e n e r a t e   R o u t i n e s
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenRoutines(
-    GENBASE_DATA    *this
-)
-{
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    //obj_Enable(this);
-    
-    // Put code here...
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-//---------------------------------------------------------------
-//         G e n e r a t e  T e s t s
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenTests(
-    GENBASE_DATA    *this
-)
-{
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    //obj_Enable(this);
-    
-    // Put code here...
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-//---------------------------------------------------------------
 //  G e n e r a t e  C o m p i l a t i o n  R u l e s
 //---------------------------------------------------------------
 
@@ -1874,9 +1538,9 @@ ERESULT         genBase_GenMakefile(
     TEXTOUT_DATA        *pOutput
 )
 {
-    ERESULT             eRc = ERESULT_SUCCESS;
-    NODE_DATA           *pNode;
-    NODEHASH_DATA       *pPrimaryHash = OBJ_NIL;
+    //ERESULT             eRc = ERESULT_SUCCESS;
+    //NODE_DATA           *pNode;
+    //NODEHASH_DATA       *pPrimaryHash = OBJ_NIL;
 
     // Do initialization.
 #ifdef NDEBUG
@@ -1891,6 +1555,7 @@ ERESULT         genBase_GenMakefile(
     genBase_setNodes(this, pNodes);
     genBase_setOutput(this, pOutput);
 
+#ifdef XYZZY
     pPrimaryHash = node_getData(pNodes);
     BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
     if (pPrimaryHash) {
@@ -2022,6 +1687,7 @@ ERESULT         genBase_GenMakefile(
         DEBUG_BREAK();
         exit(102);
     }
+#endif
     
     // Return to caller.
     return ERESULT_SUCCESS_FALSE;
@@ -2076,7 +1742,6 @@ ERESULT         genBase_GenMakefile(
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "genBase::offsetof(eRc) = %lu\n", offsetof(GENBASE_DATA,eRc));
         //fprintf(stderr, "genBase::sizeof(GENBASE_DATA) = %lu\n", sizeof(GENBASE_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(GENBASE_DATA));

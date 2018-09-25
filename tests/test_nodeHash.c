@@ -254,9 +254,9 @@ int         test_nodeHash_Merge01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pHash1 = nodeHash_New(10);
+    pHash1 = nodeHash_New(NODEHASH_TABLE_SIZE_XXXXSMALL);
     XCTAssertFalse( (OBJ_NIL == pHash1) );
-    pHash2 = nodeHash_New(5);
+    pHash2 = nodeHash_New(NODEHASH_TABLE_SIZE_XXXXXSMALL);
     XCTAssertFalse( (OBJ_NIL == pHash2) );
     
     for (i=0; i<10; ++i) {
@@ -305,8 +305,70 @@ int         test_nodeHash_Merge01(
 
 
 
+int             test_nodeHash_Expand01(
+    const
+    char            *pTestName
+                                    )
+{
+    NODEHASH_DATA   *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pResult = "LIBNAM=libTest\n";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = nodeHash_New(NODEHASH_TABLE_SIZE_XXXXXSMALL);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pStr = AStr_NewA("lib");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        eRc = nodeHash_AddA(pObj, "lib_prefix", 0, pStr);
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pStr = AStr_NewA("Test");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        eRc = nodeHash_AddA(pObj, "name", 0, pStr);
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pStr = AStr_NewA("LIBNAM=${lib_prefix}${name}\n");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = nodeHash_Expand(pObj, pStr);
+            fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("LIBNAM=$lib_prefix$name\n");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = nodeHash_Expand(pObj, pStr);
+            fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_nodeHash);
+    TINYTEST_ADD_TEST(test_nodeHash_Expand01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_Merge01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);

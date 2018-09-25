@@ -97,6 +97,12 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new AStrC object from the provided character string
+     copying it for the new object.
+     @return:   If successful, an AStrC object which must be released,
+                otherwise OBJ_NIL.
+     */
     ASTRC_DATA *    AStrC_NewA(
         const
         char            *pStr
@@ -109,8 +115,22 @@ extern "C" {
     );
     
     
-    ASTRC_DATA *   AStrC_NewFromUtf8File(
-        PATH_DATA       *pPath
+    ASTRC_DATA *   AStrC_NewFromAStr(
+        ASTR_DATA       *pStr
+    );
+    
+    
+    /*!
+     Create a new AStrC object from the provided character constant.
+     However, use the character constant as is.  Upon release of the
+     new object, the new AStrC object will not from the provided
+     character constant and will will just release the object.
+     @return:   If successful, an AStrC object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTRC_DATA *   AStrC_NewFromConstant(
+        const
+        char            *pStrA
     );
     
     
@@ -122,11 +142,6 @@ extern "C" {
 
     const
     char *          AStrC_getData(
-        ASTRC_DATA      *this
-    );
-    
-    
-    ERESULT         AStrC_getLastError(
         ASTRC_DATA      *this
     );
     
@@ -234,6 +249,16 @@ extern "C" {
         ASTRC_DATA      *this,
         uint32_t        offset,
         uint32_t        len
+    );
+    
+    
+    /*!
+     Create an AStr object from this string.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     AStrC_ToAStr(
+        ASTRC_DATA      *this
     );
     
     

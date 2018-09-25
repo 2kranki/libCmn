@@ -88,7 +88,8 @@
 extern "C" {
 #endif
     
-
+    // NOTE:    These options will be searched after the program option
+    //          defaults.  So, they can be over-ridden by the same.
     CMDUTL_OPTION       defaultOptDefns[] = {
         {
             NULL,                       // Long
@@ -393,7 +394,6 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return this->pArgs;
     }
     
@@ -417,7 +417,6 @@ extern "C" {
         }
         this->pArgs = pValue;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -511,7 +510,6 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return this->pDateTime;
     }
     
@@ -535,7 +533,6 @@ extern "C" {
         }
         this->pDateTime = pValue;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -564,7 +561,6 @@ extern "C" {
             fRc = true;
         }
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return fRc;
     }
     
@@ -586,7 +582,6 @@ extern "C" {
         else
             this->fDebug = false;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -610,7 +605,6 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return this->pEnv;
     }
     
@@ -634,7 +628,6 @@ extern "C" {
         }
         this->pEnv = pValue;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -663,55 +656,11 @@ extern "C" {
             fRc = true;
         }
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return fRc;
     }
     
     
     
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         appl_getLastError(
-        APPL_DATA       *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            appl_setLastError(
-        APPL_DATA       *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !appl_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     //---------------------------------------------------------------
     //                      P a r s e  A r g s
     //---------------------------------------------------------------
@@ -787,7 +736,6 @@ extern "C" {
         }
 #endif
 
-        appl_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -807,7 +755,6 @@ extern "C" {
 
         //this->priority = value;
 
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -831,7 +778,6 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return this->pProgramPath;
     }
     
@@ -855,7 +801,6 @@ extern "C" {
         }
         this->pProgramPath = pValue;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -879,7 +824,6 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return this->pProperties;
     }
     
@@ -903,7 +847,6 @@ extern "C" {
         }
         this->pProperties = pValue;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -932,7 +875,6 @@ extern "C" {
             fRc = true;
         }
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return fRc;
     }
     
@@ -950,7 +892,6 @@ extern "C" {
         }
 #endif
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
     
@@ -1007,7 +948,6 @@ extern "C" {
         
         iRc = this->iVerbose;
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return iRc;
     }
     
@@ -1040,20 +980,21 @@ extern "C" {
      */
     ERESULT         appl_Assign(
         APPL_DATA		*this,
-        APPL_DATA      *pOther
+        APPL_DATA       *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return appl_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
         if( !appl_Validate(pOther) ) {
             DEBUG_BREAK();
-            return appl_getLastError(pOther);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -1084,11 +1025,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        appl_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        appl_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return appl_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -1135,7 +1076,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        appl_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1192,14 +1132,13 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            appl_setLastError(this, ERESULT_INVALID_OBJECT);
-            return appl_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return appl_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -1208,8 +1147,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        appl_setLastError(this, ERESULT_SUCCESS);
-        return appl_getLastError(this);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -1228,7 +1166,7 @@ extern "C" {
     #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return appl_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
         
@@ -1237,8 +1175,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        appl_setLastError(this, ERESULT_SUCCESS);
-        return appl_getLastError(this);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -1259,14 +1196,13 @@ extern "C" {
 #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return appl_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
 #ifdef XYZZY
         eRc = appl_ParseArgs(this);
         if (ERESULT_FAILED(eRc)) {
-            appl_setLastError(this, eRc);
             return 16;
         }
 
@@ -1274,7 +1210,6 @@ extern "C" {
             if (this->pProcessInit) {
                 eRc = this->pProcessInit(this->pObjProcess);
                 if (ERESULT_FAILED(eRc)) {
-                    appl_setLastError(this, eRc);
                     return 16;
                 }
             }
@@ -1285,7 +1220,6 @@ extern "C" {
                 }
                 eRc = this->pProcessArg(this->pObjProcess, pStr);
                 if (ERESULT_FAILED(eRc)) {
-                    appl_setLastError(this, eRc);
                     return 16;
                 }
             }
@@ -1293,7 +1227,6 @@ extern "C" {
 #endif
 
         // Return to caller.
-        appl_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
     
@@ -1360,7 +1293,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&appl_Vtbl);
         
-        appl_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pDateTime = dateTime_NewCurrent( );
         if (OBJ_NIL == this->pDateTime) {
             DEBUG_BREAK();
@@ -1376,7 +1308,6 @@ extern "C" {
             return OBJ_NIL;
         }
         //fprintf(stderr, "sizeof(APPL_DATA) = %lu\n", sizeof(APPL_DATA));
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4((void *)sizeof(APPL_DATA));
     #endif
 
@@ -1399,18 +1330,16 @@ extern "C" {
 #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return appl_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            appl_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return appl_getLastError(this);
+            return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        appl_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return appl_getLastError(this);
+        return ERESULT_SUCCESS_FALSE;
     }
     
     
@@ -1430,7 +1359,7 @@ extern "C" {
 #else
         if( !appl_Validate(this) ) {
             DEBUG_BREAK();
-            return appl_getLastError(this);
+            return false;
         }
 #endif
         
@@ -1955,7 +1884,6 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(appl)}\n", this);
         AStr_AppendA(pStr, str);
         
-        appl_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -2137,12 +2065,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(APPL_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

@@ -1,0 +1,14 @@
+{
+    "library": {
+        "name":"Cmn",
+        "deps":null,
+        "headers":null,
+    }
+    "objects": {
+        "AStr":{"deps":["libCmn.h"], "json":true, "test":true},
+    },
+    "routines": [
+        "dllist.c",
+    ],
+}
+

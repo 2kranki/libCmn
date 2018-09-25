@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <textOut_internal.h>
+#include <utf8.h>
 
 
 
@@ -140,49 +141,6 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         textOut_getLastError(
-        TEXTOUT_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !textOut_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            textOut_setLastError(
-        TEXTOUT_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !textOut_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          O f f s e t
     //---------------------------------------------------------------
     
@@ -200,7 +158,6 @@ extern "C" {
         }
 #endif
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return this->offset;
     }
     
@@ -220,7 +177,6 @@ extern "C" {
         
         this->offset = value;
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -244,7 +200,6 @@ extern "C" {
         }
 #endif
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return this->offsetChr;
     }
     
@@ -264,7 +219,6 @@ extern "C" {
         
         this->offsetChr = value;
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -288,7 +242,6 @@ extern "C" {
         }
 #endif
 
-        textOut_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -309,7 +262,6 @@ extern "C" {
 
         //this->priority = value;
 
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -331,7 +283,6 @@ extern "C" {
         }
 #endif
 
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -355,7 +306,6 @@ extern "C" {
         }
 #endif
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
@@ -379,7 +329,6 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -404,7 +353,6 @@ extern "C" {
 #endif
 
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -428,7 +376,6 @@ extern "C" {
         }
 #endif
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return this->tabSize;
     }
     
@@ -449,7 +396,6 @@ extern "C" {
         this->tabSize = value;
         this->fTabify = 1;
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -480,10 +426,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         textOut_Assign(
-        TEXTOUT_DATA		*this,
-        TEXTOUT_DATA      *pOther
+        TEXTOUT_DATA	*this,
+        TEXTOUT_DATA    *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -525,11 +472,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        textOut_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        textOut_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return textOut_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -576,7 +523,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -646,7 +592,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -675,7 +620,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -717,7 +661,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&textOut_Vtbl);
         
-        textOut_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -729,10 +672,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "textOut::offsetof(eRc) = %lu\n", offsetof(TEXTOUT_DATA,eRc));
         //fprintf(stderr, "textOut::sizeof(TEXTOUT_DATA) = %lu\n", sizeof(TEXTOUT_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(TEXTOUT_DATA));
     #endif
 
@@ -810,6 +751,52 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       P u t  S t r i n g
+    //---------------------------------------------------------------
+    
+    ERESULT             textOut_PutA(
+        TEXTOUT_DATA        *this,
+        const
+        char                *pStrA
+    )
+    {
+        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        W32CHR_T            chr;
+        int                 len;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!textOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pStrA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        while (*pStrA) {
+            len = utf8_Utf8ToW32(pStrA, &chr);
+            if (len < 0) {
+                eRc = ERESULT_DATA_ERROR;
+                break;
+            }
+            eRc = textOut_Putwc(this, chr);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            pStrA += len;
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       P u t  C h a r
     //---------------------------------------------------------------
     
@@ -819,6 +806,7 @@ extern "C" {
         char            chr
     )
     {
+        ERESULT         eRc;
         int             iRc;
         
         // Do initialization.
@@ -833,23 +821,24 @@ extern "C" {
         switch (this->type) {
                 
             case TEXTOUT_TYPE_ASTR:
-                this->eRc = AStr_AppendCharW32(this->pStr, chr);
+                eRc = AStr_AppendCharW32(this->pStr, chr);
                 break;
                 
             case TEXTOUT_TYPE_FILE:
                 iRc = putc(chr, this->pFile);
-                this->eRc = ERESULT_SUCCESS;
+                eRc = ERESULT_SUCCESS;
                 if (iRc == EOF) {
-                    this->eRc = ERESULT_WRITE_ERROR;
+                    eRc = ERESULT_WRITE_ERROR;
                 }
                 break;
                 
             default:
+                eRc = ERESULT_GENERAL_FAILURE;
                 break;
         }
         
         // Return to caller.
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -859,6 +848,7 @@ extern "C" {
         W32CHR_T        chr
     )
     {
+        ERESULT         eRc;
         int             iRc;
         
         // Do initialization.
@@ -873,23 +863,24 @@ extern "C" {
         switch (this->type) {
 
             case TEXTOUT_TYPE_ASTR:
-                this->eRc = AStr_AppendCharW32(this->pStr, chr);
+                eRc = AStr_AppendCharW32(this->pStr, chr);
                 break;
 
             case TEXTOUT_TYPE_FILE:
                 iRc = putw(chr, this->pFile);
-                this->eRc = ERESULT_SUCCESS;
+                eRc = ERESULT_SUCCESS;
                if (iRc == EOF) {
-                    this->eRc = ERESULT_WRITE_ERROR;
+                    eRc = ERESULT_WRITE_ERROR;
                 }
                 break;
                 
             default:
+                eRc = ERESULT_GENERAL_FAILURE;
                 break;
         }
         
         // Return to caller.
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -1067,7 +1058,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1101,7 +1091,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        textOut_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1138,12 +1127,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(TEXTOUT_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

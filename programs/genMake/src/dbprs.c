@@ -342,7 +342,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -363,7 +362,6 @@ extern "C" {
 
         //this->priority = value;
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -385,7 +383,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -395,7 +392,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * dbprs_getStr(
+    ASTR_DATA *     dbprs_getStr(
         DBPRS_DATA     *this
     )
     {
@@ -409,7 +406,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
@@ -433,7 +429,6 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -458,7 +453,6 @@ extern "C" {
 #endif
 
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -493,6 +487,7 @@ extern "C" {
         DBPRS_DATA      *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -534,11 +529,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -598,7 +593,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -645,7 +639,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -719,7 +712,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -748,12 +740,45 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
 
 
+    //---------------------------------------------------------------
+    //                       F i n a l i z e
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_Finalize(
+        DBPRS_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pStr = ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenFinal(this->pGen);
+        if (pStr) {
+            AStr_Append(this->pStr, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            eRc = ERESULT_SUCCESS;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -790,7 +815,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&dbprs_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pStr = AStr_New( );
         if (OBJ_NIL == this->pStr) {
             DEBUG_BREAK();
@@ -835,12 +859,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -957,16 +979,14 @@ extern "C" {
     
     ERESULT         dbprs_ParseLibrary(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODEHASH_DATA   *pHash
     )
     {
         ERESULT         eRc;
-        NODEHASH_DATA   *pHashLib = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pStrWrk = OBJ_NIL;
         JSONIN_DATA     *pJsonIn = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -974,52 +994,32 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if(OBJ_NIL == pNode) {
+        if(OBJ_NIL == pHash) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+        if(!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
         BREAK_NULL(this->pDict);
 #endif
         
-        pStrWrk = name_ToString(node_getName(pNode));
-        if (pStrWrk) {
-            eRc = AStr_CompareA(pStrWrk, "library");
-            obj_Release(pStrWrk);
-            pStrWrk = OBJ_NIL;
-            if (ERESULT_SUCCESS_EQUAL == eRc)
-                ;
-            else {
-                return ERESULT_INVALID_PARAMETER;
-            }
-        }
-        else {
-            return ERESULT_INVALID_PARAMETER;
-        }
-
-        pHashLib = jsonIn_CheckNodeDataForHash(pNode);
-        if(OBJ_NIL == pHashLib) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-        pJsonIn = jsonIn_NewFromHash(pHashLib);
-        if(OBJ_NIL == pHashLib) {
+        pJsonIn = jsonIn_NewFromHash(pHash);
+        if(OBJ_NIL == pJsonIn) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
         
-        genBase_DictAddUpdateA(this->pGen, DICT_NAME_PREFIX, "lib");
-        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_NAME_PREFIX, &pStr);
+        genBase_DictAddA(this->pGen, namePrefixID, "lib");
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, namePrefixID, &pStr);
         if (!ERESULT_FAILED(eRc) && pStr) {
-            genBase_DictAddUpdate(this->pGen, DICT_NAME_PREFIX, pStr);
+            genBase_DictAdd(this->pGen, namePrefixID, pStr);
         }
 
-        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_NAME, &pStr);
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, nameID, &pStr);
         if (!ERESULT_FAILED(eRc) && pStr) {
-            genBase_DictAddUpdate(this->pGen, DICT_NAME, pStr);
+            genBase_DictAdd(this->pGen, nameID, pStr);
         }
         
         eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, "deps", &pArray);
@@ -1027,15 +1027,14 @@ extern "C" {
             genBase_setLibDeps(this->pGen, pArray);
         }
         
-
-        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_LIBDIR, &pStr);
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, libBaseID, &pStr);
         if (!ERESULT_FAILED(eRc) && pStr) {
-            genBase_DictAddUpdate(this->pGen, DICT_LIBDIR, pStr);
+            genBase_DictAdd(this->pGen, libBaseID, pStr);
         }
         
-        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, DICT_OBJDIR, &pStr);
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, objBaseID, &pStr);
         if (!ERESULT_FAILED(eRc) && pStr) {
-            genBase_DictAddUpdate(this->pGen, DICT_OBJDIR, pStr);
+            genBase_DictAdd(this->pGen, objBaseID, pStr);
         }
         
         genBase_setMakeType(this->pGen, GENMAKE_TYPE_LIB);
@@ -1044,6 +1043,7 @@ extern "C" {
             AStr_Append(this->pStr, pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
+            eRc = ERESULT_SUCCESS;
         }
 
         // Return to caller.
@@ -1133,11 +1133,7 @@ extern "C" {
                 pHash = pData;
                 pHashNode = nodeHash_FindA(pHash, "deps");
                 if (pHashNode) {
-                    pData = node_getData(pHashNode);    // Get "array" node.
-                    pData = node_getData(pData);        // Get NodeArray.
-                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                        pDepsObj = pData;
-                    }
+                    pDepsObj = jsonIn_CheckNodeDataForArray(pHashNode);
                 }
                 pHashNode = nodeHash_FindA(pHash, "json");
                 if (pHashNode) {
@@ -1165,19 +1161,11 @@ extern "C" {
                                 fJson = true;
                                 pHashNode = nodeHash_FindA(pHash, "deps");
                                 if (pHashNode) {
-                                    pData = node_getData(pHashNode);    // Get "array" node.
-                                    pData = node_getData(pData);        // Get NodeArray.
-                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                        pDepsJson = pData;
-                                    }
+                                    pDepsJson = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
                                 pHashNode = nodeHash_FindA(pHash, "srcs");
                                 if (pHashNode) {
-                                    pData = node_getData(pHashNode);    // Get "array" node.
-                                    pData = node_getData(pData);        // Get NodeArray.
-                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                        pSrcsJson = pData;
-                                    }
+                                    pSrcsJson = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
                             }
                         }
@@ -1185,11 +1173,7 @@ extern "C" {
                 }
                 pHashNode = nodeHash_FindA(pHash, "srcs");
                 if (pHashNode) {
-                    pData = node_getData(pHashNode);    // Get "array" node.
-                    pData = node_getData(pData);        // Get NodeArray.
-                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                        pSrcsObj = pData;
-                    }
+                    pSrcsObj = jsonIn_CheckNodeDataForArray(pHashNode);
                 }
                 pHashNode = nodeHash_FindA(pHash, "test");
                 if (pHashNode) {
@@ -1217,19 +1201,11 @@ extern "C" {
                                 fTest = true;
                                 pHashNode = nodeHash_FindA(pHash, "deps");
                                 if (pHashNode) {
-                                    pData = node_getData(pHashNode);    // Get "array" node.
-                                    pData = node_getData(pData);        // Get NodeArray.
-                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                        pDepsTest = pData;
-                                    }
+                                    pDepsTest = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
                                 pHashNode = nodeHash_FindA(pHash, "srcs");
                                 if (pHashNode) {
-                                    pData = node_getData(pHashNode);    // Get "array" node.
-                                    pData = node_getData(pData);        // Get NodeArray.
-                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                        pSrcsTest = pData;
-                                    }
+                                    pSrcsTest = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
                             }
                         }
@@ -1320,13 +1296,12 @@ extern "C" {
     
     ERESULT         dbprs_ParseObjects(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODEHASH_DATA   *pHash
     )
     {
         ERESULT         eRc;
-        OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNodeWrk = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
 
@@ -1337,41 +1312,113 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if(OBJ_NIL == pNode) {
+        if(OBJ_NIL == pHash) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+        if(!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        pData = node_getData(pNode);
-        if(OBJ_NIL == pData) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-        
-        if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-            pArray = pData;
-        }
-        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-            pArray = nodeHash_Nodes(pData);
-        }
+        pArray = nodeHash_Nodes(pHash);
         
         iMax = nodeArray_getSize(pArray);
         for(i=0; i<iMax; ++i) {
-            pNodeWrk = nodeArray_Get(pArray, (i+1));
-            if (pNodeWrk) {
-                if (obj_IsKindOf(node_getData(pNodeWrk), OBJ_IDENT_ASTR)) {
-                    eRc = dbprs_ParseObject(this, pData);
+            pNode = nodeArray_Get(pArray, (i+1));
+            if (pNode) {
+                if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
+                    eRc = dbprs_ParseObject(this, pNode);
                 }
             }
         }
         
         // Return to caller.
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
         return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  P r o g r a m
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_ParseProgram(
+        DBPRS_DATA      *this,
+        NODEHASH_DATA   *pHash
+    )
+    {
+        ERESULT         eRc;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        //ASTR_DATA       *pStrWrk = OBJ_NIL;
+        JSONIN_DATA     *pJsonIn = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pHash) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if(!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        BREAK_NULL(this->pDict);
+#endif
+        
+        pJsonIn = jsonIn_NewFromHash(pHash);
+        if(OBJ_NIL == pJsonIn) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        
+        genBase_DictAddUpdateA(this->pGen, namePrefixID, "lib");
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, namePrefixID, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, namePrefixID, pStr);
+        }
+        
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, nameID, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, nameID, pStr);
+        }
+        
+        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, "deps", &pArray);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_setLibDeps(this->pGen, pArray);
+        }
+        
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, libBaseID, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, libBaseID, pStr);
+        }
+        
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, objBaseID, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, objBaseID, pStr);
+        }
+        
+        genBase_setMakeType(this->pGen, GENMAKE_TYPE_LIB);
+        pStr = ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenInitial(this->pGen);
+        if (pStr) {
+            AStr_Append(this->pStr, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            eRc = ERESULT_SUCCESS;
+        }
+        
+        // Return to caller.
+        obj_Release(pJsonIn);
+        pJsonIn = OBJ_NIL;
+        return eRc;
     }
     
     
@@ -1578,14 +1625,11 @@ extern "C" {
     
     ERESULT         dbprs_ParseRoutines(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODEARRAY_DATA  *pArray
     )
     {
         ERESULT         eRc;
-        //NODEHASH_DATA   *pHash = OBJ_NIL;
-        OBJ_ID          pData = OBJ_NIL;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNodeWrk = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         //ASTR_DATA       *pStr = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
@@ -1597,35 +1641,22 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if(OBJ_NIL == pNode) {
+        if(OBJ_NIL == pArray) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+        if(!obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pData = node_getData(pNode);
-        if(OBJ_NIL == pData) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-        
-        if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-            pArray = pData;
-        }
-        else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-            pArray = nodeHash_Nodes(pData);
-        }
-        
         iMax = nodeArray_getSize(pArray);
         for(i=0; i<iMax; ++i) {
-            pNodeWrk = nodeArray_Get(pArray, (i+1));
-            if (pNodeWrk) {
-                if (obj_IsKindOf(node_getData(pNodeWrk), OBJ_IDENT_ASTR)) {
-                    eRc = dbprs_ParseRoutine(this, pData);
+            pNode = nodeArray_Get(pArray, (i+1));
+            if (pNode) {
+                if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
+                    eRc = dbprs_ParseRoutine(this, pNode);
                 }
             }
         }
@@ -1788,7 +1819,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1874,7 +1904,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     

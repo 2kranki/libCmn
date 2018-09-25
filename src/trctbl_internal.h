@@ -77,7 +77,7 @@ extern "C" {
         TRCTBL_ENTRY    entries[0];
 
     };
-#pragma pack()
+#pragma pack(pop)
 
 
     extern

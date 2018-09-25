@@ -39,6 +39,15 @@ endif  #NDEBUG
 
 OBJS =
 
+OBJS += $(OBJDIR)/dbprs.o $(OBJDIR)/dbprs_object.o
+
+$(OBJDIR)/dbprs.o: $(SRCDIR)/dbprs.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+$(OBJDIR)/dbprs_object.o: $(SRCDIR)/dbprs_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $<
+
+
 OBJS += $(OBJDIR)/genBase.o $(OBJDIR)/genBase_object.o
 
 $(OBJDIR)/genBase.o: $(SRCDIR)/genBase.c

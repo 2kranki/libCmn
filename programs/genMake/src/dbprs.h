@@ -161,8 +161,13 @@ extern "C" {
         DBPRS_DATA     *this
     );
     
+    bool            dbprs_setNodes(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pValue
+    );
+    
 
-    ASTR_DATA * dbprs_getStr(
+    ASTR_DATA *     dbprs_getStr(
         DBPRS_DATA     *this
     );
     
@@ -173,6 +178,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    ERESULT         dbprs_Finalize(
+        DBPRS_DATA      *this
+    );
+    
+    
     DBPRS_DATA *    dbprs_Init(
         DBPRS_DATA     *this
     );
@@ -208,14 +218,14 @@ extern "C" {
                 ;
      Note: See ParseObject() for definition of objectNode.
      @param     this    Object Pointer
-     @param     pNode   Node Pointer whose data is an array or a hash
+     @param     pHash   Node Hash Pointer whose data is an array or a hash
      @return    If successful, an AStr object which must be released containing the
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
     ERESULT         dbprs_ParseLibrary(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODEHASH_DATA   *pHash
     );
     
     
@@ -277,24 +287,48 @@ extern "C" {
      Parse an object and generate its components
      Node Grammar:
      objects     : '{' objects_Hash '}'
-                 | '[' objects_Array ']'
                  ;
      object_Hash :
                     objectNode (',' object_Hash)
                  ;
-     object_Array:
-                    stringNode (',' object_Array)
-                ;
      Note: See ParseObject() for definition of objectNode.
      @param     this    Object Pointer
-     @param     pNode   Node Pointer whose data is an array or a hash
+     @param     pHash   Node Hash Pointer
      @return    If successful, an AStr object which must be released containing the
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
     ERESULT         dbprs_ParseObjects(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODEHASH_DATA   *pHash
+    );
+    
+    
+    /*!
+     Parse the header portion of definition file and set up its components.
+     Node Grammar:
+     header  : "program" ':' '{' components '}'
+     ;
+     components
+     : "name" ':' string
+     | "deps" ':' deps
+     | "libdir" ':' string   // Path to where object library will be created
+     | "objdir" ':' string   // Path to where temporary object files will be
+     // created
+     ;
+     deps       : "null"
+     | '[' string* ']'       // Library dependencies as needed for gcc/clang
+     ;
+     Note: See ParseObject() for definition of objectNode.
+     @param     this    Object Pointer
+     @param     pHash   Node Hash Pointer
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseProgram(
+        DBPRS_DATA      *this,
+        NODEHASH_DATA   *pHash
     );
     
     
@@ -364,14 +398,14 @@ extern "C" {
                  ;
      Note: See ParseObject() for definition of objectNode.
      @param     this    Object Pointer
-     @param     pNode   Node Pointer whose data is an array or a hash
+     @param     pArray  Node Array Pointer
      @return    If successful, an AStr object which must be released containing the
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
     ERESULT         dbprs_ParseRoutines(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODEARRAY_DATA  *pArray
     );
     
     

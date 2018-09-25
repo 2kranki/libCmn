@@ -834,6 +834,7 @@ extern "C" {
         // Release objects and areas in other object.
         node_setName(pOther, OBJ_NIL);
         node_setData(pOther, OBJ_NIL);
+        node_setExtra(pOther, OBJ_NIL);
         node_setOther(pOther, OBJ_NIL);
         node_setProperties(pOther, OBJ_NIL);
         
@@ -857,6 +858,15 @@ extern "C" {
                 pOther->pData = this->pData;
             }
         }
+        if (this->pExtra) {
+            if (obj_getVtbl(this->pExtra)->pCopy) {
+                pOther->pExtra = obj_getVtbl(this->pExtra)->pCopy(this->pExtra);
+            }
+            else {
+                obj_Retain(this->pExtra);
+                pOther->pExtra = this->pExtra;
+            }
+        }
         if (this->pOther) {
             if (obj_getVtbl(this->pOther)->pCopy) {
                 pOther->pOther = obj_getVtbl(this->pOther)->pCopy(this->pOther);
@@ -878,7 +888,6 @@ extern "C" {
         
         // Copy other data from this object to other.
         pOther->cls = this->cls;
-        pOther->pExtra = this->pExtra;
 
         return ERESULT_SUCCESS;
     }

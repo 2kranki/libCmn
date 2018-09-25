@@ -558,6 +558,19 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new string that consists of the len characters from the offset
+     into the current string.
+     @param     this    object pointer
+     @param     offset  offset into the current string for the first char
+                        (Relative to 1)
+     @param     len     number of characters to select
+     @param     ppOther returned string object pointer
+     @return    If successful, an AStr object which must be released is placed in
+                *ppOther and ERESULT_SUCCESS is returned, otherwise an ERESULT_*
+                error is returned.
+     @warning  Remember to release the returned AStr object if present.
+     */
     ERESULT         AStr_Mid(
         ASTR_DATA		*this,
         uint32_t        offset,
@@ -582,12 +595,12 @@ extern "C" {
      @return    If successful, an AStr object which must be released is placed in
                 *ppOther and ERESULT_SUCCESS is returned, otherwise an ERESULT_*
                 error is returned.
-     @warning  Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object if present.
      */
     ERESULT         AStr_Right(
         ASTR_DATA		*this,
         uint32_t        len,
-        ASTR_DATA      **ppOther           // [out]
+        ASTR_DATA       **ppOther           // [out]
     );
     
     

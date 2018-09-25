@@ -188,6 +188,41 @@ extern "C" {
     }
     
     
+    FALSE_DATA *    jsonIn_CheckNodeDataForFalse(
+        NODE_DATA       *pNode
+    )
+    {
+        FALSE_DATA      *pFalse = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
+            return OBJ_NIL;
+        }
+        
+        pFalse = node_getData(pObj);
+        if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_TRUE)) {
+            return OBJ_NIL;
+        }
+        
+        return pFalse;
+    }
+    
+    
+    
     NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
         NODE_DATA       *pNode
     )
@@ -327,8 +362,43 @@ extern "C" {
     
     
     
+    TRUE_DATA *     jsonIn_CheckNodeDataForTrue(
+        NODE_DATA       *pNode
+    )
+    {
+        TRUE_DATA       *pTrue = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
+            return OBJ_NIL;
+        }
+        
+        pTrue = node_getData(pObj);
+        if ((OBJ_NIL == pTrue) || !obj_IsKindOf(pTrue, OBJ_IDENT_TRUE)) {
+            return OBJ_NIL;
+        }
+        
+        return pTrue;
+    }
+    
+    
 
 
+    
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================

@@ -64,15 +64,17 @@ struct main_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        makeType;       // See MAKETYPE
     uint16_t        osType;         // See OSTYPE
+    uint16_t        outType;        // See OUTTYPE
     //uint16_t        reserved;
     NODEHASH_DATA   *pDict;
+    DBPRS_DATA      *pPrs;
     OBJ_ID          pGen;
     PATH_DATA       *pFilePath;
     PATH_DATA       *pOutputPath;
-    NODE_DATA       *pNodes;
     TEXTOUT_DATA    *pOutput;
+    NODE_DATA       *pNodes;
+    ASTR_DATA       *pOut;
 
 };
 #pragma pack(pop)
@@ -87,10 +89,45 @@ struct main_data_s	{
 
 
     // Internal Functions
+    bool            main_setParser(
+        MAIN_DATA       *this,
+        DBPRS_DATA      *pValue
+    );
+    
     void            main_Dealloc(
         OBJ_ID          objId
     );
 
+    ERESULT         main_DictAdd(
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    );
+    
+    ERESULT         main_DictAddA(
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    );
+
+    ERESULT         main_DictAddUpdate(
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    );
+    
+    ERESULT         main_DictAddUpdateA(
+        MAIN_DATA        *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    );
+    
     ERESULT         main_ParseArgsDefault(
         MAIN_DATA        *this
     );

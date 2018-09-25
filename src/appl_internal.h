@@ -62,7 +62,6 @@ struct appl_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     DATETIME_DATA   *pDateTime;
     NODEHASH_DATA   *pProperties;
     
@@ -127,12 +126,6 @@ struct appl_data_s	{
     bool            appl_setDebug(
         APPL_DATA       *this,
         bool            fValue
-    );
-    
-    
-    bool            appl_setLastError(
-        APPL_DATA     *this,
-        ERESULT         value
     );
     
     

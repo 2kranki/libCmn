@@ -21,20 +21,24 @@
 /*
                             Global Dictionary Keys
  
- * Mostly set in main::main_ParseArgsDefault, main::main_ParseArgsLong
- * and main::main_ParseArgsShort.
  */
  
+#define libBaseID       "libBase"       /* Library Directory Base Directory */
 #define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
 #define namePrefixID    "namePrefix"    /* normally "" or "lib" */
+#define nameID          "name"          /* program or library base name */
+#define objBaseID       "objBase"       /*  Object Base Directory */
 #define osTypeID        "osType"        /* "macosx", "win32" or "win64" */
 #define outBaseID       "outBase"       /* Base Directory for output */
 #define resultTypeID    "resultType"    /* "pgm" or "lib" */
 #define srcBaseID       "srcDir"        /* Source File Base Drive and Directory */
-#define tmpBaseID       "tmpBase"       /* Temporary File Base */
+#define tmpBaseID       "tmpBase"       /* Temporary File Base Directory */
 //#define srcPathID       "srcPath"       /* Source File Full Path */ ???
 
- 
+//#define DICT_OBJ_PREFIX         "obj_prefix"    // ???
+
+
+
 
 
 
@@ -123,14 +127,6 @@ extern "C" {
     } GENMAKE_TYPE;
 
 
-#define DICT_LIB_PREFIX         "lib_prefix"
-#define DICT_LIBDIR             "libdir"
-#define DICT_NAME               "name"
-#define DICT_NAME_PREFIX        "name_prefix"
-#define DICT_OBJ_PREFIX         "obj_prefix"
-#define DICT_OBJDIR             "objdir"
-
-    
     
 #ifdef XYZZY
     typedef struct exec_data_s	EXEC_DATA;    // Inherits from OBJ.

@@ -106,7 +106,7 @@ extern "C" {
     ASTRC_DATA *   AStrC_NewA(
         const
         char            *pStr
-                              )
+    )
     {
         ASTRC_DATA      *this;
         
@@ -133,37 +133,50 @@ extern "C" {
     }
 
     
-    // FIXME: AStrC_NewFromUtf8File
-#ifdef XYZZY
-    ASTRC_DATA *    AStrC_NewFromUtf8File(
-        PATH_DATA       *pPath
+    ASTRC_DATA *   AStrC_NewFromAStr(
+        ASTR_DATA       *pStr
     )
     {
-        ASTRC_DATA      *this =  OBJ_NIL;
-        ERESULT         eRc;
+        ASTRC_DATA      *this;
         
-        // Do initialization.
-        if (OBJ_NIL == pPath) {
-            return this;
+        this = AStrC_Alloc( );
+        if (this) {
+            this = AStrC_InitA(this, AStr_getData(pStr));
+        }
+        return( this );
+    }
+    
+    
+    ASTRC_DATA *   AStrC_NewFromConstant(
+        const
+        char            *pStrA
+    )
+    {
+        ASTRC_DATA      *this;
+        
+        if (pStrA)
+            ;
+        else {
+            return OBJ_NIL;
         }
         
-        this = AStrC_New( );
+        this = AStrC_Alloc( );
         if (this) {
-            eRc = AStrC_AppendUtf8File(this, pPath);
-            if (ERESULT_FAILED(eRc)) {
-                obj_Release(this);
-                this = OBJ_NIL;
+            this = AStrC_Init(this);
+            if (this) {
+                this->len = utf8_StrLenA(pStrA);
+                this->pData = pStrA;
             }
         }
         
-        // Return to caller.
         return this;
     }
-#endif
-    
     
     
 
+    
+
+    
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
@@ -230,49 +243,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         AStrC_getLastError(
-        ASTRC_DATA      *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !AStrC_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            AStrC_setLastError(
-        ASTRC_DATA      *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !AStrC_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
     uint32_t        AStrC_getLength(
         ASTRC_DATA       *this
     )
@@ -313,12 +283,10 @@ extern "C" {
 #else
         if( !AStrC_Validate(this) ) {
             DEBUG_BREAK();
-            //AStrC_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
         if ((OBJ_NIL == pOther) || !(obj_IsKindOf(pOther, OBJ_IDENT_ASTRC))) {
             DEBUG_BREAK();
-            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -326,7 +294,6 @@ extern "C" {
         pNew = AStrC_AppendA(this, pOther->pData);
         
         // Return to caller.
-        //AStrC_setLastError(this, eRc);
         return pNew;
     }
     
@@ -349,19 +316,16 @@ extern "C" {
 #else
         if( !AStrC_Validate(this) ) {
             DEBUG_BREAK();
-            //AStrC_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
         if (NULL == pStr) {
             DEBUG_BREAK();
-            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
         
         pOther = AStrC_New( );
         if (OBJ_NIL == pOther) {
-            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         // This depends on the fact that a new AStrC object
@@ -370,7 +334,6 @@ extern "C" {
         // Get the data area needed.
         lenStr = (uint32_t)utf8_StrLenChars(pStr);
         if (0 == lenStr) {
-            AStrC_setLastError(this, ERESULT_DATA_NOT_FOUND);
             obj_Release(pOther);
             return OBJ_NIL;
         }
@@ -378,7 +341,6 @@ extern "C" {
         len = lenStr + lenData + 1;
         pData = mem_Malloc(len);
         if (NULL == pData) {
-            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
             obj_Release(pOther);
             return OBJ_NIL;
         }
@@ -394,12 +356,11 @@ extern "C" {
         obj_FlagOn(pOther, ASTRC_FLAG_MALLOC);
 
         // Return to caller.
-        AStrC_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
     
-    ASTRC_DATA *    AStrC_AppendStrA(
+    ASTRC_DATA *    AStrC_AppendAStr(
         ASTRC_DATA      *this,
         ASTR_DATA       *pStr
     )
@@ -415,7 +376,6 @@ extern "C" {
         }
         if( OBJ_NIL == pStr ) {
             DEBUG_BREAK();
-            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -452,7 +412,6 @@ extern "C" {
         }
         if( (OBJ_NIL == pPath) || !(obj_IsKindOf(pPath, OBJ_IDENT_PATH)) ) {
             DEBUG_BREAK();
-            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -650,9 +609,14 @@ extern "C" {
         else {
             this->pData = NULL;
         }
+        this->len = 0;
 
-        obj_Dealloc( this );
-        this = NULL;
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+        
 
         // Return to caller.
     }
@@ -745,9 +709,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStrC_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
-
     #ifdef NDEBUG
     #else
         if( !AStrC_Validate( this ) ) {
@@ -892,11 +853,9 @@ extern "C" {
             ;
         else {
             DEBUG_BREAK();
-            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
             return pOther;
         }
         if ((0 == this->len) || ((offset + len - 1) > this->len)) {
-            AStrC_setLastError(this, ERESULT_INVALID_PARAMETER);
             return pOther;
         }
 #endif
@@ -910,7 +869,6 @@ extern "C" {
             pData[lenStr] = '\0';
         }
         else {
-            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return pOther;
         }
         
@@ -921,16 +879,40 @@ extern "C" {
         }
         else {
             mem_Free(pData);
-            AStrC_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return pOther;
         }
         
         // Return to caller.
-        AStrC_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
 
 
+    
+    //---------------------------------------------------------------
+    //                          T o  A S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     AStrC_ToAStr(
+        ASTRC_DATA      *this
+    )
+    {
+        ASTR_DATA       *pNew = OBJ_NIL;
+        
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNew = AStr_NewA(this->pData);
+        
+        return pNew;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                       T o  S t r i n g
@@ -1006,6 +988,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+        
+        //TODO: Finish this!
         
         return pNew;
     }

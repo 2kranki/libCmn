@@ -278,14 +278,7 @@ GENBASE_VTBL     genBase_Vtbl = {
     NULL,               // pGenCompileObject
     NULL,               // pGenCompileTest
     (void *)genBase_GenFinal,
-    (void *)genBase_GenInitial,
-    (void *)genBase_GenLibrary,
-    (void *)genBase_GenObjects,
-    (void *)genBase_GenOSSpecific,
-    (void *)genBase_GenPrograms,
-    (void *)genBase_GenRoutines,
-    (void *)genBase_GenTests,
-
+    (void *)genBase_GenInitial
 };
 
 

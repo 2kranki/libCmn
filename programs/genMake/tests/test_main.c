@@ -115,6 +115,7 @@ int         test_main_MakeFile01(
 {
     ERESULT     eRc;
     MAIN_DATA   *pObj = OBJ_NIL;
+    ASTR_DATA   *pStr = OBJ_NIL;
     char        *pArgs[] = {
         "./makeFile01",
         "-v",
@@ -125,20 +126,26 @@ int         test_main_MakeFile01(
     
     pObj = main_NewFromArgV(2, pArgs, NULL);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = main_Init(pObj);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = main_ParseInputStr(pObj, pGoodJson1);
+        //appl_setDebug((APPL_DATA *)pObj, true);
+        eRc = main_ParseInputStr(pObj, pGoodJson01);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        eRc = main_ParseArgsDefault(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
         eRc = main_GenMakefile(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr = main_getStr(pObj);
+        fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 

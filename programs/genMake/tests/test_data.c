@@ -28,22 +28,20 @@
 
 static
 const
-char    *pGoodJson1 = "{\n"
-            "\"name\":\"libCmn\",\n"
-            "\"type\":\"library\",\n"
+char    *pGoodJson01 =
+    "{\n"
+        "\"library\":{\n"
+            "\"name\":\"Cmn\",\n"
             "\"deps\":null,\n"
             "\"headers\":null,\n"
-            "\"objects\": {\n"
-                "\"AStr\":[\"cmn\"],\n"
-            "},\n"
-            "\"routines\": [\n"
-                "\"AStr_JSON.c\",\n"
-            "],\n"
-            "\"programs\":null,\n"
-            "\"tests\": {\n"
-                "\"test_AStr.c\":null,\n"
-            "},\n"
-        "}\n";
+        "}\n,"
+        "\"objects\": {\n"
+            "\"AStr\":{\"deps\":[\"libCmn.h\"], \"json\":true, \"test\":true},\n"
+        "},\n"
+        "\"routines\": [\n"
+                "\"dllist.c\",\n"
+        "],\n"
+    "}\n";
 
 
 static

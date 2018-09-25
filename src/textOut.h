@@ -119,11 +119,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         textOut_getLastError(
-        TEXTOUT_DATA	*this
-    );
-
-
     uint16_t        textOut_getOffset(
         TEXTOUT_DATA    *this
     );
@@ -165,6 +160,20 @@ extern "C" {
         const
         char            *pFormat,
         ...
+    );
+    
+    
+    /*!
+     Output the given utf-8 string.
+     @param     this    Object Pointer
+     @param     pStrA   Pointer to UTF-8 character string
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT             textOut_PutA(
+        TEXTOUT_DATA        *this,
+        const
+        char                *pStrA
     );
     
     

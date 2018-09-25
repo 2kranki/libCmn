@@ -14,18 +14,29 @@
  *          specialized for the actual application.
  *
  * Remarks
- *  0.      We parse "--" switches using HJSON. So, the format of
- *          "--" switch is:
- *              "--".name('='.HJSON_text)?
- *          or
- *              "--".name HJSON_text
- *	1.      Argument switches, --force, --debug(-d), --verbose(-v),
- *          and --help(-?,-h), are handled by this object.
+ *	1.      Argument switches, --force(f), --debug(-d), --verbose(-v),
+ *          and --help(-?,-h), are handled by this object. However,
+ *          the supplied options provided will override these in the
+ *          search.
  *  2.      --debug will cause this object's trace flag to be turned
  *          on.
  *  3.      This object is intended to be inherited by another
  *          object which would add the specialization needed by
  *          the particular application.
+ *  4.      Normal Program flow looks like:
+ *              appl:                    application:
+ *                  SetupFromArgV()
+ *                                          ParseArgsDefaults()
+ *                                          cmdutl - parse options
+ *                                              and do option execs()
+ *
+ *                                          do {
+ *                                              if (!appl_IsMore())
+ *                                                  break
+ *                                              appl_ProcessOptions()
+ *                                              appl_NextArg()
+ *                                              // process this argument
+ *                                          } (forever)
  *
  * History
  *	06/05/2017 Generated
@@ -237,11 +248,6 @@ extern "C" {
     );
     
     
-    ERESULT         appl_getLastError(
-        APPL_DATA		*this
-    );
-
-
     PATH_DATA *     appl_getProgramPath(
         APPL_DATA       *this
     );

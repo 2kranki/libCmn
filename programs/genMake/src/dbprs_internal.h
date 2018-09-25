@@ -70,18 +70,13 @@ struct dbprs_data_s	{
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
-    ASTR_DATA       *pStr;
-    NODE_DATA       *pNodes;
     GENBASE_DATA    *pGen;
     JSONIN_DATA     *pJson;
     NODEHASH_DATA   *pDict;
+    NODE_DATA       *pNodes;
+    ASTR_DATA       *pStr;
     uint8_t         fLib;           // true == library, false == program
     uint8_t         rsvd8[3];
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
 
 };
 #pragma pack(pop)

@@ -259,6 +259,23 @@ extern "C" {
     );
     
 
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+        '$' '{'[a..zA..Z_][a..zA..Z0..9_]* '}'
+                    or
+        '$'[A..Za..z_][A..Za..z0..9_]*
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+                is returned.
+     */
+    ERESULT         nodeHash_Expand(
+        NODEHASH_DATA   *this,
+        ASTR_DATA       *pStr
+    );
+    
+    
     NODE_DATA *     nodeHash_Find(
         NODEHASH_DATA   *this,
         NODE_DATA       *pNode

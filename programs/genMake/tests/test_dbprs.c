@@ -471,6 +471,7 @@ int             test_dbprs_Object05(
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
         iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pNode);
@@ -637,6 +638,9 @@ int             test_dbprs_Library01(
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     NODEHASH_DATA   *pDict = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    int             offset = 0;
+    int             iRc;
     const
     char            *pGoodJsonObject =
     "{\n"
@@ -671,9 +675,12 @@ int             test_dbprs_Library01(
     "LIB_FILENAME=$(LIBNAM)D.a\n"
     "OBJDIR = $(LIBDIR)/o/d\n"
     "endif  #NDEBUG\n"
-    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n\n"
+    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
     ".SUFFIXES:\n"
-    ".SUFFIXES: .asm .c .o\n\n\n\n\n"
+    ".SUFFIXES: .asm .c .o\n\n"
+    "OBJS = \n\n"
+    "TESTS = \n\n"
+    "\n\n\n\n"
     ;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -703,12 +710,16 @@ int             test_dbprs_Library01(
         pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "library");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        eRc = dbprs_ParseLibrary(pObj, pNode);
+        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        
+        eRc = dbprs_ParseLibrary(pObj, pHash);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
-        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
-        
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

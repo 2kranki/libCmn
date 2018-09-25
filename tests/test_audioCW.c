@@ -192,11 +192,131 @@ int         test_audioCW_Text02(
 
 
 
+int         test_audioCW_Text03(
+    const
+    char        *pTestName
+)
+{
+    AUDIOCW_DATA    *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = audioCW_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = audioCW_Init( pObj, 1, 11025, 8, 740 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = audioCW_CalculateTiming(pObj, 15, 15);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        eRc = audioCW_PutTextW32(pObj, 5, L"DAVIN");
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        pPath = path_NewA("~/cw_15_15_DAVIN.wav");
+        eRc = audioCW_WriteToFile(pObj, pPath);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_audioCW_Text04(
+    const
+    char        *pTestName
+)
+{
+    AUDIOCW_DATA    *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = audioCW_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = audioCW_Init( pObj, 1, 11025, 8, 740 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = audioCW_CalculateTiming(pObj, 15, 15);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        eRc = audioCW_PutTextW32(pObj, 5, L"DREW");
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        pPath = path_NewA("~/cw_15_15_DREW.wav");
+        eRc = audioCW_WriteToFile(pObj, pPath);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_audioCW_Text05(
+                                const
+                                char        *pTestName
+                                )
+{
+    AUDIOCW_DATA    *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = audioCW_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = audioCW_Init( pObj, 1, 11025, 8, 740 );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = audioCW_CalculateTiming(pObj, 15, 15);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        eRc = audioCW_PutTextW32(pObj, 5, L"DOMINIC");
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        pPath = path_NewA("~/cw_15_15_DOMINIC.wav");
+        eRc = audioCW_WriteToFile(pObj, pPath);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_audioCW);
-  TINYTEST_ADD_TEST(test_audioCW_Text02,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_audioCW_Text01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_audioCW_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_audioCW_Text05,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_audioCW_Text04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_audioCW_Text03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_audioCW_Text02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_audioCW_Text01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_audioCW_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_audioCW);
