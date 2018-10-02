@@ -1,0 +1,76 @@
+# Generated file - edits may be discarded!
+
+LIBNAM=libCmn
+SYS=macosx
+TEMP=/tmp
+BASEDIR = $(TEMP)/$(LIBNAM)
+
+CFLAGS_LIBS = 
+CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+CFLAGS += -D__MACOSX_ENV__
+
+INSTALL_BASE = $(HOME)/Support/lib/$(SYS)
+INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)
+LIBDIR = $(BASEDIR)/$(SYS)
+SRCDIR = ./src
+SRCSYSDIR = ./src/$(SYS)
+ifdef  NDEBUG
+CFLAGS += -DNDEBUG
+LIB_FILENAME=$(LIBNAM)R.a
+OBJDIR = $(LIBDIR)/o/r
+else   #DEBUG
+CFLAGS += -D_DEBUG 
+LIB_FILENAME=$(LIBNAM)D.a
+OBJDIR = $(LIBDIR)/o/d
+endif  #NDEBUG
+LIBPATH = $(LIBDIR)/$(LIB_FILENAME)
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .o
+
+OBJS = 
+
+TESTS = 
+
+
+
+
+
+OBJS += $(OBJDIR)/dllist.o
+
+$(OBJDIR)/dllist.o: $(SRCDIR)/dllist.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+
+
+
+.PHONY: test
+test: $(TESTS)
+
+
+.PHONY: clean
+clean:
+	-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+
+
+.PHONY: install
+install:
+	-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)
+	cp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a
+	cp src/*.h $(INSTALLDIR)/include/
+	if [ -d src/$(SYS) ]; then \
+		cp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \
+	fi
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)
+
+
+.PHONY: all
+all:  clean create_dirs $(LIBPATH)
+
+
+

@@ -58,6 +58,7 @@ extern "C" {
         TEXTOUT_TYPE_ASTR,
         TEXTOUT_TYPE_FBSO,
         TEXTOUT_TYPE_FILE,
+        TEXTOUT_TYPE_FILE_CLOSE,
         TEXTOUT_TYPE_U8ARRAY
     } TEXTOUT_TYPE;
     

@@ -82,7 +82,7 @@ extern "C" {
 
 
     static
-    CMDUTL_OPTION       pPgmArgs[] = {
+    CMDUTL_OPTION       pPgmOptions[] = {
         {
             "file",
             'f',
@@ -411,13 +411,7 @@ extern "C" {
         if (this) {
             this = main_Init(this);
             if (this) {
-                eRc =   appl_SetupFromArgV(
-                                    (APPL_DATA *)this,
-                                           cArgs,
-                                           ppArgs,
-                                           ppEnv,
-                                           pPgmArgs
-                        );
+                eRc =   main_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
             }
         }
         return this;
@@ -1268,7 +1262,6 @@ extern "C" {
         int             iRc;
         ASTR_DATA       *pStr = OBJ_NIL;
         char            *pChrStr;
-        bool            fFile = true;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -1285,22 +1278,12 @@ extern "C" {
             exit(8);
         }
 
-        this->pOutput = textOut_NewAStr( );
-        if (OBJ_NIL == this->pOutput) {
-            fprintf(
-                    stderr,
-                    "FATAL - Could not open output file, %s!\n\n\n",
-                    path_getData(this->pOutputPath)
-                    );
-            exit(12);
-        }
-        fFile = false;
-        
         for (;;) {
             
             fRc = appl_IsMore((APPL_DATA *)this);
-            if (!fRc)
+            if (!fRc) {
                 break;
+            }
             
             eRc = appl_ProcessOptions((APPL_DATA *)this);
             if (ERESULT_FAILED(eRc)) {
@@ -1309,7 +1292,7 @@ extern "C" {
             }
             
             pChrStr = appl_NextArg((APPL_DATA *)this);
-            if (NULL == pStr) {
+            if (NULL == pChrStr) {
                 break;
             }
             pStr = AStr_NewA(pChrStr);
@@ -1319,11 +1302,6 @@ extern "C" {
             if (iRc) {
                 return iRc;
             }
-        }
-        
-        if (fFile) {
-            //FIXME: fclose(this->pOut);
-            this->pOutput = NULL;
         }
         
         // Return to caller.
@@ -1748,12 +1726,6 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-       this->pOutput = textOut_NewAStr( );
-        if (OBJ_NIL == this->pOutput) {
-            fprintf(stderr, "FATAL - Failed to create TextOut Object!\n");
-            exit(EXIT_FAILURE);
-        }
-
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1933,6 +1905,8 @@ extern "C" {
         PATH_DATA       *pDir = OBJ_NIL;
         PATH_DATA       *pFileName = OBJ_NIL;
         PATH_DATA       *pArgDir = OBJ_NIL;
+        PATH_DATA       *pMakefile = OBJ_NIL;
+        PATH_DATA       *pMakepath = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1948,22 +1922,28 @@ extern "C" {
 #endif
         
         if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "Processing - %s...\n", AStr_getData(pStr));
+            fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
         }
-        if (appl_getDebug((APPL_DATA *)this)) {
-            //FIXME: eRc = main_DictAddUpdate(this, "makeType", "d");
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(stderr, "FATAL - Failed to add 'makeType' to Dictionary\n");
-                exit(EXIT_FAILURE);
-            }
-        }
+        
         pPath = path_NewFromAStr(pStr);
         if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to create path from \n");
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_Clean(pPath);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    path_getData(pPath)
+                    );
             exit(EXIT_FAILURE);
         }
         eRc = path_IsFile(pPath);
         if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
             fprintf(
                     stderr,
                     "FATAL - File, %s, does not exist or is not a file!\n",
@@ -1973,6 +1953,7 @@ extern "C" {
         }
         eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
         if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
             fprintf(
                     stderr,
                     "FATAL - Unable to extract directory from File, %s!\n",
@@ -1982,6 +1963,7 @@ extern "C" {
         }
         pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
         if (OBJ_NIL == pArgDir) {
+            DEBUG_BREAK();
             fprintf(
                     stderr,
                     "FATAL - Unable to extract directory from File, %s!\n",
@@ -1989,15 +1971,11 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        //FIXME: eRc = main_DictAddUpdate(this, "srcDir", path_getData(pArgDir));
+        eRc = main_DictAddA(this, srcBaseID, (void *)pArgDir);
+        
+        eRc = main_DictAddA(this, srcFileID, path_getData(pPath));
         if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'srcDir' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        obj_Release(pArgDir);
-        pArgDir = OBJ_NIL;
-        //FIXME: eRc = main_DictAddUpdate(this, "srcFile", path_getData(pPath));
-        if (ERESULT_FAILED(eRc) ) {
+            DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
@@ -2006,9 +1984,61 @@ extern "C" {
         obj_Release(pPath);
         pPath = OBJ_NIL;
         
+        if (OBJ_NIL == this->pOutputPath) {
+            pMakefile = path_NewA("Makefile.${" osTypeID "}.txt");
+            if (OBJ_NIL == pMakefile) {
+                DEBUG_BREAK();
+                fprintf(
+                        stderr,
+                        "FATAL - Unable to create Makefile name!\n"
+                        );
+                exit(EXIT_FAILURE);
+            }
+            pMakepath = path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
+            if (OBJ_NIL == pMakefile) {
+                DEBUG_BREAK();
+                fprintf(
+                        stderr,
+                        "FATAL - Unable to create Makepath!\n"
+                        );
+                exit(EXIT_FAILURE);
+            }
+            eRc = path_ExpandVars(pMakepath, this->pDict);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to expand Makepath\n");
+                exit(EXIT_FAILURE);
+            }
+            this->pOutputPath = pMakepath;
+            this->pOutput = textOut_NewFromPath(pMakepath);
+            if (OBJ_NIL == this->pOutput) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to open \n");
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pMakefile);
+            pMakefile = OBJ_NIL;
+        }
+        if (!appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\t\tCreating %s\n", path_getData(this->pOutputPath));
+        }
+
         eRc = main_GenMakefile(this);
         
+        obj_Release(this->pOutput);
+        this->pOutput = OBJ_NIL;
+        
         // Return to caller.
+        obj_Release(pMakepath);
+        pMakepath = OBJ_NIL;
+        obj_Release(pArgDir);
+        pArgDir = OBJ_NIL;
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDrive = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
         return eRc;
     }
     
@@ -2089,6 +2119,36 @@ extern "C" {
         }
         
         return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  S e t u p  F r o m  A r g V
+    //---------------------------------------------------------------
+    
+    ERESULT         main_SetupFromArgV(
+        MAIN_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = appl_SetupFromArgV((APPL_DATA *)this, cArgs, ppArgV, ppEnv, pPgmOptions);
+        
+        // Return to caller.
+        return eRc;
     }
     
     

@@ -113,12 +113,27 @@ extern "C" {
     );
     
     
+    TEXTOUT_DATA *  textOut_NewFromPath(
+        PATH_DATA       *pPath
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    FILE *          textOut_getFile(
+        TEXTOUT_DATA    *this
+    );
+
+    bool            textOut_setFile(
+        TEXTOUT_DATA    *this,
+        FILE            *pValue
+    );
+    
+    
     uint16_t        textOut_getOffset(
         TEXTOUT_DATA    *this
     );
@@ -188,6 +203,34 @@ extern "C" {
         TEXTOUT_DATA    *this,
         const
         W32CHR_T        chr
+    );
+    
+    
+    /*!
+     Set up this object to write to a file.
+     @param     this    object pointer
+     @param     pFile   open file to write to
+     @param     fClose  true == close the file when done with it.
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an
+     ERESULT_* error code.
+     */
+    ERESULT             textOut_SetupFile(
+        TEXTOUT_DATA        *this,
+        FILE                *pFile,
+        bool                fClose
+    );
+    
+    
+    /*!
+     Set up this object to write to a file path.
+     @param     this    object pointer
+     @param     pPath   file path to write to
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT             textOut_SetupPath(
+        TEXTOUT_DATA        *this,
+        PATH_DATA           *pPath
     );
     
     

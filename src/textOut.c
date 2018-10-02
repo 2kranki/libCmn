@@ -133,6 +133,28 @@ extern "C" {
     }
     
     
+    TEXTOUT_DATA *  textOut_NewFromPath(
+        PATH_DATA       *pPath
+    )
+    {
+        TEXTOUT_DATA    *this;
+        ERESULT         eRc;
+        
+        this = textOut_Alloc( );
+        if (this) {
+            this = textOut_Init(this);
+            if (this) {
+                eRc = textOut_SetupPath(this, pPath);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+            }
+        }
+        return this;
+    }
+    
+    
 
     
 
@@ -140,6 +162,48 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          F i l e
+    //---------------------------------------------------------------
+    
+    FILE *          textOut_getFile(
+        TEXTOUT_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->pFile;
+    }
+    
+    
+    bool            textOut_setFile(
+        TEXTOUT_DATA    *this,
+        FILE            *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !textOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pFile = pValue;
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          O f f s e t
     //---------------------------------------------------------------
@@ -557,6 +621,10 @@ extern "C" {
 #endif
 
         textOut_setStr(this, OBJ_NIL);
+        if (this->type == TEXTOUT_TYPE_FILE_CLOSE) {
+            fclose(this->pFile);
+            this->pFile = NULL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -661,9 +729,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&textOut_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
-
     #ifdef NDEBUG
     #else
         if( !textOut_Validate(this) ) {
@@ -699,9 +764,11 @@ extern "C" {
         va_list         arg_ptr;
         char            *pStr = NULL;
         char            *pWrk = NULL;
+        W32CHR_T        chr;
+        int             len;
+        bool            fAlloc = false;
 
-        /* Do Initialization.
-         */
+        // Do Initialization.
 #ifdef NDEBUG
 #else
         if( !textOut_Validate(this) ) {
@@ -724,27 +791,30 @@ extern "C" {
             size = vsnprintf( pStr, size, pFormat, arg_ptr );
             va_end( arg_ptr );
             pWrk = pStr;
-            while (*pWrk) {
-                eRc = textOut_Putc(this, *pWrk);
-                if (ERESULT_FAILED(eRc)) {
-                    break;
-                }
-                ++pWrk;
-            }
-            mem_Free( pStr );
-            pStr = NULL;
+            fAlloc = true;
         }
         else {
             pWrk = str;
+        }
+        if (pWrk) {
             while (*pWrk) {
-                eRc = textOut_Putc(this, *pWrk);
+                len = utf8_Utf8ToW32(pWrk, &chr);
+                if (len < 0) {
+                    eRc = ERESULT_DATA_ERROR;
+                    break;
+                }
+                eRc = textOut_Putwc(this, chr);
                 if (ERESULT_FAILED(eRc)) {
                     break;
                 }
-                ++pWrk;
+                pWrk += len;
             }
         }
-        
+        if (fAlloc) {
+            mem_Free(pStr);
+            pStr = NULL;
+        }
+
         return eRc;
     }
     
@@ -825,6 +895,7 @@ extern "C" {
                 break;
                 
             case TEXTOUT_TYPE_FILE:
+            case TEXTOUT_TYPE_FILE_CLOSE:
                 iRc = putc(chr, this->pFile);
                 eRc = ERESULT_SUCCESS;
                 if (iRc == EOF) {
@@ -867,7 +938,13 @@ extern "C" {
                 break;
 
             case TEXTOUT_TYPE_FILE:
-                iRc = putw(chr, this->pFile);
+            case TEXTOUT_TYPE_FILE_CLOSE:
+                if (chr < 128) {
+                    iRc = putc(chr, this->pFile);
+                }
+                else {
+                    iRc = putw(chr, this->pFile);
+                }
                 eRc = ERESULT_SUCCESS;
                if (iRc == EOF) {
                     eRc = ERESULT_WRITE_ERROR;
@@ -984,6 +1061,89 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       S e t u p
+    //---------------------------------------------------------------
+    
+    ERESULT             textOut_SetupFile(
+        TEXTOUT_DATA        *this,
+        FILE                *pFile,
+        bool                fClose
+    )
+    {
+        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        W32CHR_T            chr;
+        int                 len;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!textOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(NULL == pFile) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (0 == this->type)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        this->pFile = pFile;
+        this->type = fClose ? TEXTOUT_TYPE_FILE_CLOSE: TEXTOUT_TYPE_FILE;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT             textOut_SetupPath(
+        TEXTOUT_DATA        *this,
+        PATH_DATA           *pPath
+    )
+    {
+        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        FILE                *pFile = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!textOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (0 == this->type)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        pFile = fopen(path_getData(pPath), "w");
+        if (NULL == pFile) {
+            DEBUG_BREAK();
+            return ERESULT_OPEN_ERROR;
+        }
+        
+        this->pFile = pFile;
+        this->type = TEXTOUT_TYPE_FILE_CLOSE;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1029,10 +1189,10 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) type=%d\n",
                     this,
                     pInfo->pClassName,
-                    textOut_getSize(this)
+                    this->type
             );
 
 #ifdef  XYZZY        

@@ -34,10 +34,13 @@ endif  #NDEBUG
 .SUFFIXES: .asm .c .o
 
 
-
-
-
 OBJS =
+
+TESTS =
+
+
+
+
 
 OBJS += $(OBJDIR)/dbprs.o $(OBJDIR)/dbprs_object.o
 
@@ -87,7 +90,6 @@ $(OBJDIR)/main_object.o: $(SRCDIR)/main_object.c
 
 
 
-TESTS =
 
 
 TESTS += test_genBase

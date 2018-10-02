@@ -453,6 +453,7 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
+            return NULL;
         }
 #endif
         

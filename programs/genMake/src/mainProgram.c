@@ -16,9 +16,7 @@
 
 int             main(
     int             cArgs,
-    const
     char            *ppArgV[],
-    const
     char            **ppEnv
 )
 {
@@ -41,7 +39,7 @@ int             main(
         exit(EXIT_FAILURE);
     }
     
-    eRc = appl_SetupFromArgV((APPL_DATA *)pMain, cArgs, ppArgV, ppEnv);
+    eRc = main_SetupFromArgV(pMain, cArgs, ppArgV, ppEnv);
     if (ERESULT_FAILED(eRc)) {
         fprintf(stderr, "FATAL - Failed to set up arguments!\n\n\n");
         return 8;

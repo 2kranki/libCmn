@@ -334,9 +334,11 @@ extern "C" {
     
     /*!
      Set up to parse the given input resetting any prior parse data.
-     @param     this    object pointer
-     @param     cArgs   number of charater strings in ppArgs
-     @param     ppArgV  point to a charater string array
+     @param     this        object pointer
+     @param     cArgs       number of charater strings in ppArgs
+     @param     ppArgV      pointer to a charater string array
+     @param     pPgmOptDefns pointer to an array of APPL_CLO elements
+                            and 
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
                 an ERESULT_* error code
      */

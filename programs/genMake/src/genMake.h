@@ -32,6 +32,7 @@
 #define outBaseID       "outBase"       /* Base Directory for output */
 #define resultTypeID    "resultType"    /* "pgm" or "lib" */
 #define srcBaseID       "srcDir"        /* Source File Base Drive and Directory */
+#define srcFileID       "srcFile"       /* Source JSON File */
 #define tmpBaseID       "tmpBase"       /* Temporary File Base Directory */
 //#define srcPathID       "srcPath"       /* Source File Full Path */ ???
 

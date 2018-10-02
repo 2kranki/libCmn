@@ -2018,7 +2018,7 @@ extern "C" {
             return pOut;
         }
         
-        AStr_AppendA(pOut, "# Generated file do not edit!\n");
+        AStr_AppendA(pOut, "# Generated file - edits may be discarded!\n");
         if (genBase_getDateTime((GENBASE_DATA *)this)) {
             pStr = dateTime_ToString(genBase_getDateTime((GENBASE_DATA *)this));
             AStr_AppendPrint(pOut, "# (%s)\n\n", AStr_getData(pStr));

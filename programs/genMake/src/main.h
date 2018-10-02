@@ -265,6 +265,22 @@ extern "C" {
     
     
     /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this        object pointer
+     @param     cArgs       number of charater strings in ppArgs
+     @param     ppArgV      pointer to a charater string array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+     an ERESULT_* error code
+     */
+    ERESULT         main_SetupFromArgV(
+        MAIN_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
+    );
+    
+    
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code
