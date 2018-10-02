@@ -490,7 +490,7 @@ int             test_genOSX_GenInitial01(
     ASTR_DATA       *pStr = OBJ_NIL;
     const
     char            *pOutputA =
-        "# Generated file do not edit!\n\n"
+        "# Generated file - edits may be discarded!\n\n"
         "LIBNAM=libTest\n"
         "SYS=macosx\n"
         "TEMP=/tmp\n"

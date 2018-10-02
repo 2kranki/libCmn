@@ -1447,7 +1447,7 @@ extern "C" {
                     pNode = nodeArray_Get(pSrcDeps, (i + 1));
                     if (pNode) {
                         pWrkStr = node_getData(pNode);
-                        if (pWrkStr && obj_IsKindOf(this, OBJ_IDENT_ASTR)) {
+                        if (pWrkStr && obj_IsKindOf(pWrkStr, OBJ_IDENT_ASTR)) {
                             eRc =   AStr_AppendPrint(
                                                 pStr,
                                                 "$(%s)/%s ",

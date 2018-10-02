@@ -115,6 +115,8 @@ int             test_dbprs_Object01(
     DBPRS_DATA      *pObj = OBJ_NIL;
     GENOSX_DATA     *pGen = OBJ_NIL;
     ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     const
@@ -155,7 +157,7 @@ int             test_dbprs_Object01(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
@@ -169,7 +171,9 @@ int             test_dbprs_Object01(
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
-        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -245,6 +249,7 @@ int             test_dbprs_Object02(
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
         iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj);
@@ -324,6 +329,7 @@ int             test_dbprs_Object03(
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
         iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
         
         obj_Release(pObj);
@@ -400,6 +406,7 @@ int             test_dbprs_Object04(
         pStr = dbprs_getStr(pObj);
         fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
         iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj);
@@ -653,7 +660,7 @@ int             test_dbprs_Library01(
     "}\n";
     const
     char            *pOutputA =
-    "# Generated file do not edit!\n\n"
+    "# Generated file - edits may be discarded!\n\n"
     "LIBNAM=libTest\n"
     "SYS=macosx\n"
     "TEMP=/tmp\n"
