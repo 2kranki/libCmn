@@ -200,8 +200,55 @@ int         test_main_MakeFile02(
 
 
 
+int         test_main_MakeFile03(
+    const
+    char        *pTestName
+)
+{
+    ERESULT     eRc;
+    int         iRc;
+    MAIN_DATA   *pObj = OBJ_NIL;
+    ASTR_DATA   *pStr = OBJ_NIL;
+    char        *pArgs[] = {
+        "./makeFile01",
+        "~/git/libCmn/programs/genMake/tests/goodJson02.txt",
+        NULL
+    };
+    const
+    char        *pFilepath = "/Users/bob/git/libCmn/programs/"
+    "genMake/tests/Makefile.macos.txt";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = main_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        //appl_setDebug((APPL_DATA *)pObj, true);
+        eRc = main_SetupFromArgV(pObj, 2, pArgs, NULL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        iRc = main_Exec(pObj);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        pStr = main_getStr(pObj);
+        if (pStr) {
+            fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_main);
+    TINYTEST_ADD_TEST(test_main_MakeFile03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_MakeFile02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_MakeFile01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_OpenClose,setUp,tearDown);

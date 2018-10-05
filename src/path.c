@@ -95,6 +95,26 @@ extern "C" {
 
 
 
+    PATH_DATA *     path_New(
+        void
+    )
+    {
+        PATH_DATA       *this;
+        //ERESULT         eRc;
+        
+        // Do initialization.
+        
+        this = path_Alloc( );
+        if (this) {
+            this = path_Init(this);
+        }
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
+    
     PATH_DATA *     path_NewA(
         const
         char            *pStr
@@ -179,6 +199,33 @@ extern "C" {
     }
     
 
+    
+    PATH_DATA *     path_NewFromDirExt(
+        ASTR_DATA       *pFilePath,
+        ASTR_DATA       *pFileExt
+    )
+    {
+        PATH_DATA       *this =  OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+        this = path_Alloc( );
+        this = path_Init(this);
+        if (OBJ_NIL == this) {
+            return this;
+        }
+        
+        eRc = path_MakeFile(this, pFilePath, pFileExt);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(this);
+            this = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
     
     PATH_DATA *     path_NewFromDriveDirFilename(
         ASTR_DATA       *pDrive,
@@ -413,8 +460,9 @@ extern "C" {
         ASTR_DATA       *pDir
     )
     {
-        ERESULT         eRc;
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+        W32CHR_T        chr;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -422,14 +470,16 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pDir) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
         
-        eRc = path_AppendFileName(this, pDir);
-        
+        if (pDir) {
+            eRc = path_AppendA(this, AStr_getData(pDir));
+        }
+        chr = AStr_CharGetLastW32((ASTR_DATA *)this);
+        if ((chr < 0) || !(chr == '/')) {
+            eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+        }
+
         // Return to caller.
         return eRc;
     }
@@ -441,8 +491,9 @@ extern "C" {
         char            *pDirA
     )
     {
-        ERESULT         eRc;
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+        W32CHR_T        chr;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -450,14 +501,16 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (NULL == pDirA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
         
-        eRc = path_AppendFileNameA(this, pDirA);
-        
+        if (pDirA) {
+            eRc = path_AppendFileNameA(this, pDirA);
+        }
+        chr = AStr_CharGetLastW32((ASTR_DATA *)this);
+        if ((chr < 0) || !(chr == '/')) {
+            eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+        }
+
         // Return to caller.
         return eRc;
     }
@@ -1247,7 +1300,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         path_MakeFile(
-        PATH_DATA		*cbp,
+        PATH_DATA		*this,
         ASTR_DATA       *pFileName,
         ASTR_DATA       *pFileExt
     )
@@ -1258,21 +1311,21 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if( !path_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        eRc = AStr_Truncate((ASTR_DATA *)cbp, 0);
+        eRc = AStr_Truncate((ASTR_DATA *)this, 0);
         if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
         }
         
         if (pFileName) {
-            eRc = AStr_Append((ASTR_DATA *)cbp, pFileName);
+            eRc = AStr_Append((ASTR_DATA *)this, pFileName);
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
         }
@@ -1282,15 +1335,15 @@ extern "C" {
             if (chr == '.')
                 ;
             else {
-                eRc = AStr_AppendA((ASTR_DATA *)cbp, ".");
+                eRc = AStr_AppendA((ASTR_DATA *)this, ".");
                 if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
                     return eRc;
                 }
             }
-            eRc = AStr_Append((ASTR_DATA *)cbp, pFileExt);
+            eRc = AStr_Append((ASTR_DATA *)this, pFileExt);
             if (ERESULT_HAS_FAILED(eRc)) {
-                (void)AStr_Truncate((ASTR_DATA *)cbp, 0);
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
         }
@@ -1724,6 +1777,82 @@ extern "C" {
         AStr_AppendA(pStr, str);
         
         return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      T o V e r s i o n e d
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     path_ToVersioned(
+        PATH_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pWrkD = OBJ_NIL;
+        ASTR_DATA       *pWrkE = OBJ_NIL;
+        ASTR_DATA       *pWrkW = OBJ_NIL;
+        uint32_t        i;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return pPath;
+        }
+#endif
+        
+        eRc = path_IsFile(this);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return pPath;
+        }
+        
+        eRc = path_SplitFile(this, &pWrkD, &pWrkE);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pWrkD)) {
+            DEBUG_BREAK();
+            obj_Release(pWrkD);
+            pWrkD = OBJ_NIL;
+            obj_Release(pWrkE);
+            pWrkE = OBJ_NIL;
+            obj_setLastError(this, ERESULT_DATA_TOO_SMALL);
+            return pPath;
+        }
+        
+        for (i=0; i<10000; ++i) {
+            pWrkW = AStr_New( );
+            eRc = AStr_AppendPrint(pWrkW, "%04d.%s", i, AStr_getData(pWrkE));
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pWrkW);
+                pWrkW = OBJ_NIL;
+                break;
+            }
+            pPath = path_NewFromDirExt(pWrkD, pWrkW);
+            if (OBJ_NIL == pPath) {
+                obj_Release(pWrkW);
+                pWrkW = OBJ_NIL;
+                break;
+            }
+            eRc = path_IsFile(pPath);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pWrkW);
+                pWrkW = OBJ_NIL;
+                break;
+            }
+            obj_Release(pWrkW);
+            pWrkW = OBJ_NIL;
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        
+        obj_Release(pWrkD);
+        pWrkD = OBJ_NIL;
+        obj_Release(pWrkE);
+        pWrkE = OBJ_NIL;
+        return pPath;
     }
     
     

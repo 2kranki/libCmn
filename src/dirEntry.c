@@ -48,6 +48,8 @@
 /* Header File Inclusion */
 #include    <dirEntry_internal.h>
 #include    <misc.h>
+#include    <path.h>
+
 
 
 
@@ -93,36 +95,40 @@ extern "C" {
 
 
 
-    DIRENTRY_DATA * dirEntry_NewA(
+    DIRENTRY_DATA *     dirEntry_New(
+        ASTR_DATA       *pDrive,
         PATH_DATA       *pDir,
-        const
-        char            *pNameStr,
+        PATH_DATA       *pFileName,         // includes file extension
         uint8_t         type
     )
     {
-        DIRENTRY_DATA   *cbp;
-        ASTR_DATA       *pName;
+        ERESULT         eRc;
+        DIRENTRY_DATA   *this;
+        PATH_DATA       *pPath  = OBJ_NIL;
         
-        pName = AStr_NewA(pNameStr);
-        if (OBJ_NIL == pName) {
-            return OBJ_NIL;
+        this = dirEntry_Alloc();
+        this = dirEntry_Init(this);
+        if (OBJ_NIL == this) {
+            return this;
         }
         
-        cbp = dirEntry_Alloc();
-        cbp = dirEntry_Init(cbp);
-        if (OBJ_NIL == cbp) {
-            return cbp;
-        }
+        (void)dirEntry_setDrive(this, pDrive);
+        (void)dirEntry_setDir(this, pDir);
+        (void)dirEntry_setFileName(this, pFileName);
+        (void)dirEntry_setType(this, type);
         
-        (void)dirEntry_setDir(cbp, pDir);
-        (void)dirEntry_setName(cbp, pName);
-        (void)dirEntry_setType(cbp, type);
+        pPath = path_New( );
+        if (pPath) {
+            eRc = path_MakePath(pPath, pDrive, pDir, pFileName);
+            if (!ERESULT_FAILED(eRc)) {
+                dirEntry_setFullPath(this, pPath);
+            }
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
 
-        obj_Release(pName);
-        pName = OBJ_NIL;
-        
         // Return to caller.
-        return( cbp );
+        return this;
     }
     
     
@@ -220,6 +226,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    D r i v e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     dirEntry_getDrive(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pDrive;
+    }
+    
+    bool            dirEntry_setDrive(
+        DIRENTRY_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pDrive) {
+            obj_Release(this->pDrive);
+        }
+        this->pDrive = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //          E x t e n d e d  A t t r i b u t e s  S i z e
     //---------------------------------------------------------------
     
@@ -256,6 +305,49 @@ extern "C" {
     }
     
 
+    
+    //---------------------------------------------------------------
+    //                       F i l e  N a m e
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     dirEntry_getFileName(
+        DIRENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->pFileName;
+    }
+    
+    bool            dirEntry_setFileName(
+        DIRENTRY_DATA   *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !dirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pFileName) {
+            obj_Release(this->pFileName);
+        }
+        this->pFileName = pValue;
+        
+        return true;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                      F u l l  P a t h
@@ -411,49 +503,6 @@ extern "C" {
             obj_Release(this->pModifiedTime);
         }
         this->pModifiedTime = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       F i l e  N a m e
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     dirEntry_getName(
-        DIRENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !dirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        
-        return this->pName;
-    }
-    
-    bool            dirEntry_setName(
-        DIRENTRY_DATA   *this,
-        ASTR_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !dirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        obj_Retain(pValue);
-        if (this->pName) {
-            obj_Release(this->pName);
-        }
-        this->pName = pValue;
         
         return true;
     }
@@ -668,7 +717,7 @@ extern "C" {
         // Release objects and areas in other object.
         (void)dirEntry_setFullPath(pOther, OBJ_NIL);
         (void)dirEntry_setDir(pOther, OBJ_NIL);
-        (void)dirEntry_setName(pOther, OBJ_NIL);
+        (void)dirEntry_setFileName(pOther, OBJ_NIL);
         (void)dirEntry_setShortName(pOther, OBJ_NIL);
         (void)dirEntry_setCreationTime(pOther, OBJ_NIL);
         (void)dirEntry_setModifiedTime(pOther, OBJ_NIL);
@@ -694,13 +743,13 @@ extern "C" {
                 pOther->pDir = this->pDir;
             }
         }
-        if (this->pName) {
-            if (obj_getVtbl(this->pName)->pCopy) {
-                pOther->pName = obj_getVtbl(this->pName)->pCopy(this->pName);
+        if (this->pFileName) {
+            if (obj_getVtbl(this->pFileName)->pCopy) {
+                pOther->pFileName = obj_getVtbl(this->pFileName)->pCopy(this->pFileName);
             }
             else {
-                obj_Retain(this->pName);
-                pOther->pName = this->pName;
+                obj_Retain(this->pFileName);
+                pOther->pFileName = this->pFileName;
             }
         }
         if (this->pShortName) {
@@ -795,20 +844,20 @@ extern "C" {
         }
         // Types are equal.
         
-        if( (this->pName) && (OBJ_NIL == pOther->pName) ) {
+        if( (this->pFileName) && (OBJ_NIL == pOther->pFileName) ) {
             DEBUG_BREAK();
             return ERESULT_SUCCESS_GREATER_THAN;
         }
-        if( (OBJ_NIL == this->pName) && (OBJ_NIL == pOther->pName) ) {
+        if( (OBJ_NIL == this->pFileName) && (OBJ_NIL == pOther->pFileName) ) {
             DEBUG_BREAK();
             return ERESULT_SUCCESS;
         }
-        if( (OBJ_NIL == this->pName) && (pOther->pName) ) {
+        if( (OBJ_NIL == this->pFileName) && (pOther->pFileName) ) {
             DEBUG_BREAK();
             return ERESULT_SUCCESS_LESS_THAN;
         }
 
-        eRc = AStr_Compare(this->pName, pOther->pName);
+        eRc = path_Compare(this->pFileName, pOther->pFileName);
         
         // Return to caller.
         return eRc;
@@ -887,7 +936,8 @@ extern "C" {
 
         (void)dirEntry_setFullPath(this, OBJ_NIL);
         (void)dirEntry_setDir(this, OBJ_NIL);
-        (void)dirEntry_setName(this, OBJ_NIL);
+        (void)dirEntry_setDrive(this, OBJ_NIL);
+        (void)dirEntry_setFileName(this, OBJ_NIL);
         (void)dirEntry_setShortName(this, OBJ_NIL);
         (void)dirEntry_setCreationTime(this, OBJ_NIL);
         (void)dirEntry_setModifiedTime(this, OBJ_NIL);
@@ -971,13 +1021,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if( OBJ_NIL == this->pName ) {
+        if( OBJ_NIL == this->pFileName ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         pPath = path_Copy(this->pDir);
-        path_AppendFileName(pPath, this->pName);
+        path_AppendFileName(pPath, (ASTR_DATA *)this->pFileName);
         dirEntry_setFullPath(this, pPath);
         pStr = path_getData(pPath);
         if (pStr) {
@@ -1036,7 +1086,7 @@ extern "C" {
         }
 #endif
         
-        eRc =   AStr_MatchA(this->pName, pPattern);
+        eRc =   AStr_MatchA((ASTR_DATA *)this->pFileName, pPattern);
         
         return eRc;
     }
@@ -1104,14 +1154,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
      ASTR_DATA      *pDesc = dirEntry_ToDebugString(this, 4);
-     @endcode:
-     @param:    this    DIRENTRY object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    DIRENTRY object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     dirEntry_ToDebugString(
         DIRENTRY_DATA   *this,

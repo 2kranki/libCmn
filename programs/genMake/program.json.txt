@@ -2,14 +2,9 @@
     "program":{
         "name":"genMake",
         "lib_deps":["Cmn"],
-        "headers_private":[
-            "genMake.h"
-        ],
-        "headers_public":[
-        ],
-        "headers_test":[
-            "test_defs.h"
-        ],
+        "headers_private":["genMake.h"],
+        "headers_public":[],
+        "headers_test":["test_defs.h"],
         "main":"mainProgram.c"
     },
     "objects":{
@@ -19,10 +14,6 @@
         "genWIN":{"deps":["genMake.h"], "test":null},
         "main":{"deps":["genMake.h"], "test":null},
     },
-    "routines":
-    [
-        "mainProgram.c"
-    ],
     "macosx": {
     },
     "win32": {

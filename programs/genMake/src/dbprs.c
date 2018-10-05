@@ -1401,6 +1401,11 @@ extern "C" {
             genBase_DictAddUpdate(this->pGen, libBaseID, pStr);
         }
         
+        eRc = jsonIn_FindStringNodeInHashA(pJsonIn, mainID, &pStr);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_DictAddUpdate(this->pGen, mainID, pStr);
+        }
+        
         eRc = jsonIn_FindStringNodeInHashA(pJsonIn, objBaseID, &pStr);
         if (!ERESULT_FAILED(eRc) && pStr) {
             genBase_DictAddUpdate(this->pGen, objBaseID, pStr);

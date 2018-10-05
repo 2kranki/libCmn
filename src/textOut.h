@@ -185,10 +185,10 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
                 an ERESULT_* error code
      */
-    ERESULT             textOut_PutA(
-        TEXTOUT_DATA        *this,
+    ERESULT         textOut_PutA(
+        TEXTOUT_DATA    *this,
         const
-        char                *pStrA
+        char            *pStrA
     );
     
     

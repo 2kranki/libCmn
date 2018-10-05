@@ -1070,9 +1070,9 @@ extern "C" {
         bool                fClose
     )
     {
-        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
-        W32CHR_T            chr;
-        int                 len;
+        //ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        //W32CHR_T            chr;
+        //int                 len;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1106,7 +1106,7 @@ extern "C" {
         PATH_DATA           *pPath
     )
     {
-        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        //ERESULT             eRc = ERESULT_INVALID_PARAMETER;
         FILE                *pFile = NULL;
         
         // Do initialization.

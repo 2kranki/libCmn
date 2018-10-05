@@ -16,6 +16,7 @@
  *
  * History
  *	06/23/2015 Generated
+ *  10/04/2018 Changed to be more consistant with the path object.
  */
 
 
@@ -96,6 +97,8 @@ extern "C" {
         DIRENTRY_TYPE_WHT=14            // ???
     } DIRENTRY_TYPES;
 
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -106,21 +109,16 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the direntry including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
-     */
     DIRENTRY_DATA *     dirEntry_Alloc(
         void
     );
     
     
-    DIRENTRY_DATA *     dirEntry_NewA(
+    DIRENTRY_DATA *     dirEntry_New(
+        ASTR_DATA           *pDrive,
         PATH_DATA           *pDir,
-        const
-        char                *pNameStr,
-        uint8_t             type
+        PATH_DATA           *pFileName,     // includes file extension
+        uint8_t             type            // See DIRENTRY_TYPES above.
     );
     
     
@@ -159,6 +157,20 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    D r i v e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     dirEntry_getDrive(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setDrive(
+        DIRENTRY_DATA   *this,
+        ASTR_DATA       *pValue
+    );
+    
+    
+    //---------------------------------------------------------------
     //          E x t e n d e d  A t t r i b u t e s  S i z e
     //---------------------------------------------------------------
     
@@ -169,6 +181,20 @@ extern "C" {
     bool            dirEntry_setEASize(
         DIRENTRY_DATA   *this,
         uint32_t        value
+    );
+    
+    
+    //---------------------------------------------------------------
+    //                       F i l e  N a m e
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     dirEntry_getFileName(
+        DIRENTRY_DATA   *this
+    );
+    
+    bool            dirEntry_setFileName(
+        DIRENTRY_DATA   *this,
+        PATH_DATA       *pValue
     );
     
     
@@ -215,20 +241,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       F i l e  N a m e
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     dirEntry_getName(
-        DIRENTRY_DATA   *this
-    );
-    
-    bool            dirEntry_setName(
-        DIRENTRY_DATA   *this,
-        ASTR_DATA       *pValue
-    );
-    
-    
-    //---------------------------------------------------------------
     //                 S h o r t  F i l e  N a m e
     //---------------------------------------------------------------
     
@@ -259,6 +271,8 @@ extern "C" {
     //---------------------------------------------------------------
     //                             T y p e
     //---------------------------------------------------------------
+
+    // See DIRENTRY_TYPES above.
     
     uint8_t         dirEntry_getType(
         DIRENTRY_DATA   *this

@@ -530,11 +530,89 @@ int             test_genOSX_GenInitial01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
+        genBase_setMakeType((GENBASE_DATA *)pObj, GENMAKE_TYPE_LIB);
+        
         eRc = genBase_DictAddA((GENBASE_DATA *)pObj, namePrefixID, "lib");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = genBase_DictAddA((GENBASE_DATA *)pObj, nameID, "Test");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
+        pStr =  genOSX_GenInitial(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=0x%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_genOSX_GenInitial02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    GENOSX_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pOutputA =
+    "# Generated file - edits may be discarded!\n\n"
+    "PGMNAM=Test\n"
+    "SYS=macosx\n"
+    "TEMP=/tmp\n"
+    "BASEDIR = $(TEMP)/$(PGMNAM)\n\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
+    "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "INSTALL_BASE = $(HOME)/Support/bin\n"
+    "INSTALLDIR = $(INSTALL_BASE)\n"
+    "LIBDIR = $(BASEDIR)/$(SYS)\n"
+    "SRCDIR = ./src\n"
+    "SRCSYSDIR = ./src/$(SYS)\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBDIR)/o/r\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG \n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBDIR)/o/d\n"
+    "endif  #NDEBUG\n"
+    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .o\n\n"
+    "OBJS = \n\n"
+    "TESTS = \n\n"
+    "\n\n\n\n"
+    ;
+    int                 iRc;
+    int                 offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genOSX_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genOSX_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        genBase_setMakeType((GENBASE_DATA *)pObj, GENMAKE_TYPE_PGM);
+        
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, namePrefixID, "lib");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, nameID, "Test");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
         pStr =  genOSX_GenInitial(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
@@ -581,7 +659,7 @@ int             test_genOSX_GenFinal01(
     "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n"
     "\tfi\n\n\n"
     ".PHONY: create_dirs\n"
-     "create_dirs:\n"
+    "create_dirs:\n"
     "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)\n\n\n"
     ".PHONY: all\n"
     "all:  clean create_dirs $(LIBPATH)\n\n\n\n"
@@ -597,6 +675,74 @@ int             test_genOSX_GenFinal01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
+        genBase_setMakeType((GENBASE_DATA *)pObj, GENMAKE_TYPE_LIB);
+        
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, namePrefixID, "lib");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, nameID, "Test");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr =  genOSX_GenFinal(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=0x%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_genOSX_GenFinal02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    GENOSX_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pOutputA =
+    "\n\n\n"
+    ".PHONY: test\n"
+    "test: $(TESTS)\n\n\n"
+    ".PHONY: clean\n"
+    "clean:\n"
+    "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n\n\n"
+    ".PHONY: install\ninstall:\n"
+    "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n"
+    "\tcp $(BASEDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)\n\n\n"
+    ".PHONY: link\nlink: $(OBJS) src/main.c\n"
+    "\tCC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n"
+    ".PHONY: create_dirs\n"
+    "create_dirs:\n"
+    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)\n\n\n"
+    ".PHONY: all\n"
+    "all:  clean create_dirs link\n\n\n\n"
+    ;
+    int                 iRc;
+    int                 offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = genOSX_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = genOSX_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        genBase_setMakeType((GENBASE_DATA *)pObj, GENMAKE_TYPE_PGM);
+        
+        eRc = genBase_DictAddA((GENBASE_DATA *)pObj, mainID, "main.c");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = genBase_DictAddA((GENBASE_DATA *)pObj, namePrefixID, "lib");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = genBase_DictAddA((GENBASE_DATA *)pObj, nameID, "Test");
@@ -623,7 +769,9 @@ int             test_genOSX_GenFinal01(
 
 
 TINYTEST_START_SUITE(test_genOSX);
+    TINYTEST_ADD_TEST(test_genOSX_GenFinal02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_GenFinal01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_genOSX_GenInitial02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_GenInitial01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_genOSX_Object01,setUp,tearDown);

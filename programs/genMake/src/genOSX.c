@@ -1937,7 +1937,10 @@ extern "C" {
         GENOSX_DATA     *this
     )
     {
+        ERESULT         eRc;
         ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        uint16_t        makeType;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1947,7 +1950,8 @@ extern "C" {
             return pStr;
         }
 #endif
-        
+        makeType = genBase_getMakeType((GENBASE_DATA *)this);
+
         pStr = AStr_New( );
         if (OBJ_NIL == pStr) {
             return pStr;
@@ -1959,18 +1963,59 @@ extern "C" {
         AStr_AppendA(pStr, "test: $(TESTS)\n\n\n");
         
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
-        AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n");
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n");
+                break;
+            case GENMAKE_TYPE_PGM:
+                AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n\n\n");
+                break;
+            default:
+                break;
+        }
         
         AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
-        AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
-        AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; "
-                            "[ ! -d $(LIBNAM)/include ] && "
-                            "mkdir -p $(LIBNAM)/include/$(SYS)\n");
-        AStr_AppendA(pStr, "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n");
-        AStr_AppendA(pStr, "\tcp src/*.h $(INSTALLDIR)/include/\n");
-        AStr_AppendA(pStr, "\tif [ -d src/$(SYS) ]; then \\\n");
-        AStr_AppendA(pStr, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n");
-        AStr_AppendA(pStr, "\tfi\n\n\n");
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
+                AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; "
+                             "[ ! -d $(LIBNAM)/include ] && "
+                             "mkdir -p $(LIBNAM)/include/$(SYS)\n");
+                AStr_AppendA(pStr, "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n");
+                AStr_AppendA(pStr, "\tcp src/*.h $(INSTALLDIR)/include/\n");
+                AStr_AppendA(pStr, "\tif [ -d src/$(SYS) ]; then \\\n");
+                AStr_AppendA(pStr, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n");
+                AStr_AppendA(pStr, "\tfi\n\n\n");
+                break;
+            case GENMAKE_TYPE_PGM:
+                AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n");
+                AStr_AppendA(pStr, "\tcp $(BASEDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)\n\n\n");
+                break;
+            default:
+                break;
+        }
+        
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                break;
+            case GENMAKE_TYPE_PGM:
+                AStr_AppendA(pStr, ".PHONY: link\n");
+                pWrk = AStr_NewA("link: $$(OBJS) src/${" mainID "}\n");
+                if (pWrk) {
+                    eRc = genBase_DictExpand((GENBASE_DATA *)this, pWrk);
+                    AStr_AppendPrint(pStr, AStr_getData(pWrk));
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                }
+                AStr_AppendPrint(
+                                 pStr,
+                                 "\tCC -o $(OBJDIR)/$(PGMNAM) "
+                                 "$(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n"
+                );
+                break;
+            default:
+                break;
+        }
         
         AStr_AppendA(pStr, ".PHONY: create_dirs\n");
         AStr_AppendA(pStr, "create_dirs:\n");
@@ -1981,7 +2026,16 @@ extern "C" {
         );
         
         AStr_AppendA(pStr, ".PHONY: all\n");
-        AStr_AppendA(pStr, "all:  clean create_dirs $(LIBPATH)\n\n\n\n");
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                AStr_AppendA(pStr, "all:  clean create_dirs $(LIBPATH)\n\n\n\n");
+                break;
+            case GENMAKE_TYPE_PGM:
+                AStr_AppendA(pStr, "all:  clean create_dirs link\n\n\n\n");
+                break;
+            default:
+                break;
+        }
 
         // Return to caller.
         return pStr;
@@ -2003,6 +2057,7 @@ extern "C" {
         int             i;
         int             iMax;
         ASTR_DATA       *pOut = OBJ_NIL;
+        uint16_t        makeType;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -2012,7 +2067,8 @@ extern "C" {
             return pOut;
         }
 #endif
-        
+        makeType = genBase_getMakeType((GENBASE_DATA *)this);
+
         pOut = AStr_New( );
         if (OBJ_NIL == pOut) {
             return pOut;
@@ -2025,16 +2081,34 @@ extern "C" {
             obj_Release(pStr);
         }
         AStr_AppendPrint(pOut, "\n");
+        
         //AStr_AppendPrint(pOut, "CC=clang\n");
-        pStr = AStr_NewA("LIBNAM=${" namePrefixID "}${" nameID "}\n");
-        if (pStr) {
-            eRc = genBase_DictExpand((GENBASE_DATA *)this, pStr);
-            AStr_AppendPrint(pOut, AStr_getData(pStr));
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                pStr = AStr_NewA("LIBNAM=${" namePrefixID "}${" nameID "}\n");
+                if (pStr) {
+                    eRc = genBase_DictExpand((GENBASE_DATA *)this, pStr);
+                    AStr_AppendPrint(pOut, AStr_getData(pStr));
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+                AStr_AppendA(pOut, "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
+                AStr_AppendA(pOut, "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
+                break;
+            case GENMAKE_TYPE_PGM:
+                pStr = AStr_NewA("PGMNAM=${" nameID "}\n");
+                if (pStr) {
+                    eRc = genBase_DictExpand((GENBASE_DATA *)this, pStr);
+                    AStr_AppendPrint(pOut, AStr_getData(pStr));
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+                AStr_AppendA(pOut, "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(PGMNAM)\n\n");
+                AStr_AppendA(pOut, "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
+                break;
+            default:
+                break;
         }
-        AStr_AppendA(pOut, "SYS=macosx\nTEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
-        AStr_AppendA(pOut, "CFLAGS_LIBS = \nCFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
         if (genBase_getLibDeps((GENBASE_DATA *)this)) {
             const
             char            *pLibIncludePrefix;
@@ -2066,8 +2140,19 @@ extern "C" {
             }
         }
         AStr_AppendA(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
-        AStr_AppendA(pOut, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
-        AStr_AppendA(pOut, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
+        
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                AStr_AppendA(pOut, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
+                AStr_AppendA(pOut, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
+                break;
+            case GENMAKE_TYPE_PGM:
+                AStr_AppendA(pOut, "INSTALL_BASE = $(HOME)/Support/bin\n");
+                AStr_AppendA(pOut, "INSTALLDIR = $(INSTALL_BASE)\n");
+                break;
+            default:
+                break;
+        }
         AStr_AppendA(pOut, "LIBDIR = $(BASEDIR)/$(SYS)\n");
         AStr_AppendPrint(pOut, "%s = ./src\nSRCSYSDIR = ./src/$(SYS)\n", pDirSrcA);
         AStr_AppendA(pOut, "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n");

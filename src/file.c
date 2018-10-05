@@ -106,6 +106,48 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                   D e l e t e
+    //---------------------------------------------------------------
+    
+    ERESULT         file_DeleteA(
+        const
+        char            *pPath
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+#if     defined(__MACOSX_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+        
+        if (NULL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+
+#if     defined(__MACOSX_ENV__)
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            iRc = unlink(pPath);
+            if (0 == iRc) {
+                eRc = ERESULT_SUCCESS;
+            }
+            else {
+                eRc = ERESULT_FILE_OPERATION_FAILED;
+            }
+        }
+        else {
+            eRc = ERESULT_FILE_NOT_FOUND;
+        }
+#endif
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       F i l e  S i z e A
     //---------------------------------------------------------------
     
@@ -120,16 +162,18 @@ extern "C" {
 #endif
         int64_t         fileSize = -1;
 
-        if (pPath) {
-#if defined(__MACOSX_ENV__)
-            iRc = stat(pPath, &statBuffer);
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                    fileSize = statBuffer.st_size;
-                }
-            }
-#endif
+        if (NULL == pPath) {
+            return -1;
         }
+        
+#if defined(__MACOSX_ENV__)
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
+                fileSize = statBuffer.st_size;
+            }
+        }
+#endif
         
         // Return to caller.
         return fileSize;
@@ -251,29 +295,29 @@ extern "C" {
 #endif
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
-        if (pPath) {
-#if defined(__MACOSX_ENV__)
-            iRc = stat(pPath, &statBuffer);
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                    iRc = utimes(pPath, NULL);
-                    if (0 == iRc) {
-                        eRc = ERESULT_SUCCESS;
-                    }
-                }
-                else
-                    eRc = ERESULT_FAILURE_FALSE;
-            }
-            else {
-                if (iRc == ENOENT) {
-                    ;
-                }
-                eRc = ERESULT_PATH_NOT_FOUND;
-            }
-#endif
+        if (NULL == pPath) {
+            return ERESULT_INVALID_PARAMETER;
         }
-        else
-            eRc = ERESULT_DATA_ERROR;
+        
+#if defined(__MACOSX_ENV__)
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
+                iRc = utimes(pPath, NULL);
+                if (0 == iRc) {
+                    eRc = ERESULT_SUCCESS;
+                }
+            }
+            else
+                eRc = ERESULT_FAILURE_FALSE;
+        }
+        else {
+            if (iRc == ENOENT) {
+                ;
+            }
+            eRc = ERESULT_PATH_NOT_FOUND;
+        }
+#endif
         
         // Return to caller.
         return eRc;
@@ -289,46 +333,46 @@ extern "C" {
     //===============================================================
 
     uint16_t        file_getPriority(
-        FILE_DATA     *cbp
+        FILE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !file_Validate( cbp ) ) {
+        if( !file_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
 
-        //return cbp->priority;
+        //return this->priority;
         return 0;
     }
 
     bool            file_setPriority(
-        FILE_DATA       *cbp,
+        FILE_DATA       *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !file_Validate( cbp ) ) {
+        if( !file_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
-        //cbp->priority = value;
+        //this->priority = value;
         return true;
     }
 
 
 
     uint32_t        file_getSize(
-        FILE_DATA       *cbp
+        FILE_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !file_Validate( cbp ) ) {
+        if( !file_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -371,8 +415,10 @@ extern "C" {
         fRc = file_Disable( this );
 
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc( this );
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -384,17 +430,17 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            file_Disable(
-        FILE_DATA		*cbp
+        FILE_DATA		*this
     )
     {
 
         // Do initialization.
-        if (NULL == cbp) {
+        if (NULL == this) {
             return false;
         }
     #ifdef NDEBUG
     #else
-        if( !file_Validate( cbp ) ) {
+        if( !file_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -402,7 +448,7 @@ extern "C" {
 
         // Put code here...
 
-        obj_Disable(cbp);
+        obj_Disable(this);
         
         // Return to caller.
         return true;
@@ -415,20 +461,20 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            file_Enable(
-        FILE_DATA		*cbp
+        FILE_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !file_Validate( cbp ) ) {
+        if( !file_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
     #endif
         
-        obj_Enable(cbp);
+        obj_Enable(this);
 
         // Put code here...
         
@@ -479,20 +525,20 @@ extern "C" {
     //---------------------------------------------------------------
     
     bool            file_IsEnabled(
-        FILE_DATA		*cbp
+        FILE_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !file_Validate( cbp ) ) {
+        if( !file_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (obj_IsEnabled(cbp))
+        if (obj_IsEnabled(this))
             return true;
         
         // Return to caller.
@@ -562,18 +608,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            file_Validate(
-        FILE_DATA      *cbp
+        FILE_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_FILE) )
+        if(this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_FILE) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(FILE_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(FILE_DATA)) )
             return false;
 
         // Return to caller.

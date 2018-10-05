@@ -1462,8 +1462,73 @@ int         test_AStr_SplitOn05(
 
 
 
+int         test_AStr_CharGet01(
+    const
+    char            *pTestName
+)
+{
+    ASTR_DATA       *pObj = OBJ_NIL;
+    W32CHR_T        chr;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = AStr_NewA("abc");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        chr = AStr_CharGetFirstW32(pObj);
+        fprintf(stderr, "\tFirst = (0x%04X)%c\n", chr, chr);
+        XCTAssertTrue( ('a' == chr) );
+        
+        chr = AStr_CharGetLastW32(pObj);
+        fprintf(stderr, "\tLast = (0x%04X)%c\n", chr, chr);
+        XCTAssertTrue( ('c' == chr) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    pObj = AStr_NewA("a");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        chr = AStr_CharGetFirstW32(pObj);
+        fprintf(stderr, "\tFirst = (0x%04X)%c\n", chr, chr);
+        XCTAssertTrue( ('a' == chr) );
+        
+        chr = AStr_CharGetLastW32(pObj);
+        fprintf(stderr, "\tLast = (0x%04X)%c\n", chr, chr);
+        XCTAssertTrue( ('a' == chr) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    pObj = AStr_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        chr = AStr_CharGetFirstW32(pObj);
+        fprintf(stderr, "\tFirst = (0x%08X)%c\n", chr, chr);
+        XCTAssertTrue( (-1 == chr) );
+        
+        chr = AStr_CharGetLastW32(pObj);
+        fprintf(stderr, "\tLast = (0x%08X)%c\n", chr, chr);
+        XCTAssertTrue( (-1 == chr) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_CharGet01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn03,setUp,tearDown);

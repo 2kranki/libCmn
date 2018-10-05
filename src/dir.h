@@ -136,9 +136,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         dir_getLastError(
-        DIR_DATA        *this
-    );
     
     
 
@@ -172,11 +169,22 @@ extern "C" {
     );
     
 
+    /*!
+     Scan a directory using the supplied method.  The "." and ".." directory
+     entries are skipped.
+     @param     this    object pointer
+     @param     pPath   path for directory to scan
+     @param     pScan   scan method to be called for directory entry.  It should
+                        return true to continue the scan or false to end it.
+     @param     pObject object parameter or 1st parameter of pScan method
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         dir_ScanDir(
         DIR_DATA		*this,
         PATH_DATA       *pPath,
-        bool            (*pScanner)(void *,DIRENTRY_DATA *),
-        void            *pData
+        bool            (*pScan)(void *, DIRENTRY_DATA *),
+        void            *pObject
     );
     
     

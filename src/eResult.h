@@ -174,7 +174,8 @@ extern "C" {
         ERESULT_CANNOT_MAKE_DIRECTORY       = -96,
         ERESULT_DISK_FULL                   = -97,
         ERESULT_DIRECTORY_FULL              = -98,
-        
+        ERESULT_FILE_OPERATION_FAILED       = -99,
+
         ERESULT_INVALID_PASSWORD            = -128,
         
         ERESULT_DATA_ERROR                  = -131,

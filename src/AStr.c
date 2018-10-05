@@ -1310,6 +1310,84 @@ extern "C" {
     }
     
     
+    W32CHR_T        AStr_CharGetFirstW32(
+        ASTR_DATA        *this
+    )
+    {
+        uint32_t        lenStr;
+        uint32_t        off;
+        W32CHR_T        chr = -1;
+        char            *pChr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStr_getLength(this);
+        if (0 == lenStr) {
+            return chr;
+        }
+
+        pChr = array_Ptr(this->pData, 1);
+        if (pChr) {
+            if ('\0' == *pChr)
+                ;
+            else {
+                off = utf8_Utf8ToW32(pChr, &chr);
+                if (0 == chr)
+                    chr = -1;
+            }
+        }
+        
+        // Return to caller.
+        return chr;
+    }
+    
+    
+    W32CHR_T        AStr_CharGetLastW32(
+        ASTR_DATA        *this
+    )
+    {
+        uint32_t        lenStr;
+        uint32_t        off;
+        W32CHR_T        chr = -1;
+        char            *pChr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStr_getLength(this);
+        if (0 == lenStr) {
+            return chr;
+        }
+        
+        off = utf8_StrOffset(AStr_getData(this), lenStr);
+        
+        pChr = array_Ptr(this->pData, off);
+        if (pChr) {
+            if ('\0' == *pChr)
+                ;
+            else {
+                lenStr = utf8_Utf8ToW32(pChr, &chr);
+                if (0 == chr)
+                    chr = -1;
+            }
+        }
+        
+        // Return to caller.
+        return chr;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                       C h a r  I n s e r t

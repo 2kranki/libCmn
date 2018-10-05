@@ -52,27 +52,28 @@ bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
             return true;
         }
     }
-    pPath = path_Copy(dirEntry_getDir(pEntry));
-    path_AppendFileName(pPath, dirEntry_getName(pEntry));
-    pStr = AStr_CStringA((ASTR_DATA *)pPath,NULL);
-    
-    fprintf(    stderr,
-                "\t%2d name: %s  type: %d\n",
-                count++,
-                pStr,
-                dirEntry_getType(pEntry)
-    );
-    
-    if (-1 == stat(pStr,&statbuf))
-        fprintf(stderr, "\tCould not stat: %s\n", pStr);
-    else {
-        //fprintf(stderr, "\tname: (%d)%s\n", statbuf->d_namlen, pDirent->d_name);
+    pPath = dirEntry_getFullPath(pEntry);
+    if (pPath) {
+        pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
+        if (pStr) {
+            fprintf(
+                    stderr,
+                    "\t%2d name: %s  type: %d\n",
+                    count++,
+                    pStr,
+                    dirEntry_getType(pEntry)
+                    );
+            
+            if (-1 == stat(pStr,&statbuf))
+                fprintf(stderr, "\tCould not stat: %s\n", pStr);
+            else {
+                //fprintf(stderr, "\tname: (%d)%s\n", statbuf->d_namlen, pDirent->d_name);
+            }
+            
+            mem_Free(pStr);
+            pStr = NULL;
+        }
     }
-    
-    mem_Free(pStr);
-    pStr = NULL;
-    obj_Release(pPath);
-    pPath = OBJ_NIL;
 
     return true;
 }
@@ -303,7 +304,7 @@ int         test_dir_Enum01(
                             stderr,
                             "%2d name: %-25s  type: %2d  gen: %d\n",
                             i,
-                            AStr_getData(dirEntry_getName(pEntry)),
+                            path_getData(dirEntry_getFileName(pEntry)),
                             dirEntry_getType(pEntry),
                             dirEntry_getGenerationNumber(pEntry)
                     );

@@ -1393,6 +1393,7 @@ extern "C" {
         if (pNode) {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
+                genBase_setMakeType(pGen, GENMAKE_TYPE_LIB);
                 eRc = dbprs_ParseLibrary(pPrs, pHashWrk);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
@@ -1418,6 +1419,7 @@ extern "C" {
             if (pNode) {
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
+                    genBase_setMakeType(pGen, GENMAKE_TYPE_PGM);
                     eRc = dbprs_ParseProgram(pPrs, pHashWrk);
                     if (ERESULT_FAILED(eRc)) {
                         fprintf(

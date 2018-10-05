@@ -97,6 +97,11 @@ extern "C" {
     );
     
     
+    PATH_DATA *     path_New(
+        void
+    );
+    
+    
     PATH_DATA *     path_NewA(
         const
         char            *pStr
@@ -110,6 +115,12 @@ extern "C" {
 
     PATH_DATA *     path_NewFromCurrentDirectory(
         void
+    );
+    
+    
+    PATH_DATA *     path_NewFromDirExt(
+        ASTR_DATA       *pFilePath,
+        ASTR_DATA       *pFileExt
     );
     
     
@@ -189,6 +200,14 @@ extern "C" {
     
     // AppendDir() first appends a '/'. Then it appends the
     // directory component.
+    /*!
+     Append a '/' if needed followed by the directory entry if it is present
+     and insure that the path is terminated by a '/'.
+     @param     this    object pointer
+     @param     pDir    optional directory
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+                is returned.
+     */
     ERESULT         path_AppendDir(
         PATH_DATA		*this,
         ASTR_DATA       *pDir
@@ -388,7 +407,20 @@ extern "C" {
     
     /*!
      Split the path into its 3 basic components of the drive, directory and
-     FileName.
+     FileName.  If a scan from the left of ':' fails, then no drive is
+     assumed and OBJ_NIL is returned for the drive.  A scan from right to
+     left for a trailing '/' is searched to find the end of the directory
+     portion of the path.  It also denotes the beginning of the file name.
+     So, if the path consists of optionally the drive and the directory
+     portions, it must end in a '/' to be properly parsed.
+     @param     this        object pointer
+     @param     ppDrive     pointer to ASTR object pointer which will contain
+                            the drive if it exists in the path.  The drive
+                            returned is without its ':' separator.
+     @param     ppDir       pointer to a path object pointer which will contain
+                            directory portion of the path.
+     @param     ppFileName  pointer to a path object pointer which will contain
+                            the file name portion of the path
      @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
      */
     ERESULT         path_SplitPath(
@@ -430,10 +462,27 @@ extern "C" {
                 can be 0
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     path_ToDebugString(
         PATH_DATA       *this,
         int             indent
+    );
+    
+    
+    /*!
+     Create a path from the current one that is extended by a version number
+     just before the file extension.  For example, "/a/abc.txt"  becomes
+     "/a/abc.0000.txt".  Note that the version number is 4 digits.
+     @param     this    object pointer
+     @return    If successful, a path object which must be released,
+                otherwise OBJ_NIL.
+     @warning  Remember to release the returned path object.
+     @warning  This can not be used from two or more threads on the same
+                file path at the same time.
+     */
+    PATH_DATA *     path_ToVersioned(
+        PATH_DATA       *this
     );
     
     

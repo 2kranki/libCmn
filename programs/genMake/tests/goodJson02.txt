@@ -1,0 +1,14 @@
+{
+    "program": {
+        "name":"test",
+        "deps":["Cmn"],
+        "main":"mainProgram.c"
+    }
+    "objects": {
+        "AStr":{"deps":["libCmn.h"], "json":true, "test":true},
+    },
+    "routines": [
+        "dllist.c",
+    ],
+}
+

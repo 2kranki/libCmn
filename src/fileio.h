@@ -205,7 +205,7 @@ extern "C" {
 
 
     bool            fileio_IsOpen(
-        FILEIO_DATA        *this
+        FILEIO_DATA     *this
     );
     
     

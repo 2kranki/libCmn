@@ -1,12 +1,14 @@
 # Generated file - edits may be discarded!
 
-LIBNAM=libCmn
+LIBNAM=libtest
 SYS=macosx
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(LIBNAM)
 
 CFLAGS_LIBS = 
 CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+CFLAGS += -I../libCmn/src -I../libCmn/src/$(SYS)
+CFLAGS_LIBS += -lCmn -L$(HOME)/Support/lib/$(SYS)/libCmn
 CFLAGS += -D__MACOSX_ENV__
 
 INSTALL_BASE = $(HOME)/Support/lib/$(SYS)

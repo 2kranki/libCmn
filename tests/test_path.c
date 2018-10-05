@@ -1109,8 +1109,68 @@ int         test_path_ExpandEnvVars02(
 
 
 
+int         test_path_Version01(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pPathW = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pStrF = OBJ_NIL;
+    ASTR_DATA   *pStrE = OBJ_NIL;
+    ASTR_DATA   *pStrW = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = path_NewA("~/git/libCmn/programs/genMake/tests/test.txt");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = path_Clean(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        
+        eRc = path_IsExisting(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        
+        pPath = path_ToVersioned(pObj);
+        XCTAssertFalse( (OBJ_NIL == pPath) );
+        fprintf(stderr, "\tversion = \"%s\"\n", path_getData(pPath));
+
+        eRc = path_SplitPath(pPath, OBJ_NIL, OBJ_NIL, &pPathW);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        eRc = path_SplitFile(pPathW, &pStrF, &pStrE);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertFalse( (OBJ_NIL == pStrF) );
+        XCTAssertFalse( (OBJ_NIL == pStrE) );
+
+        eRc = AStr_CompareA(pStrF, "test.0002");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = AStr_CompareA(pStrE, "txt");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pStrE);
+        pStrE = OBJ_NIL;
+        obj_Release(pStrF);
+        pStrF = OBJ_NIL;
+        obj_Release(pPathW);
+        pPathW = OBJ_NIL;
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_path);
+    TINYTEST_ADD_TEST(test_path_Version01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_ExpandEnvVars02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_ExpandEnvVars01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_path_ToBash,setUp,tearDown);

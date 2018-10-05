@@ -24,6 +24,7 @@
  */
  
 #define libBaseID       "libBase"       /* Library Directory Base Directory */
+#define mainID          "main"          /* if program, main routine file name */
 #define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
 #define namePrefixID    "namePrefix"    /* normally "" or "lib" */
 #define nameID          "name"          /* program or library base name */

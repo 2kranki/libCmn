@@ -272,6 +272,51 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    E x c h a n g e  D a t a
+    //---------------------------------------------------------------
+    
+    ERESULT         misc_Exchange(
+        void            *pData1,
+        void            *pData2,
+        uint32_t        size
+    )
+    {
+        uint32_t        *p1b = pData1;
+        uint32_t        *p2b = pData2;
+        uint32_t        wrk32;
+        uint32_t        size32;
+        uint8_t         *p1 = pData1;
+        uint8_t         *p2 = pData2;
+        uint8_t         wrk8;
+        
+        if ((NULL == pData1) || (NULL == pData2)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
+        size32 = size >> 2;
+        if (size32) {
+            for (; size32; --size32) {
+                wrk32 = *p1b;
+                *p1b++ = *p2b;
+                *p2b++ = wrk32;
+            }
+            size -= (size >> 2) << 2;
+            p1 = (uint8_t *)p1b;
+            p2 = (uint8_t *)p2b;
+        }
+        
+        for (; size; --size) {
+            wrk8 = *p1;
+            *p1++ = *p2;
+            *p2++ = wrk8;
+        }
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                    P a t t e r n  M a t c h
     //---------------------------------------------------------------
     

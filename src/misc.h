@@ -165,6 +165,21 @@ extern "C" {
     
     
     /*!
+     Exchange the two given data areas (ie data1 -> data2 and data2 -> data1).
+     @param     pData1  non-NULL data pointer
+     @param     pData2  non-NULL data pointer
+     @param     size    number of bytes in each area
+     @return    If successful, ERESULT_SUCCESS.  Othewise, an ERESULT_* error
+                code.
+     */
+    ERESULT         misc_Exchange(
+        void            *pData1,
+        void            *pData2,
+        uint32_t        size
+    );
+    
+    
+    /*!
      * PatternMatch() is a generalized procedure for working with "wild card"
      * names using the '*' and '?' conventions.  It is superior to the wild
      * card matcher provided in the CP/M BDOS in that it will allow operating

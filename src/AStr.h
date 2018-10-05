@@ -373,7 +373,15 @@ extern "C" {
         uint32_t        offset
     );
     
+    W32CHR_T        AStr_CharGetFirstW32(
+        ASTR_DATA        *this
+    );
     
+    W32CHR_T        AStr_CharGetLastW32(
+        ASTR_DATA        *this
+    );
+    
+
     ERESULT         AStr_CharInsertW32(
         ASTR_DATA       *this,
         uint32_t        offset,

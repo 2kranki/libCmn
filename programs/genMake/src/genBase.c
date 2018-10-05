@@ -1258,7 +1258,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        switch (this->makeType) {
+        switch (this->osType) {
                 
             case GENMAKE_OS_MACOSX:
                 eRc =   AStr_AppendPrint(
@@ -1337,7 +1337,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        switch (this->makeType) {
+        switch (this->osType) {
                 
             case GENMAKE_OS_MACOSX:
                 eRc =   AStr_AppendPrint(
@@ -1468,7 +1468,7 @@ ASTR_DATA *     genBase_CompileRules(
         return OBJ_NIL;
     }
     
-    switch (this->makeType) {
+    switch (this->osType) {
             
         case GENMAKE_OS_MACOSX:
             break;

@@ -51,74 +51,6 @@
 
 
 
-#ifdef XYZZY
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
-#include <locale.h>
-#include <langinfo.h>
-#include <stdio.h>
-#include <stdint.h>
-
-
-struct dirent   *dp;
-struct stat     statbuf;
-struct passwd   *pwd;
-struct group    *grp;
-struct tm       *tm;
-char            datestring[256];
-
-
-dp = opendir( argv[1] );
-
-/* Loop through directory entries. */
-while ((dp = readdir(dir)) != NULL) {
-    
-    
-    /* Get entry's information. */
-    if (stat(dp->d_name, &statbuf) == -1)
-        continue;
-    
-    
-    /* Print out type, permissions, and number of links. */
-    printf("%10.10s", sperm (statbuf.st_mode));
-    printf("%4d", statbuf.st_nlink);
-    
-    
-    /* Print out owner's name if it is found using getpwuid(). */
-    if ((pwd = getpwuid(statbuf.st_uid)) != NULL)
-        printf(" %-8.8s", pwd->pw_name);
-    else
-        printf(" %-8d", statbuf.st_uid);
-            
-            
-    /* Print out group name if it is found using getgrgid(). */
-    if ((grp = getgrgid(statbuf.st_gid)) != NULL)
-        printf(" %-8.8s", grp->gr_name);
-    else
-        printf(" %-8d", statbuf.st_gid);
-                    
-                    
-    /* Print size of file. */
-    printf(" %9jd", (intmax_t)statbuf.st_size);
-                    
-                    
-    tm = localtime(&statbuf.st_mtime);
-                    
-                    
-    /* Get localized date string. */
-    strftime(datestring, sizeof(datestring), nl_langinfo(D_T_FMT), tm);
-                    
-                    
-    printf(" %s %s\n", datestring, dp->d_name);
-}
-#endif
-
-
-
 
 
 
@@ -163,7 +95,22 @@ extern "C" {
 
     
     
+    static
+    bool            scan_rm(
+        void            *pObj,
+        DIRENTRY_DATA   *pEntry
+    )
+    {
+        DIR_DATA        *this = pObj;
+        ERESULT         eRc;
+        
+        
+        return true;
+    }
     
+    
+    
+
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -205,24 +152,24 @@ extern "C" {
 #endif
         ERESULT         eRc = ERESULT_SUCCESS;
         
-        if (pPath) {
+        if (NULL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
 #if     defined(__MACOSX_ENV__)
-            iRc = stat(pPath, &statBuffer);
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
-                    eRc = ERESULT_SUCCESS;
-                }
-                else
-                    eRc = ERESULT_FAILURE_FALSE;
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
+                eRc = ERESULT_SUCCESS;
             }
-            else {
-                eRc = ERESULT_PATH_NOT_FOUND;
-            }
-#endif
+            else
+                eRc = ERESULT_FAILURE_FALSE;
         }
         else {
-            eRc = ERESULT_DATA_ERROR;
+            eRc = ERESULT_PATH_NOT_FOUND;
         }
+#endif
         
         // Return to caller.
         return eRc;
@@ -245,20 +192,20 @@ extern "C" {
 #endif
         ERESULT         eRc = ERESULT_SUCCESS;
         
-        if (pPath) {
+        if (NULL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
 #if     defined(__MACOSX_ENV__)
-            iRc = stat(pPath, &statBuffer);
-            if (0 == iRc) {
-                eRc = ERESULT_SUCCESS;
-            }
-            else {
-                eRc = ERESULT_PATH_NOT_FOUND;
-            }
-#endif
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            eRc = ERESULT_SUCCESS;
         }
         else {
-            eRc = ERESULT_DATA_ERROR;
+            eRc = ERESULT_PATH_NOT_FOUND;
         }
+#endif
         
         // Return to caller.
         return eRc;
@@ -281,25 +228,25 @@ extern "C" {
 #endif
         ERESULT         eRc = ERESULT_SUCCESS;
         
-        if (pPath) {
+        if (NULL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
 #if     defined(__MACOSX_ENV__)
-            iRc = stat(pPath, &statBuffer);
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                    eRc = ERESULT_SUCCESS;
-                }
-                else {
-                    eRc = ERESULT_FAILURE_FALSE;
-                }
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
+                eRc = ERESULT_SUCCESS;
             }
             else {
-                eRc = ERESULT_PATH_NOT_FOUND;
+                eRc = ERESULT_FAILURE_FALSE;
             }
-#endif
         }
         else {
-            eRc = ERESULT_DATA_ERROR;
+            eRc = ERESULT_PATH_NOT_FOUND;
         }
+#endif
         
         // Return to caller.
         return eRc;
@@ -322,25 +269,25 @@ extern "C" {
 #endif
         ERESULT         eRc = ERESULT_SUCCESS;
         
-        if (pPath) {
+        if (NULL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
 #if     defined(__MACOSX_ENV__)
-            iRc = stat(pPath, &statBuffer);
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
-                    eRc = ERESULT_SUCCESS;
-                }
-                else {
-                    eRc = ERESULT_FAILURE_FALSE;
-                }
+        iRc = stat(pPath, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
+                eRc = ERESULT_SUCCESS;
             }
             else {
-                eRc = ERESULT_PATH_NOT_FOUND;
+                eRc = ERESULT_FAILURE_FALSE;
             }
-#endif
         }
         else {
-            eRc = ERESULT_DATA_ERROR;
+            eRc = ERESULT_PATH_NOT_FOUND;
         }
+#endif
         
         // Return to caller.
         return eRc;
@@ -354,45 +301,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT         dir_getLastError(
-        DIR_DATA        *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !dir_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            dir_setLastError(
-        DIR_DATA        *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !dir_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
     uint16_t        dir_getPriority(
         DIR_DATA     *cbp
     )
@@ -501,20 +409,17 @@ extern "C" {
 #else
         if( !dir_Validate(this) ) {
             DEBUG_BREAK();
-            dir_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
 #endif
         
         pEnum = objEnum_New();
         if( OBJ_NIL == pEnum ) {
-            dir_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
         eRc = dir_ScanDir(this, pPath, &enumScanner, pEnum);
         if (ERESULT_FAILED(eRc)) {
-            dir_setLastError(this, eRc);
             obj_Release(pEnum);
             pEnum = OBJ_NIL;
             return OBJ_NIL;
@@ -523,7 +428,6 @@ extern "C" {
         eRc = objEnum_SortAscending(pEnum);
         
         // Return to caller.
-        dir_setLastError(this, ERESULT_SUCCESS);
         return pEnum;
     }
     
@@ -560,7 +464,7 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY4(sizeof(DIR_DATA));
     #endif
 
         return this;
@@ -691,7 +595,7 @@ extern "C" {
         DIR_DATA		*this,
         PATH_DATA       *pPath,
         bool            (*pScanner)(void *, DIRENTRY_DATA *),
-        void            *pData
+        void            *pObject
     )
     {
         ERESULT         eRc;
@@ -701,9 +605,9 @@ extern "C" {
         DIR             *pDirectory;
         bool            fRc;
 #endif
-        DIRENTRY_DATA   *pEntry;
-        ASTR_DATA       *pStr;
-        PATH_DATA       *pPath2;
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -723,11 +627,17 @@ extern "C" {
 #endif
 
         eRc = path_IsDir(pPath);
-        if (ERESULT_HAS_FAILED(eRc)) {
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_PATH_NOT_FOUND;
         }
         
+        eRc = path_SplitPath(pPath, &pDrive, &pDir, OBJ_NIL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return ERESULT_PATH_NOT_FOUND;
+        }
+
 #if     defined(__MACOSX_ENV__)
         pDirA = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pDirA) {
@@ -742,45 +652,53 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
         
-        pEntry = dirEntry_Alloc();
-        pEntry = dirEntry_Init(pEntry);
-        if( OBJ_NIL == pEntry ) {
-            DEBUG_BREAK();
-            closedir(pDirectory);
-            return ERESULT_INVALID_PARAMETER;
-        }
-        
         while ((pDirent = readdir(pDirectory)) != NULL) {
+            DIRENTRY_DATA   *pEntry;
             if ((pDirent->d_namlen == 1) && (0 == strcmp(".", pDirent->d_name))) {
                 continue;
             }
             if ((pDirent->d_namlen == 2) && (0 == strcmp("..", pDirent->d_name))) {
                 continue;
             }
-            pPath2 = path_Copy(pPath);
-            (void)dirEntry_setDir(pEntry, pPath2);
-            obj_Release(pPath2);
-            pPath2 = OBJ_NIL;
-            pStr = AStr_NewA(pDirent->d_name);
-            (void)dirEntry_setName(pEntry, pStr);
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-            (void)dirEntry_setType(pEntry, pDirent->d_type);
-            fRc = (*pScanner)(pData, pEntry);
+
+            pFileName = path_NewA(pDirent->d_name);
+            if (OBJ_NIL == pFileName) {
+                DEBUG_BREAK();
+                closedir(pDirectory);
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            pEntry = dirEntry_New(pDrive, pDir, pFileName, pDirent->d_type);
+            if( OBJ_NIL == pEntry ) {
+                DEBUG_BREAK();
+                closedir(pDirectory);
+                return ERESULT_INVALID_PARAMETER;
+            }
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+
+            fRc = (*pScanner)(pObject, pEntry);
+            obj_Release(pEntry);
+            pEntry = OBJ_NIL;
             if (!fRc) {
                 break;
             }
         }
         
         if (EOF == closedir(pDirectory)) {
+            obj_Release(pDrive);
+            pDrive = OBJ_NIL;
+            obj_Release(pDir);
+            pDir = OBJ_NIL;
             return ERESULT_GENERAL_FAILURE;
         }
         
-        obj_Release(pEntry);
-        pEntry = OBJ_NIL;
 #endif
         
         // Return to caller.
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDir = OBJ_NIL;
         return ERESULT_SUCCESS;
     }
     

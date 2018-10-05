@@ -90,6 +90,12 @@ extern "C" {
     );
     
     
+    ERESULT         file_DeleteA(
+        const
+        char            *pPath
+    );
+    
+    
     int64_t         file_SizeA(
         const
         char            *pPath
