@@ -1,7 +1,7 @@
 {
     "library":{
         "name":"Cmn",
-        "deps":null,                    // An array of library names without "lib" prefix
+        "libDeps":null,                    // An array of library names without "lib" prefix
         "headers": {
             "private":
             [
@@ -34,15 +34,15 @@
         }
     }
     "objects": {
-        "appl":{"deps":["cmn_defs.h","cmdutl.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
-        "array":{"deps":["cmn_defs.h"]},
-        "ascii":{"deps":["cmn_defs.h","AStr.h"]},
-        "AStr":{"deps":["cmn_defs.h","array.h"], "json":true, "test":null},
-        "AStrArray":{"deps":["cmn_defs.h","AStr.h"], "test":null},
+        "appl":{"srcDeps":["cmn_defs.h","cmdutl.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
+        "array":{"srcDeps":["cmn_defs.h"]},
+        "ascii":{"srcDeps":["cmn_defs.h","AStr.h"]},
+        "AStr":{"srcDeps":["cmn_defs.h","array.h"], "json":true, "test":null},
+        "AStrArray":{"srcDeps":["cmn_defs.h","AStr.h"], "test":null},
         "AStrC":["cmn_defs.h"],
         "audioCW":["cmn_defs.h","AStr.h","audioWAV.h"],
         "audioWAV":["cmn_defs.h","AStr.h","fbso.h","u8Array.h"],
-        "bitMatrix":{"deps":["cmn_defs.h","AStr.h","bitSet.h","u16Matrix.h"], "json":true,"test":null},
+        "bitMatrix":{"srcDeps":["cmn_defs.h","AStr.h","bitSet.h","u16Matrix.h"], "json":true,"test":null},
         "bitSet":["cmn_defs.h","AStr.h"],
         "blkdrcds16":["cmn_defs.h","AStr.h"],
         "block16":["cmn_defs.h","AStr.h"],
@@ -52,7 +52,7 @@
         "bptIndex":["cmn_defs.h"],
         "bptLeaf":["cmn_defs.h"],
         "bptree":["cmn_defs.h"],
-        "cb":{"deps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
+        "cb":{"srcDeps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
         "cb16":["cmn_defs.h"],
         "cb32":["cmn_defs.h","psxMutex.h","psxSem.h"],
         "cfa":["cmn_defs.h"],
@@ -65,7 +65,7 @@
         "dbCsv":["cmn_defs.h","AStr.h","objArray.h","path.h","srcFile.h"],
         "dbf":["cmn_defs.h"],
         "dbField":["cmn_defs.h","AStr.h"],
-        "dec":{"deps":["cmn_defs.h","AStr.h"], "json":true, "test":null},
+        "dec":{"srcDeps":["cmn_defs.h","AStr.h"], "json":true, "test":null},
         "dir":["cmn_defs.h","AStr.h","dirEntry.h","path.h"],
         "dirEntry":["cmn_defs.h","AStr.h","path.h"],
         "ebcdic":["cmn_defs.h","AStr.h"],
@@ -81,7 +81,7 @@
         "genObj":["cmn_defs.h"],
         "greg":["cmn_defs.h"],
         "hash32":["cmn_defs.h"],
-        "hex":{"deps":["cmn_defs.h","AStr.h"], "json":true, "test":null},
+        "hex":{"srcDeps":["cmn_defs.h","AStr.h"], "json":true, "test":null},
         "hjson":["cmn_defs.h"],
         "i32Array":["cmn_defs.h"],
         "jsonIn":["cmn_defs.h"],
@@ -92,9 +92,9 @@
         "macro":["cmn_defs.h","AStr.h"],
         "md5ChkSum":["cmn_defs.h"],
         "misc":["cmn_defs.h","AStr.h"],
-        "msgBus":{"deps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
+        "msgBus":{"srcDeps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
         "msgData":["cmn_defs.h"],
-        "name":{"deps":["cmn_defs.h","AStr.h","str.h","WStr.h"], "json":true, "test":null},
+        "name":{"srcDeps":["cmn_defs.h","AStr.h","str.h","WStr.h"], "json":true, "test":null},
         "node":["cmn_defs.h","AStr.h","listdl.h","name.h","nodeArray.h","nodeHash.h","szTbl.h"],
         "nodeArc":["cmn_defs.h","AStr.h","node.h"],
         "nodeArray":["cmn_defs.h","node.h","objArray.h"],
@@ -108,7 +108,7 @@
         "null":["cmn_defs.h","AStr.h"],
         "number":["cmn_defs.h","AStr.h"],
         "objArray":["cmn_defs.h","AStr.h"],
-        "objCb":{"deps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
+        "objCb":{"srcDeps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
         "objEnum":["cmn_defs.h"],
         "objHash":["cmn_defs.h","AStr.h","listdl.h"],
         "objList":["cmn_defs.h","AStr.h","listdl.h"],

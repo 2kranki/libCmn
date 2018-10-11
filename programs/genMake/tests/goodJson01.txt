@@ -1,7 +1,7 @@
 {
     "library": {
         "name":"Cmn",
-        "deps":null,
+        "libDeps":null,
         "headers":null,
     }
     "objects": {

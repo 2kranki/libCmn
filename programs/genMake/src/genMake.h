@@ -24,6 +24,7 @@
  */
  
 #define libBaseID       "libBase"       /* Library Directory Base Directory */
+#define libDepsID       "libDeps"       /* Library Dependencies */
 #define mainID          "main"          /* if program, main routine file name */
 #define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
 #define namePrefixID    "namePrefix"    /* normally "" or "lib" */
@@ -33,6 +34,7 @@
 #define outBaseID       "outBase"       /* Base Directory for output */
 #define resultTypeID    "resultType"    /* "pgm" or "lib" */
 #define srcBaseID       "srcDir"        /* Source File Base Drive and Directory */
+#define srcDepsID       "srcDeps"       /* Source Dependencies */
 #define srcFileID       "srcFile"       /* Source JSON File */
 #define tmpBaseID       "tmpBase"       /* Temporary File Base Directory */
 //#define srcPathID       "srcPath"       /* Source File Full Path */ ???

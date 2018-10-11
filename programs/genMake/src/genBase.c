@@ -588,6 +588,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      S r c D e p s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * genBase_getSrcDeps(
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pSrcDeps;
+    }
+    
+    
+    bool            genBase_setSrcDeps(
+        GENBASE_DATA    *this,
+        NODEARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genBase_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pSrcDeps) {
+            obj_Release(this->pSrcDeps);
+        }
+        this->pSrcDeps = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     

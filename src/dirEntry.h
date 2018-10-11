@@ -94,7 +94,7 @@ extern "C" {
         DIRENTRY_TYPE_REG=8,            // Regular File
         DIRENTRY_TYPE_LNK=10,           // File Link
         DIRENTRY_TYPE_SOCK=12,          // Network Socket
-        DIRENTRY_TYPE_WHT=14            // ???
+        DIRENTRY_TYPE_WHT=14            // White Out (???)
     } DIRENTRY_TYPES;
 
     

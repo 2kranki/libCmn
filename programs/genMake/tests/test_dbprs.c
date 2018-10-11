@@ -120,9 +120,10 @@ int             test_dbprs_Object01(
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     const
-    char            *pGoodJsonObject1 = "{\n"
+    char            *pGoodJsonObject1 = 
+    "{\n"
         "\"AStr\":{"
-            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"srcDeps\":[\"cmn_defs.h\",\"array.h\"],"
             "\"json\":true,"
             "\"test\":true"
         "}\n"
@@ -140,7 +141,7 @@ int             test_dbprs_Object01(
         "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
         "TESTS += test_AStr\n\n"
         "test_AStr: $(TEST_SRC)/test_AStr.c \n"
-        "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
+        "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< \n"
         "\t$(TEST_OBJ)/$(@F)\n\n"
     ;
 
@@ -200,11 +201,12 @@ int             test_dbprs_Object02(
     int             iRc;
     int             offset = 0;
     const
-    char            *pGoodJsonObject1 = "{\n"
-    "\"appl\":{"
-    "\"deps\":[\"cmn_defs.h\",\"cmdutl.h\"],"
-    "\"test\":{\"srcs\":[objTest.c, objTest_object.c]}"
-    "}\n"
+    char            *pGoodJsonObject1 = 
+    "{\n"
+        "\"appl\":{"
+            "\"srcDeps\":[\"cmn_defs.h\",\"cmdutl.h\"],"
+            "\"test\":{\"srcs\":[objTest.c, objTest_object.c]}"
+        "}\n"
     "}\n";
     const
     char            *pOutputA =
@@ -216,7 +218,7 @@ int             test_dbprs_Object02(
     "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
     "TESTS += test_appl\n\n"
     "test_appl: $(TEST_SRC)/test_appl.c \n"
-    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< "
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< "
             "$(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c \n"
     "\t$(TEST_OBJ)/$(@F)\n\n"
     ;
@@ -234,7 +236,7 @@ int             test_dbprs_Object02(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -275,12 +277,13 @@ int             test_dbprs_Object03(
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     const
-    char            *pGoodJsonObject1 = "{\n"
-    "\"AStr\":{"
-    "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
-    "\"json\":true,"
-    "\"test\":true"
-    "}\n"
+    char            *pGoodJsonObject1 =
+    "{\n"
+        "\"AStr\":{"
+            "\"srcDeps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"json\":true,"
+            "\"test\":true"
+        "}\n"
     "}\n";
     const
     char            *pOutputA =
@@ -314,7 +317,7 @@ int             test_dbprs_Object03(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -357,11 +360,12 @@ int             test_dbprs_Object04(
     int             iRc;
     int             offset = 0;
     const
-    char            *pGoodJsonObject1 = "{\n"
-    "\"appl\":{"
-    "\"deps\":[\"cmn_defs.h\",\"cmdutl.h\"],"
-    "\"test\":{\"srcs\":[objTest.c, objTest_object.c]}"
-    "}\n"
+    char            *pGoodJsonObject1 = 
+    "{\n"
+        "\"appl\":{"
+            "\"srcDeps\":[\"cmn_defs.h\",\"cmdutl.h\"],"
+            "\"test\":{\"srcs\":[objTest.c, objTest_object.c]}"
+        "}\n"
     "}\n";
     const
     char            *pOutputA =
@@ -373,7 +377,7 @@ int             test_dbprs_Object04(
     "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
     "TESTS += test_appl\n\n"
     "test_appl: $(TEST_SRC)/test_appl.c \n"
-    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< "
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< "
     "$(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c \n"
     "\t$(TEST_OBJ)/$(@F)\n\n"
     ;
@@ -391,7 +395,7 @@ int             test_dbprs_Object04(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -435,8 +439,9 @@ int             test_dbprs_Object05(
     int             iRc;
     int             offset = 0;
     const
-    char            *pGoodJsonObject1 = "[\n"
-    "\"appl\""
+    char            *pGoodJsonObject1 = 
+    "[\n"
+        "\"appl\""
     "]\n";
     const
     char            *pOutputA =
@@ -448,7 +453,7 @@ int             test_dbprs_Object05(
     "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
     "TESTS += test_appl\n\n"
     "test_appl: $(TEST_SRC)/test_appl.c \n"
-    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< \n"
     "\t$(TEST_OBJ)/$(@F)\n\n"
     ;
     
@@ -465,7 +470,7 @@ int             test_dbprs_Object05(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         pStr = AStr_NewA("appl");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         pNode = node_NewWithUTF8AndClass("string", 0, pStr);
@@ -495,7 +500,7 @@ int             test_dbprs_Object05(
 
 
 
-int             test_dbprs_Routine01(
+int             test_dbprs_Objects01(
     const
     char            *pTestName
 )
@@ -503,23 +508,52 @@ int             test_dbprs_Routine01(
     DBPRS_DATA      *pObj = OBJ_NIL;
     GENOSX_DATA     *pGen = OBJ_NIL;
     ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
     const
-    char            *pGoodJsonObject1 = "{\n"
-        "\"listdl.c\":{"
-            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+    char            *pGoodJsonObject1 =
+    "{\n"
+        "\"AStr1\":{"
+            "\"srcDeps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"json\":true,"
             "\"test\":true"
-        "}\n"
+        "},\n"
+        "\"AStr2\":{"
+            "\"srcDeps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"json\":true,"
+            "\"test\":true"
+        "},\n"
     "}\n";
     const
     char            *pOutputA =
-    "OBJS += $(OBJDIR)/listdl.o\n\n"
-    "$(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h \n"
+    "OBJS += $(OBJDIR)/AStr1_object.o\n\n"
+    "$(OBJDIR)/AStr1_object.o: $(SRCDIR)/AStr1_object.c \n"
     "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
-    "TESTS += test_listdl\n\n"
-    "test_listdl: $(TEST_SRC)/test_listdl.c \n"
-    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
+    "OBJS += $(OBJDIR)/AStr1.o\n\n"
+    "$(OBJDIR)/AStr1.o: $(SRCDIR)/AStr1.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "OBJS += $(OBJDIR)/AStr1_JSON.o\n\n"
+    "$(OBJDIR)/AStr1_JSON.o: $(SRCDIR)/AStr1_JSON.c \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "TESTS += test_AStr1\n\n"
+    "test_AStr1: $(TEST_SRC)/test_AStr1.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< \n"
+    "\t$(TEST_OBJ)/$(@F)\n\n"
+    "OBJS += $(OBJDIR)/AStr2_object.o\n\n"
+    "$(OBJDIR)/AStr2_object.o: $(SRCDIR)/AStr2_object.c \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "OBJS += $(OBJDIR)/AStr2.o\n\n"
+    "$(OBJDIR)/AStr2.o: $(SRCDIR)/AStr2.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "OBJS += $(OBJDIR)/AStr2_JSON.o\n\n"
+    "$(OBJDIR)/AStr2_JSON.o: $(SRCDIR)/AStr2_JSON.c \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "TESTS += test_AStr2\n\n"
+    "test_AStr2: $(TEST_SRC)/test_AStr2.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< \n"
     "\t$(TEST_OBJ)/$(@F)\n\n"
     ;
     
@@ -536,7 +570,82 @@ int             test_dbprs_Routine01(
         
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pHash = node_getData(pNode);
+        pNode = nodeHash_FindA(pHash, "AStr1");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        eRc = dbprs_ParseObjects(pObj, pHash);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_dbprs_Routine01(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    const
+    char            *pGoodJsonObject1 = 
+    "{\n"
+        "\"listdl.c\":{"
+            "\"srcDeps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"test\":true"
+        "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "OBJS += $(OBJDIR)/listdl.o\n\n"
+    "$(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h \n"
+    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< \n\n"
+    "TESTS += test_listdl\n\n"
+    "test_listdl: $(TEST_SRC)/test_listdl.c \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< \n"
+    "\t$(TEST_OBJ)/$(@F)\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject1);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -549,9 +658,10 @@ int             test_dbprs_Routine01(
         eRc = dbprs_ParseRoutine(pObj, pNode);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = dbprs_getStr(pObj);
-        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
-        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
-        
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -572,13 +682,15 @@ int             test_dbprs_Routine02(
     DBPRS_DATA      *pObj = OBJ_NIL;
     GENWIN_DATA     *pGen = OBJ_NIL;
     ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "{\n"
         "\"listdl.c\":{"
-            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"srcDeps\":[\"cmn_defs.h\",\"array.h\"],"
             "\"test\":true"
         "}\n"
     "}\n";
@@ -619,9 +731,10 @@ int             test_dbprs_Routine02(
         eRc = dbprs_ParseRoutine(pObj, pNode);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = dbprs_getStr(pObj);
-        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
-        TINYTEST_TRUE( (0 == strcmp(pOutputA, AStr_getData(pStr))) );
-        
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -642,18 +755,18 @@ int             test_dbprs_Library01(
     DBPRS_DATA      *pObj = OBJ_NIL;
     GENOSX_DATA     *pGen = OBJ_NIL;
     ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     NODEHASH_DATA   *pDict = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    int             offset = 0;
-    int             iRc;
     const
     char            *pGoodJsonObject =
     "{\n"
         "\"library\":{"
             "\"name\":\"Test\","
-            "\"deps\":null,"
+            "\"libDeps\":null,"
             "\"libdir\":\"path_libdir\","
             "\"objdir\":\"path_objdir\""
         "}\n"
@@ -668,11 +781,13 @@ int             test_dbprs_Library01(
     "CFLAGS_LIBS = \n"
     "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
     "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
     "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
     "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
     "LIBDIR = $(BASEDIR)/$(SYS)\n"
     "SRCDIR = ./src\n"
     "SRCSYSDIR = ./src/$(SYS)\n"
+    "TEST_SRC = ./tests\n"
     "ifdef  NDEBUG\n"
     "CFLAGS += -DNDEBUG\n"
     "LIB_FILENAME=$(LIBNAM)R.a\n"
@@ -682,6 +797,7 @@ int             test_dbprs_Library01(
     "LIB_FILENAME=$(LIBNAM)D.a\n"
     "OBJDIR = $(LIBDIR)/o/d\n"
     "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
     "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
     ".SUFFIXES:\n"
     ".SUFFIXES: .asm .c .o\n\n"
@@ -707,7 +823,16 @@ int             test_dbprs_Library01(
         dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
         dbprs_setDict(pObj, pDict);
         
-        obj_TraceSet(pObj, true);
+        pStr = AStr_NewA("~/Support/lib/${SYS}");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        //obj_TraceSet(pObj, true);
         eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -741,11 +866,380 @@ int             test_dbprs_Library01(
 
 
 
+int             test_dbprs_Library02(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    NODEHASH_DATA   *pDict = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    const
+    char            *pGoodJsonObject =
+    "{\n"
+        "\"library\":{"
+            "\"name\":\"Test\","
+            "\"libDeps\":[\"Cmn\"],"
+            "\"libdir\":\"path_libdir\","
+            "\"objdir\":\"path_objdir\""
+        "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "# Generated file - edits may be discarded!\n\n"
+    "LIBNAM=libTest\n"
+    "SYS=macosx\n"
+    "TEMP=/tmp\n"
+    "BASEDIR = $(TEMP)/$(LIBNAM)\n\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
+    "LIB_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "LIBCMN_BASE = $(LIB_BASE)/libCmn\n"
+    "CFLAGS += -I$(LIBCMN_BASE)/include\n"
+    "CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)\n"
+    "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
+    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
+    "LIBDIR = $(BASEDIR)/$(SYS)\n"
+    "SRCDIR = ./src\n"
+    "SRCSYSDIR = ./src/$(SYS)\n"
+    "TEST_SRC = ./tests\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBDIR)/o/r\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG \n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBDIR)/o/d\n"
+    "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
+    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .o\n\n"
+    "OBJS = \n\n"
+    "TESTS = \n\n"
+    "\n\n\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen  = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    genBase_setDict((GENBASE_DATA *)pGen, pDict);
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        dbprs_setDict(pObj, pDict);
+        
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        //obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "library");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        
+        eRc = dbprs_ParseLibrary(pObj, pHash);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_dbprs_Program01(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    NODEHASH_DATA   *pDict = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    const
+    char            *pGoodJsonObject =
+    "{\n"
+        "\"program\":{"
+            "\"name\":\"Test\","
+            "\"libDeps\":null,"
+            "\"libdir\":\"path_libdir\","
+            "\"objdir\":\"path_objdir\""
+        "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "# Generated file - edits may be discarded!\n\n"
+    "PGMNAM=Test\n"
+    "SYS=macosx\n"
+    "TEMP=/tmp\n"
+    "BASEDIR = $(TEMP)/$(PGMNAM)\n\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
+    "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
+    "INSTALL_BASE = $(HOME)/Support/bin\n"
+    "INSTALLDIR = $(INSTALL_BASE)\n"
+    "LIBDIR = $(BASEDIR)/$(SYS)\n"
+    "SRCDIR = ./src\n"
+    "SRCSYSDIR = ./src/$(SYS)\n"
+    "TEST_SRC = ./tests\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBDIR)/o/r\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG \n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBDIR)/o/d\n"
+    "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
+    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .o\n\n"
+    "OBJS = \n\n"
+    "TESTS = \n\n"
+    "\n\n\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen  = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    genBase_setDict((GENBASE_DATA *)pGen, pDict);
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        dbprs_setDict(pObj, pDict);
+        
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "program");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        
+        eRc = dbprs_ParseProgram(pObj, pHash);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_dbprs_Program02(
+    const
+    char            *pTestName
+)
+{
+    DBPRS_DATA      *pObj = OBJ_NIL;
+    GENOSX_DATA     *pGen = OBJ_NIL;
+    ERESULT         eRc;
+    int             iRc;
+    int             offset = 0;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    NODEHASH_DATA   *pDict = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    const
+    char            *pGoodJsonObject =
+    "{\n"
+        "\"program\":{"
+            "\"name\":\"test\","
+            "\"libDeps\":[\"Cmn\"],"
+            "\"libdir\":\"path_libdir\","
+            "\"objdir\":\"path_objdir\""
+        "}\n"
+    "}\n";
+    const
+    char            *pOutputA =
+    "# Generated file - edits may be discarded!\n\n"
+    "PGMNAM=test\n"
+    "SYS=macosx\n"
+    "TEMP=/tmp\n"
+    "BASEDIR = $(TEMP)/$(PGMNAM)\n\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
+    "LIB_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "LIBCMN_BASE = $(LIB_BASE)/libCmn\n"
+    "CFLAGS += -I$(LIBCMN_BASE)/include\n"
+    "CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)\n"
+    "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
+    "INSTALL_BASE = $(HOME)/Support/bin\n"
+    "INSTALLDIR = $(INSTALL_BASE)\n"
+    "LIBDIR = $(BASEDIR)/$(SYS)\n"
+    "SRCDIR = ./src\n"
+    "SRCSYSDIR = ./src/$(SYS)\n"
+    "TEST_SRC = ./tests\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBDIR)/o/r\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG \n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBDIR)/o/d\n"
+    "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
+    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .o\n\n"
+    "OBJS = \n\n"
+    "TESTS = \n\n"
+    "\n\n\n\n"
+    ;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pGen  = genOSX_New(OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pGen) );
+    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    genBase_setDict((GENBASE_DATA *)pGen, pDict);
+    
+    pObj = dbprs_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = dbprs_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        dbprs_setGen(pObj, (GENBASE_DATA *)pGen);
+        dbprs_setDict(pObj, pDict);
+        
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        //obj_TraceSet(pObj, true);
+        eRc = dbprs_ParseInputStr(pObj, pGoodJsonObject);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pNode = dbprs_getNodes(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "program");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
+        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        
+        eRc = dbprs_ParseProgram(pObj, pHash);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr = dbprs_getStr(pObj);
+        fprintf(stderr, "\t\"%s\"", AStr_getData(pStr));
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
+    obj_Release(pGen);
+    pGen = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_dbprs);
+    TINYTEST_ADD_TEST(test_dbprs_Program02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbprs_Program01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbprs_Library02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Library01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Routine02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Routine01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_dbprs_Objects01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_dbprs_Object03,setUp,tearDown);

@@ -1,0 +1,159 @@
+# Generated file - edits may be discarded!
+
+PGMNAM=genMake
+SYS=macosx
+TEMP=/tmp
+BASEDIR = $(TEMP)/$(PGMNAM)
+
+CFLAGS_LIBS = 
+CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+LIB_BASE = $(HOME)/Support/lib/$(SYS)
+LIBCMN_BASE = $(LIB_BASE)/libCmn
+CFLAGS += -I$(LIBCMN_BASE)/include
+CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
+CFLAGS += -D__MACOSX_ENV__
+
+TEST_FLGS = -Itests $(CFLAGS_LIBS)
+
+INSTALL_BASE = $(HOME)/Support/bin
+INSTALLDIR = $(INSTALL_BASE)
+LIBDIR = $(BASEDIR)/$(SYS)
+SRCDIR = ./src
+SRCSYSDIR = ./src/$(SYS)
+TEST_SRC = ./tests
+ifdef  NDEBUG
+CFLAGS += -DNDEBUG
+LIB_FILENAME=$(LIBNAM)R.a
+OBJDIR = $(LIBDIR)/o/r
+else   #DEBUG
+CFLAGS += -D_DEBUG 
+LIB_FILENAME=$(LIBNAM)D.a
+OBJDIR = $(LIBDIR)/o/d
+endif  #NDEBUG
+TEST_OBJ = $(OBJDIR)/tests
+LIBPATH = $(LIBDIR)/$(LIB_FILENAME)
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .o
+
+OBJS = 
+
+TESTS = 
+
+
+
+
+
+OBJS += $(OBJDIR)/dbprs_object.o
+
+$(OBJDIR)/dbprs_object.o: $(SRCDIR)/dbprs_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/dbprs.o
+
+$(OBJDIR)/dbprs.o: $(SRCDIR)/dbprs.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_dbprs
+
+test_dbprs: $(TEST_SRC)/test_dbprs.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/genBase_object.o
+
+$(OBJDIR)/genBase_object.o: $(SRCDIR)/genBase_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/genBase.o
+
+$(OBJDIR)/genBase.o: $(SRCDIR)/genBase.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_genBase
+
+test_genBase: $(TEST_SRC)/test_genBase.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/genOSX_object.o
+
+$(OBJDIR)/genOSX_object.o: $(SRCDIR)/genOSX_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/genOSX.o
+
+$(OBJDIR)/genOSX.o: $(SRCDIR)/genOSX.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_genOSX
+
+test_genOSX: $(TEST_SRC)/test_genOSX.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/genWIN_object.o
+
+$(OBJDIR)/genWIN_object.o: $(SRCDIR)/genWIN_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/genWIN.o
+
+$(OBJDIR)/genWIN.o: $(SRCDIR)/genWIN.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_genWIN
+
+test_genWIN: $(TEST_SRC)/test_genWIN.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/main_object.o
+
+$(OBJDIR)/main_object.o: $(SRCDIR)/main_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/main.o
+
+$(OBJDIR)/main.o: $(SRCDIR)/main.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_main
+
+test_main: $(TEST_SRC)/test_main.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
+
+
+.PHONY: test
+test: $(TESTS)
+
+
+.PHONY: clean
+clean:
+	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+
+
+.PHONY: install
+install:
+	-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+	cp $(OBJDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)
+
+
+.PHONY: link
+link: $(OBJS) src/mainProgram.c
+	CC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests
+
+
+.PHONY: all
+all:  clean create_dirs link
+
+
+

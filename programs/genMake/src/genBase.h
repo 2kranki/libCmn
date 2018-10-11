@@ -304,6 +304,16 @@ extern "C" {
     );
     
     
+    NODEARRAY_DATA * genBase_getSrcDeps(
+        GENBASE_DATA    *this
+    );
+    
+    bool            genBase_setSrcDeps(
+        GENBASE_DATA    *this,
+        NODEARRAY_DATA  *pValue
+    );
+    
+    
     NODEHASH_DATA * genBase_getTests(
         GENBASE_DATA    *this
     );

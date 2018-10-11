@@ -96,6 +96,14 @@ extern "C" {
     );
     
     
+    ERESULT         file_RenameA(
+        const
+        char            *pPathOldA,
+        const
+        char            *pPathNewA
+    );
+    
+    
     int64_t         file_SizeA(
         const
         char            *pPath
@@ -116,9 +124,15 @@ extern "C" {
     );
     
     
+    /*!
+     If the file path is present, update its last used date/time.  If the
+     file path is not present, create it with no data.
+     @param     pPathA  UTF-8 file path pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
     ERESULT         file_TouchA(
         const
-        char            *pPath
+        char            *pPathA
     );
     
     

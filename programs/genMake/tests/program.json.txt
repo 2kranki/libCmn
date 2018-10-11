@@ -8,11 +8,11 @@
         "main":"mainProgram.c"
     },
     "objects":{
-        "dbprs":{"srcDeps":["genMake.h"], "test":null},
-        "genBase":{"srcDeps":["genMake.h"], "test":null},
-        "genOSX":{"srcDeps":["genMake.h"], "test":null},
-        "genWIN":{"srcDeps":["genMake.h"], "test":null},
-        "main":{"srcDeps":["genMake.h"], "test":null},
+        "dbprs":{"deps":["genMake.h"], "test":null},
+        "genBase":{"deps":["genMake.h"], "test":null},
+        "genOSX":{"deps":["genMake.h"], "test":null},
+        "genWIN":{"deps":["genMake.h"], "test":null},
+        "main":{"deps":["genMake.h"], "test":null},
     },
     "macosx": {
     },

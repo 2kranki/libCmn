@@ -262,8 +262,6 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -285,10 +283,6 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        const
-        char            *pKey;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1674,7 +1668,27 @@ extern "C" {
         }
         
 #if defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("/usr/local/bin");
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("C:/PROGRAMS");
+#endif
+        if (pStr) {
+            eRc = nodeHash_AddA(main_getDict(this), libBaseID, 0, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        outBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+#if defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("$(HOME)/Support/bin");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         pStr = AStr_NewA("C:/PROGRAMS");
@@ -2010,6 +2024,10 @@ extern "C" {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to expand Makepath\n");
                 exit(EXIT_FAILURE);
+            }
+            eRc = path_IsFile(pMakepath);
+            if (!ERESULT_FAILED(eRc)) {
+                eRc = path_VersionedRename(pMakepath);
             }
             this->pOutputPath = pMakepath;
             this->pOutput = textOut_NewFromPath(pMakepath);

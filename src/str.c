@@ -214,8 +214,9 @@ int             str_CompareSpcl(
         if( *pszStr2 )
             ;
         else {
-            if( *pszStr1 )
+            if( *pszStr1 ) {
                 result = 1;
+            }
             break;
         }
         i = *pszStr1 - *pszStr2;
@@ -235,9 +236,11 @@ int             str_CompareSpcl(
         ++pszStr1;
         ++pszStr2;
     }
+    if (result)
+        DEBUG_BREAK();
     
     // Return to caller.
-    return( result );
+    return result;
 }
 
 

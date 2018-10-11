@@ -79,7 +79,8 @@ struct genBase_data_s	{
     TEXTOUT_DATA    *pOutput;
     // The following are filled in from sections of the Node Tree.
     NODEARRAY_DATA  *pLibDeps;
-    
+    NODEARRAY_DATA  *pSrcDeps;
+
     PATH_DATA *     (*pLibIncludePath)(GENBASE_DATA *, const char *, const char *, const char *);
     PATH_DATA *     (*pLibInstalledPath)(GENBASE_DATA *, const char *, const char *, const char *);
     ASTR_DATA *     (*pLibName)(GENBASE_DATA *, const char *, const char *);

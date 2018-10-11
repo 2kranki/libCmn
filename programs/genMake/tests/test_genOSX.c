@@ -434,16 +434,18 @@ int             test_genOSX_Routine04(
 
 int             test_genOSX_Test01(
     const
-    char            *pTestName
+    char                *pTestName
 )
 {
-    GENOSX_DATA     *pObj = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    GENOSX_DATA         *pObj = OBJ_NIL;
+    ASTR_DATA           *pStr = OBJ_NIL;
+    int                 iRc;
+    int                 offset = 0;
     const
-    char            *pOutputA =
+    char                *pOutputA =
     "TESTS += test_xyzzy\n\n"
     "test_xyzzy: $(TEST_SRC)/test_xyzzy.c \n"
-    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $< \n"
+    "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< \n"
     "\t$(TEST_OBJ)/$(@F)\n\n";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -466,7 +468,9 @@ int             test_genOSX_Test01(
                 );
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "\t\"%s\"\n", AStr_getData(pStr));
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, pOutputA)) );
+        iRc = str_CompareSpcl(pOutputA, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=0x%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
@@ -498,11 +502,13 @@ int             test_genOSX_GenInitial01(
         "CFLAGS_LIBS = \n"
         "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
         "CFLAGS += -D__MACOSX_ENV__\n\n"
+        "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
         "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
         "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
         "LIBDIR = $(BASEDIR)/$(SYS)\n"
         "SRCDIR = ./src\n"
         "SRCSYSDIR = ./src/$(SYS)\n"
+        "TEST_SRC = ./tests\n"
         "ifdef  NDEBUG\n"
         "CFLAGS += -DNDEBUG\n"
         "LIB_FILENAME=$(LIBNAM)R.a\n"
@@ -512,6 +518,7 @@ int             test_genOSX_GenInitial01(
         "LIB_FILENAME=$(LIBNAM)D.a\n"
         "OBJDIR = $(LIBDIR)/o/d\n"
         "endif  #NDEBUG\n"
+        "TEST_OBJ = $(OBJDIR)/tests\n"
         "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
         ".SUFFIXES:\n"
         ".SUFFIXES: .asm .c .o\n\n"
@@ -574,11 +581,13 @@ int             test_genOSX_GenInitial02(
     "CFLAGS_LIBS = \n"
     "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
     "CFLAGS += -D__MACOSX_ENV__\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
     "INSTALL_BASE = $(HOME)/Support/bin\n"
     "INSTALLDIR = $(INSTALL_BASE)\n"
     "LIBDIR = $(BASEDIR)/$(SYS)\n"
     "SRCDIR = ./src\n"
     "SRCSYSDIR = ./src/$(SYS)\n"
+    "TEST_SRC = ./tests\n"
     "ifdef  NDEBUG\n"
     "CFLAGS += -DNDEBUG\n"
     "LIB_FILENAME=$(LIBNAM)R.a\n"
@@ -588,6 +597,7 @@ int             test_genOSX_GenInitial02(
     "LIB_FILENAME=$(LIBNAM)D.a\n"
     "OBJDIR = $(LIBDIR)/o/d\n"
     "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
     "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
     ".SUFFIXES:\n"
     ".SUFFIXES: .asm .c .o\n\n"
@@ -660,7 +670,7 @@ int             test_genOSX_GenFinal01(
     "\tfi\n\n\n"
     ".PHONY: create_dirs\n"
     "create_dirs:\n"
-    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)\n\n\n"
+    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
     ".PHONY: all\n"
     "all:  clean create_dirs $(LIBPATH)\n\n\n\n"
     ;
@@ -724,7 +734,7 @@ int             test_genOSX_GenFinal02(
     "\tCC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n"
     ".PHONY: create_dirs\n"
     "create_dirs:\n"
-    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)\n\n\n"
+    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
     ".PHONY: all\n"
     "all:  clean create_dirs link\n\n\n\n"
     ;

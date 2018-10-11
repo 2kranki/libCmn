@@ -1022,7 +1022,7 @@ extern "C" {
             genBase_DictAdd(this->pGen, nameID, pStr);
         }
         
-        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, "deps", &pArray);
+        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, libDepsID, &pArray);
         if (!ERESULT_FAILED(eRc) && pStr) {
             genBase_setLibDeps(this->pGen, pArray);
         }
@@ -1131,7 +1131,15 @@ extern "C" {
             else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                 NODE_DATA           *pHashNode;
                 pHash = pData;
-                pHashNode = nodeHash_FindA(pHash, "deps");
+#ifdef XYZZY
+                {
+                    ASTR_DATA       *pDebug;
+                    pDebug = nodeHash_ToDebugString(pHash, 4);
+                    fprintf(stderr, "%s\n\n", AStr_getData(pDebug));
+                    obj_Release(pDebug);
+                }
+#endif
+                pHashNode = nodeHash_FindA(pHash, srcDepsID);
                 if (pHashNode) {
                     pDepsObj = jsonIn_CheckNodeDataForArray(pHashNode);
                 }
@@ -1159,7 +1167,7 @@ extern "C" {
                                 NODE_DATA           *pHashNode;
                                 pHash = pData;
                                 fJson = true;
-                                pHashNode = nodeHash_FindA(pHash, "deps");
+                                pHashNode = nodeHash_FindA(pHash, srcDepsID);
                                 if (pHashNode) {
                                     pDepsJson = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
@@ -1199,7 +1207,7 @@ extern "C" {
                                 NODE_DATA           *pHashNode;
                                 pHash = pData;
                                 fTest = true;
-                                pHashNode = nodeHash_FindA(pHash, "deps");
+                                pHashNode = nodeHash_FindA(pHash, srcDepsID);
                                 if (pHashNode) {
                                     pDepsTest = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
@@ -1327,9 +1335,7 @@ extern "C" {
         for(i=0; i<iMax; ++i) {
             pNode = nodeArray_Get(pArray, (i+1));
             if (pNode) {
-                if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
-                    eRc = dbprs_ParseObject(this, pNode);
-                }
+                eRc = dbprs_ParseObject(this, pNode);
             }
         }
         
@@ -1391,7 +1397,7 @@ extern "C" {
             genBase_DictAddUpdate(this->pGen, nameID, pStr);
         }
         
-        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, "deps", &pArray);
+        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, libDepsID, &pArray);
         if (!ERESULT_FAILED(eRc) && pStr) {
             genBase_setLibDeps(this->pGen, pArray);
         }
@@ -1411,7 +1417,12 @@ extern "C" {
             genBase_DictAddUpdate(this->pGen, objBaseID, pStr);
         }
         
-        genBase_setMakeType(this->pGen, GENMAKE_TYPE_LIB);
+        eRc = jsonIn_FindArrayNodeInHashA(pJsonIn, srcDepsID, &pArray);
+        if (!ERESULT_FAILED(eRc) && pStr) {
+            genBase_setSrcDeps(this->pGen, pArray);
+        }
+        
+        genBase_setMakeType(this->pGen, GENMAKE_TYPE_PGM);
         pStr = ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenInitial(this->pGen);
         if (pStr) {
             AStr_Append(this->pStr, pStr);
@@ -1502,7 +1513,7 @@ extern "C" {
             else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                 NODE_DATA           *pHashNode;
                 pHash = pData;
-                pHashNode = nodeHash_FindA(pHash, "deps");
+                pHashNode = nodeHash_FindA(pHash, srcDepsID);
                 if (pHashNode) {
                     pData = node_getData(pHashNode);    // Get "array" node.
                     pData = node_getData(pData);        // Get NodeArray.

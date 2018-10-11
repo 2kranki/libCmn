@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include <hjson_internal.h>
 #include <trace.h>
+#include <jsonIn.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
 #include <srcErrors.h>
@@ -102,61 +103,63 @@ extern "C" {
             return pNode;
         }
         
+        pToken = lexj_TokenLookAhead(this->pLexJ, 1);
+        BREAK_NULL(pToken);
+        tokenClass = token_getClass(pToken);
+        if( tokenClass == LEXJ_SEP_RBRACKET )   // Empty Array
+            goto chkRBracket;
+        
         pChild = hjson_ParseValue(this);
         if (pChild) {
             nodeArray_AppendNode(pArray, pChild, NULL);
             obj_Release(pChild);
-        }
-        else {
-            obj_Release(pArray);
-            return OBJ_NIL;
-        }
-        
-        for (;;) {
-
+            for (;;) {
+                
+                pToken = lexj_TokenLookAhead(this->pLexJ, 1);
+                BREAK_NULL(pToken);
+                tokenClass = token_getClass(pToken);
+                if( tokenClass == LEXJ_SEP_COMMA ) {
+                    TRC_OBJ(this,"\t, - found\n");
+                    lexj_TokenAdvance(this->pLexJ, 1);
+                    continue;
+                }
+                if( tokenClass == LEXJ_SEP_RBRACKET ) {
+                    break;
+                }
+                
+                pChild = hjson_ParseValue(this);
+                if (pChild) {
+                    nodeArray_AppendNode(pArray, pChild, NULL);
+                    obj_Release(pChild);
+                }
+                else {
+                    break;
+                }
+            }
+            
+        chkRBracket:
             pToken = lexj_TokenLookAhead(this->pLexJ, 1);
             BREAK_NULL(pToken);
             tokenClass = token_getClass(pToken);
-            if( tokenClass == LEXJ_SEP_COMMA ) {
-                TRC_OBJ(this,"\t, - found\n");
-                lexj_TokenAdvance(this->pLexJ, 1);
-                continue;
-            }
             if( tokenClass == LEXJ_SEP_RBRACKET ) {
-                break;
-            }
-
-            pChild = hjson_ParseValue(this);
-            if (pChild) {
-                nodeArray_AppendNode(pArray, pChild, NULL);
-                obj_Release(pChild);
+                TRC_OBJ(this,"\t] - found\n");
+                lexj_TokenAdvance(this->pLexJ, 1);
             }
             else {
-                break;
+                ASTR_DATA           *pStr;
+                pStr = token_ToDataString(pToken);
+                srcErrors_AddFatalFromTokenA(
+                                             OBJ_NIL,
+                                             pToken,
+                                             "Expecting ']', but found %s",
+                                             AStr_getData(pStr)
+                                             );
+                obj_Release(pStr);
+                return pNode;
             }
         }
         
-        pToken = lexj_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
-        if( tokenClass == LEXJ_SEP_RBRACKET ) {
-            TRC_OBJ(this,"\t] - found\n");
-            lexj_TokenAdvance(this->pLexJ, 1);
-        }
-        else {
-            ASTR_DATA           *pStr;
-            pStr = token_ToDataString(pToken);
-            srcErrors_AddFatalFromTokenA(
-                        OBJ_NIL,
-                        pToken,
-                        "Expecting ']', but found %s",
-                        AStr_getData(pStr)
-            );
-            obj_Release(pStr);
-            return pNode;
-        }
-        
-        pNode = node_NewWithUTF8ConAndClass("array", 0, pArray);
+        pNode = jsonIn_NodeFromArray(pArray);
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
             srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
@@ -209,6 +212,12 @@ extern "C" {
             return OBJ_NIL;
         }
 
+        pToken = lexj_TokenLookAhead(this->pLexJ, 1);
+        BREAK_NULL(pToken);
+        tokenClass = token_getClass(pToken);
+        if( tokenClass == LEXJ_SEP_RBRACE )
+            goto chkRBrace;
+        
         pChild = hjson_ParsePair(this);
         if (pChild) {
             eRc = nodeHash_Add(pHash, pChild);
@@ -240,6 +249,7 @@ extern "C" {
             }
         }
         
+    chkRBrace:
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
         tokenClass = token_getClass(pToken);
@@ -262,7 +272,7 @@ extern "C" {
             return pNode;
         }
         
-        pNode = node_NewWithUTF8ConAndClass("hash", 0, pHash);
+        pNode = jsonIn_NodeFromHash(pHash);
         obj_Release(pHash);
         pHash = OBJ_NIL;
         if (pNode == OBJ_NIL) {
@@ -369,12 +379,6 @@ extern "C" {
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
-            srcErrors_AddFatalFromTokenA(
-                OBJ_NIL,
-                pToken,
-                "Expecting a \"name\", but found %s",
-                AStr_getData(pStr)
-            );
             obj_Release(pStr);
             return pNode;
         }
@@ -610,7 +614,7 @@ extern "C" {
         TRC_OBJ(this, "\tstring: (%d) \"%s\"\n", AStr_getLength(pStr), AStr_getData(pStr));
 #endif
         if (pStr) {
-            pNode = node_NewWithUTF8ConAndClass("string", 0, pStr);
+            pNode = jsonIn_NodeFromString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -666,9 +670,7 @@ extern "C" {
         }
         if( tokenClass == LEXJ_SEP_LBRACKET ) {
             pNode = hjson_ParseArray(this);
-            if (pNode) {
-                return pNode;
-            }
+            return pNode;
         }
         pNode = hjson_ParseNumber(this);
         if (pNode) {

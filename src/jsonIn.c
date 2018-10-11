@@ -397,6 +397,69 @@ extern "C" {
     
     
 
+    NODE_DATA *     jsonIn_NodeFromArray(
+        NODEARRAY_DATA  *pArray
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pArray) || !obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8ConAndClass("array", 0, pArray);
+        
+        return pNode;
+    }
+    
+    
+    
+    NODE_DATA *     jsonIn_NodeFromHash(
+        NODEHASH_DATA   *pHash
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8ConAndClass("hash", 0, pHash);
+        
+        return pNode;
+    }
+    
+    
+    
+    NODE_DATA *     jsonIn_NodeFromString(
+        ASTR_DATA       *pStr
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8ConAndClass("string", 0, pStr);
+        
+        return pNode;
+    }
+    
+    
+    
 
     
     //===============================================================

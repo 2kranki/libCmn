@@ -1677,7 +1677,7 @@ extern "C" {
                     if (pWrkStr) {
                         eRc =   AStr_AppendPrint(
                                                  pStr,
-                                                 "$(%s)/%s ",
+                                                 "$(%s)/%s $(OBJS)",
                                                  pSrcDir,
                                                  AStr_getData(pWrkStr)
                                 );
@@ -1689,7 +1689,7 @@ extern "C" {
         
         eRc =   AStr_AppendPrint(
                                  pStr,
-                                 "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(%s)/$(@F) $< ",
+                                 "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(%s)/$(@F) $(OBJS) $< ",
                                  pObjDir
                 );
         if (pObjDeps) {
@@ -1989,7 +1989,7 @@ extern "C" {
                 break;
             case GENMAKE_TYPE_PGM:
                 AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n");
-                AStr_AppendA(pStr, "\tcp $(BASEDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)\n\n\n");
+                AStr_AppendA(pStr, "\tcp $(OBJDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)\n\n\n");
                 break;
             default:
                 break;
@@ -2020,7 +2020,7 @@ extern "C" {
         AStr_AppendA(pStr, ".PHONY: create_dirs\n");
         AStr_AppendA(pStr, "create_dirs:\n");
         AStr_AppendPrint(pStr,
-                    "\t[ ! -d $(%s) ] && mkdir -p $(%s)\n\n\n",
+                    "\t[ ! -d $(%s) ] && mkdir -p $(%s)/tests\n\n\n",
                      pDirObjA,
                      pDirObjA
         );
@@ -2111,35 +2111,59 @@ extern "C" {
         }
         if (genBase_getLibDeps((GENBASE_DATA *)this)) {
             const
-            char            *pLibIncludePrefix;
+            char            *pLibBase;
+            ASTR_DATA       *pNamePrefix = OBJ_NIL;
+            ASTR_DATA       *pNamePrefixUpper = OBJ_NIL;
+            pNode = nodeHash_FindA(
+                                   genBase_getDict((GENBASE_DATA *)this),
+                                   libBaseID
+                                   );
+            if (pNode) {
+                pLibBase = AStr_getData(node_getData(pNode));
+                AStr_AppendPrint(pOut, "LIB_BASE = %s\n", pLibBase);
+            }
             pNode = nodeHash_FindA(
                             genBase_getDict((GENBASE_DATA *)this),
                             namePrefixID
                     );
-            pLibIncludePrefix = AStr_getData(node_getData(pNode));
+            pNamePrefix = node_getData(pNode);
+            pNamePrefixUpper = AStr_ToUpper(pNamePrefix);
             iMax = nodeArray_getSize(genBase_getLibDeps((GENBASE_DATA *)this));
             for (i=0; i<iMax; ++i) {
+                ASTR_DATA       *pUpper = OBJ_NIL;
                 pNode = nodeArray_Get(genBase_getLibDeps((GENBASE_DATA *)this), i+1);
                 if (pNode) {
                     pStr = node_getData(pNode);
+                    if (pStr) {
+                        pUpper = AStr_ToUpper(pStr);
+                    }
                     AStr_AppendPrint(pOut,
-                            "CFLAGS += -I../%s%s/src -I../%s%s/src/$(SYS)\n",
-                            pLibIncludePrefix,
-                            AStr_getData(pStr),
-                            pLibIncludePrefix,
-                            AStr_getData(pStr)
+                                     "%s%s_BASE = $(LIB_BASE)/%s%s\n",
+                                     AStr_getData(pNamePrefixUpper),
+                                     AStr_getData(pUpper),
+                                     AStr_getData(pNamePrefix),
+                                     AStr_getData(pStr)
+                                     );
+                    AStr_AppendPrint(pOut,
+                            "CFLAGS += -I$(%s%s_BASE)/include\n",
+                                     AStr_getData(pNamePrefixUpper),
+                                     AStr_getData(pUpper)
                             );
                     AStr_AppendPrint(pOut,
-                            "CFLAGS_LIBS += -l%s -L$(HOME)/Support/lib/$(SYS)/%s%s\n",
-                            AStr_getData(pStr),
-                            pLibIncludePrefix,
-                            AStr_getData(pStr)
+                            "CFLAGS_LIBS += -l%s -L$(%s%s_BASE)\n",
+                                     AStr_getData(pStr),
+                                     AStr_getData(pNamePrefixUpper),
+                                     AStr_getData(pUpper)
                             );
+                    obj_Release(pUpper);
                     obj_Release(pStr);
                 }
+                obj_Release(pNamePrefixUpper);
+                obj_Release(pNamePrefix);
             }
         }
         AStr_AppendA(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
+        AStr_AppendA(pOut, "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n");
         
         switch (makeType) {
             case GENMAKE_TYPE_LIB:
@@ -2155,6 +2179,7 @@ extern "C" {
         }
         AStr_AppendA(pOut, "LIBDIR = $(BASEDIR)/$(SYS)\n");
         AStr_AppendPrint(pOut, "%s = ./src\nSRCSYSDIR = ./src/$(SYS)\n", pDirSrcA);
+        AStr_AppendA(pOut, "TEST_SRC = ./tests\n");
         AStr_AppendA(pOut, "ifdef  NDEBUG\nCFLAGS += -DNDEBUG\n");
         AStr_AppendA(pOut, "LIB_FILENAME=$(LIBNAM)R.a\n");
         AStr_AppendPrint(pOut, "%s = $(LIBDIR)/o/r\n", pDirObjA);
@@ -2162,6 +2187,7 @@ extern "C" {
         AStr_AppendA(pOut, "LIB_FILENAME=$(LIBNAM)D.a\n");
         AStr_AppendPrint(pOut, "%s = $(LIBDIR)/o/d\n", pDirObjA);
         AStr_AppendA(pOut, "endif  #NDEBUG\n");
+        AStr_AppendPrint(pOut, "TEST_OBJ = $(%s)/tests\n", pDirObjA);
         AStr_AppendA(pOut, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n");
         AStr_AppendA(pOut, ".SUFFIXES:\n.SUFFIXES: .asm .c .o\n\n");
         AStr_AppendPrint(pOut, "%s = \n\n", pObjsA);

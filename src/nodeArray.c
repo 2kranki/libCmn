@@ -997,7 +997,6 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
         int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
@@ -1009,15 +1008,12 @@ extern "C" {
         
         pStr = AStr_New();
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(nodeArray) Size=%d\n",
-                     this,
-                     objArray_getSize(this->pArray)
-                );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(
+                         pStr,
+                         "{%p(nodeArray) Size=%d\n",
+                         this,
+                         (this->pArray ? objArray_getSize(this->pArray) : 0)
+        );
         
         if (this->pArray) {
             for (j=0; j<objArray_getSize(this->pArray); ++j) {
@@ -1035,8 +1031,7 @@ extern "C" {
         
         AStr_AppendCharA(pStr, '\n');
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), "%p(nodeArray)}\n", this );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(pStr, "%p(nodeArray)}\n", this);
         
         return pStr;
     }

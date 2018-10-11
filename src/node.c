@@ -1587,12 +1587,11 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
         const
         char            *pName;
+        OBJ_IUNKNOWN    *pVtbl;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1600,11 +1599,9 @@ extern "C" {
         
         pStr = AStr_New();
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        str[0] = '\0';
         pName = node_getNameUTF8(this);
-        j = snprintf(
-                     str,
-                     sizeof(str),
+        AStr_AppendPrint(
+                    pStr,
                      "{%p(node) Name=%s class=%d misc1=%d misc2=%d\n",
                      this,
                      pName,
@@ -1613,18 +1610,15 @@ extern "C" {
                      node_getMisc2(this)
             );
         mem_Free((void *)pName);
-        AStr_AppendA(pStr, str);
         
         AStr_AppendCharRepeatA(pStr, indent, ' ');
 
         if (this->pData) {
             AStr_AppendCharRepeatA(pStr, indent+3, ' ');
             AStr_AppendA(pStr, "Data:\n");
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+6
-                            );
+            pVtbl = obj_getVtbl(this->pData);
+            if (pVtbl && pVtbl->pToDebugString) {
+                pWrkStr = pVtbl->pToDebugString(this->pData, indent+6);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
@@ -1634,11 +1628,9 @@ extern "C" {
             AStr_AppendCharRepeatA(pStr, indent+3, ' ');
             AStr_AppendA(pStr, "Properties:\n");
             if (this->pProperties) {
-                if (((OBJ_DATA *)(this->pProperties))->pVtbl->pToDebugString) {
-                    pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pProperties,
-                                                    indent+6
-                                );
+                pVtbl = obj_getVtbl(this->pProperties);
+                if (pVtbl && pVtbl->pToDebugString) {
+                    pWrkStr = pVtbl->pToDebugString(this->pData, indent+6);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }
@@ -1649,11 +1641,9 @@ extern "C" {
             AStr_AppendCharRepeatA(pStr, indent+3, ' ');
             AStr_AppendA(pStr, "Other:\n");
             if (this->pOther) {
-                if (((OBJ_DATA *)(this->pOther))->pVtbl->pToDebugString) {
-                    pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pOther,
-                                                    indent+6
-                                );
+                pVtbl = obj_getVtbl(this->pOther);
+                if (pVtbl && pVtbl->pToDebugString) {
+                    pWrkStr = pVtbl->pToDebugString(this->pData, indent+6);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }
@@ -1662,8 +1652,7 @@ extern "C" {
         
         AStr_AppendA(pStr, "\n");
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), " %p(node)}\n", this );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(pStr, " %p(node)}\n", this);
         
         return pStr;
     }

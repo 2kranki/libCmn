@@ -111,7 +111,7 @@ extern "C" {
     
     ERESULT         file_DeleteA(
         const
-        char            *pPath
+        char            *pPathA
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
@@ -119,16 +119,19 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
-        
-        if (NULL == pPath) {
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        bool            bRc;
+#endif
+
+        if (NULL == pPathA) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 
 #if     defined(__MACOSX_ENV__)
-        iRc = stat(pPath, &statBuffer);
+        iRc = stat(pPathA, &statBuffer);
         if (0 == iRc) {
-            iRc = unlink(pPath);
+            iRc = unlink(pPathA);
             if (0 == iRc) {
                 eRc = ERESULT_SUCCESS;
             }
@@ -139,6 +142,71 @@ extern "C" {
         else {
             eRc = ERESULT_FILE_NOT_FOUND;
         }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        //TODO: DeleteFileW is more pwerful. Need to investgate using
+        //      it instead
+        bRc = DeleteFileA(pPathA);
+        if (bRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_FILE_OPERATION_FAILED;
+#endif
+
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          R e n a m e
+    //---------------------------------------------------------------
+    
+    ERESULT         file_RenameA(
+        const
+        char            *pPathOldA,
+        const
+        char            *pPathNewA
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+#if     defined(__MACOSX_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        bool            bRc;
+#endif
+        
+        if ((NULL == pPathOldA) || (NULL == pPathNewA)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
+#if     defined(__MACOSX_ENV__)
+        iRc = stat(pPathOldA, &statBuffer);
+        if (0 == iRc) {
+            iRc = rename(pPathOldA, pPathNewA);
+            if (0 == iRc) {
+                eRc = ERESULT_SUCCESS;
+            }
+            else {
+                eRc = ERESULT_FILE_OPERATION_FAILED;
+            }
+        }
+        else {
+            eRc = ERESULT_FILE_NOT_FOUND;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        //TODO: MoveFileExW is more pwerful. Need to investgate using
+        //      it instead
+        bRc = MoveFileExA(pPathOldA, pPathNewA, MOVEFILE_WRITE_THROUGH);
+        if (bRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_FILE_OPERATION_FAILED;
 #endif
         
         // Return to caller.
@@ -286,39 +354,56 @@ extern "C" {
     
     ERESULT         file_TouchA(
         const
-        char            *pPath
+        char            *pPathA
     )
     {
 #if defined(__MACOSX_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        HRESULT         hRc;
+#endif
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        
-        if (NULL == pPath) {
+        FILE            *pFile = NULL;
+
+        if (NULL == pPathA) {
             return ERESULT_INVALID_PARAMETER;
         }
         
 #if defined(__MACOSX_ENV__)
-        iRc = stat(pPath, &statBuffer);
+        iRc = stat(pPathA, &statBuffer);
         if (0 == iRc) {
-            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                iRc = utimes(pPath, NULL);
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {  // Regular File
+                iRc = utimes(pPathA, NULL);
                 if (0 == iRc) {
                     eRc = ERESULT_SUCCESS;
                 }
             }
-            else
-                eRc = ERESULT_FAILURE_FALSE;
         }
         else {
             if (iRc == ENOENT) {
-                ;
+                pFile = fopen(pPathA, "w");
+                if (pFile) {
+                    fclose(pFile);
+                    pFile = NULL;
+                    eRc = ERESULT_SUCCESS;
+                }
             }
-            eRc = ERESULT_PATH_NOT_FOUND;
         }
 #endif
-        
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        dwFileAttr = GetFileAttributesA(pPathA);
+        hRc = E_FAIL;
+        if( dwFileAttr != 0xFFFFFFFF ) {
+            if( dwFileAttr & FILE_ATTRIBUTE_DIRECTORY )
+                ;
+            else {
+                hRc = S_OK;
+            }
+        }
+#endif
+
         // Return to caller.
         return eRc;
     }

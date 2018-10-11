@@ -184,6 +184,21 @@ extern "C" {
     );
     
     
+    NODE_DATA *     jsonIn_NodeFromArray(
+        NODEARRAY_DATA  *pArray
+    );
+    
+    
+    NODE_DATA *     jsonIn_NodeFromHash(
+        NODEHASH_DATA   *pHash
+    );
+    
+    
+    NODE_DATA *     jsonIn_NodeFromString(
+        ASTR_DATA       *pStr
+    );
+    
+    
 
 
     //---------------------------------------------------------------

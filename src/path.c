@@ -1943,7 +1943,48 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //              V e r s i o n e d  R e n a m e
+    //---------------------------------------------------------------
     
+    ERESULT         path_VersionedRename(
+        PATH_DATA        *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        lenStr;
+        int32_t         chr;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = path_IsFile(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        
+        pPath = path_ToVersioned(this);
+        if (pPath) {
+            eRc = file_RenameA(path_getData(this), path_getData(pPath));
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+
     
 #ifdef	__cplusplus
 }

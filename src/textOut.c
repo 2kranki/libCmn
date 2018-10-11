@@ -620,10 +620,31 @@ extern "C" {
         }
 #endif
 
-        textOut_setStr(this, OBJ_NIL);
-        if (this->type == TEXTOUT_TYPE_FILE_CLOSE) {
-            fclose(this->pFile);
-            this->pFile = NULL;
+        switch (this->type) {
+            case TEXTOUT_TYPE_UNKNOWN:
+                break;
+            case TEXTOUT_TYPE_ASTR:
+                textOut_setStr(this, OBJ_NIL);
+                this->type = TEXTOUT_TYPE_UNKNOWN;
+                break;
+            case TEXTOUT_TYPE_FBSO:
+                // NOT IMPLEMENTED!
+                this->type = TEXTOUT_TYPE_UNKNOWN;
+                break;
+            case TEXTOUT_TYPE_FILE:
+                this->pFile = NULL;
+                this->type = TEXTOUT_TYPE_UNKNOWN;
+                break;
+            case TEXTOUT_TYPE_FILE_CLOSE:
+                fclose(this->pFile);
+                this->pFile = NULL;
+                this->type = TEXTOUT_TYPE_UNKNOWN;
+                break;
+            case TEXTOUT_TYPE_U8ARRAY:
+                obj_Release(this->pU8Array);
+                this->pU8Array = OBJ_NIL;
+                this->type = TEXTOUT_TYPE_UNKNOWN;
+                break;
         }
 
         obj_setVtbl(this, this->pSuperVtbl);

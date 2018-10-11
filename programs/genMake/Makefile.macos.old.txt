@@ -7,8 +7,9 @@ SYS=macosx
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(PGMNAM)
 
+LIB_BASE = $(HOME)/Support/lib/$(SYS)
 CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
-LIBCMN_BASE = $(HOME)/Support/lib/$(SYS)/libCmn
+LIBCMN_BASE = $(LIB_BASE)/libCmn
 CFLAGS += -I$(LIBCMN_BASE)/include
 CFLAGS += -D__MACOSX_ENV__
 
@@ -90,6 +91,13 @@ $(OBJDIR)/main_object.o: $(SRCDIR)/main_object.c
 
 
 
+
+
+TESTS += test_dbprs
+
+test_dbprs: $(OBJS)
+	$(CC) $(CFLAGS) $(CFLAGS_LIBS) -Itests $(LIBPATH) -o $(OBJDIR)/$(@F) $(OBJS) tests/test_dbprs.c 
+	$(OBJDIR)/$(@F)
 
 
 TESTS += test_genBase

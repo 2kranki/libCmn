@@ -40,6 +40,7 @@
  *
  * History
  *	07/08/2017 Generated
+ *  10/08/2018 Changed to allow empty arrays and hashes.
  */
 
 
@@ -52,15 +53,17 @@
  
  
  
- object     :   '{' members? '}'
+ object     :   '{' members '}'
             ;
  members    :   pair ((',' | '\n') pair?)*
+            |
             ;
  pair       :   (string | quoteless-string) (':' | '=') value
             ;
- array      :   '[' elements? ']'
+ array      :   '[' elements ']'
             ;
  elements   :   value (',' value)*
+            |
             ;
  value      :   string
             |   number

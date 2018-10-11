@@ -492,7 +492,19 @@ extern "C" {
     );
     
     
+    /*!
+     Rename the file on disk of the current path to the versioned form
+     as given by ToVersioned.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         path_VersionedRename(
+        PATH_DATA       *this
+    );
     
+    
+
 #ifdef	__cplusplus
 }
 #endif
