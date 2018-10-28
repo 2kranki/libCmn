@@ -204,7 +204,20 @@ extern "C" {
     )
     {
 #if defined(__MACOSX_ENV__)
-        usleep(msWait * 1000);
+        struct timespec waitTime = {0};
+        int             iRc;
+#endif
+
+#if defined(__MACOSX_ENV__)
+        while (msWait > 1000) {
+            waitTime.tv_nsec = 1000 * 1000 * 1000;
+            iRc = nanosleep(&waitTime, NULL);
+            msWait -= 1000;
+        }
+        if (msWait) {
+            waitTime.tv_nsec = msWait * 1000 * 1000;
+            iRc = nanosleep(&waitTime, NULL);
+        }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         Sleep(msWait);

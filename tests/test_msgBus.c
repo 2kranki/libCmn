@@ -171,7 +171,8 @@ int             test_msgBus_Broadcast01(
                 );
             }
         }
-        
+        printf("Done\n");
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
 

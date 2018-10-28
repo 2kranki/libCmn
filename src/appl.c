@@ -280,6 +280,66 @@ extern "C" {
     
     
     
+    void            appl_ErrorFatalArgOnEresult(
+        ERESULT         eRc,
+        const
+        char            *fmt,
+        va_list         argsp
+    )
+    {
+        
+        if (ERESULT_FAILED(eRc)) {
+            fprintf( stderr, "Fatal Error:  " );
+            vfprintf( stderr, fmt, argsp );
+            fprintf( stderr, "\n\n\n" );
+            exit( 100 );
+        }
+    }
+    
+    
+    
+    void            appl_ErrorFatalOnBool(
+        bool            fRc,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+        
+        if (fRc) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Fatal Error:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n\n\n" );
+            exit( 100 );
+        }
+    }
+    
+    
+    
+    void            appl_ErrorFatalOnEresult(
+        ERESULT         eRc,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+        
+        if (ERESULT_FAILED(eRc)) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Fatal Error:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n\n\n" );
+            exit( 100 );
+        }
+    }
+    
+    
+    
     void            appl_ErrorFatalFLC(
         const
         char            *pFileName,
@@ -1228,6 +1288,36 @@ extern "C" {
 
         // Return to caller.
         return 0;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          E x i t
+    //---------------------------------------------------------------
+    
+    void            appl_Exit(
+        APPL_DATA       *this,
+        int             exitCode
+    )
+    {
+        //ERESULT         eRc;
+        //ASTR_DATA       *pStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            goto exit;
+        }
+#endif
+        
+        // Do application clean up.
+        
+        // Return to caller.
+    exit:
+        exit(exitCode);
     }
     
     

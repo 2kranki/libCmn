@@ -117,46 +117,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
     
-    ERESULT         psxLock_getLastError(
-        PSXLOCK_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !psxLock_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            psxLock_setLastError(
-        PSXLOCK_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !psxLock_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
     
     
     
@@ -194,11 +155,11 @@ extern "C" {
 #else
         if( !psxLock_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
         if( !psxLock_Validate(pOther) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(pOther);
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
@@ -229,11 +190,8 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        psxLock_setLastError(this, ERESULT_SUCCESS);
-    //eom:
-        //FIXME: Implement the assignment.        
-        psxLock_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return psxLock_getLastError(this);
+    eom:
+        return ERESULT_NOT_IMPLEMENTED;
     }
     
     
@@ -280,7 +238,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        psxLock_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -374,7 +331,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxLock_Vtbl);
         
-        psxLock_setLastError(this, ERESULT_GENERAL_FAILURE);
         obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
 #if defined(__MACOSX_ENV__)
         //this->mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -408,7 +364,6 @@ extern "C" {
         }
         //fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(PSXLOCK_DATA,eRc));
         //fprintf(stderr, "sizeof(PSXLOCK_DATA) = %lu\n", sizeof(PSXLOCK_DATA));
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(PSXLOCK_DATA));
     #endif
 
@@ -431,17 +386,15 @@ extern "C" {
 #else
         if( !psxLock_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return false;
         }
 #endif
         
         if (obj_IsFlag(this, PSXLOCK_FLAG_LOCKED)) {
-            psxLock_setLastError(this, ERESULT_SUCCESS_TRUE);
             return true;
         }
         
         // Return to caller.
-        psxLock_setLastError(this, ERESULT_SUCCESS_FALSE);
         return false;
     }
     
@@ -467,24 +420,24 @@ extern "C" {
 #else
         if( !psxLock_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return false;
         }
 #endif
         
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
-        if (iRc == 0) {
-            obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-            return true;
+        if (iRc == 0)
+            ;
+        else {
+            return false;
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         EnterCriticalSection( &this->csSem );
-        obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
 #endif
         
         // Return to caller.
-        psxLock_setLastError(this, ERESULT_SUCCESS);
+        obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
         return true;
     }
     
@@ -559,7 +512,6 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(psxLock)}\n", this);
         AStr_AppendA(pStr, str);
         
-        psxLock_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -588,40 +540,38 @@ extern "C" {
 #else
         if( !psxLock_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return false;
         }
 #endif
         
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_trylock(&this->mutex);
         if (iRc) {
-            psxLock_setLastError(this, ERESULT_BUSY);
+            obj_setLastError(this, ERESULT_BUSY);
             return false;
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         iRc = TryEnterCriticalSection( &this->csSem );
-        if (iRc) {
-            obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-        }
+        if (iRc)
+            ;
         else {
-            psxLock_setLastError(this, ERESULT_BUSY);
+            obj_setLastError(this, ERESULT_BUSY);
             return false;
         }
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_lock_polling(&this->mutex);
-        if (tnRc == TN_RC_OK) {
-        }
+        if (tnRc == TN_RC_OK)
+            ;
         else {
-            psxLock_setLastError(this, ERESULT_BUSY);
+            obj_setLastError(this, ERESULT_BUSY);
             return false;
         }
 #endif
         
         // Return to caller.
         obj_FlagOn(this, PSXLOCK_FLAG_LOCKED);
-        psxLock_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -647,7 +597,7 @@ extern "C" {
 #else
         if( !psxLock_Validate(this) ) {
             DEBUG_BREAK();
-            return psxLock_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -656,17 +606,16 @@ extern "C" {
         if (iRc == 0) {
         }
         else {
-            psxLock_setLastError(this, ERESULT_NOT_BUSY);
+            obj_setLastError(this, ERESULT_NOT_BUSY);
             return false;
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         if (obj_IsFlag(this, PSXLOCK_FLAG_LOCKED)) {
             LeaveCriticalSection( &this->csSem );
-            obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
         }
         else {
-            psxLock_setLastError(this, ERESULT_NOT_BUSY);
+            obj_setLastError(this, ERESULT_NOT_BUSY);
             return false;
         }
 #endif
@@ -675,14 +624,14 @@ extern "C" {
         if (tnRc == TN_RC_OK) {
         }
         else {
-            psxLock_setLastError(this, ERESULT_NOT_BUSY);
+            obj_setLastError(this, ERESULT_NOT_BUSY);
             return false;
         }
 #endif
         
         // Return to caller.
         obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
-        psxLock_setLastError(this, ERESULT_SUCCESS);
+        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -719,12 +668,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(PSXLOCK_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

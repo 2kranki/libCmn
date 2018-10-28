@@ -420,6 +420,29 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      A p p l i c a t i o n
+    //---------------------------------------------------------------
+    
+    APPL_DATA *     main_getAppl(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (APPL_DATA *)this;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                  D i c t i o n a r y
     //---------------------------------------------------------------
     
@@ -1477,13 +1500,93 @@ extern "C" {
             else {
                 fprintf(
                         stderr,
-                        "FATAL - Found \"objects\" "
+                        "FATAL - Found \"routines\" "
                         "node in database, but it is not an array object!\n\n\n"
                         );
                 exit(12);
             }
         }
         
+        pNode = nodeHash_FindA(node_getData(this->pNodes), "tests");
+        if (pNode) {
+            pArray = jsonIn_CheckNodeDataForArray(pNode);
+            if (pArray) {
+                eRc = dbprs_ParseTests(pPrs, pArray);
+            }
+            else {
+                fprintf(
+                        stderr,
+                        "FATAL - Found \"tests\" "
+                        "node in database, but it is not an array object!\n\n\n"
+                        );
+                exit(12);
+            }
+        }
+        
+        switch (this->osType) {
+                
+            case OSTYPE_MACOS:
+                pNode = nodeHash_FindA(node_getData(this->pNodes), "macosx");
+                if (pNode) {
+                    pArray = jsonIn_CheckNodeDataForArray(pNode);
+                    if (pArray) {
+                        eRc = dbprs_ParseRoutines(pPrs, pArray);
+                    }
+                    else {
+                        fprintf(
+                                stderr,
+                                "FATAL - Found \"macosx\" "
+                                "node in database, but it is not an array object!\n\n\n"
+                                );
+                        exit(12);
+                    }
+                }
+                
+                break;
+                
+            case OSTYPE_MSC32:
+                pNode = nodeHash_FindA(node_getData(this->pNodes), "win32");
+                if (pNode) {
+                    pArray = jsonIn_CheckNodeDataForArray(pNode);
+                    if (pArray) {
+                        eRc = dbprs_ParseRoutines(pPrs, pArray);
+                    }
+                    else {
+                        fprintf(
+                                stderr,
+                                "FATAL - Found \"win32\" "
+                                "node in database, but it is not an array object!\n\n\n"
+                                );
+                        exit(12);
+                    }
+                }
+                break;
+                
+            case OSTYPE_MSC64:
+                pNode = nodeHash_FindA(node_getData(this->pNodes), "win64");
+                if (pNode) {
+                    pArray = jsonIn_CheckNodeDataForArray(pNode);
+                    if (pArray) {
+                        eRc = dbprs_ParseRoutines(pPrs, pArray);
+                    }
+                    else {
+                        fprintf(
+                                stderr,
+                                "FATAL - Found \"win64\" "
+                                "node in database, but it is not an array object!\n\n\n"
+                                );
+                        exit(12);
+                    }
+                }
+                break;
+                
+            default:
+                appl_Usage(
+                           (APPL_DATA *)this,
+                           "ERROR - Failed to indicate type of makefile to generate!\n\n\n"
+                           );
+                exit(8);
+        }
         eRc = dbprs_Finalize(pPrs);
         
         pStr = dbprs_getStr(pPrs);
@@ -1942,51 +2045,34 @@ extern "C" {
         }
         
         pPath = path_NewFromAStr(pStr);
-        if (OBJ_NIL == pPath) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to create path from \n");
-            exit(EXIT_FAILURE);
-        }
+        appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pPath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
         eRc = path_Clean(pPath);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(
-                    stderr,
+        appl_ErrorFatalOnEresult(
+                    eRc,
                     "FATAL - File, %s, does not exist or is not a file!\n",
                     path_getData(pPath)
-                    );
-            exit(EXIT_FAILURE);
-        }
+        );
         eRc = path_IsFile(pPath);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(
-                    stderr,
+        appl_ErrorFatalOnEresult(
+                    eRc,
                     "FATAL - File, %s, does not exist or is not a file!\n",
                     path_getData(pPath)
-            );
-            exit(EXIT_FAILURE);
-        }
+        );
         eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(
-                    stderr,
+        appl_ErrorFatalOnEresult(
+                    eRc,
                     "FATAL - Unable to extract directory from File, %s!\n",
                     path_getData(pPath)
-            );
-            exit(EXIT_FAILURE);
-        }
+        );
         pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
-        if (OBJ_NIL == pArgDir) {
-            DEBUG_BREAK();
-            fprintf(
-                    stderr,
+        appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pArgDir),
                     "FATAL - Unable to extract directory from File, %s!\n",
                     path_getData(pPath)
-                    );
-            exit(EXIT_FAILURE);
-        }
+        );
         eRc = main_DictAddA(this, srcBaseID, (void *)pArgDir);
         
         eRc = main_DictAddA(this, srcFileID, path_getData(pPath));

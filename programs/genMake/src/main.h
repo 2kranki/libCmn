@@ -86,6 +86,7 @@
 #ifndef         MAIN_H
 #define         MAIN_H
 
+#define MAIN_SINGLETON  1
 
 
 #ifdef	__cplusplus
@@ -136,6 +137,17 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
+#ifdef MAIN_SINGLETON
+    MAIN_DATA *     main_Shared(
+        void
+    );
+
+    void            main_SharedReset(
+        void
+    );
+#endif
+    
+    
     /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
@@ -163,6 +175,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    APPL_DATA *     main_getAppl(
+        MAIN_DATA       *this
+    );
+    
+    
     NODEHASH_DATA * main_getDict(
         MAIN_DATA       *this
     );

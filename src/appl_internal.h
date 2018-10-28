@@ -108,15 +108,23 @@ struct appl_data_s	{
 #pragma pack(pop)
 
     extern
-    const
     struct appl_class_data_s  appl_ClassObj;
 
     extern
     const
     APPL_VTBL         appl_Vtbl;
 
+    // Object Methods
+    APPL_DATA *     appl_getSingleton(
+        void
+    );
+    
+    bool            appl_setSingleton(
+        APPL_DATA       *pValue
+    );
 
-    // Internal Functions
+
+    // Internal Methodss
     bool            appl_setCmd(
         APPL_DATA       *this,
         CMDUTL_DATA     *pValue

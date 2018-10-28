@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   psxLock_internal.h
- *	Generated 05/19/2017 21:15:36
+ * File:   disk_internal.h
+ *	Generated 10/27/2018 13:52:20
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,12 @@
 
 
 
-#include    <psxLock.h>
+#include        <disk.h>
+#include        <jsonIn.h>
 
 
-#ifndef PSXLOCK_INTERNAL_H
-#define	PSXLOCK_INTERNAL_H
+#ifndef DISK_INTERNAL_H
+#define	DISK_INTERNAL_H
 
 
 
@@ -54,41 +55,68 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct psxLock_data_s	{
+struct disk_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define PSXLOCK_FLAG_LOCKED    OBJ_FLAG_USER1
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-#if defined(__MACOSX_ENV__)
-    pthread_mutex_t mutex;
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-    struct TN_Mutex mutex;
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    CRITICAL_SECTION
-                    csSem;
-#endif
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct psxLock_class_data_s  psxLock_ClassObj;
+    struct disk_class_data_s  disk_ClassObj;
 
     extern
     const
-    PSXLOCK_VTBL         psxLock_Vtbl;
+    DISK_VTBL         disk_Vtbl;
 
 
-    // Internal Functions
-    void            psxLock_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  disk_getSuperVtbl(
+        DISK_DATA     *this
+    );
+
+
+    void            disk_Dealloc(
         OBJ_ID          objId
+    );
+
+
+    DISK_DATA *       disk_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          disk_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     disk_ToJSON(
+        DISK_DATA      *this
     );
 
 
@@ -96,8 +124,8 @@ struct psxLock_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			psxLock_Validate(
-        PSXLOCK_DATA       *this
+    bool			disk_Validate(
+        DISK_DATA       *this
     );
 #endif
 
@@ -107,5 +135,5 @@ struct psxLock_data_s	{
 }
 #endif
 
-#endif	/* PSXLOCK_INTERNAL_H */
+#endif	/* DISK_INTERNAL_H */
 

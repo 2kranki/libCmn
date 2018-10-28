@@ -35,6 +35,9 @@
 
 #define			MAIN_OBJECT_C	    1
 #include        <main_internal.h>
+#ifdef          MAIN_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -47,7 +50,10 @@ struct main_class_data_s	{
     OBJ_DATA        super;
     
     // Common Data
-    //uint32_t        misc;
+#ifdef  MAIN_SINGLETON
+    volatile
+    MAIN_DATA       *pSingleton;
+#endif
 };
 typedef struct main_class_data_s MAIN_CLASS_DATA;
 
@@ -99,6 +105,10 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+//===========================================================
+//              Class Object Vtbl Definition
+//===========================================================
+
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
@@ -108,7 +118,9 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     main_Class,
-    obj_ClassWhoAmI
+    obj_ClassWhoAmI,
+    (P_OBJ_QUERYINFO)mainClass_QueryInfo,
+    NULL                        // $PClass_ToDebugString
 };
 
 
@@ -117,11 +129,90 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
 MAIN_CLASS_DATA  main_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_MAIN_CLASS, 0, 1},
 	//0
 };
+
+
+
+MAIN_DATA *     main_getSingleton(
+    void
+)
+{
+    return (OBJ_ID)(main_ClassObj.pSingleton);
+}
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  MAIN_SINGLETON
+bool            main_setSingleton(
+    MAIN_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New();
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (main_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(main_ClassObj.pSingleton));
+    }
+    main_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+MAIN_DATA *     main_Shared(
+    void
+)
+{
+    MAIN_DATA       *this = (OBJ_ID)(main_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = main_New( );
+        main_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+    }
+    
+    return this;
+}
+
+
+
+void            main_SharedReset(
+    void
+)
+{
+    MAIN_DATA       *this = (OBJ_ID)(main_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        main_ClassObj.pSingleton = NULL;
+    }
+    
+}
+#endif
 
 
 
@@ -166,6 +257,86 @@ uint16_t		main_WhoAmI(
     return MAIN_IDENT_MAIN;
 }
 
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+void *          mainClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    MAIN_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+            // Query for an address to specific data within the object.
+            // This should be used very sparingly since it breaks the
+            // object's encapsulation.
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+                    
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&main_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+#ifdef XYZZY
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return $P_ParseObject;
+                    }
+                    break;
+                    
+                case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return $PClass_WhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
 
 const
 MAIN_VTBL     main_Vtbl = {

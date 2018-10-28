@@ -160,6 +160,19 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Get the Object's singleton object.
+     @return    pointer to appl object if successful, otherwise OBJ_NIL.
+     */
+    APPL_DATA *     appl_Shared(
+        void
+    );
+    
+    void            appl_SharedReset(
+        void
+    );
+    
+    
+    /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
@@ -180,6 +193,46 @@ extern "C" {
         const
         char            *fmt,
         va_list         argsp
+    );
+    
+    /*!
+     If eRc shows failure then issue error message and abend (abnormal
+     termination of program).  Otherwise, do nothing.
+     @param     eRc     An eresult success/failure code (see eresult.h)
+     @param     fmt     fprint format string
+     @param     argsp   va_list argument pointer
+     */
+    void            appl_ErrorFatalArgOnEresult(
+        ERESULT         eRc,
+        const
+        char            *fmt,
+        va_list         argsp
+    );
+    
+    /*!
+     If fRc is non-zero then issue error message and abend (abnormal
+     termination of program).  Otherwise, do nothing.
+     @param     fRc     An boolean success/failure code
+     @param     fmt     fprint format string
+     */
+    void            appl_ErrorFatalOnBool(
+        bool            fRc,
+        const
+        char            *fmt,
+        ...
+    );
+    
+    /*!
+     If eRc shows failure then issue error message and abend (abnormal
+     termination of program).  Otherwise, do nothing.
+     @param     eRc     An eresult success/failure code (see eresult.h)
+     @param     fmt     fprint format string
+     */
+    void            appl_ErrorFatalOnEresult(
+        ERESULT         eRc,
+        const
+        char            *fmt,
+        ...
     );
     
     void            appl_ErrorFatalFLC(
@@ -287,6 +340,17 @@ extern "C" {
         APPL_DATA       *this
     );
 
+    
+    /*!
+     Exit from the application performing any cleanup needed.
+     @param     this        Object Pointer
+     @param     exitCode    exit code passed to O/S
+     */
+    void            appl_Exit(
+        APPL_DATA       *this,
+        int             exitCode
+    );
+    
     
     APPL_DATA *     appl_Init(
         APPL_DATA       *this

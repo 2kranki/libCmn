@@ -1126,7 +1126,7 @@ extern "C" {
             if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
                 ;
             else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                pDepsObj = node_getData((NODE_DATA *)pData);
+                pDepsObj = pData;
             }
             else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                 NODE_DATA           *pHashNode;
@@ -1673,6 +1673,182 @@ extern "C" {
             if (pNode) {
                 if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
                     eRc = dbprs_ParseRoutine(this, pNode);
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  T e s t
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_ParseTest(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+        OBJ_ID          pData = OBJ_NIL;
+        NODEARRAY_DATA  *pDepsObj = OBJ_NIL;
+        NODEARRAY_DATA  *pSrcsObj = OBJ_NIL;
+        char            *pName;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!dbprs_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pName = node_getNameUTF8(pNode);
+        if (OBJ_NIL == pName) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+        
+        if (0 == strcmp(pName, "string")) {
+            mem_Free(pName);
+            //pName = NULL;
+            pName = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
+        }
+        else {
+            pData = node_getData(pNode);
+            if (OBJ_NIL == pData) {
+                DEBUG_BREAK();
+                if (pName) {
+                    mem_Free(pName);
+                    pName = NULL;
+                }
+                return ERESULT_DATA_MISSING;
+            }
+            pData = node_getData(pData);
+            if (OBJ_NIL == pData) {
+                DEBUG_BREAK();
+                if (pName) {
+                    mem_Free(pName);
+                    pName = NULL;
+                }
+                return ERESULT_DATA_MISSING;
+            }
+            if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
+                ;
+            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                pDepsObj = node_getData((NODE_DATA *)pData);
+            }
+            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
+                NODE_DATA           *pHashNode;
+                pHash = pData;
+                pHashNode = nodeHash_FindA(pHash, srcDepsID);
+                if (pHashNode) {
+                    pData = node_getData(pHashNode);    // Get "array" node.
+                    pData = node_getData(pData);        // Get NodeArray.
+                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                        pDepsObj = pData;
+                    }
+                }
+                pHashNode = nodeHash_FindA(pHash, "srcs");
+                if (pHashNode) {
+                    pData = node_getData(pHashNode);    // Get "array" node.
+                    pData = node_getData(pData);        // Get NodeArray.
+                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
+                        pSrcsObj = pData;
+                    }
+                }
+            }
+            else {
+                DEBUG_BREAK();
+                if (pName) {
+                    mem_Free(pName);
+                    pName = NULL;
+                }
+                return ERESULT_DATA_ERROR;
+            }
+        }
+        
+        if (this->pGen) {
+            if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
+                pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
+                                                    this->pGen,
+                                                    pName,
+                                                    NULL,
+                                                    NULL,
+                                                    NULL,
+                                                    NULL,
+                                                    pDepsObj,
+                                                    pSrcsObj
+                        );
+            }
+            if (pStr) {
+                AStr_Append(this->pStr, pStr);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        if (pName) {
+            mem_Free(pName);
+            pName = NULL;
+        }
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  R o u t i n e s
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_ParseTests(
+        DBPRS_DATA      *this,
+        NODEARRAY_DATA  *pArray
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pNode = OBJ_NIL;
+        //ASTR_DATA       *pStr = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if(!obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        iMax = nodeArray_getSize(pArray);
+        for(i=0; i<iMax; ++i) {
+            pNode = nodeArray_Get(pArray, (i+1));
+            if (pNode) {
+                if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
+                    eRc = dbprs_ParseTest(this, pNode);
                 }
             }
         }

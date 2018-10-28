@@ -33,7 +33,7 @@ int             main(
     fprintf(stderr, "\n\n");
 #endif
 
-    pMain = main_New( );
+    pMain = main_Shared( );
     if (pMain == OBJ_NIL) {
         fprintf(stderr, "FATAL ERROR - \n");
         exit(EXIT_FAILURE);
@@ -47,7 +47,7 @@ int             main(
     
     iRc = main_Exec(pMain);
 
-    //obj_Release(pMain);
+    //obj_SharedReset( );
     pMain = OBJ_NIL;
     return iRc;
 }

@@ -653,6 +653,9 @@ int             test_genOSX_GenFinal01(
     const
     char            *pOutputA =
     "\n\n\n"
+    "$(LIBPATH):  $(OBJS)\n"
+    "\t-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
+    "\tar rc $(LIBPATH) $(OBJS)\n\n\n\n"
     ".PHONY: test\n"
     "test: $(TESTS)\n\n\n"
     ".PHONY: clean\n"
@@ -729,7 +732,7 @@ int             test_genOSX_GenFinal02(
     "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n\n\n"
     ".PHONY: install\ninstall:\n"
     "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n"
-    "\tcp $(BASEDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)\n\n\n"
+    "\tcp $(OBJDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)\n\n\n"
     ".PHONY: link\nlink: $(OBJS) src/main.c\n"
     "\tCC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n"
     ".PHONY: create_dirs\n"

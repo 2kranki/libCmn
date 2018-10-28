@@ -157,7 +157,7 @@ extern "C" {
         //int             chrLen = 0;
 
         // Scan off leading white-space.
-        scanWhite( &pCurChr, NULL );
+        scanner_ScanWhite( &pCurChr, NULL );
         
         // Scan the paramter.
         if( *pCurChr ) {
@@ -263,7 +263,7 @@ extern "C" {
         pCurChr = *ppCmdStr;
         
         // Scan off leading white-space.
-        scanWhite( &pCurChr, &cLen );
+        scanner_ScanWhite( &pCurChr, &cLen );
 
         chrLen = utf8_Utf8ToW32(pCurChr, &chr);
         if (0 == chrLen) {
@@ -273,7 +273,7 @@ extern "C" {
         if ( ('0' == chr) && (('x' == *(pCurChr+1)) || ('X' == *(pCurChr+1))) ) {
             pCurChr += 2;
             cLen += 2;
-            fRc = scanHex32(&pCurChr, &cDec, &value);
+            fRc = scanner_ScanHex32(&pCurChr, &cDec, &value);
             cLen += cDec;
             goto Exit00;
         }
@@ -361,7 +361,7 @@ extern "C" {
         pCurChr = *ppCmdStr;
         
         // Scan off leading white-space.
-        scanWhite( &pCurChr, &cLen );
+        scanner_ScanWhite( &pCurChr, &cLen );
         
         // Scan off each parameter.
         for (;;) {
@@ -436,7 +436,7 @@ extern "C" {
         pCurChr = *ppCmdStr;
         
         // Scan off leading white-space.
-        scanWhite( &pCurChr, &cLen );
+        scanner_ScanWhite( &pCurChr, &cLen );
         
         // Scan off each parameter.
         for (;;) {
@@ -509,7 +509,7 @@ extern "C" {
         }
         
         // Scan off leading white-space.
-        scanWhite(&pCurChr, NULL);
+        scanner_ScanWhite(&pCurChr, NULL);
         
         // Scan the paramter.
         if( *pCurChr ) {

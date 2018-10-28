@@ -1959,6 +1959,18 @@ extern "C" {
         
         AStr_AppendA(pStr, "\n\n\n");
         
+        switch (makeType) {
+            case GENMAKE_TYPE_LIB:
+                AStr_AppendA(pStr, "$(LIBPATH):  $(OBJS)\n");
+                AStr_AppendA(pStr, "\t-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n");
+                AStr_AppendA(pStr, "\tar rc $(LIBPATH) $(OBJS)\n\n\n\n");
+                break;
+            case GENMAKE_TYPE_PGM:
+                break;
+            default:
+                break;
+        }
+        
         AStr_AppendA(pStr, ".PHONY: test\n");
         AStr_AppendA(pStr, "test: $(TESTS)\n\n\n");
         
@@ -2163,7 +2175,7 @@ extern "C" {
             }
         }
         AStr_AppendA(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
-        AStr_AppendA(pOut, "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n");
+        AStr_AppendA(pOut, "TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses\n\n");
         
         switch (makeType) {
             case GENMAKE_TYPE_LIB:

@@ -59,7 +59,7 @@
         "cmdutl":["cmn_defs.h","AStr.h"],
         "compiler":["cmn_defs.h"],
         "consumer":["cmn_defs.h","AStr.h","psxMutex.h","psxSem.h","psxThread.h"],
-        "crc":["cmn_defs.h"],
+        "crc":{"srcDeps":["cmn_defs.h"], "test":null},
         "csv":["cmn_defs.h"],
         "dateTime":["cmn_defs.h","AStr.h"],
         "dbCsv":["cmn_defs.h","AStr.h","objArray.h","path.h","srcFile.h"],
@@ -68,9 +68,11 @@
         "dec":{"srcDeps":["cmn_defs.h","AStr.h"], "json":true, "test":null},
         "dir":["cmn_defs.h","AStr.h","dirEntry.h","path.h"],
         "dirEntry":["cmn_defs.h","AStr.h","path.h"],
-        "ebcdic":["cmn_defs.h","AStr.h"],
-        "endian":["cmn_defs.h","AStr.h"],
-        "enum":["cmn_defs.h"],
+        "disk":{"srcDeps":["cmn_defs.h","AStr.h","path.h"], "test":null},
+        "disks":{"srcDeps":["cmn_defs.h","AStr.h","path.h"], "test":null},
+        "ebcdic":{"srcDeps":["cmn_defs.h","AStr.h"], "test":null},
+        "endian":{"srcDeps":["cmn_defs.h","AStr.h"], "test":null},
+        "enum":{"srcDeps":["cmn_defs.h"], "test":null},
         "eResult":["cmn_defs.h"],
         "execArray":["cmn_defs.h","AStr.h","objArray.h","ptrArray.h"],
         "false":["cmn_defs.h","AStr.h"],
@@ -94,23 +96,23 @@
         "misc":["cmn_defs.h","AStr.h"],
         "msgBus":{"srcDeps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
         "msgData":["cmn_defs.h"],
-        "name":{"srcDeps":["cmn_defs.h","AStr.h","str.h","WStr.h"], "json":true, "test":null},
-        "node":["cmn_defs.h","AStr.h","listdl.h","name.h","nodeArray.h","nodeHash.h","szTbl.h"],
+        "name":{"srcDeps":["cmn_defs.h","AStr.h","str.h"], "json":true, "test":null},
+        "node":{srcDeps:["cmn_defs.h","AStr.h","listdl.h","name.h","nodeArray.h","nodeHash.h","szTbl.h"], json:true},
         "nodeArc":["cmn_defs.h","AStr.h","node.h"],
         "nodeArray":["cmn_defs.h","node.h","objArray.h"],
         "nodeGraph":["cmn_defs.h","AStr.h","node.h","objArray.h"],
-        "nodeHash":["cmn_defs.h","listdl.h","node.h"],
-        "nodeLink":["cmn_defs.h","name.h","node.h","str.h"],
+        "nodeHash":{srcDeps:["cmn_defs.h","listdl.h","node.h"], json:true},
+        "nodeLink":{srcDeps:["cmn_defs.h","name.h","node.h","str.h"], json:true},
         "nodeList":["cmn_defs.h","listdl.h","node.h","str.h"],
         "nodeMatrix":["cmn_defs.h","AStr.h","node.h","objMatrix.h"],
         "nodeScan":["cmn_defs.h","AStr.h","node.h","nodeArray.h"],
         "nodeTree":["cmn_defs.h","AStr.h","node.h","nodeHash.h","objArray.h","szTbl.h"],
-        "null":["cmn_defs.h","AStr.h"],
-        "number":["cmn_defs.h","AStr.h"],
+        "null":{srcDeps:["cmn_defs.h","AStr.h"], json:true},
+        "number":{srcDeps:["cmn_defs.h","AStr.h"], json:true},
         "objArray":["cmn_defs.h","AStr.h"],
         "objCb":{"srcDeps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
         "objEnum":["cmn_defs.h"],
-        "objHash":["cmn_defs.h","AStr.h","listdl.h"],
+        "objHash":{srcDeps:["cmn_defs.h","AStr.h","listdl.h"], json:true},
         "objList":["cmn_defs.h","AStr.h","listdl.h"],
         "objMatrix":["cmn_defs.h","AStr.h"],
         "objMethod":["cmn_defs.h"],
@@ -137,275 +139,60 @@
         "srcError":["cmn_defs.h","AStr.h"],
         "srcErrors":["cmn_defs.h","AStr.h"],
         "srcFile":["cmn_defs.h","AStr.h","ascii.h","fbsi.h","path.h","token.h",
-                    "tokenList.h","u8Array.h","WStr.h"],
+                    "tokenList.h","u8Array.h"],
         "srcFiles":["cmn_defs.h","objArray.h","path.h","srcFile.h","token.h"],
-        "srcLoc":["cmn_defs.h","AStr.h"],
+        "srcLoc":{srcDeps:["cmn_defs.h"], json:true},
         "SRecords":["cmn_defs.h","AStr.h","srcFile.h"],
         "symAttr":["cmn_defs.h"],
-        "symEntry":["cmn_defs.h"],
+        "symEntry":{srcDeps:["cmn_defs.h"], json:true},
         "symTable":["cmn_defs.h"],
-        "szData":["cmn_defs.h"],
+        "szData":{srcDeps:["cmn_defs.h"], json:true},
         "szHash":["cmn_defs.h","AStr.h","listdl.h","szTbl.h"],
-        "szTbl":["cmn_defs.h","AStr.h","ptrArray.h","szHash.h"],
+        "szTbl":{srcDeps:["cmn_defs.h","AStr.h","ptrArray.h","szHash.h"], json:true},
         "table":["cmn_defs.h","AStr.h","listdl.h"],
         "ternary":["cmn_defs.h","AStr.h","blocks.h"],
         "textIn":["cmn_defs.h"],
         "textOut":["cmn_defs.h"],
         "timer":null,
-        "token":["cmn_defs.h","AStr.h","AStrC.h","WStr.h","WStrC.h"],
+        "token":{srcDeps:["cmn_defs.h","AStr.h","AStrC.h"], json:true},
         "tokenList":["cmn_defs.h","AStr.h","token.h"],
         "trace":["cmn_defs.h"],
         "true":["cmn_defs.h","AStr.h"],
-        "u8Array":null,
+        "u8Array":{srcDeps:["cmn_defs.h"], json:true},
         "u12Array":["cmn_defs.h","AStr.h","array.h"],
         "u16Array":["cmn_defs.h","AStr.h","array.h"],
         "u16Matrix":["cmn_defs.h","AStr.h"],
         "u32Array":["cmn_defs.h","AStr.h","array.h"],
         "u32Matrix":["cmn_defs.h","AStr.h"],
         "uint128":["cmn_defs.h"],
-        "utf8":["cmn_defs.h"],
-        "value":["cmn_defs.h"],
+        "utf8":{srcDeps:["cmn_defs.h"], json:true},
+        "value":{srcDeps:["cmn_defs.h"], json:true},
         "visitor":["cmn_defs.h"],
         "wav":["cmn_defs.h"],
-        "W32Str":["cmn_defs.h"],
+        "W32Str":{srcDeps:["cmn_defs.h"], json:true},
         "W32StrC":["cmn_defs.h"],
         "xml":["cmn_defs.h"]
     },
-    "routines":
-    [
+    "routines": [
         "listdl.c",
         "md5_plumb.c",
-        "node_JSON.c",
-        "nodeHash_JSON.c",
-        "nodeLink_JSON.c",
-        "null_JSON.c",
-        "number_JSON.c",
         "obj.c",
-        "objHash_JSON.c",
         "shellSortPtrs.c",
-        #"srcError_JSON.c",
-        "srcLoc_JSON.c",
         "str.c",
-        "symEntry_JSON.c",
-        "szData_JSON.c",
-        "szTbl_JSON.c",
-        "token_JSON.c",
-        "u8Array_JSON.c",
-        "utf8_JSON.c",
-        "value_JSON.c",
-        "W32Str_JSON.c"
     ],
-    "macosx": {
-        "cmn_osx.c":null,
-        "memOSX.c":null,
-        "memOSX_object.c":null`
-    },
-    "win32": {
-        "cmn_win32.c":null,
-        "memWin32.c":null,
-        "memWin32_object.c":null
-    },
-    "programs": [
-        /*******
-        {
-            "name":"genGetterSetter",
-            "routines": [
-                "genGetterSetter.c"
-            ]
-        },
-        ********/
-        {
-            "name":"genMake",
-            "type":"program",
-            "lib_deps":["cmn_defs"],
-            "headers": {
-                "private":
-                [
-                    "genMake.h"
-                ],
-                "test":
-                [
-                    "test_defs.h"
-                ],
-            }
-            "objects":
-            {
-                "genOSX":["md5Util"],
-                "genWIN":["md5Util"],
-                "main":["md5Util"]
-            },
-            "routines":
-            [
-                "mainProgram.c"
-            ],
-            "tests":
-            {
-                "test_genOSX.c":null,
-                "test_genWIN.c":null,
-                "test_main.c":null
-            }   
-        },
-        /*******
-        {
-            "name":"lexFileToJSON",
-            "routines": [
-                "lexFileToJSON.c"
-            ]
-        },
-        {
-            "name":"md5Util",
-            "headers_private":
-            [
-                "md5Util.h"
-            ],
-            "objects":
-            {
-                "exec":["md5Util"],
-                "main":["md5Util"]
-            },
-            "routines":
-            [
-                "mainProgram.c"
-            ],
-            "tests":
-            {
-                "test_exec.c":null,
-                "test_main.c":null
-            }   
-        },
-        ********/
+    "macosx": [
+        "cmn_osx.c",
+        "memOSX.c",
+        "memOSX_object.c"`
     ],
-    "tests":
-    {
-        "test_AStrC.c":null,
-        "test_audioCW.c":null,
-        "test_audioWAV.c":null,
-        "test_bitMatrix.c":null,
-        "test_bitSet.c":null,
-        "test_blkdrcds16.c":null,
-        "test_block16.c":null,
-        "test_block32.c":null,
-        "test_blocks.c":null,
-        "test_bptIndex.c":null,
-        "test_bptLeaf.c":null,
-        "test_bptree.c":null,
-        "test_btp.c":null,
-        "test_cb16.c":null,
-        "test_cb32.c":null,
-        "test_cfa.c":null,
-        "test_cmdutl.c":null,
-        "test_compiler.c":null,
-        "test_consumer.c":null,
-        "test_crc.c":null,
-        "test_csv.c":null,
-        "test_dateTime.c":null,
-        "test_dbCsv.c":null,
-        "test_dbField.c":null,
-        "test_dbf.c":null,
-        "test_dec.c":null,
-        "test_dir.c":null,
-        "test_dirEntry.c":null,
-        "test_ebcdic.c":null,
-        "test_endian.c":null,
-        "test_enum.c":null,
-        "test_eResult.c":null,
-        "test_execArray.c":null,
-        "test_false.c":null,
-        "test_fbs.c":null,
-        "test_fileio.c":null,
-        "test_genObj.c":null,
-        "test_greg.c":null,
-        "test_hash32.c":null,
-        "test_hex.c":null,
-        "test_i32Array.c":null,
-        "test_hjson.c":null,
-        "test_jsonIn.c":null,
-        "test_jsonOut.c":null,
-        "test_lex.c":null,
-        "test_lexj.c":null,
-        "test_listdl.c":null,
-        "test_lru.c":null,
-        "test_macro.c":null,
-        "test_md5ChkSum.c":null,
-        "test_memOSX.c":null,
-        "test_misc.c":null,
-        "test_msgData.c":null,
-        "test_node.c":null,
-        "test_nodeArc.c":null,
-        "test_nodeArray.c":null,
-        "test_nodeGraph.c":null,
-        "test_nodeHash.c":null,
-        "test_nodeLink.c":null,
-        "test_nodeList.c":null,
-        "test_nodeMatrix.c":null,
-        "test_nodeScan.c":null,
-        "test_nodeTree.c":null,
-        "test_null.c":null,
-        "test_number.c":null,
-        "test_obj.c":null,
-        "test_objArray.c":null,
-        "test_objEnum.c":null,
-        "test_objHash.c":null,
-        "test_objList.c":null,
-        "test_objMatrix.c":null,
-        "test_objMethod.c":null,
-        "test_objTest.c":[objTest.c,objTest_object.c],
-        "test_parser.c":null,
-        "test_path.c":null,
-        "test_plist.c":null,
-        "test_pplex.c":null,
-        "test_pplex1.c":null,
-        "test_pplex2.c":null,
-        "test_pplex3.c":null,
-        "test_psxCond.c":null,
-        "test_psxLock.c":null,
-        "test_psxMutex.c":null,
-        "test_psxSem.c":null,
-        "test_psxThread.c":null,
-        "test_ptrArray.c":null,
-        "test_rrds32.c":null,
-        "test_scanDate.c":null,
-        "test_scanDec32.c":null,
-        "test_scanString.c":null,
-        "test_scanWhite.c":null,
-        "test_scanner.c":null,
-        "test_screen.c":null,
-        "test_sidx.c":null,
-        "test_srcError.c":null,
-        "test_srcErrors.c":null,
-        "test_srcFile.c":null,
-        "test_srcFiles.c":null,
-        "test_srcLoc.c":null,
-        "test_SRecords.c":null,
-        "test_str.c":null,
-        "test_symAttr.c":null,
-        "test_symEntry.c":null,
-        "test_symTable.c":null,
-        "test_szData.c":null,
-        "test_szHash.c":null,
-        "test_szTbl.c":null,
-        "test_table.c":null,
-        "test_ternary.c":null,
-        "test_textIn.c":null,
-        "test_textOut.c":null,
-        "test_timer.c":null,
-        "test_token.c":null,
-        "test_tokenList.c":null,
-        "test_trace.c":null,
-        "test_true.c":null,
-        "test_u8Array.c":null,
-        "test_u12Array.c":null,
-        "test_u16Array.c":null,
-        "test_u16Matrix.c":null,
-        "test_u32Array.c":null,
-        "test_u32Matrix.c":null,
-        "test_uint128.c":null,
-        "test_utf8.c":null,
-        "test_value.c":null,
-        "test_visitor.c":null,
-        "test_wav.c":null,
-        "test_W32Str.c":null,
-        "test_W32StrC.c":null,
-        "test_xml.c":null
-    }
+    "win32": [
+        "cmn_win32.c",
+        "memWin32.c",
+        "memWin32_object.c"
+    ],
+    "programs": ["genGetterSetter", "genMake", "lexFileToJSON", "md5Util"],
+    "tests": [
+        "listdl.c",
+        "str.c"
+     ]
 }

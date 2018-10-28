@@ -25,6 +25,7 @@
 #include    <test_defs.h>
 #include    <trace.h>
 #include    <cb_internal.h>
+#include    <psxMutex.h>
 #include    <psxThread.h>
 
 
@@ -69,7 +70,10 @@ typedef struct buffer_entry_s {
 static
 BUFFER_ENTRY    outputQueue[NUM_STR * 2] = {0};
 static
+volatile
 int             outputQueueEnd = -1;
+static
+PSXMUTEX_DATA   *pMutex = OBJ_NIL;
 
 
 
@@ -77,10 +81,12 @@ static
 void            addOutput (const char *pStr)
 {
     
+    psxMutex_Lock(pMutex);
     ++outputQueueEnd;
     outputQueue[outputQueueEnd].pStr = pStr;
     printf("addOutput()  %3d - %s\n", outputQueueEnd, outputQueue[outputQueueEnd].pStr);
-    
+    psxMutex_Unlock(pMutex);
+
 }
 
 
@@ -261,7 +267,7 @@ int         test_cb_CounterOverflow(
     }
     
     fRc = cb_isEmpty(pCB);
-    fprintf(stderr, "\tisEMpty(%c)\n", (fRc ? 't' : 'f'));
+    fprintf(stderr, "\tisEmpty(%c)\n", (fRc ? 't' : 'f'));
     XCTAssertTrue( (fRc) );
     
 	obj_Release( pCB );
@@ -283,6 +289,8 @@ int         test_cb_Operation(
     PSXTHREAD_DATA  *pThread = OBJ_NIL;
     bool            fRc;
     
+    pMutex = psxMutex_New();
+    XCTAssertFalse( (OBJ_NIL == pMutex) );
     fprintf(stderr, "Performing: %s\n", pTestName);
     printf("Creating Buffer...\n");
     pCB = cb_Alloc(sizeof(BUFFER_ENTRY), 4);
@@ -303,12 +311,12 @@ int         test_cb_Operation(
         fRc = psxThread_Pause(pThread);
         XCTAssertTrue( (fRc) );
         while (!psxThread_IsPaused(pThread)) {
-            psxThread_Wait(1000);
+            psxThread_Wait(1000);       // Wait 1 sec.
         }
         psxThread_setWait(pThread, 500);
         fRc = psxThread_Resume(pThread);
         while (!psxThread_IsRunning(pThread)) {
-            psxThread_Wait(1000);
+            psxThread_Wait(1000);       // Wait 1 sec.
         }
         
         printf("Loading Buffer...\n");
@@ -316,7 +324,7 @@ int         test_cb_Operation(
             printf("  Put(%d) - %s\n", i, StrArray[i]);
             cb_Put(pCB, &StrArray[i]);
         }
-        psxThread_Wait(10000);
+        psxThread_Wait(10000);          // Wait 10 secs.
         
         printf("\n\n");
         printf("Output Queue(%d):\n", outputQueueEnd+1);
@@ -336,7 +344,9 @@ int         test_cb_Operation(
         obj_Release(pCB);
         pCB = NULL;
     }
-    
+    obj_Release(pMutex);
+    pMutex = NULL;
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }

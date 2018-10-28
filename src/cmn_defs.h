@@ -226,6 +226,10 @@ extern "C" {
         OBJ_IDENT_DIR_CLASS,
         OBJ_IDENT_DIRENTRY,
         OBJ_IDENT_DIRENTRY_CLASS,
+        OBJ_IDENT_DISK,                 // Disk Information/Management
+        OBJ_IDENT_DISK_CLASS,
+        OBJ_IDENT_DISKS,                // Information/Management of Disks
+        OBJ_IDENT_DISKS_CLASS,
         OBJ_IDENT_EBCDIC,               // EBCDIC Character
         OBJ_IDENT_EBCDIC_CLASS,
         OBJ_IDENT_ENDIAN,               // Little/Big Endian Manipulation

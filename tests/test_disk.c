@@ -1,5 +1,5 @@
 /*
- *	Generated 08/12/2018 23:54:40
+ *	Generated 10/27/2018 13:52:20
  */
 
 
@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <u32Matrix_internal.h>
+#include    <disk_internal.h>
 
 
 
@@ -74,18 +74,18 @@ int             tearDown(
 
 
 
-int             test_u32Matrix_OpenClose(
+int             test_disk_OpenClose(
     const
     char            *pTestName
 )
 {
-    U32MATRIX_DATA	    *pObj = OBJ_NIL;
+    DISK_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = u32Matrix_Alloc( );
+    pObj = disk_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = u32Matrix_Init(pObj, 2, 2);
+    pObj = disk_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,11 +102,11 @@ int             test_u32Matrix_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_u32Matrix);
-    TINYTEST_ADD_TEST(test_u32Matrix_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_disk);
+    TINYTEST_ADD_TEST(test_disk_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_u32Matrix);
+TINYTEST_MAIN_SINGLE_SUITE(test_disk);
 
 
 

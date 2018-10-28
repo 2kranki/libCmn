@@ -80,7 +80,6 @@ struct main_data_s	{
 #pragma pack(pop)
 
     extern
-    const
     struct main_class_data_s  main_ClassObj;
 
     extern
@@ -88,7 +87,34 @@ struct main_data_s	{
     MAIN_VTBL         main_Vtbl;
 
 
-    // Internal Functions
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+    
+#ifdef  $Q_SINGLETON
+    MAIN_DATA *     main_getSingleton(
+        void
+    );
+    
+    bool            main_setSingleton(
+        MAIN_DATA       *pValue
+    );
+#endif
+    
+    
+    void *          mainClass_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
+    
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+    
     bool            main_setParser(
         MAIN_DATA       *this,
         DBPRS_DATA      *pValue

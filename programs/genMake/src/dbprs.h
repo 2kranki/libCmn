@@ -410,6 +410,50 @@ extern "C" {
     
     
     /*!
+     Parse an object and generate its components
+     Node Grammar:
+     testNode   : string
+                | hash
+                ;
+     hash       : '{' elements '}'
+                ;
+     elements   : "name" ':' string         // Required
+                | "srcDeps" : array_of_file_names
+                | "srcs"  : '[' file_names ']'
+                ;
+     @param     this    Object Pointer
+     @param     pNode   Object Node Pointer
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseTest(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Parse an object and generate its components
+     Node Grammar:
+     tests      : '[' objects_Array ']'
+                ;
+     object_Array: testNode*
+                ;
+     Note: See ParseTest() for definition of testNode.
+     @param     this    Object Pointer
+     @param     pArray  Node Array Pointer
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT         dbprs_ParseTests(
+        DBPRS_DATA      *this,
+        NODEARRAY_DATA  *pArray
+    );
+    
+    
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 

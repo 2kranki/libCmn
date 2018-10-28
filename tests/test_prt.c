@@ -1,5 +1,5 @@
 /*
- *	Generated 08/12/2018 23:54:40
+ *	Generated 06/05/2017 21:57:10
  */
 
 
@@ -24,13 +24,14 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <u32Matrix_internal.h>
+#include    <fbsi_internal.h>
+#include    <fbso_internal.h>
 
 
 
-int             setUp(
+int         setUp(
     const
-    char            *pTestName
+    char        *pTestName
 )
 {
     mem_Init( );
@@ -42,9 +43,9 @@ int             setUp(
 }
 
 
-int             tearDown(
+int         tearDown(
     const
-    char            *pTestName
+    char        *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -74,39 +75,54 @@ int             tearDown(
 
 
 
-int             test_u32Matrix_OpenClose(
+int         test_fbs_OpenClose(
     const
-    char            *pTestName
+    char        *pTestName
 )
 {
-    U32MATRIX_DATA	    *pObj = OBJ_NIL;
+    FBSI_DATA	*pObjI = OBJ_NIL;
+    FBSO_DATA	*pObjO = OBJ_NIL;
+    const
+    char        *pFilePathStr = "/Users/bob/Support/x/test.txt";
+    PATH_DATA   *pFilePath = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pObj = u32Matrix_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = u32Matrix_Init(pObj, 2, 2);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        // Test something.
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
+    
+    pFilePath = path_NewA(pFilePathStr);
+    XCTAssertFalse( (OBJ_NIL == pFilePath) );
+    
+    pObjO = fbso_Alloc();
+    XCTAssertFalse( (OBJ_NIL == pObjO) );
+    pObjO = fbso_Init( pObjO, pFilePath );
+    XCTAssertFalse( (OBJ_NIL == pObjO) );
+    if (pObjO) {
+        obj_Release(pObjO);
+        pObjO = OBJ_NIL;
     }
+    
+    pObjI = fbsi_Alloc();
+    XCTAssertFalse( (OBJ_NIL == pObjI) );
+    pObjI = fbsi_InitPath( pObjI, pFilePath );
+    XCTAssertFalse( (OBJ_NIL == pObjI) );
+    if (pObjI) {
+        obj_Release(pObjI);
+        pObjI = OBJ_NIL;
+    }
+    
+    obj_Release(pFilePath);
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_u32Matrix);
-    TINYTEST_ADD_TEST(test_u32Matrix_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_fbs);
+  TINYTEST_ADD_TEST(test_fbs_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_u32Matrix);
+TINYTEST_MAIN_SINGLE_SUITE(test_fbs);
 
 
 

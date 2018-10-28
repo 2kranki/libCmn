@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          PSXLOCK Console Transmit Task (psxLock) Header
+//          DISK Console Transmit Task (disk) Header
 //****************************************************************
 /*
  * Program
- *			Separate psxLock (psxLock)
+ *			Separate disk (disk)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate psxLock to run things without complications
- *          of interfering with the main psxLock. A psxLock may be 
- *          called a psxLock on other O/S's.
+ *          a separate disk to run things without complications
+ *          of interfering with the main disk. A disk may be 
+ *          called a disk on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal psxLock. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	05/19/2017 Generated
+ *	10/27/2018 Generated
  */
 
 
@@ -58,8 +55,8 @@
 #include        <AStr.h>
 
 
-#ifndef         PSXLOCK_H
-#define         PSXLOCK_H
+#ifndef         DISK_H
+#define         DISK_H
 
 
 
@@ -73,16 +70,16 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct psxLock_data_s	PSXLOCK_DATA;    // Inherits from OBJ.
+    typedef struct disk_data_s	DISK_DATA;    // Inherits from OBJ.
 
-    typedef struct psxLock_vtbl_s	{
+    typedef struct disk_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in psxLock_object.c.
+        // method names to the vtbl definition in disk_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(PSXLOCK_DATA *);
-    } PSXLOCK_VTBL;
+        //bool        (*pIsEnabled)(DISK_DATA *);
+    } DISK_VTBL;
 
 
 
@@ -99,14 +96,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to psxLock object if successful, otherwise OBJ_NIL.
+     @return    pointer to disk object if successful, otherwise OBJ_NIL.
      */
-    PSXLOCK_DATA *  psxLock_Alloc(
+    DISK_DATA *     disk_Alloc(
         void
     );
     
     
-    PSXLOCK_DATA *  psxLock_New(
+    OBJ_ID          disk_Class(
+        void
+    );
+    
+    
+    DISK_DATA *     disk_New(
         void
     );
     
@@ -123,53 +125,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    PSXLOCK_DATA *   psxLock_Init(
-        PSXLOCK_DATA     *this
+    ERESULT     disk_Disable(
+        DISK_DATA		*this
     );
 
 
-    bool            psxLock_IsLocked(
-        PSXLOCK_DATA	*this
+    ERESULT     disk_Enable(
+        DISK_DATA		*this
+    );
+
+   
+    DISK_DATA *   disk_Init(
+        DISK_DATA     *this
+    );
+
+
+    ERESULT     disk_IsEnabled(
+        DISK_DATA		*this
     );
     
-    
-    /*!
-     Set the lock unconditionally.
-     @param     this    PSXLOCK object pointer
-     @return    If successful, true is returned. Otherwise, false.
-     @warning   This will put the thread in an infinite wait until
-                the lock provided for its use.
-     */
-    bool            psxLock_Lock(
-        PSXLOCK_DATA	*this
-    );
-    
-    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = psxLock_ToDebugString(this,4);
-     @endcode
-     @param     this    PSXLOCK object pointer
+     @code 
+        ASTR_DATA      *pDesc = disk_ToDebugString(this,4);
+     @endcode 
+     @param     this    DISK object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     psxLock_ToDebugString(
-        PSXLOCK_DATA    *this,
+    ASTR_DATA *    disk_ToDebugString(
+        DISK_DATA     *this,
         int             indent
-    );
-    
-    
-    bool            psxLock_TryLock(
-        PSXLOCK_DATA	*this
-    );
-    
-    
-    bool            psxLock_Unlock(
-        PSXLOCK_DATA	*this
     );
     
     
@@ -179,5 +169,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* PSXLOCK_H */
+#endif	/* DISK_H */
 

@@ -77,8 +77,10 @@ struct msgBus_data_s	{
     OBJCB_DATA      *pBuffer;
     volatile
     uint32_t        msWait;
+    volatile
     uint16_t        actualSize;
     uint16_t        rsvd16;
+    volatile
     int32_t         unique;
     uint32_t        rsvd32;
 

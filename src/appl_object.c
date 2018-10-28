@@ -35,6 +35,7 @@
 
 #define			APPL_OBJECT_C	    1
 #include        <appl_internal.h>
+#include        <psxLock.h>
 
 
 
@@ -47,7 +48,8 @@ struct appl_class_data_s	{
     OBJ_DATA        super;
     
     // Common Data
-    //uint32_t        misc;
+    volatile
+    APPL_DATA       *pSingleton;
 };
 typedef struct appl_class_data_s APPL_CLASS_DATA;
 
@@ -116,11 +118,83 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
 APPL_CLASS_DATA  appl_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_APPL_CLASS, 0, 1},
-	//0
+    0
 };
+
+
+
+APPL_DATA *     appl_getSingleton(
+    void
+)
+{
+    return (OBJ_ID)(appl_ClassObj.pSingleton);
+}
+
+
+bool            appl_setSingleton(
+    APPL_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New();
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (appl_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(appl_ClassObj.pSingleton));
+    }
+    appl_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+APPL_DATA *     appl_Shared(
+)
+{
+    APPL_DATA       *this = (OBJ_ID)(appl_ClassObj.pSingleton);
+
+    if (NULL == this) {
+        this = appl_New( );
+        appl_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+    }
+    
+    return this;
+}
+
+
+
+void            appl_SharedReset(
+    void
+)
+{
+    APPL_DATA       *this = (OBJ_ID)(appl_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        appl_ClassObj.pSingleton = NULL;
+    }
+    
+}
 
 
 
