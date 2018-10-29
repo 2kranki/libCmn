@@ -8,9 +8,16 @@
  *			Separate srcErrors (srcErrors)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate srcErrors to run things without complications
- *          of interfering with the main srcErrors. A srcErrors may be 
- *          called a srcErrors on other O/S's.
+ *          a source errors of varying severities.
+ *
+ *          By using the shared object, errors can be accumulated
+ *          while parsing a source file and then terminate execution
+ *          if any fatal errors occurred.  Optionally, a fatal error
+ *          can cause immediate termination if the property, ExitOnFatal,
+ *          is true.
+ *
+ *          If program termination is requested because fatal errors
+ *          occurred, an optional exit will be performed if present.
  *
  * Remarks
  *	1.      This object can be accessed as a singleton which is
@@ -64,6 +71,8 @@
 #ifndef         SRCERRORS_H
 #define         SRCERRORS_H
 
+
+#define SRCERRORS_SINGLETON 1
 
 
 #ifdef	__cplusplus
@@ -130,23 +139,37 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            srcErrors_getExitOnFatal(
+        SRCERRORS_DATA  *this
+    );
+    
+    bool            srcErrors_setExitOnFatal(
+        SRCERRORS_DATA  *this,
+        bool            value
+    );
+    
+
+    /*!
+     The Fatal Property is true if any of the errors added were "fatal".
+     */
+    bool            srcErrors_getFatal(
+        SRCERRORS_DATA  *this
+    );
+    
+    
     /*!
      The Fatal Error Exit is executed anytime that a fatal error
-     is added to the collection. The last error in the collection
-     will be the one that triggered the exit being called.
+     is added to the collection. If the exit returns an eresult
+     error code then the exit process is terminated and program
+     termination is aborted.
      */
     bool            srcErrors_setFatalExit(
         SRCERRORS_DATA  *this,
-        void            (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *),
+        ERESULT         (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *),
         OBJ_ID          pFatalExitObject
     );
     
     
-    ERESULT     srcErrors_getLastError(
-        SRCERRORS_DATA		*this
-    );
-
-
 
     
     //---------------------------------------------------------------
@@ -187,7 +210,7 @@ extern "C" {
      @return    If successful, true; otherwise, false and an ERESULT_*
      error will be set in Last Error.
      */
-    bool        srcErrors_AddFatalA(
+    ERESULT         srcErrors_AddFatalA(
         SRCERRORS_DATA  *this,
         const
         SRCLOC          *pLocation,
@@ -253,12 +276,33 @@ extern "C" {
     );
     
     
+    /*!
+     If a fatal error has occurred, print all errors to stderr,
+     execute the fatal error exit if present, then exit with
+     the given error code.  If no fatal errors occurred, simply
+     return without any impact.
+     @param     this        object pointer
+     */
+    void            srcErrors_ExitOnFatal(
+        SRCERRORS_DATA  *this
+    );
+    
+    
     SRCERRORS_DATA * srcErrors_Init(
         SRCERRORS_DATA  *this
     );
 
 
     SRCERROR_DATA * srcErrors_LatestError(
+        SRCERRORS_DATA  *this
+    );
+    
+    
+    /*!
+     Print all errors on stderr.
+     @param     this        object pointer
+     */
+    void            srcErrors_Print(
         SRCERRORS_DATA  *this
     );
     

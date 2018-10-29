@@ -198,8 +198,8 @@ extern "C" {
      past the end, zero will be returned in NumReturned.
      @param     this    OBJENUM object pointer
      @param     arraySize size of ppVoidArray
-     @param     ppObjArray an array of void pointers which are filled in by this
-                 this method if any elements are left to enumerate.
+     @param     ppObjArray      an array of void pointers which are filled in by this
+                                this method if any elements are left to enumerate.
      @param     pNumReturned    where the number of returned objected pointers is
                                 to be put (optional);
      @return    If successful ERESULT_SUCCESS and data returned in ppObjArray

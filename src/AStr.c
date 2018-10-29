@@ -1595,7 +1595,7 @@ extern "C" {
         ASTR_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         int32_t         i;
         
         // Do initialization.

@@ -176,7 +176,7 @@ SRCERROR_VTBL     srcError_Vtbl = {
         NULL,			// srcError_Enable,
         NULL,			// srcError_Disable,
         (P_OBJ_ASSIGN)srcError_Assign,
-        NULL,			// (P_OBJ_COMPARE)srcError_Compare,
+        (P_OBJ_COMPARE)srcError_Compare,
         (P_OBJ_PTR)srcError_Copy,
         NULL 			// (P_OBJ_HASH)srcError_Hash,
     },

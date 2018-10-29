@@ -67,10 +67,12 @@ struct srcErrors_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     OBJARRAY_DATA   *pErrors;
+    bool            fFatal;         // One or more fatal errors occurred
+    bool            fExitOnFatal;
+    uint16_t        rsvd16;
     
-    void            (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *);
+    ERESULT         (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *);
     OBJ_ID          pFatalExitObject;
 
 };
@@ -96,12 +98,6 @@ struct srcErrors_data_s	{
     );
     
     
-   bool            srcErrors_setLastError(
-        SRCERRORS_DATA     *this,
-        ERESULT         value
-    );
-
-
     OBJ_IUNKNOWN *  srcErrors_getSuperVtbl(
         SRCERRORS_DATA     *this
     );

@@ -87,7 +87,6 @@ extern "C" {
         SRCERROR_SEVERITY_UNKNOWN = 0,
         SRCERROR_SEVERITY_INFO,
         SRCERROR_SEVERITY_WARNING,
-        SRCERROR_SEVERITY_SEVERE,
         SRCERROR_SEVERITY_FATAL
     } SRCERROR_SEVERITY;
 
@@ -157,11 +156,6 @@ extern "C" {
     );
     
     
-    ERESULT         srcError_getLastError(
-        SRCERROR_DATA	*this
-    );
-
-
     SRCLOC *        srcError_getLocation(
         SRCERROR_DATA   *this
     );
@@ -192,6 +186,12 @@ extern "C" {
      ERESULT_* error
      */
     ERESULT         srcError_Assign(
+        SRCERROR_DATA   *this,
+        SRCERROR_DATA   *pOther
+    );
+    
+    
+    ERESULT         srcError_Compare(
         SRCERROR_DATA   *this,
         SRCERROR_DATA   *pOther
     );
@@ -252,6 +252,11 @@ extern "C" {
     ASTR_DATA *     srcError_ToDebugString(
         SRCERROR_DATA   *this,
         int             indent
+    );
+    
+    
+    ASTR_DATA *     srcError_ToString(
+        SRCERROR_DATA   *this
     );
     
     

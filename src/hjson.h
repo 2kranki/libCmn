@@ -29,6 +29,13 @@
  *          whose name is the same keyword of "null", "true" or
  *          "false"
  *
+ *          If errors occur in the parse, the shared object for
+ *          srcErrors will contain those error descriptions. So,
+ *          "srcErrors_Print(OBJ_NIL);" will print the errors on
+ *          stderr.  "srcErrors_ExitOnFatal(OBJ_NIL);" will print
+ *          the errors and then exit if any fatal errors occurred.
+ *          See srcErrors.h for more information.
+ *
  * Remarks
  *	1.      I changed the definition of the quoteless string to end
  *          with '\n' and any of '{','}','[',']',':',','. This al-

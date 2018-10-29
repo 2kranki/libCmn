@@ -605,13 +605,16 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            for (i=0; i<array_getSize(this->pArray); ++i) {
-                ppObj = array_Ptr(this->pArray, (i + 1));
-                if (*ppObj) {
-                    eRc = objEnum_Append(pEnum, *ppObj);
+            pEnum = objEnum_New();
+            if (pEnum) {
+                for (i=0; i<array_getSize(this->pArray); ++i) {
+                    ppObj = array_Ptr(this->pArray, (i + 1));
+                    if (*ppObj) {
+                        eRc = objEnum_Append(pEnum, *ppObj);
+                    }
                 }
+                eRc = objArray_SortAscending(pEnum->pArray, NULL);
             }
-            eRc = objArray_SortAscending(pEnum->pArray, NULL);
         }
         
         // Return to caller.

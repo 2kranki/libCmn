@@ -65,10 +65,10 @@ extern "C" {
     ****************************************************************/
 
     static
-    void            errorExit(
+    ERESULT        errorExit(
     )
     {
-        exit(4);
+        return ERESULT_SUCCESS;
     }
     
     

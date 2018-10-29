@@ -67,7 +67,6 @@ struct srcError_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        severity;
     uint16_t        rsvd16;
     SRCLOC          loc;
@@ -96,12 +95,6 @@ struct srcError_data_s	{
     );
     
     
-   bool            srcError_setLastError(
-        SRCERROR_DATA   *this,
-        ERESULT         value
-    );
-
-
     bool            srcError_setLocation(
         SRCERROR_DATA   *this,
         const

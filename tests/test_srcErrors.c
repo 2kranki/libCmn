@@ -51,7 +51,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    srcErrors_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -101,8 +102,43 @@ int         test_srcErrors_OpenClose(
 
 
 
+int         test_srcErrors_Fatal01(
+    const
+    char        *pTestName
+)
+{
+    SRCERRORS_DATA  *pObj = OBJ_NIL;
+    SRCLOC          location = {1,3,2,200};
+    
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = srcErrors_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = srcErrors_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        srcErrors_AddFatalA(
+                            pObj,
+                            &location,
+                            "Expecting '}', but found nothing"
+        );
+        srcErrors_Print(pObj);
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_srcErrors);
+    TINYTEST_ADD_TEST(test_srcErrors_Fatal01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcErrors_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

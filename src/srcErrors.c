@@ -63,13 +63,12 @@ extern "C" {
     ****************************************************************/
 
     static
-    void            srcErrors_DefaultFatalExit(
+    ERESULT         srcErrors_DefaultFatalExit(
         OBJ_ID          pObj,
         SRCERRORS_DATA  *pData
     )
     {
-        DEBUG_BREAK();
-        exit(99);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -167,7 +166,6 @@ extern "C" {
         }
 #endif
         
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return this->pErrors;
     }
     
@@ -191,7 +189,90 @@ extern "C" {
         }
         this->pErrors = pValue;
         
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  E x i t  O n  F a t a l
+    //---------------------------------------------------------------
+    
+    bool            srcErrors_getExitOnFatal(
+        SRCERRORS_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->fExitOnFatal;
+    }
+    
+    
+    bool            srcErrors_setExitOnFatal(
+        SRCERRORS_DATA  *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fExitOnFatal = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          F a t a l
+    //---------------------------------------------------------------
+    
+    bool            srcErrors_getFatal(
+        SRCERRORS_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->fFatal;
+    }
+    
+    
+    bool            srcErrors_setFatal(
+        SRCERRORS_DATA  *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fFatal = value;
+        
         return true;
     }
     
@@ -203,7 +284,7 @@ extern "C" {
     
     bool            srcErrors_setFatalExit(
         SRCERRORS_DATA  *this,
-        void            (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *),
+        ERESULT         (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *),
         OBJ_ID          pFatalExitObject
     )
     {
@@ -228,49 +309,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         srcErrors_getLastError(
-        SRCERRORS_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcErrors_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            srcErrors_setLastError(
-        SRCERRORS_DATA  *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !srcErrors_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -288,7 +326,6 @@ extern "C" {
         }
 #endif
 
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -309,7 +346,6 @@ extern "C" {
 
         //this->priority = value;
 
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -331,7 +367,6 @@ extern "C" {
         }
 #endif
 
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -356,7 +391,6 @@ extern "C" {
 #endif
 
         
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -383,11 +417,12 @@ extern "C" {
         ...
     )
     {
+        ERESULT         eRc;
         SRCERROR_DATA   *pError = OBJ_NIL;
         char            str[512];
         int             size;
         va_list         arg_ptr;
-        char            *pStr = NULL;
+        char            *pStr = str;
         
         // Do initialization.
         if (OBJ_NIL == this) {
@@ -422,27 +457,28 @@ extern "C" {
             pError = srcError_New(severity, pLocation, pStr);
         }
         if (OBJ_NIL == pError) {
-            srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return false;
         }
-        this->eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
         obj_Release(pError);
         pError = OBJ_NIL;
-        if (ERESULT_FAILED(this->eRc)) {
+        if (ERESULT_FAILED(eRc)) {
             return false;
         }
         
-        if ((severity == SRCERROR_SEVERITY_FATAL) && this->pFatalExit) {
-            this->pFatalExit(this->pFatalExitObject, this);
+        if (severity == SRCERROR_SEVERITY_FATAL) {
+            srcErrors_setFatal(this, true);
+            if (this->fExitOnFatal) {
+                srcErrors_ExitOnFatal(this);
+            }
         }
         
         // Return to caller.
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
-    bool        srcErrors_AddFatalA(
+    ERESULT         srcErrors_AddFatalA(
         SRCERRORS_DATA  *this,
         const
         SRCLOC          *pLocation,
@@ -451,11 +487,12 @@ extern "C" {
         ...
     )
     {
+        ERESULT         eRc;
         SRCERROR_DATA   *pError = OBJ_NIL;
         char            str[512];
         int             size;
         va_list         arg_ptr;
-        char            *pStr = NULL;
+        char            *pStr = str;
         
         // Do initialization.
         if (OBJ_NIL == this) {
@@ -469,7 +506,7 @@ extern "C" {
         }
 #endif
         
-        va_start( arg_ptr, pErrorString );
+        va_start(arg_ptr, pErrorString);
         str[0] = '\0';
         size = vsnprintf( str, sizeof(str), pErrorString, arg_ptr );
         va_end( arg_ptr );
@@ -490,23 +527,22 @@ extern "C" {
             pError = srcError_New(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
         }
         if (OBJ_NIL == pError) {
-            srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return false;
         }
-        this->eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
         obj_Release(pError);
         pError = OBJ_NIL;
-        if (ERESULT_FAILED(this->eRc)) {
+        if (ERESULT_FAILED(eRc)) {
             return false;
         }
         
-        if (this->pFatalExit) {
-            this->pFatalExit(this->pFatalExitObject, this);
+        srcErrors_setFatal(this, true);
+        if (this->fExitOnFatal) {
+            srcErrors_ExitOnFatal(this);
         }
-        
+
         // Return to caller.
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
-        return true;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -517,6 +553,7 @@ extern "C" {
         char            *pExpected
     )
     {
+        ERESULT         eRc;
         SRCERROR_DATA   *pError = OBJ_NIL;
         ASTR_DATA       *pWrk = OBJ_NIL;
         ASTR_DATA       *pTmp = OBJ_NIL;
@@ -549,23 +586,22 @@ extern "C" {
         pError = srcError_NewFatalFromToken(pToken, pWrk);
         obj_Release(pWrk);
         if (OBJ_NIL == pError) {
-            srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return false;
         }
         
-        this->eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
         obj_Release(pError);
         pError = OBJ_NIL;
-        if (ERESULT_FAILED(this->eRc)) {
+        if (ERESULT_FAILED(eRc)) {
             return false;
         }
         
-        if (this->pFatalExit) {
-            this->pFatalExit(this->pFatalExitObject, this);
+        srcErrors_setFatal(this, true);
+        if (this->fExitOnFatal) {
+            srcErrors_ExitOnFatal(this);
         }
-        
+
         // Return to caller.
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -578,11 +614,12 @@ extern "C" {
         ...
     )
     {
+        ERESULT         eRc;
         SRCERROR_DATA   *pError = OBJ_NIL;
         char            str[512];
         int             size;
         va_list         arg_ptr;
-        char            *pStr = NULL;
+        char            *pStr = str;
 
         // Do initialization.
         if (OBJ_NIL == this) {
@@ -617,22 +654,21 @@ extern "C" {
             pError = srcError_NewFatalFromTokenA(pToken, pStr);
         }
         if (OBJ_NIL == pError) {
-            srcErrors_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return false;
         }
-        this->eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
         obj_Release(pError);
         pError = OBJ_NIL;
-        if (ERESULT_FAILED(this->eRc)) {
+        if (ERESULT_FAILED(eRc)) {
             return false;
         }
         
-        if (this->pFatalExit) {
-            this->pFatalExit(this->pFatalExitObject, this);
+        srcErrors_setFatal(this, true);
+        if (this->fExitOnFatal) {
+            srcErrors_ExitOnFatal(this);
         }
-        
+
         // Return to caller.
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -660,7 +696,8 @@ extern "C" {
         SRCERRORS_DATA      *pOther
     )
     {
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -701,11 +738,10 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
     eom:
         //FIXME: Implement the assignment.        
-        srcErrors_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return srcErrors_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -725,12 +761,12 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the SRCERRORS object.
      */
-    SRCERRORS_DATA *     srcErrors_Copy(
-        SRCERRORS_DATA       *this
+    SRCERRORS_DATA *    srcErrors_Copy(
+        SRCERRORS_DATA      *this
     )
     {
-        SRCERRORS_DATA       *pOther = OBJ_NIL;
-        ERESULT         eRc;
+        SRCERRORS_DATA      *pOther = OBJ_NIL;
+        ERESULT             eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -744,7 +780,7 @@ extern "C" {
         pOther = srcErrors_New( );
         if (pOther) {
             eRc = srcErrors_Assign(this, pOther);
-            if (ERESULT_HAS_FAILED(eRc)) {
+            if (ERESULT_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
@@ -752,7 +788,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -821,20 +856,55 @@ extern "C" {
         }
     #endif
         
-        pEnum = objArray_Enum(this->pErrors);
+        if (this->pErrors) {
+            pEnum = objArray_Enum(this->pErrors);
+        }
 
         // Put code here...
         
         // Return to caller.
-        if (pEnum)
-            srcErrors_setLastError(this, ERESULT_SUCCESS);
-        else
-            srcErrors_setLastError(this, ERESULT_GENERAL_FAILURE);
         return pEnum;
     }
 
 
 
+    //---------------------------------------------------------------
+    //               E x i t  O n  F a t a l
+    //---------------------------------------------------------------
+    
+    void            srcErrors_ExitOnFatal(
+        SRCERRORS_DATA  *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+        
+        if (this->fFatal) {
+            srcErrors_Print(this);
+            if (this->pFatalExit) {
+                eRc = this->pFatalExit(this->pFatalExitObject, this);
+                if (ERESULT_FAILED(eRc))
+                    return;
+            }
+            exit(100);
+        }
+
+        // Return to caller.
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -872,7 +942,6 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcErrors_Vtbl);
         this->pFatalExit = srcErrors_DefaultFatalExit;
         
-        srcErrors_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->pErrors = objArray_New( );
 
     #ifdef NDEBUG
@@ -883,10 +952,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "srcErrors::offsetof(eRc) = %lu\n", offsetof(SRCERRORS_DATA,eRc));
         //fprintf(stderr, "srcErrors::sizeof(SRCERRORS_DATA) = %lu\n", sizeof(SRCERRORS_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(SRCERRORS_DATA));
     #endif
 
@@ -922,8 +989,55 @@ extern "C" {
         }
         
         // Return to caller.
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return pError;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      P r i n t
+    //---------------------------------------------------------------
+    
+    void            srcErrors_Print(
+        SRCERRORS_DATA  *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        SRCERROR_DATA   *pError = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+        
+        pEnum = srcErrors_EnumErrors(this);
+        if (pEnum) {
+            while (objEnum_Remaining(pEnum)) {
+                eRc = objEnum_Next(pEnum, 1, (void **)&pError, NULL);
+                if (ERESULT_SUCCESSFUL(eRc)) {
+                    pStr = srcError_ToString(pError);
+                    if (pStr) {
+                        fprintf(stderr, "%s", AStr_getData(pStr));
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                }
+                pError = OBJ_NIL;
+            }
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
+        }
+        
+        // Return to caller.
     }
     
     
@@ -1058,10 +1172,10 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) %s\n",
                     this,
                     pInfo->pClassName,
-                    srcErrors_getSize(this)
+                    (srcErrors_getFatal(this) ? "fatal_error(s)" : "")
             );
 
 #ifdef  XYZZY        
@@ -1087,7 +1201,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1121,7 +1234,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        srcErrors_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1158,12 +1270,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SRCERRORS_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

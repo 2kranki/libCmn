@@ -46,6 +46,7 @@
 #include        <genOSX.h>
 #include        <genWIN.h>
 #include        <hjson.h>
+#include        <srcErrors.h>
 
 
 
@@ -1898,6 +1899,7 @@ extern "C" {
             obj_Release(pObj);
             pObj = OBJ_NIL;
         }
+        srcErrors_ExitOnFatal(OBJ_NIL);
         
         if (this->pNodes) {
             pHash = node_getData(this->pNodes);
@@ -1965,6 +1967,7 @@ extern "C" {
             obj_Release(pObj);
             pObj = OBJ_NIL;
         }
+        srcErrors_ExitOnFatal(OBJ_NIL);
         
         if (this->pNodes) {
             pHash = node_getData(this->pNodes);
