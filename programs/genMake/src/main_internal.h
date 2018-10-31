@@ -91,7 +91,7 @@ struct main_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
     
-#ifdef  $Q_SINGLETON
+#ifdef  MAIN_SINGLETON
     MAIN_DATA *     main_getSingleton(
         void
     );

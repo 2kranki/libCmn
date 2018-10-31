@@ -185,6 +185,8 @@ NODETREE_VTBL     nodeTree_Vtbl = {
     // Properties:
     // Methods:
     (void *)nodeTree_getCloseNode,
+    (void *)nodeTree_getNodeArrayClass,
+    (void *)nodeTree_setNodeArrayClass,
     (void *)nodeTree_getOpenNode,
     (void *)nodeTree_getRootIndex,
     (void *)nodeTree_getSize,
@@ -201,11 +203,6 @@ NODETREE_VTBL     nodeTree_Vtbl = {
     (void *)nodeTree_NodeParent,
     (void *)nodeTree_Nodes,
     (void *)nodeTree_PrintTree,
-    (void *)nodeTree_Property,
-    (void *)nodeTree_PropertyAdd,
-    (void *)nodeTree_PropertyCount,
-    (void *)nodeTree_PropertyDelete,
-    (void *)nodeTree_Properties,
     (void *)nodeTree_SiblingAdd,
     (void *)nodeTree_SiblingCount,
     (void *)nodeTree_SiblingNext,

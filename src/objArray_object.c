@@ -95,6 +95,49 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          obj_ClassQueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    const
+    char            *pStr = pData;
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)&objArray_Info;
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return objArray_New;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
 static
 const
 OBJ_IUNKNOWN    obj_Vtbl = {
@@ -104,7 +147,8 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     obj_ReleaseNull,
     NULL,
     objArray_Class,
-    obj_ClassWhoAmI
+    obj_ClassWhoAmI,
+    obj_ClassQueryInfo
 };
 
 

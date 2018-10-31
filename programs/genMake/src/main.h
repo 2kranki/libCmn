@@ -286,6 +286,7 @@ extern "C" {
      @param     this        object pointer
      @param     cArgs       number of charater strings in ppArgs
      @param     ppArgV      pointer to a charater string array
+     @param     ppEnv       pointer to a charater string array
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
      an ERESULT_* error code
      */

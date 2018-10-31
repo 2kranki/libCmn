@@ -136,6 +136,11 @@ MAIN_CLASS_DATA  main_ClassObj = {
 
 
 
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  MAIN_SINGLETON
 MAIN_DATA *     main_getSingleton(
     void
 )
@@ -144,11 +149,6 @@ MAIN_DATA *     main_getSingleton(
 }
 
 
-//---------------------------------------------------------------
-//          S i n g l e t o n  M e t h o d s
-//---------------------------------------------------------------
-
-#ifdef  MAIN_SINGLETON
 bool            main_setSingleton(
     MAIN_DATA       *pValue
 )
@@ -192,6 +192,7 @@ MAIN_DATA *     main_Shared(
     if (NULL == this) {
         this = main_New( );
         main_setSingleton(this);
+        appl_setSingleton((APPL_DATA *)this);
         obj_Release(this);          // Shared controls object retention now.
     }
     

@@ -114,6 +114,12 @@ void *          obj_ClassQueryInfo(
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return number_New;
+                    }
+                    break;
+                    
                 case 'T':
                     if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                         return number_ToDebugString;

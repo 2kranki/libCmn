@@ -597,7 +597,47 @@ extern "C" {
     
 
     
+    //---------------------------------------------------------------
+    //                   N o d e  A r r a y  C l a s s
+    //---------------------------------------------------------------
     
+    OBJ_ID          nodeTree_getNodeArrayClass(
+        NODETREE_DATA   *this
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->pNodeArrayClass;
+    }
+    
+    
+    bool          nodeTree_setNodeArrayClass(
+        NODETREE_DATA   *this,
+        OBJ_ID          pClass
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pNodeArrayClass = pClass;
+        return true;
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                    R o o t  I n d e x
     //---------------------------------------------------------------
@@ -1083,8 +1123,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeTree_Vtbl);
 
+        this->pNodeArrayClass = nodeArray_Class( );
         this->pArray = objArray_New();
-        
+        if (OBJ_NIL == this->pArray) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+
     #ifdef NDEBUG
     #else
         if( !nodeTree_Validate(this) ) {
@@ -1306,7 +1351,7 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if( pNode == OBJ_NIL ) {
+        if((pNode == OBJ_NIL) && (obj_IsKindOf(this, OBJ_IDENT_NODELINK))) {
             DEBUG_BREAK();
             obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
@@ -1494,173 +1539,6 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    P r o p e r t y  G e t
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     nodeTree_Property(
-        NODETREE_DATA   *this,
-        const
-        char            *pName
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pProperty = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        if (this->pProperties) {
-            pProperty = nodeHash_FindA(this->pProperties, pName);
-        }
-        
-        // Return to caller.
-        return pProperty;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                     P r o p e r t y  A d d
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeTree_PropertyAdd(
-        NODETREE_DATA   *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        ERESULT         eRc;
-        NODE_DATA       *pNode = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pName) {
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeHash_New( 17 );
-            if (OBJ_NIL == this->pProperties) {
-                return ERESULT_INSUFFICIENT_MEMORY;
-            }
-        }
-        
-        pNode = node_NewWithUTF8AndClass(pName, 0, pData);
-        if (OBJ_NIL == pNode) {
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        eRc = nodeHash_Add(this->pProperties, pNode);
-        obj_Release(pNode);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //              P r o p e r t y  C o u n t
-    //---------------------------------------------------------------
-    
-    uint32_t        nodeTree_PropertyCount(
-        NODETREE_DATA	*this
-    )
-    {
-        uint32_t        num = 0;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate( this ) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        if (this->pProperties) {
-            num = nodeHash_getSize(this->pProperties);
-        }
-        
-        // Return to caller.
-        return num;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    P r o p e r t y  G e t
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeTree_PropertyDelete(
-        NODETREE_DATA   *this,
-        const
-        char            *pName
-    )
-    {
-        ERESULT         eRc = ERESULT_DATA_MISSING;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (this->pProperties) {
-            eRc = nodeHash_DeleteA(this->pProperties, pName);
-        }
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    P r o p e r t i e s
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * nodeTree_Properties(
-        NODETREE_DATA   *this
-    )
-    {
-        //ERESULT         eRc;
-        NODEARRAY_DATA  *pProperties = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        if (this->pProperties) {
-            pProperties = nodeHash_Nodes(this->pProperties);
-        }
-        
-        // Return to caller.
-        return pProperties;
     }
     
     
@@ -1950,21 +1828,6 @@ extern "C" {
             }
         }
         
-        if (this->pProperties) {
-            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
-            AStr_AppendA(pStr, "Properties:\n");
-            if (this->pProperties) {
-                if (((OBJ_DATA *)(this->pProperties))->pVtbl->pToDebugString) {
-                    pWrkStr =   ((OBJ_DATA *)(this->pProperties))->pVtbl->pToDebugString(
-                                            this->pProperties,
-                                            indent+6
-                                );
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                }
-            }
-        }
-        
         AStr_AppendCharRepeatA(pStr, indent, ' ');
         j = snprintf( str, sizeof(str), " %p(nodeTree)}\n", this );
         AStr_AppendA(pStr, str);
@@ -1983,6 +1846,8 @@ extern "C" {
     )
     {
         NODEARRAY_DATA  *pArray;
+        OBJ_ID          (*pNew)(void);
+        OBJ_IUNKNOWN    *pVtbl;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1993,7 +1858,15 @@ extern "C" {
         }
 #endif
 
-        pArray = nodeArray_New();
+        pVtbl = obj_getVtbl(this->pNodeArrayClass);
+        if (NULL == pVtbl->pQueryInfo) {
+            return OBJ_NIL;
+        }
+        pNew = pVtbl->pQueryInfo(this->pNodeArrayClass, OBJ_QUERYINFO_TYPE_METHOD, "New");
+        if (NULL == pNew) {
+            return OBJ_NIL;
+        }
+        pArray = pNew();
         if (pArray) {
             nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
             nodeTree_UpDownNodePost(this, 1, pArray);
@@ -2011,7 +1884,9 @@ extern "C" {
     )
     {
         NODEARRAY_DATA  *pArray;
-        
+        OBJ_ID          (*pNew)(void);
+        OBJ_IUNKNOWN    *pVtbl;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -2021,7 +1896,15 @@ extern "C" {
         }
 #endif
 
-        pArray = nodeArray_New();
+        pVtbl = obj_getVtbl(this->pNodeArrayClass);
+        if (NULL == pVtbl->pQueryInfo) {
+            return OBJ_NIL;
+        }
+        pNew = pVtbl->pQueryInfo(this->pNodeArrayClass, OBJ_QUERYINFO_TYPE_METHOD, "New");
+        if (NULL == pNew) {
+            return OBJ_NIL;
+        }
+        pArray = pNew();
         if (pArray) {
             nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
             nodeTree_UpDownNodePre(this, 1, pArray);
@@ -2100,12 +1983,10 @@ extern "C" {
         else
             return false;
         if( !(obj_getSize(this) >= sizeof(NODETREE_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif
@@ -2147,8 +2028,8 @@ extern "C" {
         for (i=0; i<iMax; ++i) {
             pEntry = objArray_Get(this->pArray, i+1);
             if (pEntry) {
-                if (obj_IsKindOf(this, OBJ_IDENT_NODELINK)) {
-                }
+                if (obj_IsKindOf(this, OBJ_IDENT_NODELINK))
+                    ;
                 else {
                     DEBUG_BREAK();
                     pStr = "node entry does not contain a proper NODE!";
@@ -2156,8 +2037,8 @@ extern "C" {
                     break;
                 }
                 pName = node_getName((NODE_DATA *)pEntry);
-                if ((OBJ_NIL == pName) || (obj_getIdent(pName) == OBJ_IDENT_NAME)) {
-                }
+                if ((OBJ_NIL == pName) || (obj_getIdent(pName) == OBJ_IDENT_NAME))
+                    ;
                 else {
                     DEBUG_BREAK();
                     pStr = "node does not contain a NAME!";

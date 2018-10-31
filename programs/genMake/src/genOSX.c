@@ -2170,9 +2170,9 @@ extern "C" {
                     obj_Release(pUpper);
                     obj_Release(pStr);
                 }
-                obj_Release(pNamePrefixUpper);
-                obj_Release(pNamePrefix);
             }
+            obj_Release(pNamePrefixUpper);
+            obj_Release(pNamePrefix);
         }
         AStr_AppendA(pOut, "CFLAGS += -D__MACOSX_ENV__\n\n");
         AStr_AppendA(pOut, "TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses\n\n");

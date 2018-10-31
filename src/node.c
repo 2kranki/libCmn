@@ -1212,7 +1212,6 @@ extern "C" {
         BREAK_NOT_BOUNDARY4(&this->pProperties);
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this;
     }
 

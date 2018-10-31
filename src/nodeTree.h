@@ -100,6 +100,8 @@ extern "C" {
         // Properties:
         // Methods:
         NODELINK_DATA * (*pGetCloseNode)(OBJ_ID);
+        OBJ_ID          (*pGetNodeArrayClass)(OBJ_ID);
+        bool            (*pSetNodeArrayClass)(OBJ_ID,OBJ_ID);
         NODELINK_DATA * (*pGetOpenNode)(OBJ_ID);
         uint32_t        (*pGetRootIndex)(OBJ_ID);
         uint32_t        (*pGetSize)(OBJ_ID);
@@ -116,11 +118,6 @@ extern "C" {
         uint32_t        (*pNodeParent)(OBJ_ID,uint32_t);
         ERESULT         (*pNodes)(OBJ_ID,NODEARRAY_DATA **);
         ERESULT         (*pPrintTree)(OBJ_ID);
-        NODE_DATA *     (*pProperty)(OBJ_ID,const char *);
-        ERESULT         (*pPropertyAdd)(OBJ_ID,const char *,OBJ_ID);
-        uint32_t        (*pPropertyCount)(OBJ_ID);
-        ERESULT         (*pPropertyDelete)(OBJ_ID,const char *);
-        NODEARRAY_DATA * (*pProperties)(OBJ_ID);
         uint32_t        (*pSiblingAdd)(OBJ_ID,uint32_t,NODELINK_DATA *);
         uint32_t        (*pSiblingCount)(OBJ_ID,uint32_t);
         NODELINK_DATA * (*pSiblingNext)(OBJ_ID,uint32_t);
@@ -203,6 +200,16 @@ extern "C" {
     );
     
     
+    OBJ_ID          nodeTree_getNodeArrayClass(
+        NODETREE_DATA   *this
+    );
+    
+    bool          nodeTree_setNodeArrayClass(
+        NODETREE_DATA   *this,
+        OBJ_ID          pClass
+    );
+    
+
     NODELINK_DATA * nodeTree_getOpenNode(
         NODETREE_DATA   *this
     );
@@ -414,38 +421,6 @@ extern "C" {
     
     ERESULT         nodeTree_PrintTree(
         NODETREE_DATA	*this
-    );
-    
-    
-    NODE_DATA *     nodeTree_Property(
-        NODETREE_DATA   *this,
-        const
-        char            *pName
-    );
-    
-    
-    ERESULT         nodeTree_PropertyAdd(
-        NODETREE_DATA   *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    
-    uint32_t        nodeTree_PropertyCount(
-        NODETREE_DATA	*this
-    );
-    
-    
-    ERESULT         nodeTree_PropertyDelete(
-        NODETREE_DATA   *this,
-        const
-        char            *pName
-    );
-    
-    
-    NODEARRAY_DATA * nodeTree_Properties(
-        NODETREE_DATA   *this
     );
     
     

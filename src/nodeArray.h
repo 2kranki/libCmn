@@ -103,6 +103,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          nodeArray_Class(
+        void
+    );
+    
+    
     /*!
      Search the given NULL-terminated Set of Nodes for a node that
      matches the given node using the comparison routine provided.

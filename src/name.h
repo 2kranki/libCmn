@@ -137,11 +137,29 @@ extern "C" {
         ASTR_DATA       *pValue
     );
     
+    /*!
+     Create a new name from a UTF-8 character string.  The character string
+     is copied into the new object and then released upon object deletion.
+     @param     pValue  pointer to a NUL-terminated UTF-8 Character String.
+     @return    If successful, a new name object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned object when you are done
+                with it.
+     */
     NAME_DATA *     name_NewUTF8(
         const
         char            *pValue
     );
     
+    /*!
+     Create a new name from a UTF-8 character constant.  Since it is a character
+     constant the name will not be copied nor released.
+     @param     pValue  pointer to a NUL-terminated UTF-8 Character Constant.
+     @return    If successful, a new name object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned object when you are done
+                with it.
+     */
     NAME_DATA *     name_NewUTF8Con(
         const
         char            *pValue

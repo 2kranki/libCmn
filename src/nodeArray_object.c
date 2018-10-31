@@ -144,25 +144,17 @@ void *          class_QueryInfo(
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
+                case 'A':
+                    if (str_Compare("Alloc", (char *)pStr) == 0) {
+                        return nodeArray_Alloc;
+                    }
+                    break;
+                    
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
                         return nodeArray_New;
                     }
                     break;
-
-#ifdef XYZZY
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return nodeArray_ParseObject;
-                    }
-                    break;
-
-                 case 'W':
-                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return obj_ClassWhoAmI;
-                    }
-                    break;
-#endif
                     
                 default:
                     break;

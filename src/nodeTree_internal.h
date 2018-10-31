@@ -63,10 +63,10 @@ struct nodeTree_data_s	{
 
     // Common Data
     OBJARRAY_DATA   *pArray;        // Root is always at 1
-    NODEHASH_DATA   *pProperties;
     uint32_t        size;           // Maximum number of elements
     NODELINK_DATA   *pOpen;
     NODELINK_DATA   *pClose;
+    OBJ_ID          pNodeArrayClass;
     
 };
 #pragma pack(pop)
