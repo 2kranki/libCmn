@@ -94,18 +94,18 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct node_data_s          NODE_DATA;
-    typedef struct nodeArc_data_s       NODEARC_DATA;
-    typedef struct nodeArray_data_s     NODEARRAY_DATA;
-    typedef struct nodeATree_data_s     NODEATREE_DATA;
-    typedef struct nodeEntry_data_s     NODEENTRY_DATA;
-    typedef struct nodeGraph_data_s     NODEGRAPH_DATA;
-    typedef struct nodeHash_data_s      NODEHASH_DATA;
-    typedef struct nodeLink_data_s      NODELINK_DATA;
-    typedef struct nodeList_data_s      NODELIST_DATA;
-    typedef struct nodeMatrix_data_s	NODEMATRIX_DATA;
-    typedef struct nodeScan_data_s      NODESCAN_DATA;
-    typedef struct nodeTree_data_s      NODETREE_DATA;
+    typedef struct node_data_s              NODE_DATA;
+    typedef struct nodeArc_data_s           NODEARC_DATA;
+    typedef struct nodeArray_data_s         NODEARRAY_DATA;
+    typedef struct nodeATree_data_s         NODEATREE_DATA;
+    typedef struct nodeEntry_data_s         NODEENTRY_DATA;
+    typedef struct nodeGraph_data_s         NODEGRAPH_DATA;
+    typedef struct nodeHash_data_s          NODEHASH_DATA;
+    typedef struct nodeLink_data_s          NODELINK_DATA;
+    typedef struct nodeList_data_s          NODELIST_DATA;
+    typedef struct nodeMatrix_data_s	    NODEMATRIX_DATA;
+    typedef struct nodeScan_data_s          NODESCAN_DATA;
+    typedef struct nodeTree_data_s          NODETREE_DATA;
 
     
     // Some predefined Node Classes

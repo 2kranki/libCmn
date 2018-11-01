@@ -84,7 +84,8 @@ extern "C" {
         // Methods:
     } NODEARRAY_VTBL;
     
-    
+    typedef struct nodeArray_class_data_s   NODEARRAY_CLASS_DATA;
+
 
 
 
@@ -181,7 +182,6 @@ extern "C" {
         NODE_DATA       *pObject,
         uint32_t        *pIndex
     );
-    
     
     
     /*!
@@ -284,6 +284,13 @@ extern "C" {
     );
 
 
+    ERESULT         nodeArray_Put(
+        NODEARRAY_DATA  *this,
+        uint32_t        index,
+        NODE_DATA       *pObject
+    );
+    
+    
     ERESULT         nodeArray_SortAscending(
         NODEARRAY_DATA	*this
     );

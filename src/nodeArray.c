@@ -351,6 +351,11 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if((pObject == OBJ_NIL) || (!obj_IsKindOf(pObject, OBJ_IDENT_NODE))) {
+            DEBUG_BREAK();
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return 0;
+        }
 #endif
         
         if (OBJ_NIL == this->pArray) {
@@ -365,7 +370,6 @@ extern "C" {
         // Return to caller.
         return eRc;
     }
-    
     
     
     
@@ -847,6 +851,11 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if((pObject == OBJ_NIL) || (!obj_IsKindOf(pObject, OBJ_IDENT_NODE))) {
+            DEBUG_BREAK();
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return 0;
+        }
 #endif
         
         if (OBJ_NIL == this->pArray) {
@@ -857,6 +866,44 @@ extern "C" {
         }
         
         eRc = objArray_InsertObj(this->pArray, index, pObject);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    ERESULT         nodeArray_Put(
+        NODEARRAY_DATA  *this,
+        uint32_t        index,
+        NODE_DATA       *pObject
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (pObject == OBJ_NIL)
+            ;
+        else if (!obj_IsKindOf(pObject, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pArray) {
+            this->pArray = objArray_New();
+            if (OBJ_NIL == this->pArray) {
+                return ERESULT_MEMORY_EXCEEDED;
+            }
+        }
+        
+        eRc = objArray_Put(this->pArray, index, pObject);
         
         // Return to caller.
         return eRc;

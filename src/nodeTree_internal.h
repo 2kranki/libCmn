@@ -62,7 +62,7 @@ struct nodeTree_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    OBJARRAY_DATA   *pArray;        // Root is always at 1
+    NODEARRAY_DATA  *pArray;        // Root is always at 1
     uint32_t        size;           // Maximum number of elements
     NODELINK_DATA   *pOpen;
     NODELINK_DATA   *pClose;

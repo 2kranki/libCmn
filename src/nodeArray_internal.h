@@ -67,6 +67,9 @@ struct nodeArray_data_s	{
 #pragma pack(pop)
 
     extern
+    NODEARRAY_CLASS_DATA  nodeArray_ClassObj;
+    
+    extern
     const
     NODEARRAY_VTBL  nodeArray_Vtbl;
 

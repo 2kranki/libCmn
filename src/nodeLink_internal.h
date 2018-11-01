@@ -80,7 +80,6 @@ struct nodeLink_data_s	{
 #pragma pack(pop)
 
     extern
-    const
     struct nodeLink_class_data_s  nodeLink_ClassObj;
 
     extern

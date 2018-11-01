@@ -441,7 +441,6 @@ extern "C" {
         if (index && (index <= this->size))
             ;
         else {
-            DEBUG_BREAK();
             return NULL;
         }
 #endif

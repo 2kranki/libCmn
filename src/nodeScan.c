@@ -262,6 +262,25 @@ extern "C" {
 
 
 
+    NODESCAN_DATA * nodeScan_New(
+        void
+    )
+    {
+        NODESCAN_DATA   *this;
+        
+        this = nodeScan_Alloc( );
+        if (this) {
+            this = nodeScan_Init(this);
+            if (this) {
+                this->pClose = nodeTree_getCloseNode(this->pTree);
+                this->pOpen = nodeTree_getOpenNode(this->pTree);
+            }
+        }
+        return this;
+    }
+    
+    
+    
     NODESCAN_DATA * nodeScan_NewFromArray(
         NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
     )

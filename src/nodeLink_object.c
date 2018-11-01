@@ -124,7 +124,6 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
 NODELINK_CLASS_DATA  nodeLink_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELINK_CLASS, 0, 1},
 	//0
@@ -187,19 +186,11 @@ void *          nodeLinkClass_QueryInfo(
                     }
                     break;
 
-#ifdef XYZZY
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return nodeLink_ParseObject;
-                    }
-                    break;
-
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return nodeLinkClass_WhoAmI;
                     }
                     break;
-#endif
                     
                 default:
                     break;

@@ -1244,9 +1244,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -1276,11 +1274,11 @@ extern "C" {
         }
         AStr_AppendPrint(
                          pStr,
-                         "\"index\":\"%s\", "
-                         "\"leftIndex\":\"%s\", "
-                         "\"middleIndex\":\"%d\", "
-                         "\"parentIndex\":\"%d\", "
-                         "\"rightIndex\":%d\n",
+                         "\"index\":\"%4d\", "
+                         "\"leftIndex\":\"%4d\", "
+                         "\"middleIndex\":\"%4d\", "
+                         "\"parentIndex\":\"%4d\", "
+                         "\"rightIndex\":%4d\n",
                          this->index,
                          this->leftIndex,
                          this->middleIndex,
@@ -1288,18 +1286,16 @@ extern "C" {
                          this->rightIndex
                          );
         
-#ifdef  XYZZY
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
+        if (this->pSuperVtbl) {
+            if (this->pSuperVtbl->pToDebugString) {
+                pWrkStr =   this->pSuperVtbl->pToDebugString(
+                                                    this,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

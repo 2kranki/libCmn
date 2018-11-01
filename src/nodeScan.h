@@ -95,6 +95,11 @@ extern "C" {
     );
     
     
+    NODESCAN_DATA * nodeScan_New(
+        void
+    );
+    
+    
     NODESCAN_DATA * nodeScan_NewFromArray(
         NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
     );

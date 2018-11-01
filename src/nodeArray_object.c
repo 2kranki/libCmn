@@ -47,7 +47,6 @@ struct nodeArray_class_data_s	{
     // Common Data
     //uint32_t        misc;
 };
-typedef struct nodeArray_class_data_s NODEARRAY_CLASS_DATA;
 
 
 
@@ -190,8 +189,6 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
-const
 NODEARRAY_CLASS_DATA  nodeArray_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEARRAY_CLASS, 0, 1},
 	//0

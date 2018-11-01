@@ -1097,7 +1097,7 @@ extern "C" {
         
         va_start( arg_ptr, pFormat );
         str[0] = '\0';
-        size = vsnprintf( str, sizeof(str), pFormat, arg_ptr );
+        size = vsnprintf(str, sizeof(str), pFormat, arg_ptr);
         va_end( arg_ptr );
         if (size >= sizeof(str)) {
             ++size;

@@ -85,13 +85,6 @@ struct objArray_data_s	{
         OBJ_ID          objId
     );
 
-    ERESULT         objArray_Put(
-        OBJARRAY_DATA	*this,
-        uint16_t        index,          // Relative to 1
-        OBJ_ID          pObj
-    );
-
-
     void *          objArray_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
