@@ -2026,7 +2026,7 @@ extern "C" {
         for (i=0; i<iMax; ++i) {
             pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
             if (pEntry) {
-                if (obj_IsKindOf(this, OBJ_IDENT_NODELINK))
+                if (obj_IsKindOf(pEntry, OBJ_IDENT_NODELINK))
                     ;
                 else {
                     pVtbl = obj_getVtbl(pEntry);

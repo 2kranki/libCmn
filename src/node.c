@@ -561,6 +561,7 @@ extern "C" {
         NODE_DATA       *this
     )
     {
+        char            *pStrA = NULL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -571,7 +572,11 @@ extern "C" {
         }
 #endif
         
-        return name_getUTF8(this->pName);
+        if (this->pName) {
+            pStrA = name_getUTF8(this->pName);
+        }
+        
+        return pStrA;
     }
     
     

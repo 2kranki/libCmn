@@ -85,6 +85,15 @@ extern "C" {
     static
     CMDUTL_OPTION       pPgmOptions[] = {
         {
+            "backup",
+            'n',
+            CMDUTL_ARG_OPTION_NONE,
+            APPL_ARG_INCR,
+            offsetof(MAIN_DATA, fBackup),
+            NULL,
+            "Backup output file if it exists"
+        },
+        {
             "file",
             'f',
             CMDUTL_ARG_OPTION_REQUIRED,
@@ -104,7 +113,7 @@ extern "C" {
         },
         {
             "macos",
-            'M',
+            'X',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
             0,
@@ -2115,7 +2124,7 @@ extern "C" {
                 exit(EXIT_FAILURE);
             }
             eRc = path_IsFile(pMakepath);
-            if (!ERESULT_FAILED(eRc)) {
+            if (!ERESULT_FAILED(eRc) && this->fBackup) {
                 eRc = path_VersionedRename(pMakepath);
             }
             this->pOutputPath = pMakepath;

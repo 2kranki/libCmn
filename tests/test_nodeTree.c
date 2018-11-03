@@ -967,6 +967,9 @@ int         test_nodeTree_Delete01(
     XCTAssertFalse( (pObj == OBJ_NIL) );
     if (pObj) {
         
+        eRc = nodeTree_Verify(pObj, NULL);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
 #ifdef XYZZY
         pStr = nodeTree_ToDebugString(pObj, 0);
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));

@@ -66,7 +66,8 @@ struct main_data_s	{
     // Common Data
     uint16_t        osType;         // See OSTYPE
     uint16_t        outType;        // See OUTTYPE
-    //uint16_t        reserved;
+    uint16_t        fBackup;        // true == backup output file if it exists
+    uint16_t        rsvd16;
     NODEHASH_DATA   *pDict;
     DBPRS_DATA      *pPrs;
     OBJ_ID          pGen;

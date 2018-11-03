@@ -177,7 +177,7 @@ extern "C" {
 #else
         if( !name_Validate( this ) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return NULL;
         }
 #endif
 
@@ -273,6 +273,7 @@ extern "C" {
 #else
         if( !name_Validate( this ) ) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
@@ -359,6 +360,7 @@ extern "C" {
 #else
         if( !name_Validate(this) ) {
             DEBUG_BREAK();
+            return NULL;
         }
 #endif
         
