@@ -959,7 +959,7 @@ int         test_nodeTree_Delete01(
     NODELINK_DATA   *pEntry = OBJ_NIL;
     uint32_t        i;
     ERESULT         eRc = ERESULT_SUCCESS;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     

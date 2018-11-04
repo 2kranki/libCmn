@@ -840,27 +840,24 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if(!nodeLink_Validate(this) || !obj_IsKindOf(this, OBJ_IDENT_NODE)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeLink_Validate(pOther) ) {
+        if(!nodeLink_Validate(pOther) || !obj_IsKindOf(pOther, OBJ_IDENT_NODE)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
+        i = node_getType((NODE_DATA *)this) - node_getType((NODE_DATA *)pOther);
+        if (0 == i) {
+            eRc =   name_Compare(
+                                 node_getName((NODE_DATA *)this),
+                                 node_getName((NODE_DATA *)pOther)
+                    );
             return eRc;
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
         
         if (i < 0) {
             eRc = ERESULT_SUCCESS_LESS_THAN;
@@ -869,7 +866,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        obj_setLastError(this, eRc);
         return eRc;
     }
     

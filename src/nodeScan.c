@@ -402,7 +402,32 @@ extern "C" {
     }
     
     
+    bool            nodeScan_setCloseNode(
+        NODESCAN_DATA   *this,
+        NODELINK_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#ifdef CLOSE_OWNED
+        obj_Retain(pValue);
+        if (this->pClose) {
+            obj_Release(this->pClose);
+        }
+        this->pClose = pValue;
+#endif
+        
+        return true;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          I n d e x
     //---------------------------------------------------------------
@@ -462,7 +487,32 @@ extern "C" {
     }
     
     
+    bool            nodeScan_setOpenNode(
+        NODESCAN_DATA   *this,
+        NODELINK_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#ifdef OPEN_OWNED
+        obj_Retain(pValue);
+        if (this->pOpen) {
+            obj_Release(this->pOpen);
+        }
+        this->pOpen = pValue;
+#endif
+        
+        return true;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          S t a r t
     //---------------------------------------------------------------

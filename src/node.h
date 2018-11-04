@@ -304,7 +304,7 @@ extern "C" {
     
     /*!
      @return    If successful, a UTF-8 string which must be freed
-                with mem_Free(), otherwise OBJ_NIL.
+                with mem_Free(), otherwise NULL.
      */
     char *          node_getNameUTF8(
         NODE_DATA       *this
@@ -330,7 +330,7 @@ extern "C" {
     
     
     /*!
-     Type is user defined and optionally.
+     Type is user defined and optional.
      */
     int32_t         node_getType(
         NODE_DATA       *this

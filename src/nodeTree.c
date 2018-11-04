@@ -596,7 +596,29 @@ extern "C" {
     }
     
 
+    bool            nodeTree_setCloseNode(
+        NODETREE_DATA   *this,
+        NODELINK_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pClose) {
+            obj_Release(this->pClose);
+        }
+        this->pClose = pValue;
+        
+        return true;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                   N o d e  A r r a y  C l a s s
     //---------------------------------------------------------------
@@ -701,7 +723,29 @@ extern "C" {
     }
     
     
+    bool            nodeTree_setOpenNode(
+        NODETREE_DATA   *this,
+        NODELINK_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pOpen) {
+            obj_Release(this->pOpen);
+        }
+        this->pOpen = pValue;
+        
+        return true;
+    }
     
+    
+
     
 
     

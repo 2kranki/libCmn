@@ -82,18 +82,28 @@ struct nodeTree_data_s	{
 
 
     // Internal Functions
-    void            nodeTree_Dealloc(
-        OBJ_ID          objId
+    bool            nodeTree_setCloseNode(
+        NODETREE_DATA   *this,
+        NODELINK_DATA   *pValue
     );
-
+    
     bool            nodeTree_setDownNode(
         NODETREE_DATA   *cbp,
         NODE_DATA       *pValue
     );
     
+    bool            nodeTree_setOpenNode(
+        NODETREE_DATA   *this,
+        NODELINK_DATA   *pValue
+    );
+    
     bool            nodeTree_setUpNode(
         NODETREE_DATA   *cbp,
         NODE_DATA       *pValue
+    );
+    
+    void            nodeTree_Dealloc(
+        OBJ_ID          objId
     );
     
     void *          nodeTree_QueryInfo(

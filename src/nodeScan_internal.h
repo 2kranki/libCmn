@@ -115,6 +115,18 @@ struct nodeScan_data_s	{
 
 
     // Internal Functions
+    bool            nodeScan_setCloseNode(
+        NODESCAN_DATA   *this,
+        NODELINK_DATA   *pValue
+    );
+    
+    
+    bool            nodeScan_setOpenNode(
+        NODESCAN_DATA   *this,
+        NODELINK_DATA   *pValue
+    );
+    
+    
     void            nodeScan_Dealloc(
         OBJ_ID          objId
     );

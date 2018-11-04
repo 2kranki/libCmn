@@ -275,7 +275,7 @@ NODELINK_VTBL     nodeLink_Vtbl = {
             NULL,			// nodeLink_Enable,
             NULL,			// nodeLink_Disable,
             NULL,			// (P_OBJ_ASSIGN)nodeLink_Assign,
-            NULL,			// (P_OBJ_COMPARE)nodeLink_Compare,
+            (P_OBJ_COMPARE)nodeLink_Compare,
             NULL, 			// (P_OBJ_PTR)nodeLink_Copy,
             NULL, 			// (P_OBJ_PTR)nodeLink_DeepCopy,
             NULL 			// (P_OBJ_HASH)nodeLink_Hash,

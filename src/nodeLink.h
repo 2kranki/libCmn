@@ -275,13 +275,15 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     nodeLink_Disable(
-        NODELINK_DATA		*this
-    );
-
-
-    ERESULT     nodeLink_Enable(
-        NODELINK_DATA		*this
+    /*!
+     Compare the two provided object's types and names.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         nodeLink_Compare(
+        NODELINK_DATA     *this,
+        NODELINK_DATA     *pOther
     );
 
    
@@ -290,11 +292,6 @@ extern "C" {
     );
 
 
-    ERESULT     nodeLink_IsEnabled(
-        NODELINK_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

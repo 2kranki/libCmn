@@ -90,7 +90,7 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    NODESCAN_DATA *     nodeScan_Alloc(
+    NODESCAN_DATA * nodeScan_Alloc(
         void
     );
     
