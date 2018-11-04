@@ -160,7 +160,10 @@ extern "C" {
     );
     
     
-    
+    NODETREE_DATA * nodeScan_getTree(
+        NODESCAN_DATA   *this
+    );
+
     
 
     

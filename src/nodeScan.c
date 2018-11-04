@@ -420,9 +420,9 @@ extern "C" {
         if (this->pClose) {
             obj_Release(this->pClose);
         }
-        this->pClose = pValue;
 #endif
-        
+        this->pClose = pValue;
+
         return true;
     }
     
@@ -505,9 +505,9 @@ extern "C" {
         if (this->pOpen) {
             obj_Release(this->pOpen);
         }
-        this->pOpen = pValue;
 #endif
-        
+        this->pOpen = pValue;
+
         return true;
     }
     
@@ -535,6 +535,53 @@ extern "C" {
     }
     
 
+    
+    //---------------------------------------------------------------
+    //                      N o d e  T r e e
+    //---------------------------------------------------------------
+    
+    NODETREE_DATA * nodeScan_getTree(
+        NODESCAN_DATA   *this
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->pTree;
+    }
+    
+    
+    bool            nodeScan_setTree(
+        NODESCAN_DATA   *this,
+        NODETREE_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeScan_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#ifdef TREE_OWNED
+        obj_Retain(pValue);
+        if (this->pTree) {
+            obj_Release(this->pTree);
+        }
+#endif
+        this->pTree = pValue;
+
+        return true;
+    }
+    
+    
     
 
     //===============================================================

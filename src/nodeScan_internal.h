@@ -127,6 +127,12 @@ struct nodeScan_data_s	{
     );
     
     
+    bool            nodeScan_setTree(
+        NODESCAN_DATA   *this,
+        NODETREE_DATA   *pValue
+    );
+    
+    
     void            nodeScan_Dealloc(
         OBJ_ID          objId
     );
