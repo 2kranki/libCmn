@@ -346,6 +346,48 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          J s o n
+    //---------------------------------------------------------------
+    
+    uint8_t         genObj_getJson(
+        GENOBJ_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->fJson;
+    }
+    
+    
+    bool            genObj_setJson(
+        GENOBJ_DATA     *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fSingleton = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -388,6 +430,48 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          S i n g l e t o n
+    //---------------------------------------------------------------
+    
+    uint8_t         genObj_getSingleton(
+        GENOBJ_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->fSingleton;
+    }
+    
+    
+    bool            genObj_setSingleton(
+        GENOBJ_DATA     *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fSingleton = value;
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -781,7 +865,34 @@ extern "C" {
     }
     
     
+    ERESULT         genObj_DictUpdateA(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        const
+        char            *pValueA
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = nodeHash_DeleteA(this->pDict, pName);
+        eRc = genObj_DictAddA(this, pName, pValueA);
+        
+        // Return to caller.
+        return eRc;
+    }
     
+    
+
     //---------------------------------------------------------------
     //               G e n e r a t e  D a t a  E n d
     //---------------------------------------------------------------
@@ -915,7 +1026,8 @@ extern "C" {
         const
         char            *pName,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        uint8_t         fOwned
     )
     {
         ASTR_DATA       *pOffset = OBJ_NIL;
@@ -1220,6 +1332,11 @@ extern "C" {
         AStr_AppendPrint(*ppStr, "%s#endif\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "\n");
         if (fObject) {
+            if (fOwned)
+                ;
+            else {
+                AStr_AppendPrint(*ppStr, "%s#ifdef XYZZY_NOT_OWNED\n", AStr_getData(pOffset));
+            }
             AStr_AppendPrint(*ppStr,
                              "%s\tobj_Retain(pValue);\n",
                              AStr_getData(pOffset)
@@ -1234,6 +1351,11 @@ extern "C" {
                              AStr_getData(pOffset),
                              pName
                              );
+            if (fOwned)
+                ;
+            else {
+                AStr_AppendPrint(*ppStr, "%s#endif\n", AStr_getData(pOffset));
+            }
             AStr_AppendPrint(*ppStr,
                              "%s\t\t//this->%s = OBJ_NIL;\n",
                              AStr_getData(pOffset),
@@ -1320,9 +1442,11 @@ extern "C" {
         AStr_AppendA(*ppStr, " * Remarks:\n");
         AStr_AppendA(*ppStr, " *\t1.\tNone\n");
         AStr_AppendA(*ppStr, " * History:\n");
-        if (this->pDateTime) {
-            AStr_AppendPrint(*ppStr, " *\t%s\tGenerated.\n", AStr_getData(this->pDateTime));
-        }
+        AStr_AppendPrint(*ppStr, " *\t%s/%s/%s\tGenerated.\n",
+                         AStr_getData(genObj_DictFind(this, "M")),
+                         AStr_getData(genObj_DictFind(this, "D")),
+                         AStr_getData(genObj_DictFind(this, "Y"))
+        );
         AStr_AppendA(*ppStr, " *\n");
         AStr_AppendA(*ppStr, " *\n");
         AStr_AppendA(*ppStr, " *\n");
@@ -1341,10 +1465,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //         G e n e r a t e  I n t e r n a l  H e a d e r
+    //      G e n e r a t e  F i l e I n t e r n a l  H e a d e r
     //---------------------------------------------------------------
     
-    ASTR_DATA *     genObj_GenInternalHeader(
+    ASTR_DATA *     genObj_GenFileInternalHeader(
         GENOBJ_DATA     *this,
         const
         char            *pIncludes
@@ -1397,6 +1521,9 @@ extern "C" {
         AStr_AppendPrint(pStr, "#include <%s.h>\n", AStr_getData(pClassName));
         AStr_AppendPrint(pStr, "#include <ascii.h>\n");
         AStr_AppendPrint(pStr, "#include <utf8.h>\n");
+        if (this->fJson) {
+            AStr_AppendPrint(pStr, "#include <jsonIn.h>\n");
+        }
         if (pIncludes) {
             AStr_AppendA(pStr, pIncludes);
         }
@@ -1413,18 +1540,16 @@ extern "C" {
         AStr_AppendA(pStr, "\tOBJ_DATA\t\tsuper;\n");
         AStr_AppendA(pStr, "\tOBJ_IUNKNOWN\t*pSuperVtbl;\t// Needed for Inheritance\n\n");
         AStr_AppendA(pStr, "\t// Common Data\n");
-        AStr_AppendA(pStr, "\tERESULT\t\teRc;\n");
         AStr_AppendA(pStr, "\tuint16_t\t\tsize;\t\t// maximum number of elements\n");
-        AStr_AppendA(pStr, "\tuint16_t\t\treserved;\n");
+        AStr_AppendA(pStr, "\tuint16_t\t\trsvd16A;\n");
         AStr_AppendA(pStr, "\tASTR_DATA\t\t*pStr;\n\n");
         AStr_AppendA(pStr, "\tvolatile\n");
-        AStr_AppendA(pStr, "\tint32_t\t\tnumRead;\n");
+        AStr_AppendA(pStr, "\tint32_t\t\t\tnumRead;\n");
         AStr_AppendA(pStr, "\t// WARNING - 'elems' must be last element of this structure!\n");
         AStr_AppendA(pStr, "\tuint32_t\t\telems[0];\n\n");
         AStr_AppendA(pStr, "};\n");
         AStr_AppendA(pStr, "#pragma pack(pop)\n\n");
         AStr_AppendA(pStr, "\textern\n");
-        AStr_AppendA(pStr, "\tconst\n");
         AStr_AppendPrint(
                          pStr,
                          "\tstruct %s_class_data_s  %s_ClassObj;\n\n",
@@ -1440,14 +1565,30 @@ extern "C" {
                          AStr_getData(pClassName)
                          );
         AStr_AppendA(pStr, "\n\n\n");
+        eRc = genObj_GenSection(this, &pStr, "Class Object Method Forward Definitions", false);
+        if (this->fSingleton) {
+            AStr_AppendPrint(pStr, "#ifdef  $Q_SINGLETON\n", AStr_getData(pClassNameUC));
+            AStr_AppendPrint(
+                             pStr,
+                             "\t%s_DATA *     %s_getSingleton(\n\n",
+                             AStr_getData(pClassNameUC),
+                             AStr_getData(pClassName)
+            );
+            AStr_AppendA(pStr, "\t\tvoid\n");
+            AStr_AppendA(pStr, "\t);\n\n");
+            AStr_AppendPrint(pStr, "\tbool            %s_setSingleton(\n\n", AStr_getData(pClassName));
+            AStr_AppendPrint(pStr, "\t\%s_DATA       *pValue\n", AStr_getData(pClassNameUC));
+            AStr_AppendA(pStr, "\t);\n\n");
+            AStr_AppendA(pStr, "#endif\n\n");
+        }
+        AStr_AppendA(pStr, "\n\n\n");
         eRc = genObj_GenSection(this, &pStr, "Internal Method Forward Definitions", false);
-        AStr_AppendPrint(pStr, "\tbool\t\t%s_setLastError(\n", AStr_getData(pClassName));
+        AStr_AppendPrint(pStr, "\tbool\t\t%s_setPriority(\n", AStr_getData(pClassName));
         AStr_AppendPrint(pStr, "\t\t%s\t\t*this,\n", AStr_getData(pClassNameUC));
-        AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
+        AStr_AppendA(pStr, "\t\tuint16_t\t\tvalue\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
         AStr_AppendPrint(pStr, "\tOBJ_IUNKNOWN *\t%s_getSuperVtbl(\n", AStr_getData(pClassName));
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this,\n", AStr_getData(pClassNameUC));
-        AStr_AppendA(pStr, "\t\tERESULT\t\tvalue\n");
+        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", AStr_getData(pClassNameUC));
         AStr_AppendA(pStr, "\t);\n\n\n");
         AStr_AppendPrint(pStr, "\tvoid\t\t%s_Dealloc(\n", AStr_getData(pClassName));
         AStr_AppendA(pStr, "\t\tOBJ_ID\t\tobjId\n");
@@ -1455,11 +1596,13 @@ extern "C" {
         AStr_AppendPrint(pStr, "\tvoid *\t\t%s_QueryInfo(\n", AStr_getData(pClassName));
         AStr_AppendA(pStr, "\t\tOBJ_ID\t\tobjId,\n");
         AStr_AppendA(pStr, "\t\tuint32_t\t\ttype,\n");
-        AStr_AppendA(pStr, "\t\void\t\t*pData\n");
+        AStr_AppendA(pStr, "\t\tvoid\t\t*pData\n");
         AStr_AppendA(pStr, "\t);\n\n\n");
-        AStr_AppendPrint(pStr, "\tASTR_DATA *\t%s_ToJSON(\n", AStr_getData(pClassName));
-        AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", AStr_getData(pClassNameUC));
-        AStr_AppendA(pStr, "\t);\n\n\n");
+        if (this->fJson) {
+            AStr_AppendPrint(pStr, "\tASTR_DATA *\t%s_ToJSON(\n", AStr_getData(pClassName));
+            AStr_AppendPrint(pStr, "\t\t%s_DATA\t\t*this\n", AStr_getData(pClassNameUC));
+            AStr_AppendA(pStr, "\t);\n\n\n");
+        }
         AStr_AppendA(pStr, "#ifdef NDEBUG\n");
         AStr_AppendA(pStr, "#else\n");
         AStr_AppendPrint(pStr, "\tbool\t\t%s_Validate(\n", AStr_getData(pClassName));
@@ -1551,9 +1694,11 @@ extern "C" {
         const
         char            *pReturnType,       // Return Type
         const
-        char            *pDataDefs,
+        char            **pParmDefs,        // Parameter Defs
         const
-        char            *pBody,
+        char            **pDataDefs,        // Data Defs
+        const
+        char            **pBody,
         bool            fStatic             // true == static procedure
     )
     {
@@ -1645,18 +1790,22 @@ extern "C" {
                          AStr_getData(pClassName),
                          pName
                          );
-        if (pDataDefs) {
+        if (pParmDefs) {
             AStr_AppendPrint(
                              *ppStr,
                              "%s\t%s_DATA\t*this,\n",
                              AStr_getData(pOffset),
                              AStr_getData(pClassNameUC)
             );
-            AStr_AppendPrint(
-                             *ppStr,
-                             "%s",
-                             pDataDefs
-            );
+            while (*pParmDefs) {
+                AStr_AppendPrint(
+                                 *ppStr,
+                                 "%s\t%s",
+                                 AStr_getData(pOffset),
+                                 *pParmDefs
+                );
+                ++pParmDefs;
+            }
         }
         else {
             AStr_AppendPrint(
@@ -1696,7 +1845,15 @@ extern "C" {
             AStr_AppendPrint(*ppStr, "%s\tuint64_t\t\t\tiRet = 0;\n", AStr_getData(pOffset));
         }
         if (pDataDefs) {
-            AStr_AppendPrint(*ppStr, "%s", pDataDefs);
+            while (*pDataDefs) {
+                AStr_AppendPrint(
+                                 *ppStr,
+                                 "%s\t%s",
+                                 AStr_getData(pOffset),
+                                 *pDataDefs
+                                 );
+                ++pDataDefs;
+            }
         }
         AStr_AppendPrint(*ppStr, "\n");
         AStr_AppendPrint(*ppStr, "%s\t// Do initialization.\n", AStr_getData(pOffset));
@@ -1710,11 +1867,19 @@ extern "C" {
         );
         AStr_AppendPrint(*ppStr, "%s\t\tDEBUG_BREAK();\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "%s\t\treturn ERESULT_INVALID_OBJECT;\n", AStr_getData(pOffset));
-        AStr_AppendPrint(*ppStr, "\t%s}\n", AStr_getData(pOffset));
+        AStr_AppendPrint(*ppStr, "%s\t}\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "%s#endif\n", AStr_getData(pOffset));
         AStr_AppendPrint(*ppStr, "\n");
         if (pBody) {
-            AStr_AppendPrint(*ppStr, "%s", pBody);
+            while (*pBody) {
+                AStr_AppendPrint(
+                                 *ppStr,
+                                 "%s\t%s",
+                                 AStr_getData(pOffset),
+                                 *pBody
+                                 );
+                ++pBody;
+            }
         }
         AStr_AppendPrint(*ppStr, "\n");
         AStr_AppendPrint(*ppStr, "%s\t// Return to caller.\n", AStr_getData(pOffset));

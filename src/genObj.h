@@ -134,6 +134,26 @@ extern "C" {
     );
     
 
+    uint8_t         genObj_getJson(
+        GENOBJ_DATA     *this
+    );
+    
+    bool            genObj_setJson(
+        GENOBJ_DATA     *this,
+        uint8_t         value
+    );
+    
+    
+    uint8_t         genObj_getSingleton(
+        GENOBJ_DATA     *this
+    );
+    
+    bool            genObj_setSingleton(
+        GENOBJ_DATA     *this,
+        uint8_t         value
+    );
+
+    
 
     
     //---------------------------------------------------------------
@@ -181,9 +201,24 @@ extern "C" {
     );
     
     
+    ERESULT         genObj_DictUpdate(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        ASTR_DATA       *pValue
+    );
     
+    ERESULT         genObj_DictUpdateA(
+        GENOBJ_DATA     *this,
+        const
+        char            *pName,
+        const
+        char            *pValue
+    );
+    
+
     /*!
-     Generate the Internal Object Header.
+     Generate the Internal Object Header file.
      @param     this    object pointer
      @param     pIncludes Pointer to a UTF-8 Character String representing the
                         additional includes that might be needed in the hearder
@@ -191,7 +226,7 @@ extern "C" {
                 header. Otherwise, OBJ_NIL and an ERESULT_* error code is set
                 in Last Error.
      */
-    ASTR_DATA *     genObj_GenInternalHeader(
+    ASTR_DATA *     genObj_GenFileInternalHeader(
         GENOBJ_DATA     *this,
         const
         char            *pIncludes

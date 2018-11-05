@@ -72,6 +72,12 @@ struct genObj_data_s	{
     // Common Data
     NODEHASH_DATA   *pDict;             // Dictionary
     ASTR_DATA       *pDateTime;
+    uint8_t         fJson;              // Include JSON support
+    uint8_t         fSingleton;         // Include Singleton support
+    uint8_t         fInherit;           // Include Inheritance
+    //FIXME: For inheritance, we need object name, object data name, header file,
+    //FIXME:    internal header file, ???
+    uint8_t         rsvd8;
     
 };
 #pragma pack(pop)
@@ -130,7 +136,8 @@ struct genObj_data_s	{
         const
         char            *pName,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        uint8_t         fOwned
     );
     
     
@@ -155,9 +162,11 @@ struct genObj_data_s	{
         const
         char            *pReturns,
         const
-        char            *pDataDefs,
+        char            **pParmDefs,
         const
-        char            *pBody,
+        char            **pDataDefs,         // NULL-terminated Data Defs
+        const
+        char            *pBody[],
         bool            fStatic
     );
     
