@@ -74,6 +74,21 @@ extern "C" {
 #endif
     
 
+#ifdef NDEBUG
+#   define  TRC_OBJ_TOKEN(cbp,desc,pToken))     /**/
+#else
+#   define  TRC_OBJ_TOKEN(cbp,desc,pToken)\
+    do {\
+        if (obj_Trace(cbp) || obj_Trace(((OBJ_DATA *)cbp)->pVtbl->pClassObject())) {\
+            ASTR_DATA       *pStr = token_getTextAStr(pToken);\
+            int32_t         cls = token_getClass(pToken);\
+            trace_TraceA(trace_Shared(),"%s token=(%d)%s\n",desc,cls,AStr_getData(pStr));\
+            obj_Release(pStr);\
+        }\
+    } while(0)
+#endif
+    
+    
     //****************************************************************
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
