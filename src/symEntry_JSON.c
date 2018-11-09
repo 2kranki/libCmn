@@ -251,7 +251,7 @@ extern "C" {
         const
         char            *pData;
 #endif
-        SYM_ENTRY       *pEntry = NULL;
+        //SYM_ENTRY       *pEntry = NULL;
 
 #ifdef NDEBUG
 #else
@@ -274,10 +274,10 @@ extern "C" {
                      );
         AStr_AppendA(pStr, str);
         
+#ifdef XYZZY
         if (this->pEntry) {
             pEntry = this->pEntry;
             AStr_AppendPrint(pStr, ", \"nameToken\":%u", pEntry->nameToken);
-#ifdef XYZZY            
             len = array_getSize((ARRAY_DATA *)this) - 1;
             AStr_AppendPrint(pStr, ", \"len\":%u", len);
             if (len) {
@@ -294,9 +294,9 @@ extern "C" {
             else {
                 AStr_AppendA(pStr, ", \"data\":null ");
             }
-#endif
         }
-        
+#endif
+
         AStr_AppendA(pStr, "}\n");
         
         return pStr;

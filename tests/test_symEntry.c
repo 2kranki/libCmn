@@ -1,5 +1,5 @@
 /*
- *	Generated 03/27/2017 21:41:19
+ *	Generated 11/04/2018 21:12:53
  */
 
 
@@ -23,15 +23,14 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <symEntry_internal.h>
 #include    <trace.h>
-#include    <szTbl.h>
+#include    <symEntry_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -43,16 +42,15 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
     
-    szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -62,11 +60,10 @@ int         tearDown(
                 "ERROR: "
                 "\x1b[0m"
                 "Leaked memory areas were found!\n"
-                );
+        );
         exitCode = 4;
         return 0;
     }
-
     mem_Release( );
     
     return 1; 
@@ -77,22 +74,18 @@ int         tearDown(
 
 
 
-int         test_symEntry_OpenClose(
+int             test_symEntry_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    SYMENTRY_DATA	*pObj = OBJ_NIL;
-    NAME_DATA	    *pName = OBJ_NIL;
+    SYMENTRY_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    fprintf(stderr, "\tSYM_ENTRY Size=%ld\n", sizeof(SYM_ENTRY));
-
-    pName = name_NewUTF8Con("test");
 
     pObj = symEntry_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = symEntry_Init(pObj);
+    pObj = symEntry_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,20 +95,7 @@ int         test_symEntry_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    pObj = symEntry_NewA("test", 24);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        // Test something.
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    obj_Release(pName);
-    pName = OBJ_NIL;
-
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
@@ -123,7 +103,7 @@ int         test_symEntry_OpenClose(
 
 
 TINYTEST_START_SUITE(test_symEntry);
-  TINYTEST_ADD_TEST(test_symEntry_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_symEntry_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_symEntry);

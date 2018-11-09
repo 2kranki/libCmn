@@ -1,29 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Symbol Table (symTable) Header
+//          SYMTABLE Console Transmit Task (symTable) Header
 //****************************************************************
 /*
  * Program
- *			Symbol Table (symTable)
+ *			Separate symTable (symTable)
  * Purpose
- *			This object provides a Generalized Symbol Table that
- *          can be used in assemblers or compilers. It facilitates
- *          scoped symbol tables and synonym access.
- *
- *          Since more and more computer languages allow synonyms to
- *          be used in naming such as C's typedef (ie typedef short
- *          int16_t;). This table uses an index of symbol table
- *          entries where each entry points to another Attribute
- *          table. The Attribute table contains the actual data
- *          needed by the assembler or compiler.  That way, multiple
- *          symbol entries can point to one attribute entry.
+ *			This object provides a standardized way of handling
+ *          a separate symTable to run things without complications
+ *          of interfering with the main symTable. A symTable may be 
+ *          called a symTable on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	03/27/2017 Generated
+ *	11/04/2018 Generated
  */
 
 
@@ -60,13 +53,15 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <objEnum.h>
+#include        <nodeHash.h>
+#include        <symEntry.h>
 
 
 #ifndef         SYMTABLE_H
 #define         SYMTABLE_H
 
 
+//#define   SYMTABLE_SINGLETON    1
 
 #ifdef	__cplusplus
 extern "C" {
@@ -78,7 +73,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct symTable_data_s	SYMTABLE_DATA;    // Inherits from OBJ.
+    typedef struct symTable_data_s	SYMTABLE_DATA;            // Inherits from OBJ
+    typedef struct symTable_class_data_s SYMTABLE_CLASS_DATA; // Inherits from OBJ
 
     typedef struct symTable_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -89,24 +85,18 @@ extern "C" {
         //bool        (*pIsEnabled)(SYMTABLE_DATA *);
     } SYMTABLE_VTBL;
 
+    typedef struct symTable_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in symTable_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SYMTABLE_DATA *);
+    } SYMTABLE_CLASS_VTBL;
 
 
-    // Prime numbers for hash table sizes within 16 bits
-    // (Maximum size is 65535)
-    typedef enum symTable_table_size_e {
-        SYMTABLE_HASH_SIZE_XXXXXSMALL = 5,
-        SYMTABLE_HASH_SIZE_XXXXSMALL = 17,
-        SYMTABLE_HASH_SIZE_XXXSMALL = 31,
-        SYMTABLE_HASH_SIZE_XXSMALL = 61,
-        SYMTABLE_HASH_SIZE_XSMALL = 127,
-        SYMTABLE_HASH_SIZE_SMALL = 257,
-        SYMTABLE_HASH_SIZE_MEDIUM = 2053,
-        SYMTABLE_HASH_SIZE_LARGE  = 4099,
-        SYMTABLE_HASH_SIZE_XLARGE = 16411
-    } SYMTABLE_HASH_SIZE;
-    
-    
-    
+
+
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
     ****************************************************************/
@@ -116,13 +106,35 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SYMTABLE_DATA *     symTable_Alloc(
+#ifdef  SYMTABLE_SINGLETON
+    SYMTABLE_DATA *     symTable_Shared(
+        void
+    );
+
+    bool            symTable_SharedReset(
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to symTable object if successful, otherwise OBJ_NIL.
+     */
+    SYMTABLE_DATA * symTable_Alloc(
         void
     );
     
     
-    SYMTABLE_DATA *     symTable_New(
-        uint16_t        cHash       // [in] Hash Table Size
+    OBJ_ID          symTable_Class(
+        void
+    );
+    
+    
+    SYMTABLE_DATA * symTable_New(
+        void
     );
     
     
@@ -131,101 +143,42 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        symTable_getSize(
-        SYMTABLE_DATA   *this
-    );
-    
-    
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /*! Create a new node and adds it to the hash table if the
-        supplied key does not exist in the table.
-    @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error.
-    */
-    ERESULT         symTable_AddEntry(
-        SYMTABLE_DATA    *this,
-        OBJ_ID           pObject
-    );
-    
-    
-    /*! Delete the first entry found matching the given object
-        from the hash and returns it.
-     @return    return the object deleted from the hash if successful.
-                Otherwise, return OBJ_NIL and set an ERESULT_* error.
-     */
-    OBJ_ID          symTable_DeleteEntry(
+    ERESULT         symTable_Add(
         SYMTABLE_DATA   *this,
-        OBJ_ID          pObject
-    );
-    
-    
-    /*! Delete all entries found in the hash.
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error.
-     */
-    ERESULT         symTable_DeleteAllEntries(
-        SYMTABLE_DATA   *this
-    );
-    
-    
-    /*! Create an enumerator for the Hash in ascending order
-        if the object contains a compare() method.
-     @param     this    DIR_DATA object pointer
-     @return    If successful, an Enumerator object which must be
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned objEnum object.
-     */
-    OBJENUM_DATA *  symTable_Enum(
-        SYMTABLE_DATA   *this
-    );
-    
-    
-    /* Find() returns the data associated with the given object if
-     * found, otherwise OBJ_NIL is returned.
-     */
-    OBJ_ID          symTable_Find(
-        SYMTABLE_DATA   *this,
-        OBJ_ID          pObject
-    );
-    
-    
-    SYMTABLE_DATA * symTable_Init(
-        SYMTABLE_DATA   *this,
-        uint16_t        cHash       // [in] Hash Table Size
+        SYMENTRY_DATA   *pEntry
     );
 
 
-    ERESULT         symTable_ScopeClose(
-        SYMTABLE_DATA    *this
+    SYMENTRY_DATA * symTable_FindA(
+        SYMTABLE_DATA   *this,
+        const
+        char            *pStrA
     );
-    
-    
-    OBJENUM_DATA *  symTable_ScopeEnum(
-        SYMTABLE_DATA    *this
+
+   
+    SYMTABLE_DATA *   symTable_Init(
+        SYMTABLE_DATA     *this
     );
-    
-    
-    ERESULT         symTable_ScopeOpen(
-        SYMTABLE_DATA	*this
-    );
-    
- 
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
+     @code 
         ASTR_DATA      *pDesc = symTable_ToDebugString(this,4);
      @endcode 
      @param     this    SYMTABLE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning  Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    symTable_ToDebugString(
         SYMTABLE_DATA     *this,

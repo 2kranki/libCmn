@@ -12,13 +12,13 @@
  *
  * Remarks
  *	1.      Nodes are stored within the hash by their name.  If the
- *          nodes are created for use in the JSON, parser or equivalent
+ *          nodes are created for use in JSON, parser or equivalent
  *          environments, then their data will also be nodes and not
  *          the direct data.
  *
  *          The data nodes with have names of "array", "false", "hash",
- *          "integer", "null", "string" or "true" generally.  The data
- *          node's data will be the actual data such as:
+ *          "integer", "null", "string" or "true" generally.  The node's
+ *          data object will be the actual data such as:
  *                  "array"     == nodeArray object
  *                  "false"     == false object
  *                  "hash"      == nodeHash object
@@ -224,6 +224,27 @@ extern "C" {
     );
     
 
+    /*! Add an object to the Hash Table if the supplied key does not exist
+     in the table or if duplicates are allowed.  The object being added
+     must support the compare() and hash() methods.
+     @param     this        object pointer
+     @param     pNumBuckets Number of Hash Buckets in Index
+     @param     pNumEmpty   Number of Empty Hash Buckets
+     @param     pNumMax     Maximum Number of nodes in any one Hash Bucket
+     @param     pNumAvg     Average Number of nodes in Hash Buckets that
+     have nodes
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         nodeHash_CalcHashStats(
+        NODEHASH_DATA   *this,
+        uint32_t        *pNumBuckets,   // Number of Hash Buckets
+        uint32_t        *pNumEmpty,     // Number of Empty Hash Buckets
+        uint32_t        *pNumMax,       // Maximum Number in any one Hash Bucket
+        uint32_t        *pNumAvg        // Average Number in each Hash Bucket
+    );
+    
+    
     /*!
      Copy the hash. Any element of the Hash that has a copy method
      will have that used to create a new object. Otherwise, the object

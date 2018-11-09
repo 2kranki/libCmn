@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   symTable_internal.h
- *	Generated 03/27/2017 21:41:31
+ *	Generated 11/04/2018 21:13:12
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,10 @@
 
 
 
-#include    <symTable.h>
-#include    <listdl.h>
-#include    <objArray.h>
-#include    <objHash.h>
-
-
+#include        <symTable.h>
+#include        <jsonIn.h>
+#include        <nodeHash_internal.h>
+#include        <objArray.h>
 
 
 #ifndef SYMTABLE_INTERNAL_H
@@ -58,42 +56,33 @@ extern "C" {
 
 
 
-    //      Node Descriptor
-#pragma pack(push, 1)
-    typedef struct  objHash_node_s {
-        LISTDL_NODE     list;
-        uint32_t        hash;
-        uint32_t        unique;
-        OBJ_ID          pObject;
-    } SYMTABLE_NODE;
-#pragma pack(pop)
-    
-    
-    // Block Descriptor
-#pragma pack(push, 1)
-    typedef struct  objHash_block_s {
-        LISTDL_NODE     list;
-        SYMTABLE_NODE   node[0];
-    } SYMTABLE_BLOCK;
-#pragma pack(pop)
-    
-    
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
 
 #pragma pack(push, 1)
 struct symTable_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    OBJHASH_DATA    *pEntries;
-    
+    uint16_t        cHashes;    // number of nodeHashes in pStack
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+    OBJARRAY_DATA   *pStack;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
+
 };
 #pragma pack(pop)
 
     extern
-    const
     struct symTable_class_data_s  symTable_ClassObj;
 
     extern
@@ -101,16 +90,54 @@ struct symTable_data_s	{
     SYMTABLE_VTBL         symTable_Vtbl;
 
 
-    // Internal Functions
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SYMTABLE_SINGLETON
+    SYMTABLE_DATA *     symTable_getSingleton(
+        void
+    );
+
+    bool            symTable_setSingleton(
+     SYMTABLE_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  symTable_getSuperVtbl(
+        SYMTABLE_DATA     *this
+    );
+
+
     void            symTable_Dealloc(
         OBJ_ID          objId
     );
+
+
+    SYMTABLE_DATA *       symTable_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
 
     void *          symTable_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
+
+
+    ASTR_DATA *     symTable_ToJSON(
+        SYMTABLE_DATA      *this
+    );
+
+
 
 
 #ifdef NDEBUG

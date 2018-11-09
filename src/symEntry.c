@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   symEntry.c
- *	Generated 03/27/2017 21:41:19
+ *	Generated 11/04/2018 21:12:53
  *
  */
 
@@ -36,13 +36,13 @@
 
 
 
-
 //*****************************************************************
 //* * * * * * * * * * * *  Data Definitions   * * * * * * * * * * *
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "symEntry_internal.h"
+#include        <symEntry_internal.h>
+#include        <trace.h>
 
 
 
@@ -82,14 +82,15 @@ extern "C" {
     //===============================================================
 
     SYMENTRY_DATA *     symEntry_Alloc(
+        void
     )
     {
         SYMENTRY_DATA       *this;
-        uint32_t            cbSize = sizeof(SYMENTRY_DATA);
+        uint32_t        cbSize = sizeof(SYMENTRY_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -97,10 +98,8 @@ extern "C" {
 
 
 
-    SYMENTRY_DATA *     symEntry_NewA(
-        const
-        char                *pName,
-        int32_t             class
+    SYMENTRY_DATA *     symEntry_New(
+        void
     )
     {
         SYMENTRY_DATA       *this;
@@ -108,17 +107,68 @@ extern "C" {
         this = symEntry_Alloc( );
         if (this) {
             this = symEntry_Init(this);
-            if (this) {
-                if (pName) {
-                    symEntry_setName(this, pName);
-                }
-                symEntry_setClass(this, class);
-            }
         } 
         return this;
     }
 
 
+    SYMENTRY_DATA *    gmrNode_NewWithUTF8AndClass(
+        const
+        char            *pNameA,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
+    {
+        SYMENTRY_DATA   *this;
+        NAME_DATA       *pName = OBJ_NIL;
+        
+        this = symEntry_Alloc( );
+        if (this) {
+            this = symEntry_Init(this);
+            if (this) {
+                if (pNameA) {
+                    pName = name_NewUTF8(pNameA);
+                    node_setName((NODE_DATA *)this, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                }
+                node_setClass((NODE_DATA *)this, cls);
+                node_setData((NODE_DATA *)this, pData);
+            }
+        }
+        return this;
+    }
+    
+    
+    SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass(
+        const
+        char            *pNameA,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
+    {
+        SYMENTRY_DATA   *this;
+        NAME_DATA       *pName = OBJ_NIL;
+        
+        this = symEntry_Alloc( );
+        if (this) {
+            this = symEntry_Init(this);
+            if (this) {
+                if (pNameA) {
+                    pName = name_NewUTF8Con(pNameA);
+                    node_setName((NODE_DATA *)this, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                }
+                node_setClass((NODE_DATA *)this, cls);
+                node_setData((NODE_DATA *)this, pData);
+            }
+        }
+        return this;
+    }
+    
+    
+    
 
     
 
@@ -127,10 +177,95 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          A t t r
+    //                          C l a s s
     //---------------------------------------------------------------
     
-    SYMATTR_DATA *  symEntry_getAttr(
+    int32_t         symEntry_getClass(
+        SYMENTRY_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return node_getClass((NODE_DATA *)this);
+    }
+    
+    
+    bool            symEntry_setClass(
+        SYMENTRY_DATA   *this,
+        int32_t         value
+    )
+    {
+        bool            fRc;
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = node_setClass((NODE_DATA *)this, value);
+        
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         L e v e l
+    //---------------------------------------------------------------
+    
+    int16_t         symEntry_getLevel(
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->level;
+    }
+    
+    
+    bool            symEntry_setLevel(
+        SYMENTRY_DATA   *this,
+        int16_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->level = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      N o d e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     symEntry_getNode(
         SYMENTRY_DATA   *this
     )
     {
@@ -144,14 +279,37 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return this->pAttr;
+        return (NODE_DATA *)this;
     }
     
     
-    bool        symEntry_setAttr(
-        SYMENTRY_DATA   *this,
-        SYMATTR_DATA    *pValue
+    
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        symEntry_getPriority(
+        SYMENTRY_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return 0;
+    }
+
+
+    bool            symEntry_setPriority(
+        SYMENTRY_DATA     *this,
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
@@ -161,165 +319,17 @@ extern "C" {
             return false;
         }
 #endif
-        
-        obj_Retain(pValue);
-        if (this->pAttr) {
-            obj_Release(this->pAttr);
-        }
-        this->pAttr = pValue;
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
+
+        //this->priority = value;
+
         return true;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          C l a s s
-    //---------------------------------------------------------------
-    
-    int32_t         symEntry_getClass(
-        SYMENTRY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
-        }
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return this->pEntry->cls;
-    }
-    
-    
-    bool            symEntry_setClass(
-        SYMENTRY_DATA   *this,
-        int32_t         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
-        }
-        
-        this->pEntry->cls = value;
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          H a s h
-    //---------------------------------------------------------------
-    
-    uint32_t        symEntry_getHash(
-        SYMENTRY_DATA   *this
-    )
-    {
-        uint32_t        hash = 0;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
-        }
-        
-        hash = szTbl_TokenToHash(OBJ_NIL, this->pEntry->nameToken);
 
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return hash;
-    }
-    
-    
-    //---------------------------------------------------------------
-    //                          N a m e
-    //---------------------------------------------------------------
-    
-    const
-    char *          symEntry_getName(
-        SYMENTRY_DATA   *this
-    )
-    {
-        const
-        char            *pStr = NULL;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return NULL;
-        }
 
-        pStr = szTbl_TokenToString(OBJ_NIL, this->pEntry->nameToken);
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-    
-    
-    bool            symEntry_setName(
-        SYMENTRY_DATA   *this,
-        const
-        char            *pValue
-    )
-    {
-        uint32_t        token;
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return NULL;
-        }
 
-        token = szTbl_StringToToken(OBJ_NIL, pValue);
-        this->pEntry->nameToken = token;
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return true;
-    }
-    
-    
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
     
     uint32_t        symEntry_getSize(
         SYMENTRY_DATA       *this
@@ -332,19 +342,18 @@ extern "C" {
             return 0;
         }
 #endif
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
+
         return 0;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
-    //                          T o k e n
+    //                              S t r
     //---------------------------------------------------------------
     
-    uint32_t        symEntry_getToken(
-        SYMENTRY_DATA   *this
+    ASTR_DATA * symEntry_getStr(
+        SYMENTRY_DATA     *this
     )
     {
         
@@ -353,23 +362,17 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return -1;
+            return OBJ_NIL;
         }
 #endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
-        }
         
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return this->pEntry->nameToken;
+        return this->pStr;
     }
     
     
-    bool            symEntry_setToken(
-        SYMENTRY_DATA   *this,
-        uint32_t        value
+    bool        symEntry_setStr(
+        SYMENTRY_DATA     *this,
+        ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -379,26 +382,48 @@ extern "C" {
             return false;
         }
 #endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
         }
+        this->pStr = pValue;
         
-        this->pEntry->nameToken = value;
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
     
     //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  symEntry_getSuperVtbl(
+        SYMENTRY_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
+
+    //---------------------------------------------------------------
     //                          T y p e
     //---------------------------------------------------------------
     
     int32_t         symEntry_getType(
-        SYMENTRY_DATA   *this
+        SYMENTRY_DATA    *this
     )
     {
         
@@ -407,16 +432,11 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return -1;
+            return 0;
         }
 #endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
-        }
         
-        return this->pEntry->type;
+        return node_getType((NODE_DATA *)this);
     }
     
     
@@ -425,6 +445,7 @@ extern "C" {
         int32_t         value
     )
     {
+        bool            fRc;
 #ifdef NDEBUG
 #else
         if( !symEntry_Validate(this) ) {
@@ -432,86 +453,21 @@ extern "C" {
             return false;
         }
 #endif
-        if (NULL == this->pEntry) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
-            return -1;
-        }
         
-        this->pEntry->type = value;
+        fRc = node_setType((NODE_DATA *)this, value);
         
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return true;
+        return fRc;
     }
     
     
     
 
-    
 
     //===============================================================
     //                          M e t h o d s
     //===============================================================
 
 
-    //---------------------------------------------------------------
-    //                        A c c e p t
-    //---------------------------------------------------------------
-    
-    ERESULT         symEntry_Accept(
-        SYMENTRY_DATA    *this,
-        VISITOR_DATA     *pVisitor
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        ERESULT         (*pMethod)(VISITOR_DATA *this, SYMENTRY_DATA *pObj) = NULL;
-        const
-        OBJ_IUNKNOWN    *pVtbl;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !symEntry_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == pVisitor ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pStr = AStr_NewA("Visit_symEntry_");
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        AStr_AppendHex32(pStr, this->pEntry->type);
-        
-        pVtbl = obj_getVtbl(pVisitor);
-        if (pVtbl && pVtbl->pQueryInfo) {
-            pMethod =   pVtbl->pQueryInfo(
-                                          pVisitor,
-                                          OBJ_QUERYINFO_TYPE_METHOD,
-                                          (void *)AStr_getData(pStr)
-                                          );
-        }
-        
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
-        if (NULL == pMethod) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_FUNCTION;
-        }
-        
-        eRc = pMethod(pVisitor, this);
-        
-        return eRc;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -521,30 +477,31 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code
-        ERESULT eRc = symEntry__Assign(this,pOther);
-     @endcode
+     @code 
+        ERESULT eRc = symEntry_Assign(this,pOther);
+     @endcode 
      @param     this    SYMENTRY object pointer
      @param     pOther  a pointer to another SYMENTRY object
-     @return    If successful, ERESULT_SUCCESS otherwise an
+     @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
     ERESULT         symEntry_Assign(
         SYMENTRY_DATA		*this,
-        SYMENTRY_DATA      *pOther
+        SYMENTRY_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return obj_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
         if( !symEntry_Validate(pOther) ) {
             DEBUG_BREAK();
-            return obj_getLastError(pOther);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -575,13 +532,72 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
-    //eom:
+        eRc = ERESULT_SUCCESS;
+    eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         symEntry_Compare(
+        SYMENTRY_DATA     *this,
+        SYMENTRY_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if( !symEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !symEntry_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
     
     
     //---------------------------------------------------------------
@@ -591,13 +607,13 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code
+     @code 
         symEntry      *pCopy = symEntry_Copy(this);
-     @endcode
+     @endcode 
      @param     this    SYMENTRY object pointer
-     @return    If successful, a SYMENTRY object which must be released,
-                otherwise OBJ_NIL.
-     @warning   Remember to release the returned the SYMENTRY object.
+     @return    If successful, a SYMENTRY object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
     SYMENTRY_DATA *     symEntry_Copy(
         SYMENTRY_DATA       *this
@@ -615,7 +631,7 @@ extern "C" {
         }
 #endif
         
-        //FIXME: pOther = symEntry_New(symEntry_getName(this), symEntry_getData(this));
+        pOther = symEntry_New( );
         if (pOther) {
             eRc = symEntry_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -626,7 +642,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -660,15 +675,11 @@ extern "C" {
         }
 #endif
 
-        if (this->pEntry) {
-            mem_Free(this->pEntry);
-            this->pEntry = NULL;
-        }
-        symEntry_setAttr(this, OBJ_NIL);
+        symEntry_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        // pSuperVtbl is saved immediately after the super object which we
-        // inherit from is initialized.
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
         this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
@@ -687,15 +698,11 @@ extern "C" {
     {
 
         // Do initialization.
-        if (NULL == this) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
-            return obj_getLastError(this);
-        }
     #ifdef NDEBUG
     #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return obj_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -704,8 +711,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return obj_getLastError(this);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -724,7 +730,7 @@ extern "C" {
     #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return obj_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
         
@@ -733,8 +739,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return obj_getLastError(this);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -744,7 +749,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     SYMENTRY_DATA *   symEntry_Init(
-        SYMENTRY_DATA   *this
+        SYMENTRY_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(SYMENTRY_DATA);
@@ -763,21 +768,20 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)node_Init((NODE_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMENTRY);
+        this = (OBJ_ID)nodeLink_Init((NODELINK_DATA *)this); // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMENTRY);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                              // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_SYMENTRY);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_SYMENTRY); // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&symEntry_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
-        this->pEntry = mem_Calloc(1, sizeof(SYM_ENTRY));
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
@@ -786,10 +790,12 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+#ifdef __APPLE__
+        //fprintf(stderr, "symEntry::sizeof(SYMENTRY_DATA) = %lu\n", sizeof(SYMENTRY_DATA));
+#endif
+        BREAK_NOT_BOUNDARY4(sizeof(SYMENTRY_DATA));
     #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this;
     }
 
@@ -809,18 +815,16 @@ extern "C" {
 #else
         if( !symEntry_Validate(this) ) {
             DEBUG_BREAK();
-            return obj_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return obj_getLastError(this);
+            return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return obj_getLastError(this);
+        return ERESULT_SUCCESS_FALSE;
     }
     
     
@@ -829,16 +833,38 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = symEntry_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "symEntry", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
     void *          symEntry_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SYMENTRY_DATA   *this = objId;
+        SYMENTRY_DATA     *this = objId;
         const
         char            *pStr = pData;
-
+        
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -852,52 +878,68 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)symEntry_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
-                    case 'A':
-                        if (str_Compare("Accept", (char *)pStr) == 0) {
-                            return symEntry_Accept;
-                        }
-                        break;
-                        
-#ifdef XYZZY
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
                             return symEntry_Disable;
                         }
                         break;
-                        
+
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
                             return symEntry_Enable;
                         }
                         break;
-                        
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return symEntry_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return symEntry_ToJSON;
-                        }
                         break;
-#endif
                         
                     default:
                         break;
                 }
                 break;
                 
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == symEntry_ToDebugString)
+                    return "ToDebugString";
+                break;
+                
             default:
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pData);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -909,26 +951,28 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code 
         ASTR_DATA      *pDesc = symEntry_ToDebugString(this,4);
-     @endcode:
-     @param:    this    SYMENTRY object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode 
+     @param     this    SYMENTRY object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     symEntry_ToDebugString(
         SYMENTRY_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
 #endif
+        const
+        OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -939,19 +983,23 @@ extern "C" {
         }
 #endif
               
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(symEntry) type=%d\n",
-                     this,
-                     symEntry_getType(this)
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    symEntry_getSize(this)
             );
-        AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -967,12 +1015,15 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(symEntry)}\n", this);
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -992,7 +1043,7 @@ extern "C" {
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_SYMENTRY) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_SYMENTRY) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1009,12 +1060,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SYMENTRY_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

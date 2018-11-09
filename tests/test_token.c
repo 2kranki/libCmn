@@ -134,7 +134,9 @@ int         test_token_JSON01(
                                 "}\n";
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
-    
+    int             iRc;
+    int             offset = 0;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_NewInteger(&loc, 11, 64);
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -150,9 +152,10 @@ int         test_token_JSON01(
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         fprintf(stderr, "%s\n", AStr_getData(pStr));
-        eRc = AStr_CompareA(pStr, pJSON_Con);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        
+        iRc = str_CompareSpcl(pJSON_Con, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         if (pToken) {
@@ -208,7 +211,7 @@ int         test_token_JSON02(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":5 /*TOKEN_TYPE_W32CHAR*/, "
+                                    "\"type\":7 /*TOKEN_TYPE_W32CHAR*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"dec\", "
                                         "\"len\":8, "
@@ -216,9 +219,11 @@ int         test_token_JSON02(
                                         "\"data\":90 "
                                     "}\n"
                                 "}\n";
-    ERESULT     eRc;
-    TOKEN_DATA  *pToken;
-    
+    ERESULT         eRc;
+    TOKEN_DATA      *pToken;
+    int             iRc;
+    int             offset = 0;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -236,9 +241,10 @@ int         test_token_JSON02(
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         fprintf(stderr, "%s\n", AStr_getData(pStr));
-        eRc = AStr_CompareA(pStr, pJSON_Con);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        
+        iRc = str_CompareSpcl(pJSON_Con, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         XCTAssertTrue( ( 1 == token_getFileIndex(pToken)) );
@@ -253,9 +259,10 @@ int         test_token_JSON02(
         pStr = token_ToJSON(pToken);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         //fprintf(stderr, "\tJSON = \"%s\"\n", AStr_getData(pStr));
-        eRc = AStr_CompareA(pStr, pJSON_Con);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        
+        iRc = str_CompareSpcl(pJSON_Con, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         obj_Release(pToken);
         pToken = OBJ_NIL;
         obj_Release(pStr);
@@ -289,7 +296,7 @@ int         test_token_JSON03(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":4 /*TOKEN_TYPE_STRTOKEN*/, "
+                                    "\"type\":6 /*TOKEN_TYPE_STRTOKEN*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"utf8\", "
                                         "\"len\":5, "
@@ -300,7 +307,9 @@ int         test_token_JSON03(
     ERESULT     eRc;
     TOKEN_DATA  *pToken;
     ASTR_DATA   *pAStr;
-    
+    int             iRc;
+    int             offset = 0;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = token_NewStrA(&loc, 11, "12345");
@@ -324,9 +333,10 @@ int         test_token_JSON03(
         pStr = token_ToJSON(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         fprintf(stderr, "%s\n", AStr_getData(pStr));
-        eRc = AStr_CompareA(pStr, pJSON_Con);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        
+        iRc = str_CompareSpcl(pJSON_Con, AStr_getData(pStr), &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
         pToken = token_NewFromJSONString(pStr);
         XCTAssertFalse( (OBJ_NIL == pToken) );
 
@@ -385,7 +395,7 @@ int         test_token_JSON04(
                                         "\"colNo\":2 "
                                     "}\n, "
                                     "\"misc\":0, "
-                                    "\"type\":4 /*TOKEN_TYPE_STRTOKEN*/, "
+                                    "\"type\":6 /*TOKEN_TYPE_STRTOKEN*/, "
                                     "\"data\":{ "
                                         "\"objectType\":\"utf8\", "
                                         "\"len\":4, "

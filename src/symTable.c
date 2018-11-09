@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   symTable.c
- *	Generated 03/27/2017 21:41:31
+ *	Generated 11/04/2018 21:13:12
  *
  */
 
@@ -36,14 +36,13 @@
 
 
 
-
 //*****************************************************************
 //* * * * * * * * * * * *  Data Definitions   * * * * * * * * * * *
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <symTable_internal.h>
-#include    <objEnum_internal.h>
+#include        <symTable_internal.h>
+#include        <trace.h>
 
 
 
@@ -60,7 +59,17 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    
+#ifdef XYZZY
+    static
+    void            symTable_task_body(
+        void            *pData
+    )
+    {
+        //SYMTABLE_DATA  *this = pData;
+        
+    }
+#endif
+
 
 
     /****************************************************************
@@ -72,15 +81,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SYMTABLE_DATA * symTable_Alloc(
+    SYMTABLE_DATA *     symTable_Alloc(
+        void
     )
     {
-        SYMTABLE_DATA   *this;
+        SYMTABLE_DATA       *this;
         uint32_t        cbSize = sizeof(SYMTABLE_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -88,15 +98,15 @@ extern "C" {
 
 
 
-    SYMTABLE_DATA * symTable_New(
-        uint16_t        cHash       // [in] Hash Table Size
+    SYMTABLE_DATA *     symTable_New(
+        void
     )
     {
-        SYMTABLE_DATA   *this;
+        SYMTABLE_DATA       *this;
         
         this = symTable_Alloc( );
         if (this) {
-            this = symTable_Init(this, cHash);
+            this = symTable_Init(this);
         } 
         return this;
     }
@@ -109,6 +119,10 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
     uint16_t        symTable_getPriority(
         SYMTABLE_DATA     *this
     )
@@ -123,10 +137,10 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
+
 
     bool            symTable_setPriority(
         SYMTABLE_DATA     *this,
@@ -143,12 +157,15 @@ extern "C" {
 
         //this->priority = value;
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
 
 
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
     uint32_t        symTable_getSize(
         SYMTABLE_DATA       *this
     )
@@ -161,14 +178,81 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
-        return objHash_getSize(this->pEntries);
+        return 0;
     }
 
 
 
-
+    //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
     
+    ASTR_DATA * symTable_getStr(
+        SYMTABLE_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        symTable_setStr(
+        SYMTABLE_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  symTable_getSuperVtbl(
+        SYMTABLE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
+
     
 
     //===============================================================
@@ -176,32 +260,39 @@ extern "C" {
     //===============================================================
 
 
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
     //                          A d d
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
     
-    ERESULT         symTable_AddEntry(
+    ERESULT         symTable_Add(
         SYMTABLE_DATA   *this,
-        OBJ_ID          pObject
+        SYMENTRY_DATA   *pEntry
     )
     {
+        NODEHASH_DATA   *pHash;
         ERESULT         eRc;
         
+        // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate( this ) ) {
+        if( !symTable_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pObject) {
+        if((OBJ_NIL == pEntry) || !obj_IsKindOf(this, OBJ_IDENT_SYMENTRY)) {
+            DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        pHash = objArray_Get(this->pStack, this->cHashes);
+        if (OBJ_NIL == pHash) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
         
-        eRc = objHash_Add(this->pEntries, pObject, NULL);
+        eRc = nodeHash_Add(pHash, (NODE_DATA *)pEntry);
         
         // Return to caller.
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -216,30 +307,31 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code:
-        ERESULT eRc = symTable__Assign(this,pOther);
-     @endcode:
+     @code 
+        ERESULT eRc = symTable_Assign(this,pOther);
+     @endcode 
      @param     this    SYMTABLE object pointer
      @param     pOther  a pointer to another SYMTABLE object
-     @return    If successful, ERESULT_SUCCESS otherwise an
+     @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
     ERESULT         symTable_Assign(
         SYMTABLE_DATA		*this,
-        SYMTABLE_DATA      *pOther
+        SYMTABLE_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !symTable_Validate(this) ) {
             DEBUG_BREAK();
-            return obj_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
         if( !symTable_Validate(pOther) ) {
             DEBUG_BREAK();
-            return obj_getLastError(pOther);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -270,13 +362,72 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
-    //eom:
+        eRc = ERESULT_SUCCESS;
+    eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         symTable_Compare(
+        SYMTABLE_DATA     *this,
+        SYMTABLE_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !symTable_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
     
     
     //---------------------------------------------------------------
@@ -286,20 +437,20 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code
+     @code 
         symTable      *pCopy = symTable_Copy(this);
-     @endcode
+     @endcode 
      @param     this    SYMTABLE object pointer
-     @return    If successful, a SYMTABLE object which must be released,
-                otherwise OBJ_NIL.
-     @warning   Remember to release the returned the SYMTABLE object.
+     @return    If successful, a SYMTABLE object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
     SYMTABLE_DATA *     symTable_Copy(
         SYMTABLE_DATA       *this
     )
     {
         SYMTABLE_DATA       *pOther = OBJ_NIL;
-        //ERESULT         eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -310,8 +461,7 @@ extern "C" {
         }
 #endif
         
-#ifdef XYZZY                    //FIXME: old hash stuff, replace with objHash
-        pOther = symTable_New(this->cHash);
+        pOther = symTable_New( );
         if (pOther) {
             eRc = symTable_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -319,11 +469,9 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
-#endif
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -338,7 +486,6 @@ extern "C" {
     )
     {
         SYMTABLE_DATA   *this = objId;
-        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -352,14 +499,30 @@ extern "C" {
         }
 #endif
 
-        if(this->pEntries) {
-            obj_Release(this->pEntries);
-            this->pEntries = OBJ_NIL;
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((SYMTABLE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
-        
+#endif
+
+        if (this->pStack) {
+            while(this->cHashes) {
+                NODEHASH_DATA       *pHash;
+                pHash = objArray_Get(this->pStack, this->cHashes);
+                if (pHash) {
+                    obj_Release(pHash);
+                    objArray_Put(this->pStack, this->cHashes, OBJ_NIL);
+                }
+                --this->cHashes;
+            }
+            obj_Release(this->pStack);
+            this->pStack = OBJ_NIL;
+        }
+        symTable_setStr(this, OBJ_NIL);
+
         obj_setVtbl(this, this->pSuperVtbl);
-        // pSuperVtbl is saved immediately after the super object which we
-        // inherit from is initialized.
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
         this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
@@ -368,120 +531,166 @@ extern "C" {
 
 
 
-    //----------------------------------------------------------
-    //                      D e l e t e
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
+    //                         D e l e t e
+    //---------------------------------------------------------------
     
-    OBJ_ID          symTable_DeleteEntry(
+    ERESULT         symTable_DeleteA(
         SYMTABLE_DATA   *this,
-        OBJ_ID          pObject
+        const
+        char            *pStrA
     )
     {
-        OBJ_ID          pReturn = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !symTable_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        pReturn = objHash_Delete(this->pEntries, pObject);
-        
-        // Return to caller.
-        obj_setLastError(this, objHash_getLastError(this->pEntries));
-        return pReturn;
-    }
-    
-    
-    ERESULT         symTable_DeleteAllEntries(
-        SYMTABLE_DATA   *this
-    )
-    {
+        NODEHASH_DATA   *pHash;
         ERESULT         eRc;
-
+        SYMENTRY_DATA   *pEntry = OBJ_NIL;
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if(!symTable_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if(NULL == pEntry) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
+        pHash = objArray_Get(this->pStack, this->cHashes);
+        if (OBJ_NIL == pHash) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
         
-        eRc = objHash_DeleteAll(this->pEntries);
+        eRc = nodeHash_DeleteA(pHash, pStrA);
         
         // Return to caller.
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
     
     
     //---------------------------------------------------------------
-    //                      E n u m
+    //                      D i s a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         symTable_Disable(
+        SYMTABLE_DATA		*this
+    )
+    {
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        // Put code here...
+
+        obj_Disable(this);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          E n a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         symTable_Enable(
+        SYMTABLE_DATA		*this
+    )
+    {
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        obj_Enable(this);
+
+        // Put code here...
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         E n u m
     //---------------------------------------------------------------
     
-    OBJENUM_DATA *  symTable_Enum(
+    OBJARRAY_DATA * symTable_Enum(
         SYMTABLE_DATA   *this
     )
     {
-        OBJENUM_DATA    *pEnum = OBJ_NIL;
-        ERESULT         eRc;
+        NODEHASH_DATA   *pHash;
+        SYMENTRY_DATA   *pEntry = OBJ_NIL;
+        OBJARRAY_DATA   *pEnum = OBJ_NIL;
         
         // Do initialization.
-        if (NULL == this) {
-            return pEnum;
-        }
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if(!symTable_Validate(this)) {
             DEBUG_BREAK();
-            return pEnum;
+            return OBJ_NIL; //ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pEnum = objHash_Enum(this->pEntries);
-        if (OBJ_NIL == pEnum) {
-            eRc = ERESULT_OUT_OF_MEMORY;
-            obj_setLastError(this, eRc);
-            return OBJ_NIL;
-        }
+        //FIXME: pEnum = (OBJARRAY_DATA *)nodeHash_Enum(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pEnum;
     }
     
     
     
-    //----------------------------------------------------------
-    //                        F i n d
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
+    //                         F i n d
+    //---------------------------------------------------------------
     
-    OBJ_ID          symTable_Find(
+    SYMENTRY_DATA * symTable_FindA(
         SYMTABLE_DATA   *this,
-        OBJ_ID          pObject
+        const
+        char            *pStrA
     )
     {
-        OBJ_ID          pReturn = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        SYMENTRY_DATA   *pEntry = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if(!symTable_Validate(this)) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return OBJ_NIL; //ERESULT_INVALID_OBJECT;
+        }
+        if(NULL == pEntry) {
+            DEBUG_BREAK();
+            return OBJ_NIL; //ERESULT_INVALID_PARAMETER;
         }
 #endif
-
-        pReturn = objHash_Find(this->pEntries, pObject);
+        pHash = objArray_Get(this->pStack, this->cHashes);
+        if (OBJ_NIL == pHash) {
+            DEBUG_BREAK();
+            return OBJ_NIL; //ERESULT_GENERAL_FAILURE;
+        }
+        
+        pEntry = (SYMENTRY_DATA *)nodeHash_FindA(pHash, pStrA);
         
         // Return to caller.
-        obj_setLastError(this, objHash_getLastError(this->pEntries));
-        return pReturn;
+        return pEntry;
     }
     
     
@@ -491,12 +700,13 @@ extern "C" {
     //---------------------------------------------------------------
 
     SYMTABLE_DATA * symTable_Init(
-        SYMTABLE_DATA   *this,
-        uint16_t        cHash       // [in] Hash Table Size
+        SYMTABLE_DATA   *this
     )
     {
         uint32_t        cbSize = sizeof(SYMTABLE_DATA);
-
+        NODEHASH_DATA   *pHash;
+        ERESULT         eRc;
+        
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -523,15 +733,27 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&symTable_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
-
-        this->pEntries = objHash_New(cHash);
-        if (OBJ_NIL == this->pEntries) {
+        this->pStack = objArray_New( );
+        if (OBJ_NIL == this->pStack) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        objHash_setDuplicates(this->pEntries, true);
+        pHash = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        if (OBJ_NIL == pHash) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        eRc = objArray_AppendObj(this->pStack, pHash, NULL);
+        obj_Release(pHash);
+        pHash = OBJ_NIL;
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        ++this->cHashes;
 
     #ifdef NDEBUG
     #else
@@ -540,7 +762,10 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+#ifdef __APPLE__
+        fprintf(stderr, "symTable::sizeof(SYMTABLE_DATA) = %lu\n", sizeof(SYMTABLE_DATA));
+#endif
+        BREAK_NOT_BOUNDARY4(sizeof(SYMTABLE_DATA));
     #endif
 
         return this;
@@ -549,19 +774,69 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                       I s E n a b l e d
+    //---------------------------------------------------------------
+    
+    ERESULT         symTable_IsEnabled(
+        SYMTABLE_DATA		*this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (obj_IsEnabled(this)) {
+            return ERESULT_SUCCESS_TRUE;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = symTable_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "symTable", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
     void *          symTable_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SYMTABLE_DATA   *this = objId;
+        SYMTABLE_DATA     *this = objId;
         const
         char            *pStr = pData;
-
+        
         if (OBJ_NIL == this) {
             return NULL;
         }
@@ -575,46 +850,110 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)symTable_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
-#ifdef XYZZY
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return hex_Disable;
+                            return symTable_Disable;
                         }
                         break;
-                        
+
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return hex_Enable;
+                            return symTable_Enable;
                         }
                         break;
-                        
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return hex_ToDebugString;
+                            return symTable_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return hex_ToJSON;
+                            return symTable_ToJSON;
                         }
                         break;
-#endif
                         
                     default:
                         break;
                 }
                 break;
                 
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == symTable_ToDebugString)
+                    return "ToDebugString";
+                if (pData == symTable_ToJSON)
+                    return "ToJSON";
+                break;
+                
             default:
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pData);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+     ASTR_DATA *     symTable_ToJSON(
+        SYMTABLE_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !symTable_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    "{\"objectType\":\"%s\"",
+                    pInfo->pClassName
+                );
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
     }
     
     
@@ -626,26 +965,28 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
+     @code 
         ASTR_DATA      *pDesc = symTable_ToDebugString(this,4);
-     @endcode
+     @endcode 
      @param     this    SYMTABLE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     symTable_ToDebugString(
         SYMTABLE_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
 #ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
 #endif
+        const
+        OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -656,19 +997,23 @@ extern "C" {
         }
 #endif
               
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(symTable) size=%d\n",
-                     this,
-                     symTable_getSize(this)
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    symTable_getSize(this)
             );
-        AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -684,12 +1029,15 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(symTable)}\n", this);
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -709,7 +1057,7 @@ extern "C" {
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_SYMTABLE) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_SYMTABLE) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -726,12 +1074,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SYMTABLE_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

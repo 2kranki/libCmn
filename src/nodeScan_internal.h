@@ -80,8 +80,8 @@ struct nodeScan_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    uint32_t        index;      // Scan Index (relative to 1)
-    uint32_t        start;      // Scan Start Index (relative to 1)
+    uint32_t        index;      // Scan Index (relative to 0)
+    uint32_t        start;      // Scan Start Index (relative to 0)
     NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
     //                          // up/down members.
     NODETREE_DATA   *pTree;     // Tree associated with linearized tree list

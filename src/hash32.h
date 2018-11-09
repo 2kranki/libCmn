@@ -108,12 +108,9 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the hash32 including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
+    /* Alloc() allocates an area large enough for the hash32.
      */
-    HASH32_DATA *     hash32_Alloc(
+    HASH32_DATA *   hash32_Alloc(
         void
     );
     
@@ -133,7 +130,18 @@ extern "C" {
     );
 
 
+    bool            hash32_getDuplicates(
+        HASH32_DATA     *this
+    );
     
+    bool            hash32_setDuplicates(
+        HASH32_DATA     *this,
+        bool            fValue
+    );
+    
+
+    
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------

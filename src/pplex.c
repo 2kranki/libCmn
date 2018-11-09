@@ -1472,18 +1472,18 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            pplex_Validate(
-        PPLEX_DATA      *cbp
+        PPLEX_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_PPLEX) )
+        if( this ) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_PPLEX) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(PPLEX_DATA)) )
+        if( !(obj_getSize(this) >= sizeof(PPLEX_DATA)) )
             return false;
 
         // Return to caller.

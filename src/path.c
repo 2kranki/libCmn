@@ -1951,9 +1951,6 @@ extern "C" {
         PATH_DATA        *this
     )
     {
-        uint32_t        i;
-        uint32_t        lenStr;
-        int32_t         chr;
         PATH_DATA       *pPath = OBJ_NIL;
         ERESULT         eRc;
         

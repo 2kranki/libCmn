@@ -13,13 +13,10 @@
  *          called a symEntry on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal symEntry. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	03/27/2017 Generated
+ *	11/04/2018 Generated
  */
 
 
@@ -56,16 +53,14 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <name.h>
-#include        <symAttr.h>
-#include        <visitor.h>
-
+#include        <node.h>
 
 
 #ifndef         SYMENTRY_H
 #define         SYMENTRY_H
 
 
+//#define   SYMENTRY_SINGLETON    1
 
 #ifdef	__cplusplus
 extern "C" {
@@ -77,7 +72,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct symEntry_data_s	SYMENTRY_DATA;    // Inherits from OBJ.
+    typedef struct symEntry_data_s	SYMENTRY_DATA;            // Inherits from OBJ
+    typedef struct symEntry_class_data_s SYMENTRY_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct symEntry_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -87,6 +83,16 @@ extern "C" {
         // Methods:
         //bool        (*pIsEnabled)(SYMENTRY_DATA *);
     } SYMENTRY_VTBL;
+
+    typedef struct symEntry_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in symEntry_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SYMENTRY_DATA *);
+    } SYMENTRY_CLASS_VTBL;
+
 
 
 
@@ -99,165 +105,118 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SYMENTRY_DATA *     symEntry_Alloc(
+#ifdef  SYMENTRY_SINGLETON
+    SYMENTRY_DATA *     symEntry_Shared(
+        void
+    );
+
+    bool            symEntry_SharedReset(
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to symEntry object if successful, otherwise OBJ_NIL.
+     */
+    SYMENTRY_DATA * symEntry_Alloc(
         void
     );
     
     
-    OBJ_ID              symEntry_Class(
+    OBJ_ID          symEntry_Class(
         void
     );
     
     
-    SYMENTRY_DATA *     symEntry_New(
-        NAME_DATA           *pName,
-        OBJ_ID              pData
+    SYMENTRY_DATA * symEntry_New(
+        void
     );
     
-    SYMENTRY_DATA *     symEntry_NewA(
+    
+    SYMENTRY_DATA * symEntry_NewWithUTF8AndClass(
         const
-        char                *pName,
-        int32_t             class
+        char            *pNameA,
+        int32_t         cls,
+        OBJ_ID          pData
+    );
+    
+    
+    SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass(
+        const
+        char            *pNameA,
+        int32_t         cls,
+        OBJ_ID          pData
     );
     
     
 
-    SYMENTRY_DATA *     symEntry_NewWithUTF8(
-        const
-        char                *pName,
-        OBJ_ID              pData
-    );
-    
-    
 
-    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    SYMATTR_DATA *  symEntry_getAttr(
-        SYMENTRY_DATA    *this
-    );
-    
-    bool            symEntry_setAttr(
-        SYMENTRY_DATA   *this,
-        SYMATTR_DATA    *pValue
-    );
-    
-    
     int32_t         symEntry_getClass(
         SYMENTRY_DATA   *this
     );
     
-    bool            symEntry_setClass(
-        SYMENTRY_DATA   *this,
-        int32_t         value
-    );
     
-    
-    uint16_t        symEntry_getFlags16(
-        SYMENTRY_DATA	*this
-    );
-    
-    bool            symEntry_setFlags16(
-        SYMENTRY_DATA	*this,
-        uint16_t        value
-    );
-    
-    
-    const
-    char *          symEntry_getName(
+    int16_t         symEntry_getLevel(
         SYMENTRY_DATA   *this
     );
     
     
-    uint16_t        symEntry_getMisc16ua(
-        SYMENTRY_DATA	*this
-    );
-    
-    bool            symEntry_setMisc16ua(
-        SYMENTRY_DATA	*this,
-        uint16_t        value
-    );
-    
-    
-    uint16_t        symEntry_getMisc16ub(
-        SYMENTRY_DATA	*this
-    );
-    
-    bool            symEntry_setMisc16ub(
-        SYMENTRY_DATA	*this,
-        uint16_t        value
-    );
-    
-    
-    uint32_t        symEntry_getMisc32ua(
-        SYMENTRY_DATA	*this
-    );
-    
-    bool            symEntry_setMisc32ua(
-        SYMENTRY_DATA	*this,
-        uint32_t        value
-    );
-    
-    
-    uint32_t        symEntry_getMisc32ub(
-        SYMENTRY_DATA	*this
-    );
-    
-    bool            symEntry_setMisc32ub(
-        SYMENTRY_DATA	*this,
-        uint32_t        value
-    );
-    
-    
-    OBJ_ID          symEntry_getObject(
-        SYMENTRY_DATA    *this
-    );
-    
-    bool            symEntry_setObject(
-        SYMENTRY_DATA   *this,
-        OBJ_ID          pValue
-    );
-    
-    
-    uint32_t        symEntry_getToken(
-        SYMENTRY_DATA    *this
+    NODE_DATA *     symEntry_getNode(
+        SYMENTRY_DATA   *this
     );
     
     
     int32_t         symEntry_getType(
-        SYMENTRY_DATA	*this
-    );
-    
-    bool            symEntry_setType(
-        SYMENTRY_DATA	*this,
-        int32_t         value
+        SYMENTRY_DATA   *this
     );
     
     
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SYMENTRY_DATA *   symEntry_Init(
-        SYMENTRY_DATA   *this
+    ERESULT     symEntry_Disable(
+        SYMENTRY_DATA		*this
     );
 
 
+    ERESULT     symEntry_Enable(
+        SYMENTRY_DATA		*this
+    );
+
+   
+    SYMENTRY_DATA *   symEntry_Init(
+        SYMENTRY_DATA     *this
+    );
+
+
+    ERESULT     symEntry_IsEnabled(
+        SYMENTRY_DATA		*this
+    );
+    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
+     @code 
         ASTR_DATA      *pDesc = symEntry_ToDebugString(this,4);
-     @endcode
+     @endcode 
      @param     this    SYMENTRY object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning  Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    symEntry_ToDebugString(
         SYMENTRY_DATA     *this,

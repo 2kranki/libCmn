@@ -52,6 +52,25 @@ extern "C" {
 #endif
     
 
+    static
+    uint32_t        sizeTable[] = {
+        7,
+        13,
+        31,
+        61,
+        127,
+        257,
+        4099,
+        8193,
+        16411,
+        33391,
+        63949,
+        132049,
+        263167
+    };
+    static
+    uint32_t        cSizeTable = 13;
+    
     
 
 
@@ -414,6 +433,26 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          S c o p e
+    //---------------------------------------------------------------
+    
+    uint32_t        objHash_getScope(
+        OBJHASH_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->scopeLvl;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S i z e
     //---------------------------------------------------------------
     
@@ -427,6 +466,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
+        
         return this->num;
     }
 
@@ -590,6 +630,67 @@ extern "C" {
         
         // Return to caller.
         this->eRc = eRc;
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //       C a l c  H a s h  I n d e x  S t a t i s t i c s
+    //---------------------------------------------------------------
+    
+    ERESULT            objHash_CalcHashStats(
+        OBJHASH_DATA    *this,
+        uint32_t        *pNumBuckets,   // Number of Hash Buckets
+        uint32_t        *pNumEmpty,     // Number of Empty Hash Buckets
+        uint32_t        *pNumMax,       // Maximum Number in any one Hash Bucket
+        uint32_t        *pNumAvg        // Average Number in each Hash Bucket
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     *pNodeList;
+        uint32_t        i;
+        uint32_t        count;
+        uint32_t        numEmpty = 0;
+        uint32_t        numMax = 0;
+        uint32_t        num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Do the calculations.
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            count = listdl_Count(pNodeList);
+            if (0 == count) {
+                ++numEmpty;
+            }
+            if (count > numMax) {
+                numMax = count;
+            }
+            num += count;
+        }
+        
+        // Return to caller.
+        if (pNumBuckets)
+            *pNumBuckets = this->cHash;
+        if (pNumEmpty)
+            *pNumEmpty = numEmpty;
+        if (pNumMax)
+            *pNumMax = numMax;
+        if (pNumAvg) {
+            if (this->cHash - numEmpty) {
+                *pNumAvg = num / (this->cHash - numEmpty);
+            }
+            else
+                *pNumAvg = 0;
+        }
         return eRc;
     }
     
@@ -852,7 +953,34 @@ extern "C" {
     }
     
     
+    OBJENUM_DATA *  objHash_EnumScope(
+        OBJHASH_DATA    *this,
+        uint32_t        scope
+    )
+    {
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return pEnum;
+        }
+        if(scope > this->scopeLvl) {
+            DEBUG_BREAK();
+            return pEnum;
+        }
+#endif
+        
+        pEnum = objHash_ScopeEnum(this, scope);
+        
+        // Return to caller.
+        return pEnum;
+    }
     
+    
+
     //----------------------------------------------------------
     //                        F i n d
     //----------------------------------------------------------
@@ -1011,6 +1139,57 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                 R e b u i l d  I n d e x
+    //---------------------------------------------------------------
+    
+    ERESULT            objHash_RebuildIndex(
+        OBJHASH_DATA    *this,
+        uint32_t        cHash           // Number of Hash Buckets
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     *pHash;         // New Hash Table
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
+        uint32_t        i;
+        uint32_t        idx;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pHash = mem_Calloc(cHash, sizeof(LISTDL_DATA));
+        if (NULL == pHash) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // Create the new index;
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            while (listdl_Count(pNodeList)) {
+                pNode = listdl_DeleteHead(pNodeList);
+                idx = pNode->hash % cHash;
+                listdl_Add2Tail(&pHash[idx], pNode);
+            }
+        }
+        
+        // Make the new index active.
+        mem_Free(this->pHash);
+        this->pHash = pHash;
+        this->cHash = cHash;
+
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -1108,6 +1287,12 @@ extern "C" {
         if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
+        }
+        if (this->scopeLvl)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
         }
 #endif
         
@@ -1234,8 +1419,7 @@ extern "C" {
 #else
         if( !objHash_Validate(this) ) {
             DEBUG_BREAK();
-            //this->eRc = ERESULT_INVALID_OBJECT;
-            return 0;
+            return 0;   //  ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -1244,8 +1428,7 @@ extern "C" {
             this->pScope = array_NewWithSize(sizeof(uint32_t));
             if (OBJ_NIL == this->pScope) {
                 DEBUG_BREAK();
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return 0;
+                return 0;   // ERESULT_OUT_OF_MEMORY;
             }
         }
 

@@ -65,11 +65,14 @@ extern "C" {
         int16_t         cls;                // Character/Token Class (Optional)
         int16_t         misc;
         union {
+            char            chr[8];
             double          flt;
             int64_t         integer;            // Integer
             uint32_t        strToken;           // String Index Token
             W32CHR_T        w32chr[2];          // Unicode Character followed by NUL
-            char            chr[8];
+            char            *pStrA;
+            const
+            char            *pStrConA;
         };
         // Do NOT declare any variables here, put them above the union.
     } TOKEN;

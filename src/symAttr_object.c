@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'symAttr'
-//	Generated 02/02/2018 10:14:55
+//	Generated 11/04/2018 21:22:43
 
 
 /*
@@ -33,10 +33,12 @@
 
 
 
-//#define   SYMATTR_IS_SINGLETON     1
 
 #define			SYMATTR_OBJECT_C	    1
 #include        <symAttr_internal.h>
+#ifdef  SYMATTR_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -49,10 +51,13 @@ struct symAttr_class_data_s	{
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  SYMATTR_SINGLETON
+    volatile
+    SYMATTR_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct symAttr_class_data_s SYMATTR_CLASS_DATA;
 
 
 
@@ -86,6 +91,12 @@ bool            symAttrClass_IsKindOf(
     if (OBJ_IDENT_SYMATTR_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_NODELINK_CLASS == classID) {
+        return true;
+    }
+    if (OBJ_IDENT_NODE_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -102,17 +113,26 @@ uint16_t		symAttrClass_WhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&symAttr_Info,
-    symAttrClass_IsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    symAttr_Class,
-    symAttrClass_WhoAmI,
-    (P_OBJ_QUERYINFO)symAttrClass_QueryInfo
+SYMATTR_CLASS_VTBL    class_Vtbl = {
+    {
+        &symAttr_Info,
+        symAttrClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        symAttr_Class,
+        symAttrClass_WhoAmI,
+        (P_OBJ_QUERYINFO)symAttrClass_QueryInfo,
+        NULL                        // symAttrClass_ToDebugString
+    },
 };
 
 
@@ -121,11 +141,94 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
 SYMATTR_CLASS_DATA  symAttr_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SYMATTR_CLASS, 0, 1},
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SYMATTR_CLASS, 0, 1},
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  SYMATTR_SINGLETON
+SYMATTR_DATA *     symAttr_getSingleton(
+    void
+)
+{
+    return (OBJ_ID)(symAttr_ClassObj.pSingleton);
+}
+
+
+bool            symAttr_setSingleton(
+    SYMATTR_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New();
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (symAttr_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(symAttr_ClassObj.pSingleton));
+    }
+    symAttr_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+SYMATTR_DATA *     symAttr_Shared(
+    void
+)
+{
+    SYMATTR_DATA       *this = (OBJ_ID)(symAttr_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = symAttr_New( );
+        symAttr_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // symAttr_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            symAttr_SharedReset(
+    void
+)
+{
+    SYMATTR_DATA       *this = (OBJ_ID)(symAttr_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        symAttr_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -141,11 +244,9 @@ void *          symAttrClass_QueryInfo(
 )
 {
     SYMATTR_CLASS_DATA *this = objId;
-#ifdef XYZZY
     const
     char            *pStr = pData;
-#endif
-
+    
     if (OBJ_NIL == this) {
         return NULL;
     }
@@ -156,16 +257,15 @@ void *          symAttrClass_QueryInfo(
             return this;
             break;
             
-#ifdef XYZZY  
         // Query for an address to specific data within the object.  
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
-                case 'O':
-                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
-                        return &this->pObjCatalog;
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&symAttr_Info;
                     }
                     break;
                     
@@ -173,17 +273,21 @@ void *          symAttrClass_QueryInfo(
                     break;
             }
             break;
-#endif
             
         case OBJ_QUERYINFO_TYPE_INFO:
             return (void *)obj_getInfo(this);
             break;
             
-#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'W':
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return symAttr_New;
+                    }
+                    break;
+                    
+                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return symAttrClass_WhoAmI;
                     }
@@ -193,7 +297,6 @@ void *          symAttrClass_QueryInfo(
                     break;
             }
             break;
-#endif
             
         default:
             break;
@@ -205,11 +308,6 @@ void *          symAttrClass_QueryInfo(
 
 
 
-
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
-
 static
 bool            symAttr_IsKindOf(
     uint16_t		classID
@@ -217,6 +315,12 @@ bool            symAttr_IsKindOf(
 {
     if (OBJ_IDENT_SYMATTR == classID) {
        return true;
+    }
+    if (OBJ_IDENT_NODELINK == classID) {
+        return true;
+    }
+    if (OBJ_IDENT_NODE == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -249,6 +353,13 @@ uint16_t		symAttr_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
 SYMATTR_VTBL     symAttr_Vtbl = {
     {
@@ -271,6 +382,7 @@ SYMATTR_VTBL     symAttr_Vtbl = {
         NULL,			// (P_OBJ_ASSIGN)symAttr_Assign,
         NULL,			// (P_OBJ_COMPARE)symAttr_Compare,
         NULL, 			// (P_OBJ_PTR)symAttr_Copy,
+        NULL, 			// (P_OBJ_PTR)symAttr_DeepCopy,
         NULL 			// (P_OBJ_HASH)symAttr_Hash,
     },
     // Put other object method names below this.
@@ -286,9 +398,9 @@ static
 const
 OBJ_INFO        symAttr_Info = {
     "symAttr",
-    "Symbol Entry Attributes",
+    "Symbol Attributes",
     (OBJ_DATA *)&symAttr_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&node_ClassObj,
     (OBJ_IUNKNOWN *)&symAttr_Vtbl
 };
 

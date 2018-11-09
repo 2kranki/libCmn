@@ -45,6 +45,7 @@
 #include    <objHash.h>
 #include    <array.h>
 #include    <listdl.h>
+#include    <u32Array.h>
 
 
 #ifdef	__cplusplus
@@ -53,7 +54,7 @@ extern "C" {
 
 #define HASH_SCOPE_INC   1              /* Incremental Scope Size */
 
-    //      Node Descriptor
+    //      Hash Node Descriptor
 #pragma pack(push, 1)
     typedef struct  objHash_node_s {
         LISTDL_NODE     list;
@@ -61,7 +62,7 @@ extern "C" {
         uint32_t        unique;
         uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
         uint32_t        scopeNext;
-        OBJ_ID          pObject;
+        OBJ_ID          pObject;        // OBJ_NIL == deleted node
     } OBJHASH_NODE;
 #pragma pack(pop)
     
@@ -87,16 +88,18 @@ struct objHash_data_s	{
     uint32_t        unique;         // Unique number given to entries as they are
     //                              // added to the hash table
     uint32_t        num;            // Current Number of Entries
-    LISTDL_DATA     freeList;       // Free Node Linked List
-    LISTDL_DATA     blocks;
-    uint16_t        cBlock;         // Number of Nodes per Block
-    uint16_t        cHash;          // Number of Hash Buckets
-    LISTDL_DATA     *pHash;         // Main Hash Table
     uint8_t         fDups;          // true == Allow Duplicate Names
     uint8_t         rsvd8[3];
+    uint32_t        cBlock;         // Number of Nodes per Block
+    uint32_t        cHash;          // Number of Hash Buckets
+    uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
+    LISTDL_DATA     blocks;
+    LISTDL_DATA     freeList;       // Free Node Linked List
+    LISTDL_DATA     *pHash;         // Main Hash Table
 
     ARRAY_DATA      *pScope;
-    uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
+    U32ARRAY_DATA   *pScopes;
+    U32ARRAY_DATA   *pProcs;
 
 };
 #pragma pack(pop)

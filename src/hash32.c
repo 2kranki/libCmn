@@ -193,7 +193,58 @@ extern "C" {
 
 
 
+    //----------------------------------------------------------
+    //                      D u p l i c a t e s
+    //----------------------------------------------------------
     
+    bool            hash32_getDuplicates(
+        HASH32_DATA     *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !hash32_Validate(this) ) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        
+        if (this->fDups)
+            fRc = true;
+        
+        return fRc;
+    }
+    
+    
+    bool            hash32_setDuplicates(
+        HASH32_DATA     *this,
+        bool            fValue
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !hash32_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (fValue)
+            this->fDups = 1;
+        else
+            this->fDups = 0;
+        
+        return true;
+    }
+    
+    
+
+
 
     //===============================================================
     //                          M e t h o d s

@@ -260,6 +260,8 @@ NODE_VTBL       node_Vtbl = {
         NULL,           // (P_OBJ_DEEPCOPY)
         NULL 			// (P_OBJ_HASH)node_Hash
     },
+    node_getType,
+    node_setType,
     node_getClass,
     node_setClass,
     node_getData,

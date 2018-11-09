@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   symAttr_internal.h
- *	Generated 02/02/2018 10:14:55
+ *	Generated 11/04/2018 21:22:43
  *
  * Notes:
  *  --	N/A
@@ -39,8 +39,9 @@
 
 
 
-#include    <symAttr.h>
-#include    <value.h>
+#include        <symAttr.h>
+#include        <jsonIn.h>
+#include        <nodeLink_internal.h>
 
 
 #ifndef SYMATTR_INTERNAL_H
@@ -53,7 +54,9 @@ extern "C" {
 #endif
 
 
-    
+
+
+#ifdef XYZZY
     typedef enum sym_primitive_e {
         SYM_PRIMITIVE_UNDEFINED=0,
         SYM_PRIMITIVE_INT8,
@@ -136,7 +139,7 @@ extern "C" {
             } constantType;
             struct {
                 uint32_t        offset;
-            } fieldType;
+            } memberType;
             struct {
                 uint32_t        addr;
             } functionType;
@@ -154,11 +157,11 @@ extern "C" {
         };
     } SYM_ATTR;
     
-    
-    
-    
+#endif
 
-    
+
+
+
 
 
     //---------------------------------------------------------------
@@ -169,14 +172,13 @@ extern "C" {
 struct symAttr_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    NODELINK_DATA   super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pStr;
-    SYM_ATTR        attr;
 
     volatile
     int32_t         numRead;
@@ -187,7 +189,6 @@ struct symAttr_data_s	{
 #pragma pack(pop)
 
     extern
-    const
     struct symAttr_class_data_s  symAttr_ClassObj;
 
     extern
@@ -197,16 +198,49 @@ struct symAttr_data_s	{
 
 
     //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SYMATTR_SINGLETON
+    SYMATTR_DATA *     symAttr_getSingleton(
+        void
+    );
+
+    bool            symAttr_setSingleton(
+     SYMATTR_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            symAttr_setClass(
+        SYMATTR_DATA    *this,
+        int32_t         value
+    );
+    
+    
     OBJ_IUNKNOWN *  symAttr_getSuperVtbl(
         SYMATTR_DATA     *this
     );
 
 
+    bool            symAttr_setClass(
+        SYMATTR_DATA    *this,
+        int32_t         value
+    );
+    
+    
     void            symAttr_Dealloc(
         OBJ_ID          objId
+    );
+
+
+    SYMATTR_DATA *       symAttr_ParseObject(
+        JSONIN_DATA     *pParser
     );
 
 

@@ -165,8 +165,17 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // Add() creates a new node and adds it to the hash table if the
-    // supplied key does not exist in the table.
+    /*! Add an object to the Hash Table if the supplied key does not exist
+     in the table or if duplicates are allowed.  The object being added
+     must support the compare() and hash() methods.
+     @param     this    object pointer
+     @param     pObject object pointer to be added to the table
+     @param     pIndex  An optional pointer to uint32_t which will contain
+                a unique number for the object if it is added to the Hash
+                successfully.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         objHash_Add(
         OBJHASH_DATA    *this,
         OBJ_ID          pObject,
@@ -177,6 +186,27 @@ extern "C" {
     ERESULT         objHash_Assign(
         OBJHASH_DATA    *this,
         OBJHASH_DATA    *pOther
+    );
+    
+    
+    /*! Add an object to the Hash Table if the supplied key does not exist
+     in the table or if duplicates are allowed.  The object being added
+     must support the compare() and hash() methods.
+     @param     this        object pointer
+     @param     pNumBuckets Number of Hash Buckets in Index
+     @param     pNumEmpty   Number of Empty Hash Buckets
+     @param     pNumMax     Maximum Number of nodes in any one Hash Bucket
+     @param     pNumAvg     Average Number of nodes in Hash Buckets that
+                            have nodes
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT            objHash_CalcHashStats(
+        OBJHASH_DATA    *this,
+        uint32_t        *pNumBuckets,   // Number of Hash Buckets
+        uint32_t        *pNumEmpty,     // Number of Empty Hash Buckets
+        uint32_t        *pNumMax,       // Maximum Number in any one Hash Bucket
+        uint32_t        *pNumAvg        // Average Number in each Hash Bucket
     );
     
     
@@ -198,7 +228,7 @@ extern "C" {
     
     /*! Delete all entries found in the hash.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error.
+                error code.
      */
     ERESULT         objHash_DeleteAll(
         OBJHASH_DATA    *this
@@ -217,7 +247,7 @@ extern "C" {
     
     /*! Create an enumerator for the Hash in ascending order
          if the object contains a compare() method.
-     @param     this    DIR_DATA object pointer
+     @param     this    object pointer
      @return    If successful, an Enumerator object which must be
                  released, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
@@ -237,8 +267,7 @@ extern "C" {
     
     
     /*! Find the object for the given index.
-     @return    If successful, the object deleted. Otherwise, return OBJ_NIL
-                and set an ERESULT_* error.
+     @return    If successful, the object address. Otherwise, return OBJ_NIL.
      */
     OBJ_ID          objHash_FindIndex(
         OBJHASH_DATA    *this,
@@ -252,6 +281,18 @@ extern "C" {
     );
 
 
+    /*!
+     Rebuild the hash index with a different number of Hash Buckets.
+     This method allows you to grow the index dynamically as needed.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT            objHash_RebuildIndex(
+        OBJHASH_DATA    *this,
+        uint32_t        cHash           // Number of Hash Buckets
+    );
+    
+    
     /*!
      Create a string that describes this object and the
      objects within it.

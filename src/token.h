@@ -93,11 +93,14 @@ extern "C" {
     
     typedef enum token_type_e {
         TOKEN_TYPE_UNKNOWN=0,
-        TOKEN_TYPE_CHAR,            // A single Unicode character in ASCII
+        TOKEN_TYPE_CHAR,            // A single Unicode character in UTF-8
         TOKEN_TYPE_FLOAT,           // double
         TOKEN_TYPE_INTEGER,         // int64_t
+        TOKEN_TYPE_STR_UTF8,        // UTF-8 String Token
+        TOKEN_TYPE_STRCON_UTF8,     // UTF-8 String Constant Token
         TOKEN_TYPE_STRTOKEN,        // String Token for szTbl
-        TOKEN_TYPE_W32CHAR          // A single Unicode character
+        TOKEN_TYPE_W32CHAR,         // A single Unicode character
+        TOKEN_TYPE_USER=32          // First User Type allowed
     } TOKEN_TYPE;
     
     

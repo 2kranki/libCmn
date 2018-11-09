@@ -100,6 +100,8 @@ struct hash32_data_s	{
 	HASH32_NODE     *pDeletedHead;  /* Deleted Nodes Linked List Ptr */
 	HASH32_BLOCK    *pBlocks;
 	HASH32_NODE     **pHash;        // Main Hash Table
+    uint8_t         fDups;          // true == allow duplicates
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)

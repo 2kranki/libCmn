@@ -280,6 +280,8 @@ NODELINK_VTBL     nodeLink_Vtbl = {
             NULL, 			// (P_OBJ_PTR)nodeLink_DeepCopy,
             NULL 			// (P_OBJ_HASH)nodeLink_Hash,
         },
+        node_getType,
+        node_setType,
         node_getClass,
         node_setClass,
         node_getData,

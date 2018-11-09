@@ -129,27 +129,24 @@ extern "C" {
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in $P_object.c.
         // Properties:
-        int32_t         (*pGetClass)(NODE_DATA *this);
-        bool            (*pSetClass)(NODE_DATA *this,int32_t value);
-        OBJ_ID          (*pGetData)(NODE_DATA *this);
-        bool            (*pSetData)(NODE_DATA *this,OBJ_ID pValue);
-        uint16_t        (*pGetMisc1)(NODE_DATA *this);
-        bool            (*pSetMisc1)(NODE_DATA *this,uint16_t value);
-        uint16_t        (*pGetMisc2)(NODE_DATA *this);
-        bool            (*pSetMisc2)(NODE_DATA *this,uint16_t value);
-        NAME_DATA *     (*pGetName)(NODE_DATA *this);
-        OBJ_ID          (*pGetOther)(NODE_DATA *this);
-        bool            (*pSetOther)(NODE_DATA *this,OBJ_ID pValue);
+        int32_t         (*pGetType)(NODE_DATA *);
+        bool            (*pSetType)(NODE_DATA *, int32_t);
+        int32_t         (*pGetClass)(NODE_DATA *);
+        bool            (*pSetClass)(NODE_DATA *, int32_t);
+        OBJ_ID          (*pGetData)(NODE_DATA *);
+        bool            (*pSetData)(NODE_DATA *, OBJ_ID);
+        uint16_t        (*pGetMisc1)(NODE_DATA *);
+        bool            (*pSetMisc1)(NODE_DATA *, uint16_t);
+        uint16_t        (*pGetMisc2)(NODE_DATA *);
+        bool            (*pSetMisc2)(NODE_DATA *, uint16_t);
+        NAME_DATA *     (*pGetName)(NODE_DATA *);
+        OBJ_ID          (*pGetOther)(NODE_DATA *);
+        bool            (*pSetOther)(NODE_DATA *, OBJ_ID);
         // Methods:
-        OBJ_ID          (*pProperty)(NODE_DATA *this, const char *pName);
-        ERESULT         (*pPropertyAdd)(
-                            NODE_DATA       *this,
-                            const
-                            char            *pName,
-                            NODE_DATA       *pData
-                        );
-        uint32_t        (*pPropertyCount)(NODE_DATA	*this);
-        ASTRARRAY_DATA * (*pPropertyKeys)(NODE_DATA *this);
+        OBJ_ID          (*pProperty)(NODE_DATA *, const char *);
+        ERESULT         (*pPropertyAdd)(NODE_DATA *, const char *, NODE_DATA *);
+        uint32_t        (*pPropertyCount)(NODE_DATA	*);
+        ASTRARRAY_DATA * (*pPropertyKeys)(NODE_DATA *);
     } NODE_VTBL;
     
     

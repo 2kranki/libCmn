@@ -1,11 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   symEntry_internal.h
- *	Generated 03/27/2017 21:41:19
+ *	Generated 11/04/2018 21:12:53
  *
  * Notes:
- *  --	IMPORTANT -- SYM_Entry must be cacheable. So, it must use indexes
- *          only, NEVER use direct pointers.
+ *  --	N/A
  *
  */
 
@@ -40,12 +39,9 @@
 
 
 
-#include    <symEntry.h>
-#include    <node_internal.h>
-#include    <value.h>
-
-
-
+#include        <symEntry.h>
+#include        <jsonIn.h>
+#include        <nodeLink_internal.h>
 
 
 #ifndef SYMENTRY_INTERNAL_H
@@ -57,7 +53,13 @@
 extern "C" {
 #endif
 
-    
+
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
     typedef enum sym_primitive_e {
         SYM_PRIMITIVE_UNDEFINED=0,
         SYM_PRIMITIVE_INT8,
@@ -119,7 +121,7 @@ extern "C" {
         SYM_TYPE_VARIABLE,
     } SYM_TYPE;
     
-
+    
     typedef struct sym_entry_s {
         uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        flags;
@@ -146,24 +148,29 @@ extern "C" {
     
     
     
-
-
+    
+    
 #pragma pack(push, 1)
 struct symEntry_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    NODELINK_DATA   super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    SYM_ENTRY       *pEntry;
-    SYMATTR_DATA    *pAttr;
+    uint16_t        size;		    // maximum number of elements
+    int16_t         level;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
-    const
     struct symEntry_class_data_s  symEntry_ClassObj;
 
     extern
@@ -171,26 +178,74 @@ struct symEntry_data_s	{
     SYMENTRY_VTBL         symEntry_Vtbl;
 
 
-    // Internal Functions
-    bool            symEntry_setName(
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SYMENTRY_SINGLETON
+    SYMENTRY_DATA * symEntry_getSingleton(
+        void
+    );
+
+    bool            symEntry_setSingleton(
+     SYMENTRY_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    bool            symEntry_setClass(
         SYMENTRY_DATA   *this,
-        const
-        char            *pValue
+        int32_t         value
+    );
+    
+    
+    bool            symEntry_setLevel(
+        SYMENTRY_DATA   *this,
+        int16_t         value
+    );
+    
+    
+    OBJ_IUNKNOWN *  symEntry_getSuperVtbl(
+        SYMENTRY_DATA   *this
+    );
+
+
+    bool            symEntry_setType(
+        SYMENTRY_DATA   *this,
+        int32_t         value
     );
     
     
     void            symEntry_Dealloc(
         OBJ_ID          objId
     );
-    
-    
+
+
+    SYMENTRY_DATA *       symEntry_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+
+
     void *          symEntry_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     symEntry_ToJSON(
+        SYMENTRY_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
     bool			symEntry_Validate(

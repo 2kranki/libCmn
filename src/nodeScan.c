@@ -445,7 +445,7 @@ extern "C" {
         }
 #endif
 
-        return this->index + 1;
+        return this->index;
     }
 
     bool            nodeScan_setIndex(
@@ -459,7 +459,7 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        this->index = value - 1;
+        this->index = value;
         
         return true;
     }
@@ -531,7 +531,7 @@ extern "C" {
         }
 #endif
         
-        return this->start + 1;
+        return this->start;
     }
     
 
@@ -612,6 +612,8 @@ extern "C" {
 #endif
 
         nodeScan_setArray(this, OBJ_NIL);
+        this->index = 0;
+        this->start = 0;
         if (this->pScanInput) {
             obj_Release(this->pScanInput);
             this->pScanInput = OBJ_NIL;
@@ -654,8 +656,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeScan_Vtbl);
         
-        this->index = 1;
-
     #ifdef NDEBUG
     #else
         if( !nodeScan_Validate(this) ) {
@@ -683,7 +683,6 @@ extern "C" {
 
         if (pValue) {
             nodeScan_setArray(this, pValue);
-            nodeScan_setIndex(this, 1);
         }
         
         return this;
@@ -701,7 +700,7 @@ extern "C" {
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -711,22 +710,26 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
+            return OBJ_NIL;
+        }
+        if (numChrs > 0)
+            ;
+        else {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
         
         // Shift inputs.
-        ++this->index;
-        if (this->index <= nodeArray_getSize(this->pArray))
+        this->index += numChrs;
+        if (this->index < nodeArray_getSize(this->pArray))
             ;
         else {
-            this->index = 1;
-            obj_setLastError(this, ERESULT_EOF_ERROR);
             return OBJ_NIL;
         }
-        pNode = nodeArray_Get(this->pArray, this->index);
-        
+        pNode = nodeArray_Get(this->pArray, (this->index + 1));
+
         // Return to caller.
         return pNode;
     }
@@ -754,29 +757,27 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
+            //obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
         if (num > 0)
             ;
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            //obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
         
         idx = this->index + (num - 1);
-        if (idx <= nodeArray_getSize(this->pArray))
+        if (idx < nodeArray_getSize(this->pArray))
             ;
         else {
-            obj_setLastError(this, ERESULT_EOF_ERROR);
             return OBJ_NIL;
         }
-        pNode = nodeArray_Get(this->pArray, idx);
+        pNode = nodeArray_Get(this->pArray, (idx + 1));
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pNode;
     }
     
@@ -812,7 +813,7 @@ extern "C" {
 #endif
         this->start = this->index;
         
-        pNode = nodeArray_Get(this->pArray, this->index+1);
+        pNode = nodeScan_InputLookAhead(this, 1);
         if (pNode) {
             pName = node_getNameUTF8(pNode);
             cmp = strcmp(pName, pStr);
@@ -864,7 +865,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        pNode = nodeArray_Get(this->pArray, this->index);
+        pNode = nodeScan_InputLookAhead(this, 1);
         if( pNode && ((cls == node_getClass(pNode)) || (cls == NODE_CLASS_ANY)) ) {
             (void)nodeScan_InputAdvance(this, 1);
             obj_setLastError(this, ERESULT_SUCCESS);
@@ -961,12 +962,10 @@ extern "C" {
         }
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_DATA_MISSING);
             return OBJ_NIL;
         }
         if (NULL == pRegex) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -1000,9 +999,8 @@ extern "C" {
                 fKleene = true;
                 stopRegex = *(pIdxRegex + 1);
                 startIndex = this->index;
-                pNodeStart = nodeArray_Get(this->pArray, this->index);
+                pNodeStart = nodeScan_InputLookAhead(this, 1);
                 if (OBJ_NIL == pNodeStart) {
-                    obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                     return OBJ_NIL;
                 }
             }
@@ -1010,12 +1008,10 @@ extern "C" {
                 stopRegex = curRegex;
             }
             if (0 == stopRegex) {
-                obj_setLastError(this, ERESULT_INVALID_DATA);
                 return OBJ_NIL;
             }
             pNode = nodeScan_ScanClassUntil(this, stopRegex);
             if (OBJ_NIL == pNode) {
-                obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
                 return OBJ_NIL;
             }
             if (fKleene) {
@@ -1034,7 +1030,6 @@ extern "C" {
                     stopRegex = *(pIdxRegex + 1);
                     pNode = nodeScan_ScanClassUntil(this, stopRegex);
                     if (OBJ_NIL == pNode) {
-                        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
                         return OBJ_NIL;
                     }
                 }
@@ -1042,7 +1037,6 @@ extern "C" {
                     stopRegex = curRegex;
                 pNode = nodeArray_Get(this->pArray, 1);
                 if(pNode) {
-                    obj_setLastError(this, ERESULT_SUCCESS);
                     return pNode;
                 }
                 ++pIdxRegex;
@@ -1050,7 +1044,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return OBJ_NIL;
     }
     
@@ -1171,7 +1164,7 @@ extern "C" {
         }
 #endif
         
-        if (this->index <= nodeArray_getSize(this->pArray))
+        if (this->index < nodeArray_getSize(this->pArray))
             ;
         else {
             DEBUG_BREAK();
@@ -1179,8 +1172,8 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        while (this->index <= nodeArray_getSize(this->pArray)) {
-            pNode = nodeArray_Get(this->pArray, this->index);
+        while (this->index < nodeArray_getSize(this->pArray)) {
+            pNode = nodeArray_Get(this->pArray, (this->index + 1));
             if (OBJ_NIL == pNode) {
                 obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return 0;
@@ -1226,8 +1219,8 @@ extern "C" {
         }
 #endif
         
-        this->index = 1;
-        pNode = nodeArray_Get(this->pArray, this->index);
+        this->index = 0;
+        pNode = nodeArray_Get(this->pArray, (this->index + 1));
         if (OBJ_NIL == pNode) {
             obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;

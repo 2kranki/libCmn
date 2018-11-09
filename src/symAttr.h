@@ -16,7 +16,7 @@
  *	1.      None
  *
  * History
- *	02/02/2018 Generated
+ *	11/04/2018 Generated
  */
 
 
@@ -53,13 +53,14 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <visitor.h>
+#include        <nodeLink.h>
 
 
 #ifndef         SYMATTR_H
 #define         SYMATTR_H
 
 
+//#define   SYMATTR_SINGLETON    1
 
 #ifdef	__cplusplus
 extern "C" {
@@ -71,7 +72,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct symAttr_data_s	SYMATTR_DATA;    // Inherits from OBJ.
+    typedef struct symAttr_data_s	SYMATTR_DATA;            // Inherits from OBJ
+    typedef struct symAttr_class_data_s SYMATTR_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct symAttr_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -81,6 +83,16 @@ extern "C" {
         // Methods:
         //bool        (*pIsEnabled)(SYMATTR_DATA *);
     } SYMATTR_VTBL;
+
+    typedef struct symAttr_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in symAttr_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SYMATTR_DATA *);
+    } SYMATTR_CLASS_VTBL;
+
 
 
 
@@ -93,13 +105,24 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  SYMATTR_SINGLETON
+    SYMATTR_DATA *     symAttr_Shared(
+        void
+    );
+
+    bool            symAttr_SharedReset(
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
      @return    pointer to symAttr object if successful, otherwise OBJ_NIL.
      */
-    SYMATTR_DATA *  symAttr_Alloc(
+    SYMATTR_DATA *     symAttr_Alloc(
         void
     );
     
@@ -109,7 +132,7 @@ extern "C" {
     );
     
     
-    SYMATTR_DATA *  symAttr_New(
+    SYMATTR_DATA *     symAttr_New(
         void
     );
     
@@ -123,9 +146,9 @@ extern "C" {
         SYMATTR_DATA    *this
     );
     
-    bool            symAttr_setClass(
-        SYMATTR_DATA    *this,
-        int32_t         value
+    
+    NODE_DATA *     symAttr_getNode(
+        SYMATTR_DATA    *this
     );
     
     
@@ -133,10 +156,6 @@ extern "C" {
         SYMATTR_DATA    *this
     );
     
-    bool            symAttr_setType(
-        SYMATTR_DATA    *this,
-        int32_t         value
-    );
     
 
 

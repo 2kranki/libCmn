@@ -53,7 +53,29 @@ extern "C" {
 #endif
     
 
+    static
+    uint32_t        sizeTable[] = {
+        7,
+        13,
+        31,
+        61,
+        127,
+        257,
+        4099,
+        8193,
+        16411,
+        33391,
+        63949,
+        132049,
+        263167
+    };
+    static
+    uint32_t        cSizeTable = 13;
     
+    
+    
+    
+
 
 
  
@@ -493,6 +515,67 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //       C a l c  H a s h  I n d e x  S t a t i s t i c s
+    //---------------------------------------------------------------
+    
+    ERESULT            nodeHash_CalcHashStats(
+        NODEHASH_DATA   *this,
+        uint32_t        *pNumBuckets,   // Number of Hash Buckets
+        uint32_t        *pNumEmpty,     // Number of Empty Hash Buckets
+        uint32_t        *pNumMax,       // Maximum Number in any one Hash Bucket
+        uint32_t        *pNumAvg        // Average Number in each Hash Bucket
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     *pNodeList;
+        uint32_t        i;
+        uint32_t        count;
+        uint32_t        numEmpty = 0;
+        uint32_t        numMax = 0;
+        uint32_t        num = 0;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Do the calculations.
+        for (i=0; i<this->cHash; ++i) {
+            pNodeList = &this->pHash[i];
+            count = listdl_Count(pNodeList);
+            if (0 == count) {
+                ++numEmpty;
+            }
+            if (count > numMax) {
+                numMax = count;
+            }
+            num += count;
+        }
+        
+        // Return to caller.
+        if (pNumBuckets)
+            *pNumBuckets = this->cHash;
+        if (pNumEmpty)
+            *pNumEmpty = numEmpty;
+        if (pNumMax)
+            *pNumMax = numMax;
+        if (pNumAvg) {
+            if (this->cHash - numEmpty) {
+                *pNumAvg = num / (this->cHash - numEmpty);
+            }
+            else
+                *pNumAvg = 0;
+        }
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------

@@ -156,6 +156,7 @@ extern	"C" {
         OBJ_DATA        *pClassObject;
         OBJ_DATA        *pClassSuperObject;
         OBJ_IUNKNOWN    *pDefaultVtbls;     // Default Object VTBL
+        uint32_t        defaultObjectSize;
     };
 #pragma pack(pop)
     
