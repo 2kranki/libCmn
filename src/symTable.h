@@ -158,6 +158,7 @@ extern "C" {
 
     SYMENTRY_DATA * symTable_FindA(
         SYMTABLE_DATA   *this,
+        int32_t         cls,
         const
         char            *pStrA
     );

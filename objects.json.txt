@@ -100,6 +100,7 @@
         "node":{srcDeps:["cmn_defs.h","AStr.h","listdl.h","name.h","nodeArray.h","nodeHash.h","szTbl.h"], json:true},
         "nodeArc":["cmn_defs.h","AStr.h","node.h"],
         "nodeArray":["cmn_defs.h","node.h","objArray.h"],
+        "nodeBTree":["cmn_defs.h","AStr.h","node.h","nodeHash.h","objArray.h","szTbl.h"],
         "nodeGraph":["cmn_defs.h","AStr.h","node.h","objArray.h"],
         "nodeHash":{srcDeps:["cmn_defs.h","listdl.h","node.h"], json:true},
         "nodeLink":{srcDeps:["cmn_defs.h","name.h","node.h","str.h"], json:true},

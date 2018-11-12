@@ -173,7 +173,7 @@ int             test_jsonIn_01(
         eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tCount = %lld\n", count);
-        pNode = nodeHash_FindA(pObj->pHash, "Count");
+        pNode = nodeHash_FindA(pObj->pHash, 0, "Count");
         TINYTEST_FALSE( (NULL == pNode) );
         count = jsonIn_CheckNodeDataForInteger(pNode);
         fprintf(stderr, "\tCount from check = %lld\n", count);
@@ -211,7 +211,7 @@ int             test_jsonIn_01(
                 mem_Free(pData);
                 pData = NULL;
             }
-            pNode = nodeHash_FindA(pObj->pHash, "data");
+            pNode = nodeHash_FindA(pObj->pHash, 0, "data");
             TINYTEST_FALSE( (NULL == pNode) );
             pStrWrk = jsonIn_CheckNodeDataForString(pNode);
             if (pStrWrk) {

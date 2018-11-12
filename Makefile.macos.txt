@@ -1179,6 +1179,22 @@ test_nodeArray: $(TEST_SRC)/test_nodeArray.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/nodeBTree_object.o
+
+$(OBJDIR)/nodeBTree_object.o: $(SRCDIR)/nodeBTree_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/nodeBTree.o
+
+$(OBJDIR)/nodeBTree.o: $(SRCDIR)/nodeBTree.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeHash.h $(SRCDIR)/objArray.h $(SRCDIR)/szTbl.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_nodeBTree
+
+test_nodeBTree: $(TEST_SRC)/test_nodeBTree.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/nodeGraph_object.o
 
 $(OBJDIR)/nodeGraph_object.o: $(SRCDIR)/nodeGraph_object.c 

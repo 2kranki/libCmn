@@ -701,14 +701,14 @@ extern "C" {
     }
     
     
-    const
     char *          token_getTextA(
         TOKEN_DATA      *this
     )
     {
+        char            *pStrA = NULL;
         const
-        char            *pStr = NULL;
-        
+        char            *pStrA2 = NULL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -721,18 +721,19 @@ extern "C" {
         switch (this->data.type) {
                 
             case TOKEN_TYPE_CHAR:
-                pStr = this->data.chr;
+                pStrA = strdup(this->data.chr);
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                pStr = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
+                pStrA2 = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
+                pStrA = strdup(pStrA2);
                 break;
                 
             default:
                 break;
         }
         
-        return pStr;
+        return pStrA;
     }
     
     
@@ -742,8 +743,8 @@ extern "C" {
     )
     {
         const
-        char            *pStr = NULL;
-        ASTR_DATA       *pAStr = OBJ_NIL;
+        char            *pStrA = NULL;
+        ASTR_DATA       *pStr = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -757,17 +758,17 @@ extern "C" {
         switch (this->data.type) {
                 
             case TOKEN_TYPE_CHAR:
-                pAStr = AStr_NewA(this->data.chr);
+                pStr = AStr_NewA(this->data.chr);
                 break;
                 
             case TOKEN_TYPE_W32CHAR:
-                pAStr = AStr_NewW32(this->data.w32chr);
+                pStr = AStr_NewW32(this->data.w32chr);
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                pStr = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
-                if (pStr) {
-                    pAStr = AStr_NewA(pStr);
+                pStrA = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
+                if (pStrA) {
+                    pStr = AStr_NewA(pStrA);
                 }
                 break;
                 
@@ -775,7 +776,7 @@ extern "C" {
                 break;
         }
         
-        return pAStr;
+        return pStr;
     }
     
     

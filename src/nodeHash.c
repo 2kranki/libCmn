@@ -139,12 +139,14 @@ extern "C" {
     
     
     /*!
-     Find the nodeHash which contains the name given.
-     @return    If successful, return the hash node pointer; otherwise return NULL.
+     Find the nodeHash which contains the given name and optionally class.
+     @return    If successful, return the internal hash node pointer;
+                otherwise return NULL.
      */
     static
     NODEHASH_NODE * nodeHash_FindNodeHash(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NAME_DATA       *pName
     )
     {
@@ -159,17 +161,35 @@ extern "C" {
         
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
-            if (node_getHash(pNode->pNode) == hash) {
-                eRc = name_Compare(pName, node_getName(pNode->pNode));
-                if (ERESULT_SUCCESS_EQUAL == eRc) {
-                    return pNode;
-                }
+            if (cls) {
+                if (cls == node_getClass(pNode->pNode)) {
+                    if (node_getHash(pNode->pNode) == hash) {
+                        eRc = name_Compare(pName, node_getName(pNode->pNode));
+                        if (ERESULT_SUCCESS_EQUAL == eRc) {
+                            return pNode;
+                        }
 #ifdef XYZZY
-                // WARNING: Entries are not sorted currently.
-                if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                    break;
-                }
+                        // WARNING: Entries are not sorted currently.
+                        if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                            break;
+                        }
 #endif
+                    }
+                }
+            }
+            else {
+                if (node_getHash(pNode->pNode) == hash) {
+                    eRc = name_Compare(pName, node_getName(pNode->pNode));
+                    if (ERESULT_SUCCESS_EQUAL == eRc) {
+                        return pNode;
+                    }
+#ifdef XYZZY
+                    // WARNING: Entries are not sorted currently.
+                    if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                        break;
+                    }
+#endif
+                }
             }
             pNode = listdl_Next(pNodeList, pNode);
         }
@@ -349,7 +369,7 @@ extern "C" {
         }
     #endif
 
-        pEntry = nodeHash_FindNodeHash(this, node_getName(pNode));
+        pEntry = nodeHash_FindNodeHash(this, 0, node_getName(pNode));
         if (pEntry && !obj_IsFlag(this, NODEHASH_FLAG_DUPS)) {
             return ERESULT_DATA_ALREADY_EXISTS;
         }
@@ -440,7 +460,7 @@ extern "C" {
         }
 #endif
         
-        pEntry = nodeHash_FindNodeHash(this, node_getName(pNode));
+        pEntry = nodeHash_FindNodeHash(this, 0, node_getName(pNode));
         if (pEntry) {
             obj_Release(pEntry->pNode);
             //pEntry->pNode = OBJ_NIL;
@@ -774,6 +794,7 @@ extern "C" {
     
     ERESULT         nodeHash_Delete(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NODE_DATA       *pNode
     )
     {
@@ -793,7 +814,7 @@ extern "C" {
         }
 #endif
         
-        pEntry = nodeHash_FindNodeHash(this, node_getName(pNode));
+        pEntry = nodeHash_FindNodeHash(this, cls, node_getName(pNode));
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -812,6 +833,7 @@ extern "C" {
     
     ERESULT         nodeHash_DeleteA(
         NODEHASH_DATA	*this,
+        int32_t         cls,
         const
         char            *pName
     )
@@ -841,7 +863,7 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         hash = name_getHash(pNameObj);
-        pEntry = nodeHash_FindNodeHash(this, pNameObj);
+        pEntry = nodeHash_FindNodeHash(this, cls, pNameObj);
         obj_Release(pNameObj);
         pNameObj = OBJ_NIL;
         if (NULL == pEntry) {
@@ -862,6 +884,7 @@ extern "C" {
     
     ERESULT         nodeHash_DeleteName(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NAME_DATA       *pName
     )
     {
@@ -881,7 +904,7 @@ extern "C" {
         }
 #endif
         
-        pEntry = nodeHash_FindNodeHash(this, pName);
+        pEntry = nodeHash_FindNodeHash(this, cls, pName);
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -973,7 +996,7 @@ extern "C" {
 
                     // Find the name from the Dictionary.
                 do_replace:
-                    pNode = nodeHash_FindA(this, AStr_getData(pName));
+                    pNode = nodeHash_FindA(this, 0, AStr_getData(pName));
                     if (OBJ_NIL == pNode) {
                         obj_Release(pName);
                         return ERESULT_DATA_NOT_FOUND;
@@ -1051,6 +1074,7 @@ extern "C" {
 
     NODE_DATA *     nodeHash_Find(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NODE_DATA       *pNode
     )
     {
@@ -1070,14 +1094,15 @@ extern "C" {
 #endif
         
         // Return to caller.
-        return nodeHash_FindName(this, node_getName(pNode));
+        return nodeHash_FindName(this, cls, node_getName(pNode));
     }
     
     
     NODE_DATA *     nodeHash_FindA(
         NODEHASH_DATA	*this,
+        int32_t         cls,
         const
-        char            *pName
+        char            *pNameA
     )
     {
         NODEHASH_NODE   *pEntry = OBJ_NIL;
@@ -1090,20 +1115,20 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        if( OBJ_NIL == pName ) {
+        if( OBJ_NIL == pNameA ) {
             DEBUG_BREAK();
             obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
     #endif
         
-        pNameObj = name_NewUTF8(pName);
+        pNameObj = name_NewUTF8(pNameA);
         if(OBJ_NIL == pNameObj) {
             DEBUG_BREAK();
             obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
-        pEntry = nodeHash_FindNodeHash(this, pNameObj);
+        pEntry = nodeHash_FindNodeHash(this, cls, pNameObj);
         obj_Release(pNameObj);
         pNameObj = OBJ_NIL;
         if (pEntry) {
@@ -1188,6 +1213,7 @@ extern "C" {
     
     NODE_DATA *     nodeHash_FindName(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NAME_DATA       *pName
     )
     {
@@ -1207,7 +1233,7 @@ extern "C" {
         }
 #endif
         
-        pEntry = nodeHash_FindNodeHash(this, pName);
+        pEntry = nodeHash_FindNodeHash(this, cls, pName);
         if (pEntry) {
             obj_setLastError(this, ERESULT_SUCCESS);
             return pEntry->pNode;
@@ -1241,7 +1267,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(this, pSectionA);
+        pNode = nodeHash_FindA(this, 0, pSectionA);
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1431,10 +1457,10 @@ extern "C" {
         for (i=0; i<iMax; ++i) {
             pItem = nodeArray_Get(pArray, i+1);
             if (pItem) {
-                pNode = nodeHash_Find(this, pItem);
+                pNode = nodeHash_Find(this, 0, pItem);
                 if (pNode) {
                     if (fReplace) {
-                        eRc = nodeHash_Delete(this, pItem);
+                        eRc = nodeHash_Delete(this, 0, pItem);
                         if (ERESULT_FAILED(eRc)) {
                             return eRc;
                         }

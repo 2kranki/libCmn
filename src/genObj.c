@@ -828,7 +828,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(this->pDict, pName);
+        pNode = nodeHash_FindA(this->pDict, 0, pName);
         if (pNode) {
             pValue = node_getData(pNode);
             BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
@@ -857,7 +857,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeHash_DeleteA(this->pDict, pName);
+        eRc = nodeHash_DeleteA(this->pDict, 0, pName);
         eRc = genObj_DictAdd(this, pName, pValue);
         
         // Return to caller.
@@ -884,7 +884,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeHash_DeleteA(this->pDict, pName);
+        eRc = nodeHash_DeleteA(this->pDict, 0, pName);
         eRc = genObj_DictAddA(this, pName, pValueA);
         
         // Return to caller.

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   symTable.c
- *	Generated 11/04/2018 21:13:12
+ * File:   nodeBTree.c
+ *	Generated 11/12/2018 09:44:16
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <symTable_internal.h>
+#include        <nodeBTree_internal.h>
 #include        <trace.h>
 
 
@@ -61,11 +61,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            symTable_task_body(
+    void            nodeBTree_task_body(
         void            *pData
     )
     {
-        //SYMTABLE_DATA  *this = pData;
+        //NODEBTREE_DATA  *this = pData;
         
     }
 #endif
@@ -81,12 +81,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SYMTABLE_DATA *     symTable_Alloc(
+    NODEBTREE_DATA *     nodeBTree_Alloc(
         void
     )
     {
-        SYMTABLE_DATA       *this;
-        uint32_t        cbSize = sizeof(SYMTABLE_DATA);
+        NODEBTREE_DATA       *this;
+        uint32_t        cbSize = sizeof(NODEBTREE_DATA);
         
         // Do initialization.
         
@@ -98,15 +98,15 @@ extern "C" {
 
 
 
-    SYMTABLE_DATA *     symTable_New(
+    NODEBTREE_DATA *     nodeBTree_New(
         void
     )
     {
-        SYMTABLE_DATA       *this;
+        NODEBTREE_DATA       *this;
         
-        this = symTable_Alloc( );
+        this = nodeBTree_Alloc( );
         if (this) {
-            this = symTable_Init(this);
+            this = nodeBTree_Init(this);
         } 
         return this;
     }
@@ -123,15 +123,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        symTable_getPriority(
-        SYMTABLE_DATA     *this
+    uint16_t        nodeBTree_getPriority(
+        NODEBTREE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -142,14 +142,14 @@ extern "C" {
     }
 
 
-    bool            symTable_setPriority(
-        SYMTABLE_DATA     *this,
+    bool            nodeBTree_setPriority(
+        NODEBTREE_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -166,13 +166,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        symTable_getSize(
-        SYMTABLE_DATA       *this
+    uint32_t        nodeBTree_getSize(
+        NODEBTREE_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -187,15 +187,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * symTable_getStr(
-        SYMTABLE_DATA     *this
+    ASTR_DATA * nodeBTree_getStr(
+        NODEBTREE_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -205,14 +205,14 @@ extern "C" {
     }
     
     
-    bool        symTable_setStr(
-        SYMTABLE_DATA     *this,
+    bool        nodeBTree_setStr(
+        NODEBTREE_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -233,15 +233,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  symTable_getSuperVtbl(
-        SYMTABLE_DATA     *this
+    OBJ_IUNKNOWN *  nodeBTree_getSuperVtbl(
+        NODEBTREE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -261,44 +261,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          A d d
-    //---------------------------------------------------------------
-    
-    ERESULT         symTable_Add(
-        SYMTABLE_DATA   *this,
-        SYMENTRY_DATA   *pEntry
-    )
-    {
-        NODEHASH_DATA   *pHash;
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !symTable_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if((OBJ_NIL == pEntry) || !obj_IsKindOf(this, OBJ_IDENT_SYMENTRY)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        pHash = objArray_Get(this->pStack, this->cHashes);
-        if (OBJ_NIL == pHash) {
-            DEBUG_BREAK();
-            return ERESULT_GENERAL_FAILURE;
-        }
-        
-        eRc = nodeHash_Add(pHash, (NODE_DATA *)pEntry);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -308,16 +270,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = symTable_Assign(this,pOther);
+        ERESULT eRc = nodeBTree_Assign(this,pOther);
      @endcode 
-     @param     this    SYMTABLE object pointer
-     @param     pOther  a pointer to another SYMTABLE object
+     @param     this    NODEBTREE object pointer
+     @param     pOther  a pointer to another NODEBTREE object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         symTable_Assign(
-        SYMTABLE_DATA		*this,
-        SYMTABLE_DATA     *pOther
+    ERESULT         nodeBTree_Assign(
+        NODEBTREE_DATA		*this,
+        NODEBTREE_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -325,11 +287,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !symTable_Validate(pOther) ) {
+        if( !nodeBTree_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -381,9 +343,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         symTable_Compare(
-        SYMTABLE_DATA     *this,
-        SYMTABLE_DATA     *pOther
+    ERESULT         nodeBTree_Compare(
+        NODEBTREE_DATA     *this,
+        NODEBTREE_DATA     *pOther
     )
     {
         int             i = 0;
@@ -397,11 +359,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !symTable_Validate(pOther) ) {
+        if( !nodeBTree_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -438,32 +400,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        symTable      *pCopy = symTable_Copy(this);
+        nodeBTree      *pCopy = nodeBTree_Copy(this);
      @endcode 
-     @param     this    SYMTABLE object pointer
-     @return    If successful, a SYMTABLE object which must be 
+     @param     this    NODEBTREE object pointer
+     @return    If successful, a NODEBTREE object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SYMTABLE_DATA *     symTable_Copy(
-        SYMTABLE_DATA       *this
+    NODEBTREE_DATA *     nodeBTree_Copy(
+        NODEBTREE_DATA       *this
     )
     {
-        SYMTABLE_DATA       *pOther = OBJ_NIL;
+        NODEBTREE_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = symTable_New( );
+        pOther = nodeBTree_New( );
         if (pOther) {
-            eRc = symTable_Assign(this, pOther);
+            eRc = nodeBTree_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -481,11 +443,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            symTable_Dealloc(
+    void            nodeBTree_Dealloc(
         OBJ_ID          objId
     )
     {
-        SYMTABLE_DATA   *this = objId;
+        NODEBTREE_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -493,7 +455,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -501,24 +463,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SYMTABLE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((NODEBTREE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        if (this->pStack) {
-            while(this->cHashes) {
-                NODEHASH_DATA       *pHash;
-                pHash = objArray_Get(this->pStack, this->cHashes);
-                if (pHash) {
-                    obj_Release(pHash);
-                    objArray_Put(this->pStack, this->cHashes, OBJ_NIL);
-                }
-                --this->cHashes;
-            }
-            obj_Release(this->pStack);
-            this->pStack = OBJ_NIL;
-        }
-        symTable_setStr(this, OBJ_NIL);
+        nodeBTree_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -532,59 +481,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                         D e l e t e
-    //---------------------------------------------------------------
-    
-    ERESULT         symTable_DeleteA(
-        SYMTABLE_DATA   *this,
-        int32_t         cls,
-        const
-        char            *pStrA
-    )
-    {
-        NODEHASH_DATA   *pHash;
-        ERESULT         eRc;
-        SYMENTRY_DATA   *pEntry = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if(!symTable_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if(NULL == pEntry) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        pHash = objArray_Get(this->pStack, this->cHashes);
-        if (OBJ_NIL == pHash) {
-            DEBUG_BREAK();
-            return ERESULT_GENERAL_FAILURE;
-        }
-        
-        eRc = nodeHash_DeleteA(pHash, cls, pStrA);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         symTable_Disable(
-        SYMTABLE_DATA		*this
+    ERESULT         nodeBTree_Disable(
+        NODEBTREE_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -604,15 +512,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         symTable_Enable(
-        SYMTABLE_DATA		*this
+    ERESULT         nodeBTree_Enable(
+        NODEBTREE_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -629,85 +537,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                         E n u m
-    //---------------------------------------------------------------
-    
-    OBJARRAY_DATA * symTable_Enum(
-        SYMTABLE_DATA   *this
-    )
-    {
-        NODEHASH_DATA   *pHash;
-        SYMENTRY_DATA   *pEntry = OBJ_NIL;
-        OBJARRAY_DATA   *pEnum = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if(!symTable_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL; //ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        //FIXME: pEnum = (OBJARRAY_DATA *)nodeHash_Enum(this);
-        
-        // Return to caller.
-        return pEnum;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                         F i n d
-    //---------------------------------------------------------------
-    
-    SYMENTRY_DATA * symTable_FindA(
-        SYMTABLE_DATA   *this,
-        int32_t         cls,
-        const
-        char            *pStrA
-    )
-    {
-        NODEHASH_DATA   *pHash;
-        SYMENTRY_DATA   *pEntry = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if(!symTable_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL; //ERESULT_INVALID_OBJECT;
-        }
-        if(NULL == pEntry) {
-            DEBUG_BREAK();
-            return OBJ_NIL; //ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        pHash = objArray_Get(this->pStack, this->cHashes);
-        if (OBJ_NIL == pHash) {
-            DEBUG_BREAK();
-            return OBJ_NIL; //ERESULT_GENERAL_FAILURE;
-        }
-        
-        pEntry = (SYMENTRY_DATA *)nodeHash_FindA(pHash, cls, pStrA);
-        
-        // Return to caller.
-        return pEntry;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SYMTABLE_DATA * symTable_Init(
-        SYMTABLE_DATA   *this
+    NODEBTREE_DATA *   nodeBTree_Init(
+        NODEBTREE_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SYMTABLE_DATA);
-        NODEHASH_DATA   *pHash;
-        ERESULT         eRc;
+        uint32_t        cbSize = sizeof(NODEBTREE_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -724,50 +561,31 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMTABLE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBTREE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SYMTABLE);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEBTREE);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&symTable_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTree_Vtbl);
         
-        this->pStack = objArray_New( );
-        if (OBJ_NIL == this->pStack) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        pHash = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
-        if (OBJ_NIL == pHash) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        eRc = objArray_AppendObj(this->pStack, pHash, NULL);
-        obj_Release(pHash);
-        pHash = OBJ_NIL;
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        ++this->cHashes;
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "symTable::sizeof(SYMTABLE_DATA) = %lu\n", sizeof(SYMTABLE_DATA));
+        fprintf(stderr, "nodeBTree::sizeof(NODEBTREE_DATA) = %lu\n", sizeof(NODEBTREE_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SYMTABLE_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(NODEBTREE_DATA));
     #endif
 
         return this;
@@ -779,15 +597,15 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         symTable_IsEnabled(
-        SYMTABLE_DATA		*this
+    ERESULT         nodeBTree_IsEnabled(
+        NODEBTREE_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -814,14 +632,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = symTable_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = nodeBTree_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "symTable", prefix,
+                        the object name, "nodeBTree", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -829,13 +647,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          symTable_QueryInfo(
+    void *          nodeBTree_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SYMTABLE_DATA     *this = objId;
+        NODEBTREE_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -844,7 +662,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -853,7 +671,7 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)symTable_Class();
+                return (void *)nodeBTree_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -883,22 +701,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return symTable_Disable;
+                            return nodeBTree_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return symTable_Enable;
+                            return nodeBTree_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return symTable_ToDebugString;
+                            return nodeBTree_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return symTable_ToJSON;
+                            return nodeBTree_ToJSON;
                         }
                         break;
                         
@@ -908,9 +726,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == symTable_ToDebugString)
+                if (pData == nodeBTree_ToDebugString)
                     return "ToDebugString";
-                if (pData == symTable_ToJSON)
+                if (pData == nodeBTree_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -927,19 +745,19 @@ extern "C" {
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     symTable_ToJSON(
-        SYMTABLE_DATA      *this
+     ASTR_DATA *     nodeBTree_ToJSON(
+        NODEBTREE_DATA      *this
     )
     {
         ERESULT         eRc;
-        //int             j;
+        int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -968,16 +786,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = symTable_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeBTree_ToDebugString(this,4);
      @endcode 
-     @param     this    SYMTABLE object pointer
+     @param     this    NODEBTREE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     symTable_ToDebugString(
-        SYMTABLE_DATA      *this,
+    ASTR_DATA *     nodeBTree_ToDebugString(
+        NODEBTREE_DATA      *this,
         int             indent
     )
     {
@@ -993,7 +811,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symTable_Validate(this) ) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1014,7 +832,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    symTable_getSize(this)
+                    nodeBTree_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -1051,15 +869,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            symTable_Validate(
-        SYMTABLE_DATA      *this
+    bool            nodeBTree_Validate(
+        NODEBTREE_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SYMTABLE) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODEBTREE) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1075,7 +893,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SYMTABLE_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(NODEBTREE_DATA)) ) {
             return false;
         }
 

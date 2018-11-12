@@ -1603,7 +1603,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            pProperty = nodeHash_FindA(this->pProperties, pName);
+            pProperty = nodeHash_FindA(this->pProperties, 0, pName);
         }
         
         // Return to caller.
@@ -1909,14 +1909,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = appl_ToDebugString(this,4);
-     @endcode:
-     @param:    this    APPL object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    APPL object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     appl_ToDebugString(
         APPL_DATA      *this,

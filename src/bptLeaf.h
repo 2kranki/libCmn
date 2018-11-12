@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          BPTLEAF Console Transmit Task (bptLeaf) Header
+//          B+ Tree Leaf Node (bptLeaf) Header
 //****************************************************************
 /*
  * Program
- *			Separate bptLeaf (bptLeaf)
+ *			B+ Tree Leaf Node (bptLeaf)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate bptLeaf to run things without complications

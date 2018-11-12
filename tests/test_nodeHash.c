@@ -167,17 +167,17 @@ int         test_nodeHash_AddFindDelete01(
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeHash_getSize(pHash);
             XCTAssertTrue( (cnt == (i+1)) );
-            pNodeFnd = nodeHash_FindA(pHash, strings[i]);
+            pNodeFnd = nodeHash_FindA(pHash, 0, strings[i]);
             XCTAssertTrue( (pNode) );
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
  
-        eRc = nodeHash_DeleteA(pHash, strings[5]);
+        eRc = nodeHash_DeleteA(pHash, 0, strings[5]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = nodeHash_getSize(pHash);
         XCTAssertTrue( (cnt == 9) );
-        pNodeFnd = nodeHash_FindA(pHash, strings[11]);
+        pNodeFnd = nodeHash_FindA(pHash, 0, strings[11]);
         XCTAssertTrue( (OBJ_NIL == pNodeFnd) );
         
         obj_Release(pHash);
@@ -217,7 +217,7 @@ int         test_nodeHash_JSON01(
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeHash_getSize(pHash);
             XCTAssertTrue( (cnt == (i+1)) );
-            pNodeFnd = nodeHash_FindA(pHash, strings[i]);
+            pNodeFnd = nodeHash_FindA(pHash, 0, strings[i]);
             XCTAssertTrue( (pNode) );
             obj_Release(pNode);
             pNode = OBJ_NIL;
@@ -287,7 +287,7 @@ int         test_nodeHash_Merge01(
     XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
     i = nodeHash_getSize(pHash1);
     XCTAssertTrue( (15 == i) );
-    pNodeFnd = nodeHash_FindA(pHash1, strings[1]);
+    pNodeFnd = nodeHash_FindA(pHash1, 0, strings[1]);
     XCTAssertTrue( (pNodeFnd) );
     pStr = node_getData(pNodeFnd);
     XCTAssertTrue( (pStr) );

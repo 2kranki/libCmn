@@ -347,10 +347,9 @@ extern "C" {
     
     /*!
      Get the token's data as a constant character string.
-     @return    If successful, an AStr object which must be released,
-                otherwise NULL.
+     @return    If successful, a nul-terminated string which must be
+                freed with mem_Free(), otherwise NULL.
      */
-    const
     char *          token_getTextA(
         TOKEN_DATA      *this
     );

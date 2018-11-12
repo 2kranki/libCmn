@@ -265,17 +265,20 @@ extern "C" {
     
     ERESULT         nodeHash_Delete(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NODE_DATA       *pNode
     );
     
     ERESULT         nodeHash_DeleteA(
         NODEHASH_DATA	*this,
+        int32_t         cls,
         const
         char            *pName
     );
 
     ERESULT         nodeHash_DeleteName(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NAME_DATA       *pName
     );
     
@@ -299,11 +302,13 @@ extern "C" {
     
     NODE_DATA *     nodeHash_Find(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NODE_DATA       *pNode
     );
     
     NODE_DATA *     nodeHash_FindA(
         NODEHASH_DATA	*this,
+        int32_t         cls,
         const
         char            *pName
     );
@@ -342,8 +347,17 @@ extern "C" {
     );
     
     
+    /*!
+     Find a node by name and optionally a class.
+     @param     this    Object Pointer
+     @param     pName   Name Object Pointer (required)
+     @param     cls     integer class (0 == any class)
+     @return    If successful, a valid Node Object Pointer,
+                otherwise, OBJ_NIL.
+     */
     NODE_DATA *     nodeHash_FindName(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         NAME_DATA       *pName
     );
 

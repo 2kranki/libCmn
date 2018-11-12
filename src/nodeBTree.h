@@ -1,22 +1,18 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          B+ Tree Index Node (bptIndex) Header
+//          Binary Tree of Nodes (nodeBTree) Header
 //****************************************************************
 /*
  * Program
- *			B+ Tree Index Node (bptIndex)
+ *			Binary Tree of Nodes (nodeBTree)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate bptIndex to run things without complications
- *          of interfering with the main bptIndex. A bptIndex may be 
- *          called a bptIndex on other O/S's.
- *
+ *			This object provides support for a binary tree of nodes.
  * Remarks
  *	1.      None
  *
  * History
- *	07/08/2018 Generated
+ *	11/12/2018 Generated
  */
 
 
@@ -53,13 +49,14 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <bptree.h>
+#include        <nodeLink.h>
 
 
-#ifndef         BPTINDEX_H
-#define         BPTINDEX_H
+#ifndef         NODEBTREE_H
+#define         NODEBTREE_H
 
 
+//#define   NODEBTREE_SINGLETON    1
 
 #ifdef	__cplusplus
 extern "C" {
@@ -71,16 +68,25 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct bptIndex_data_s	BPTINDEX_DATA;    // Inherits from OBJ.
 
-    typedef struct bptIndex_vtbl_s	{
+    typedef struct nodeBTree_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in bptIndex_object.c.
+        // method names to the vtbl definition in nodeBTree_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(BPTINDEX_DATA *);
-    } BPTINDEX_VTBL;
+        //bool        (*pIsEnabled)(NODEBTREE_DATA *);
+    } NODEBTREE_VTBL;
+
+    typedef struct nodeBTree_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in nodeBTree_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(NODEBTREE_DATA *);
+    } NODEBTREE_CLASS_VTBL;
+
 
 
 
@@ -93,23 +99,34 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  NODEBTREE_SINGLETON
+    NODEBTREE_DATA *     nodeBTree_Shared(
+        void
+    );
+
+    bool            nodeBTree_SharedReset(
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to bptIndex object if successful, otherwise OBJ_NIL.
+     @return    pointer to nodeBTree object if successful, otherwise OBJ_NIL.
      */
-    BPTINDEX_DATA *     bptIndex_Alloc(
+    NODEBTREE_DATA * nodeBTree_Alloc(
         void
     );
     
     
-    OBJ_ID              bptIndex_Class(
+    OBJ_ID          nodeBTree_Class(
         void
     );
     
     
-    BPTINDEX_DATA *     bptIndex_New(
+    NODEBTREE_DATA * nodeBTree_New(
         void
     );
     
@@ -126,23 +143,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     bptIndex_Disable(
-        BPTINDEX_DATA		*this
+    ERESULT         nodeBTree_Disable(
+        NODEBTREE_DATA  *this
     );
 
 
-    ERESULT     bptIndex_Enable(
-        BPTINDEX_DATA		*this
+    ERESULT         nodeBTree_Enable(
+        NODEBTREE_DATA	*this
     );
 
    
-    BPTINDEX_DATA *   bptIndex_Init(
-        BPTINDEX_DATA     *this
+    NODEBTREE_DATA * nodeBTree_Init(
+        NODEBTREE_DATA  *this
     );
 
 
-    ERESULT     bptIndex_IsEnabled(
-        BPTINDEX_DATA		*this
+    ERESULT         nodeBTree_IsEnabled(
+        NODEBTREE_DATA	*this
     );
     
  
@@ -150,16 +167,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = bptIndex_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeBTree_ToDebugString(this,4);
      @endcode 
-     @param     this    BPTINDEX object pointer
+     @param     this    NODEBTREE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    bptIndex_ToDebugString(
-        BPTINDEX_DATA     *this,
+    ASTR_DATA *    nodeBTree_ToDebugString(
+        NODEBTREE_DATA  *this,
         int             indent
     );
     
@@ -170,5 +187,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* BPTINDEX_H */
+#endif	/* NODEBTREE_H */
 

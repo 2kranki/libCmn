@@ -614,6 +614,7 @@ extern "C" {
     
     NODE_DATA *     nodeGraph_NodeFindA(
         NODEGRAPH_DATA  *this,
+        int32_t         cls,
         const
         char            *pNameA
     )
@@ -631,7 +632,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(this->pNodes, pNameA);
+        pNode = nodeHash_FindA(this->pNodes, cls, pNameA);
         eRc = obj_getLastError(this->pNodes);
 
         // Return to caller.

@@ -730,7 +730,7 @@ int         test_cmdutl_Input01(
             XCTAssertFalse( (OBJ_NIL == pHash) );
             XCTAssertTrue( (4 == nodeHash_getSize(pHash)) );
             
-            pNode = nodeHash_FindA(pHash, "one");
+            pNode = nodeHash_FindA(pHash, 0, "one");
             XCTAssertFalse( (OBJ_NIL == pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
@@ -739,7 +739,7 @@ int         test_cmdutl_Input01(
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))) );
             
-            pNode = nodeHash_FindA(pHash, "two");
+            pNode = nodeHash_FindA(pHash, 0, "two");
             XCTAssertFalse( (OBJ_NIL == pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
@@ -748,7 +748,7 @@ int         test_cmdutl_Input01(
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))) );
             
-            pNode = nodeHash_FindA(pHash, "three");
+            pNode = nodeHash_FindA(pHash, 0, "three");
             XCTAssertFalse( (OBJ_NIL == pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);
@@ -769,7 +769,7 @@ int         test_cmdutl_Input01(
             pStr = node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))) );
             
-            pNode = nodeHash_FindA(pHash, "four");
+            pNode = nodeHash_FindA(pHash, 0, "four");
             XCTAssertFalse( (OBJ_NIL == pNode) );
             pNode = node_getData(pNode);
             pStrA = node_getNameUTF8(pNode);

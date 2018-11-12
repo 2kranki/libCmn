@@ -1510,7 +1510,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(this->pHash, pSection);
+        pNode = nodeHash_FindA(this->pHash, 0, pSection);
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }

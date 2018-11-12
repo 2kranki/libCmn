@@ -98,6 +98,8 @@ extern "C" {
     typedef struct nodeArc_data_s           NODEARC_DATA;
     typedef struct nodeArray_data_s         NODEARRAY_DATA;
     typedef struct nodeATree_data_s         NODEATREE_DATA;
+    typedef struct nodeBTree_data_s         NODEBTREE_DATA;         // Inherits from OBJ
+    typedef struct nodeBTree_class_data_s   NODEBTREE_CLASS_DATA;   // Inherits from OBJ
     typedef struct nodeEntry_data_s         NODEENTRY_DATA;
     typedef struct nodeGraph_data_s         NODEGRAPH_DATA;
     typedef struct nodeHash_data_s          NODEHASH_DATA;
