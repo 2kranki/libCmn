@@ -160,6 +160,12 @@ extern	"C" {
     );
 
 
+    bool             listdl_ClearNode(
+        LISTDL_DATA     *pCB,
+        void            *pRecord
+    );
+    
+    
     // Contains() returns true if the list contains the provided
     // entry in the Doubly-Linked List otherwise false. This is
     // a relatively slow operation since it searches the list from
@@ -249,7 +255,7 @@ extern	"C" {
      Initialize the main control block to an empty list.
      Example:
      @code
-        bool  fRc = listdl_Init(&freeList, offsetof(LRU_SECTOR,lruList));
+        bool  fRc = listdl_Init(&freeList, offsetof(LRU_SECTOR, lruList));
      @endcode
      @param     this    list control block pointer
      @param     offset  number of bytes displacement into the list entry to

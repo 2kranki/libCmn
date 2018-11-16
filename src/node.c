@@ -440,6 +440,7 @@ extern "C" {
     }
     
     
+
     //---------------------------------------------------------------
     //                          M i s c
     //---------------------------------------------------------------
@@ -908,8 +909,9 @@ extern "C" {
         NODE_DATA       *pOther
     )
     {
-        ERESULT         eRc;
-        
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        int             i = 0;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -923,19 +925,35 @@ extern "C" {
         }
 #endif
 
-        eRc = name_Compare(this->pName, pOther->pName);
+        i = node_getClass((NODE_DATA *)this) - node_getClass((NODE_DATA *)pOther);
+        if (0 == i) {
+            eRc =   name_Compare(
+                            node_getName((NODE_DATA *)this),
+                            node_getName((NODE_DATA *)pOther)
+                    );
+            return eRc;
+        }
         
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+
         return eRc;
     }
     
     
     ERESULT         node_CompareA(
         NODE_DATA       *this,
+        int32_t         cls,
         const
         char            *pName
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -950,7 +968,24 @@ extern "C" {
         }
 #endif
         
-        eRc = name_CompareA(this->pName, pName);
+        if (0 == cls) {
+            eRc = name_CompareA(this->pName, pName);
+        }
+        else {
+            int         iRc;
+            iRc = node_getClass(this) - cls;
+            if (0 == iRc) {
+                eRc = name_CompareA(this->pName, pName);
+                return eRc;
+            }
+            if (iRc < 0) {
+                eRc = ERESULT_SUCCESS_GREATER_THAN;
+            }
+            else {
+                eRc = ERESULT_SUCCESS_LESS_THAN;
+            }
+            
+        }
         
         return eRc;
     }

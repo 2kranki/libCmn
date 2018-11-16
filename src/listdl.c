@@ -224,6 +224,32 @@ void * 			listdl_AddBefore(
 
 
 //**********************************************************
+//                    C l e a r  N o d e
+//**********************************************************
+
+bool             listdl_ClearNode(
+    LISTDL_DATA     *pCB,
+    void            *pRecord
+)
+{
+    LISTDL_NODE     *pRecordNode;
+    
+    // Do initialization.
+    if( NULL == pRecord ) {
+        return false;
+    }
+    pRecordNode = Ptr2Node( pRecord );
+    
+    pRecordNode->pNext = NULL;
+    pRecordNode->pPrev = NULL;
+    
+    // Return to caller.
+    return true;
+}
+
+
+
+//**********************************************************
 //					C o n t a i n s
 //**********************************************************
 

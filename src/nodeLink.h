@@ -181,6 +181,11 @@ extern "C" {
     );
     
     
+    uint32_t        nodeLink_getHash(
+        NODELINK_DATA   *this
+    );
+    
+    
     uint32_t        nodeLink_getIndex(
         NODELINK_DATA   *this
     );
@@ -276,17 +281,34 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Compare the two provided object's types and names.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     Compare this node's class to the other node's class. If they are equal,
+     then compare the name.  So, this compares the name within class.
+     @result
+     ERESULT_SUCCESS_EQUAL if this == other,
+     ERESULT_SUCCESS_LESS_THAN if this < other
+     or ERESULT_SUCCESS_GREATER_THAN if this > other.
      */
     ERESULT         nodeLink_Compare(
-        NODELINK_DATA     *this,
-        NODELINK_DATA     *pOther
+        NODELINK_DATA   *this,
+        NODELINK_DATA   *pOther
     );
-
-   
+    
+    
+    /*!
+     Compare this node's name to a character string.
+     @result
+     ERESULT_SUCCESS_EQUAL if this == pName,
+     ERESULT_SUCCESS_LESS_THAN if this < pName
+     or ERESULT_SUCCESS_GREATER_THAN if this > pName.
+     */
+    ERESULT         nodeLink_CompareA(
+        NODELINK_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pName
+    );
+    
+    
     NODELINK_DATA *   nodeLink_Init(
         NODELINK_DATA     *this
     );

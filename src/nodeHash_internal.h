@@ -51,8 +51,13 @@
 extern "C" {
 #endif
 
-#define HASH_BLOCK_SIZE  4096
-    
+#if defined(__MACOSX_ENV__)
+#   define HASH_BLOCK_SIZE  4096
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#   define HASH_BLOCK_SIZE  4096
+#endif
+
     
     //      Hash Node Descriptor
 #pragma pack(push, 1)
@@ -87,6 +92,7 @@ struct nodeHash_data_s	{
     LISTDL_DATA     freeList;       // Free Node Linked List
     LISTDL_DATA     blocks;
     uint32_t        cBlock;         // Number of Nodes per Block
+    uint32_t        blockSize;
     uint32_t        cHash;
     LISTDL_DATA     *pHash;         // Main Hash Table
 

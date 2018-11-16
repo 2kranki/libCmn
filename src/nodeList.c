@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include "nodeList_internal.h"
 #include "nodeArray.h"
+#include "blocks_internal.h"
 #include "enum_internal.h"
 #include "utf8.h"
 
@@ -70,6 +71,16 @@ extern "C" {
         uint32_t        i;
         
         // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeList_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+        if (0 == this->blockSize) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
         if ( 0 == listdl_Count(&this->freeList) )
             ;
         else {
@@ -77,15 +88,14 @@ extern "C" {
         }
         
         // Get a new block.
-        i = sizeof(NODELIST_BLOCK) + (this->cBlock * sizeof(NODELIST_NODE));
-        pBlock = (NODELIST_BLOCK *)mem_Malloc( i );
+        pBlock = (NODELIST_BLOCK *)mem_Malloc( this->blockSize );
         if( NULL == pBlock ) {
             return false;
         }
         listdl_Add2Tail(&this->blocks, pBlock);
         
         // Now chain the entries to the Free chain.
-        for (i=0; i<this->cBlock; ++i) {
+        for (i=0; i<this->cRecordsPerBlock; ++i) {
             listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
         }
         
@@ -98,24 +108,21 @@ extern "C" {
     static
     NODELIST_NODE * nodeList_FindNode(
         NODELIST_DATA   *this,
-        const
-        char            *pKey
+        NODE_DATA       *pNode
     )
     {
-        NODELIST_NODE   *pNode;
-        int             iRc;
-        const
-        char            *pName;
+        NODELIST_NODE   *pNodeInt;
+        ERESULT         eRc;
         
-        pNode = listdl_Head(&this->list);
-        while ( pNode ) {
-            pName = node_getNameUTF8(pNode->pNode);
-            iRc = utf8_StrCmp(pKey,pName);
-            mem_Free((void *)pName);
-            if (0 == iRc) {
-                return pNode;
+        pNodeInt = listdl_Head(&this->list);
+        while ( pNodeInt ) {
+            eRc = node_Compare(pNode, pNodeInt->pNode);
+            if (ERESULT_SUCCESS_GREATER_THAN == eRc)
+                ;
+            else {
+                return pNodeInt;
             }
-            pNode = listdl_Next(&this->list, pNode);
+            pNodeInt = listdl_Next(&this->list, pNodeInt);
         }
         
         // Return to caller.
@@ -124,7 +131,66 @@ extern "C" {
     
     
     
+    static
+    NODELIST_NODE * nodeList_FindNodeA(
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pKeyA
+    )
+    {
+        NODELIST_NODE   *pNodeInt;
+        ERESULT         eRc;
+        
+        pNodeInt = listdl_Head(&this->list);
+        while ( pNodeInt ) {
+            eRc = node_CompareA(pNodeInt->pNode, cls, pKeyA);
+            if (eRc == ERESULT_SUCCESS_EQUAL) {
+                return pNodeInt;
+            }
+            if (obj_Flag(this, LIST_FLAG_ORDERED)) {
+                if (eRc == ERESULT_SUCCESS_LESS_THAN)
+                    return pNodeInt;
+            }
+            pNodeInt = listdl_Next(&this->list, pNodeInt);
+        }
+                
+        // Return to caller.
+        return NULL;
+    }
+                    
+                    
+                    
+    static
+    int             nodeList_SortCompare(
+        NODE_DATA       *pNode1,
+        NODE_DATA       *pNode2
+    )
+    {
+        int             iRc;
+        ERESULT         eRc;
+        
+        iRc = node_getType(pNode1) - node_getType(pNode2);
+        if (0 == iRc) {
+            eRc =   name_Compare(
+                                 node_getName(pNode1),
+                                 node_getName(pNode2)
+                    );
+            if (ERESULT_SUCCESS_EQUAL == eRc)
+                iRc = 0;
+            else if (ERESULT_SUCCESS_LESS_THAN == eRc)
+                iRc = -1;
+            else
+                iRc = 1;
+        }
+
+        // Return to caller.
+        return iRc;
+    }
     
+    
+    
+
 
 
     /****************************************************************
@@ -173,6 +239,61 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                       O r d e r e d
+    //---------------------------------------------------------------
+    
+    bool            nodeList_getOrdered(
+        NODELIST_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeList_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        if (obj_Flag(this, LIST_FLAG_ORDERED))
+            return true;
+        else
+            return false;
+    }
+    
+    bool            nodeList_setOrdered(
+        NODELIST_DATA   *this,
+        bool            fValue
+    )
+    {
+        bool            fOrdered = false;
+        ERESULT         eRc;
+#ifdef NDEBUG
+#else
+        if( !nodeList_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        if (obj_Flag(this, LIST_FLAG_ORDERED))
+            fOrdered = true;
+        obj_FlagSet(this, LIST_FLAG_ORDERED, fValue);
+        if (!fOrdered && fValue) {
+            eRc = nodeList_SortAscending(this);
+            if (ERESULT_FAILED(eRc))
+                return false;
+        }
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       P r i o r i t y
+    //---------------------------------------------------------------
+    
     uint16_t        nodeList_getPriority(
         NODELIST_DATA     *this
     )
@@ -209,10 +330,15 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+    
     uint32_t        nodeList_getSize(
         NODELIST_DATA   *this
     )
     {
+
 #ifdef NDEBUG
 #else
         if( !nodeList_Validate(this) ) {
@@ -270,10 +396,22 @@ extern "C" {
         }
         obj_Retain(pNode);
         pEntry->pNode = pNode;
-        listdl_Add2Head(&this->list, pEntry);
+        if (obj_Flag(this, LIST_FLAG_ORDERED)) {
+            NODELIST_NODE   *pNodeInt;
+            // Find insertion point.
+            pNodeInt = nodeList_FindNode(this, pNode);
+            // Do the insertion.
+            if (pNodeInt) {
+                listdl_AddBefore(&this->list, pNodeInt, pEntry);
+            }
+            else
+                listdl_Add2Tail(&this->list, pEntry);
+        }
+        else
+            listdl_Add2Head(&this->list, pEntry);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
 
 
@@ -311,7 +449,19 @@ extern "C" {
         }
         obj_Retain(pNode);
         pEntry->pNode = pNode;
-        listdl_Add2Tail(&this->list, pEntry);
+        if (obj_Flag(this, LIST_FLAG_ORDERED)) {
+            NODELIST_NODE   *pNodeInt;
+            // Find insertion point.
+            pNodeInt = nodeList_FindNode(this, pNode);
+            // Do the insertion.
+            if (pNodeInt) {
+                listdl_AddBefore(&this->list, pNodeInt, pEntry);
+            }
+            else
+                listdl_Add2Tail(&this->list, pEntry);
+        }
+        else
+            listdl_Add2Tail(&this->list, pEntry);
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
@@ -412,7 +562,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeList_Delete(
-        NODELIST_DATA	*cbp,
+        NODELIST_DATA	*this,
+        int32_t         cls,
         const
         char            *pName
     )
@@ -422,7 +573,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -432,15 +583,15 @@ extern "C" {
         }
 #endif
         
-        pEntry = nodeList_FindNode(cbp, pName);
+        pEntry = nodeList_FindNodeA(this, cls, pName);
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
         
         obj_Release(pEntry->pNode);
         pEntry->pNode = OBJ_NIL;
-        listdl_Delete(&cbp->list, pEntry);
-        listdl_Add2Tail(&cbp->freeList, pEntry);
+        listdl_Delete(&this->list, pEntry);
+        listdl_Add2Tail(&this->freeList, pEntry);
         
         // Return to caller.
         return ERESULT_SUCCESSFUL_COMPLETION;
@@ -448,7 +599,7 @@ extern "C" {
     
     
     ERESULT         nodeList_DeleteHead(
-        NODELIST_DATA	*cbp
+        NODELIST_DATA	*this
     )
     {
         NODELIST_NODE   *pEntry = OBJ_NIL;
@@ -456,29 +607,29 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pEntry = listdl_Head(&cbp->list);
+        pEntry = listdl_Head(&this->list);
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
         
         obj_Release(pEntry->pNode);
         pEntry->pNode = OBJ_NIL;
-        listdl_Delete(&cbp->list, pEntry);
-        listdl_Add2Tail(&cbp->freeList, pEntry);
+        listdl_Delete(&this->list, pEntry);
+        listdl_Add2Tail(&this->freeList, pEntry);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
     ERESULT         nodeList_DeleteTail(
-        NODELIST_DATA	*cbp
+        NODELIST_DATA	*this
     )
     {
         NODELIST_NODE   *pEntry = OBJ_NIL;
@@ -486,24 +637,24 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pEntry = listdl_Tail(&cbp->list);
+        pEntry = listdl_Tail(&this->list);
         if (NULL == pEntry) {
             return ERESULT_DATA_NOT_FOUND;
         }
         
         obj_Release(pEntry->pNode);
         pEntry->pNode = OBJ_NIL;
-        listdl_Delete(&cbp->list, pEntry);
-        listdl_Add2Tail(&cbp->freeList, pEntry);
+        listdl_Delete(&this->list, pEntry);
+        listdl_Add2Tail(&this->freeList, pEntry);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -533,10 +684,12 @@ extern "C" {
 #endif
         
         pEnum = enum_New();
-        pEntry = listdl_Head(&this->list);
-        while ( pEntry ) {
-            eRc = enum_Append(pEnum, pEntry->pNode, NULL);
-            pEntry = listdl_Next(&this->list, pEntry);
+        if (pEnum) {
+            pEntry = listdl_Head(&this->list);
+            while ( pEntry ) {
+                eRc = enum_Append(pEnum, pEntry->pNode, NULL);
+                pEntry = listdl_Next(&this->list, pEntry);
+            }
         }
         
         // Return to caller.
@@ -544,15 +697,16 @@ extern "C" {
     }
     
     
+
     //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
 
-    ERESULT         nodeList_Find(
-        NODELIST_DATA	*cbp,
+    NODE_DATA *     nodeList_FindA(
+        NODELIST_DATA	*this,
+        int32_t         cls,
         const
-        char            *pName,
-        NODE_DATA       **ppNode
+        char            *pName
     )
     {
         NODELIST_NODE   *pEntry = OBJ_NIL;
@@ -560,29 +714,26 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
         if( OBJ_NIL == pName ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
         }
     #endif
         
-        pEntry = nodeList_FindNode( cbp, pName );
+        pEntry = nodeList_FindNodeA(this, cls, pName);
         if (pEntry) {
-            if (ppNode) {
-                *ppNode = pEntry->pNode;
-            }
-            return ERESULT_SUCCESSFUL_COMPLETION;
+            return pEntry->pNode;
         }
         
         // Return to caller.
-        if (ppNode) {
-            *ppNode = OBJ_NIL;
-        }
-        return ERESULT_DATA_NOT_FOUND;
+        //return ERESULT_DATA_NOT_FOUND;
+        return OBJ_NIL;
     }
 
 
@@ -629,6 +780,42 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeList_Get(
+        NODELIST_DATA   *this,
+        uint32_t        index
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        NODELIST_NODE   *pEntry = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if ((index >= 1) && (index <= listdl_Count(&this->list)) )
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEntry = listdl_Index(&this->list, index);
+        if (pEntry)
+            pNode = pEntry->pNode;
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -649,9 +836,10 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeList_Vtbl);
         
-        cbSize = HASH_BLOCK_SIZE - sizeof(NODELIST_BLOCK);
+        this->blockSize = LIST_BLOCK_SIZE;
+        cbSize = this->blockSize - sizeof(NODELIST_BLOCK);
         cbSize /= sizeof(NODELIST_NODE);
-        this->cBlock = cbSize;
+        this->cRecordsPerBlock = cbSize;
         
         // Initialize the lists.
         listdl_Init(&this->freeList, offsetof(NODELIST_NODE, list));
@@ -676,41 +864,74 @@ extern "C" {
     //                         N o d e s
     //---------------------------------------------------------------
     
-    ERESULT         nodeList_Nodes(
-        NODELIST_DATA	*cbp,
-        NODEARRAY_DATA  **ppKeys
+    NODEARRAY_DATA * nodeList_Nodes(
+        NODELIST_DATA	*this
     )
     {
         NODEARRAY_DATA  *pKeys;
         NODELIST_NODE   *pEntry = OBJ_NIL;
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeList_Validate( cbp ) ) {
+        if( !nodeList_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == ppKeys ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
 #endif
         
         pKeys = nodeArray_New();
-        pEntry = listdl_Head(&cbp->list);
+        pEntry = listdl_Head(&this->list);
         while ( pEntry ) {
             eRc = nodeArray_AppendNode(pKeys, pEntry->pNode, NULL);
-            if (ERESULT_HAS_FAILED(eRc)) {
+            if (ERESULT_FAILED(eRc)) {
                 break;
             }
-            pEntry = listdl_Next(&cbp->list, pEntry);
+            pEntry = listdl_Next(&this->list, pEntry);
         }
         nodeArray_SortAscending(pKeys);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return pKeys;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         S o r t
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeList_SortAscending(
+        NODELIST_DATA   *this
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        bool            fRc;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef NDEBUG
+#else
+        if( !nodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (listdl_Count(&this->list) < 2) {
+            return ERESULT_SUCCESS;
+        }
+        
+        fRc = listdl_Sort(&this->list, (void *)nodeList_SortCompare);
+        if (fRc)
+            eRc = ERESULT_SUCCESS;
+        
+        // Return to caller.
+        return eRc;
     }
     
     
@@ -778,20 +999,35 @@ extern "C" {
     #ifdef NDEBUG
     #else
     bool            nodeList_Validate(
-        NODELIST_DATA      *cbp
+        NODELIST_DATA   *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_NODELIST) )
+        uint32_t        i;
+        
+        if (this) {
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODELIST) )
                 ;
             else
                 return false;
         }
         else
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(NODELIST_DATA)) )
+        if (!(obj_getSize(this) >= sizeof(NODELIST_DATA)))
             return false;
 
+        if (this->blockSize) {
+            i = this->blockSize - sizeof(NODELIST_BLOCK);
+            i /= sizeof(NODELIST_NODE);
+            if (i == this->cRecordsPerBlock)
+                ;
+            else
+                return false;
+        }
+        else {
+            if (this->cRecordsPerBlock)
+                return false;
+        }
+        
         // Return to caller.
         return true;
     }

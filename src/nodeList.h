@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Node Hash (nodeList) Header
+//                  Node List (nodeList) Header
 //****************************************************************
 /*
  * Program
- *			Hash Table of Nodes (nodeList)
+ *			List of Nodes (nodeList)
  * Purpose
  *			This object provides a hash table keyed by the
  *          node name with the node as the data.
@@ -54,6 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <node.h>
+#include        <nodeArray.h>
 #include        <enum.h>
 
 
@@ -126,6 +127,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            nodeList_getOrdered(
+        NODELIST_DATA   *this
+    );
+    
+    bool            nodeList_setOrdered(
+        NODELIST_DATA   *this,
+        bool            fValue
+    );
+
+    
     /* Size() returns the current number of used entries.
      * Returns:
      *		Current Number of Entries in Table
@@ -161,6 +172,7 @@ extern "C" {
     // Deletes first entry in list that matches the name.
     ERESULT         nodeList_Delete(
         NODELIST_DATA	*this,
+        int32_t         cls,
         const
         char            *pName
     );
@@ -186,11 +198,11 @@ extern "C" {
     );
     
     
-    ERESULT         nodeList_Find(
+    NODE_DATA *     nodeList_FindA(
         NODELIST_DATA	*this,
+        int32_t         cls,
         const
-        char            *pName,
-        NODE_DATA       **ppNode
+        char            *pName
     );
     
     
@@ -201,11 +213,42 @@ extern "C" {
     );
     
     
+    NODE_DATA *     nodeList_Get(
+        NODELIST_DATA   *this,
+        uint32_t        index
+    );
+    
+    
     NODELIST_DATA * nodeList_Init(
         NODELIST_DATA   *this
     );
 
 
+    /*!
+     Return an array of all nodes in the graph sorted by name in
+     ascending order.
+     @param     this    Object Pointer
+     @return    NodeArray object pointer which must be released if
+                successful.  Otherwise, OBJ_NIL and object's error
+                code is set to the specific error.
+     @warning   Remember to release the returned object.
+     */
+    NODEARRAY_DATA * nodeList_Nodes(
+        NODELIST_DATA   *this
+    );
+    
+    
+    /*!
+     Sort the list in ascending sequence.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         nodeList_SortAscending(
+        NODELIST_DATA   *this
+    );
+    
+    
     /*!
      Create a string that describes this object and the
      objects within it.

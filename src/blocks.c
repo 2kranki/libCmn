@@ -106,7 +106,8 @@ extern "C" {
 
 
     BLOCKS_DATA *   blocks_New(
-        uint32_t        blockSize
+        uint32_t        blockSize,
+        uint32_t        recordSize
     )
     {
         BLOCKS_DATA   *this;
@@ -126,8 +127,9 @@ extern "C" {
     {
         uint32_t        avail = 0;
         
-        if (blockSize == 0)
-            blockSize = BLOCKS_BLOCK_SIZE;
+        if (blockSize == 0) {
+            blockSize = BLKS_BLOCK_SIZE;
+        }
         avail = blockSize - sizeof(BLOCKS_BLOCK);
         
         return avail;
@@ -152,7 +154,7 @@ extern "C" {
             return 0;
         }
 #endif
-        this->eRc = ERESULT_SUCCESS;
+
         return this->blockAvail;
     }
     
@@ -169,31 +171,12 @@ extern "C" {
             return 0;
         }
 #endif
-        this->eRc = ERESULT_SUCCESS;
+
         return this->blockSize;
     }
     
     
     
-    ERESULT         blocks_getLastError(
-        BLOCKS_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        return this->eRc;
-    }
-
-
-
     uint32_t        blocks_getSize(
         BLOCKS_DATA       *this
     )
@@ -205,7 +188,7 @@ extern "C" {
             return 0;
         }
 #endif
-        this->eRc = ERESULT_SUCCESS;
+
         return this->cBlocks;
     }
 
@@ -240,14 +223,12 @@ extern "C" {
         
         pBlock = blocks_AddBlock(this);
         if (pBlock == NULL) {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
             return NULL;
         }
         memset(pBlock->data, 0, this->blockAvail);
         ++this->cBlocks;
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return pBlock->data;
     }
     
@@ -275,18 +256,18 @@ extern "C" {
         BLOCKS_DATA      *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !blocks_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( !blocks_Validate(pOther) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
@@ -319,10 +300,10 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        this->eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
+        eRc = ERESULT_SUCCESS;
+        eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
     //eom:
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -358,7 +339,7 @@ extern "C" {
         }
 #endif
         
-        pOther = blocks_New(this->blockSize);
+        pOther = blocks_New(this->blockSize, this->recordSize);
         if (pOther) {
             eRc = blocks_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -369,7 +350,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -481,7 +461,7 @@ extern "C" {
 #else
         if( !blocks_Validate(this) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_OBJECT;
+            //this->eRc = ERESULT_INVALID_OBJECT;
             return NULL;
         }
 #endif
@@ -490,14 +470,14 @@ extern "C" {
         for (; pBlock; ) {
             ++count;
             if (count == index) {
-                this->eRc = ERESULT_SUCCESS;
+                //this->eRc = ERESULT_SUCCESS;
                 return pBlock->data;
             }
             pBlock = listdl_Next(&this->blocks, pBlock);
         }
         
         // Return to caller.
-        this->eRc = ERESULT_DATA_NOT_FOUND;
+        //this->eRc = ERESULT_DATA_NOT_FOUND;
         return NULL;
     }
     
@@ -541,10 +521,10 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&blocks_Vtbl);
         
         if (blockSize == 0)
-            blockSize = BLOCKS_BLOCK_SIZE;
+            blockSize = BLKS_BLOCK_SIZE;
         this->blockSize = blockSize;
         this->blockAvail = blocks_Available(blockSize);
-        listdl_Init( &this->blocks,  offsetof(BLOCKS_BLOCK, list) );
+        listdl_Init(&this->blocks,  offsetof(BLOCKS_BLOCK, list));
 
     #ifdef NDEBUG
     #else
@@ -561,6 +541,39 @@ extern "C" {
 
      
 
+    //----------------------------------------------------------
+    //                  N e w  R e c o r d
+    //----------------------------------------------------------
+    
+    BLOCKS_NODE *   blocks_NewRecord(
+        BLOCKS_DATA     *this
+    )
+    {
+        //uint32_t        i;
+        BLOCKS_NODE     *pNode = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            //this->eRc = ERESULT_INVALID_OBJECT;
+            return NULL;
+        }
+#endif
+        
+        if (listdl_Count(&this->freeList))
+            ;
+        else {
+            
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -601,9 +614,9 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(blocks)  cBlocks=%d\n",
+                     "{%p(blocks)  Records per Block=%d\n",
                      this,
-                     this->cBlocks
+                     this->cRecordsPerBlock
             );
         AStr_AppendA(pStr, str);
 
@@ -641,6 +654,8 @@ extern "C" {
         BLOCKS_DATA      *this
     )
     {
+        uint32_t        i;
+
         if( this ) {
             if ( obj_IsKindOf(this,OBJ_IDENT_BLOCKS) )
                 ;
@@ -649,12 +664,25 @@ extern "C" {
         }
         else
             return false;
-        this->eRc = ERESULT_INVALID_OBJECT;
         if( !(obj_getSize(this) >= sizeof(BLOCKS_DATA)) )
             return false;
 
+#ifdef XYZZY
+        if (this->blockSize) {
+            i = this->blockSize - sizeof(BLOCKS_BLOCK);
+            i /= sizeof(NODELIST_NODE);
+            if (i == this->cBlock)
+                ;
+            else
+                return false;
+        }
+        else {
+            if (this->cBlock)
+                return false;
+        }
+#endif
+        
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

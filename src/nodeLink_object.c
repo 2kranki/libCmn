@@ -278,7 +278,7 @@ NODELINK_VTBL     nodeLink_Vtbl = {
             (P_OBJ_COMPARE)nodeLink_Compare,
             NULL, 			// (P_OBJ_PTR)nodeLink_Copy,
             NULL, 			// (P_OBJ_PTR)nodeLink_DeepCopy,
-            NULL 			// (P_OBJ_HASH)nodeLink_Hash,
+            (P_OBJ_HASH)nodeLink_getHash,
         },
         node_getType,
         node_setType,

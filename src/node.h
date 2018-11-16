@@ -362,7 +362,8 @@ extern "C" {
     
     
     /*!
-     Compare this node's name to the other node's name.
+     Compare this node's class to the other node's class. If they are equal,
+     then compare the name.  So, this compares the name within class.
      @result
                  ERESULT_SUCCESS_EQUAL if this == other,
                  ERESULT_SUCCESS_LESS_THAN if this < other
@@ -383,6 +384,7 @@ extern "C" {
      */
     ERESULT         node_CompareA(
         NODE_DATA       *this,
+        int32_t         cls,
         const
         char            *pName
     );

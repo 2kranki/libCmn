@@ -125,7 +125,7 @@ int         test_nodeHash_OpenClose(
     
     pObj = nodeHash_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeHash_Init( pObj, 13 );
+    pObj = nodeHash_Init(pObj, 13);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -179,6 +179,82 @@ int         test_nodeHash_AddFindDelete01(
         XCTAssertTrue( (cnt == 9) );
         pNodeFnd = nodeHash_FindA(pHash, 0, strings[11]);
         XCTAssertTrue( (OBJ_NIL == pNodeFnd) );
+        
+        obj_Release(pHash);
+        pHash = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_nodeHash_AddFindDelete02(
+    const
+    char        *pTestName
+)
+{
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pNode;
+    NODE_DATA       *pNodeFnd;
+    NODEHASH_NODE   *pIntNode;
+    ERESULT         eRc;
+    char            **pStrA;
+    uint32_t        numBuckets;     // Number of Hash Buckets
+    uint32_t        numEmpty;       // Number of Empty Hash Buckets
+    uint32_t        numMax;         // Maximum Number in any one Hash Bucket
+    uint32_t        numAvg;         // Average Number in each Hash Bucket
+    uint32_t        i;
+    uint32_t        iMax;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pHash = nodeHash_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pHash) );
+    pHash = nodeHash_Init( pHash, 5 );
+    XCTAssertFalse( (OBJ_NIL == pHash) );
+    if (pHash) {
+        
+        pStrA = strings;
+        while (*pStrA) {
+            pNode = node_NewWithUTF8ConAndClass(*pStrA, 0, OBJ_NIL);
+            eRc = nodeHash_Add(pHash, pNode);
+            XCTAssertTrue( (!ERESULT_FAILED(eRc)) );
+            pNodeFnd = nodeHash_FindA(pHash, 0, *pStrA);
+            XCTAssertTrue( (pNode) );
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+            ++pStrA;
+        }
+        
+        eRc = nodeHash_CalcHashStats(pHash, &numBuckets, &numEmpty, &numMax, &numAvg);
+        XCTAssertTrue( (!ERESULT_FAILED(eRc)) );
+        fprintf(
+                stderr,
+                "\tnumBuckets=%d numEmpty=%d numMax=%d numAvg=%d\n",
+                numBuckets,
+                numEmpty,
+                numMax,
+                numAvg
+        );
+        
+        iMax = pHash->cHash;
+        for (i=0; i<iMax; ++i) {
+            LISTDL_DATA     *pNodeList;
+            ASTR_DATA       *pStr = OBJ_NIL;
+            
+            pNodeList = &pHash->pHash[i];
+            pIntNode = listdl_Head(pNodeList);
+            fprintf(stderr, "\tHash Chain %d:\n", (i+1));
+            while ( pIntNode ) {
+                pStr = node_ToDebugString(pIntNode->pNode, 4);
+                fprintf(stderr, "\t%s", AStr_getData(pStr));
+                obj_Release(pStr);
+                pIntNode = listdl_Next(pNodeList, pIntNode);
+            }
+                
+        }
         
         obj_Release(pHash);
         pHash = OBJ_NIL;
@@ -371,6 +447,7 @@ TINYTEST_START_SUITE(test_nodeHash);
     TINYTEST_ADD_TEST(test_nodeHash_Expand01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_Merge01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

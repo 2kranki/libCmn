@@ -113,15 +113,14 @@ extern "C" {
         uint32_t        i;
         
         // Do initialization.
-        if ( 0 == listdl_Count(&this->freeList) )
+        if (0 == listdl_Count(&this->freeList))
             ;
         else {
             return true;
         }
         
         // Get a new block.
-        i = sizeof(NODEHASH_BLOCK) + (this->cBlock * sizeof(NODEHASH_NODE));
-        pBlock = (NODEHASH_BLOCK *)mem_Malloc( i );
+        pBlock = (NODEHASH_BLOCK *)mem_Calloc(1, this->blockSize);
         if( NULL == pBlock ) {
             return false;
         }
@@ -136,6 +135,35 @@ extern "C" {
         return true;
     }
     
+    
+    
+    /*!
+     Find the nodeHash which contains the given name and optionally class.
+     @return    If successful, return the internal hash node pointer;
+     otherwise return NULL.
+     */
+    static
+    NODEHASH_NODE * nodeHash_GetFreeNode(
+        NODEHASH_DATA   *this
+    )
+    {
+        NODEHASH_NODE   *pEntry = NULL;
+        
+        // Do initialization.
+        
+        // Determine the entry number.
+        if (0 == listdl_Count(&this->freeList)) {
+            if (nodeHash_AddBlock(this))
+                ;
+            else {
+                return NULL;
+            }
+        }
+        pEntry = listdl_DeleteHead(&this->freeList);
+
+        // Return to caller.
+        return pEntry;
+    }
     
     
     /*!
@@ -197,6 +225,7 @@ extern "C" {
         // Return to caller.
         return NULL;
     }
+    
     
     
     static
@@ -355,6 +384,11 @@ extern "C" {
     {
         LISTDL_DATA     *pNodeList;
         NODEHASH_NODE   *pEntry;
+        NODEHASH_NODE   *pEntryNew;
+        NAME_DATA       *pName;
+        uint32_t        hash;
+        int32_t         cls;
+        ERESULT         eRc = ERESULT_FAILURE;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -369,30 +403,58 @@ extern "C" {
         }
     #endif
 
+        pName = node_getName(pNode);
+        hash = name_getHash(pName);
+        cls = node_getClass(pNode);
+        pNodeList = nodeHash_NodeListFromHash(this, hash);
+        pEntry = listdl_Head(pNodeList);
+        while ( pEntry ) {
+            if (cls) {
+                if (cls == node_getClass(pEntry->pNode)) {
+                    if (node_getHash(pEntry->pNode) == hash) {
+                        eRc = name_Compare(pName, node_getName(pEntry->pNode));
+                        if (ERESULT_SUCCESS_EQUAL == eRc) {
+                            break;
+                        }
+                        if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                if (node_getHash(pEntry->pNode) == hash) {
+                    eRc = name_Compare(pName, node_getName(pEntry->pNode));
+                    if (ERESULT_SUCCESS_EQUAL == eRc) {
+                        break;
+                    }
+                    if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                        break;
+                    }
+                }
+            }
+            pEntry = listdl_Next(pNodeList, pEntry);
+        }
+        
+        if (ERESULT_SUCCESS_EQUAL == eRc) {
+        }
+
         pEntry = nodeHash_FindNodeHash(this, 0, node_getName(pNode));
         if (pEntry && !obj_IsFlag(this, NODEHASH_FLAG_DUPS)) {
             return ERESULT_DATA_ALREADY_EXISTS;
         }
         
-        // Determine the entry number.
-        if (0 == listdl_Count(&this->freeList)) {
-            if ( nodeHash_AddBlock(this) )
-                ;
-            else {
-                return ERESULT_INSUFFICIENT_MEMORY;
-            }
-        }
-        pEntry = listdl_DeleteHead(&this->freeList);
-        if (NULL == pEntry) {
+        // Get an internal node.
+        pEntryNew = nodeHash_GetFreeNode(this);
+        if (NULL == pEntryNew) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
         
-        // Add it to the table.
+        // Add it to the hash chain.
         obj_Retain(pNode);
-        pEntry->pNode = pNode;
+        pEntryNew->pNode = pNode;
         
-        pNodeList = nodeHash_NodeListFromHash(this, node_getHash(pNode));
-        listdl_Add2Tail(pNodeList, pEntry);
+        listdl_AddBefore(pNodeList, pEntry, pEntryNew);
         
         ++this->size;
         
@@ -1385,6 +1447,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeHash_Vtbl);
         
+        this->blockSize = HASH_BLOCK_SIZE;
         this->cHash = cHash;
         cbSize = HASH_BLOCK_SIZE - sizeof(NODEHASH_BLOCK);
         cbSize /= sizeof(NODEHASH_NODE);
@@ -1392,7 +1455,7 @@ extern "C" {
         
         // Allocate the Hash Table.
         cbSize = cHash * sizeof(LISTDL_DATA);
-        this->pHash = (LISTDL_DATA *)mem_Malloc( cbSize );
+        this->pHash = (LISTDL_DATA *)mem_Malloc(cbSize);
         if (NULL == this->pHash) {
             DEBUG_BREAK();
             mem_Free(this);
@@ -1669,7 +1732,7 @@ extern "C" {
         
         AStr_AppendCharRepeatA(pStr, 1, '\n');
         AStr_AppendCharRepeatA(pStr, indent, ' ');
-        AStr_AppendPrint( pStr, "%p(%s)}\n", this, pInfo->pClassName);
+        AStr_AppendPrint( pStr, " %p(%s)}\n", this, pInfo->pClassName);
         
         return pStr;
     }

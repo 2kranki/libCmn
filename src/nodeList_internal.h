@@ -50,10 +50,15 @@
 extern "C" {
 #endif
 
-#define HASH_BLOCK_SIZE  4096
+#if defined(__MACOSX_ENV__)
+#   define LIST_BLOCK_SIZE  4096
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#   define LIST_BLOCK_SIZE  4096
+#endif
+
     
-    
-    //      Hash Node Descriptor
+    // Node Descriptor
 #pragma pack(push, 1)
     typedef struct  nodeList_node_s {
         LISTDL_NODE     list;
@@ -77,13 +82,17 @@ struct nodeList_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;
+#define LIST_FLAG_ORDERED OBJ_FLAG_USER1
 
     // Common Data
-    uint32_t        size;
-    LISTDL_DATA     freeList;       // Free Node Linked List
+    LISTDL_DATA     freeList;           // Free Node Linked List
     LISTDL_DATA     blocks;
-    LISTDL_DATA     list;           // Main Hash Table
-    uint32_t        cBlock;         // Number of Nodes per Block
+    uint32_t        blockSize;
+    uint32_t        cBlocks;
+    uint32_t        recordSize;
+    uint32_t        cRecordsPerBlock;   // Number of Nodes per Block
+    uint32_t        size;
+    LISTDL_DATA     list;               // Main List
 
 };
 #pragma pack(pop)

@@ -55,14 +55,13 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <enum.h>
+#include        <listdl.h>
 
 
 
 #ifndef         BLOCKS_H
 #define         BLOCKS_H
 
-#define BLOCKS_BLOCK_SIZE   2048            /* Default Block Size */
-//  Needed overhead will be removed to control the block list.
 
 
 #ifdef	__cplusplus
@@ -87,6 +86,14 @@ extern "C" {
     } BLOCKS_VTBL;
 
 
+#pragma pack(push, 1)
+    typedef struct  blocks_node_s {
+        LISTDL_NODE         list;           // Used when node is on Free List
+        uint8_t             data[0];
+    } BLOCKS_NODE;
+#pragma pack(pop)
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -109,11 +116,12 @@ extern "C" {
     
     
     BLOCKS_DATA *   blocks_New(
-        uint32_t        blockSize       // If 0, use default size.
+        uint32_t        blockSize,      // If 0, use default size.
+        uint32_t        recordSize
     );
     
     
-    uint32_t        blocks_Available(
+    uint32_t        blocks_AvailableSize(
         uint32_t        blockSize       // If 0, use default size.
     );
     

@@ -51,7 +51,14 @@ extern "C" {
 #endif
 
 
-    //                  Block
+#if defined(__MACOSX_ENV__)
+#   define BLKS_BLOCK_SIZE  4096
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#   define BLKS_BLOCK_SIZE  4096
+#endif
+
+
     typedef struct blocks_block_s {
         LISTDL_NODE         list;           // Chain for block list
         uint8_t             data[0];        // Nodes
@@ -68,12 +75,14 @@ struct blocks_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     LISTDL_DATA     blocks;
+    LISTDL_DATA     freeList;
     uint32_t        blockSize;
-    uint32_t        blockAvail;
     uint32_t        cBlocks;
-
+    uint32_t        blockAvail;
+    uint32_t        recordSize;
+    uint32_t        cRecordsPerBlock;
+    
 };
 //#pragma pack(pop)
 

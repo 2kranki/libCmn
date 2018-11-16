@@ -135,7 +135,7 @@ int         test_nodeList_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -166,25 +166,95 @@ int         test_nodeList_AddFindDelete01(
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeList_getSize(pList);
             XCTAssertTrue( (cnt == (i+1)) );
-            eRc = nodeList_Find(pList, strings[i], NULL);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeList_FindA(pList, 0, strings[i]);
+            XCTAssertTrue( (pNode) );
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
  
-        eRc = nodeList_Delete(pList, strings[5]);
+        eRc = nodeList_Delete(pList, 0, strings[5]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = nodeList_getSize(pList);
         XCTAssertTrue( (cnt == 9) );
-        eRc = nodeList_Find(pList, strings[11], NULL);
-        XCTAssertFalse( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        
+        pNode = nodeList_FindA(pList, 0, strings[11]);
+        XCTAssertTrue( (OBJ_NIL == pNode) );
+
         obj_Release(pList);
         pList = OBJ_NIL;
         //szTbl_SharedReset();
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_nodeList_AddFindDelete02(
+    const
+    char        *pTestName
+)
+{
+    NODELIST_DATA   *pList;
+    NODE_DATA       *pNode;
+    NODE_DATA       *pNode2;
+    uint32_t        i;
+    uint32_t        cnt;
+    ERESULT         eRc;
+    NODEARRAY_DATA  *pArray;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pList = nodeList_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pList) );
+    pList = nodeList_Init( pList );
+    XCTAssertFalse( (OBJ_NIL == pList) );
+    if (pList) {
+        
+        nodeList_setOrdered(pList, true);
+        
+        for (i=0; i<10; ++i) {
+            fprintf(stderr, "\tAdding %s\n", strings[i]);
+            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            eRc = nodeList_Add2Head(pList, pNode);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            cnt = nodeList_getSize(pList);
+            XCTAssertTrue( (cnt == (i+1)) );
+            pNode2 = nodeList_FindA(pList, 0, strings[i]);
+            XCTAssertTrue( (pNode2) );
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+        }
+        
+        cnt = nodeList_getSize(pList);
+        fprintf(stderr, "\tCount = %d\n", cnt);
+        for (i=0; i<cnt; ++i) {
+            char        *pNameA = NULL;
+            pNode = nodeList_Get(pList, i+1);
+            pNameA = node_getNameUTF8(pNode);
+            fprintf(stderr, "\t\t%s\n", pNameA);
+            mem_Free(pNameA);
+            pNameA = NULL;
+        }
+
+        pArray = nodeList_Nodes(pList);
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        XCTAssertTrue( (nodeList_getSize(pList) == nodeArray_getSize(pArray)) );
+        for (i=0; i<cnt; ++i) {
+            pNode = nodeList_Get(pList, i+1);
+            pNode2 = nodeArray_Get(pArray, i+1);
+            eRc = node_Compare(pNode, pNode2);
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        }
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+
+        obj_Release(pList);
+        pList = OBJ_NIL;
+        //szTbl_SharedReset();
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -192,8 +262,9 @@ int         test_nodeList_AddFindDelete01(
 
 
 TINYTEST_START_SUITE(test_nodeList);
-  TINYTEST_ADD_TEST(test_nodeList_AddFindDelete01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_nodeList_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeList_AddFindDelete02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeList_AddFindDelete01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeList_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_nodeList);

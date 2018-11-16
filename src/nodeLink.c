@@ -327,6 +327,36 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+    
+    uint32_t        nodeLink_getHash(
+        NODELINK_DATA   *this
+    )
+    {
+        uint32_t        hash = 0;
+        NAME_DATA       *pName = OBJ_NIL;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return hash;
+        }
+#endif
+        pName = node_getName((NODE_DATA *)this);
+        
+        if (pName) {
+            hash = name_getHash(pName);
+        }
+        
+        return hash;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                          I n d e x
     //---------------------------------------------------------------
     
@@ -818,58 +848,57 @@ extern "C" {
     //                      C o m p a r e
     //---------------------------------------------------------------
     
-    /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
-     */
     ERESULT         nodeLink_Compare(
-        NODELINK_DATA     *this,
-        NODELINK_DATA     *pOther
+        NODELINK_DATA   *this,
+        NODELINK_DATA   *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
+        ERESULT         eRc;
         
+        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if(!nodeLink_Validate(this) || !obj_IsKindOf(this, OBJ_IDENT_NODE)) {
+        if( !nodeLink_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if(!nodeLink_Validate(pOther) || !obj_IsKindOf(pOther, OBJ_IDENT_NODE)) {
+        if( !nodeLink_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-
-        i = node_getType((NODE_DATA *)this) - node_getType((NODE_DATA *)pOther);
-        if (0 == i) {
-            eRc =   name_Compare(
-                                 node_getName((NODE_DATA *)this),
-                                 node_getName((NODE_DATA *)pOther)
-                    );
-            return eRc;
-        }
         
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
+        eRc = node_Compare((NODE_DATA *)this, (NODE_DATA *)pOther);
         
         return eRc;
     }
     
     
+    ERESULT         nodeLink_CompareA(
+        NODELINK_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    )
+    {
+        ERESULT         eRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = node_CompareA((NODE_DATA *)this, cls, pNameA);
+        
+        return eRc;
+    }
+
+    
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
