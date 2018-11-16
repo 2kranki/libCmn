@@ -559,15 +559,15 @@ extern "C" {
 
     typedef void        (*P_VOIDEXIT0)(void);
     typedef void        (*P_VOIDEXIT1)(void *);
-    typedef void        (*P_VOIDEXIT2)(void *,void *);
-    typedef void        (*P_VOIDEXIT3)(void *,void *,void *);
-    typedef void        (*P_VOIDEXIT12)(void *,bool);
+    typedef void        (*P_VOIDEXIT2)(void *, void *);
+    typedef void        (*P_VOIDEXIT3)(void *, void *, void *);
+    typedef void        (*P_VOIDEXIT12)(void *, bool);
     typedef bool        (*P_VOIDEXIT1_B)(void *);
-    typedef bool        (*P_VOIDEXIT2_B)(void *,void *);
-    typedef bool        (*P_VOIDEXIT3_B)(void *,void *,void *);
+    typedef bool        (*P_VOIDEXIT2_B)(void *, void *);
+    typedef bool        (*P_VOIDEXIT3_B)(void *, void *, void *);
     typedef ERESULT     (*P_VOIDEXIT1_BE)(void *);
-    typedef ERESULT     (*P_VOIDEXIT2_BE)(void *,void *);
-    typedef ERESULT     (*P_VOIDEXIT3_BE)(void *,void *,void *);
+    typedef ERESULT     (*P_VOIDEXIT2_BE)(void *, void *);
+    typedef ERESULT     (*P_VOIDEXIT3_BE)(void *, void *, void *);
     typedef uint32_t    (*P_VOIDEXIT1_U32)(void *);
     typedef void *      (*P_VOIDEXIT1_PTR)(void *);
     typedef uint32_t    (*P_VOIDEXIT2_U32_U32)(void *,uint32_t);

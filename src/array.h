@@ -231,6 +231,26 @@ extern "C" {
     
     
     /*!
+     Scan the array applying the given routine to each member of the
+     array.  Second parameter to the Scan routine is the actual array
+     entry address. Halt the scan if an error return code is returned
+     by the scan routine.
+     @param     this    Object Pointer
+     @param     pScan   Scan Routine Address
+     @param     pObj    First Parameter for the Scan Routine (optional)
+     @param     pArg3   Third Parameter for the Scan Routine (optional)
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         array_ForEach(
+        ARRAY_DATA      *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
+    /*!
      Copy a portion of an array to a given buffer.
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error.

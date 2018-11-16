@@ -744,8 +744,9 @@ extern "C" {
     
     ERESULT         nodeList_ForEach(
         NODELIST_DATA	*this,
-        P_VOIDEXIT2_BE  pScan,
-        OBJ_ID          pObj            // Used as first parameter of scan method
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
     )
     {
         NODELIST_NODE   *pEntry = OBJ_NIL;
@@ -766,7 +767,7 @@ extern "C" {
         
         pEntry = listdl_Head(&this->list);
         while ( pEntry ) {
-            eRc = pScan(pObj,pEntry->pNode);
+            eRc = pScan(pObj, pEntry->pNode, pArg3);
             if (ERESULT_HAS_FAILED(eRc)) {
                 break;
             }

@@ -40,6 +40,7 @@
 #include    <nodeHash.h>
 #include    <jsonIn.h>
 #include    <listdl.h>
+#include    <nodeList.h>
 #include    <str.h>
 
 

@@ -265,6 +265,26 @@ extern "C" {
     );
     
     
+    /*!
+     Scan the array applying the given routine to each member of the
+     array.  Second parameter to the Scan routine is the actual node
+     address. Halt the scan if an error return code is returned
+     by the scan routine.
+     @param     this    Object Pointer
+     @param     pScan   Scan Routine Address
+     @param     pObj    First Parameter for the Scan Routine (optional)
+     @param     pArg3   Third Parameter for the Scan Routine (optional)
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         nodeArray_ForEach(
+        NODEARRAY_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
     NODE_DATA *     nodeArray_Get(
         NODEARRAY_DATA	*this,
         uint32_t        index       // Relative to 1

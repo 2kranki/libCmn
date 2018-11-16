@@ -68,6 +68,22 @@ char        *strings[] = {
 
 
 
+ERESULT     listEntryPrintRtn(
+    NODELIST_DATA   *this,
+    NODE_DATA       *pNode,
+    void            *pVoid
+)
+{
+    char            *pNameA;
+    
+    pNameA = node_getNameUTF8(pNode);
+    fprintf(stderr, "\t\t%s\n", pNameA);
+    mem_Free(pNameA);
+    return ERESULT_SUCCESS;
+}
+
+
+
 int         setUp(
     const
     char        *pTestName
@@ -227,7 +243,7 @@ int         test_nodeList_AddFindDelete02(
         }
         
         cnt = nodeList_getSize(pList);
-        fprintf(stderr, "\tCount = %d\n", cnt);
+        fprintf(stderr, "\n\tCount = %d\n", cnt);
         for (i=0; i<cnt; ++i) {
             char        *pNameA = NULL;
             pNode = nodeList_Get(pList, i+1);
@@ -237,6 +253,9 @@ int         test_nodeList_AddFindDelete02(
             pNameA = NULL;
         }
 
+        fprintf(stderr, "\nForEach:\n");
+        nodeList_ForEach(pList, (void *)listEntryPrintRtn, pList, NULL);
+        
         pArray = nodeList_Nodes(pList);
         XCTAssertFalse( (OBJ_NIL == pArray) );
         XCTAssertTrue( (nodeList_getSize(pList) == nodeArray_getSize(pArray)) );

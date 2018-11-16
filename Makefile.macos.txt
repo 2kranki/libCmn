@@ -1173,6 +1173,11 @@ OBJS += $(OBJDIR)/nodeArray.o
 $(OBJDIR)/nodeArray.o: $(SRCDIR)/nodeArray.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/objArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
+OBJS += $(OBJDIR)/nodeArray_JSON.o
+
+$(OBJDIR)/nodeArray_JSON.o: $(SRCDIR)/nodeArray_JSON.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
 TESTS += test_nodeArray
 
 test_nodeArray: $(TEST_SRC)/test_nodeArray.c 
@@ -1261,6 +1266,11 @@ $(OBJDIR)/nodeList_object.o: $(SRCDIR)/nodeList_object.c
 OBJS += $(OBJDIR)/nodeList.o
 
 $(OBJDIR)/nodeList.o: $(SRCDIR)/nodeList.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h $(SRCDIR)/node.h $(SRCDIR)/str.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/nodeList_JSON.o
+
+$(OBJDIR)/nodeList_JSON.o: $(SRCDIR)/nodeList_JSON.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 TESTS += test_nodeList

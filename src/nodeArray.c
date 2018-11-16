@@ -713,6 +713,47 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     F o r  E a c h
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeArray_ForEach(
+        NODEARRAY_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        index;
+        uint32_t        size;
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pArray && pScan) {
+            size = objArray_getSize(this->pArray);
+            for (index = 0; index < size; ++index) {
+                pNode = objArray_Get(this->pArray, (index + 1));
+                eRc = pScan(pObj, pNode, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    break;
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        G e t
     //---------------------------------------------------------------
     

@@ -334,7 +334,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->size;
     }
 
@@ -905,6 +904,45 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                      F o r  E a c h
+    //---------------------------------------------------------------
+    
+    ERESULT         array_ForEach(
+        ARRAY_DATA      *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        i;
+        void            *pVoid = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pArray && pScan) {
+            for (i=0; i<this->size; ++i) {
+                pVoid = this->pArray + array_OffsetOf(this, i+1);
+                eRc = pScan(pObj, pVoid, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    break;
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+
     
     
     //---------------------------------------------------------------
