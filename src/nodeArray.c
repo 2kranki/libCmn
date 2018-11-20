@@ -1098,7 +1098,7 @@ extern "C" {
         AStr_AppendCharRepeatA(pStr, indent, ' ');
         AStr_AppendPrint(
                          pStr,
-                         "{%p(nodeArray) Size=%d\n",
+                         "{%p(nodeArray) Size=%d\n\n",
                          this,
                          (this->pArray ? objArray_getSize(this->pArray) : 0)
         );
@@ -1114,6 +1114,7 @@ extern "C" {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }
+                AStr_AppendCharA(pStr, '\n');
             }
         }
         

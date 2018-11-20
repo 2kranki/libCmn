@@ -59,9 +59,18 @@ extern "C" {
 #endif
 
 
+    // Node Descriptor
+#pragma pack(push, 1)
+    typedef struct  blocks_node_s {
+        LISTDL_NODE     list;
+        uint8_t         data[0];
+    } BLOCKS_NODE;
+#pragma pack(pop)
+    
+    
     typedef struct blocks_block_s {
-        LISTDL_NODE         list;           // Chain for block list
-        uint8_t             data[0];        // Nodes
+        LISTDL_NODE     list;           // Chain for block list
+        uint8_t         data[0];        // Nodes
     } BLOCKS_BLOCK;
     
     
@@ -78,11 +87,11 @@ struct blocks_data_s	{
     LISTDL_DATA     blocks;
     LISTDL_DATA     freeList;
     uint32_t        blockSize;
-    uint32_t        cBlocks;
     uint32_t        blockAvail;
     uint32_t        recordSize;
     uint32_t        cRecordsPerBlock;
-    
+    uint32_t        cBlocks;
+
 };
 //#pragma pack(pop)
 

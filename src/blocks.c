@@ -59,21 +59,48 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    // Groups are always added to the end of the group list.
-    BLOCKS_BLOCK *  blocks_AddBlock(
+    static
+    bool            blocks_AddBlock(
         BLOCKS_DATA     *this
     )
     {
-        BLOCKS_BLOCK    *pBlock = NULL;
+        BLOCKS_BLOCK    *pBlock;
+        BLOCKS_NODE     *pNode;
+        uint32_t        i;
         
-        pBlock = mem_Malloc(this->blockSize);
-        if (pBlock) {
-            pBlock->list.pNext = 0;
-            pBlock->list.pPrev = 0;
-            listdl_Add2Tail(&this->blocks, pBlock);
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!blocks_Validate(this)) {
+            DEBUG_BREAK();
+        }
+        if (0 == this->blockSize) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (0 == listdl_Count(&this->freeList))
+            ;
+        else {
+            return true;
         }
         
-        return pBlock;
+        // Get a new block.
+        pBlock = (BLOCKS_BLOCK *)mem_Malloc( this->blockSize );
+        if( NULL == pBlock ) {
+            return false;
+        }
+        listdl_Add2Tail(&this->blocks, pBlock);
+        ++this->cBlocks;
+        
+        // Now chain the entries to the Free chain.
+        for (i=0; i<this->cRecordsPerBlock; ++i) {
+            pNode = (BLOCKS_NODE *)((uint8_t *)&pBlock->data + (this->recordSize * i));
+            listdl_Add2Tail(&this->freeList, pNode);
+        }
+        
+        // Return to caller.
+        return true;
     }
 
 
@@ -106,20 +133,43 @@ extern "C" {
 
 
     BLOCKS_DATA *   blocks_New(
-        uint32_t        blockSize,
-        uint32_t        recordSize
+        void
     )
     {
         BLOCKS_DATA   *this;
         
         this = blocks_Alloc( );
         if (this) {
-            this = blocks_Init(this, blockSize);
+            this = blocks_Init(this);
         } 
         return this;
     }
 
 
+    BLOCKS_DATA *   blocks_NewWithSizes(
+        uint32_t        blockSize,
+        uint32_t        recordSize
+    )
+    {
+        BLOCKS_DATA     *this;
+        ERESULT         eRc;
+        
+        this = blocks_Alloc( );
+        if (this) {
+            this = blocks_Init(this);
+            if (this) {
+                eRc = blocks_SetupSizes(this, blockSize, recordSize);
+                if (ERESULT_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+            }
+        }
+        return this;
+    }
+    
+    
 
     uint32_t        blocks_Available(
         uint32_t        blockSize       // If 0, use default size.
@@ -177,6 +227,40 @@ extern "C" {
     
     
     
+    uint32_t        blocks_getRecordsPerBlock(
+        BLOCKS_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->cRecordsPerBlock;
+    }
+    
+    
+    
+    uint32_t        blocks_getRecordSize(
+        BLOCKS_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->recordSize;
+    }
+    
+    
+    
     uint32_t        blocks_getSize(
         BLOCKS_DATA       *this
     )
@@ -202,38 +286,6 @@ extern "C" {
     //===============================================================
 
 
-    //---------------------------------------------------------------
-    //                          A d d
-    //---------------------------------------------------------------
-    
-    void *          blocks_Add(
-        BLOCKS_DATA     *this
-    )
-    {
-        BLOCKS_BLOCK    *pBlock = NULL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        pBlock = blocks_AddBlock(this);
-        if (pBlock == NULL) {
-            return NULL;
-        }
-        memset(pBlock->data, 0, this->blockAvail);
-        ++this->cBlocks;
-        
-        // Return to caller.
-        return pBlock->data;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -339,7 +391,7 @@ extern "C" {
         }
 #endif
         
-        pOther = blocks_New(this->blockSize, this->recordSize);
+        pOther = blocks_NewWithSizes(this->blockSize, this->recordSize);
         if (pOther) {
             eRc = blocks_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -443,53 +495,12 @@ extern "C" {
     
     
     
-    //----------------------------------------------------------
-    //                        G e t
-    //----------------------------------------------------------
-    
-    void *          blocks_Get(
-        BLOCKS_DATA     *this,
-        uint32_t        index
-    )
-    {
-        //uint32_t        i;
-        BLOCKS_BLOCK    *pBlock;
-        uint32_t        count = 0;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            //this->eRc = ERESULT_INVALID_OBJECT;
-            return NULL;
-        }
-#endif
-        
-        pBlock = listdl_Head(&this->blocks);
-        for (; pBlock; ) {
-            ++count;
-            if (count == index) {
-                //this->eRc = ERESULT_SUCCESS;
-                return pBlock->data;
-            }
-            pBlock = listdl_Next(&this->blocks, pBlock);
-        }
-        
-        // Return to caller.
-        //this->eRc = ERESULT_DATA_NOT_FOUND;
-        return NULL;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
     BLOCKS_DATA *   blocks_Init(
-        BLOCKS_DATA     *this,
-        uint32_t        blockSize
+        BLOCKS_DATA     *this
     )
     {
         uint32_t        cbSize = sizeof(BLOCKS_DATA);
@@ -520,11 +531,8 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&blocks_Vtbl);
         
-        if (blockSize == 0)
-            blockSize = BLKS_BLOCK_SIZE;
-        this->blockSize = blockSize;
-        this->blockAvail = blocks_Available(blockSize);
         listdl_Init(&this->blocks,  offsetof(BLOCKS_BLOCK, list));
+        listdl_Init(&this->freeList, 0);
 
     #ifdef NDEBUG
     #else
@@ -542,15 +550,39 @@ extern "C" {
      
 
     //----------------------------------------------------------
-    //                  N e w  R e c o r d
+    //                  R e c o r d
     //----------------------------------------------------------
     
-    BLOCKS_NODE *   blocks_NewRecord(
+    ERESULT         blocks_RecordFree(
+        BLOCKS_DATA     *this,
+        void            *pRecord
+    )
+    {
+        BLOCKS_NODE     *pNode = pRecord;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        listdl_Add2Head(&this->freeList, pNode);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    void *          blocks_RecordNew(
         BLOCKS_DATA     *this
     )
     {
+        bool            fRc;
         //uint32_t        i;
-        BLOCKS_NODE     *pNode = NULL;
+        BLOCKS_NODE     *pNode;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -562,14 +594,67 @@ extern "C" {
         }
 #endif
         
-        if (listdl_Count(&this->freeList))
-            ;
-        else {
-            
+        if (0 == listdl_Count(&this->freeList)) {
+            fRc = blocks_AddBlock(this);
+            if (!fRc)
+                return NULL;
+        }
+        
+        pNode = listdl_DeleteHead(&this->freeList);
+        if (pNode) {
+            memset(pNode, 0, this->recordSize);
         }
         
         // Return to caller.
         return pNode;
+    }
+    
+    
+    
+    //----------------------------------------------------------
+    //                  S e t u p  S i z e s
+    //----------------------------------------------------------
+    
+    ERESULT         blocks_SetupSizes(
+        BLOCKS_DATA     *this,
+        uint32_t        blockSize,
+        uint32_t        recordSize
+    )
+    {
+        uint32_t        i;
+        
+        // Do initialization.
+        if (blockSize == 0)
+            blockSize = BLKS_BLOCK_SIZE;
+#ifdef NDEBUG
+#else
+        if (!blocks_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->cBlocks) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_ALREADY_EXISTS;
+        }
+        if (recordSize < sizeof(BLOCKS_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (recordSize > (blockSize - sizeof(BLOCKS_BLOCK))) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        this->blockSize = blockSize;
+        this->blockAvail = blockSize - sizeof(BLOCKS_BLOCK);
+        this->recordSize = recordSize;
+        if (recordSize) {
+            this->cRecordsPerBlock = this->blockAvail / recordSize;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     

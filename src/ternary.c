@@ -61,43 +61,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    TERNARY_NODE *  ternary_NodeAlloc(
-        TERNARY_DATA    *this
-    )
-    {
-        
-        uint32_t        i;
-        uint32_t        index;
-        TERNARY_NODE    *pNode;
-        
-        // Do initialization.
-        
-        // Allocate a block if no free nodes.
-        if (NULL == this->pFreeNodes) {
-            TERNARY_BUFFER          *pBuffer = blocks_Add((BLOCKS_DATA *)this);
-            if (pBuffer == NULL) {
-                this->eRc = ERESULT_OUT_OF_MEMORY;
-                return NULL;
-            }
-            for( i=0; i<this->nodesPerBLock; ++i ) {
-                index = (this->nodesPerBLock - 1) - i;
-                pNode = &pBuffer->array[index];
-                pNode->pData = this->pFreeNodes;
-                this->pFreeNodes = pNode;
-            }
-        }
-        
-        pNode = this->pFreeNodes;
-        this->pFreeNodes = pNode->pEqual;
-        ++this->cTreeNum;
-        
-        // Return to caller.
-        return pNode;
-    }
-    
-    
-    
     TERNARY_NODE *  ternary_NodeInsert(
         TERNARY_DATA    *this,
         TERNARY_NODE    *pNode,
@@ -108,7 +71,7 @@ extern "C" {
         
         // Allocate a block if no free nodes.
         if (NULL == pNode) {
-            pNode = ternary_NodeAlloc(this);
+            pNode = blocks_RecordNew((BLOCKS_DATA *)this);
             if (pNode == NULL) {
                 return NULL;
             }
@@ -247,7 +210,7 @@ extern "C" {
         
         this = ternary_Alloc( );
         if (this) {
-            this = ternary_Init( this, bufferSize );
+            this = ternary_Init(this);
         } 
         return this;
     }
@@ -472,12 +435,11 @@ extern "C" {
     //---------------------------------------------------------------
 
     TERNARY_DATA *  ternary_Init(
-        TERNARY_DATA    *this,
-        uint32_t        bufferSize
+        TERNARY_DATA    *this
     )
     {
+        ERESULT         eRc;
         uint32_t        cbSize = sizeof(TERNARY_DATA);
-        uint32_t        blockSize = 4096;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -485,7 +447,7 @@ extern "C" {
         
         //cbSize = obj_getSize(this);
         //this = (TERNARY_DATA *)obj_Init( this, cbSize, OBJ_IDENT_TERNARY );
-        this = (TERNARY_DATA *)blocks_Init((BLOCKS_DATA *)this, blockSize );
+        this = (TERNARY_DATA *)blocks_Init((BLOCKS_DATA *)this);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -496,7 +458,12 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ternary_Vtbl);
 
-        this->nodesPerBLock = blockSize / sizeof(TERNARY_NODE);
+        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(TERNARY_NODE));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
     #ifdef NDEBUG
     #else
@@ -505,7 +472,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->nodesPerBLock);
+        BREAK_NOT_BOUNDARY4(sizeof(TERNARY_DATA));
     #endif
 
         return this;

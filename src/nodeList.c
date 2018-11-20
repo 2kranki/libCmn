@@ -117,6 +117,7 @@ extern "C" {
         pNodeInt = listdl_Head(&this->list);
         while ( pNodeInt ) {
             eRc = node_Compare(pNode, pNodeInt->pNode);
+            obj_setLastError(this, eRc);
             if (ERESULT_SUCCESS_GREATER_THAN == eRc)
                 ;
             else {
@@ -145,6 +146,7 @@ extern "C" {
         pNodeInt = listdl_Head(&this->list);
         while ( pNodeInt ) {
             eRc = node_CompareA(pNodeInt->pNode, cls, pKeyA);
+            obj_setLastError(this, eRc);
             if (eRc == ERESULT_SUCCESS_EQUAL) {
                 return pNodeInt;
             }

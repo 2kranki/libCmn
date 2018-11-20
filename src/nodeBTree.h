@@ -13,6 +13,12 @@
  *
  * History
  *	11/12/2018 Generated
+ *
+ * References
+ *  * "Data Structures Using C", Tenenbaum, Langsam and Augenstein, Prentice-Hall,
+ *      1990, ISBN: 0-13-199746-7
+ *  * "The Art of Computer Programming - Searching and Sorting, 2nd Edition ", Knuth,
+ *      Addison-Wesley, 1998, ISBN: 0-201-89685-0
  */
 
 
@@ -49,7 +55,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <nodeLink.h>
+#include        <nodeLnkP.h>
 
 
 #ifndef         NODEBTREE_H
@@ -136,6 +142,10 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    NODELNKP_DATA * nodeBTree_getRoot(
+        NODEBTREE_DATA  *this
+    );
+    
 
 
     
@@ -143,13 +153,40 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         nodeBTree_Disable(
-        NODEBTREE_DATA  *this
+    /*!
+     Add the given node to the Hash. If duplicates are not allowed, then
+     the node's name must not exist in the Hash.  Otherwise, the node will
+     be added to the head of the Hash list effectively blocking access to
+     other nodes with the same name.  The A versions creates a node from
+     the data given before trying to add it to the Hash.
+     @param     this        Object Pointer
+     @param     pNode       Data Object Pointer
+     @param     fReplace    true == replace current entry if it exists,
+                            otherwise, return ERESULT_DATA_ALREADY_EXISTS
+                            error.
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+     error code is returned.
+     */
+    ERESULT         nodeBTree_Add(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode,
+        bool            fReplace
     );
-
-
-    ERESULT         nodeBTree_Enable(
-        NODEBTREE_DATA	*this
+    
+    ERESULT         nodeBTree_AddA(
+        NODEBTREE_DATA  *this,
+        int32_t         cls,
+        const
+        char            *pNameA,            // UTF-8
+        OBJ_ID          pData
+    );
+    
+    
+    NODE_DATA *     nodeBTree_FindA(
+        NODEBTREE_DATA  *this,
+        int32_t         cls,
+        const
+        char            *pNameA            // UTF-8
     );
 
    
@@ -158,11 +195,34 @@ extern "C" {
     );
 
 
-    ERESULT         nodeBTree_IsEnabled(
-        NODEBTREE_DATA	*this
+    ERESULT         nodeBTree_InOrderTraversal(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
     );
     
- 
+    
+    NODELINK_DATA * nodeBTree_Node(
+        NODEBTREE_DATA  *this,
+        uint32_t        index       // Relative to 1
+    );
+    
+    
+    ERESULT         nodeTree_Nodes(
+        NODEBTREE_DATA  *this,
+        NODEARRAY_DATA  **ppNodes
+    );
+    
+    
+    ERESULT         nodeBTree_PreOrderTraversal(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -181,7 +241,25 @@ extern "C" {
     );
     
     
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodesPostRecurse(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
 
+    
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodesPreRecurse(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
     
 #ifdef	__cplusplus
 }

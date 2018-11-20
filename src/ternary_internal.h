@@ -63,12 +63,6 @@ extern "C" {
     
     
     
-    typedef struct  ternary_buffer_s TERNARY_BUFFER;
-    struct          ternary_buffer_s {
-        TERNARY_NODE    array[0];
-    };
-    
-    
     
 #pragma pack(push, 1)
 struct ternary_data_s	{
@@ -83,10 +77,8 @@ struct ternary_data_s	{
     
     // Tree Variables
     TERNARY_NODE    *pRoot;             // Root of Ternary Node Tree
-    void            *pFreeNodes;
     uint32_t		cTreeNum;           // Current Number of Entries
     uint32_t        maxKeyLen;
-    uint16_t        nodesPerBLock;
     
 };
 #pragma pack(pop)

@@ -86,12 +86,6 @@ extern "C" {
     } BLOCKS_VTBL;
 
 
-#pragma pack(push, 1)
-    typedef struct  blocks_node_s {
-        LISTDL_NODE         list;           // Used when node is on Free List
-        uint8_t             data[0];
-    } BLOCKS_NODE;
-#pragma pack(pop)
     
     
 
@@ -116,6 +110,11 @@ extern "C" {
     
     
     BLOCKS_DATA *   blocks_New(
+        void
+    );
+    
+    
+    BLOCKS_DATA *   blocks_NewWithSizes(
         uint32_t        blockSize,      // If 0, use default size.
         uint32_t        recordSize
     );
@@ -141,8 +140,13 @@ extern "C" {
     );
     
     
-    ERESULT         blocks_getLastError(
-        BLOCKS_DATA		*this
+    uint32_t        blocks_getRecordsPerBlock(
+        BLOCKS_DATA     *this
+    );
+    
+    
+    uint32_t        blocks_getRecordSize(
+        BLOCKS_DATA     *this
     );
 
 
@@ -166,11 +170,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    void *          blocks_Add(
-        BLOCKS_DATA     *this
-    );
-
-
     /*!
      Create an Enumerator that will enumerate through all the blocks.
      @return    If successful, valid enumerator. Otherwise, OBJ_NIL.
@@ -183,28 +182,34 @@ extern "C" {
     );
     
     
-    void *          blocks_Get(
-        BLOCKS_DATA     *this,
-        uint32_t        index
-    );
-    
-    
-    uint64_t        blocks_GetSpcl(
-        BLOCKS_DATA     *this,
-        uint32_t        index
-    );
-    
-    
     BLOCKS_DATA *   blocks_Init(
-        BLOCKS_DATA     *this,
-        uint32_t        blockSize
+        BLOCKS_DATA     *this
     );
 
 
-    ERESULT         blocks_PutSpcl(
+    ERESULT         blocks_RecordFree(
         BLOCKS_DATA     *this,
-        uint32_t        index,
-        uint64_t        value
+        void            *pRecord
+    );
+    
+    
+    void *          blocks_RecordNew(
+        BLOCKS_DATA     *this
+    );
+    
+    
+    /*!
+     Create a string that describes this object and the objects within it.
+     @param     this        object pointer
+     @param     blockSize   number of characters to indent every line of output, can be 0
+     @param     recordSize  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     */
+    ERESULT         blocks_SetupSizes(
+        BLOCKS_DATA     *this,
+        uint32_t        blockSize,
+        uint32_t        recordSize
     );
     
     

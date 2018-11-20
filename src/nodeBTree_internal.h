@@ -40,7 +40,10 @@
 
 
 #include        <nodeBTree.h>
+#include        <blocks_internal.h>
 #include        <jsonIn.h>
+#include        <listdl.h>
+#include        <nodeArray.h>
 
 
 #ifndef NODEBTREE_INTERNAL_H
@@ -55,6 +58,31 @@ extern "C" {
 
 
 
+#if defined(__MACOSX_ENV__)
+#   define BTREE_BLOCK_SIZE  4096
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#   define BTREE_BLOCK_SIZE  4096
+#endif
+    
+    
+    // Node Descriptor
+    typedef struct  nodeBTree_node_s NODEBTREE_NODE;
+#pragma pack(push, 1)
+    struct  nodeBTree_node_s {
+        NODEBTREE_NODE  *pLeft;
+        NODEBTREE_NODE  *pRight;
+        NODELINK_DATA   *pNode;
+        uint8_t         fLeft;          // 1 == Link, 0 == thread
+#define NODEBTREE_LINK      1
+#define NODEBTREE_THREAD    0
+        uint8_t         fRight;         // 1 == Link, 0 == thread
+        uint8_t         fRightChild;    // 1 == Node is Right Child of Parent
+        int8_t          balance;        // -2 .. +2
+    };
+#pragma pack(pop)
+    
+    
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
@@ -63,18 +91,14 @@ extern "C" {
 struct nodeBTree_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
+    NODEARRAY_DATA  *pArray;        // Root is always at 1
+    NODEBTREE_NODE  *pRoot;
     ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    uint32_t        size;
 
 };
 #pragma pack(pop)
@@ -118,7 +142,25 @@ struct nodeBTree_data_s	{
     );
 
 
-    NODEBTREE_DATA *       nodeBTree_ParseObject(
+    ERESULT         nodeBTree_DeleteNodes(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
+    NODELNKP_DATA * nodeBTree_LeftMostChild(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
+    NODELNKP_DATA * nodeBTree_Parent(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
+    NODEBTREE_DATA * nodeBTree_ParseObject(
         JSONIN_DATA     *pParser
     );
 
@@ -130,6 +172,12 @@ struct nodeBTree_data_s	{
     );
 
 
+    NODELNKP_DATA * nodeBTree_RightMostChild(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
     ASTR_DATA *     nodeBTree_ToJSON(
         NODEBTREE_DATA      *this
     );

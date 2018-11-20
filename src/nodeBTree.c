@@ -5,7 +5,12 @@
  *
  */
 
- 
+
+
+
+
+
+
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -59,16 +64,468 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            nodeBTree_task_body(
-        void            *pData
+    //---------------------------------------------------------------
+    //                  D e l e t e  N o d e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_DeleteNode(
+        NODEBTREE_DATA  *this,
+        NODEBTREE_NODE  *pNode
     )
     {
-        //NODEBTREE_DATA  *this = pData;
         
+        // Do initialization.
+        if (NULL == pNode) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
+        if (pNode->pNode) {
+            obj_Release(pNode->pNode);
+            pNode->pNode = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  D e l e t e  N o d e s
+    //---------------------------------------------------------------
+    
+    /*! Delete all the nodes in the Tree using a Post-order traversal.
+        This is the best way to delete the nodes in case the sub-tree
+        is right degenerate.
+     */
+    ERESULT         nodeBTree_DeleteNodes(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+        NODELNKP_DATA   *pWork;
+        uint32_t        index;
+
+        if (pNode) {
+            
+            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            if (pWork) {
+                nodeBTree_DeleteNodes(this, pWork);
+            }
+            
+            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            if (pWork) {
+                nodeBTree_DeleteNodes(this, pWork);
+            }
+            
+            nodeLnkP_setLeft(pNode, OBJ_NIL);
+            nodeLnkP_setMiddle(pNode, OBJ_NIL);
+            nodeLnkP_setParent(pNode, OBJ_NIL);
+            nodeLnkP_setRight(pNode, OBJ_NIL);
+            index = nodeLnkP_getIndex(pNode);
+            nodeArray_Put(this->pArray, index, OBJ_NIL);
+        }
+
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  L e f t - M o s t  C h i l d
+    //---------------------------------------------------------------
+    
+    // The Left-Most Child is the smallest key of the sub-tree from
+    // the given node.
+    
+    NODELNKP_DATA * nodeBTree_LeftMostChild(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+        
+        while (nodeLnkP_getLeftLink(pNode)) {
+            pNode = nodeLnkP_getLeft(pNode);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  R i g h t - M o s t  C h i l d
+    //---------------------------------------------------------------
+    
+    // The Right-Most Child is the largest key of the sub-tree from
+    // the given node.
+    
+    NODELNKP_DATA * nodeBTree_RightMostChild(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+        
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+        
+        while (nodeLnkP_getRightLink(pNode)) {
+            pNode = nodeLnkP_getRight(pNode);
+        }
+
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      P a r e n t
+    //---------------------------------------------------------------
+    
+    NODELNKP_DATA * nodeBTree_Parent(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+        uint32_t        index;
+        
+        // Do initialization.
+        if (OBJ_NIL == pNode) {
+            return OBJ_NIL;
+        }
+        
+#ifdef XYZZY
+        if (nodeLink_getRightChild(pNode)) {
+            pNode = nodeBTree_LeftMostChild(this, pNode);
+            index = nodeLink_getLeft(pNode);
+            pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        }
+        else {
+            pNode = nodeBTree_RightMostChild(this, pNode);
+            index = nodeLink_getRight(pNode);
+            pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        }
 #endif
+
+        // Return to caller.
+        //return pNode;
+        return OBJ_NIL;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  I n s e r t  L e f t
+    //---------------------------------------------------------------
+    
+    NODELNKP_DATA * nodeBTree_InsertLeft(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+        NODELNKP_DATA   *pChild;
+        
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+
+#ifdef XYZZY
+        // Insert new node as Left Child of Node.
+        pChild = blocks_RecordNew((BLOCKS_DATA *)this);
+        if (pChild) {
+            pChild->pLeft = pNode->pLeft;
+            pChild->fLeft = pNode->fLeft;
+            pChild->pRight = pNode;
+            pChild->balance = 0;
+            pChild->fRightChild = 0;
+            pNode->pLeft = pChild;
+            pNode->fLeft = NODEBTREE_LINK;
+        }
+#endif
+        
+        // Return to caller.
+        return pChild;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  I n s e r t  R i g h t
+    //---------------------------------------------------------------
+    
+    NODEBTREE_NODE * nodeBTree_InsertRight(
+        NODEBTREE_DATA  *this,
+        NODEBTREE_NODE  *pNode
+    )
+    {
+        NODEBTREE_NODE  *pChild;
+        
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+        
+        // Insert new node as Right Child of Node.
+        pChild = blocks_RecordNew((BLOCKS_DATA *)this);
+        if (pChild) {
+            pChild->pRight = pNode->pRight;
+            pChild->fRight = pNode->fRight;
+            pChild->pLeft = pNode;
+            pChild->balance = 0;
+            pChild->fRightChild = 1;
+            pNode->pRight = pChild;
+            pNode->fRight = NODEBTREE_LINK;
+        }
+        
+        // Return to caller.
+        return pChild;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          R o t a t e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_RotateLeft(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+        NODELNKP_DATA   *pParent;
+        NODELNKP_DATA   *pLeftTree;
+        NODELNKP_DATA   *pRight;
+        NODELNKP_DATA   *pWork;
+        uint32_t        index;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (pNode && nodeLnkP_getRight(pNode))
+            ;
+        else {
+            return ERESULT_SUCCESS;
+        }
+        
+        // Point to all nodes necessary to do the rotation.
+        pRight = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : NULL;
+        pParent = nodeLnkP_getParent(pNode);
+        pLeftTree = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : NULL;
+        while( nodeLnkP_getLeftLink(pLeftTree) ) {
+            pLeftTree = nodeLnkP_getLeft(pLeftTree);
+        }
+        
+        // Chain the right child to the node's parent.
+        //TODO: This avoids using threads, just links.  Is this valid?
+        if( pParent ) {
+            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : NULL;
+            if( pWork && (pWork == pNode)) {
+                nodeLnkP_setLeft(pParent, pRight);
+            }
+            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : NULL;
+            if( pWork && (pWork == pNode)) {
+                nodeLnkP_setRight(pParent, pRight);
+            }
+        }
+        else {
+            //FIXME: this->pRoot = pRight;
+        }
+        nodeLnkP_setRight(pNode, NULL);
+        
+        // Now add the node after the left-most node of the
+        // node's right child.
+        nodeLnkP_setLeft(pLeftTree, pNode);
+        nodeLnkP_setRightLink(pNode, true);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         nodeBTree_RotateRight(
+        NODEBTREE_DATA  *this,
+        NODELINK_DATA   *pNode
+    )
+    {
+        NODELINK_DATA   *pParent;
+        NODELINK_DATA   *pRightTree;
+        NODELINK_DATA   *pLeft;
+        uint32_t        index;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (pNode && nodeLink_getLeft(pNode))
+            ;
+        else {
+            return ERESULT_SUCCESS;
+        }
+        
+        // Point to all nodes necessary to do the rotation.
+        pLeft = nodeBTree_Node(this, nodeLink_getLeft(pNode));
+#ifdef xyzzy
+        //FIXME: pParent = pNode->pParent;
+        pRightTree = pNode->pLeft;
+        while( pRightTree->pRight )
+            pRightTree = pRightTree->pRight;
+
+        // Chain the left child to the node's parent.
+        if( pParent ) {
+            if( pParent->pLeft == pNode )
+                pParent->pLeft = pLeft;
+            if( pParent->pRight == pNode )
+                pParent->pRight = pLeft;
+        }
+        else
+            //FIXME: this->pRoot = pLeft;
+        pNode->pLeft = NULL;
+        
+        // Now add the node after the right-most node of the
+        // node's left child.
+        pRightTree->pRight = pNode;
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  V i s i t  N o d e s
+    //---------------------------------------------------------------
+    
+    /*! Visit all the nodes from the given node and below in the Tree
+     using a Pre-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodeInRecurse(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODELNKP_DATA   *pWork;
+        
+        if (pNode) {
+            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            if (pWork) {
+                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            eRc = pScan(pObj, pNode, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            if (pWork) {
+                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+        }
+        
+        return eRc;
+    }
+    
+    
+    /*! Visit all the nodes from the given node and below in the Tree
+        using a Post-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodePostRecurse(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODELNKP_DATA   *pWork;
+        
+        if (pNode) {
+            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            if (pWork) {
+                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            if (pWork) {
+                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            eRc = pScan(pObj, pNode, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+        
+        return eRc;
+    }
+    
+    
+    /*! Visit all the nodes from the given node and below in the Tree
+     using a Pre-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodePreRecurse(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODELNKP_DATA   *pWork;
+        
+        if (pNode) {
+            eRc = pScan(pObj, pNode, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            if (pWork) {
+                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            if (pWork) {
+                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+        }
+        
+        return eRc;
+    }
+    
+    
+
 
 
 
@@ -120,6 +577,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          A r r a y
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * nodeBTree_getArray(
+        NODEBTREE_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pArray;
+    }
+    
+    
+    bool            nodeBTree_setArray(
+        NODEBTREE_DATA  *this,
+        NODEARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pArray) {
+            obj_Release(this->pArray);
+        }
+        this->pArray = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -163,6 +666,23 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          R o o t
+    //---------------------------------------------------------------
+    
+    NODELNKP_DATA * nodeBTree_getRoot(
+        NODEBTREE_DATA  *this
+    )
+    {
+        
+        // Do initialization.
+        
+        // Return to caller.
+        return (NODELNKP_DATA *)nodeArray_Get(this->pArray, 1);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -178,7 +698,7 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return this->size;
     }
 
 
@@ -259,6 +779,156 @@ extern "C" {
     //                          M e t h o d s
     //===============================================================
 
+
+    //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_Add(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode,
+        bool            fReplace
+    )
+    {
+        NODELNKP_DATA   *pParent;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        index = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode,OBJ_IDENT_NODE) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        nodeLnkP_setIndex(pNode, index);
+
+        if (1 == nodeArray_getSize(this->pArray)) {
+#ifdef THREADED_TREE
+            nodeLnkP_setLeftLink(pNode, false);
+            nodeLnkP_setLeft(pNode, pNode);
+            nodeLnkP_setRightLink(pNode, false);
+            nodeLnkP_setRight(pNode, pNode);
+#endif
+            nodeLnkP_setBalance(pNode, 0);
+            return ERESULT_SUCCESS;
+        }
+
+        pParent = nodeBTree_getRoot(this);
+        while (pParent) {
+            eRc = nodeLnkP_Compare(pNode, pParent);
+            if (ERESULT_SUCCESS_EQUAL == eRc) {
+                if (fReplace) {
+                    nodeLnkP_setBalance(pNode, nodeLnkP_getBalance(pParent));
+                    nodeLnkP_setIndex(pNode, nodeLnkP_getIndex(pParent));
+                    nodeLnkP_setLeft(pNode, nodeLnkP_getLeft(pParent));
+                    nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
+                    nodeLnkP_setParent(pNode, nodeLnkP_getParent(pParent));
+                    nodeLnkP_setRight(pNode, nodeLnkP_getRight(pParent));
+                    nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
+                    nodeArray_Put(
+                                  this->pArray,
+                                  nodeLnkP_getIndex(pNode),
+                                  (NODE_DATA *)pNode
+                    );
+                    return ERESULT_SUCCESS;
+                }
+                return ERESULT_DATA_ALREADY_EXISTS;
+            }
+            else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
+                if (nodeLnkP_getLeftLink(pParent) && nodeLnkP_getLeft(pParent))
+                    pParent = nodeLnkP_getLeft(pParent);
+                else {
+                    // Insert new node as Left Child of Parent.
+                    nodeLnkP_setLeft(pNode, nodeLnkP_getLeft(pParent));
+                    nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
+#ifdef THREADED_TREE
+                    nodeLnkP_setRight(pNode, pParent);      // Thread back to Parent
+                    nodeLnkP_setRightLink(pNode, false);
+#endif
+                    nodeLnkP_setParent(pNode, pParent);
+                    nodeLnkP_setBalance(pNode, 0);
+                    nodeLnkP_setLeft(pParent, pNode);       // Parent's Left = Node
+                    nodeLnkP_setLeftLink(pParent, true);
+                    break;
+                }
+            }
+            else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                if (nodeLnkP_getRightLink(pParent) && nodeLnkP_getRight(pParent))
+                    pParent = nodeLnkP_getRight(pParent);
+                else {
+                    // Insert new node as Right Child of Parent.
+                    nodeLnkP_setRight(pNode, nodeLnkP_getRight(pParent));
+                    nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
+#ifdef THREADED_TREE
+                    nodeLnkP_setLeft(pNode, pParent);      // Thread back to Parent
+                    nodeLnkP_setLeftLink(pNode, false);
+#endif
+                    nodeLnkP_setParent(pNode, pParent);
+                    nodeLnkP_setBalance(pNode, 0);
+                    nodeLnkP_setRight(pParent, pNode);       // Parent's Right = Node
+                    nodeLnkP_setRightLink(pParent, true);
+                    break;
+                }
+            }
+            else {
+                return ERESULT_GENERAL_FAILURE;
+            }
+        }
+        ++this->size;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+
+    ERESULT         nodeBTree_AddA(
+        NODEBTREE_DATA  *this,
+        int32_t         cls,
+        const
+        char            *pNameA,            // UTF-8
+        OBJ_ID          pData
+    )
+    {
+        NODELNKP_DATA   *pNode = NULL;
+        ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pNode = nodeLnkP_NewWithUTF8AndClass(pNameA, cls, pData);
+        if (pNode) {
+            eRc = nodeBTree_Add(this, pNode, false);
+        }
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
 
     //---------------------------------------------------------------
     //                       A s s i g n
@@ -447,7 +1117,8 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        NODEBTREE_DATA   *this = objId;
+        NODEBTREE_DATA  *this = objId;
+        NODELNKP_DATA   *pNode = OBJ_NIL;
 
         // Do initialization.
         if (NULL == this) {
@@ -466,7 +1137,10 @@ extern "C" {
             ((NODEBTREE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
+        
+        nodeBTree_DeleteNodes(this, nodeBTree_getRoot(this));
 
+        nodeBTree_setArray(this, OBJ_NIL);
         nodeBTree_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -480,6 +1154,67 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                         D e l e t e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeBTree_Delete(
+        NODEBTREE_DATA  *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NODEBTREE_NODE  *pParent;
+        NODEBTREE_NODE  *pEntry;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode,OBJ_IDENT_NODE) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        // Search the tree for the node.
+        pEntry = nodeBTree_getRoot(this);
+        while (pEntry) {
+            eRc = node_Compare(pNode, pEntry->pNode);
+            if (ERESULT_SUCCESS_EQUAL == eRc) {
+                goto found;
+            }
+            else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
+                if (pEntry->pLeft)
+                    pEntry = pEntry->pLeft;
+                else
+                    break;
+            }
+            else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                if (pEntry->pRight)
+                    pEntry = pEntry->pRight;
+                else
+                    break;
+            }
+            else {
+                //return ERESULT_GENERAL_FAILURE;
+                return OBJ_NIL;
+            }
+        }
+    found:
+        
+        
+        // Return to caller.
+        return OBJ_NIL;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -537,14 +1272,107 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+    
+    NODELNKP_DATA * nodeBTree_Find(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pNode
+    )
+    {
+        NODELNKP_DATA   *pParent;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode,OBJ_IDENT_NODE) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        
+#ifdef XYZZY
+        pParent = nodeBTree_getRoot(this);
+        while (pParent) {
+            eRc = node_Compare(pNode, pParent->pNode);
+            if (ERESULT_SUCCESS_EQUAL == eRc) {
+                return pParent->pNode;
+            }
+            else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
+                if (pParent->pLeft)
+                    pParent = pParent->pLeft;
+                else
+                    break;
+            }
+            else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                if (pParent->pRight)
+                    pParent = pParent->pRight;
+                else
+                    break;
+            }
+            else {
+                //return ERESULT_GENERAL_FAILURE;
+                return OBJ_NIL;
+            }
+        }
+#endif
+        
+        // Return to caller.
+        return OBJ_NIL;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                          F i r s t
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeBTree_First(
+        NODEBTREE_DATA  *this
+    )
+    {
+        NODEBTREE_NODE  *pEntry;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEntry = nodeBTree_getRoot(this);
+        pEntry = nodeBTree_LeftMostChild(this, pEntry);
+        if (pEntry) {
+            pNode = pEntry->pNode;
+        }
+
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODEBTREE_DATA *   nodeBTree_Init(
-        NODEBTREE_DATA       *this
+    NODEBTREE_DATA * nodeBTree_Init(
+        NODEBTREE_DATA  *this
     )
     {
         uint32_t        cbSize = sizeof(NODEBTREE_DATA);
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -560,20 +1388,31 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBTREE);
+        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBTREE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEBTREE);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEBTREE);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTree_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEBTREE_NODE));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
+        this->pArray = nodeArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -583,7 +1422,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "nodeBTree::sizeof(NODEBTREE_DATA) = %lu\n", sizeof(NODEBTREE_DATA));
+        //fprintf(stderr, "nodeBTree::sizeof(NODEBTREE_DATA) = %lu\n", sizeof(NODEBTREE_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEBTREE_DATA));
     #endif
@@ -593,6 +1432,68 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //             I n  O r d e r  T r a v e r s a l
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_InOrderTraversal(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
+    )
+    {
+        NODEBTREE_NODE  *pNode1;
+        NODEBTREE_NODE  *pNode2;
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pNode1 = nodeBTree_getRoot(this);
+        pNode2 = NULL;
+        
+#ifdef XYZZY
+        do {
+            // Descend down the bottom of the left branch.
+            while (pNode1) {
+                pNode2 = pNode1;
+                pNode1 = pNode1->pLeft;
+            }
+            // Scan the left-most node.
+            if (pNode2) {
+                eRc = pScan(pObj, pNode2->pNode, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    break;
+                pNode1 = pNode2->pRight;
+            }
+            while (pNode2 && (NULL == pNode1)) {
+                do {
+                    pNode1 = pNode2;
+                    //FIXME: pNode2 = pNode1->pParent;
+                } while (pNode2 && !(pNode1 == pNode1->pParent->pLeft));
+                if (pNode2) {
+                    eRc = pScan(pObj, pNode2->pNode, pArg3);
+                    if (ERESULT_FAILED(eRc))
+                        break;
+                    pNode1 = pNode2->pRight;
+                }
+            }
+        } while (pNode2);
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
@@ -617,6 +1518,183 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          L a s t
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     nodeBTree_Last(
+        NODEBTREE_DATA  *this
+    )
+    {
+        NODEBTREE_NODE  *pEntry;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEntry = nodeBTree_getRoot(this);
+        pEntry = nodeBTree_RightMostChild(this, pEntry);
+        if (pEntry) {
+            pNode = pEntry->pNode;
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       N o d e
+    //---------------------------------------------------------------
+    
+    NODELINK_DATA * nodeBTree_Node(
+        NODEBTREE_DATA  *this,
+        uint32_t        index
+    )
+    {
+        NODELINK_DATA   *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return pNode;
+        }
+        if( !((index > 0) && (index <= nodeArray_getSize(this->pArray))) ) {
+            DEBUG_BREAK();
+            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return pNode;
+        }
+#endif
+        
+        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         N o d e s
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_Nodes(
+        NODEBTREE_DATA  *this,
+        NODEARRAY_DATA  **ppNodes
+    )
+    {
+        NODELINK_DATA   *pEntry;
+        NODEARRAY_DATA  *pNodes = OBJ_NIL;
+        uint32_t        i;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( OBJ_NIL == ppNodes ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pNodes = nodeArray_New();
+        for (i=0; i<nodeArray_getSize(this->pArray); ++i) {
+            pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
+            if (pEntry) {
+                eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pNodes);
+                    pNodes = OBJ_NIL;
+                    goto eom;
+                }
+            }
+        }
+        nodeArray_SortAscending(pNodes);
+        
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    eom:
+        if (ppNodes) {
+            *ppNodes = pNodes;
+        }
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //             P r e  O r d e r  T r a v e r s a l
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_PreOrderTraversal(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
+    )
+    {
+        NODEBTREE_NODE  *pNode1;
+        NODEBTREE_NODE  *pNode2;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pNode1 = nodeBTree_getRoot(this);
+        pNode2 = NULL;
+
+#ifdef XYZZY
+        do {
+            // Descend down the bottom of the left branch.
+            while (pNode1) {
+                pNode2 = pNode1;
+                pNode1 = pNode1->pLeft;
+                // Scan the left-most node.
+                if (pNode2) {
+                    eRc = pScan(pObj, pNode2->pNode, pArg3);
+                    if (ERESULT_FAILED(eRc))
+                        break;
+                }
+            }
+            while (pNode2 && (NULL == pNode1)) {
+                do {
+                    pNode1 = pNode2;
+                    pNode2 = pNode1->pParent;
+                } while (pNode2 && !(pNode1 == pNode1->pParent->pLeft));
+                if (pNode2) {
+                    eRc = pScan(pObj, pNode2->pNode, pArg3);
+                    if (ERESULT_FAILED(eRc))
+                        break;
+                    pNode1 = pNode2->pRight;
+                }
+            }
+        } while (pNode2);
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -742,6 +1820,55 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                  R i g t  D e g e n e r a t e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTree_RightDegenerate(
+        NODEBTREE_DATA  *this
+    )
+    {
+        NODEBTREE_NODE  *pNode;
+        NODEBTREE_NODE  *pParent;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef XYZZY
+        /* Alter the tree to be right degenerate (ie a singly-
+         * linked list using only the right child ptr).
+         */
+        pNode = nodeBTree_getRoot(this);
+        while( pNode ) {
+            pParent = pNode->pParent;
+            if( pNode->pLeft ) {
+                nodeBTree_RotateRight(this, pNode);
+                if( pParent ) {
+                    if( pParent->pLeft )
+                        pNode = pParent->pLeft;
+                    else
+                        pNode = pParent->pRight;
+                }
+                else
+                    pNode = this->pRoot;
+            }
+            else
+                pNode = pNode->pRight;
+        }
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
@@ -800,11 +1927,8 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -832,21 +1956,19 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    nodeBTree_getSize(this)
+                    nodeArray_getSize(this->pArray)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
+        if (this->pArray) {
+            if (((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString(
+                                                    this->pArray,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -904,7 +2026,155 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                  V i s i t  N o d e s
+    //---------------------------------------------------------------
     
+    /*! Visit all the nodes in the Tree using a In-order traversal.
+     */
+    
+    ERESULT         nodeBTree_VisitNodesInParent(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!nodeBTree_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pScan) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc =   nodeBTree_VisitNodeInRecurse(
+                                             this,
+                                             nodeBTree_getRoot(this),
+                                             pScan,
+                                             pObj,
+                                             pArg3
+                                             );
+        
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTree_VisitNodesInRecurse(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!nodeBTree_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pScan) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc =   nodeBTree_VisitNodeInRecurse(
+                                              this,
+                                              nodeBTree_getRoot(this),
+                                              pScan,
+                                              pObj,
+                                              pArg3
+                );
+        
+        return eRc;
+    }
+    
+    
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodesPostRecurse(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!nodeBTree_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pScan) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc =   nodeBTree_VisitNodePostRecurse(
+                    this,
+                    nodeBTree_getRoot(this),
+                    pScan,
+                    pObj,
+                    pArg3
+                );
+        
+        return eRc;
+    }
+    
+    
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodesPreRecurse(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!nodeBTree_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pScan) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc =   nodeBTree_VisitNodePreRecurse(
+                                               this,
+                                               nodeBTree_getRoot(this),
+                                               pScan,
+                                               pObj,
+                                               pArg3
+                );
+        
+        return eRc;
+    }
+    
+    
+
+
     
 #ifdef	__cplusplus
 }

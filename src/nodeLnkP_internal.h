@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeLink_internal.h
- *	Generated 06/30/2018 19:10:48
+ * File:   nodeLnkP_internal.h
+ *	Generated 11/19/2018 07:52:23
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,13 @@
 
 
 
-#include    <nodeLink.h>
-#include    <jsonIn.h>
-#include    <node_internal.h>
+#include        <nodeLnkP.h>
+#include        <jsonIn.h>
+#include        <node_internal.h>
 
 
-#ifndef NODELINK_INTERNAL_H
-#define	NODELINK_INTERNAL_H
+#ifndef NODELNKP_INTERNAL_H
+#define	NODELNKP_INTERNAL_H
 
 
 
@@ -61,8 +61,8 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct nodeLink_data_s	{
-    /* Warning - NODE_DATA must be first in this object!
+struct nodeLnkP_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
      */
     NODE_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
@@ -73,23 +73,37 @@ struct nodeLink_data_s	{
     // obj's cbMisc1 is used for balance.
 
     // Common Data
-
-    // Indices
+    NODELNKP_DATA   *pLeft;
+    NODELNKP_DATA   *pMiddle;
+    NODELNKP_DATA   *pParent;
+    NODELNKP_DATA   *pRight;
     uint32_t        index;
-    uint32_t        leftIndex;
-    uint32_t        middleIndex;
-    uint32_t        parentIndex;
-    uint32_t        rightIndex;
 
 };
 #pragma pack(pop)
 
     extern
-    struct nodeLink_class_data_s  nodeLink_ClassObj;
+    struct nodeLnkP_class_data_s  nodeLnkP_ClassObj;
 
     extern
     const
-    NODELINK_VTBL         nodeLink_Vtbl;
+    NODELNKP_VTBL         nodeLnkP_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  NODELNKP_SINGLETON
+    NODELNKP_DATA *     nodeLnkP_getSingleton(
+        void
+    );
+
+    bool            nodeLnkP_setSingleton(
+     NODELNKP_DATA       *pValue
+);
+#endif
 
 
 
@@ -97,36 +111,30 @@ struct nodeLink_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeLink_getSuperVtbl(
-        NODELINK_DATA     *this
+    OBJ_IUNKNOWN *  nodeLnkP_getSuperVtbl(
+        NODELNKP_DATA     *this
     );
 
 
-    void            nodeLink_Dealloc(
+    void            nodeLnkP_Dealloc(
         OBJ_ID          objId
     );
 
 
-    NODELINK_DATA * nodeLink_ParseObject(
+    NODELNKP_DATA *       nodeLnkP_ParseObject(
         JSONIN_DATA     *pParser
     );
 
 
-    ERESULT         nodeLink_ParseObjectFields(
-        JSONIN_DATA     *pParser,
-        NODELINK_DATA   *pObject
-    );
-    
-    
-    void *          nodeLink_QueryInfo(
+    void *          nodeLnkP_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeLink_ToJSON(
-        NODELINK_DATA      *this
+    ASTR_DATA *     nodeLnkP_ToJSON(
+        NODELNKP_DATA      *this
     );
 
 
@@ -134,8 +142,8 @@ struct nodeLink_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			nodeLink_Validate(
-        NODELINK_DATA       *this
+    bool			nodeLnkP_Validate(
+        NODELNKP_DATA       *this
     );
 #endif
 
@@ -145,5 +153,5 @@ struct nodeLink_data_s	{
 }
 #endif
 
-#endif	/* NODELINK_INTERNAL_H */
+#endif	/* NODELNKP_INTERNAL_H */
 

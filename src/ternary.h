@@ -75,7 +75,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ternary_data_s	TERNARY_DATA;
+    typedef struct ternary_data_s	TERNARY_DATA;  // Inherits from Blocks
 
     typedef struct ternary_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -145,8 +145,7 @@ extern "C" {
     
     
     TERNARY_DATA * ternary_Init(
-        TERNARY_DATA    *this,
-        uint32_t        bufferSize
+        TERNARY_DATA    *this
     );
 
 

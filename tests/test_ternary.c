@@ -84,7 +84,7 @@ int         test_ternary_OpenClose(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = ternary_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = ternary_Init( pObj, 16 );
+    pObj = ternary_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -112,7 +112,7 @@ int         test_ternary_AddFind(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = ternary_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = ternary_Init( pObj, 16 );
+    pObj = ternary_Init(pObj);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     obj_TraceSet(pObj, true);
     if (pObj) {

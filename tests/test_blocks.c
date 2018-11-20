@@ -84,7 +84,7 @@ int         test_blocks_OpenClose(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = blocks_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = blocks_Init(pObj, 4096);
+    pObj = blocks_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -108,56 +108,52 @@ int         test_blocks_Add(
 {
     ERESULT         eRc;
     BLOCKS_DATA	    *pObj = OBJ_NIL;
-    void            *pBlk1 = NULL;
-    void            *pBlk2 = NULL;
-    void            *pBlk3 = NULL;
-    void            *pBlk4 = NULL;
+    void            *pRcd1 = NULL;
+    void            *pRcd2 = NULL;
+    void            *pRcd3 = NULL;
+    void            *pRcd4 = NULL;
     void            *pWrk;
-    uint8_t         *pBlks[8] = {NULL};
-    uint32_t        cBlks = 0;
-    BLOCKS_BLOCK    *pGroup;
-    int             i;
-    ENUM_DATA       *pEnum = OBJ_NIL;
-    uint64_t        i64 = 0;
+    uint8_t         *pRcds[8] = {NULL};
+    uint32_t        cRcds = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = blocks_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = blocks_Init( pObj, 2048 );
+    pObj = blocks_Init( pObj);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pBlk1 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk1) );
-        pBlk2 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk2) );
-        pBlk3 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk3) );
-        pBlk4 = blocks_Add(pObj);
-        XCTAssertFalse( (NULL == pBlk4) );
-        XCTAssertTrue( (4 == blocks_getSize(pObj)) );
-
-        eRc = blocks_Enum(pObj, &pEnum);
+        eRc = blocks_SetupSizes(pObj, 0, 32);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = enum_Next(pEnum, 8, (void**)pBlks, &cBlks);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (4 == cBlks) );
-        XCTAssertTrue( (pBlks[0] == pBlk1) );
-        XCTAssertTrue( (pBlks[1] == pBlk2) );
-        XCTAssertTrue( (pBlks[2] == pBlk3) );
-        XCTAssertTrue( (pBlks[3] == pBlk4) );
-        obj_Release(pEnum);
-        pEnum = OBJ_NIL;
+        fprintf(stderr, "\tBlockSize  = %d\n", blocks_getBlockSize(pObj));
+        XCTAssertTrue( (4096 == blocks_getBlockSize(pObj)) );
+        fprintf(stderr, "\tBlockAvail = %d\n", blocks_getBlockAvail(pObj));
+        XCTAssertTrue( (4080 == blocks_getBlockAvail(pObj)) );
+        fprintf(stderr, "\tRecordSize  = %d\n", blocks_getRecordSize(pObj));
+        XCTAssertTrue( (32 == blocks_getRecordSize(pObj)) );
+        fprintf(stderr, "\tRecordsPerBlock  = %d\n", blocks_getRecordsPerBlock(pObj));
+        XCTAssertTrue( (127 == blocks_getRecordsPerBlock(pObj)) );
 
-        pWrk = blocks_Get(pObj, 1);
-        XCTAssertTrue( (pWrk == pBlk1) );
-        pWrk = blocks_Get(pObj, 2);
-        XCTAssertTrue( (pWrk == pBlk2) );
-        pWrk = blocks_Get(pObj, 3);
-        XCTAssertTrue( (pWrk == pBlk3) );
-        pWrk = blocks_Get(pObj, 4);
-        XCTAssertTrue( (pWrk == pBlk4) );
-        
+        pRcd1 = blocks_RecordNew(pObj);
+        pWrk = pObj->blocks.pHead;
+        fprintf(stderr, "\tBlock 1  = %p\n", pWrk);
+        fprintf(stderr, "\tRecord 1  = %p\n", pRcd1);
+        fprintf(stderr, "\tOffset 1  = %d\n", (int)(pRcd1 - pWrk));
+        XCTAssertTrue( (16 == (int)(pRcd1 - pWrk)) );
+        pRcd2 = blocks_RecordNew(pObj);
+        fprintf(stderr, "\tRecord 2  = %p\n", pRcd2);
+        fprintf(stderr, "\tOffset 2  = %d\n", (int)(pRcd2 - pWrk));
+        XCTAssertTrue( (48 == (int)(pRcd2 - pWrk)) );
+        pRcd3 = blocks_RecordNew(pObj);
+        fprintf(stderr, "\tRecord 3  = %p\n", pRcd3);
+        eRc = blocks_RecordFree(pObj, pRcd2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tFreed Record 2  = %p\n", pRcd2);
+        pRcd4 = blocks_RecordNew(pObj);
+        fprintf(stderr, "\tRecord 4  = %p\n", pRcd4);
+        XCTAssertTrue( (pRcd2 == pRcd4) );
+        pRcd2 = NULL;
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

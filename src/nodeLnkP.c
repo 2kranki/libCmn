@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   nodeLink.c
- *	Generated 06/30/2018 19:10:48
+ * File:   nodeLnkP.c
+ *	Generated 11/19/2018 07:52:23
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <nodeLink_internal.h>
+#include        <nodeLnkP_internal.h>
 #include        <trace.h>
 
 
@@ -61,11 +61,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            nodeLink_task_body(
+    void            nodeLnkP_task_body(
         void            *pData
     )
     {
-        //NODELINK_DATA  *this = pData;
+        //NODELNKP_DATA  *this = pData;
         
     }
 #endif
@@ -81,15 +81,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODELINK_DATA *     nodeLink_Alloc(
+    NODELNKP_DATA *     nodeLnkP_Alloc(
+        void
     )
     {
-        NODELINK_DATA   *this;
-        uint32_t        cbSize = sizeof(NODELINK_DATA);
+        NODELNKP_DATA       *this;
+        uint32_t        cbSize = sizeof(NODELNKP_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -97,32 +98,33 @@ extern "C" {
 
 
 
-    NODELINK_DATA *     nodeLink_New(
+    NODELNKP_DATA *     nodeLnkP_New(
+        void
     )
     {
-        NODELINK_DATA       *this;
+        NODELNKP_DATA       *this;
         
-        this = nodeLink_Alloc( );
+        this = nodeLnkP_Alloc( );
         if (this) {
-            this = nodeLink_Init(this);
+            this = nodeLnkP_Init(this);
         } 
         return this;
     }
 
 
-    NODELINK_DATA * nodeLink_NewWithUTF8AndClass(
+    NODELNKP_DATA * nodeLnkP_NewWithUTF8AndClass(
         const
         char            *pNameA,
         int32_t         cls,
         OBJ_ID          pData
     )
     {
-        NODELINK_DATA   *this;
+        NODELNKP_DATA   *this;
         NAME_DATA       *pName = OBJ_NIL;
         
-        this = nodeLink_Alloc( );
+        this = nodeLnkP_Alloc( );
         if (this) {
-            this = nodeLink_Init(this);
+            this = nodeLnkP_Init(this);
             if (this) {
                 if (pNameA) {
                     pName = name_NewUTF8(pNameA);
@@ -136,21 +138,21 @@ extern "C" {
         }
         return this;
     }
-
     
-    NODELINK_DATA * nodeLink_NewWithUTF8ConAndClass(
+    
+    NODELNKP_DATA * nodeLnkP_NewWithUTF8ConAndClass(
         const
         char            *pNameA,
         int32_t         cls,
         OBJ_ID          pData
     )
     {
-        NODELINK_DATA   *this;
+        NODELNKP_DATA   *this;
         NAME_DATA       *pName = OBJ_NIL;
         
-        this = nodeLink_Alloc( );
+        this = nodeLnkP_Alloc( );
         if (this) {
-            this = nodeLink_Init(this);
+            this = nodeLnkP_Init(this);
             if (this) {
                 if (pNameA) {
                     pName = name_NewUTF8Con(pNameA);
@@ -177,15 +179,15 @@ extern "C" {
     //                         B a l a n c e
     //---------------------------------------------------------------
     
-    int16_t         nodeLink_getBalance(
-        NODELINK_DATA   *this
+    int16_t         nodeLnkP_getBalance(
+        NODELNKP_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -195,14 +197,14 @@ extern "C" {
     }
     
     
-    bool            nodeLink_setBalance(
-        NODELINK_DATA   *this,
+    bool            nodeLnkP_setBalance(
+        NODELNKP_DATA   *this,
         int16_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -216,201 +218,18 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      C h i l d  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        nodeLink_getChild(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->leftIndex;
-    }
-    
-    
-    bool            nodeLink_setChild(
-        NODELINK_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->leftIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          C l a s s
-    //---------------------------------------------------------------
-    
-    int32_t         nodeLink_getClass(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return node_getClass((NODE_DATA *)this);
-    }
-    
-
-    
-    //---------------------------------------------------------------
-    //                          D a t a
-    //---------------------------------------------------------------
-    
-    OBJ_ID          nodeLink_getData(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return node_getData((NODE_DATA *)this);
-    }
-
-    
-    
-    //---------------------------------------------------------------
-    //                          E x t r a
-    //---------------------------------------------------------------
-    
-    OBJ_ID          nodeLink_getExtra(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return node_getExtra((NODE_DATA *)this);
-    }
-
-    
-    
-    //---------------------------------------------------------------
-    //                      F r o m  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        nodeLink_getFrom(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->leftIndex;
-    }
-    
-    
-    bool            nodeLink_setFrom(
-        NODELINK_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->leftIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          H a s h
-    //---------------------------------------------------------------
-    
-    uint32_t        nodeLink_getHash(
-        NODELINK_DATA   *this
-    )
-    {
-        uint32_t        hash = 0;
-        NAME_DATA       *pName = OBJ_NIL;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return hash;
-        }
-#endif
-        pName = node_getName((NODE_DATA *)this);
-        
-        if (pName) {
-            hash = name_getHash(pName);
-        }
-        
-        return hash;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          I n d e x
     //---------------------------------------------------------------
     
-    uint32_t        nodeLink_getIndex(
-        NODELINK_DATA   *this
+    uint32_t        nodeLnkP_getIndex(
+        NODELNKP_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -420,14 +239,14 @@ extern "C" {
     }
     
     
-    bool            nodeLink_setIndex(
-        NODELINK_DATA   *this,
+    bool            nodeLnkP_setIndex(
+        NODELNKP_DATA   *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -441,48 +260,52 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L e f t  I n d e x
+    //                          L e f t
     //---------------------------------------------------------------
     
-    uint32_t        nodeLink_getLeft(
-        NODELINK_DATA   *this
+    NODELNKP_DATA * nodeLnkP_getLeft(
+        NODELNKP_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return OBJ_NIL;
         }
 #endif
         
-        return this->leftIndex;
+        return this->pLeft;
     }
     
     
-    bool            nodeLink_setLeft(
-        NODELINK_DATA   *this,
-        uint32_t        value
+    bool            nodeLnkP_setLeft(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        this->leftIndex = value;
+        obj_Retain(pValue);
+        if (this->pLeft) {
+            obj_Release(this->pLeft);
+        }
+        this->pLeft = pValue;
         
         return true;
     }
     
     
-    bool            nodeLink_getLeftLink(
-        NODELINK_DATA   *this
+    bool            nodeLnkP_getLeftLink(
+        NODELNKP_DATA   *this
     )
     {
         bool            fRc;
@@ -490,7 +313,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -502,14 +325,14 @@ extern "C" {
     }
     
     
-    bool            nodeLink_setLeftLink(
-        NODELINK_DATA   *this,
+    bool            nodeLnkP_setLeftLink(
+        NODELNKP_DATA   *this,
         bool            fValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -521,43 +344,48 @@ extern "C" {
     }
     
     
+    
 
     //---------------------------------------------------------------
-    //                   M i d d l e  I n d e x
+    //                         M i d d l e
     //---------------------------------------------------------------
     
-    uint32_t        nodeLink_getMiddle(
-        NODELINK_DATA   *this
+    NODELNKP_DATA * nodeLnkP_getMiddle(
+        NODELNKP_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return OBJ_NIL;
         }
 #endif
         
-        return this->middleIndex;
+        return this->pMiddle;
     }
     
     
-    bool            nodeLink_setMiddle(
-        NODELINK_DATA   *this,
-        uint32_t        value
+    bool            nodeLnkP_setMiddle(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        this->middleIndex = value;
+        obj_Retain(pValue);
+        if (this->pMiddle) {
+            obj_Release(this->pMiddle);
+        }
+        this->pMiddle = pValue;
         
         return true;
     }
@@ -565,86 +393,45 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          N a m e
+    //                         P a r e n t
     //---------------------------------------------------------------
     
-    NAME_DATA *     nodeLink_getName(
-        NODELINK_DATA   *this
+    NODELNKP_DATA * nodeLnkP_getParent(
+        NODELNKP_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return node_getName((NODE_DATA *)this);
-    }
-
-    
-    
-    //---------------------------------------------------------------
-    //                          O t h e r
-    //---------------------------------------------------------------
-    
-    OBJ_ID          nodeLink_getOther(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return node_getOther((NODE_DATA *)this);
+        return this->pParent;
     }
     
     
-    //---------------------------------------------------------------
-    //                   P a r e n t  I n d e x
-    //---------------------------------------------------------------
-    
-    uint32_t        nodeLink_getParent(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->parentIndex;
-    }
-    
-    
-    bool            nodeLink_setParent(
-        NODELINK_DATA   *this,
-        uint32_t        value
+    bool            nodeLnkP_setParent(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        this->parentIndex = value;
+        obj_Retain(pValue);
+        if (this->pParent) {
+            obj_Release(this->pParent);
+        }
+        this->pParent = pValue;
         
         return true;
     }
@@ -655,34 +442,33 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        nodeLink_getPriority(
-        NODELINK_DATA     *this
+    uint16_t        nodeLnkP_getPriority(
+        NODELNKP_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            nodeLink_setPriority(
-        NODELINK_DATA   *this,
+    bool            nodeLnkP_setPriority(
+        NODELNKP_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -690,55 +476,58 @@ extern "C" {
 
         //this->priority = value;
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
 
 
     //---------------------------------------------------------------
-    //                      R i g h t  I n d e x
+    //                         R i g h t
     //---------------------------------------------------------------
     
-    uint32_t        nodeLink_getRight(
-        NODELINK_DATA   *this
+    NODELNKP_DATA * nodeLnkP_getRight(
+        NODELNKP_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return OBJ_NIL;
         }
 #endif
         
-        return this->rightIndex;
+        return this->pRight;
     }
     
     
-    bool            nodeLink_setRight(
-        NODELINK_DATA   *this,
-        uint32_t        value
+    bool            nodeLnkP_setRight(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        this->rightIndex = value;
+        obj_Retain(pValue);
+        if (this->pRight) {
+            obj_Release(this->pRight);
+        }
+        this->pRight = pValue;
         
         return true;
     }
     
     
-    bool            nodeLink_getRightChild(
-        NODELINK_DATA   *this
+    bool            nodeLnkP_getRightChild(
+        NODELNKP_DATA   *this
     )
     {
         bool            fRc;
@@ -746,7 +535,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -758,14 +547,14 @@ extern "C" {
     }
     
     
-    bool            nodeLink_setRightChild(
-        NODELINK_DATA   *this,
+    bool            nodeLnkP_setRightChild(
+        NODELNKP_DATA   *this,
         bool            fValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -777,8 +566,8 @@ extern "C" {
     }
     
     
-    bool            nodeLink_getRightLink(
-        NODELINK_DATA   *this
+    bool            nodeLnkP_getRightLink(
+        NODELNKP_DATA   *this
     )
     {
         bool            fRc;
@@ -786,7 +575,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -798,14 +587,14 @@ extern "C" {
     }
     
     
-    bool            nodeLink_setRightLink(
-        NODELINK_DATA   *this,
+    bool            nodeLnkP_setRightLink(
+        NODELNKP_DATA   *this,
         bool            fValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -819,115 +608,51 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //                    S i b l i n g  I n d e x
+    //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        nodeLink_getSibling(
-        NODELINK_DATA   *this
+    uint32_t        nodeLnkP_getSize(
+        NODELNKP_DATA       *this
     )
     {
-        
-        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
-        return this->rightIndex;
+
+        return 0;
     }
-    
-    
-    bool            nodeLink_setSibling(
-        NODELINK_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->rightIndex = value;
-        
-        return true;
-    }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  nodeLink_getSuperVtbl(
-        NODELINK_DATA     *this
+    OBJ_IUNKNOWN *  nodeLnkP_getSuperVtbl(
+        NODELNKP_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
 
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
   
 
-    //---------------------------------------------------------------
-    //                    T o  I n d e x
-    //---------------------------------------------------------------
     
-    uint32_t        nodeLink_getTo(
-        NODELINK_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->rightIndex;
-    }
-    
-    
-    bool            nodeLink_setTo(
-        NODELINK_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeLink_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->rightIndex = value;
-        
-        return true;
-    }
-    
-    
-    
-
 
     //===============================================================
     //                          M e t h o d s
@@ -944,27 +669,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = nodeLink__Assign(this,pOther);
+        ERESULT eRc = nodeLnkP_Assign(this,pOther);
      @endcode 
-     @param     this    NODELINK object pointer
-     @param     pOther  a pointer to another NODELINK object
+     @param     this    NODELNKP object pointer
+     @param     pOther  a pointer to another NODELNKP object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         nodeLink_Assign(
-        NODELINK_DATA		*this,
-        NODELINK_DATA      *pOther
+    ERESULT         nodeLnkP_Assign(
+        NODELNKP_DATA		*this,
+        NODELNKP_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeLink_Validate(pOther) ) {
+        if( !nodeLnkP_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -997,11 +723,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -1010,34 +736,39 @@ extern "C" {
     //                      C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         nodeLink_Compare(
-        NODELINK_DATA   *this,
-        NODELINK_DATA   *pOther
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         nodeLnkP_Compare(
+        NODELNKP_DATA     *this,
+        NODELNKP_DATA     *pOther
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
-        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeLink_Validate(pOther) ) {
+        if( !nodeLnkP_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+
         eRc = node_Compare((NODE_DATA *)this, (NODE_DATA *)pOther);
-        
+
         return eRc;
     }
     
-    
-    ERESULT         nodeLink_CompareA(
-        NODELINK_DATA   *this,
+
+    ERESULT         nodeLnkP_CompareA(
+        NODELNKP_DATA   *this,
         int32_t         cls,
         const
         char            *pNameA
@@ -1048,7 +779,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1058,7 +789,7 @@ extern "C" {
         
         return eRc;
     }
-
+    
     
 
     //---------------------------------------------------------------
@@ -1069,32 +800,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        nodeLink      *pCopy = nodeLink_Copy(this);
+        nodeLnkP      *pCopy = nodeLnkP_Copy(this);
      @endcode 
-     @param     this    NODELINK object pointer
-     @return    If successful, a NODELINK object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the NODELINK object.
+     @param     this    NODELNKP object pointer
+     @return    If successful, a NODELNKP object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    NODELINK_DATA * nodeLink_Copy(
-        NODELINK_DATA   *this
+    NODELNKP_DATA *     nodeLnkP_Copy(
+        NODELNKP_DATA       *this
     )
     {
-        NODELINK_DATA   *pOther = OBJ_NIL;
+        NODELNKP_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = nodeLink_New( );
+        pOther = nodeLnkP_New( );
         if (pOther) {
-            eRc = nodeLink_Assign(this, pOther);
+            eRc = nodeLnkP_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -1103,7 +834,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1113,11 +843,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            nodeLink_Dealloc(
+    void            nodeLnkP_Dealloc(
         OBJ_ID          objId
     )
     {
-        NODELINK_DATA   *this = objId;
+        NODELNKP_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -1125,11 +855,22 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
+
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((NODELNKP_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        nodeLnkP_setLeft(this, OBJ_NIL);
+        nodeLnkP_setMiddle(this, OBJ_NIL);
+        nodeLnkP_setParent(this, OBJ_NIL);
+        nodeLnkP_setRight(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1146,15 +887,15 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeLink_Disable(
-        NODELINK_DATA		*this
+    ERESULT         nodeLnkP_Disable(
+        NODELNKP_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1165,7 +906,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1175,15 +915,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeLink_Enable(
-        NODELINK_DATA		*this
+    ERESULT         nodeLnkP_Enable(
+        NODELNKP_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1194,7 +934,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1204,11 +943,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODELINK_DATA * nodeLink_Init(
-        NODELINK_DATA   *this
+    NODELNKP_DATA *   nodeLnkP_Init(
+        NODELNKP_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(NODELINK_DATA);
+        uint32_t        cbSize = sizeof(NODELNKP_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1225,31 +964,31 @@ extern "C" {
         }
 
         this = (OBJ_ID)node_Init((NODE_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODELINK);
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODELNKP);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);                      // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODELINK); // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODELNKP); // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeLink_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeLnkP_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "nodeLink::sizeof(NODELINK_DATA) = %lu\n", sizeof(NODELINK_DATA));
+        //fprintf(stderr, "nodeLnkP::sizeof(NODELNKP_DATA) = %lu\n", sizeof(NODELNKP_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(NODELINK_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(NODELNKP_DATA));
     #endif
 
         return this;
@@ -1261,27 +1000,25 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         nodeLink_IsEnabled(
-        NODELINK_DATA		*this
+    ERESULT         nodeLnkP_IsEnabled(
+        NODELNKP_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1298,14 +1035,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = nodeLink_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = nodeLnkP_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "nodeLink", prefix,
+                        the object name, "nodeLnkP", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1313,13 +1050,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          nodeLink_QueryInfo(
+    void *          nodeLnkP_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        NODELINK_DATA     *this = objId;
+        NODELNKP_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1328,7 +1065,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1337,7 +1074,7 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)nodeLink_Class();
+                return (void *)nodeLnkP_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1367,22 +1104,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return nodeLink_Disable;
+                            return nodeLnkP_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return nodeLink_Enable;
+                            return nodeLnkP_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return nodeLink_ToDebugString;
+                            return nodeLnkP_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return nodeLink_ToJSON;
+                            return nodeLnkP_ToJSON;
                         }
                         break;
                         
@@ -1392,9 +1129,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == nodeLink_ToDebugString)
+                if (pData == nodeLnkP_ToDebugString)
                     return "ToDebugString";
-                if (pData == nodeLink_ToJSON)
+                if (pData == nodeLnkP_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -1408,6 +1145,42 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+     ASTR_DATA *     nodeLnkP_ToJSON(
+        NODELNKP_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    "{\"objectType\":\"%s\"",
+                    pInfo->pClassName
+                );
+        
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1415,16 +1188,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = nodeLink_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeLnkP_ToDebugString(this,4);
      @endcode 
-     @param     this    NODELINK object pointer
+     @param     this    NODELNKP object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeLink_ToDebugString(
-        NODELINK_DATA      *this,
+    ASTR_DATA *     nodeLnkP_ToDebugString(
+        NODELNKP_DATA      *this,
         int             indent
     )
     {
@@ -1438,7 +1211,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeLink_Validate(this) ) {
+        if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1446,53 +1219,57 @@ extern "C" {
               
         pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s)\n",
+                    "{%p(%s) retain=%d\n",
                     this,
-                    pInfo->pClassName
+                    pInfo->pClassName,
+                    obj_getRetainCount(this)
             );
-
         if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         AStr_AppendPrint(
                          pStr,
-                         "\"index\":\"%4d\", "
+                         "index:\"%4d\", "
                          "%s "
-                         "\"leftIndex\":\"%4d\", "
-                         "%s "
-                         "\"middleIndex\":\"%4d\", "
-                         "\"parentIndex\":\"%4d\", "
-                         "\"rightIndex\":%4d "
-                         "%s "
-                         "\"balance\":%4d "
+                         "left%s:\"%p\", "
+                         "middle:\"%p\", "
+                         "parent:\"%p\", "
+                         "right%s:%p "
+                         "balance:%4d "
                          "\n",
                          this->index,
-                         (nodeLink_getRightChild(this) ? "Right_Child" : ""),
-                         this->leftIndex,
-                         (nodeLink_getLeftLink(this) ? "Left_Link" : ""),
-                         this->middleIndex,
-                         this->parentIndex,
-                         this->rightIndex,
-                         (nodeLink_getRightLink(this) ? "Right_Link" : ""),
-                         nodeLink_getBalance(this)
+                         (nodeLnkP_getRightChild(this) ? "RChild," : ""),
+                         (nodeLnkP_getLeftLink(this) ? "_Link" : "_Thread"),
+                         this->pLeft,
+                         this->pMiddle,
+                         this->pParent,
+                         (nodeLnkP_getRightLink(this) ? "_Link" : "_Thread"),
+                         this->pRight,
+                         nodeLnkP_getBalance(this)
         );
-        
+
         if (this->pSuperVtbl) {
             if (this->pSuperVtbl->pToDebugString) {
                 pWrkStr =   this->pSuperVtbl->pToDebugString(
-                                                    this,
-                                                    indent+3
+                                                             this,
+                                                             indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
         
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -1503,7 +1280,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1515,15 +1291,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            nodeLink_Validate(
-        NODELINK_DATA      *this
+    bool            nodeLnkP_Validate(
+        NODELNKP_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_NODELINK) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODELNKP) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1539,13 +1315,11 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(NODELINK_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
+        if( !(obj_getSize(this) >= sizeof(NODELNKP_DATA)) ) {
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

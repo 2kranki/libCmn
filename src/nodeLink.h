@@ -143,6 +143,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    int16_t         nodeLink_getBalance(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setBalance(
+        NODELINK_DATA   *this,
+        int16_t         value
+    );
+
+    
     /*!
      Child index property is used to point to the next child node
      if needed.  Note that this uses the Left index internally.
@@ -206,6 +216,20 @@ extern "C" {
     );
     
     
+    /*!
+     Left Link property is used to indicate that the Left Index
+     is a link (true) or a thread (false) for use in a threaded tree.
+     */
+    bool            nodeLink_getLeftLink(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setLeftLink(
+        NODELINK_DATA   *this,
+        bool            fValue
+    );
+    
+    
     uint32_t        nodeLink_getMiddle(
         NODELINK_DATA   *this
     );
@@ -243,6 +267,30 @@ extern "C" {
     bool            nodeLink_setRight(
         NODELINK_DATA   *this,
         uint32_t        value
+    );
+    
+    
+    bool            nodeLink_getRightChild(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setRightChild(
+        NODELINK_DATA   *this,
+        bool            fValue
+    );
+
+    
+    /*!
+     Right Link property is used to indicate that the Right Index
+     is a link (true) or a thread (false) for use in a threaded tree.
+     */
+    bool            nodeLink_getRightLink(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setRightLink(
+        NODELINK_DATA   *this,
+        bool            fValue
     );
     
     

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'nodeBTree'
-//	Generated 11/12/2018 09:44:16
+//	Class Object Metods and Tables for 'nodeLnkP'
+//	Generated 11/19/2018 07:52:23
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEBTREE_OBJECT_C	    1
-#include        <nodeBTree_internal.h>
-#ifdef  NODEBTREE_SINGLETON
+#define			NODELNKP_OBJECT_C	    1
+#include        <nodeLnkP_internal.h>
+#ifdef  NODELNKP_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct nodeBTree_class_data_s	{
+struct nodeLnkP_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEBTREE_SINGLETON
+#ifdef  NODELNKP_SINGLETON
     volatile
-    NODEBTREE_DATA       *pSingleton;
+    NODELNKP_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct nodeBTree_class_data_s	{
 
 
 static
-void *          nodeBTreeClass_QueryInfo(
+void *          nodeLnkPClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,20 +78,20 @@ void *          nodeBTreeClass_QueryInfo(
 
 static
 const
-OBJ_INFO        nodeBTree_Info;            // Forward Reference
+OBJ_INFO        nodeLnkP_Info;            // Forward Reference
 
 
 
 
 static
-bool            nodeBTreeClass_IsKindOf(
+bool            nodeLnkPClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEBTREE_CLASS == classID) {
+    if (OBJ_IDENT_NODELNKP_CLASS == classID) {
        return true;
     }
-    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
+    if (OBJ_IDENT_NODE_CLASS == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -102,11 +102,11 @@ bool            nodeBTreeClass_IsKindOf(
 
 
 static
-uint16_t		nodeBTreeClass_WhoAmI(
+uint16_t		nodeLnkPClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_NODEBTREE_CLASS;
+    return OBJ_IDENT_NODELNKP_CLASS;
 }
 
 
@@ -118,17 +118,17 @@ uint16_t		nodeBTreeClass_WhoAmI(
 
 static
 const
-NODEBTREE_CLASS_VTBL    class_Vtbl = {
+NODELNKP_CLASS_VTBL    class_Vtbl = {
     {
-        &nodeBTree_Info,
-        nodeBTreeClass_IsKindOf,
+        &nodeLnkP_Info,
+        nodeLnkPClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        nodeBTree_Class,
-        nodeBTreeClass_WhoAmI,
-        (P_OBJ_QUERYINFO)nodeBTreeClass_QueryInfo,
-        NULL                        // nodeBTreeClass_ToDebugString
+        nodeLnkP_Class,
+        nodeLnkPClass_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeLnkPClass_QueryInfo,
+        NULL                        // nodeLnkPClass_ToDebugString
     },
 };
 
@@ -138,8 +138,8 @@ NODEBTREE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEBTREE_CLASS_DATA  nodeBTree_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEBTREE_CLASS, 0, 1},
+NODELNKP_CLASS_DATA  nodeLnkP_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELNKP_CLASS, 0, 1},
 	//0
 };
 
@@ -149,17 +149,17 @@ NODEBTREE_CLASS_DATA  nodeBTree_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEBTREE_SINGLETON
-NODEBTREE_DATA *     nodeBTree_getSingleton(
+#ifdef  NODELNKP_SINGLETON
+NODELNKP_DATA *     nodeLnkP_getSingleton(
     void
 )
 {
-    return (OBJ_ID)(nodeBTree_ClassObj.pSingleton);
+    return (OBJ_ID)(nodeLnkP_ClassObj.pSingleton);
 }
 
 
-bool            nodeBTree_setSingleton(
-    NODEBTREE_DATA       *pValue
+bool            nodeLnkP_setSingleton(
+    NODELNKP_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -179,10 +179,10 @@ bool            nodeBTree_setSingleton(
     }
     
     obj_Retain(pValue);
-    if (nodeBTree_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(nodeBTree_ClassObj.pSingleton));
+    if (nodeLnkP_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(nodeLnkP_ClassObj.pSingleton));
     }
-    nodeBTree_ClassObj.pSingleton = pValue;
+    nodeLnkP_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -192,17 +192,17 @@ bool            nodeBTree_setSingleton(
 
 
 
-NODEBTREE_DATA *     nodeBTree_Shared(
+NODELNKP_DATA *     nodeLnkP_Shared(
     void
 )
 {
-    NODEBTREE_DATA       *this = (OBJ_ID)(nodeBTree_ClassObj.pSingleton);
+    NODELNKP_DATA       *this = (OBJ_ID)(nodeLnkP_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = nodeBTree_New( );
-        nodeBTree_setSingleton(this);
+        this = nodeLnkP_New( );
+        nodeLnkP_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // nodeBTree_ClassObj.pSingleton = OBJ_NIL;
+        // nodeLnkP_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -210,15 +210,15 @@ NODEBTREE_DATA *     nodeBTree_Shared(
 
 
 
-void            nodeBTree_SharedReset(
+void            nodeLnkP_SharedReset(
     void
 )
 {
-    NODEBTREE_DATA       *this = (OBJ_ID)(nodeBTree_ClassObj.pSingleton);
+    NODELNKP_DATA       *this = (OBJ_ID)(nodeLnkP_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        nodeBTree_ClassObj.pSingleton = OBJ_NIL;
+        nodeLnkP_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -234,13 +234,13 @@ void            nodeBTree_SharedReset(
 //---------------------------------------------------------------
 
 static
-void *          nodeBTreeClass_QueryInfo(
+void *          nodeLnkPClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEBTREE_CLASS_DATA *this = objId;
+    NODELNKP_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -262,7 +262,7 @@ void *          nodeBTreeClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&nodeBTree_Info;
+                        return (void *)&nodeLnkP_Info;
                     }
                     break;
                     
@@ -280,13 +280,13 @@ void *          nodeBTreeClass_QueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return nodeBTree_New;
+                        return nodeLnkP_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return nodeBTreeClass_WhoAmI;
+                        return nodeLnkPClass_WhoAmI;
                     }
                     break;
                     
@@ -306,14 +306,14 @@ void *          nodeBTreeClass_QueryInfo(
 
 
 static
-bool            nodeBTree_IsKindOf(
+bool            nodeLnkP_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEBTREE == classID) {
+    if (OBJ_IDENT_NODELNKP == classID) {
        return true;
     }
-    if (OBJ_IDENT_BLOCKS == classID) {
+    if (OBJ_IDENT_NODE == classID) {
         return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -325,25 +325,25 @@ bool            nodeBTree_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            nodeBTree_Dealloc(
+void            nodeLnkP_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          nodeBTree_Class(
+OBJ_ID          nodeLnkP_Class(
     void
 )
 {
-    return (OBJ_ID)&nodeBTree_ClassObj;
+    return (OBJ_ID)&nodeLnkP_ClassObj;
 }
 
 
 static
-uint16_t		nodeBTree_WhoAmI(
+uint16_t		nodeLnkP_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_NODEBTREE;
+    return OBJ_IDENT_NODELNKP;
 }
 
 
@@ -355,34 +355,34 @@ uint16_t		nodeBTree_WhoAmI(
 //===========================================================
 
 const
-NODEBTREE_VTBL     nodeBTree_Vtbl = {
+NODELNKP_VTBL     nodeLnkP_Vtbl = {
     {
-        &nodeBTree_Info,
-        nodeBTree_IsKindOf,
-#ifdef  NODEBTREE_IS_SINGLETON
+        &nodeLnkP_Info,
+        nodeLnkP_IsKindOf,
+#ifdef  NODELNKP_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        nodeBTree_Dealloc,
-        nodeBTree_Class,
-        nodeBTree_WhoAmI,
-        (P_OBJ_QUERYINFO)nodeBTree_QueryInfo,
-        (P_OBJ_TOSTRING)nodeBTree_ToDebugString,
-        NULL,			// nodeBTree_Enable,
-        NULL,			// nodeBTree_Disable,
-        NULL,			// (P_OBJ_ASSIGN)nodeBTree_Assign,
-        NULL,			// (P_OBJ_COMPARE)nodeBTree_Compare,
-        NULL, 			// (P_OBJ_PTR)nodeBTree_Copy,
-        NULL, 			// (P_OBJ_PTR)nodeBTree_DeepCopy,
-        NULL 			// (P_OBJ_HASH)nodeBTree_Hash,
+        nodeLnkP_Dealloc,
+        nodeLnkP_Class,
+        nodeLnkP_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeLnkP_QueryInfo,
+        (P_OBJ_TOSTRING)nodeLnkP_ToDebugString,
+        NULL,			// nodeLnkP_Enable,
+        NULL,			// nodeLnkP_Disable,
+        NULL,			// (P_OBJ_ASSIGN)nodeLnkP_Assign,
+        NULL,			// (P_OBJ_COMPARE)nodeLnkP_Compare,
+        NULL, 			// (P_OBJ_PTR)nodeLnkP_Copy,
+        NULL, 			// (P_OBJ_PTR)nodeLnkP_DeepCopy,
+        NULL 			// (P_OBJ_HASH)nodeLnkP_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //nodeBTree_IsEnabled,
+    //nodeLnkP_IsEnabled,
  
 };
 
@@ -390,12 +390,12 @@ NODEBTREE_VTBL     nodeBTree_Vtbl = {
 
 static
 const
-OBJ_INFO        nodeBTree_Info = {
-    "nodeBTree",
-    "Binary Tree of Nodes",
-    (OBJ_DATA *)&nodeBTree_ClassObj,
-    (OBJ_DATA *)&blocks_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeBTree_Vtbl
+OBJ_INFO        nodeLnkP_Info = {
+    "nodeLnkP",
+    "node w/Pointer Links",
+    (OBJ_DATA *)&nodeLnkP_ClassObj,
+    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_IUNKNOWN *)&nodeLnkP_Vtbl
 };
 
 
