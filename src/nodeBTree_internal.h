@@ -132,6 +132,12 @@ struct nodeBTree_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            nodeBTree_setRoot(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pValue
+    );
+    
+    
     OBJ_IUNKNOWN *  nodeBTree_getSuperVtbl(
         NODEBTREE_DATA     *this
     );

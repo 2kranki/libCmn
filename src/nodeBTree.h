@@ -190,6 +190,11 @@ extern "C" {
     );
 
    
+    NODELNKP_DATA * nodeBTree_First(
+        NODEBTREE_DATA  *this
+    );
+    
+    
     NODEBTREE_DATA * nodeBTree_Init(
         NODEBTREE_DATA  *this
     );
@@ -250,6 +255,23 @@ extern "C" {
         void            *pArg3
     );
 
+    
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTree_VisitNodesInParent(   // Use Parent link (not recursive).
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
+    );
+    
+    ERESULT         nodeBTree_VisitNodesInRecurse(
+        NODEBTREE_DATA  *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
     
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */

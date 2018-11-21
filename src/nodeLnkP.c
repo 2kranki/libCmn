@@ -263,29 +263,36 @@ extern "C" {
     //                          L e f t
     //---------------------------------------------------------------
     
-    NODELNKP_DATA * nodeLnkP_getLeft(
+    NODELNKP_DATA * nodeLnkP_getLeftLink(
         NODELNKP_DATA   *this
     )
     {
+        bool            fRc;
+        NODELNKP_DATA   *pNode = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !nodeLnkP_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
         
-        return this->pLeft;
+        fRc = obj_Flag(this, NODELINK_LEFT_LINK);
+        if (fRc)
+            pNode = this->pLeft;
+        
+        return pNode;
     }
     
     
-    bool            nodeLnkP_setLeft(
+    bool            nodeLnkP_setLeftLink(
         NODELNKP_DATA   *this,
         NODELNKP_DATA   *pValue
     )
     {
+        
 #ifdef NDEBUG
 #else
         if( !nodeLnkP_Validate(this) ) {
@@ -300,15 +307,19 @@ extern "C" {
         }
         this->pLeft = pValue;
         
+        obj_FlagSet(this, NODELINK_LEFT_LINK, (pValue ? true : false));
+        
         return true;
     }
     
     
-    bool            nodeLnkP_getLeftLink(
+    
+    NODELNKP_DATA * nodeLnkP_getLeftThread(
         NODELNKP_DATA   *this
     )
     {
         bool            fRc;
+        NODELNKP_DATA   *pNode = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -320,16 +331,19 @@ extern "C" {
 #endif
         
         fRc = obj_Flag(this, NODELINK_LEFT_LINK);
+        if (!fRc)
+            pNode = this->pLeft;
         
-        return fRc;
+        return pNode;
     }
     
     
-    bool            nodeLnkP_setLeftLink(
+    bool            nodeLnkP_setLeftThread(
         NODELNKP_DATA   *this,
-        bool            fValue
+        NODELNKP_DATA   *pValue
     )
     {
+        
 #ifdef NDEBUG
 #else
         if( !nodeLnkP_Validate(this) ) {
@@ -338,7 +352,13 @@ extern "C" {
         }
 #endif
         
-        obj_FlagSet(this, NODELINK_LEFT_LINK, fValue);
+        obj_Retain(pValue);
+        if (this->pLeft) {
+            obj_Release(this->pLeft);
+        }
+        this->pLeft = pValue;
+        
+        obj_FlagSet(this, NODELINK_LEFT_LINK, false);
         
         return true;
     }
@@ -392,6 +412,47 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
+    
+    NAME_DATA *     nodeLnkP_getName(
+        NODELNKP_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return node_getName((NODE_DATA *)this);
+    }
+    
+    
+    char *          nodeLnkP_getNameUTF8(
+        NODELNKP_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return node_getNameUTF8((NODE_DATA *)this);
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                         P a r e n t
     //---------------------------------------------------------------
@@ -566,11 +627,12 @@ extern "C" {
     }
     
     
-    bool            nodeLnkP_getRightLink(
+    NODELNKP_DATA * nodeLnkP_getRightLink(
         NODELNKP_DATA   *this
     )
     {
         bool            fRc;
+        NODELNKP_DATA   *pNode = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -582,16 +644,19 @@ extern "C" {
 #endif
         
         fRc = obj_Flag(this, NODELINK_RIGHT_LINK);
+        if (fRc)
+            pNode = this->pRight;
         
-        return fRc;
+        return pNode;
     }
     
     
     bool            nodeLnkP_setRightLink(
         NODELNKP_DATA   *this,
-        bool            fValue
+        NODELNKP_DATA   *pValue
     )
     {
+        
 #ifdef NDEBUG
 #else
         if( !nodeLnkP_Validate(this) ) {
@@ -600,13 +665,70 @@ extern "C" {
         }
 #endif
         
-        obj_FlagSet(this, NODELINK_RIGHT_LINK, fValue);
+        obj_Retain(pValue);
+        if (this->pRight) {
+            obj_Release(this->pRight);
+        }
+        this->pRight = pValue;
+        
+        obj_FlagSet(this, NODELINK_RIGHT_LINK, (pValue ? true : false));
         
         return true;
     }
     
     
-
+    
+    NODELNKP_DATA * nodeLnkP_getRightThread(
+        NODELNKP_DATA   *this
+    )
+    {
+        bool            fRc;
+        NODELNKP_DATA   *pNode = OBJ_NIL;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        fRc = obj_Flag(this, NODELINK_RIGHT_LINK);
+        if (!fRc)
+            pNode = this->pRight;
+        
+        return pNode;
+    }
+    
+    
+    bool            nodeLnkP_setRightThread(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pRight) {
+            obj_Release(this->pRight);
+        }
+        this->pRight = pValue;
+        
+        obj_FlagSet(this, NODELINK_RIGHT_LINK, false);
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -838,7 +960,41 @@ extern "C" {
     }
     
     
+    ERESULT         nodeLnkP_CopyProperties(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pOther
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        obj_setMisc1(pOther, obj_getMisc1(this));   // Balance
+        pOther->index = this->index;
+        pOther->pLeft = this->pLeft;
+        obj_FlagSet(pOther, NODELINK_LEFT_LINK, obj_Flag(this, NODELINK_LEFT_LINK));
+        pOther->pMiddle = this->pMiddle;
+        pOther->pParent = this->pParent;
+        pOther->pRight = this->pRight;
+        obj_FlagSet(pOther, NODELINK_RIGHT_LINK, obj_Flag(this, NODELINK_RIGHT_LINK));
+        obj_FlagSet(pOther, NODELINK_RIGHT_CHILD, obj_Flag(this, NODELINK_RIGHT_CHILD));
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
@@ -867,7 +1023,7 @@ extern "C" {
         }
 #endif
 
-        nodeLnkP_setLeft(this, OBJ_NIL);
+        nodeLnkP_setLeftLink(this, OBJ_NIL);
         nodeLnkP_setMiddle(this, OBJ_NIL);
         nodeLnkP_setParent(this, OBJ_NIL);
         nodeLnkP_setRight(this, OBJ_NIL);
@@ -1020,6 +1176,89 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  I s  L e f t  L i n k
+    //---------------------------------------------------------------
+    
+    bool            nodeLnkP_IsLeftLink(
+        NODELNKP_DATA   *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = obj_Flag(this, NODELINK_LEFT_LINK);
+        
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  I s  R i g h t  C h i l d
+    //---------------------------------------------------------------
+    
+    bool            nodeLnkP_IsRightChild(
+        NODELNKP_DATA   *this
+    )
+    {
+        bool            fRc = false;
+        NODELNKP_DATA   *pParent;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        pParent = this->pParent;
+        if (pParent) {
+            if (pParent->pRight == this)
+                fRc = true;
+        }
+        
+        return fRc;
+    }
+    
+
+    
+    //---------------------------------------------------------------
+    //                  I s  R i g h t  L i n k
+    //---------------------------------------------------------------
+    
+    bool            nodeLnkP_IsRightLink(
+        NODELNKP_DATA   *this
+    )
+    {
+        bool            fRc = false;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = obj_Flag(this, NODELINK_RIGHT_LINK);
+
+        return fRc;
     }
     
     

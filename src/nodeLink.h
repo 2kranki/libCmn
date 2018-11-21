@@ -80,14 +80,18 @@ extern "C" {
         // Methods:
         uint32_t        (*pGetIndex)(NODELINK_DATA *this);
         bool            (*pSetIndex)(NODELINK_DATA *this, uint32_t value);
-        uint32_t        (*pGetLeft)(NODELINK_DATA *this);
-        bool            (*pSetLeft)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetLeftLink)(NODELINK_DATA *this);
+        bool            (*pSetLeftLink)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetLeftThread)(NODELINK_DATA *this);
+        bool            (*pSetLeftThread)(NODELINK_DATA *this, uint32_t value);
         uint32_t        (*pGetMiddle)(NODELINK_DATA *this);
         bool            (*pSetMiddle)(NODELINK_DATA *this, uint32_t value);
         uint32_t        (*pGetParent)(NODELINK_DATA *this);
         bool            (*pSetParent)(NODELINK_DATA *this, uint32_t value);
-        uint32_t        (*pGetRight)(NODELINK_DATA *this);
-        bool            (*pSetRight)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetRightLink)(NODELINK_DATA *this);
+        bool            (*pSetRightLink)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetRightThread)(NODELINK_DATA *this);
+        bool            (*pSetRightThread)(NODELINK_DATA *this, uint32_t value);
     } NODELINK_VTBL;
 
 
@@ -206,27 +210,23 @@ extern "C" {
     );
     
 
-    uint32_t        nodeLink_getLeft(
+    uint32_t        nodeLink_getLeftLink(
         NODELINK_DATA   *this
     );
-    
-    bool            nodeLink_setLeft(
+
+    bool            nodeLink_setLeftLink(
         NODELINK_DATA   *this,
         uint32_t        value
     );
     
     
-    /*!
-     Left Link property is used to indicate that the Left Index
-     is a link (true) or a thread (false) for use in a threaded tree.
-     */
-    bool            nodeLink_getLeftLink(
+    uint32_t        nodeLink_getLeftThread(
         NODELINK_DATA   *this
     );
     
-    bool            nodeLink_setLeftLink(
+    bool            nodeLink_setLeftThread(
         NODELINK_DATA   *this,
-        bool            fValue
+        uint32_t        value
     );
     
     
@@ -243,8 +243,17 @@ extern "C" {
     NAME_DATA *     nodeLink_getName(
         NODELINK_DATA   *this
     );
+
     
+    /*!
+     @return    If successful, a UTF-8 string which must be freed
+     with mem_Free(), otherwise NULL.
+     */
+    char *          nodeLink_getNameUTF8(
+        NODELINK_DATA   *this
+    );
     
+
     OBJ_ID          nodeLink_getOther(
         NODELINK_DATA   *this
     );
@@ -260,16 +269,6 @@ extern "C" {
     );
     
     
-    uint32_t        nodeLink_getRight(
-        NODELINK_DATA   *this
-    );
-    
-    bool            nodeLink_setRight(
-        NODELINK_DATA   *this,
-        uint32_t        value
-    );
-    
-    
     bool            nodeLink_getRightChild(
         NODELINK_DATA   *this
     );
@@ -280,17 +279,23 @@ extern "C" {
     );
 
     
-    /*!
-     Right Link property is used to indicate that the Right Index
-     is a link (true) or a thread (false) for use in a threaded tree.
-     */
-    bool            nodeLink_getRightLink(
+    uint32_t        nodeLink_getRightLink(
         NODELINK_DATA   *this
     );
     
     bool            nodeLink_setRightLink(
         NODELINK_DATA   *this,
-        bool            fValue
+        uint32_t        value
+    );
+    
+    
+    uint32_t        nodeLink_getRightThread(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setRightThread(
+        NODELINK_DATA   *this,
+        uint32_t        value
     );
     
     

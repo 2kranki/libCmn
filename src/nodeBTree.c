@@ -108,20 +108,20 @@ extern "C" {
 
         if (pNode) {
             
-            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
                 nodeBTree_DeleteNodes(this, pWork);
             }
             
-            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
                 nodeBTree_DeleteNodes(this, pWork);
             }
             
-            nodeLnkP_setLeft(pNode, OBJ_NIL);
+            nodeLnkP_setLeftLink(pNode, OBJ_NIL);
             nodeLnkP_setMiddle(pNode, OBJ_NIL);
             nodeLnkP_setParent(pNode, OBJ_NIL);
-            nodeLnkP_setRight(pNode, OBJ_NIL);
+            nodeLnkP_setRightLink(pNode, OBJ_NIL);
             index = nodeLnkP_getIndex(pNode);
             nodeArray_Put(this->pArray, index, OBJ_NIL);
         }
@@ -150,7 +150,7 @@ extern "C" {
         }
         
         while (nodeLnkP_getLeftLink(pNode)) {
-            pNode = nodeLnkP_getLeft(pNode);
+            pNode = nodeLnkP_getLeftLink(pNode);
         }
         
         // Return to caller.
@@ -178,7 +178,7 @@ extern "C" {
         }
         
         while (nodeLnkP_getRightLink(pNode)) {
-            pNode = nodeLnkP_getRight(pNode);
+            pNode = nodeLnkP_getRightLink(pNode);
         }
 
         // Return to caller.
@@ -232,7 +232,7 @@ extern "C" {
         NODELNKP_DATA   *pNode
     )
     {
-        NODELNKP_DATA   *pChild;
+        NODELNKP_DATA   *pChild = OBJ_NIL;
         
         // Do initialization.
         if (NULL == pNode) {
@@ -297,13 +297,17 @@ extern "C" {
     //                          R o t a t e
     //---------------------------------------------------------------
     
+    /*!
+     Rotate the tree at the given node left one rotation.
+     */
+    
     ERESULT         nodeBTree_RotateLeft(
         NODEBTREE_DATA  *this,
         NODELNKP_DATA   *pNode
     )
     {
         NODELNKP_DATA   *pParent;
-        NODELNKP_DATA   *pLeftTree;
+        NODELNKP_DATA   *pLeftTree;         // Left Tree of the Right node
         NODELNKP_DATA   *pRight;
         NODELNKP_DATA   *pWork;
         uint32_t        index;
@@ -316,42 +320,50 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
-        if (pNode && nodeLnkP_getRight(pNode))
+
+        // Nothing to do if there is not a right link.
+        if (pNode && nodeLnkP_getRightLink(pNode))
             ;
         else {
             return ERESULT_SUCCESS;
         }
         
+#ifdef THREADED_TREE
+        //TODO: Currently threads are not adjusted nor passed on.
+#endif
+        
         // Point to all nodes necessary to do the rotation.
-        pRight = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : NULL;
+        pRight = nodeLnkP_getRightLink(pNode);
         pParent = nodeLnkP_getParent(pNode);
-        pLeftTree = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : NULL;
-        while( nodeLnkP_getLeftLink(pLeftTree) ) {
-            pLeftTree = nodeLnkP_getLeft(pLeftTree);
+        pLeftTree = nodeLnkP_getRightLink(pNode);
+        while( pLeftTree && nodeLnkP_getLeftLink(pLeftTree) ) {  // Get left-most link.
+            pLeftTree = nodeLnkP_getLeftLink(pLeftTree);
         }
         
         // Chain the right child to the node's parent.
-        //TODO: This avoids using threads, just links.  Is this valid?
         if( pParent ) {
-            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : NULL;
+            pWork = nodeLnkP_getLeftLink(pNode);
             if( pWork && (pWork == pNode)) {
-                nodeLnkP_setLeft(pParent, pRight);
+                nodeLnkP_setLeftLink(pParent, pRight);
             }
-            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : NULL;
+            pWork = nodeLnkP_getRightLink(pNode);
             if( pWork && (pWork == pNode)) {
-                nodeLnkP_setRight(pParent, pRight);
+                nodeLnkP_setRightLink(pParent, pRight);
             }
         }
         else {
-            //FIXME: this->pRoot = pRight;
+            uint32_t        rightIndex;
+            NODELNKP_DATA   *pRoot = nodeBTree_getRoot(this);
+            rightIndex = nodeLnkP_getIndex(pRight);
+            nodeArray_Put(this->pArray, rightIndex, (NODE_DATA *)pRoot);
+            nodeArray_Put(this->pArray, 1, (NODE_DATA *)pRight);
         }
-        nodeLnkP_setRight(pNode, NULL);
+        nodeLnkP_setRightLink(pNode, NULL);
         
         // Now add the node after the left-most node of the
         // node's right child.
-        nodeLnkP_setLeft(pLeftTree, pNode);
-        nodeLnkP_setRightLink(pNode, true);
+        nodeLnkP_setLeftLink(pLeftTree, pNode);
+        //FIXME: nodeLnkP_setRightLink(pNode, pRight);
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -360,12 +372,12 @@ extern "C" {
     
     ERESULT         nodeBTree_RotateRight(
         NODEBTREE_DATA  *this,
-        NODELINK_DATA   *pNode
+        NODELNKP_DATA   *pNode
     )
     {
-        NODELINK_DATA   *pParent;
-        NODELINK_DATA   *pRightTree;
-        NODELINK_DATA   *pLeft;
+        NODELNKP_DATA   *pParent;
+        NODELNKP_DATA   *pRightTree;
+        NODELNKP_DATA   *pLeft;
         uint32_t        index;
 
         // Do initialization.
@@ -377,20 +389,25 @@ extern "C" {
         }
 #endif
         
-        if (pNode && nodeLink_getLeft(pNode))
+        if (pNode && nodeLnkP_getLeftLink(pNode))
             ;
         else {
             return ERESULT_SUCCESS;
         }
         
+#ifdef THREADED_TREE
+        //TODO: Currently threads are not adjusted.
+#endif
+        
         // Point to all nodes necessary to do the rotation.
-        pLeft = nodeBTree_Node(this, nodeLink_getLeft(pNode));
-#ifdef xyzzy
-        //FIXME: pParent = pNode->pParent;
-        pRightTree = pNode->pLeft;
-        while( pRightTree->pRight )
-            pRightTree = pRightTree->pRight;
+        pLeft = nodeLnkP_getLeftLink(pNode);
+        pParent = nodeLnkP_getParent(pNode);
+        pRightTree = nodeLnkP_getLeftLink(pNode);
+        while( pRightTree && nodeLnkP_getRightLink(pRightTree) )
+            pRightTree = nodeLnkP_getRightLink(pRightTree);
 
+#ifdef XYZZY
+        pParent = nodeLnkP_getParent(pNode);
         // Chain the left child to the node's parent.
         if( pParent ) {
             if( pParent->pLeft == pNode )
@@ -432,18 +449,18 @@ extern "C" {
         NODELNKP_DATA   *pWork;
         
         if (pNode) {
-            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTree_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
             eRc = pScan(pObj, pNode, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
-            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTree_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
@@ -468,13 +485,13 @@ extern "C" {
         NODELNKP_DATA   *pWork;
         
         if (pNode) {
-            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
                 eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
                 eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
@@ -507,15 +524,15 @@ extern "C" {
             eRc = pScan(pObj, pNode, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
-            pWork = nodeLnkP_getLeftLink(pNode) ? nodeLnkP_getLeft(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTree_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            pWork = nodeLnkP_getRightLink(pNode) ? nodeLnkP_getRight(pNode) : OBJ_NIL;
+            pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTree_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
@@ -680,8 +697,25 @@ extern "C" {
         return (NODELNKP_DATA *)nodeArray_Get(this->pArray, 1);
     }
     
+    bool            nodeBTree_setRoot(
+        NODEBTREE_DATA  *this,
+        NODELNKP_DATA   *pValue
+    )
+    {
+        ERESULT         eRc;
+        bool            fRc = true;
+        
+        // Do initialization.
+        eRc = nodeArray_Put(this->pArray, 1, (NODE_DATA *)pValue);
+        if (ERESULT_FAILED(eRc))
+            fRc = false;
+
+        // Return to caller.
+        return fRc;
+    }
     
     
+
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -829,13 +863,7 @@ extern "C" {
             eRc = nodeLnkP_Compare(pNode, pParent);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
                 if (fReplace) {
-                    nodeLnkP_setBalance(pNode, nodeLnkP_getBalance(pParent));
-                    nodeLnkP_setIndex(pNode, nodeLnkP_getIndex(pParent));
-                    nodeLnkP_setLeft(pNode, nodeLnkP_getLeft(pParent));
-                    nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
-                    nodeLnkP_setParent(pNode, nodeLnkP_getParent(pParent));
-                    nodeLnkP_setRight(pNode, nodeLnkP_getRight(pParent));
-                    nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
+                    eRc = nodeLnkP_CopyProperties(pParent, pNode);
                     nodeArray_Put(
                                   this->pArray,
                                   nodeLnkP_getIndex(pNode),
@@ -846,38 +874,38 @@ extern "C" {
                 return ERESULT_DATA_ALREADY_EXISTS;
             }
             else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (nodeLnkP_getLeftLink(pParent) && nodeLnkP_getLeft(pParent))
-                    pParent = nodeLnkP_getLeft(pParent);
+                if (nodeLnkP_IsLeftLink(pParent))
+                    pParent = nodeLnkP_getLeftLink(pParent);
                 else {
                     // Insert new node as Left Child of Parent.
-                    nodeLnkP_setLeft(pNode, nodeLnkP_getLeft(pParent));
-                    nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
+                    if (nodeLnkP_IsLeftLink(pParent))
+                        nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
+                    else
+                        nodeLnkP_setLeftThread(pNode, nodeLnkP_getLeftThread(pParent));
 #ifdef THREADED_TREE
-                    nodeLnkP_setRight(pNode, pParent);      // Thread back to Parent
-                    nodeLnkP_setRightLink(pNode, false);
+                    nodeLnkP_setRightThread(pNode, pParent);
 #endif
                     nodeLnkP_setParent(pNode, pParent);
                     nodeLnkP_setBalance(pNode, 0);
-                    nodeLnkP_setLeft(pParent, pNode);       // Parent's Left = Node
-                    nodeLnkP_setLeftLink(pParent, true);
+                    nodeLnkP_setLeftLink(pParent, pNode);
                     break;
                 }
             }
             else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (nodeLnkP_getRightLink(pParent) && nodeLnkP_getRight(pParent))
-                    pParent = nodeLnkP_getRight(pParent);
+                if (nodeLnkP_IsRightLink(pParent))
+                    pParent = nodeLnkP_getRightLink(pParent);
                 else {
                     // Insert new node as Right Child of Parent.
-                    nodeLnkP_setRight(pNode, nodeLnkP_getRight(pParent));
-                    nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
+                    if (nodeLnkP_IsRightLink(pParent))
+                        nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
+                    else
+                        nodeLnkP_setRightThread(pNode, nodeLnkP_getRightThread(pParent));
 #ifdef THREADED_TREE
-                    nodeLnkP_setLeft(pNode, pParent);      // Thread back to Parent
-                    nodeLnkP_setLeftLink(pNode, false);
+                    nodeLnkP_setLeftThread(pNode, pParent);      // Thread back to Parent
 #endif
                     nodeLnkP_setParent(pNode, pParent);
                     nodeLnkP_setBalance(pNode, 0);
-                    nodeLnkP_setRight(pParent, pNode);       // Parent's Right = Node
-                    nodeLnkP_setRightLink(pParent, true);
+                    nodeLnkP_setRightLink(pParent, pNode);  // Parent's Right = Node
                     break;
                 }
             }
@@ -1182,6 +1210,7 @@ extern "C" {
         }
 #endif
 
+#ifdef XYZZY
         // Search the tree for the node.
         pEntry = nodeBTree_getRoot(this);
         while (pEntry) {
@@ -1207,7 +1236,7 @@ extern "C" {
             }
         }
     found:
-        
+#endif
         
         // Return to caller.
         return OBJ_NIL;
@@ -1298,31 +1327,29 @@ extern "C" {
         }
 #endif
         
-#ifdef XYZZY
         pParent = nodeBTree_getRoot(this);
         while (pParent) {
-            eRc = node_Compare(pNode, pParent->pNode);
+            eRc = nodeLnkP_Compare(pNode, pParent);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
-                return pParent->pNode;
+                return pParent;
             }
             else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (pParent->pLeft)
-                    pParent = pParent->pLeft;
+                if (nodeLnkP_IsLeftLink(pParent))
+                    pParent = nodeLnkP_getLeftLink(pParent);
                 else
                     break;
             }
             else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (pParent->pRight)
-                    pParent = pParent->pRight;
+                if (nodeLnkP_IsRightLink(pParent))
+                    pParent = nodeLnkP_getRightLink(pParent);
                 else
                     break;
             }
             else {
-                //return ERESULT_GENERAL_FAILURE;
+                //return ERESULT_DATA_NOT_FOUND;
                 return OBJ_NIL;
             }
         }
-#endif
         
         // Return to caller.
         return OBJ_NIL;
@@ -1334,12 +1361,11 @@ extern "C" {
     //                          F i r s t
     //---------------------------------------------------------------
     
-    NODE_DATA *     nodeBTree_First(
+    NODELNKP_DATA * nodeBTree_First(
         NODEBTREE_DATA  *this
     )
     {
-        NODEBTREE_NODE  *pEntry;
-        NODE_DATA       *pNode = OBJ_NIL;
+        NODELNKP_DATA   *pNode = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1351,11 +1377,8 @@ extern "C" {
         }
 #endif
         
-        pEntry = nodeBTree_getRoot(this);
-        pEntry = nodeBTree_LeftMostChild(this, pEntry);
-        if (pEntry) {
-            pNode = pEntry->pNode;
-        }
+        pNode = nodeBTree_getRoot(this);
+        pNode = nodeBTree_LeftMostChild(this, pNode);
 
         // Return to caller.
         return pNode;
@@ -1433,68 +1456,6 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //             I n  O r d e r  T r a v e r s a l
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeBTree_InOrderTraversal(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    )
-    {
-        NODEBTREE_NODE  *pNode1;
-        NODEBTREE_NODE  *pNode2;
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pNode1 = nodeBTree_getRoot(this);
-        pNode2 = NULL;
-        
-#ifdef XYZZY
-        do {
-            // Descend down the bottom of the left branch.
-            while (pNode1) {
-                pNode2 = pNode1;
-                pNode1 = pNode1->pLeft;
-            }
-            // Scan the left-most node.
-            if (pNode2) {
-                eRc = pScan(pObj, pNode2->pNode, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    break;
-                pNode1 = pNode2->pRight;
-            }
-            while (pNode2 && (NULL == pNode1)) {
-                do {
-                    pNode1 = pNode2;
-                    //FIXME: pNode2 = pNode1->pParent;
-                } while (pNode2 && !(pNode1 == pNode1->pParent->pLeft));
-                if (pNode2) {
-                    eRc = pScan(pObj, pNode2->pNode, pArg3);
-                    if (ERESULT_FAILED(eRc))
-                        break;
-                    pNode1 = pNode2->pRight;
-                }
-            }
-        } while (pNode2);
-#endif
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
@@ -1526,12 +1487,11 @@ extern "C" {
     //                          L a s t
     //---------------------------------------------------------------
     
-    NODE_DATA *     nodeBTree_Last(
+    NODELNKP_DATA * nodeBTree_Last(
         NODEBTREE_DATA  *this
     )
     {
-        NODEBTREE_NODE  *pEntry;
-        NODE_DATA       *pNode = OBJ_NIL;
+        NODELNKP_DATA   *pEntry;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1545,12 +1505,9 @@ extern "C" {
         
         pEntry = nodeBTree_getRoot(this);
         pEntry = nodeBTree_RightMostChild(this, pEntry);
-        if (pEntry) {
-            pNode = pEntry->pNode;
-        }
         
         // Return to caller.
-        return pNode;
+        return pEntry;
     }
     
     
@@ -1662,10 +1619,10 @@ extern "C" {
         }
 #endif
         
+#ifdef XYZZY
         pNode1 = nodeBTree_getRoot(this);
         pNode2 = NULL;
 
-#ifdef XYZZY
         do {
             // Descend down the bottom of the left branch.
             while (pNode1) {
@@ -2036,34 +1993,77 @@ extern "C" {
     ERESULT         nodeBTree_VisitNodesInParent(
         NODEBTREE_DATA  *this,
         P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
+        OBJ_ID          pObj,
         void            *pArg3
     )
     {
+        NODELNKP_DATA   *pNodeP;
+        NODELNKP_DATA   *pNodeQ;
+        NODELNKP_DATA   *pNodePL;           // Parent's Left Child
         ERESULT         eRc;
+        
+        /*
+         When the traversal process reaches a leaf node, the parent field can
+         be used to climb back up the tree.  So, when nodeP is reached from a
+         left son, its right subtree must still be traversed; therefore this
+         algorithm proceeds to nodeP->right.  When nodeP is reached from its
+         right son, both its subtrees have been traversed and this algorithm
+         backs up further to nodeP->parent.
+         
+         In this inorder traversal a node is visited when its left is recog-
+         nized as NULL or when it is reached after backing up from its left
+         child.
+         */
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!nodeBTree_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pScan) {
+        if( !nodeBTree_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc =   nodeBTree_VisitNodeInRecurse(
-                                             this,
-                                             nodeBTree_getRoot(this),
-                                             pScan,
-                                             pObj,
-                                             pArg3
-                                             );
+        pNodeP = nodeBTree_getRoot(this);
+        pNodeQ = NULL;
         
-        return eRc;
+        do {
+            // Descend down to the bottom of the left branch.
+            while (pNodeP) {
+                pNodeQ = pNodeP;
+                pNodeP = nodeLnkP_getLeftLink(pNodeP);
+            }
+            // Scan the left-most node.
+            if (pNodeQ) {
+                eRc = pScan(pObj, pNodeQ, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    break;
+                pNodeP = nodeLnkP_getRightLink(pNodeQ);
+            }
+            // nodeQ is current node and nodeP is its right child or NULL.
+            while (pNodeQ && (NULL == pNodeP)) {
+                // nodeQ has no right child.  Back up until a left son or
+                // the tree root is found.
+                do {
+                    pNodeP = pNodeQ;
+                    pNodeQ = nodeLnkP_getParent(pNodeP);
+                    if (pNodeQ)
+                        pNodePL = nodeLnkP_getLeftLink(pNodeQ);
+                    else
+                        break;
+                } while (pNodeQ && !(pNodeP == pNodePL));
+                // Scan the ??? node.
+                if (pNodeQ) {
+                    eRc = pScan(pObj, pNodeQ, pArg3);
+                    if (ERESULT_FAILED(eRc))
+                        break;
+                    pNodeP = nodeLnkP_getRightLink(pNodeQ);
+                }
+            }
+        } while (pNodeQ);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     

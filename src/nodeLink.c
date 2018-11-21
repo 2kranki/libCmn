@@ -481,11 +481,12 @@ extern "C" {
     }
     
     
-    bool            nodeLink_getLeftLink(
+    uint32_t        nodeLink_getLeftLink(
         NODELINK_DATA   *this
     )
     {
         bool            fRc;
+        uint32_t        nodeIndex = 0;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -497,14 +498,16 @@ extern "C" {
 #endif
         
         fRc = obj_Flag(this, NODELINK_LEFT_LINK);
+        if (fRc)
+            nodeIndex = this->leftIndex;
         
-        return fRc;
+        return nodeIndex;
     }
     
     
     bool            nodeLink_setLeftLink(
         NODELINK_DATA   *this,
-        bool            fValue
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -515,7 +518,52 @@ extern "C" {
         }
 #endif
         
-        obj_FlagSet(this, NODELINK_LEFT_LINK, fValue);
+        this->leftIndex = value;
+        obj_FlagSet(this, NODELINK_LEFT_LINK, (value ? true : false));
+        
+        return true;
+    }
+    
+    
+    uint32_t        nodeLink_getLeftThread(
+        NODELINK_DATA   *this
+    )
+    {
+        bool            fRc;
+        uint32_t        nodeIndex = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        fRc = obj_Flag(this, NODELINK_LEFT_LINK);
+        if (!fRc)
+            nodeIndex = this->leftIndex;
+        
+        return nodeIndex;
+    }
+    
+    
+    bool            nodeLink_setLeftThread(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->leftIndex = value;
+        obj_FlagSet(this, NODELINK_LEFT_LINK, false);
         
         return true;
     }
@@ -586,7 +634,25 @@ extern "C" {
     }
 
     
+    char *          nodeLink_getNameUTF8(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return node_getNameUTF8((NODE_DATA *)this);
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          O t h e r
     //---------------------------------------------------------------
@@ -776,12 +842,14 @@ extern "C" {
         return true;
     }
     
+
     
-    bool            nodeLink_getRightLink(
+    uint32_t        nodeLink_getRightLink(
         NODELINK_DATA   *this
     )
     {
         bool            fRc;
+        uint32_t        nodeIndex = 0;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -793,14 +861,16 @@ extern "C" {
 #endif
         
         fRc = obj_Flag(this, NODELINK_RIGHT_LINK);
+        if (fRc)
+            nodeIndex = this->rightIndex;
         
-        return fRc;
+        return nodeIndex;
     }
     
     
     bool            nodeLink_setRightLink(
         NODELINK_DATA   *this,
-        bool            fValue
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -811,13 +881,59 @@ extern "C" {
         }
 #endif
         
-        obj_FlagSet(this, NODELINK_RIGHT_LINK, fValue);
+        this->rightIndex = value;
+        obj_FlagSet(this, NODELINK_RIGHT_LINK, (value ? true : false));
         
         return true;
     }
     
     
 
+    uint32_t        nodeLink_getRightThread(
+        NODELINK_DATA   *this
+    )
+    {
+        bool            fRc;
+        uint32_t        nodeIndex = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        fRc = obj_Flag(this, NODELINK_RIGHT_LINK);
+        if (!fRc)
+            nodeIndex = this->rightIndex;
+        
+        return nodeIndex;
+    }
+    
+    
+    bool            nodeLink_setRightThread(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->rightIndex = value;
+        obj_FlagSet(this, NODELINK_RIGHT_LINK, false);
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                    S i b l i n g  I n d e x
     //---------------------------------------------------------------

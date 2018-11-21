@@ -2129,7 +2129,7 @@ extern "C" {
                     eRc = ERESULT_FAILURE;
                     break;
                 }
-                idx = nodeLink_getLeft(pEntry);
+                idx = nodeLink_getLeftLink(pEntry);
                 if (idx && (idx <= iMax)) {
                 }
                 else if (0 ==  idx)
@@ -2140,7 +2140,7 @@ extern "C" {
                     eRc = ERESULT_FAILURE;
                     break;
                 }
-                idx = nodeLink_getRight(pEntry);
+                idx = nodeLink_getRightLink(pEntry);
                 if (idx && (idx <= iMax)) {
                 }
                 else if (0 ==  idx)

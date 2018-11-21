@@ -30,13 +30,13 @@
 static
 ERESULT         printNode(
     OBJ_ID          pObj,
-    NODE_DATA       *pNode,
+    NODELNKP_DATA   *pNode,
     void            *pArg3
 )
 {
     char            *pNameA;
     
-    pNameA = node_getNameUTF8(pNode);
+    pNameA = node_getNameUTF8((NODE_DATA *)pNode);
     if (pNameA) {
         fprintf(stderr, "%s", pNameA);
         mem_Free(pNameA);
@@ -130,14 +130,14 @@ int             test_nodeBTree_Add01(
     NODEBTREE_NODE  *pEntry = NULL;
     ERESULT         eRc;
     const
-    char            *pStrA = "ABCDE";
+    char            *pStrA = "ABCDEFG";
     const
     char            *pStrP = pStrA;
     char            strA[2] = {0};
     ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    fprintf(stderr, "\tGenerate a right degenerate tree\n\n");
+    fprintf(stderr, "\tGenerate a right degenerate tree (ie worst case)\n\n");
 
     pTree = nodeBTree_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pTree) );
@@ -160,16 +160,18 @@ int             test_nodeBTree_Add01(
         }
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPre-Order Recurse: AEDCB\n\t              Got: ");
-        eRc = nodeBTree_VisitNodesPreRecurse(pTree, printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\tPre-Order Recurse: ABCDEFG\n\t      Recurse Got: ");
+        eRc = nodeBTree_VisitNodesPreRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tIn-Order Recurse: AEDCB\n\t             Got: ");
-        eRc = nodeBTree_VisitNodesInRecurse(pTree, printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\tIn-Order Recurse: ABCDEFG\n\t      Parent Got: ");
+        eRc = nodeBTree_VisitNodesInParent(pTree, (void *)printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\n\t     Recurse Got: ");
+        eRc = nodeBTree_VisitNodesInRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPost-Order Recurse: EDCBA\n\t               Got: ");
-        eRc = nodeBTree_VisitNodesPostRecurse(pTree, printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\tPost-Order Recurse: GFEDCBA\n\t       Recurse Got: ");
+        eRc = nodeBTree_VisitNodesPostRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
 
         pStr = nodeBTree_ToDebugString(pTree, 4);
@@ -194,7 +196,6 @@ int             test_nodeBTree_Add02(
 {
     NODEBTREE_DATA  *pTree = OBJ_NIL;
     NODELNKP_DATA   *pNode = OBJ_NIL;
-    NODEBTREE_NODE  *pEntry = NULL;
     ERESULT         eRc;
     //              ABCDEFG
     const
@@ -228,16 +229,18 @@ int             test_nodeBTree_Add02(
         }
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPre-Order Recurse: DACBEGF\n\t              Got: ");
-        eRc = nodeBTree_VisitNodesPreRecurse(pTree, printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\tPre-Order Recurse: DBACFEG\n\t      Recurse Got: ");
+        eRc = nodeBTree_VisitNodesPreRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tIn-Order Recurse: ACBDEGF\n\t             Got: ");
-        eRc = nodeBTree_VisitNodesInRecurse(pTree, printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\tIn-Order Recurse: ABCDEFG\n\t      Parent Got: ");
+        eRc = nodeBTree_VisitNodesInParent(pTree, (void *)printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\n\t     Recurse Got: ");
+        eRc = nodeBTree_VisitNodesInRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPost-Order Recurse: ACBEGFD\n\t               Got: ");
-        eRc = nodeBTree_VisitNodesPostRecurse(pTree, printNode, OBJ_NIL, NULL);
+        fprintf(stderr, "\tPost-Order Recurse: ACBEGFD\n\t       Recurse Got: ");
+        eRc = nodeBTree_VisitNodesPostRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
         pStr = nodeBTree_ToDebugString(pTree, 4);
@@ -255,117 +258,8 @@ int             test_nodeBTree_Add02(
 
 
 
-int             test_nodeBTree_Traverse01(
-    const
-    char            *pTestName
-)
-{
-    NODEBTREE_DATA  *pTree = OBJ_NIL;
-    NODE_DATA       *pNode = OBJ_NIL;
-    NODEBTREE_NODE  *pEntry = NULL;
-    ERESULT         eRc;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pTree = nodeBTree_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pTree) );
-    pTree = nodeBTree_Init( pTree );
-    TINYTEST_FALSE( (OBJ_NIL == pTree) );
-    if (pTree) {
-        
-#ifdef xyzzy
-        pNode = node_NewWithUTF8ConAndClass("A", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("B", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pLeft = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("D", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pLeft->pLeft = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("G", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pLeft->pLeft->pRight = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("C", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pRight = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("F", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pRight->pRight = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("E", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pRight->pLeft = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("H", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pRight->pLeft->pLeft = pEntry;
-        
-        pNode = node_NewWithUTF8ConAndClass("I", 0, OBJ_NIL);
-        TINYTEST_FALSE( (OBJ_NIL == pNode) );
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)pTree);
-        TINYTEST_FALSE( (NULL == pEntry) );
-        pEntry->pNode = pNode;
-        //FIXME: pTree->pRoot->pRight->pLeft->pRight = pEntry;
-#endif
-        
-        fprintf(stderr, "Preorder:   ABDGCEHIF\n");
-        fprintf(stderr, "Actual:     ");
-        eRc = nodeBTree_PreOrderTraversal(pTree, (void *)printNode, NULL, NULL);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\n\n\n");
-
-        fprintf(stderr, "Inorder:    DGBAHEICF\n");
-        fprintf(stderr, "Actual:     ");
-        eRc = nodeBTree_InOrderTraversal(pTree, (void *)printNode, NULL, NULL);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\n\n\n");
-
-        fprintf(stderr, "Postorder:  GDBHIEFCA\n");
-        fprintf(stderr, "\n\n\n");
-
-        obj_Release(pTree);
-        pTree = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
-    return 1;
-}
-
-
-
 
 TINYTEST_START_SUITE(test_nodeBTree);
-    //TINYTEST_ADD_TEST(test_nodeBTree_Traverse01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeBTree_Add02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeBTree_Add01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeBTree_OpenClose,setUp,tearDown);

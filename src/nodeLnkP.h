@@ -176,30 +176,26 @@ extern "C" {
     );
 
     
-    NODELNKP_DATA * nodeLnkP_getLeft(
-        NODELNKP_DATA   *this
-    );
-    
-    bool            nodeLnkP_setLeft(
-        NODELNKP_DATA   *this,
-        NODELNKP_DATA   *pValue
-    );
-
-    
-    /*!
-     Left Link property is used to indicate that the Left Pointer
-     is a link (true) or a thread (false) for use in a threaded tree.
-     */
-    bool            nodeLnkP_getLeftLink(
+    NODELNKP_DATA * nodeLnkP_getLeftLink(
         NODELNKP_DATA   *this
     );
     
     bool            nodeLnkP_setLeftLink(
         NODELNKP_DATA   *this,
-        bool            fValue
+        NODELNKP_DATA   *pValue
     );
     
 
+    NODELNKP_DATA * nodeLnkP_getLeftThread(
+        NODELNKP_DATA   *this
+    );
+    
+    bool            nodeLnkP_setLeftThread(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
+    );
+    
+    
     NODELNKP_DATA * nodeLnkP_getMiddle(
         NODELNKP_DATA   *this
     );
@@ -210,6 +206,20 @@ extern "C" {
     );
     
     
+    NAME_DATA *     nodeLnkP_getName(
+        NODELNKP_DATA   *this
+    );
+
+    
+    /*!
+     @return    If successful, a UTF-8 string which must be freed
+     with mem_Free(), otherwise NULL.
+     */
+    char *          nodeLnkP_getNameUTF8(
+        NODELNKP_DATA   *this
+    );
+    
+
     NODELNKP_DATA * nodeLnkP_getParent(
         NODELNKP_DATA   *this
     );
@@ -220,39 +230,29 @@ extern "C" {
     );
     
     
-    NODELNKP_DATA * nodeLnkP_getRight(
-        NODELNKP_DATA   *this
-    );
-    
-    bool            nodeLnkP_setRight(
-        NODELNKP_DATA   *this,
-        NODELNKP_DATA   *pValue
-    );
-    
-    
     bool            nodeLnkP_getRightChild(
         NODELNKP_DATA   *this
     );
     
-    bool            nodeLnkP_setRightChild(
-        NODELNKP_DATA   *this,
-        bool            fValue
-    );
-
-    
-    /*!
-     Right Link property is used to indicate that the Right Pointer
-     is a link (true) or a thread (false) for use in a threaded tree.
-     */
-    bool            nodeLnkP_getRightLink(
+    NODELNKP_DATA * nodeLnkP_getRightLink(
         NODELNKP_DATA   *this
     );
     
     bool            nodeLnkP_setRightLink(
         NODELNKP_DATA   *this,
-        bool            fValue
+        NODELNKP_DATA   *pValue
     );
-
+    
+    
+    NODELNKP_DATA * nodeLnkP_getRightThread(
+        NODELNKP_DATA   *this
+    );
+    
+    bool            nodeLnkP_setRightThread(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pValue
+    );
+    
     
 
 
@@ -268,8 +268,8 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         nodeLnkP_Compare(
-        NODELNKP_DATA     *this,
-        NODELNKP_DATA     *pOther
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pOther
     );
 
     ERESULT         nodeLnkP_CompareA(
@@ -280,21 +280,40 @@ extern "C" {
     );
     
 
-    ERESULT     nodeLnkP_Enable(
-        NODELNKP_DATA		*this
+    /*!
+     Copy all the link properties from this object to the other object.  This
+     does not copy the node properties.
+     @param     this    object pointer
+     @param     pOther  object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_* error
+                code.
+     */
+    ERESULT         nodeLnkP_CopyProperties(
+        NODELNKP_DATA   *this,
+        NODELNKP_DATA   *pOther
+    );
+    
+    
+    NODELNKP_DATA * nodeLnkP_Init(
+        NODELNKP_DATA   *this
     );
 
-   
-    NODELNKP_DATA *   nodeLnkP_Init(
-        NODELNKP_DATA     *this
+
+    bool            nodeLnkP_IsLeftLink(
+        NODELNKP_DATA   *this
     );
-
-
-    ERESULT     nodeLnkP_IsEnabled(
-        NODELNKP_DATA		*this
+    
+    
+    bool            nodeLnkP_IsRightChild(
+        NODELNKP_DATA   *this
     );
     
  
+    bool            nodeLnkP_IsRightLink(
+        NODELNKP_DATA   *this
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -307,8 +326,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    nodeLnkP_ToDebugString(
-        NODELNKP_DATA     *this,
+    ASTR_DATA *     nodeLnkP_ToDebugString(
+        NODELNKP_DATA   *this,
         int             indent
     );
     

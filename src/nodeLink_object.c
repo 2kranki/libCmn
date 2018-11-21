@@ -300,14 +300,18 @@ NODELINK_VTBL     nodeLink_Vtbl = {
     },
     nodeLink_getIndex,
     nodeLink_setIndex,
-    nodeLink_getLeft,
-    nodeLink_setLeft,
+    nodeLink_getLeftLink,
+    nodeLink_setLeftLink,
+    nodeLink_getLeftThread,
+    nodeLink_setLeftThread,
     nodeLink_getMiddle,
     nodeLink_setMiddle,
     nodeLink_getParent,
     nodeLink_setParent,
-    nodeLink_getRight,
-    nodeLink_setRight,
+    nodeLink_getRightLink,
+    nodeLink_setRightLink,
+    nodeLink_getRightThread,
+    nodeLink_setRightThread,
 };
 
 

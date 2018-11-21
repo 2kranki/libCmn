@@ -163,7 +163,7 @@ extern "C" {
         nodeLink_setIndex(pObject, uint32);
         eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "leftIndex", &intIn);
         uint32  = (uint32_t)intIn;
-        nodeLink_setLeft(pObject, uint32);
+        nodeLink_setLeftLink(pObject, uint32);
         eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "middleIndex", &intIn);
         uint32  = (uint32_t)intIn;
         nodeLink_setMiddle(pObject, uint32);
@@ -172,7 +172,7 @@ extern "C" {
         nodeLink_setParent(pObject, uint32);
         eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "rightIndex", &intIn);
         uint32  = (uint32_t)intIn;
-        nodeLink_setRight(pObject, uint32);
+        nodeLink_setRightLink(pObject, uint32);
 
         // Return to caller.
     exit00:
