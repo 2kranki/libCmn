@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   nodeList_internal.h
- *	Generated 07/22/2015 10:03:31
+ *	Generated 11/23/2018 17:15:11
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,90 +38,111 @@
 
 
 
-#include    <nodeList.h>
-#include    <listdl.h>
-#include    <str.h>
+
+#include        <nodeList.h>
+#include        <jsonIn.h>
+#include        <nodeEnum_internal.h>
+#include        <objList_internal.h>
 
 
 #ifndef NODELIST_INTERNAL_H
 #define	NODELIST_INTERNAL_H
 
 
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-#if defined(__MACOSX_ENV__)
-#   define LIST_BLOCK_SIZE  4096
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#   define LIST_BLOCK_SIZE  4096
-#endif
 
-    
-    // Node Descriptor
-#pragma pack(push, 1)
-    typedef struct  nodeList_node_s {
-        LISTDL_NODE     list;
-        NODE_DATA       *pNode;
-    } NODELIST_NODE;
-#pragma pack(pop)
-    
-    
-    // Block Descriptor
-#pragma pack(push, 1)
-    typedef struct  nodeList_block_s {
-        LISTDL_NODE     list;
-        NODELIST_NODE   node[0];
-    } NODELIST_BLOCK;
-#pragma pack(pop)
-    
-    
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
 struct nodeList_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
+    /* Warning - OBJLIST_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
-#define LIST_FLAG_ORDERED OBJ_FLAG_USER1
+    OBJLIST_DATA    super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    LISTDL_DATA     freeList;           // Free Node Linked List
-    LISTDL_DATA     blocks;
-    uint32_t        blockSize;
-    uint32_t        cBlocks;
-    uint32_t        recordSize;
-    uint32_t        cRecordsPerBlock;   // Number of Nodes per Block
-    uint32_t        size;
-    LISTDL_DATA     list;               // Main List
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
+    struct nodeList_class_data_s  nodeList_ClassObj;
+
+    extern
     const
-    NODELIST_VTBL   nodeList_Vtbl;
+    NODELIST_VTBL         nodeList_Vtbl;
 
 
 
-    // Internal Functions
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  NODELIST_SINGLETON
+    NODELIST_DATA *     nodeList_getSingleton(
+        void
+    );
+
+    bool            nodeList_setSingleton(
+     NODELIST_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  nodeList_getSuperVtbl(
+        NODELIST_DATA     *this
+    );
+
+
     void            nodeList_Dealloc(
         OBJ_ID          objId
+    );
+
+
+    NODELIST_DATA *       nodeList_ParseObject(
+        JSONIN_DATA     *pParser
     );
 
 
     void *          nodeList_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
-    
-    
+
+
+    ASTR_DATA *     nodeList_ToJSON(
+        NODELIST_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
     bool			nodeList_Validate(
-        NODELIST_DATA       *cbp
+        NODELIST_DATA       *this
     );
 #endif
 

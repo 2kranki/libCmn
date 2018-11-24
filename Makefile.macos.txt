@@ -1184,19 +1184,19 @@ test_nodeArray: $(TEST_SRC)/test_nodeArray.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/nodeBTree_object.o
+OBJS += $(OBJDIR)/nodeBTP_object.o
 
-$(OBJDIR)/nodeBTree_object.o: $(SRCDIR)/nodeBTree_object.c 
+$(OBJDIR)/nodeBTP_object.o: $(SRCDIR)/nodeBTP_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/nodeBTree.o
+OBJS += $(OBJDIR)/nodeBTP.o
 
-$(OBJDIR)/nodeBTree.o: $(SRCDIR)/nodeBTree.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeHash.h $(SRCDIR)/objArray.h $(SRCDIR)/szTbl.h 
+$(OBJDIR)/nodeBTP.o: $(SRCDIR)/nodeBTP.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeLnkP.h $(SRCDIR)/nodeArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeBTree
+TESTS += test_nodeBTP
 
-test_nodeBTree: $(TEST_SRC)/test_nodeBTree.c 
+test_nodeBTP: $(TEST_SRC)/test_nodeBTP.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1276,6 +1276,22 @@ $(OBJDIR)/nodeList_JSON.o: $(SRCDIR)/nodeList_JSON.c
 TESTS += test_nodeList
 
 test_nodeList: $(TEST_SRC)/test_nodeList.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/nodeLnkP_object.o
+
+$(OBJDIR)/nodeLnkP_object.o: $(SRCDIR)/nodeLnkP_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/nodeLnkP.o
+
+$(OBJDIR)/nodeLnkP.o: $(SRCDIR)/nodeLnkP.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/name.h $(SRCDIR)/node.h $(SRCDIR)/str.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_nodeLnkP
+
+test_nodeLnkP: $(TEST_SRC)/test_nodeLnkP.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

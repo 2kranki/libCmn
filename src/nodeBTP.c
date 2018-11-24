@@ -1,16 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   nodeBTree.c
- *	Generated 11/12/2018 09:44:16
+ * File:   nodeBTP.c
+ *	Generated 11/22/2018 23:21:01
  *
  */
 
-
-
-
-
-
-
+ 
 /*
  This is free and unencumbered software released into the public domain.
  
@@ -46,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <nodeBTree_internal.h>
+#include        <nodeBTP_internal.h>
 #include        <trace.h>
 
 
@@ -68,23 +63,31 @@ extern "C" {
     //                  D e l e t e  N o d e
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTree_DeleteNode(
-        NODEBTREE_DATA  *this,
-        NODEBTREE_NODE  *pNode
+    ERESULT         nodeBTP_DeleteNode(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode
     )
     {
-        
-        // Do initialization.
-        if (NULL == pNode) {
-            return ERESULT_INVALID_PARAMETER;
+        NODELNKP_DATA   *pWork;
+#ifdef USE_BLOCKS
+#else
+        uint32_t        index;
+#endif
+
+        if (pNode) {
+            
+            nodeLnkP_setLeftLink(pNode, OBJ_NIL);
+            nodeLnkP_setMiddle(pNode, OBJ_NIL);
+            nodeLnkP_setParent(pNode, OBJ_NIL);
+            nodeLnkP_setRightLink(pNode, OBJ_NIL);
+#ifdef USE_BLOCKS
+            blocks_RecordFree((BLOCKS_DATA *)this, pNode);
+#else
+            index = nodeLnkP_getIndex(pNode);
+            nodeArray_Put(this->pArray, index, OBJ_NIL);
+#endif
         }
         
-        if (pNode->pNode) {
-            obj_Release(pNode->pNode);
-            pNode->pNode = OBJ_NIL;
-        }
-        
-        // Return to caller.
         return ERESULT_SUCCESS;
     }
     
@@ -95,36 +98,41 @@ extern "C" {
     //---------------------------------------------------------------
     
     /*! Delete all the nodes in the Tree using a Post-order traversal.
-        This is the best way to delete the nodes in case the sub-tree
-        is right degenerate.
+     This is the best way to delete the nodes in case the sub-tree
+     is right degenerate.
      */
-    ERESULT         nodeBTree_DeleteNodes(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_DeleteNodes(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
     )
     {
         NODELNKP_DATA   *pWork;
         uint32_t        index;
-
+        
         if (pNode) {
             
             pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
-                nodeBTree_DeleteNodes(this, pWork);
+                nodeBTP_DeleteNodes(this, pWork);
             }
             
             pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
-                nodeBTree_DeleteNodes(this, pWork);
+                nodeBTP_DeleteNodes(this, pWork);
             }
             
             nodeLnkP_setLeftLink(pNode, OBJ_NIL);
             nodeLnkP_setMiddle(pNode, OBJ_NIL);
             nodeLnkP_setParent(pNode, OBJ_NIL);
             nodeLnkP_setRightLink(pNode, OBJ_NIL);
+#ifdef USE_BLOCKS
+            blocks_RecordFree((BLOCKS_DATA *)this, pNode);
+#else
             index = nodeLnkP_getIndex(pNode);
+            nodeArray_Put(this->pArray, index, OBJ_NIL);
+#endif
         }
-
+        
         return ERESULT_SUCCESS;
     }
     
@@ -137,12 +145,12 @@ extern "C" {
     // The Left-Most Child is the smallest key of the sub-tree from
     // the given node.
     
-    NODELNKP_DATA * nodeBTree_LeftMostChild(
-        NODEBTREE_DATA  *this,
+    NODELNKP_DATA * nodeBTP_LeftMostChild(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
     )
     {
-
+        
         // Do initialization.
         if (NULL == pNode) {
             return NULL;
@@ -159,140 +167,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  R i g h t - M o s t  C h i l d
-    //---------------------------------------------------------------
-    
-    // The Right-Most Child is the largest key of the sub-tree from
-    // the given node.
-    
-    NODELNKP_DATA * nodeBTree_RightMostChild(
-        NODEBTREE_DATA  *this,
-        NODELNKP_DATA   *pNode
-    )
-    {
-        
-        // Do initialization.
-        if (NULL == pNode) {
-            return NULL;
-        }
-        
-        while (nodeLnkP_getRightLink(pNode)) {
-            pNode = nodeLnkP_getRightLink(pNode);
-        }
-
-        // Return to caller.
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      P a r e n t
-    //---------------------------------------------------------------
-    
-    NODELNKP_DATA * nodeBTree_Parent(
-        NODEBTREE_DATA  *this,
-        NODELNKP_DATA   *pNode
-    )
-    {
-        uint32_t        index;
-        
-        // Do initialization.
-        if (OBJ_NIL == pNode) {
-            return OBJ_NIL;
-        }
-        
-#ifdef XYZZY
-        if (nodeLink_getRightChild(pNode)) {
-            pNode = nodeBTree_LeftMostChild(this, pNode);
-            index = nodeLink_getLeft(pNode);
-            pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
-        }
-        else {
-            pNode = nodeBTree_RightMostChild(this, pNode);
-            index = nodeLink_getRight(pNode);
-            pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
-        }
-#endif
-
-        // Return to caller.
-        //return pNode;
-        return OBJ_NIL;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  I n s e r t  L e f t
-    //---------------------------------------------------------------
-    
-    NODELNKP_DATA * nodeBTree_InsertLeft(
-        NODEBTREE_DATA  *this,
-        NODELNKP_DATA   *pNode
-    )
-    {
-        NODELNKP_DATA   *pChild = OBJ_NIL;
-        
-        // Do initialization.
-        if (NULL == pNode) {
-            return NULL;
-        }
-
-#ifdef XYZZY
-        // Insert new node as Left Child of Node.
-        pChild = blocks_RecordNew((BLOCKS_DATA *)this);
-        if (pChild) {
-            pChild->pLeft = pNode->pLeft;
-            pChild->fLeft = pNode->fLeft;
-            pChild->pRight = pNode;
-            pChild->balance = 0;
-            pChild->fRightChild = 0;
-            pNode->pLeft = pChild;
-            pNode->fLeft = NODEBTREE_LINK;
-        }
-#endif
-        
-        // Return to caller.
-        return pChild;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  I n s e r t  R i g h t
-    //---------------------------------------------------------------
-    
-    NODEBTREE_NODE * nodeBTree_InsertRight(
-        NODEBTREE_DATA  *this,
-        NODEBTREE_NODE  *pNode
-    )
-    {
-        NODEBTREE_NODE  *pChild;
-        
-        // Do initialization.
-        if (NULL == pNode) {
-            return NULL;
-        }
-        
-        // Insert new node as Right Child of Node.
-        pChild = blocks_RecordNew((BLOCKS_DATA *)this);
-        if (pChild) {
-            pChild->pRight = pNode->pRight;
-            pChild->fRight = pNode->fRight;
-            pChild->pLeft = pNode;
-            pChild->balance = 0;
-            pChild->fRightChild = 1;
-            pNode->pRight = pChild;
-            pNode->fRight = NODEBTREE_LINK;
-        }
-        
-        // Return to caller.
-        return pChild;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          R o t a t e
     //---------------------------------------------------------------
     
@@ -300,8 +174,8 @@ extern "C" {
      Rotate the tree at the given node left one rotation.
      */
     
-    ERESULT         nodeBTree_RotateLeft(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_RotateLeft(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
     )
     {
@@ -309,17 +183,16 @@ extern "C" {
         NODELNKP_DATA   *pLeftTree;         // Left Tree of the Right node
         NODELNKP_DATA   *pRight;
         NODELNKP_DATA   *pWork;
-        uint32_t        index;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-
+        
         // Nothing to do if there is not a right link.
         if (pNode && nodeLnkP_getRightLink(pNode))
             ;
@@ -352,10 +225,13 @@ extern "C" {
         }
         else {
             uint32_t        rightIndex;
-            NODELNKP_DATA   *pRoot = nodeBTree_getRoot(this);
+            NODELNKP_DATA   *pRoot = nodeBTP_getRoot(this);
             rightIndex = nodeLnkP_getIndex(pRight);
+#ifdef USE_BLOCKS
+#else
             nodeArray_Put(this->pArray, rightIndex, (NODE_DATA *)pRoot);
             nodeArray_Put(this->pArray, 1, (NODE_DATA *)pRight);
+#endif
         }
         nodeLnkP_setRightLink(pNode, NULL);
         
@@ -369,20 +245,19 @@ extern "C" {
     }
     
     
-    ERESULT         nodeBTree_RotateRight(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_RotateRight(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
     )
     {
         NODELNKP_DATA   *pParent;
         NODELNKP_DATA   *pRightTree;
         NODELNKP_DATA   *pLeft;
-        uint32_t        index;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -404,7 +279,8 @@ extern "C" {
         pRightTree = nodeLnkP_getLeftLink(pNode);
         while( pRightTree && nodeLnkP_getRightLink(pRightTree) )
             pRightTree = nodeLnkP_getRightLink(pRightTree);
-
+        
+        //FIXME: Implement the following.
 #ifdef XYZZY
         pParent = nodeLnkP_getParent(pNode);
         // Chain the left child to the node's parent.
@@ -416,7 +292,7 @@ extern "C" {
         }
         else
             //FIXME: this->pRoot = pLeft;
-        pNode->pLeft = NULL;
+            pNode->pLeft = NULL;
         
         // Now add the node after the right-most node of the
         // node's left child.
@@ -436,8 +312,8 @@ extern "C" {
     /*! Visit all the nodes from the given node and below in the Tree
      using a Pre-order traversal.
      */
-    ERESULT         nodeBTree_VisitNodeInRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodeInRecurse(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
@@ -450,7 +326,7 @@ extern "C" {
         if (pNode) {
             pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTP_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
@@ -459,7 +335,7 @@ extern "C" {
                 return eRc;
             pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTP_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
@@ -470,10 +346,10 @@ extern "C" {
     
     
     /*! Visit all the nodes from the given node and below in the Tree
-        using a Post-order traversal.
+     using a Post-order traversal.
      */
-    ERESULT         nodeBTree_VisitNodePostRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodePostRecurse(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
@@ -486,13 +362,13 @@ extern "C" {
         if (pNode) {
             pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTP_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
             pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTP_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
@@ -508,8 +384,8 @@ extern "C" {
     /*! Visit all the nodes from the given node and below in the Tree
      using a Pre-order traversal.
      */
-    ERESULT         nodeBTree_VisitNodePreRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodePreRecurse(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
@@ -525,13 +401,13 @@ extern "C" {
                 return eRc;
             pWork = nodeLnkP_getLeftLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTP_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
             pWork = nodeLnkP_getRightLink(pNode);
             if (pWork) {
-                eRc = nodeBTree_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
+                eRc = nodeBTP_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
@@ -541,7 +417,7 @@ extern "C" {
     }
     
     
-
+    
 
 
 
@@ -554,12 +430,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODEBTREE_DATA *     nodeBTree_Alloc(
+    NODEBTP_DATA *     nodeBTP_Alloc(
         void
     )
     {
-        NODEBTREE_DATA       *this;
-        uint32_t        cbSize = sizeof(NODEBTREE_DATA);
+        NODEBTP_DATA       *this;
+        uint32_t        cbSize = sizeof(NODEBTP_DATA);
         
         // Do initialization.
         
@@ -571,15 +447,15 @@ extern "C" {
 
 
 
-    NODEBTREE_DATA *     nodeBTree_New(
+    NODEBTP_DATA *     nodeBTP_New(
         void
     )
     {
-        NODEBTREE_DATA       *this;
+        NODEBTP_DATA       *this;
         
-        this = nodeBTree_Alloc( );
+        this = nodeBTP_Alloc( );
         if (this) {
-            this = nodeBTree_Init(this);
+            this = nodeBTP_Init(this);
         } 
         return this;
     }
@@ -593,64 +469,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          A r r a y
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * nodeBTree_getArray(
-        NODEBTREE_DATA  *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pArray;
-    }
-    
-    
-    bool            nodeBTree_setArray(
-        NODEBTREE_DATA  *this,
-        NODEARRAY_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pArray) {
-            obj_Release(this->pArray);
-        }
-        this->pArray = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        nodeBTree_getPriority(
-        NODEBTREE_DATA     *this
+    uint16_t        nodeBTP_getPriority(
+        NODEBTP_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -661,14 +491,14 @@ extern "C" {
     }
 
 
-    bool            nodeBTree_setPriority(
-        NODEBTREE_DATA     *this,
+    bool            nodeBTP_setPriority(
+        NODEBTP_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -685,53 +515,47 @@ extern "C" {
     //                          R o o t
     //---------------------------------------------------------------
     
-    NODELNKP_DATA * nodeBTree_getRoot(
-        NODEBTREE_DATA  *this
+    NODELNKP_DATA * nodeBTP_getRoot(
+        NODEBTP_DATA    *this
     )
     {
         
         // Do initialization.
-        
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
         // Return to caller.
+#ifdef USE_BLOCKS
+        return this->pRoot;
+#else
         return (NODELNKP_DATA *)nodeArray_Get(this->pArray, 1);
-    }
-    
-    bool            nodeBTree_setRoot(
-        NODEBTREE_DATA  *this,
-        NODELNKP_DATA   *pValue
-    )
-    {
-        ERESULT         eRc;
-        bool            fRc = true;
-        
-        // Do initialization.
-        eRc = nodeArray_Put(this->pArray, 1, (NODE_DATA *)pValue);
-        if (ERESULT_FAILED(eRc))
-            fRc = false;
-
-        // Return to caller.
-        return fRc;
+#endif
     }
     
     
-
+    
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        nodeBTree_getSize(
-        NODEBTREE_DATA       *this
+    uint32_t        nodeBTP_getSize(
+        NODEBTP_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->size;
+        return 0;
     }
 
 
@@ -740,15 +564,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * nodeBTree_getStr(
-        NODEBTREE_DATA     *this
+    ASTR_DATA * nodeBTP_getStr(
+        NODEBTP_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -758,14 +582,14 @@ extern "C" {
     }
     
     
-    bool        nodeBTree_setStr(
-        NODEBTREE_DATA     *this,
+    bool        nodeBTP_setStr(
+        NODEBTP_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -786,15 +610,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  nodeBTree_getSuperVtbl(
-        NODEBTREE_DATA     *this
+    OBJ_IUNKNOWN *  nodeBTP_getSuperVtbl(
+        NODEBTP_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -817,20 +641,23 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTree_Add(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_Add(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode,
         bool            fReplace
     )
     {
-        NODELNKP_DATA   *pParent;
+        NODELNKP_DATA   *pParent = OBJ_NIL;
+#ifdef USE_BLOCKS
+        NODELNKP_DATA   **ppNew = NULL;
+#endif
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         uint32_t        index = 0;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -840,34 +667,45 @@ extern "C" {
         }
 #endif
         
+#ifdef USE_BLOCKS
+        ppNew = blocks_RecordNew((BLOCKS_DATA *)this);
+        if (NULL == ppNew) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        obj_Retain(pNode);
+        *ppNew = pNode;
+        nodeLnkP_setIndex(pNode, blocks_getUnique((BLOCKS_DATA *)this));
+#else
         eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
         nodeLnkP_setIndex(pNode, index);
-
-        if (1 == nodeArray_getSize(this->pArray)) {
-#ifdef THREADED_TREE
-            nodeLnkP_setLeftLink(pNode, false);
-            nodeLnkP_setLeft(pNode, pNode);
-            nodeLnkP_setRightLink(pNode, false);
-            nodeLnkP_setRight(pNode, pNode);
 #endif
+        
+        pParent = nodeBTP_getRoot(this);
+        if (NULL == pParent) {
             nodeLnkP_setBalance(pNode, 0);
+#ifdef USE_BLOCKS
+            this->pRoot = pNode;
+#endif
             return ERESULT_SUCCESS;
         }
-
-        pParent = nodeBTree_getRoot(this);
+        
+        pParent = nodeBTP_getRoot(this);
         while (pParent) {
             eRc = nodeLnkP_Compare(pNode, pParent);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
                 if (fReplace) {
                     eRc = nodeLnkP_CopyProperties(pParent, pNode);
+#ifdef USE_BLOCKS
+#else
                     nodeArray_Put(
                                   this->pArray,
                                   nodeLnkP_getIndex(pNode),
                                   (NODE_DATA *)pNode
-                    );
+                                  );
+#endif
                     return ERESULT_SUCCESS;
                 }
                 return ERESULT_DATA_ALREADY_EXISTS;
@@ -881,9 +719,6 @@ extern "C" {
                         nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
                     else
                         nodeLnkP_setLeftThread(pNode, nodeLnkP_getLeftThread(pParent));
-#ifdef THREADED_TREE
-                    nodeLnkP_setRightThread(pNode, pParent);
-#endif
                     nodeLnkP_setParent(pNode, pParent);
                     nodeLnkP_setBalance(pNode, 0);
                     nodeLnkP_setLeftLink(pParent, pNode);
@@ -899,9 +734,6 @@ extern "C" {
                         nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
                     else
                         nodeLnkP_setRightThread(pNode, nodeLnkP_getRightThread(pParent));
-#ifdef THREADED_TREE
-                    nodeLnkP_setLeftThread(pNode, pParent);      // Thread back to Parent
-#endif
                     nodeLnkP_setParent(pNode, pParent);
                     nodeLnkP_setBalance(pNode, 0);
                     nodeLnkP_setRightLink(pParent, pNode);  // Parent's Right = Node
@@ -918,9 +750,9 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
     
-
-    ERESULT         nodeBTree_AddA(
-        NODEBTREE_DATA  *this,
+    
+    ERESULT         nodeBTP_AddA(
+        NODEBTP_DATA    *this,
         int32_t         cls,
         const
         char            *pNameA,            // UTF-8
@@ -933,7 +765,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -945,7 +777,7 @@ extern "C" {
         
         pNode = nodeLnkP_NewWithUTF8AndClass(pNameA, cls, pData);
         if (pNode) {
-            eRc = nodeBTree_Add(this, pNode, false);
+            eRc = nodeBTP_Add(this, pNode, false);
         }
         obj_Release(pNode);
         pNode = OBJ_NIL;
@@ -956,7 +788,6 @@ extern "C" {
     
     
     
-
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -967,16 +798,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = nodeBTree_Assign(this,pOther);
+        ERESULT eRc = nodeBTP_Assign(this,pOther);
      @endcode 
-     @param     this    NODEBTREE object pointer
-     @param     pOther  a pointer to another NODEBTREE object
+     @param     this    NODEBTP object pointer
+     @param     pOther  a pointer to another NODEBTP object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         nodeBTree_Assign(
-        NODEBTREE_DATA		*this,
-        NODEBTREE_DATA     *pOther
+    ERESULT         nodeBTP_Assign(
+        NODEBTP_DATA		*this,
+        NODEBTP_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -984,11 +815,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeBTree_Validate(pOther) ) {
+        if( !nodeBTP_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1040,9 +871,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         nodeBTree_Compare(
-        NODEBTREE_DATA     *this,
-        NODEBTREE_DATA     *pOther
+    ERESULT         nodeBTP_Compare(
+        NODEBTP_DATA     *this,
+        NODEBTP_DATA     *pOther
     )
     {
         int             i = 0;
@@ -1056,11 +887,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeBTree_Validate(pOther) ) {
+        if( !nodeBTP_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1097,32 +928,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        nodeBTree      *pCopy = nodeBTree_Copy(this);
+        nodeBTP      *pCopy = nodeBTP_Copy(this);
      @endcode 
-     @param     this    NODEBTREE object pointer
-     @return    If successful, a NODEBTREE object which must be 
+     @param     this    NODEBTP object pointer
+     @return    If successful, a NODEBTP object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODEBTREE_DATA *     nodeBTree_Copy(
-        NODEBTREE_DATA       *this
+    NODEBTP_DATA *     nodeBTP_Copy(
+        NODEBTP_DATA       *this
     )
     {
-        NODEBTREE_DATA       *pOther = OBJ_NIL;
+        NODEBTP_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = nodeBTree_New( );
+        pOther = nodeBTP_New( );
         if (pOther) {
-            eRc = nodeBTree_Assign(this, pOther);
+            eRc = nodeBTP_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -1140,12 +971,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            nodeBTree_Dealloc(
+    void            nodeBTP_Dealloc(
         OBJ_ID          objId
     )
     {
-        NODEBTREE_DATA  *this = objId;
-        NODELNKP_DATA   *pNode = OBJ_NIL;
+        NODEBTP_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -1153,7 +983,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -1161,14 +991,20 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((NODEBTREE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((NODEBTP_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-        
-        nodeBTree_DeleteNodes(this, nodeBTree_getRoot(this));
 
-        nodeBTree_setArray(this, OBJ_NIL);
-        nodeBTree_setStr(this, OBJ_NIL);
+        nodeBTP_DeleteNodes(this, nodeBTP_getRoot(this));
+        
+#ifdef USE_BLOCKS
+#else
+        if (this->pArray) {
+            obj_Release(this->pArray);
+            this->pArray = OBJ_NIL;
+        }
+#endif
+        nodeBTP_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1182,80 +1018,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                         D e l e t e
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     nodeBTree_Delete(
-        NODEBTREE_DATA  *this,
-        NODE_DATA       *pNode
-    )
-    {
-        NODEBTREE_NODE  *pParent;
-        NODEBTREE_NODE  *pEntry;
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode,OBJ_IDENT_NODE) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_PARAMETER;
-            return OBJ_NIL;
-        }
-#endif
-
-#ifdef XYZZY
-        // Search the tree for the node.
-        pEntry = nodeBTree_getRoot(this);
-        while (pEntry) {
-            eRc = node_Compare(pNode, pEntry->pNode);
-            if (ERESULT_SUCCESS_EQUAL == eRc) {
-                goto found;
-            }
-            else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (pEntry->pLeft)
-                    pEntry = pEntry->pLeft;
-                else
-                    break;
-            }
-            else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (pEntry->pRight)
-                    pEntry = pEntry->pRight;
-                else
-                    break;
-            }
-            else {
-                //return ERESULT_GENERAL_FAILURE;
-                return OBJ_NIL;
-            }
-        }
-    found:
-#endif
-        
-        // Return to caller.
-        return OBJ_NIL;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeBTree_Disable(
-        NODEBTREE_DATA		*this
+    ERESULT         nodeBTP_Disable(
+        NODEBTP_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1275,15 +1049,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeBTree_Enable(
-        NODEBTREE_DATA		*this
+    ERESULT         nodeBTP_Enable(
+        NODEBTP_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1303,8 +1077,8 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
-    NODELNKP_DATA * nodeBTree_Find(
-        NODEBTREE_DATA  *this,
+    NODELNKP_DATA * nodeBTP_Find(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
     )
     {
@@ -1314,7 +1088,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
@@ -1326,7 +1100,7 @@ extern "C" {
         }
 #endif
         
-        pParent = nodeBTree_getRoot(this);
+        pParent = nodeBTP_getRoot(this);
         while (pParent) {
             eRc = nodeLnkP_Compare(pNode, pParent);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
@@ -1355,47 +1129,21 @@ extern "C" {
     }
     
     
-
-    //---------------------------------------------------------------
-    //                          F i r s t
-    //---------------------------------------------------------------
-    
-    NODELNKP_DATA * nodeBTree_First(
-        NODEBTREE_DATA  *this
-    )
-    {
-        NODELNKP_DATA   *pNode = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        
-        pNode = nodeBTree_getRoot(this);
-        pNode = nodeBTree_LeftMostChild(this, pNode);
-
-        // Return to caller.
-        return pNode;
-    }
-    
-    
     
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODEBTREE_DATA * nodeBTree_Init(
-        NODEBTREE_DATA  *this
+    NODEBTP_DATA *  nodeBTP_Init(
+        NODEBTP_DATA    *this
     )
     {
-        uint32_t        cbSize = sizeof(NODEBTREE_DATA);
-        ERESULT         eRc;
-        
+        uint32_t        cbSize = sizeof(NODEBTP_DATA);
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+#ifdef USE_BLOCKS
+        uint32_t        objSize = 0;
+#endif
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1411,42 +1159,53 @@ extern "C" {
         }
 
         this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBTREE);
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBTP);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                        // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEBTREE);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEBTP);      // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTree_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTP_Vtbl);
         
-        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEBTREE_NODE));
-        if (ERESULT_FAILED(eRc)) {
+#ifdef USE_BLOCKS
+        if (((OBJ_DATA *)(nodeLnkP_Class()))->pVtbl->pQueryInfo) {
+            objSize =   (uint32_t)((OBJ_DATA *)(nodeLnkP_Class()))->pVtbl->pQueryInfo(
+                                                    nodeLnkP_Class(),
+                                                    OBJ_QUERYINFO_TYPE_OBJECT_SIZE,
+                                                    NULL
+                        );
+        }
+        if (objSize) {
+            eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, objSize);
+        }
+        if (ERESULT_FAILED(eRc) || (0 == objSize)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        
+#else
         this->pArray = nodeArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-
+#endif
+        
     #ifdef NDEBUG
     #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "nodeBTree::sizeof(NODEBTREE_DATA) = %lu\n", sizeof(NODEBTREE_DATA));
+        //fprintf(stderr, "nodeBTP::sizeof(NODEBTP_DATA) = %lu\n", sizeof(NODEBTP_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(NODEBTREE_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(NODEBTP_DATA));
     #endif
 
         return this;
@@ -1458,15 +1217,15 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTree_IsEnabled(
-        NODEBTREE_DATA		*this
+    ERESULT         nodeBTP_IsEnabled(
+        NODEBTP_DATA		*this
     )
     {
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1483,71 +1242,11 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          L a s t
-    //---------------------------------------------------------------
-    
-    NODELNKP_DATA * nodeBTree_Last(
-        NODEBTREE_DATA  *this
-    )
-    {
-        NODELNKP_DATA   *pEntry;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        
-        pEntry = nodeBTree_getRoot(this);
-        pEntry = nodeBTree_RightMostChild(this, pEntry);
-        
-        // Return to caller.
-        return pEntry;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       N o d e
-    //---------------------------------------------------------------
-    
-    NODELINK_DATA * nodeBTree_Node(
-        NODEBTREE_DATA  *this,
-        uint32_t        index
-    )
-    {
-        NODELINK_DATA   *pNode = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return pNode;
-        }
-        if( !((index > 0) && (index <= nodeArray_getSize(this->pArray))) ) {
-            DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
-            return pNode;
-        }
-#endif
-        
-        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                         N o d e s
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTree_Nodes(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_Nodes(
+        NODEBTP_DATA    *this,
         NODEARRAY_DATA  **ppNodes
     )
     {
@@ -1559,7 +1258,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1570,19 +1269,24 @@ extern "C" {
 #endif
         
         pNodes = nodeArray_New();
-        for (i=0; i<nodeArray_getSize(this->pArray); ++i) {
-            pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
-            if (pEntry) {
-                eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
-                if (ERESULT_FAILED(eRc)) {
-                    obj_Release(pNodes);
-                    pNodes = OBJ_NIL;
-                    goto eom;
+        if (pNodes) {
+#ifdef USE_BLOCKS
+#else
+            for (i=0; i<nodeArray_getSize(this->pArray); ++i) {
+                pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
+                if (pEntry) {
+                    eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pNodes);
+                        pNodes = OBJ_NIL;
+                        goto eom;
+                    }
                 }
             }
+            nodeArray_SortAscending(pNodes);
+#endif
         }
-        nodeArray_SortAscending(pNodes);
-        
+
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
@@ -1590,67 +1294,6 @@ extern "C" {
             *ppNodes = pNodes;
         }
         return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //             P r e  O r d e r  T r a v e r s a l
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeBTree_PreOrderTraversal(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    )
-    {
-        NODEBTREE_NODE  *pNode1;
-        NODEBTREE_NODE  *pNode2;
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#ifdef XYZZY
-        pNode1 = nodeBTree_getRoot(this);
-        pNode2 = NULL;
-
-        do {
-            // Descend down the bottom of the left branch.
-            while (pNode1) {
-                pNode2 = pNode1;
-                pNode1 = pNode1->pLeft;
-                // Scan the left-most node.
-                if (pNode2) {
-                    eRc = pScan(pObj, pNode2->pNode, pArg3);
-                    if (ERESULT_FAILED(eRc))
-                        break;
-                }
-            }
-            while (pNode2 && (NULL == pNode1)) {
-                do {
-                    pNode1 = pNode2;
-                    pNode2 = pNode1->pParent;
-                } while (pNode2 && !(pNode1 == pNode1->pParent->pLeft));
-                if (pNode2) {
-                    eRc = pScan(pObj, pNode2->pNode, pArg3);
-                    if (ERESULT_FAILED(eRc))
-                        break;
-                    pNode1 = pNode2->pRight;
-                }
-            }
-        } while (pNode2);
-#endif
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
     }
     
     
@@ -1666,14 +1309,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = nodeBTree_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = nodeBTP_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "nodeBTree", prefix,
+                        the object name, "nodeBTP", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1681,13 +1324,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          nodeBTree_QueryInfo(
+    void *          nodeBTP_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        NODEBTREE_DATA     *this = objId;
+        NODEBTP_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1696,7 +1339,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1704,8 +1347,12 @@ extern "C" {
         
         switch (type) {
                 
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(NODEBTP_DATA);
+                break;
+                
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)nodeBTree_Class();
+                return (void *)nodeBTP_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1735,22 +1382,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return nodeBTree_Disable;
+                            return nodeBTP_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return nodeBTree_Enable;
+                            return nodeBTP_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return nodeBTree_ToDebugString;
+                            return nodeBTP_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return nodeBTree_ToJSON;
+                            return nodeBTP_ToJSON;
                         }
                         break;
                         
@@ -1760,9 +1407,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == nodeBTree_ToDebugString)
+                if (pData == nodeBTP_ToDebugString)
                     return "ToDebugString";
-                if (pData == nodeBTree_ToJSON)
+                if (pData == nodeBTP_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -1779,19 +1426,19 @@ extern "C" {
     //                  R i g t  D e g e n e r a t e
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTree_RightDegenerate(
-        NODEBTREE_DATA  *this
+    ERESULT         nodeBTP_RightDegenerate(
+        NODEBTP_DATA    *this
     )
     {
 #ifdef XYZZY
         NODELNKP_NODE   *pNode;
         NODELNKP_NODE   *pParent;
 #endif
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1801,22 +1448,22 @@ extern "C" {
         /* Alter the tree to be right degenerate (ie a singly-
          * linked list using only the right child ptr).
          */
-        pNode = nodeBTree_getRoot(this);
+        pNode = nodeBTP_getRoot(this);
         while( pNode ) {
-            pParent = pNode->pParent;
-            if( pNode->pLeft ) {
-                nodeBTree_RotateRight(this, pNode);
+            pParent = nodeLnkP_getParent(pNode);
+            if( nodeLnkP_getLeftLink(pNode) ) {
+                nodeBTP_RotateRight(this, pNode);
                 if( pParent ) {
-                    if( pParent->pLeft )
-                        pNode = pParent->pLeft;
+                    if( nodeLnkP_getLeftLink(pParent) )
+                        pNode = nodeLnkP_getLeftLink(pParent);
                     else
-                        pNode = pParent->pRight;
+                        pNode = nodeLnkP_getRightLink(pParent);
                 }
                 else
-                    pNode = this->pRoot;
+                    pNode = nodeBTP_getRoot(this);
             }
             else
-                pNode = pNode->pRight;
+                pNode = nodeLnkP_getRightLink(pNode);
         }
 #endif
         
@@ -1830,8 +1477,8 @@ extern "C" {
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     nodeBTree_ToJSON(
-        NODEBTREE_DATA      *this
+     ASTR_DATA *     nodeBTP_ToJSON(
+        NODEBTP_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -1842,7 +1489,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1871,20 +1518,21 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = nodeBTree_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeBTP_ToDebugString(this,4);
      @endcode 
-     @param     this    NODEBTREE object pointer
+     @param     this    NODEBTP object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeBTree_ToDebugString(
-        NODEBTREE_DATA  *this,
+    ASTR_DATA *     nodeBTP_ToDebugString(
+        NODEBTP_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
         const
@@ -1893,7 +1541,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1914,9 +1562,11 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    nodeArray_getSize(this->pArray)
+                    nodeBTP_getSize(this)
             );
 
+#ifdef USE_BLOCKS
+#else
         if (this->pArray) {
             if (((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString(
@@ -1927,7 +1577,8 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-
+#endif
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -1949,15 +1600,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            nodeBTree_Validate(
-        NODEBTREE_DATA      *this
+    bool            nodeBTP_Validate(
+        NODEBTP_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_NODEBTREE) )
+            if ( obj_IsKindOf(this, OBJ_IDENT_NODEBTP) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1973,7 +1624,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(NODEBTREE_DATA)) ) {
+        if( !(obj_getSize(this) >= sizeof(NODEBTP_DATA)) ) {
             return false;
         }
 
@@ -1991,8 +1642,8 @@ extern "C" {
     /*! Visit all the nodes in the Tree using a In-order traversal.
      */
     
-    ERESULT         nodeBTree_VisitNodesInParent(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodesInParent(
+        NODEBTP_DATA    *this,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,
         void            *pArg3
@@ -2006,13 +1657,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pNodeP = nodeBTree_getRoot(this);
+        pNodeP = nodeBTP_getRoot(this);
         pNodeQ = NULL;
         
         do {
@@ -2055,8 +1706,8 @@ extern "C" {
     }
     
     
-    ERESULT         nodeBTree_VisitNodesInRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodesInRecurse(
+        NODEBTP_DATA  *this,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -2067,7 +1718,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!nodeBTree_Validate(this)) {
+        if (!nodeBTP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -2077,12 +1728,12 @@ extern "C" {
         }
 #endif
         
-        eRc =   nodeBTree_VisitNodeInRecurse(
-                                              this,
-                                              nodeBTree_getRoot(this),
-                                              pScan,
-                                              pObj,
-                                              pArg3
+        eRc =   nodeBTP_VisitNodeInRecurse(
+                            this,
+                            nodeBTP_getRoot(this),
+                            pScan,
+                            pObj,
+                            pArg3
                 );
         
         return eRc;
@@ -2091,8 +1742,8 @@ extern "C" {
     
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
-    ERESULT         nodeBTree_VisitNodesPostRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodesPostRecurse(
+        NODEBTP_DATA    *this,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -2103,7 +1754,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!nodeBTree_Validate(this)) {
+        if (!nodeBTP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -2113,13 +1764,13 @@ extern "C" {
         }
 #endif
         
-        eRc =   nodeBTree_VisitNodePostRecurse(
-                    this,
-                    nodeBTree_getRoot(this),
-                    pScan,
-                    pObj,
-                    pArg3
-                );
+        eRc =   nodeBTP_VisitNodePostRecurse(
+                                               this,
+                                               nodeBTP_getRoot(this),
+                                               pScan,
+                                               pObj,
+                                               pArg3
+                                               );
         
         return eRc;
     }
@@ -2127,8 +1778,8 @@ extern "C" {
     
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
-    ERESULT         nodeBTree_VisitNodesPreParent(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodesPreParent(
+        NODEBTP_DATA    *this,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,
         void            *pArg3
@@ -2138,20 +1789,20 @@ extern "C" {
         NODELNKP_DATA   *pNodeQ;
         NODELNKP_DATA   *pNodePR;           // Parent's Right Child
         ERESULT         eRc;
-
+        
         // In pre-order, a node is visited only when it is reached on the way
         // down the tree.
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeBTree_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pNodeP = nodeBTree_getRoot(this);
+        pNodeP = nodeBTP_getRoot(this);
         pNodeQ = pNodeP;
         
         do {
@@ -2200,8 +1851,8 @@ extern "C" {
     }
     
     
-    ERESULT         nodeBTree_VisitNodesPreRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodesPreRecurse(
+        NODEBTP_DATA  *this,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -2212,7 +1863,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!nodeBTree_Validate(this)) {
+        if (!nodeBTP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -2222,19 +1873,19 @@ extern "C" {
         }
 #endif
         
-        eRc =   nodeBTree_VisitNodePreRecurse(
-                                               this,
-                                               nodeBTree_getRoot(this),
-                                               pScan,
-                                               pObj,
-                                               pArg3
-                );
+        eRc =   nodeBTP_VisitNodePreRecurse(
+                                              this,
+                                              nodeBTP_getRoot(this),
+                                              pScan,
+                                              pObj,
+                                              pArg3
+                                              );
         
         return eRc;
     }
     
     
-
+    
 
     
 #ifdef	__cplusplus

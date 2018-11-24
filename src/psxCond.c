@@ -643,7 +643,6 @@ extern "C" {
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         EnterCriticalSection(&this->csMutex);
         while(cb_NumEntries(this) == 0) {
             if (obj_Flag(this, CB_FLAG_PAUSE)) {
@@ -652,7 +651,6 @@ extern "C" {
             }
             SleepConditionVariableCS(&this->cvCondFull, &this->csMutex, INFINITE);
         }
-#endif
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         tnRc = tn_mutex_unlock(&this->mutex);

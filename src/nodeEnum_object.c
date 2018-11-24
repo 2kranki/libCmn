@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'sgraph'
-//	Generated 08/12/2018 14:34:38
+//	Class Object Metods and Tables for 'nodeEnum'
+//	Generated 11/23/2018 21:35:43
 
 
 /*
@@ -33,10 +33,12 @@
 
 
 
-//#define   SGRAPH_IS_SINGLETON     1
 
-#define			SGRAPH_OBJECT_C	    1
-#include        <sgraph_internal.h>
+#define			NODEENUM_OBJECT_C	    1
+#include        <nodeEnum_internal.h>
+#ifdef  NODEENUM_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -44,15 +46,18 @@
 //                  Class Object Definition
 //===========================================================
 
-struct sgraph_class_data_s	{
+struct nodeEnum_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  NODEENUM_SINGLETON
+    volatile
+    NODEENUM_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct sgraph_class_data_s SGRAPH_CLASS_DATA;
 
 
 
@@ -64,7 +69,7 @@ typedef struct sgraph_class_data_s SGRAPH_CLASS_DATA;
 
 
 static
-void *          sgraphClass_QueryInfo(
+void *          nodeEnumClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +78,17 @@ void *          sgraphClass_QueryInfo(
 
 static
 const
-OBJ_INFO        sgraph_Info;            // Forward Reference
+OBJ_INFO        nodeEnum_Info;            // Forward Reference
 
 
 
 
 static
-bool            sgraphClass_IsKindOf(
+bool            nodeEnumClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SGRAPH_CLASS == classID) {
+    if (OBJ_IDENT_NODEENUM_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +99,34 @@ bool            sgraphClass_IsKindOf(
 
 
 static
-uint16_t		sgraphClass_WhoAmI(
+uint16_t		nodeEnumClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_SGRAPH_CLASS;
+    return OBJ_IDENT_NODEENUM_CLASS;
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&sgraph_Info,
-    sgraphClass_IsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    sgraph_Class,
-    sgraphClass_WhoAmI,
-    (P_OBJ_QUERYINFO)sgraphClass_QueryInfo
+NODEENUM_CLASS_VTBL    class_Vtbl = {
+    {
+        &nodeEnum_Info,
+        nodeEnumClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        nodeEnum_Class,
+        nodeEnumClass_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeEnumClass_QueryInfo,
+        NULL                        // nodeEnumClass_ToDebugString
+    },
 };
 
 
@@ -121,11 +135,94 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
-SGRAPH_CLASS_DATA  sgraph_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SGRAPH_CLASS, 0, 1},
+NODEENUM_CLASS_DATA  nodeEnum_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEENUM_CLASS, 0, 1},
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  NODEENUM_SINGLETON
+NODEENUM_DATA *     nodeEnum_getSingleton(
+    void
+)
+{
+    return (OBJ_ID)(nodeEnum_ClassObj.pSingleton);
+}
+
+
+bool            nodeEnum_setSingleton(
+    NODEENUM_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New();
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (nodeEnum_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(nodeEnum_ClassObj.pSingleton));
+    }
+    nodeEnum_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+NODEENUM_DATA *     nodeEnum_Shared(
+    void
+)
+{
+    NODEENUM_DATA       *this = (OBJ_ID)(nodeEnum_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = nodeEnum_New( );
+        nodeEnum_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // nodeEnum_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            nodeEnum_SharedReset(
+    void
+)
+{
+    NODEENUM_DATA       *this = (OBJ_ID)(nodeEnum_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        nodeEnum_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -134,13 +231,13 @@ SGRAPH_CLASS_DATA  sgraph_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          sgraphClass_QueryInfo(
+void *          nodeEnumClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    SGRAPH_CLASS_DATA *this = objId;
+    NODEENUM_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -151,7 +248,7 @@ void *          sgraphClass_QueryInfo(
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(SGRAPH_DATA);
+            return (void *)sizeof(NODEENUM_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -166,7 +263,7 @@ void *          sgraphClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&sgraph_Info;
+                        return (void *)&nodeEnum_Info;
                     }
                     break;
                     
@@ -179,19 +276,18 @@ void *          sgraphClass_QueryInfo(
             return (void *)obj_getInfo(this);
             break;
             
-#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return sgraph_ParseObject;
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return nodeEnum_New;
                     }
                     break;
-
+                    
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return sgraphClass_WhoAmI;
+                        return nodeEnumClass_WhoAmI;
                     }
                     break;
                     
@@ -199,7 +295,6 @@ void *          sgraphClass_QueryInfo(
                     break;
             }
             break;
-#endif
             
         default:
             break;
@@ -211,17 +306,12 @@ void *          sgraphClass_QueryInfo(
 
 
 
-
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
-
 static
-bool            sgraph_IsKindOf(
+bool            nodeEnum_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SGRAPH == classID) {
+    if (OBJ_IDENT_NODEENUM == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -233,57 +323,64 @@ bool            sgraph_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            sgraph_Dealloc(
+void            nodeEnum_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          sgraph_Class(
+OBJ_ID          nodeEnum_Class(
     void
 )
 {
-    return (OBJ_ID)&sgraph_ClassObj;
+    return (OBJ_ID)&nodeEnum_ClassObj;
 }
 
 
 static
-uint16_t		sgraph_WhoAmI(
+uint16_t		nodeEnum_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_SGRAPH;
+    return OBJ_IDENT_NODEENUM;
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-SGRAPH_VTBL     sgraph_Vtbl = {
+NODEENUM_VTBL     nodeEnum_Vtbl = {
     {
-        &sgraph_Info,
-        sgraph_IsKindOf,
-#ifdef  SGRAPH_IS_SINGLETON
+        &nodeEnum_Info,
+        nodeEnum_IsKindOf,
+#ifdef  NODEENUM_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        sgraph_Dealloc,
-        sgraph_Class,
-        sgraph_WhoAmI,
-        (P_OBJ_QUERYINFO)sgraph_QueryInfo,
-        (P_OBJ_TOSTRING)sgraph_ToDebugString,
-        NULL,			// sgraph_Enable,
-        NULL,			// sgraph_Disable,
-        NULL,			// (P_OBJ_ASSIGN)sgraph_Assign,
-        NULL,			// (P_OBJ_COMPARE)sgraph_Compare,
-        NULL, 			// (P_OBJ_PTR)sgraph_Copy,
-        NULL, 			// (P_OBJ_PTR)sgraph_DeepCopy,
-        NULL 			// (P_OBJ_HASH)sgraph_Hash,
+        nodeEnum_Dealloc,
+        nodeEnum_Class,
+        nodeEnum_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeEnum_QueryInfo,
+        (P_OBJ_TOSTRING)nodeEnum_ToDebugString,
+        NULL,			// nodeEnum_Enable,
+        NULL,			// nodeEnum_Disable,
+        NULL,			// (P_OBJ_ASSIGN)nodeEnum_Assign,
+        NULL,			// (P_OBJ_COMPARE)nodeEnum_Compare,
+        NULL, 			// (P_OBJ_PTR)nodeEnum_Copy,
+        NULL, 			// (P_OBJ_PTR)nodeEnum_DeepCopy,
+        NULL 			// (P_OBJ_HASH)nodeEnum_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //sgraph_IsEnabled,
+    //nodeEnum_IsEnabled,
  
 };
 
@@ -291,12 +388,12 @@ SGRAPH_VTBL     sgraph_Vtbl = {
 
 static
 const
-OBJ_INFO        sgraph_Info = {
-    "sgraph",
-    "Simple Graph",
-    (OBJ_DATA *)&sgraph_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&sgraph_Vtbl
+OBJ_INFO        nodeEnum_Info = {
+    "nodeEnum",
+    "Node Emumerator",
+    (OBJ_DATA *)&nodeEnum_ClassObj,
+    (OBJ_DATA *)&objEnum_ClassObj,
+    (OBJ_IUNKNOWN *)&nodeEnum_Vtbl
 };
 
 

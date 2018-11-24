@@ -227,6 +227,50 @@ extern "C" {
     
     
     
+    /*!
+     * The delete exit is called whenever an active record is to be
+     * freed allowing any clean up to be performed.
+     */
+    bool            blocks_setDeleteExit(
+        BLOCKS_DATA     *this,
+        P_VOIDEXIT3_BE  pDelete,
+        OBJ_ID          pObj,           // Used as first parameter of scan method
+        void            *pArg3          // Used as third parameter of scan method
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pDelete   = pDelete;
+        this->pObj      = pObj;
+        this->pArg3     = pArg3;
+        
+        return true;
+    }
+
+    
+    uint32_t        blocks_getNumActive(
+        BLOCKS_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return listdl_Count(&this->activeList);
+    }
+    
+    
+    
     uint32_t        blocks_getRecordsPerBlock(
         BLOCKS_DATA     *this
     )
@@ -278,6 +322,23 @@ extern "C" {
 
 
 
+    uint32_t        blocks_getUnique(
+        BLOCKS_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->recordSize;
+    }
+    
+    
+    
 
     
 
@@ -417,6 +478,7 @@ extern "C" {
     {
         BLOCKS_DATA     *this = objId;
         BLOCKS_BLOCK    *pBlock;
+        ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -430,6 +492,10 @@ extern "C" {
         }
 #endif
 
+        // Delete all the active records.
+        eRc = blocks_ForEach(this, (void *)blocks_RecordFree, this, NULL);
+        
+        // Delete all the blocks.
         while (listdl_Count(&this->blocks)) {
             pBlock = listdl_DeleteTail(&this->blocks);
             mem_Free(pBlock);
@@ -496,6 +562,80 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          F o r  E a c h
+    //---------------------------------------------------------------
+    
+    ERESULT         blocks_ForEach(
+        BLOCKS_DATA     *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        BLOCKS_NODE     *pEntry = OBJ_NIL;
+        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pScan ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pEntry = listdl_Head(&this->activeList);
+        while ( pEntry ) {
+            eRc = pScan(pObj, pEntry->data, pArg3);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                break;
+            }
+            pEntry = listdl_Next(&this->activeList, pEntry);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+    
+    void *          blocks_ActiveIndex(
+        BLOCKS_DATA    *this,
+        int32_t        index                    // (relative to 1)
+    )
+    {
+        BLOCKS_NODE     *pNode;
+        void            *pData = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        pNode = listdl_Index(&this->activeList, index);
+        if (pNode) {
+            pData = pNode->data;
+        }
+        
+        // Return to caller.
+        return pData;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -532,6 +672,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&blocks_Vtbl);
         
         listdl_Init(&this->blocks,  offsetof(BLOCKS_BLOCK, list));
+        listdl_Init(&this->activeList, 0);
         listdl_Init(&this->freeList, 0);
 
     #ifdef NDEBUG
@@ -558,7 +699,9 @@ extern "C" {
         void            *pRecord
     )
     {
-        BLOCKS_NODE     *pNode = pRecord;
+        BLOCKS_NODE     *pNode = (BLOCKS_NODE *)((uint8_t *)pRecord - sizeof(BLOCKS_NODE));
+        bool            fRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -569,10 +712,18 @@ extern "C" {
         }
 #endif
         
-        listdl_Add2Head(&this->freeList, pNode);
+        fRc = listdl_Delete(&this->activeList, pNode);
+        if (fRc) {
+            if (this->pDelete) {
+                eRc = this->pDelete(this->pObj, pNode->data, this->pArg3);
+            }
+            listdl_Add2Head(&this->freeList, pNode);
+        }
+        else
+            eRc = ERESULT_DATA_NOT_FOUND;
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
@@ -602,11 +753,13 @@ extern "C" {
         
         pNode = listdl_DeleteHead(&this->freeList);
         if (pNode) {
-            memset(pNode, 0, this->recordSize);
+            memset(pNode->data, 0, (this->recordSize - sizeof(BLOCKS_NODE)));
+            listdl_Add2Head(&this->activeList, pNode);
         }
+        ++this->unique;
         
         // Return to caller.
-        return pNode;
+        return &pNode->data;
     }
     
     
@@ -636,7 +789,9 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_DATA_ALREADY_EXISTS;
         }
-        if (recordSize < sizeof(BLOCKS_NODE)) {
+        if (recordSize > 0)
+            ;
+        else {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -648,7 +803,9 @@ extern "C" {
         
         this->blockSize = blockSize;
         this->blockAvail = blockSize - sizeof(BLOCKS_BLOCK);
-        this->recordSize = recordSize;
+        this->dataSize = recordSize;
+        recordSize = recordSize + sizeof(BLOCKS_NODE);
+        this->recordSize = ((recordSize + 4 - 1) >> 2) << 2;
         if (recordSize) {
             this->cRecordsPerBlock = this->blockAvail / recordSize;
         }

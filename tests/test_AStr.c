@@ -1009,10 +1009,20 @@ int         test_AStr_JSON01(
     char        *pTestName
 )
 {
-    //ERESULT     eRc;
+    ERESULT     eRc;
+    uint32_t    iRc;
     ASTR_DATA   *pObj = OBJ_NIL;
     ASTR_DATA   *pJsonStr = OBJ_NIL;
     ASTR_DATA   *pJsonStrOut = OBJ_NIL;
+    const
+    char        *pJsonStrA = "{ "
+        "\"objectType\":\"AStr\", "
+        "\"len\":3, "
+        "\"crc\":2807916624, "
+        "\"data\":\"abc\""
+    
+    "}\n";
+    uint32_t    index = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -1030,6 +1040,9 @@ int         test_AStr_JSON01(
                 pJsonStr,
                 AStr_getData(pJsonStr)
         );
+        iRc = str_CompareSpcl(AStr_getData(pJsonStr), pJsonStrA, &index);
+        fprintf(stderr, "\tCompareSpcl: %d, index=%d\n", iRc, index);
+        XCTAssertTrue( (0 == iRc) );
         pJsonStrOut = AStr_NewFromJSONString(pJsonStr);
         XCTAssertFalse( (OBJ_NIL == pJsonStrOut) );
         fprintf(

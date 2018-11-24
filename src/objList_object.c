@@ -78,6 +78,9 @@ bool            objList_ClassIsKindOf(
     if (OBJ_IDENT_OBJLIST_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -127,6 +130,9 @@ bool            objList_IsKindOf(
 {
     if (OBJ_IDENT_OBJLIST == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLOCKS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

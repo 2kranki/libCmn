@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'nodeList'
-//	Generated 07/12/2016 22:44:32
+//	Generated 11/23/2018 17:15:11
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,23 +32,32 @@
  */
 
 
+
+
 #define			NODELIST_OBJECT_C	    1
-#include        "nodeList_internal.h"
+#include        <nodeList_internal.h>
+#ifdef  NODELIST_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
 struct nodeList_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  NODELIST_SINGLETON
+    volatile
+    NODELIST_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct nodeList_class_data_s NODELIST_CLASS_DATA;
 
 
 
@@ -59,24 +69,33 @@ typedef struct nodeList_class_data_s NODELIST_CLASS_DATA;
 
 
 static
+void *          nodeListClass_QueryInfo(
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+static
 const
 OBJ_INFO        nodeList_Info;            // Forward Reference
 
 
 
-OBJ_ID          nodeList_Class(
-    void
-);
-
-
 
 static
-bool            nodeList_ClassIsKindOf(
+bool            nodeListClass_IsKindOf(
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_NODELIST_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_OBJLIST_CLASS == classID) {
+        return true;
+    }
+    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -86,7 +105,7 @@ bool            nodeList_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		nodeListClass_WhoAmI(
     void
 )
 {
@@ -94,19 +113,137 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
+static
+const
+NODELIST_CLASS_VTBL    class_Vtbl = {
+    {
+        &nodeList_Info,
+        nodeListClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        nodeList_Class,
+        nodeListClass_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeListClass_QueryInfo,
+        NULL                        // nodeListClass_ToDebugString
+    },
+};
+
+
+
+//-----------------------------------------------------------
+//						Class Object
+//-----------------------------------------------------------
+
+NODELIST_CLASS_DATA  nodeList_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELIST_CLASS, 0, 1},
+	//0
+};
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  NODELIST_SINGLETON
+NODELIST_DATA *     nodeList_getSingleton(
+    void
+)
+{
+    return (OBJ_ID)(nodeList_ClassObj.pSingleton);
+}
+
+
+bool            nodeList_setSingleton(
+    NODELIST_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New();
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (nodeList_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(nodeList_ClassObj.pSingleton));
+    }
+    nodeList_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+NODELIST_DATA *     nodeList_Shared(
+    void
+)
+{
+    NODELIST_DATA       *this = (OBJ_ID)(nodeList_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = nodeList_New( );
+        nodeList_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // nodeList_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            nodeList_SharedReset(
+    void
+)
+{
+    NODELIST_DATA       *this = (OBJ_ID)(nodeList_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        nodeList_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
 //---------------------------------------------------------------
 //                     Q u e r y  I n f o
 //---------------------------------------------------------------
 
 static
-void *          class_QueryInfo(
+void *          nodeListClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODELIST_CLASS_DATA 
-                    *this = objId;
+    NODELIST_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -116,6 +253,10 @@ void *          class_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(NODELIST_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
@@ -149,20 +290,12 @@ void *          class_QueryInfo(
                         return nodeList_New;
                     }
                     break;
-
-#ifdef XYZZY
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return nodeList_ParseObject;
-                    }
-                    break;
-
+                    
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return obj_WhoAmI;
+                        return nodeListClass_WhoAmI;
                     }
                     break;
-#endif
                     
                 default:
                     break;
@@ -178,33 +311,6 @@ void *          class_QueryInfo(
 
 
 
-static
-const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&nodeList_Info,
-    nodeList_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    nodeList_Class,
-    obj_ClassWhoAmI,
-    class_QueryInfo
-};
-
-
-
-//-----------------------------------------------------------
-//						Class Object
-//-----------------------------------------------------------
-
-static
-const
-NODELIST_CLASS_DATA  nodeList_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELIST_CLASS, 0, 1},
-	//0
-};
-
-
 
 static
 bool            nodeList_IsKindOf(
@@ -213,6 +319,12 @@ bool            nodeList_IsKindOf(
 {
     if (OBJ_IDENT_NODELIST == classID) {
        return true;
+    }
+    if (OBJ_IDENT_OBJLIST == classID) {
+        return true;
+    }
+    if (OBJ_IDENT_BLOCKS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -245,29 +357,42 @@ uint16_t		nodeList_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
 NODELIST_VTBL     nodeList_Vtbl = {
     {
         &nodeList_Info,
         nodeList_IsKindOf,
+#ifdef  NODELIST_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
+#endif
         nodeList_Dealloc,
         nodeList_Class,
         nodeList_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)nodeList_QueryInfo,
         (P_OBJ_TOSTRING)nodeList_ToDebugString,
         NULL,			// nodeList_Enable,
         NULL,			// nodeList_Disable,
         NULL,			// (P_OBJ_ASSIGN)nodeList_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeList_Compare,
         NULL, 			// (P_OBJ_PTR)nodeList_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL 			// (P_OBJ_HASH)nodeList_Hash
+        NULL, 			// (P_OBJ_PTR)nodeList_DeepCopy,
+        NULL 			// (P_OBJ_HASH)nodeList_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
+    //nodeList_IsEnabled,
  
 };
 
@@ -277,9 +402,9 @@ static
 const
 OBJ_INFO        nodeList_Info = {
     "nodeList",
-    "A List of Nodes",
+    "List of Nodes",
     (OBJ_DATA *)&nodeList_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&objList_ClassObj,
     (OBJ_IUNKNOWN *)&nodeList_Vtbl
 };
 

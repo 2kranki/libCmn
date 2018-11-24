@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeLnkP_internal.h
- *	Generated 11/19/2018 07:52:23
+ * File:   nodeEnum_internal.h
+ *	Generated 11/23/2018 21:35:43
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <nodeLnkP.h>
+#include        <nodeEnum.h>
 #include        <jsonIn.h>
-#include        <node_internal.h>
+#include        <objEnum_internal.h>
 
 
-#ifndef NODELNKP_INTERNAL_H
-#define	NODELNKP_INTERNAL_H
+#ifndef NODEENUM_INTERNAL_H
+#define	NODEENUM_INTERNAL_H
 
 
 
@@ -61,34 +61,31 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct nodeLnkP_data_s	{
+struct nodeEnum_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJENUM_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define NODELINK_RED         OBJ_FLAG_USER4
-#define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
-#define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
-#define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
-    // OBJ_FLAG_USER1 and obj's misc2 are used by node.
-    // obj's cbMisc1 is used for balance.
 
     // Common Data
-    NODELNKP_DATA   *pLeft;
-    NODELNKP_DATA   *pMiddle;
-    NODELNKP_DATA   *pParent;
-    NODELNKP_DATA   *pRight;
-    uint32_t        index;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        reserved;
+    ASTR_DATA       *pStr;
+
+    volatile
+    int32_t         numRead;
+    // WARNING - 'elems' must be last element of this structure!
+    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
-    struct nodeLnkP_class_data_s  nodeLnkP_ClassObj;
+    struct nodeEnum_class_data_s  nodeEnum_ClassObj;
 
     extern
     const
-    NODELNKP_VTBL         nodeLnkP_Vtbl;
+    NODEENUM_VTBL         nodeEnum_Vtbl;
 
 
 
@@ -96,13 +93,13 @@ struct nodeLnkP_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODELNKP_SINGLETON
-    NODELNKP_DATA *     nodeLnkP_getSingleton(
+#ifdef  NODEENUM_SINGLETON
+    NODEENUM_DATA *     nodeEnum_getSingleton(
         void
     );
 
-    bool            nodeLnkP_setSingleton(
-     NODELNKP_DATA       *pValue
+    bool            nodeEnum_setSingleton(
+     NODEENUM_DATA       *pValue
 );
 #endif
 
@@ -112,30 +109,36 @@ struct nodeLnkP_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeLnkP_getSuperVtbl(
-        NODELNKP_DATA     *this
+    OBJ_IUNKNOWN *  nodeEnum_getSuperVtbl(
+        NODEENUM_DATA     *this
     );
 
 
-    void            nodeLnkP_Dealloc(
+    ERESULT         nodeEnum_Append(
+        NODEENUM_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    void            nodeEnum_Dealloc(
         OBJ_ID          objId
     );
 
 
-    NODELNKP_DATA *       nodeLnkP_ParseObject(
+    NODEENUM_DATA * nodeEnum_ParseObject(
         JSONIN_DATA     *pParser
     );
 
 
-    void *          nodeLnkP_QueryInfo(
+    void *          nodeEnum_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeLnkP_ToJSON(
-        NODELNKP_DATA      *this
+    ASTR_DATA *     nodeEnum_ToJSON(
+        NODEENUM_DATA      *this
     );
 
 
@@ -143,8 +146,8 @@ struct nodeLnkP_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			nodeLnkP_Validate(
-        NODELNKP_DATA       *this
+    bool			nodeEnum_Validate(
+        NODEENUM_DATA       *this
     );
 #endif
 
@@ -154,5 +157,5 @@ struct nodeLnkP_data_s	{
 }
 #endif
 
-#endif	/* NODELNKP_INTERNAL_H */
+#endif	/* NODEENUM_INTERNAL_H */
 

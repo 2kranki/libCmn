@@ -119,6 +119,7 @@ int         test_objList_BasicList01(
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     NAME_DATA       *pEntry;
+    char            *pStrA;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -177,8 +178,33 @@ int         test_objList_BasicList01(
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        fprintf(stderr, "Check that each of the entries in the new list are the same"
-                        " addresses from first set of objects displayed.\n\n\n");
+
+        // Verify that the linkage fields are correct.
+        pEntry = objList_Head(pObj2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameC) );
+        eRc = name_CompareA(pEntry, "C");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Index(pObj2, 1);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameC) );
+        eRc = name_CompareA(pEntry, "C");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Index(pObj2, 2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameB) );
+        eRc = name_CompareA(pEntry, "B");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Index(pObj2, 3);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameA) );
+        eRc = name_CompareA(pEntry, "A");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Tail(pObj2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameA) );
+        eRc = name_CompareA(pEntry, "A");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -192,8 +218,32 @@ int         test_objList_BasicList01(
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        fprintf(stderr, "Check that each of the entries in the new list are different"
-                " addresses from first set of objects displayed.\n\n\n");
+        // Verify that the linkage fields are correct.
+        pEntry = objList_Head(pObj2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( !(pEntry == pNameC) );
+        eRc = name_CompareA(pEntry, "C");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Index(pObj2, 1);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( !(pEntry == pNameC) );
+        eRc = name_CompareA(pEntry, "C");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Index(pObj2, 2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( !(pEntry == pNameB) );
+        eRc = name_CompareA(pEntry, "B");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Index(pObj2, 3);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( !(pEntry == pNameA) );
+        eRc = name_CompareA(pEntry, "A");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        pEntry = objList_Tail(pObj2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( !(pEntry == pNameA) );
+        eRc = name_CompareA(pEntry, "A");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;

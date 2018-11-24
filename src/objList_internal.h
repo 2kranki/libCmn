@@ -39,6 +39,8 @@
 
 #include    <objList.h>
 #include    <listdl.h>
+#include    <blocks_internal.h>
+
 
 
 #ifndef OBJLIST_INTERNAL_H
@@ -51,24 +53,12 @@ extern "C" {
 #endif
 
 
-#define LIST_BLOCK_SIZE  4096
-    
-    
     //      Hash Node Descriptor
 #pragma pack(push, 1)
-    typedef struct  objList_node_s {
+    typedef struct  objList_record_s {
         LISTDL_NODE     list;
         OBJ_ID          pObject;
-    } OBJLIST_NODE;
-#pragma pack(pop)
-    
-    
-    // Block Descriptor
-#pragma pack(push, 1)
-    typedef struct  objList_block_s {
-        LISTDL_NODE     list;
-        OBJLIST_NODE    node[0];
-    } OBJLIST_BLOCK;
+    } OBJLIST_RECORD;
 #pragma pack(pop)
     
     
@@ -76,17 +66,14 @@ extern "C" {
 
 #pragma pack(push, 1)
 struct objList_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
+    /* Warning - BLOCKS_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-
+#define LIST_FLAG_ORDERED OBJ_FLAG_USER1
+    
     // Common Data
-    ERESULT         eRc;
-    LISTDL_DATA     freeList;       // Free Node Linked List
-    LISTDL_DATA     blocks;
-    LISTDL_DATA     list;           // Main Hash Table
-    uint32_t        cBlock;         // Number of Nodes per Block
+    LISTDL_DATA     list;           // Main List
 
 };
 #pragma pack(pop)
@@ -101,11 +88,22 @@ struct objList_data_s	{
 
 
     // Internal Functions
+    LISTDL_DATA *   objList_getList(
+        OBJLIST_DATA    *this
+    );
+    
+    
     void            objList_Dealloc(
         OBJ_ID          objId
     );
 
 
+    OBJLIST_RECORD * objList_FindObj(
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObj
+    );
+    
+    
     void *          objList_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

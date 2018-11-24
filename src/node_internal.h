@@ -73,8 +73,8 @@ struct node_data_s	{
     int32_t         type;
     NAME_DATA       *pName;
     OBJ_ID          pData;
-    OBJ_ID          pOther;
     OBJ_ID          pExtra;
+    OBJ_ID          pOther;
     OBJHASH_DATA    *pProperties;
 };
 #pragma pack(pop)

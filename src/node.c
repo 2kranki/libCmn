@@ -894,6 +894,9 @@ extern "C" {
         
         // Copy other data from this object to other.
         pOther->cls = this->cls;
+        pOther->type = this->type;
+        obj_FlagSet(pOther, NODE_DUP_NAME, obj_Flag(this, NODE_DUP_NAME));
+        obj_setMisc2(pOther, obj_getMisc2(this));
 
         return ERESULT_SUCCESS;
     }

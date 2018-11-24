@@ -229,7 +229,20 @@ extern "C" {
         NODELNKP_DATA   *pValue
     );
     
+
+    /*!
+     The red property can be used by red-black trees.
+     */
+    bool            nodeLnkP_getRed(
+        NODELNKP_DATA   *this
+    );
     
+    bool            nodeLnkP_setRed(
+        NODELNKP_DATA   *this,
+        bool            fValue
+    );
+    
+
     bool            nodeLnkP_getRightChild(
         NODELNKP_DATA   *this
     );

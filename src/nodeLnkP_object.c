@@ -250,6 +250,10 @@ void *          nodeLnkPClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(NODELNKP_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;

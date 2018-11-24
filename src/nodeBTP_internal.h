@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeLnkP_internal.h
- *	Generated 11/19/2018 07:52:23
+ * File:   nodeBTP_internal.h
+ *	Generated 11/22/2018 23:21:01
  *
  * Notes:
  *  --	N/A
@@ -39,14 +39,17 @@
 
 
 
-#include        <nodeLnkP.h>
+#include        <nodeBTP.h>
+#include        <blocks_internal.h>
 #include        <jsonIn.h>
-#include        <node_internal.h>
+#include        <nodeArray.h>
 
 
-#ifndef NODELNKP_INTERNAL_H
-#define	NODELNKP_INTERNAL_H
+#ifndef NODEBTP_INTERNAL_H
+#define	NODEBTP_INTERNAL_H
 
+
+#define USE_BLOCKS  1
 
 
 #ifdef	__cplusplus
@@ -61,34 +64,30 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct nodeLnkP_data_s	{
+struct nodeBTP_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define NODELINK_RED         OBJ_FLAG_USER4
-#define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
-#define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
-#define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
-    // OBJ_FLAG_USER1 and obj's misc2 are used by node.
-    // obj's cbMisc1 is used for balance.
 
     // Common Data
-    NODELNKP_DATA   *pLeft;
-    NODELNKP_DATA   *pMiddle;
-    NODELNKP_DATA   *pParent;
-    NODELNKP_DATA   *pRight;
-    uint32_t        index;
+#ifdef USE_BLOCKS
+#else
+    NODEARRAY_DATA  *pArray;
+#endif
+    NODELNKP_DATA   *pRoot;
+    uint32_t        size;		    // maximum number of elements
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct nodeLnkP_class_data_s  nodeLnkP_ClassObj;
+    struct nodeBTP_class_data_s  nodeBTP_ClassObj;
 
     extern
     const
-    NODELNKP_VTBL         nodeLnkP_Vtbl;
+    NODEBTP_VTBL         nodeBTP_Vtbl;
 
 
 
@@ -96,13 +95,13 @@ struct nodeLnkP_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODELNKP_SINGLETON
-    NODELNKP_DATA *     nodeLnkP_getSingleton(
+#ifdef  NODEBTP_SINGLETON
+    NODEBTP_DATA *     nodeBTP_getSingleton(
         void
     );
 
-    bool            nodeLnkP_setSingleton(
-     NODELNKP_DATA       *pValue
+    bool            nodeBTP_setSingleton(
+     NODEBTP_DATA       *pValue
 );
 #endif
 
@@ -112,47 +111,97 @@ struct nodeLnkP_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeLnkP_getSuperVtbl(
-        NODELNKP_DATA     *this
+    OBJ_IUNKNOWN *  nodeBTP_getSuperVtbl(
+        NODEBTP_DATA     *this
     );
 
 
-    void            nodeLnkP_Dealloc(
+    void            nodeBTP_Dealloc(
         OBJ_ID          objId
     );
 
 
-    NODELNKP_DATA *       nodeLnkP_ParseObject(
+    ERESULT         nodeBTP_DeleteNodes(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
+    NODELNKP_DATA * nodeBTP_LeftMostChild(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
+    NODEBTP_DATA *       nodeBTP_ParseObject(
         JSONIN_DATA     *pParser
     );
 
 
-    void *          nodeLnkP_QueryInfo(
+    void *          nodeBTP_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeLnkP_ToJSON(
-        NODELNKP_DATA      *this
+    ERESULT         nodeBTP_RotateLeft(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode
     );
-
-
+    
+    
+    ERESULT         nodeBTP_RotateRight(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode
+    );
+    
+    
+    ASTR_DATA *     nodeBTP_ToJSON(
+        NODEBTP_DATA      *this
+    );
 
 
 #ifdef NDEBUG
 #else
-    bool			nodeLnkP_Validate(
-        NODELNKP_DATA       *this
+    bool			nodeBTP_Validate(
+        NODEBTP_DATA       *this
     );
 #endif
 
 
+    ERESULT         nodeBTP_VisitNodeInRecurse(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
+    ERESULT         nodeBTP_VisitNodePostRecurse(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
+    ERESULT         nodeBTP_VisitNodePreRecurse(
+        NODEBTP_DATA    *this,
+        NODELNKP_DATA   *pNode,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
+    
 
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* NODELNKP_INTERNAL_H */
+#endif	/* NODEBTP_INTERNAL_H */
 

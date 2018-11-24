@@ -543,6 +543,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         R e d
+    //---------------------------------------------------------------
+    
+    bool            nodeLnkP_getRed(
+        NODELNKP_DATA   *this
+    )
+    {
+        bool            fRc;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        fRc = obj_Flag(this, NODELINK_RED);
+        
+        return fRc;
+    }
+    
+    
+    bool            nodeLnkP_setRed(
+        NODELNKP_DATA   *this,
+        bool            fValue
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !nodeLnkP_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_FlagSet(this, NODELINK_RED, fValue);
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                         R i g h t
     //---------------------------------------------------------------
     
@@ -979,6 +1025,7 @@ extern "C" {
         }
 #endif
         
+        obj_FlagSet(pOther, NODELINK_RED, obj_Flag(this, NODELINK_RED));
         obj_setMisc1(pOther, obj_getMisc1(this));   // Balance
         pOther->index = this->index;
         pOther->pLeft = this->pLeft;
@@ -1312,6 +1359,10 @@ extern "C" {
         
         switch (type) {
                 
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(NODELNKP_DATA);
+                break;
+                
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
                 return (void *)nodeLnkP_Class();
                 break;
@@ -1480,6 +1531,7 @@ extern "C" {
                          pStr,
                          "index:\"%4d\", "
                          "%s "
+                         "%s "
                          "left%s:\"%p\", "
                          "middle:\"%p\", "
                          "parent:\"%p\", "
@@ -1487,6 +1539,7 @@ extern "C" {
                          "balance:%4d "
                          "\n",
                          this->index,
+                         (nodeLnkP_getRed(this) ? "red," : "black,"),
                          (nodeLnkP_getRightChild(this) ? "RChild," : ""),
                          (nodeLnkP_getLeftLink(this) ? "_Link" : "_Thread"),
                          this->pLeft,

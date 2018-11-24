@@ -130,12 +130,31 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        blocks_getBlockAvail(
+   uint32_t        blocks_getBlockAvail(
         BLOCKS_DATA     *this
     );
     
     
     uint32_t        blocks_getBlockSize(
+        BLOCKS_DATA     *this
+    );
+    
+    /*!
+     * The delete exit is called whenever an active record is to be
+     * freed allowing any clean up to be performed.
+     */
+    bool            blocks_setDeleteExit(
+        BLOCKS_DATA     *this,
+        P_VOIDEXIT3_BE  pDelete,
+        OBJ_ID          pObj,           // Used as first parameter of scan method
+        void            *pArg3          // Used as third parameter of scan method
+    );
+    
+    
+    /*!
+     * Number of Active Records
+     */
+    uint32_t        blocks_getNumActive(
         BLOCKS_DATA     *this
     );
     
@@ -164,12 +183,29 @@ extern "C" {
     );
     
     
+    uint32_t        blocks_getUnique(
+        BLOCKS_DATA     *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Return the address of the index'th active record.
+     @param     this    Object Pointer
+     @param     index   number of item on the active list (relative to 1)
+     @return:   If successful, address of the record. Otherwise, NULL.
+     */
+    void *          blocks_ActiveIndex(
+        BLOCKS_DATA    *this,
+        int32_t        index                    // (relative to 1)
+    );
+    
+    
     /*!
      Create an Enumerator that will enumerate through all the blocks.
      @return    If successful, valid enumerator. Otherwise, OBJ_NIL.
@@ -179,6 +215,25 @@ extern "C" {
     ERESULT         blocks_Enum(
         BLOCKS_DATA     *this,
         ENUM_DATA       **ppEnum
+    );
+    
+    
+    /*!
+     Scan the active record list applying the given routine to each member
+     of the list.  Halt the scan if an error return code is returned by
+     the scan routine.
+     @param     this    Object Pointer
+     @param     pScan   Scan Routine Address
+     @param     pObj    First Parameter for the Scan Routine (optional)
+     @param     pArg3   Third Parameter for the Scan Routine (optional)
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error.
+     */
+    ERESULT         blocks_ForEach(
+        BLOCKS_DATA     *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,           // Used as first parameter of scan method
+        void            *pArg3          // Used as third parameter of scan method
     );
     
     

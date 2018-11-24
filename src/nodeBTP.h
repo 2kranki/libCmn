@@ -1,24 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Binary Tree of Nodes (nodeBTree) Header
+//          NODEBTP Console Transmit Task (nodeBTP) Header
 //****************************************************************
 /*
  * Program
- *			Binary Tree of Nodes (nodeBTree)
+ *			Separate nodeBTP (nodeBTP)
  * Purpose
- *			This object provides support for a binary tree of nodes.
+ *			This object provides a standardized way of handling
+ *          a separate nodeBTP to run things without complications
+ *          of interfering with the main nodeBTP. A nodeBTP may be 
+ *          called a nodeBTP on other O/S's.
+ *
  * Remarks
  *	1.      None
  *
  * History
- *	11/12/2018 Generated
- *
- * References
- *  * "Data Structures Using C", Tenenbaum, Langsam and Augenstein, Prentice-Hall,
- *      1990, ISBN: 0-13-199746-7
- *  * "The Art of Computer Programming - Searching and Sorting, 2nd Edition ", Knuth,
- *      Addison-Wesley, 1998, ISBN: 0-201-89685-0
+ *	11/22/2018 Generated
  */
 
 
@@ -58,11 +56,11 @@
 #include        <nodeLnkP.h>
 
 
-#ifndef         NODEBTREE_H
-#define         NODEBTREE_H
+#ifndef         NODEBTP_H
+#define         NODEBTP_H
 
 
-//#define   NODEBTREE_SINGLETON    1
+//#define   NODEBTP_SINGLETON    1
 
 #ifdef	__cplusplus
 extern "C" {
@@ -74,24 +72,26 @@ extern "C" {
     //****************************************************************
 
 
+    typedef struct nodeBTP_data_s	NODEBTP_DATA;            // Inherits from OBJ
+    typedef struct nodeBTP_class_data_s NODEBTP_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct nodeBTree_vtbl_s	{
+    typedef struct nodeBTP_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeBTree_object.c.
+        // method names to the vtbl definition in nodeBTP_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEBTREE_DATA *);
-    } NODEBTREE_VTBL;
+        //bool        (*pIsEnabled)(NODEBTP_DATA *);
+    } NODEBTP_VTBL;
 
-    typedef struct nodeBTree_class_vtbl_s	{
+    typedef struct nodeBTP_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeBTree_object.c.
+        // method names to the vtbl definition in nodeBTP_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEBTREE_DATA *);
-    } NODEBTREE_CLASS_VTBL;
+        //bool        (*pIsEnabled)(NODEBTP_DATA *);
+    } NODEBTP_CLASS_VTBL;
 
 
 
@@ -105,12 +105,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  NODEBTREE_SINGLETON
-    NODEBTREE_DATA *     nodeBTree_Shared(
+#ifdef  NODEBTP_SINGLETON
+    NODEBTP_DATA *     nodeBTP_Shared(
         void
     );
 
-    bool            nodeBTree_SharedReset(
+    bool            nodeBTP_SharedReset(
         void
     );
 #endif
@@ -120,19 +120,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to nodeBTree object if successful, otherwise OBJ_NIL.
+     @return    pointer to nodeBTP object if successful, otherwise OBJ_NIL.
      */
-    NODEBTREE_DATA * nodeBTree_Alloc(
+    NODEBTP_DATA *     nodeBTP_Alloc(
         void
     );
     
     
-    OBJ_ID          nodeBTree_Class(
+    OBJ_ID          nodeBTP_Class(
         void
     );
     
     
-    NODEBTREE_DATA * nodeBTree_New(
+    NODEBTP_DATA *     nodeBTP_New(
         void
     );
     
@@ -142,8 +142,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODELNKP_DATA * nodeBTree_getRoot(
-        NODEBTREE_DATA  *this
+    NODELNKP_DATA * nodeBTP_getRoot(
+        NODEBTP_DATA    *this
     );
     
 
@@ -162,19 +162,19 @@ extern "C" {
      @param     this        Object Pointer
      @param     pNode       Data Object Pointer
      @param     fReplace    true == replace current entry if it exists,
-                            otherwise, return ERESULT_DATA_ALREADY_EXISTS
-                            error.
+     otherwise, return ERESULT_DATA_ALREADY_EXISTS
+     error.
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
      error code is returned.
      */
-    ERESULT         nodeBTree_Add(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_Add(
+        NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode,
         bool            fReplace
     );
     
-    ERESULT         nodeBTree_AddA(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_AddA(
+        NODEBTP_DATA    *this,
         int32_t         cls,
         const
         char            *pNameA,            // UTF-8
@@ -182,117 +182,83 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeBTree_FindA(
-        NODEBTREE_DATA  *this,
-        int32_t         cls,
-        const
-        char            *pNameA            // UTF-8
-    );
-
-   
-    NODELNKP_DATA * nodeBTree_First(
-        NODEBTREE_DATA  *this
-    );
-    
-    
-    NODEBTREE_DATA * nodeBTree_Init(
-        NODEBTREE_DATA  *this
+    NODEBTP_DATA *   nodeBTP_Init(
+        NODEBTP_DATA     *this
     );
 
 
-    ERESULT         nodeBTree_InOrderTraversal(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
+    ERESULT     nodeBTP_IsEnabled(
+        NODEBTP_DATA		*this
     );
     
-    
-    NODELINK_DATA * nodeBTree_Node(
-        NODEBTREE_DATA  *this,
-        uint32_t        index       // Relative to 1
-    );
-    
-    
-    ERESULT         nodeTree_Nodes(
-        NODEBTREE_DATA  *this,
-        NODEARRAY_DATA  **ppNodes
-    );
-    
-    
-    ERESULT         nodeBTree_PreOrderTraversal(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    );
-    
-    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = nodeBTree_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeBTP_ToDebugString(this,4);
      @endcode 
-     @param     this    NODEBTREE object pointer
+     @param     this    NODEBTP object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    nodeBTree_ToDebugString(
-        NODEBTREE_DATA  *this,
+    ASTR_DATA *    nodeBTP_ToDebugString(
+        NODEBTP_DATA     *this,
         int             indent
     );
     
     
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
-    ERESULT         nodeBTree_VisitNodesPostRecurse(
-        NODEBTREE_DATA  *this,
+    ERESULT         nodeBTP_VisitNodesPostRecurse(
+        NODEBTP_DATA     *this,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );
+    
+    
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTP_VisitNodesInParent(   // Use Parent link (not recursive).
+        NODEBTP_DATA     *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
+    );
+    
+    ERESULT         nodeBTP_VisitNodesInRecurse(
+        NODEBTP_DATA     *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
+    /*! Visit all the nodes in the Tree using a Post-order traversal.
+     */
+    ERESULT         nodeBTP_VisitNodesPreParent(
+        NODEBTP_DATA     *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,
+        void            *pArg3
+    );
+    
+    ERESULT         nodeBTP_VisitNodesPreRecurse(
+        NODEBTP_DATA     *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    );
+    
+    
 
-    
-    /*! Visit all the nodes in the Tree using a Post-order traversal.
-     */
-    ERESULT         nodeBTree_VisitNodesInParent(   // Use Parent link (not recursive).
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    );
-    
-    ERESULT         nodeBTree_VisitNodesInRecurse(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
-        void            *pArg3
-    );
-    
-    
-    /*! Visit all the nodes in the Tree using a Post-order traversal.
-     */
-    ERESULT         nodeBTree_VisitNodesPreParent(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    );
-    
-    ERESULT         nodeBTree_VisitNodesPreRecurse(
-        NODEBTREE_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
-        void            *pArg3
-    );
-    
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* NODEBTREE_H */
+#endif	/* NODEBTP_H */
 

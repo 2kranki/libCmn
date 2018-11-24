@@ -145,8 +145,6 @@ extern "C" {
         OBJ_IDENT_APPL_CLASS,
         OBJ_IDENT_ARRAY,                // Expandable Array
         OBJ_IDENT_ARRAY_CLASS,
-        //OBJ_IDENT_ARRAYEXPAND,          // Expandable Array
-        //OBJ_IDENT_ARRAYEXPAND_CLASS,
         OBJ_IDENT_ASCII,                // ASCII Character Set
         OBJ_IDENT_ASCII_CLASS,
         OBJ_IDENT_ASTR,                 // ASCII String
@@ -302,8 +300,12 @@ extern "C" {
         OBJ_IDENT_NODEARRAY_CLASS,
         OBJ_IDENT_NODEBTREE,            // A Binary Tree of Nodes
         OBJ_IDENT_NODEBTREE_CLASS,
+        OBJ_IDENT_NODEBTP,              // A Binary Tree of Nodes using pointer linkage
+        OBJ_IDENT_NODEBTP_CLASS,        //      between nodes
         OBJ_IDENT_NODEENTRY,            // A Node to be used in other containers
         OBJ_IDENT_NODEENTRY_CLASS,
+        OBJ_IDENT_NODEENUM,             // Node Enumeration
+        OBJ_IDENT_NODEENUM_CLASS,
         OBJ_IDENT_NODEGRAPH,            // Graph of Nodes
         OBJ_IDENT_NODEGRAPH_CLASS,
         OBJ_IDENT_NODEHASH,             // A Hash Table of Nodes
@@ -318,8 +320,10 @@ extern "C" {
         OBJ_IDENT_NODEMATRIX_CLASS,
         OBJ_IDENT_NODESCAN,             // Node Tree Scanner
         OBJ_IDENT_NODESCAN_CLASS,
-        OBJ_IDENT_NODETREE,             // A Tree of Nodes
-        OBJ_IDENT_NODETREE_CLASS,
+        OBJ_IDENT_NODETREE,             // A Tree of Nodes using index linkage between
+        OBJ_IDENT_NODETREE_CLASS,       // nodes
+        OBJ_IDENT_NODETRP,              // A Tree of Nodes using pointer linkage between
+        OBJ_IDENT_NODETRP_CLASS,        // nodes
         OBJ_IDENT_NULL,
         OBJ_IDENT_NULL_CLASS,
         OBJ_IDENT_NUMBER,               // Generic Number

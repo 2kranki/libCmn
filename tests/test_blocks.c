@@ -130,20 +130,52 @@ int         test_blocks_Add(
         fprintf(stderr, "\tBlockAvail = %d\n", blocks_getBlockAvail(pObj));
         XCTAssertTrue( (4080 == blocks_getBlockAvail(pObj)) );
         fprintf(stderr, "\tRecordSize  = %d\n", blocks_getRecordSize(pObj));
-        XCTAssertTrue( (32 == blocks_getRecordSize(pObj)) );
+#if defined(__MACOSX_ENV__)
+        XCTAssertTrue( (48 == blocks_getRecordSize(pObj)) );
+#endif
+#if defined(__WIN32_ENV__)
+        XCTAssertTrue( (36 == blocks_getRecordSize(pObj)) );
+#endif
+#if defined(__WIN64_ENV__)
+        XCTAssertTrue( (48 == blocks_getRecordSize(pObj)) );
+#endif
         fprintf(stderr, "\tRecordsPerBlock  = %d\n", blocks_getRecordsPerBlock(pObj));
+#if defined(__MACOSX_ENV__)
+        XCTAssertTrue( (85 == blocks_getRecordsPerBlock(pObj)) );
+#endif
+#if defined(__WIN32_ENV__)
         XCTAssertTrue( (127 == blocks_getRecordsPerBlock(pObj)) );
+#endif
+#if defined(__WIN64_ENV__)
+        XCTAssertTrue( (85 == blocks_getRecordsPerBlock(pObj)) );
+#endif
 
         pRcd1 = blocks_RecordNew(pObj);
         pWrk = pObj->blocks.pHead;
         fprintf(stderr, "\tBlock 1  = %p\n", pWrk);
         fprintf(stderr, "\tRecord 1  = %p\n", pRcd1);
         fprintf(stderr, "\tOffset 1  = %d\n", (int)(pRcd1 - pWrk));
-        XCTAssertTrue( (16 == (int)(pRcd1 - pWrk)) );
+#if defined(__MACOSX_ENV__)
+        XCTAssertTrue( (32 == (int)(pRcd1 - pWrk)) );
+#endif
+#if defined(__WIN32_ENV__)
+        XCTAssertTrue( (20 == (int)(pRcd1 - pWrk)) );
+#endif
+#if defined(__WIN64_ENV__)
+        XCTAssertTrue( (32 == (int)(pRcd1 - pWrk)) );
+#endif
         pRcd2 = blocks_RecordNew(pObj);
         fprintf(stderr, "\tRecord 2  = %p\n", pRcd2);
         fprintf(stderr, "\tOffset 2  = %d\n", (int)(pRcd2 - pWrk));
-        XCTAssertTrue( (48 == (int)(pRcd2 - pWrk)) );
+#if defined(__MACOSX_ENV__)
+        XCTAssertTrue( (80 == (int)(pRcd2 - pWrk)) );
+#endif
+#if defined(__WIN32_ENV__)
+        XCTAssertTrue( (52 == (int)(pRcd2 - pWrk)) );
+#endif
+#if defined(__WIN64_ENV__)
+        XCTAssertTrue( (80 == (int)(pRcd2 - pWrk)) );
+#endif
         pRcd3 = blocks_RecordNew(pObj);
         fprintf(stderr, "\tRecord 3  = %p\n", pRcd3);
         eRc = blocks_RecordFree(pObj, pRcd2);

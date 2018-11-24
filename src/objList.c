@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "objList_internal.h"
+#include    <objList_internal.h>
+#include    <objEnum_internal.h>
 
 
 
@@ -58,36 +59,56 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    bool            objList_AddBlock(
-        OBJLIST_DATA   *this
+    
+    OBJLIST_RECORD * objList_FindObj(
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObj
     )
     {
-        OBJLIST_BLOCK   *pBlock;
-        uint32_t        i;
-        
-        // Do initialization.
-        if ( 0 == listdl_Count(&this->freeList) )
-            ;
-        else {
-            return true;
-        }
-        
-        // Get a new block.
-        i = sizeof(OBJLIST_BLOCK) + (this->cBlock * sizeof(OBJLIST_NODE));
-        pBlock = (OBJLIST_BLOCK *)mem_Malloc( i );
-        if( NULL == pBlock ) {
-            return false;
-        }
-        listdl_Add2Tail(&this->blocks, pBlock);
-        
-        // Now chain the entries to the Free chain.
-        for (i=0; i<this->cBlock; ++i) {
-            listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
+        OBJLIST_RECORD  *pObjInt;
+        ERESULT         eRc;
+        P_OBJ_COMPARE   pCompare = obj_getVtbl(pObj)->pCompare;
+
+        pObjInt = listdl_Head(&this->list);
+        while ( pObjInt ) {
+            eRc = pCompare(pObj, pObjInt->pObject);
+            if (ERESULT_SUCCESS_GREATER_THAN == eRc)
+                ;
+            else {
+                // pObj <= the current entry
+                obj_setLastError(this, eRc);
+                return pObjInt;
+            }
+            pObjInt = listdl_Next(&this->list, pObjInt);
         }
         
         // Return to caller.
-        return true;
+        return NULL;
+    }
+    
+    
+    static
+    int             objList_SortCompare(
+        OBJ_ID          pNode1,
+        OBJ_ID          pNode2
+    )
+    {
+        int             iRc;
+        ERESULT         eRc;
+        P_OBJ_COMPARE   pCompare = obj_getVtbl(pNode1)->pCompare;
+        
+        if (NULL == pCompare)
+            return -1;
+        eRc = pCompare(pNode1, pNode2);
+        if (ERESULT_SUCCESS_EQUAL == eRc)
+            iRc = 0;
+        else if (ERESULT_SUCCESS_LESS_THAN == eRc)
+            iRc = -1;
+        else
+            iRc = 1;
+        
+        // Return to caller.
+        return iRc;
     }
     
     
@@ -104,10 +125,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    OBJLIST_DATA *     objList_Alloc(
+    OBJLIST_DATA *  objList_Alloc(
+        void
     )
     {
-        OBJLIST_DATA       *this;
+        OBJLIST_DATA    *this;
         uint32_t        cbSize = sizeof(OBJLIST_DATA);
         
         // Do initialization.
@@ -121,6 +143,7 @@ extern "C" {
 
 
     OBJLIST_DATA *     objList_New(
+        void
     )
     {
         OBJLIST_DATA       *this;
@@ -140,25 +163,73 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT         objList_getLastError(
+    LISTDL_DATA *   objList_getList(
         OBJLIST_DATA    *this
     )
     {
-
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        return &this->list;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       O r d e r e d
+    //---------------------------------------------------------------
+    
+    bool            objList_getOrdered(
+        OBJLIST_DATA    *this
+    )
+    {
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
         if( !objList_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
         }
 #endif
-
-        return this->eRc;
+        
+        if (obj_Flag(this, LIST_FLAG_ORDERED))
+            return true;
+        else
+            return false;
     }
+    
+    bool            objList_setOrdered(
+        OBJLIST_DATA    *this,
+        bool            fValue
+    )
+    {
+        bool            fOrdered = false;
+        ERESULT         eRc;
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        if (obj_Flag(this, LIST_FLAG_ORDERED))
+            fOrdered = true;
+        obj_FlagSet(this, LIST_FLAG_ORDERED, fValue);
+        if (!fOrdered && fValue) {
+            eRc = objList_SortAscending(this);
+            if (ERESULT_FAILED(eRc))
+                return false;
+        }
+        
+        return true;
+    }
+    
 
-
-
+    
     uint32_t        objList_getSize(
         OBJLIST_DATA    *this
     )
@@ -192,43 +263,44 @@ extern "C" {
         OBJ_ID          pObject
     )
     {
-        OBJLIST_NODE    *pEntry;
+        OBJLIST_RECORD  *pEntry;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !objList_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( (OBJ_NIL == pObject) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        if (0 == listdl_Count(&this->freeList)) {
-            if ( objList_AddBlock(this) )
-                ;
-            else {
-                this->eRc = ERESULT_INSUFFICIENT_MEMORY;
-                return this->eRc;
-            }
+        pEntry = blocks_RecordNew((BLOCKS_DATA *)this);
+        if (NULL == pEntry) {
+            return ERESULT_OUT_OF_MEMORY;
         }
         
-        pEntry = listdl_DeleteHead(&this->freeList);
-        if (NULL == pEntry) {
-            this->eRc = ERESULT_INSUFFICIENT_MEMORY;
-            return this->eRc;
-        }
         obj_Retain(pObject);
         pEntry->pObject = pObject;
-        listdl_Add2Head(&this->list, pEntry);
+        if (obj_Flag(this, LIST_FLAG_ORDERED)) {
+            OBJLIST_RECORD      *pObjInt;
+            // Find insertion point.
+            pObjInt = objList_FindObj(this, pObject);
+            // Do the insertion.
+            if (pObjInt) {
+                listdl_AddBefore(&this->list, pObjInt, pEntry);
+            }
+            else
+                listdl_Add2Tail(&this->list, pEntry);
+        }
+        else
+            listdl_Add2Head(&this->list, pEntry);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -237,43 +309,44 @@ extern "C" {
         OBJ_ID          pObject
     )
     {
-        OBJLIST_NODE    *pEntry;
+        OBJLIST_RECORD  *pEntry;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !objList_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( (OBJ_NIL == pObject) ) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        if (0 == listdl_Count(&this->freeList)) {
-            if ( objList_AddBlock(this) )
-                ;
-            else {
-                this->eRc = ERESULT_INSUFFICIENT_MEMORY;
-                return this->eRc;
-            }
-        }
-        
-        pEntry = listdl_DeleteHead(&this->freeList);
+        pEntry = blocks_RecordNew((BLOCKS_DATA *)this);
         if (NULL == pEntry) {
-            this->eRc = ERESULT_INSUFFICIENT_MEMORY;
-            return this->eRc;
+            return ERESULT_OUT_OF_MEMORY;
         }
+
         obj_Retain(pObject);
         pEntry->pObject = pObject;
-        listdl_Add2Tail(&this->list, pEntry);
+        if (obj_Flag(this, LIST_FLAG_ORDERED)) {
+            OBJLIST_RECORD      *pObjInt;
+            // Find insertion point.
+            pObjInt = objList_FindObj(this, pObject);
+            // Do the insertion.
+            if (pObjInt) {
+                listdl_AddBefore(&this->list, pObjInt, pEntry);
+            }
+            else
+                listdl_Add2Tail(&this->list, pEntry);
+        }
+        else
+            listdl_Add2Tail(&this->list, pEntry);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -301,18 +374,18 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !objList_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( !objList_Validate(pOther) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
@@ -338,7 +411,6 @@ extern "C" {
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return ERESULT_SUCCESS;
     }
     
@@ -382,9 +454,6 @@ extern "C" {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
-            else {
-                this->eRc = ERESULT_SUCCESS;
-            }
         }
         
         // Return to caller.
@@ -402,8 +471,7 @@ extern "C" {
     )
     {
         OBJLIST_DATA    *this = objId;
-        OBJLIST_BLOCK   *pBlock;
-        OBJLIST_NODE    *pEntry;
+        OBJLIST_RECORD  *pEntry;
 
         // Do initialization.
         if (NULL == this) {
@@ -417,12 +485,6 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((OBJLIST_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
         // Release all the nodes.
         while ( (pEntry = listdl_Head(&this->list)) ) {
             if (pEntry->pObject) {
@@ -432,14 +494,10 @@ extern "C" {
             listdl_DeleteHead(&this->list);
         }
         
-        while ( listdl_Count(&this->blocks) ) {
-            pBlock = listdl_DeleteHead(&this->blocks);
-            mem_Free( pBlock );
-        }
-        
-        obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super object which we
+        // inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -468,7 +526,7 @@ extern "C" {
     {
         OBJLIST_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
-        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
         OBJ_ID          pObject;
 
         // Do initialization.
@@ -518,31 +576,60 @@ extern "C" {
         OBJLIST_DATA	*this
     )
     {
-        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !objList_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         pEntry = listdl_Head(&this->list);
         if (NULL == pEntry) {
-            this->eRc = ERESULT_DATA_NOT_FOUND;
-            return this->eRc;
+            return ERESULT_DATA_NOT_FOUND;
         }
         
         obj_Release(pEntry->pObject);
         pEntry->pObject = OBJ_NIL;
         listdl_Delete(&this->list, pEntry);
-        listdl_Add2Tail(&this->freeList, pEntry);
+        blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         objList_DeleteIndex(
+        OBJLIST_DATA    *this,
+        uint32_t        index
+    )
+    {
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEntry = listdl_Index(&this->list, index);
+        if (NULL == pEntry) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        
+        obj_Release(pEntry->pObject);
+        pEntry->pObject = OBJ_NIL;
+        listdl_Delete(&this->list, pEntry);
+        blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -550,31 +637,70 @@ extern "C" {
         OBJLIST_DATA	*this
     )
     {
-        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !objList_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         pEntry = listdl_Tail(&this->list);
         if (NULL == pEntry) {
-            this->eRc = ERESULT_DATA_NOT_FOUND;
-            return this->eRc;
+            return ERESULT_DATA_NOT_FOUND;
         }
         
         obj_Release(pEntry->pObject);
         pEntry->pObject = OBJ_NIL;
         listdl_Delete(&this->list, pEntry);
-        listdl_Add2Tail(&this->freeList, pEntry);
+        blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        E n u m
+    //---------------------------------------------------------------
+    
+    OBJENUM_DATA *  objList_Enum(
+        OBJLIST_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pEnum = objEnum_New();
+        if (pEnum) {
+            pEntry = listdl_Head(&this->list);
+            while ( pEntry ) {
+                eRc = objEnum_Append(pEnum, pEntry->pObject);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pEnum);
+                    pEnum = OBJ_NIL;
+                    break;
+                }
+                pEntry = listdl_Next(&this->list, pEntry);
+            }
+        }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return pEnum;
     }
     
     
@@ -585,11 +711,13 @@ extern "C" {
     
     ERESULT         objList_ForEach(
         OBJLIST_DATA    *this,
-        P_VOIDEXIT2_BE  pScan,
-        OBJ_ID          pObject            // Used as first parameter of scan method
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObject,        // Used as first parameter of scan method
+        void            *pArg3
     )
     {
-        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -606,15 +734,15 @@ extern "C" {
         
         pEntry = listdl_Head(&this->list);
         while ( pEntry ) {
-            this->eRc = pScan(pObject, pEntry->pObject);
-            if (ERESULT_HAS_FAILED(this->eRc)) {
+            eRc = pScan(pObject, pEntry->pObject, pArg3);
+            if (ERESULT_HAS_FAILED(eRc)) {
                 break;
             }
             pEntry = listdl_Next(&this->list, pEntry);
         }
         
         // Return to caller.
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -628,7 +756,7 @@ extern "C" {
     )
     {
         OBJ_ID          pObject = OBJ_NIL;
-        OBJLIST_NODE    *pNode;
+        OBJLIST_RECORD  *pNode;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -645,7 +773,6 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return pObject;
     }
 
@@ -661,7 +788,7 @@ extern "C" {
     )
     {
         OBJ_ID          pObject = OBJ_NIL;
-        OBJLIST_NODE    *pNode;
+        OBJLIST_RECORD  *pNode;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -678,7 +805,6 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return pObject;
     }
     
@@ -688,11 +814,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    OBJLIST_DATA *   objList_Init(
-        OBJLIST_DATA       *this
+    OBJLIST_DATA *  objList_Init(
+        OBJLIST_DATA    *this
     )
     {
         uint32_t        cbSize = sizeof(OBJLIST_DATA);
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -708,26 +835,26 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJLIST);
+        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJLIST);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJLIST);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJLIST);      // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objList_Vtbl);
         
-        cbSize = LIST_BLOCK_SIZE - sizeof(OBJLIST_BLOCK);
-        cbSize /= sizeof(OBJLIST_NODE);
-        this->cBlock = cbSize;
+        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJLIST_RECORD));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         
-        // Initialize the lists.
-        listdl_Init(&this->freeList, offsetof(OBJLIST_NODE, list));
-        listdl_Init(&this->blocks, offsetof(OBJLIST_NODE, list));
-        listdl_Init(&this->list, offsetof(OBJLIST_NODE, list));
+        listdl_Init(&this->list, offsetof(OBJLIST_RECORD, list));
         
     #ifdef NDEBUG
     #else
@@ -736,7 +863,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->cBlock);
+        BREAK_NOT_BOUNDARY4(&this->list);
     #endif
 
         return this;
@@ -744,6 +871,47 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //                        O b j e c t s
+    //---------------------------------------------------------------
+    
+    OBJARRAY_DATA * objList_Objects(
+        OBJLIST_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+        OBJARRAY_DATA   *pArray = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pArray = objArray_New();
+        if (pArray) {
+            pEntry = listdl_Head(&this->list);
+            while ( pEntry ) {
+                eRc = objArray_Append(pArray, pEntry->pObject);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                    break;
+                }
+                pEntry = listdl_Next(&this->list, pEntry);
+            }
+        }
+        
+        // Return to caller.
+        return pArray;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -793,6 +961,10 @@ extern "C" {
         
         switch (type) {
                 
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(OBJLIST_DATA);
+                break;
+                
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
@@ -821,6 +993,42 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         S o r t
+    //---------------------------------------------------------------
+    
+    ERESULT         objList_SortAscending(
+        OBJLIST_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        bool            fRc;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (listdl_Count(&this->list) < 2) {
+            return ERESULT_SUCCESS;
+        }
+        
+        fRc = listdl_Sort(&this->list, (void *)objList_SortCompare);
+        if (fRc)
+            eRc = ERESULT_SUCCESS;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                          T a i l
     //---------------------------------------------------------------
     
@@ -829,7 +1037,7 @@ extern "C" {
     )
     {
         OBJ_ID          pObject = OBJ_NIL;
-        OBJLIST_NODE    *pNode;
+        OBJLIST_RECORD  *pNode;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -846,7 +1054,6 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return pObject;
     }
     
@@ -877,7 +1084,7 @@ extern "C" {
         int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
-        OBJLIST_NODE    *pEntry = OBJ_NIL;
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -931,7 +1138,6 @@ extern "C" {
         OBJLIST_DATA      *this
     )
     {
-        this->eRc = ERESULT_INVALID_OBJECT;
         if( this ) {
             if ( obj_IsKindOf(this,OBJ_IDENT_OBJLIST) )
                 ;
@@ -944,7 +1150,6 @@ extern "C" {
             return false;
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

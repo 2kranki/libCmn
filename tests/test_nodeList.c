@@ -1,5 +1,5 @@
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 11/23/2018 17:15:11
  */
 
 
@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <nodeList_internal.h>
+
 
 
 static
@@ -84,9 +85,9 @@ ERESULT     listEntryPrintRtn(
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -98,9 +99,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -130,15 +131,15 @@ int         tearDown(
 
 
 
-int         test_nodeList_OpenClose(
+int             test_nodeList_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    NODELIST_DATA *pObj = OBJ_NIL;
+    NODELIST_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    
+
     pObj = nodeList_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     pObj = nodeList_Init( pObj );
@@ -151,7 +152,7 @@ int         test_nodeList_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
@@ -187,13 +188,15 @@ int         test_nodeList_AddFindDelete01(
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
- 
-        eRc = nodeList_Delete(pList, 0, strings[5]);
+        
+#ifdef XYZZY
+        eRc = nodeList_DeleteA(pList, 0, strings[5]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         cnt = nodeList_getSize(pList);
         XCTAssertTrue( (cnt == 9) );
         pNode = nodeList_FindA(pList, 0, strings[11]);
         XCTAssertTrue( (OBJ_NIL == pNode) );
+#endif
 
         obj_Release(pList);
         pList = OBJ_NIL;
@@ -218,7 +221,7 @@ int         test_nodeList_AddFindDelete02(
     uint32_t        cnt;
     ERESULT         eRc;
     NODEARRAY_DATA  *pArray;
-
+    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pList = nodeList_Alloc( );
@@ -246,13 +249,13 @@ int         test_nodeList_AddFindDelete02(
         fprintf(stderr, "\n\tCount = %d\n", cnt);
         for (i=0; i<cnt; ++i) {
             char        *pNameA = NULL;
-            pNode = nodeList_Get(pList, i+1);
+            pNode = nodeList_Index(pList, i+1);
             pNameA = node_getNameUTF8(pNode);
             fprintf(stderr, "\t\t%s\n", pNameA);
             mem_Free(pNameA);
             pNameA = NULL;
         }
-
+        
         fprintf(stderr, "\nForEach:\n");
         nodeList_ForEach(pList, (void *)listEntryPrintRtn, pList, NULL);
         
@@ -260,14 +263,14 @@ int         test_nodeList_AddFindDelete02(
         XCTAssertFalse( (OBJ_NIL == pArray) );
         XCTAssertTrue( (nodeList_getSize(pList) == nodeArray_getSize(pArray)) );
         for (i=0; i<cnt; ++i) {
-            pNode = nodeList_Get(pList, i+1);
+            pNode = nodeList_Index(pList, i+1);
             pNode2 = nodeArray_Get(pArray, i+1);
             eRc = node_Compare(pNode, pNode2);
             XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         }
         obj_Release(pArray);
         pArray = OBJ_NIL;
-
+        
         obj_Release(pList);
         pList = OBJ_NIL;
         //szTbl_SharedReset();

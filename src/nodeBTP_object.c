@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'nodeBTree'
-//	Generated 11/12/2018 09:44:16
+//	Class Object Metods and Tables for 'nodeBTP'
+//	Generated 11/22/2018 23:21:01
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEBTREE_OBJECT_C	    1
-#include        <nodeBTree_internal.h>
-#ifdef  NODEBTREE_SINGLETON
+#define			NODEBTP_OBJECT_C	    1
+#include        <nodeBTP_internal.h>
+#ifdef  NODEBTP_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct nodeBTree_class_data_s	{
+struct nodeBTP_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEBTREE_SINGLETON
+#ifdef  NODEBTP_SINGLETON
     volatile
-    NODEBTREE_DATA       *pSingleton;
+    NODEBTP_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct nodeBTree_class_data_s	{
 
 
 static
-void *          nodeBTreeClass_QueryInfo(
+void *          nodeBTPClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          nodeBTreeClass_QueryInfo(
 
 static
 const
-OBJ_INFO        nodeBTree_Info;            // Forward Reference
+OBJ_INFO        nodeBTP_Info;            // Forward Reference
 
 
 
 
 static
-bool            nodeBTreeClass_IsKindOf(
+bool            nodeBTPClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEBTREE_CLASS == classID) {
+    if (OBJ_IDENT_NODEBTP_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_BLOCKS_CLASS == classID) {
@@ -102,11 +102,11 @@ bool            nodeBTreeClass_IsKindOf(
 
 
 static
-uint16_t		nodeBTreeClass_WhoAmI(
+uint16_t		nodeBTPClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_NODEBTREE_CLASS;
+    return OBJ_IDENT_NODEBTP_CLASS;
 }
 
 
@@ -118,17 +118,17 @@ uint16_t		nodeBTreeClass_WhoAmI(
 
 static
 const
-NODEBTREE_CLASS_VTBL    class_Vtbl = {
+NODEBTP_CLASS_VTBL    class_Vtbl = {
     {
-        &nodeBTree_Info,
-        nodeBTreeClass_IsKindOf,
+        &nodeBTP_Info,
+        nodeBTPClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        nodeBTree_Class,
-        nodeBTreeClass_WhoAmI,
-        (P_OBJ_QUERYINFO)nodeBTreeClass_QueryInfo,
-        NULL                        // nodeBTreeClass_ToDebugString
+        nodeBTP_Class,
+        nodeBTPClass_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeBTPClass_QueryInfo,
+        NULL                        // nodeBTPClass_ToDebugString
     },
 };
 
@@ -138,8 +138,8 @@ NODEBTREE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEBTREE_CLASS_DATA  nodeBTree_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEBTREE_CLASS, 0, 1},
+NODEBTP_CLASS_DATA  nodeBTP_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEBTP_CLASS, 0, 1},
 	//0
 };
 
@@ -149,17 +149,17 @@ NODEBTREE_CLASS_DATA  nodeBTree_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEBTREE_SINGLETON
-NODEBTREE_DATA *     nodeBTree_getSingleton(
+#ifdef  NODEBTP_SINGLETON
+NODEBTP_DATA *     nodeBTP_getSingleton(
     void
 )
 {
-    return (OBJ_ID)(nodeBTree_ClassObj.pSingleton);
+    return (OBJ_ID)(nodeBTP_ClassObj.pSingleton);
 }
 
 
-bool            nodeBTree_setSingleton(
-    NODEBTREE_DATA       *pValue
+bool            nodeBTP_setSingleton(
+    NODEBTP_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -179,10 +179,10 @@ bool            nodeBTree_setSingleton(
     }
     
     obj_Retain(pValue);
-    if (nodeBTree_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(nodeBTree_ClassObj.pSingleton));
+    if (nodeBTP_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(nodeBTP_ClassObj.pSingleton));
     }
-    nodeBTree_ClassObj.pSingleton = pValue;
+    nodeBTP_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -192,17 +192,17 @@ bool            nodeBTree_setSingleton(
 
 
 
-NODEBTREE_DATA *     nodeBTree_Shared(
+NODEBTP_DATA *     nodeBTP_Shared(
     void
 )
 {
-    NODEBTREE_DATA       *this = (OBJ_ID)(nodeBTree_ClassObj.pSingleton);
+    NODEBTP_DATA       *this = (OBJ_ID)(nodeBTP_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = nodeBTree_New( );
-        nodeBTree_setSingleton(this);
+        this = nodeBTP_New( );
+        nodeBTP_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // nodeBTree_ClassObj.pSingleton = OBJ_NIL;
+        // nodeBTP_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -210,15 +210,15 @@ NODEBTREE_DATA *     nodeBTree_Shared(
 
 
 
-void            nodeBTree_SharedReset(
+void            nodeBTP_SharedReset(
     void
 )
 {
-    NODEBTREE_DATA       *this = (OBJ_ID)(nodeBTree_ClassObj.pSingleton);
+    NODEBTP_DATA       *this = (OBJ_ID)(nodeBTP_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        nodeBTree_ClassObj.pSingleton = OBJ_NIL;
+        nodeBTP_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -234,13 +234,13 @@ void            nodeBTree_SharedReset(
 //---------------------------------------------------------------
 
 static
-void *          nodeBTreeClass_QueryInfo(
+void *          nodeBTPClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEBTREE_CLASS_DATA *this = objId;
+    NODEBTP_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -251,7 +251,7 @@ void *          nodeBTreeClass_QueryInfo(
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEBTREE_DATA);
+            return (void *)sizeof(NODEBTP_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -266,7 +266,7 @@ void *          nodeBTreeClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&nodeBTree_Info;
+                        return (void *)&nodeBTP_Info;
                     }
                     break;
                     
@@ -284,13 +284,13 @@ void *          nodeBTreeClass_QueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return nodeBTree_New;
+                        return nodeBTP_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return nodeBTreeClass_WhoAmI;
+                        return nodeBTPClass_WhoAmI;
                     }
                     break;
                     
@@ -310,11 +310,11 @@ void *          nodeBTreeClass_QueryInfo(
 
 
 static
-bool            nodeBTree_IsKindOf(
+bool            nodeBTP_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEBTREE == classID) {
+    if (OBJ_IDENT_NODEBTP == classID) {
        return true;
     }
     if (OBJ_IDENT_BLOCKS == classID) {
@@ -329,25 +329,25 @@ bool            nodeBTree_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            nodeBTree_Dealloc(
+void            nodeBTP_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          nodeBTree_Class(
+OBJ_ID          nodeBTP_Class(
     void
 )
 {
-    return (OBJ_ID)&nodeBTree_ClassObj;
+    return (OBJ_ID)&nodeBTP_ClassObj;
 }
 
 
 static
-uint16_t		nodeBTree_WhoAmI(
+uint16_t		nodeBTP_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_NODEBTREE;
+    return OBJ_IDENT_NODEBTP;
 }
 
 
@@ -359,34 +359,34 @@ uint16_t		nodeBTree_WhoAmI(
 //===========================================================
 
 const
-NODEBTREE_VTBL     nodeBTree_Vtbl = {
+NODEBTP_VTBL     nodeBTP_Vtbl = {
     {
-        &nodeBTree_Info,
-        nodeBTree_IsKindOf,
-#ifdef  NODEBTREE_IS_SINGLETON
+        &nodeBTP_Info,
+        nodeBTP_IsKindOf,
+#ifdef  NODEBTP_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        nodeBTree_Dealloc,
-        nodeBTree_Class,
-        nodeBTree_WhoAmI,
-        (P_OBJ_QUERYINFO)nodeBTree_QueryInfo,
-        (P_OBJ_TOSTRING)nodeBTree_ToDebugString,
-        NULL,			// nodeBTree_Enable,
-        NULL,			// nodeBTree_Disable,
-        NULL,			// (P_OBJ_ASSIGN)nodeBTree_Assign,
-        NULL,			// (P_OBJ_COMPARE)nodeBTree_Compare,
-        NULL, 			// (P_OBJ_PTR)nodeBTree_Copy,
-        NULL, 			// (P_OBJ_PTR)nodeBTree_DeepCopy,
-        NULL 			// (P_OBJ_HASH)nodeBTree_Hash,
+        nodeBTP_Dealloc,
+        nodeBTP_Class,
+        nodeBTP_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeBTP_QueryInfo,
+        (P_OBJ_TOSTRING)nodeBTP_ToDebugString,
+        NULL,			// nodeBTP_Enable,
+        NULL,			// nodeBTP_Disable,
+        NULL,			// (P_OBJ_ASSIGN)nodeBTP_Assign,
+        NULL,			// (P_OBJ_COMPARE)nodeBTP_Compare,
+        NULL, 			// (P_OBJ_PTR)nodeBTP_Copy,
+        NULL, 			// (P_OBJ_PTR)nodeBTP_DeepCopy,
+        NULL 			// (P_OBJ_HASH)nodeBTP_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //nodeBTree_IsEnabled,
+    //nodeBTP_IsEnabled,
  
 };
 
@@ -394,12 +394,12 @@ NODEBTREE_VTBL     nodeBTree_Vtbl = {
 
 static
 const
-OBJ_INFO        nodeBTree_Info = {
-    "nodeBTree",
-    "Binary Tree of Nodes",
-    (OBJ_DATA *)&nodeBTree_ClassObj,
+OBJ_INFO        nodeBTP_Info = {
+    "nodeBTP",
+    "Binary Tree of nodes using pointers",
+    (OBJ_DATA *)&nodeBTP_ClassObj,
     (OBJ_DATA *)&blocks_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeBTree_Vtbl
+    (OBJ_IUNKNOWN *)&nodeBTP_Vtbl
 };
 
 

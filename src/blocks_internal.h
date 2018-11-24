@@ -85,13 +85,20 @@ struct blocks_data_s	{
 
     // Common Data
     LISTDL_DATA     blocks;
+    LISTDL_DATA     activeList;
     LISTDL_DATA     freeList;
     uint32_t        blockSize;
     uint32_t        blockAvail;
     uint32_t        recordSize;
+    uint32_t        dataSize;
     uint32_t        cRecordsPerBlock;
     uint32_t        cBlocks;
+    uint32_t        unique;
 
+    // Record Deletion Exit
+    P_VOIDEXIT3_BE  pDelete;
+    OBJ_ID          pObj;           // Used as first parameter of pDelete
+    void            *pArg3;         // Used as third paarameter of pDelete
 };
 //#pragma pack(pop)
 

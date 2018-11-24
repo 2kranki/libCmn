@@ -506,8 +506,10 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         ASTR_DATA       *pData;
+#ifdef XYZZY
         LISTDL_DATA     *pNodeList;
         NODELIST_NODE   *pEntry;
+#endif
         //NODE_DATA       *pNode;
         void *          (*pQueryInfo)(
             OBJ_ID          objId,

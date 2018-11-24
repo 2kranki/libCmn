@@ -51,6 +51,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <objArray.h>
+#include        <objEnum.h>
 
 
 #ifndef         OBJLIST_H
@@ -105,14 +107,23 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         objList_getLastError(
-        OBJLIST_DATA		*this
+    /*!
+     Ordered property causes the list to be sorted according to the
+     vtbl compare routine.  For Ordered to work properly all objects
+     in the list should be of the same type.
+     */
+    bool            objList_getOrdered(
+        OBJLIST_DATA    *this
     );
+    
+    bool            objList_setOrdered(
+        OBJLIST_DATA    *this,
+        bool            fValue
+    );
+    
 
-
-    /* Size() returns the current number of used entries.
-     * Returns:
-     *		Current Number of Entries in Table
+    /*!
+     Size property is the numbers of objects on the list.
      */
     uint32_t        objList_getSize(
         OBJLIST_DATA   *this
@@ -192,16 +203,31 @@ extern "C" {
         OBJLIST_DATA	*this
     );
     
+    ERESULT         objList_DeleteIndex(
+        OBJLIST_DATA    *this,
+        uint32_t        index
+    );
     
     ERESULT         objList_DeleteTail(
         OBJLIST_DATA	*this
     );
     
     
+    /*! Create an enumerator for the list.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+     OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    OBJENUM_DATA *  objList_Enum(
+        OBJLIST_DATA    *this
+    );
+    
+    
     ERESULT         objList_ForEach(
         OBJLIST_DATA    *this,
-        P_VOIDEXIT2_BE  pScan,
-        OBJ_ID          pObject            // Used as first parameter of scan method
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObject,        // Used as first parameter of scan method
+        void            *pArg3
     );
     
     
@@ -221,6 +247,16 @@ extern "C" {
     );
 
 
+    OBJARRAY_DATA *  objList_Objects(
+        OBJLIST_DATA    *this
+    );
+    
+    
+    ERESULT         objList_SortAscending(
+        OBJLIST_DATA    *this
+    );
+    
+    
     OBJ_ID          objList_Tail(
         OBJLIST_DATA    *this
     );

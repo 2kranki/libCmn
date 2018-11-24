@@ -214,6 +214,7 @@ extern	"C" {
     
     typedef enum obj_QueryInfoType_e {
         OBJ_QUERYINFO_TYPE_UNKNOWN=0,
+        OBJ_QUERYINFO_TYPE_OBJECT_SIZE,     // Return size of object
         OBJ_QUERYINFO_TYPE_CLASS_OBJECT,    // Return class object
         OBJ_QUERYINFO_TYPE_DATA_PTR,        // If the given string matches a data name,
         //                                  // return a pointer to the data
