@@ -87,6 +87,7 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    // NODEHASH_DATA is defined in node.h
 
 
     // Prime numbers for hash table sizes within 16 bits

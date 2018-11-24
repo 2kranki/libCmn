@@ -300,11 +300,13 @@ extern "C" {
             return false;
         }
 #endif
-        
+
+#ifdef OWNED_POINTERS
         obj_Retain(pValue);
         if (this->pLeft) {
             obj_Release(this->pLeft);
         }
+#endif
         this->pLeft = pValue;
         
         obj_FlagSet(this, NODELINK_LEFT_LINK, (pValue ? true : false));
@@ -352,10 +354,12 @@ extern "C" {
         }
 #endif
         
+#ifdef OWNED_POINTERS
         obj_Retain(pValue);
         if (this->pLeft) {
             obj_Release(this->pLeft);
         }
+#endif
         this->pLeft = pValue;
         
         obj_FlagSet(this, NODELINK_LEFT_LINK, false);
@@ -401,10 +405,12 @@ extern "C" {
         }
 #endif
         
+#ifdef OWNED_POINTERS
         obj_Retain(pValue);
         if (this->pMiddle) {
             obj_Release(this->pMiddle);
         }
+#endif
         this->pMiddle = pValue;
         
         return true;
@@ -488,10 +494,12 @@ extern "C" {
         }
 #endif
         
+#ifdef OWNED_POINTERS
         obj_Retain(pValue);
         if (this->pParent) {
             obj_Release(this->pParent);
         }
+#endif
         this->pParent = pValue;
         
         return true;
@@ -623,10 +631,12 @@ extern "C" {
         }
 #endif
         
+#ifdef OWNED_POINTERS
         obj_Retain(pValue);
         if (this->pRight) {
             obj_Release(this->pRight);
         }
+#endif
         this->pRight = pValue;
         
         return true;
@@ -711,10 +721,12 @@ extern "C" {
         }
 #endif
         
+#ifdef OWNED_POINTERS
         obj_Retain(pValue);
         if (this->pRight) {
             obj_Release(this->pRight);
         }
+#endif
         this->pRight = pValue;
         
         obj_FlagSet(this, NODELINK_RIGHT_LINK, (pValue ? true : false));

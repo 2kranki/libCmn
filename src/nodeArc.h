@@ -68,6 +68,7 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    // NODEARC_DATA is defined in node.h
 
 
     typedef struct nodeArc_vtbl_s	{

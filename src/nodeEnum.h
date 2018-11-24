@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <node.h>
 
 
 #ifndef         NODEENUM_H
@@ -71,8 +72,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct nodeEnum_data_s	NODEENUM_DATA;            // Inherits from OBJ
-    typedef struct nodeEnum_class_data_s NODEENUM_CLASS_DATA;   // Inherits from OBJ
+    // NODEENUM_DATA is defined in node.h
 
     typedef struct nodeEnum_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.

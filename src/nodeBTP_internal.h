@@ -49,7 +49,6 @@
 #define	NODEBTP_INTERNAL_H
 
 
-#define USE_BLOCKS  1
 
 
 #ifdef	__cplusplus
@@ -57,6 +56,23 @@ extern "C" {
 #endif
 
 
+    //      Node Record Descriptor
+#pragma pack(push, 1)
+    typedef struct  nodeBTP_record_s {
+        uint32_t        unique;
+        NODELNKP_DATA   *pNode;
+    } NODEBTP_RECORD;
+#pragma pack(pop)
+
+    
+#pragma pack(push, 1)
+    typedef struct  nodeBTP_find_s {
+        uint32_t        unique;
+        NODEBTP_RECORD  *pRecord;
+    } NODEBTP_FIND;
+#pragma pack(pop)
+    
+    
 
 
     //---------------------------------------------------------------
@@ -71,10 +87,6 @@ struct nodeBTP_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-#ifdef USE_BLOCKS
-#else
-    NODEARRAY_DATA  *pArray;
-#endif
     NODELNKP_DATA   *pRoot;
     uint32_t        size;		    // maximum number of elements
     ASTR_DATA       *pStr;
@@ -124,6 +136,12 @@ struct nodeBTP_data_s	{
     ERESULT         nodeBTP_DeleteNodes(
         NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
+    );
+    
+    
+    NODEBTP_RECORD * nodeBTP_FindUnique(
+        NODEBTP_DATA    *this,
+        uint32_t        unique
     );
     
     

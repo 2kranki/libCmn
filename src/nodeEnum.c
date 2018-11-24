@@ -614,7 +614,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "nodeEnum::sizeof(NODEENUM_DATA) = %lu\n", sizeof(NODEENUM_DATA));
+        //fprintf(stderr, "nodeEnum::sizeof(NODEENUM_DATA) = %lu\n", sizeof(NODEENUM_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEENUM_DATA));
     #endif

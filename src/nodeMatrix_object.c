@@ -280,7 +280,8 @@ OBJ_INFO        nodeMatrix_Info = {
     "Matrix of Nodes",
     (OBJ_DATA *)&nodeMatrix_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeMatrix_Vtbl
+    (OBJ_IUNKNOWN *)&nodeMatrix_Vtbl,
+    sizeof(NODEMATRIX_DATA)
 };
 
 

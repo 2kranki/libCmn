@@ -105,7 +105,32 @@ extern "C" {
 
 
 
+    ERESULT         blocks_RecordFreeExit(
+        BLOCKS_DATA     *this,
+        void            *pRecord,
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        BLOCKS_NODE     *pNode = (BLOCKS_NODE *)((uint8_t *)pRecord - sizeof(BLOCKS_NODE));
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = blocks_RecordFree(this, pRecord);
+        
+        // Return to caller.
+        return eRc;
+    }
     
+    
+
     
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -253,6 +278,23 @@ extern "C" {
         return true;
     }
 
+    
+    LISTDL_DATA *   blocks_getList(
+        BLOCKS_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return &this->activeList;
+    }
+    
+    
     
     uint32_t        blocks_getNumActive(
         BLOCKS_DATA     *this
@@ -478,6 +520,7 @@ extern "C" {
     {
         BLOCKS_DATA     *this = objId;
         BLOCKS_BLOCK    *pBlock;
+        BLOCKS_NODE     *pNode;
         ERESULT         eRc;
 
         // Do initialization.
@@ -493,7 +536,14 @@ extern "C" {
 #endif
 
         // Delete all the active records.
-        eRc = blocks_ForEach(this, (void *)blocks_RecordFree, this, NULL);
+        for (;;) {
+            pNode = listdl_Tail(&this->activeList);
+            if (pNode) {
+                eRc = blocks_RecordFree(this, pNode->data);
+            }
+            else
+                break;
+        }
         
         // Delete all the blocks.
         while (listdl_Count(&this->blocks)) {
@@ -715,7 +765,7 @@ extern "C" {
         fRc = listdl_Delete(&this->activeList, pNode);
         if (fRc) {
             if (this->pDelete) {
-                eRc = this->pDelete(this->pObj, pNode->data, this->pArg3);
+                eRc = this->pDelete(this->pObj, pRecord, this->pArg3);
             }
             listdl_Add2Head(&this->freeList, pNode);
         }

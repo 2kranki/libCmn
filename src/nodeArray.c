@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include    <nodeArray_internal.h>
-#include    <enum_internal.h>
+#include    <nodeEnum_internal.h>
 #include    <i32Array.h>
 #include    <utf8.h>
 
@@ -626,12 +626,12 @@ extern "C" {
     //                        E n u m
     //---------------------------------------------------------------
     
-    ENUM_DATA *     nodeArray_Enum(
+    NODEENUM_DATA * nodeArray_Enum(
         NODEARRAY_DATA  *this
     )
     {
         ERESULT         eRc;
-        ENUM_DATA       *pEnum = OBJ_NIL;
+        NODEENUM_DATA   *pEnum = OBJ_NIL;
         uint32_t        size;
         uint32_t        index;
         NODE_DATA       *pNode;
@@ -646,11 +646,11 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pEnum = enum_New();
+            pEnum = nodeEnum_New();
             size = objArray_getSize(this->pArray);
             for (index = 0; index < size; ++index) {
                 pNode = objArray_Get(this->pArray, index+1);
-                eRc = enum_Append(pEnum, pNode, NULL);
+                eRc = nodeEnum_Append(pEnum, pNode);
             }
         }
         

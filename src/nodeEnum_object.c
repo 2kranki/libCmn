@@ -91,6 +91,9 @@ bool            nodeEnumClass_IsKindOf(
     if (OBJ_IDENT_NODEENUM_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_OBJENUM_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -314,6 +317,9 @@ bool            nodeEnum_IsKindOf(
     if (OBJ_IDENT_NODEENUM == classID) {
        return true;
     }
+    if (OBJ_IDENT_OBJENUM == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
@@ -393,7 +399,8 @@ OBJ_INFO        nodeEnum_Info = {
     "Node Emumerator",
     (OBJ_DATA *)&nodeEnum_ClassObj,
     (OBJ_DATA *)&objEnum_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeEnum_Vtbl
+    (OBJ_IUNKNOWN *)&nodeEnum_Vtbl,
+    sizeof(NODEENUM_DATA)
 };
 
 

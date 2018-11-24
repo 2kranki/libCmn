@@ -274,7 +274,8 @@ OBJ_INFO        nodeScan_Info = {
     "Node Scanner",
     (OBJ_DATA *)&nodeScan_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeScan_Vtbl
+    (OBJ_IUNKNOWN *)&nodeScan_Vtbl,
+    sizeof(NODESCAN_DATA)
 };
 
 

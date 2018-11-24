@@ -399,7 +399,8 @@ OBJ_INFO        nodeLnkP_Info = {
     "node w/Pointer Links",
     (OBJ_DATA *)&nodeLnkP_ClassObj,
     (OBJ_DATA *)&node_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeLnkP_Vtbl
+    (OBJ_IUNKNOWN *)&nodeLnkP_Vtbl,
+    sizeof(NODELNKP_DATA)
 };
 
 

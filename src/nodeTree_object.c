@@ -224,7 +224,8 @@ OBJ_INFO        nodeTree_Info = {
     "Tree of Nodes",
     (OBJ_DATA *)&nodeTree_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeTree_Vtbl
+    (OBJ_IUNKNOWN *)&nodeTree_Vtbl,
+    sizeof(NODETREE_DATA)
 };
 
 

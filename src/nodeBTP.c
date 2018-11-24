@@ -42,6 +42,8 @@
 
 /* Header File Inclusion */
 #include        <nodeBTP_internal.h>
+#include        <listdl.h>
+#include        <nodeEnum_internal.h>
 #include        <trace.h>
 
 
@@ -60,32 +62,24 @@ extern "C" {
     ****************************************************************/
 
     //---------------------------------------------------------------
-    //                  D e l e t e  N o d e
+    //                  D e l e t e  E x i t
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTP_DeleteNode(
+    ERESULT         nodeBTP_DeleteExit(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pRecord,
+        void            *pArg3
     )
     {
-        NODELNKP_DATA   *pWork;
-#ifdef USE_BLOCKS
-#else
-        uint32_t        index;
-#endif
-
+        NODELNKP_DATA   *pNode = pRecord->pNode;
+        
         if (pNode) {
-            
             nodeLnkP_setLeftLink(pNode, OBJ_NIL);
             nodeLnkP_setMiddle(pNode, OBJ_NIL);
             nodeLnkP_setParent(pNode, OBJ_NIL);
             nodeLnkP_setRightLink(pNode, OBJ_NIL);
-#ifdef USE_BLOCKS
-            blocks_RecordFree((BLOCKS_DATA *)this, pNode);
-#else
-            index = nodeLnkP_getIndex(pNode);
-            nodeArray_Put(this->pArray, index, OBJ_NIL);
-#endif
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
         }
         
         return ERESULT_SUCCESS;
@@ -106,9 +100,11 @@ extern "C" {
         NODELNKP_DATA   *pNode
     )
     {
+#ifdef XYZZY
+        LISTDL_DATA     *pList = NULL;
         NODELNKP_DATA   *pWork;
-        uint32_t        index;
-        
+        NODEBTP_RECORD  *pRecord = NULL;
+
         if (pNode) {
             
             pWork = nodeLnkP_getLeftLink(pNode);
@@ -125,15 +121,87 @@ extern "C" {
             nodeLnkP_setMiddle(pNode, OBJ_NIL);
             nodeLnkP_setParent(pNode, OBJ_NIL);
             nodeLnkP_setRightLink(pNode, OBJ_NIL);
-#ifdef USE_BLOCKS
             blocks_RecordFree((BLOCKS_DATA *)this, pNode);
-#else
-            index = nodeLnkP_getIndex(pNode);
-            nodeArray_Put(this->pArray, index, OBJ_NIL);
+        }
 #endif
+        
+        //return ERESULT_SUCCESS;
+        return ERESULT_NOT_IMPLEMENTED;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  E n u m  E x i t
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_EnumExit(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pRecord,
+        NODEENUM_DATA   *pEnum
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        NODELNKP_DATA   *pNode = pRecord->pNode;
+        
+        if (pNode && pEnum) {
+            eRc = nodeEnum_Append(pEnum, (NODE_DATA *)pNode);
         }
         
-        return ERESULT_SUCCESS;
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  F i n d  E x i t
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_FindExit(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pRecord,
+        NODEBTP_FIND    *pFind
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODELNKP_DATA   *pNode = pRecord->pNode;
+        
+        if (pNode) {
+            if (pFind->unique == pRecord->unique) {
+                pFind->pRecord = pRecord;
+                return ERESULT_DATA_NOT_FOUND;
+            }
+        }
+        
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  F i n d  U n i q u e
+    //---------------------------------------------------------------
+    
+    NODEBTP_RECORD * nodeBTP_FindUnique(
+        NODEBTP_DATA    *this,
+        uint32_t        unique
+    )
+    {
+        LISTDL_DATA     *pList;
+        NODEBTP_RECORD  *pRecord = NULL;
+        
+        pList = blocks_getList((BLOCKS_DATA *)this);
+        if (pList) {
+            pRecord = listdl_Head(pList);
+            while (pRecord) {
+                if (unique == pRecord->unique) {
+                    break;
+                }
+                pRecord = listdl_Next(pList, pRecord);
+            }
+        }
+        
+        return pRecord;
     }
     
     
@@ -162,6 +230,28 @@ extern "C" {
         
         // Return to caller.
         return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  N o d e s  E x i t
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_NodesExit(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pRecord,
+        NODEARRAY_DATA  *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        NODELNKP_DATA   *pNode = pRecord->pNode;
+        
+        if (pNode && pArray) {
+            eRc = nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
+        }
+        
+        return eRc;
     }
     
     
@@ -200,10 +290,6 @@ extern "C" {
             return ERESULT_SUCCESS;
         }
         
-#ifdef THREADED_TREE
-        //TODO: Currently threads are not adjusted nor passed on.
-#endif
-        
         // Point to all nodes necessary to do the rotation.
         pRight = nodeLnkP_getRightLink(pNode);
         pParent = nodeLnkP_getParent(pNode);
@@ -227,11 +313,8 @@ extern "C" {
             uint32_t        rightIndex;
             NODELNKP_DATA   *pRoot = nodeBTP_getRoot(this);
             rightIndex = nodeLnkP_getIndex(pRight);
-#ifdef USE_BLOCKS
-#else
-            nodeArray_Put(this->pArray, rightIndex, (NODE_DATA *)pRoot);
-            nodeArray_Put(this->pArray, 1, (NODE_DATA *)pRight);
-#endif
+            //FIXME: nodeArray_Put(this->pArray, rightIndex, (NODE_DATA *)pRoot);
+            //FIXME: nodeArray_Put(this->pArray, 1, (NODE_DATA *)pRight);
         }
         nodeLnkP_setRightLink(pNode, NULL);
         
@@ -268,10 +351,6 @@ extern "C" {
         else {
             return ERESULT_SUCCESS;
         }
-        
-#ifdef THREADED_TREE
-        //TODO: Currently threads are not adjusted.
-#endif
         
         // Point to all nodes necessary to do the rotation.
         pLeft = nodeLnkP_getLeftLink(pNode);
@@ -530,11 +609,7 @@ extern "C" {
 #endif
 
         // Return to caller.
-#ifdef USE_BLOCKS
         return this->pRoot;
-#else
-        return (NODELNKP_DATA *)nodeArray_Get(this->pArray, 1);
-#endif
     }
     
     
@@ -648,11 +723,8 @@ extern "C" {
     )
     {
         NODELNKP_DATA   *pParent = OBJ_NIL;
-#ifdef USE_BLOCKS
-        NODELNKP_DATA   **ppNew = NULL;
-#endif
+        NODEBTP_RECORD  *pRecord = NULL;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        uint32_t        index = 0;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -667,28 +739,19 @@ extern "C" {
         }
 #endif
         
-#ifdef USE_BLOCKS
-        ppNew = blocks_RecordNew((BLOCKS_DATA *)this);
-        if (NULL == ppNew) {
+        pRecord = blocks_RecordNew((BLOCKS_DATA *)this);
+        if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
         obj_Retain(pNode);
-        *ppNew = pNode;
+        pRecord->pNode = pNode;
+        pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
         nodeLnkP_setIndex(pNode, blocks_getUnique((BLOCKS_DATA *)this));
-#else
-        eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        nodeLnkP_setIndex(pNode, index);
-#endif
         
         pParent = nodeBTP_getRoot(this);
         if (NULL == pParent) {
             nodeLnkP_setBalance(pNode, 0);
-#ifdef USE_BLOCKS
             this->pRoot = pNode;
-#endif
             return ERESULT_SUCCESS;
         }
         
@@ -697,15 +760,13 @@ extern "C" {
             eRc = nodeLnkP_Compare(pNode, pParent);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
                 if (fReplace) {
-                    eRc = nodeLnkP_CopyProperties(pParent, pNode);
-#ifdef USE_BLOCKS
-#else
-                    nodeArray_Put(
-                                  this->pArray,
-                                  nodeLnkP_getIndex(pNode),
-                                  (NODE_DATA *)pNode
-                                  );
-#endif
+                    pRecord = nodeBTP_FindUnique(this, nodeLnkP_getIndex(pParent));
+                    if (pRecord) {
+                        eRc = nodeLnkP_CopyProperties(pParent, pNode);
+                        blocks_RecordFree((BLOCKS_DATA *)this, pRecord);
+                    }
+                    else
+                        return ERESULT_GENERAL_FAILURE;
                     return ERESULT_SUCCESS;
                 }
                 return ERESULT_DATA_ALREADY_EXISTS;
@@ -995,15 +1056,6 @@ extern "C" {
         }
 #endif
 
-        nodeBTP_DeleteNodes(this, nodeBTP_getRoot(this));
-        
-#ifdef USE_BLOCKS
-#else
-        if (this->pArray) {
-            obj_Release(this->pArray);
-            this->pArray = OBJ_NIL;
-        }
-#endif
         nodeBTP_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1074,6 +1126,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         E n u m
+    //---------------------------------------------------------------
+    
+    NODEENUM_DATA * nodeBTP_Enum(
+        NODEBTP_DATA    *this
+    )
+    {
+        NODEENUM_DATA   *pEnum = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pEnum = nodeEnum_New();
+        if (pEnum) {
+            eRc =   blocks_ForEach(
+                                   (BLOCKS_DATA *)this,
+                                   (void *)nodeBTP_EnumExit,
+                                   this,
+                                   pEnum
+                                   );
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pEnum);
+                pEnum = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pEnum;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
     
@@ -1140,9 +1232,7 @@ extern "C" {
     {
         uint32_t        cbSize = sizeof(NODEBTP_DATA);
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-#ifdef USE_BLOCKS
         uint32_t        objSize = 0;
-#endif
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1170,7 +1260,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTP_Vtbl);
         
-#ifdef USE_BLOCKS
         if (((OBJ_DATA *)(nodeLnkP_Class()))->pVtbl->pQueryInfo) {
             objSize =   (uint32_t)((OBJ_DATA *)(nodeLnkP_Class()))->pVtbl->pQueryInfo(
                                                     nodeLnkP_Class(),
@@ -1180,20 +1269,20 @@ extern "C" {
         }
         if (objSize) {
             eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, objSize);
+            if (!ERESULT_FAILED(eRc)) {
+                blocks_setDeleteExit(
+                                (BLOCKS_DATA *)this,
+                                (void *)nodeBTP_DeleteExit,
+                                this,
+                                NULL
+                );
+            }
         }
         if (ERESULT_FAILED(eRc) || (0 == objSize)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#else
-        this->pArray = nodeArray_New( );
-        if (OBJ_NIL == this->pArray) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
         
     #ifdef NDEBUG
     #else
@@ -1250,9 +1339,7 @@ extern "C" {
         NODEARRAY_DATA  **ppNodes
     )
     {
-        NODELINK_DATA   *pEntry;
         NODEARRAY_DATA  *pNodes = OBJ_NIL;
-        uint32_t        i;
         ERESULT         eRc;
         
         // Do initialization.
@@ -1270,21 +1357,18 @@ extern "C" {
         
         pNodes = nodeArray_New();
         if (pNodes) {
-#ifdef USE_BLOCKS
-#else
-            for (i=0; i<nodeArray_getSize(this->pArray); ++i) {
-                pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
-                if (pEntry) {
-                    eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
-                    if (ERESULT_FAILED(eRc)) {
-                        obj_Release(pNodes);
-                        pNodes = OBJ_NIL;
-                        goto eom;
-                    }
-                }
+            eRc =   blocks_ForEach(
+                                (BLOCKS_DATA *)this,
+                                (void *)nodeBTP_NodesExit,
+                                this,
+                                pNodes
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pNodes);
+                pNodes = OBJ_NIL;
             }
-            nodeArray_SortAscending(pNodes);
-#endif
+            else
+                nodeArray_SortAscending(pNodes);
         }
 
         // Return to caller.
@@ -1468,7 +1552,8 @@ extern "C" {
 #endif
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        //return ERESULT_SUCCESS;
+        return ERESULT_NOT_IMPLEMENTED;
     }
     
     
@@ -1537,6 +1622,10 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        LISTDL_DATA     *pList = NULL;
+        BLOCKS_NODE     *pEntry = NULL;
+        NODEBTP_RECORD  *pRecord;
+        NODELNKP_DATA   *pNode;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1565,19 +1654,17 @@ extern "C" {
                     nodeBTP_getSize(this)
             );
 
-#ifdef USE_BLOCKS
-#else
-        if (this->pArray) {
-            if (((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString(
-                                                                                this->pArray,
-                                                                                indent+3
-                                                                                );
+        pList = blocks_getList((BLOCKS_DATA *)this);
+        pEntry = listdl_Head(pList);
+        while (pEntry) {
+            pNode = ((NODEBTP_RECORD *)(pEntry->data))->pNode;
+            if (pNode) {
+                pWrkStr = nodeLnkP_ToDebugString(pNode, indent+3);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
+            pEntry = listdl_Next(pList, pEntry);
         }
-#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

@@ -152,6 +152,14 @@ extern "C" {
     
     
     /*!
+     * Active Records List
+     */
+    LISTDL_DATA *   blocks_getList(
+        BLOCKS_DATA     *this
+    );
+    
+    
+    /*!
      * Number of Active Records
      */
     uint32_t        blocks_getNumActive(

@@ -405,7 +405,9 @@ OBJ_INFO        nodeList_Info = {
     "List of Nodes",
     (OBJ_DATA *)&nodeList_ClassObj,
     (OBJ_DATA *)&objList_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeList_Vtbl
+    (OBJ_IUNKNOWN *)&nodeList_Vtbl,
+    sizeof(NODELIST_DATA)
+
 };
 
 

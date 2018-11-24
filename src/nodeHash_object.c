@@ -276,9 +276,11 @@ static
 const
 OBJ_INFO        nodeHash_Info = {
     "nodeHash",
-    "nodeHash",				// <-- Fill in description
+    "Hash Table of Nodes",
     (OBJ_DATA *)&nodeHash_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&nodeHash_Vtbl,
+    sizeof(NODEHASH_DATA)
 };
 
 

@@ -28,6 +28,21 @@
 
 
 
+static
+char    *pStringTable[] = {
+    "now",
+    "before",
+    "after",
+    "tomorrow",
+    "today",
+    "someday"
+};
+static
+int             cStringTable = 6;
+
+
+
+
 int             setUp(
     const
     char            *pTestName
@@ -101,8 +116,69 @@ int             test_nodeEnum_OpenClose(
 
 
 
+int         test_nodeEnum_Test01(
+    const
+    char        *pTestName
+)
+{
+    NODEENUM_DATA   *pObj = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ERESULT         eRc;
+    uint32_t        i;
+    uint32_t        j = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = nodeEnum_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = nodeEnum_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        fprintf(stderr, "\tAppending data:\n");
+        for(i=0; i<cStringTable; ++i) {
+            pNode = node_NewWithUTF8AndClass(pStringTable[i], 0, OBJ_NIL);
+            if (pNode) {
+                eRc = nodeEnum_Append(pObj, pNode);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                fprintf(stderr, "\t%2d - %s\n", i, pStringTable[i]);
+                obj_Release(pNode);
+                pNode = OBJ_NIL;
+            }
+        }
+        
+        fprintf(stderr, "\tEnumerate data:\n");
+        i = 0;
+        for (;;) {
+            char        *pStrA;
+            eRc = nodeEnum_Next(pObj, 1, (OBJ_ID *)&pNode, &i);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            if (pNode) {
+                pStrA = node_getNameUTF8(pNode);
+                fprintf(stderr, "\t%2d - %s\n", i, pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+            }
+            ++i;
+        }
+        
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_nodeEnum);
+    TINYTEST_ADD_TEST(test_nodeEnum_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeEnum_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

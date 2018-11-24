@@ -84,7 +84,7 @@ extern "C" {
         // Methods:
     } NODEARRAY_VTBL;
     
-    typedef struct nodeArray_class_data_s   NODEARRAY_CLASS_DATA;
+    // NODEARRAY_DATA is defined in node.h
 
 
 
@@ -246,7 +246,7 @@ extern "C" {
                  OBJ_NIL.
      @warning   Remember to release the returned ENUM object.
      */
-    ENUM_DATA *     nodeArray_Enum(
+    NODEENUM_DATA * nodeArray_Enum(
         NODEARRAY_DATA  *this
     );
     

@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <nodeEnum.h>
 #include        <nodeLnkP.h>
 
 
@@ -72,8 +73,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct nodeBTP_data_s	NODEBTP_DATA;            // Inherits from OBJ
-    typedef struct nodeBTP_class_data_s NODEBTP_CLASS_DATA;   // Inherits from OBJ
+    // NODEBTP_DATA is defined in node.h
 
     typedef struct nodeBTP_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -122,7 +122,7 @@ extern "C" {
      released.
      @return    pointer to nodeBTP object if successful, otherwise OBJ_NIL.
      */
-    NODEBTP_DATA *     nodeBTP_Alloc(
+    NODEBTP_DATA *  nodeBTP_Alloc(
         void
     );
     
@@ -132,7 +132,7 @@ extern "C" {
     );
     
     
-    NODEBTP_DATA *     nodeBTP_New(
+    NODEBTP_DATA *  nodeBTP_New(
         void
     );
     
@@ -179,6 +179,17 @@ extern "C" {
         const
         char            *pNameA,            // UTF-8
         OBJ_ID          pData
+    );
+    
+    
+    /*!
+     Create an enumerator for the Tree.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+                OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    NODEENUM_DATA * nodeBTP_Enum(
+        NODEBTP_DATA    *this
     );
     
     

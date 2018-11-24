@@ -72,8 +72,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct nodeLnkP_data_s	NODELNKP_DATA;            // Inherits from OBJ
-    typedef struct nodeLnkP_class_data_s NODELNKP_CLASS_DATA;   // Inherits from OBJ
+    // NODELNKP_DATA is defined in node.h
 
     typedef struct nodeLnkP_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
