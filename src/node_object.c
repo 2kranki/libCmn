@@ -288,7 +288,8 @@ OBJ_INFO        node_Info = {
     "Generic Node with Properties",
     (OBJ_DATA *)&node_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&node_Vtbl
+    (OBJ_IUNKNOWN *)&node_Vtbl,
+    sizeof(NODE_DATA)
 };
 
 

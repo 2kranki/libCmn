@@ -200,7 +200,8 @@ OBJ_INFO        AStrArray_Info = {
     "Array of Ascii Strings",
     (OBJ_DATA *)&AStrArray_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&AStrArray_Vtbl
+    (OBJ_IUNKNOWN *)&AStrArray_Vtbl,
+    sizeof(ASTRARRAY_DATA)
 };
 
 

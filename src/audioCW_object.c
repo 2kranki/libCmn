@@ -197,7 +197,8 @@ OBJ_INFO        audioCW_Info = {
     "Morse Code Audio",
     (OBJ_DATA *)&audioCW_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&audioCW_Vtbl
+    (OBJ_IUNKNOWN *)&audioCW_Vtbl,
+    sizeof(AUDIOCW_DATA)
 };
 
 

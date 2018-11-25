@@ -244,7 +244,9 @@ OBJ_INFO        null_Info = {
     "null",
     "Null",				
     (OBJ_DATA *)&null_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&null_Vtbl,
+    sizeof(NULL_DATA)
 };
 
 

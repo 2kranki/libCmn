@@ -200,8 +200,9 @@ OBJ_INFO        objList_Info = {
     "objList",
     "List of Objects",
     (OBJ_DATA *)&objList_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&objList_Vtbl
+    (OBJ_DATA *)&blocks_ClassObj,
+    (OBJ_IUNKNOWN *)&objList_Vtbl,
+    sizeof(OBJLIST_DATA)
 };
 
 

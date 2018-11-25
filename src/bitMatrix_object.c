@@ -292,7 +292,8 @@ OBJ_INFO        bitMatrix_Info = {
     "A Matrix of Bits",
     (OBJ_DATA *)&bitMatrix_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&bitMatrix_Vtbl
+    (OBJ_IUNKNOWN *)&bitMatrix_Vtbl,
+    sizeof(BITMATRIX_DATA)
 };
 
 

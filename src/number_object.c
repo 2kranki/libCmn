@@ -246,7 +246,8 @@ OBJ_INFO        number_Info = {
     "Number",
     (OBJ_DATA *)&number_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&number_Vtbl
+    (OBJ_IUNKNOWN *)&number_Vtbl,
+    sizeof(NUMBER_DATA)
 };
 
 

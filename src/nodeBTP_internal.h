@@ -63,7 +63,9 @@ extern "C" {
         NODEBTP_RECORD  *pLeft;
         NODEBTP_RECORD  *pRight;
         NODEBTP_RECORD  *pParent;
-        uint32_t        fRed;
+        uint32_t        color;
+#define NODEBTP_BLACK   0
+#define NODEBTP_RED     1
         uint32_t        unique;
         NODE_DATA       *pNode;
     };
@@ -151,6 +153,42 @@ struct nodeBTP_data_s	{
     
     
     NODEBTP_RECORD * nodeBTP_Grandparent(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    ERESULT         nodeBTP_InsertCase1(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    ERESULT         nodeBTP_InsertCase2(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    ERESULT         nodeBTP_InsertCase3(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    ERESULT         nodeBTP_InsertCase4(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    ERESULT         nodeBTP_InsertCase5(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    ERESULT         nodeBTP_InsertRepair(
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode
     );

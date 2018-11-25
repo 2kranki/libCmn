@@ -198,7 +198,8 @@ OBJ_INFO        ascii_Info = {
     "ASCII Character Support",
     (OBJ_DATA *)&ascii_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&ascii_Vtbl
+    (OBJ_IUNKNOWN *)&ascii_Vtbl,
+    sizeof(ASCII_DATA)
 };
 
 

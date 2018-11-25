@@ -198,7 +198,9 @@ OBJ_INFO        AStr_Info = {
     "AStr",
     "Ascii String (UTF-8)",
     (OBJ_DATA *)&AStr_ClassObj,
-    (OBJ_DATA *)&array_ClassObj
+    (OBJ_DATA *)&array_ClassObj,
+    (OBJ_IUNKNOWN *)&AStr_Vtbl,
+    sizeof(ASTR_DATA)
 };
 
 

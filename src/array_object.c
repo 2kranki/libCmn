@@ -199,7 +199,8 @@ OBJ_INFO        array_Info = {
     "Array",
     (OBJ_DATA *)&array_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&array_Vtbl
+    (OBJ_IUNKNOWN *)&array_Vtbl,
+    sizeof(ARRAY_DATA)
 };
 
 

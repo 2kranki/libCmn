@@ -197,7 +197,8 @@ OBJ_INFO        audioWAV_Info = {
     "WAV File Audio",
     (OBJ_DATA *)&audioWAV_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&audioWAV_Vtbl
+    (OBJ_IUNKNOWN *)&audioWAV_Vtbl,
+    sizeof(AUDIOWAV_DATA)
 };
 
 

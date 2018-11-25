@@ -281,7 +281,8 @@ OBJ_INFO        nodeGraph_Info = {
     "Graph of Nodes",
     (OBJ_DATA *)&nodeGraph_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeGraph_Vtbl
+    (OBJ_IUNKNOWN *)&nodeGraph_Vtbl,
+    sizeof(NODEGRAPH_DATA)
 };
 
 

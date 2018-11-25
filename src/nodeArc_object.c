@@ -287,7 +287,8 @@ OBJ_INFO        nodeArc_Info = {
     "A Graph Arc",
     (OBJ_DATA *)&nodeArc_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeArc_Vtbl
+    (OBJ_IUNKNOWN *)&nodeArc_Vtbl,
+    sizeof(NODEARC_DATA)
 };
 
 

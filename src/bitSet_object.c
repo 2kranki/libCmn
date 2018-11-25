@@ -198,7 +198,8 @@ OBJ_INFO        bitSet_Info = {
     "Set of Bits",
     (OBJ_DATA *)&bitSet_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&bitSet_Vtbl
+    (OBJ_IUNKNOWN *)&bitSet_Vtbl,
+    sizeof(BITSET_DATA)
 };
 
 

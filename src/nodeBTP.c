@@ -175,7 +175,7 @@ extern "C" {
             return NULL;
         }
         
-        pParent = pNode-pParent;
+        pParent = pNode->pParent;
         if (pParent)
             pGrandparent = pParent->pParent;
         
@@ -184,6 +184,160 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                I n s e r t  C a s e s
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_InsertCase1(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        ERESULT         eRc;
+        
+        BREAK_NULL(pNode);
+        if (NULL == this->pRoot) {
+            this->pRoot = pNode;
+            return ERESULT_SUCCESS;
+        }
+        else {
+            eRc = nodeBTP_InsertCase2(this, pNode);
+        }
+        
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTP_InsertCase2(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        ERESULT         eRc;
+        
+        BREAK_NULL(pNode);
+        if (pNode->pParent->color == NODEBTP_BLACK) {
+            this->pRoot = pNode;
+            pNode->color = NODEBTP_BLACK;
+            return ERESULT_SUCCESS;
+        }
+        else {
+            eRc = nodeBTP_InsertCase3(this, pNode);
+        }
+        
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTP_InsertCase3(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODEBTP_RECORD  *pUncle;
+        NODEBTP_RECORD  *pGP;
+
+        BREAK_NULL(pNode);
+        pUncle = nodeBTP_Uncle(this, pNode);
+        if (pUncle &&  (pUncle->color == NODEBTP_RED)) {
+            pNode->pParent->color = NODEBTP_BLACK;
+            pUncle->color = NODEBTP_BLACK;
+            pGP = nodeBTP_Grandparent(this, pNode);
+            BREAK_NULL(pGP);
+            pGP->color = NODEBTP_RED;
+            eRc = nodeBTP_InsertCase1(this, pGP);
+        }
+        else {
+            eRc = nodeBTP_InsertCase4(this, pNode);
+        }
+        
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTP_InsertCase4(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODEBTP_RECORD  *pGP;
+        
+        BREAK_NULL(pNode);
+        pGP = nodeBTP_Grandparent(this, pNode);
+        if ((pNode == pNode->pParent->pRight) && (pNode->pParent == pGP->pLeft)) {
+            eRc = nodeBTP_RotateLeft(this, pNode->pParent);
+            pNode = pNode->pLeft;
+        }
+        else if ((pNode == pNode->pParent->pLeft) && (pNode->pParent == pGP->pRight)) {
+            eRc = nodeBTP_RotateLeft(this, pNode->pParent);
+            pNode = pNode->pRight;
+        }
+        eRc = nodeBTP_InsertCase5(this, pNode);
+        
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTP_InsertCase5(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODEBTP_RECORD  *pGP;
+        
+        BREAK_NULL(pNode);
+        pGP = nodeBTP_Grandparent(this, pNode);
+        BREAK_NULL(pGP);
+        pNode->pParent->color = NODEBTP_BLACK;
+        pGP->color = NODEBTP_RED;
+        if (pNode == pNode->pParent->pLeft)
+            eRc = nodeBTP_RotateRight(this, pGP);
+        else
+            eRc = nodeBTP_RotateLeft(this, pGP);
+
+        return eRc;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                I n s e r t  R e p a i r
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_InsertRepair(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODEBTP_RECORD  *pUncle = NULL;
+
+        BREAK_NULL(pNode);
+        if (NULL == pNode->pParent) {
+            eRc = nodeBTP_InsertCase1(this, pNode);
+        }
+        else if (pNode->pParent->color == NODEBTP_BLACK) {
+            eRc = nodeBTP_InsertCase2(this, pNode);
+        }
+        else  {
+            pUncle = nodeBTP_Uncle(this, pNode);
+            BREAK_NULL(pUncle);
+            if (pUncle->color == NODEBTP_RED) {
+                eRc = nodeBTP_InsertCase3(this, pNode);
+            }
+            else {
+                eRc = nodeBTP_InsertCase4(this, pNode);
+            }
+        }
+
+        return eRc;
+    }
+    
+
     
     //---------------------------------------------------------------
     //                  L e f t - M o s t  C h i l d
@@ -760,6 +914,7 @@ extern "C" {
     {
         NODEBTP_RECORD  *pParent = OBJ_NIL;
         NODEBTP_RECORD  *pRecord = NULL;
+        NODEBTP_RECORD  *pUncle = NULL;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
         // Do initialization.
@@ -782,9 +937,11 @@ extern "C" {
         obj_Retain(pNode);
         pRecord->pNode = pNode;
         pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
-        
+        pRecord->color = NODEBTP_RED;
+
         pParent = this->pRoot;
         if (NULL == pParent) {
+            pRecord->color = NODEBTP_BLACK;
             this->pRoot = pRecord;
             return ERESULT_SUCCESS;
         }
@@ -827,6 +984,15 @@ extern "C" {
             }
         }
         ++this->size;
+        
+        if (pRecord->pParent->color == NODEBTP_BLACK)
+            ;
+        else {
+            pUncle = nodeBTP_Uncle(this, pRecord);
+            if (pUncle && (pUncle->color == NODEBTP_RED)) {
+                
+            }
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1162,7 +1328,7 @@ extern "C" {
 #else
         if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return NULL;
         }
 #endif
         

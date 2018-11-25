@@ -197,7 +197,8 @@ OBJ_INFO        blocks_Info = {
     "A List of Blocks/Buffers",
     (OBJ_DATA *)&blocks_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&blocks_Vtbl
+    (OBJ_IUNKNOWN *)&blocks_Vtbl,
+    sizeof(BLOCKS_DATA)
 };
 
 

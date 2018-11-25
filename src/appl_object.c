@@ -273,7 +273,8 @@ OBJ_INFO        appl_Info = {
     "Application Base Object",
     (OBJ_DATA *)&appl_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&appl_Vtbl
+    (OBJ_IUNKNOWN *)&appl_Vtbl,
+    sizeof(APPL_DATA)
 };
 
 
