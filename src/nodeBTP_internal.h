@@ -57,11 +57,16 @@ extern "C" {
 
 
     //      Node Record Descriptor
+    typedef struct  nodeBTP_record_s NODEBTP_RECORD;
 #pragma pack(push, 1)
-    typedef struct  nodeBTP_record_s {
+    struct  nodeBTP_record_s {
+        NODEBTP_RECORD  *pLeft;
+        NODEBTP_RECORD  *pRight;
+        NODEBTP_RECORD  *pParent;
+        uint32_t        fRed;
         uint32_t        unique;
-        NODELNKP_DATA   *pNode;
-    } NODEBTP_RECORD;
+        NODE_DATA       *pNode;
+    };
 #pragma pack(pop)
 
     
@@ -87,7 +92,7 @@ struct nodeBTP_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    NODELNKP_DATA   *pRoot;
+    NODEBTP_RECORD  *pRoot;
     uint32_t        size;		    // maximum number of elements
     ASTR_DATA       *pStr;
 
@@ -145,9 +150,15 @@ struct nodeBTP_data_s	{
     );
     
     
-    NODELNKP_DATA * nodeBTP_LeftMostChild(
+    NODEBTP_RECORD * nodeBTP_Grandparent(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    NODEBTP_RECORD * nodeBTP_LeftMostChild(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
     );
     
     
@@ -165,13 +176,19 @@ struct nodeBTP_data_s	{
 
     ERESULT         nodeBTP_RotateLeft(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pNode
     );
     
     
     ERESULT         nodeBTP_RotateRight(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
+    NODEBTP_RECORD * nodeBTP_Sibling(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
     );
     
     
@@ -180,6 +197,12 @@ struct nodeBTP_data_s	{
     );
 
 
+    NODEBTP_RECORD * nodeBTP_Uncle(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			nodeBTP_Validate(
@@ -190,7 +213,7 @@ struct nodeBTP_data_s	{
 
     ERESULT         nodeBTP_VisitNodeInRecurse(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -199,7 +222,7 @@ struct nodeBTP_data_s	{
     
     ERESULT         nodeBTP_VisitNodePostRecurse(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -208,7 +231,7 @@ struct nodeBTP_data_s	{
     
     ERESULT         nodeBTP_VisitNodePreRecurse(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3

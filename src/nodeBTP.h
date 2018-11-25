@@ -142,7 +142,7 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODELNKP_DATA * nodeBTP_getRoot(
+    NODE_DATA *     nodeBTP_getRoot(
         NODEBTP_DATA    *this
     );
     
@@ -169,7 +169,7 @@ extern "C" {
      */
     ERESULT         nodeBTP_Add(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODE_DATA       *pNode,
         bool            fReplace
     );
     

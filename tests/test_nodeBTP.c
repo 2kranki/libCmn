@@ -31,7 +31,7 @@
 static
 ERESULT         printNode(
     OBJ_ID          pObj,
-    NODELNKP_DATA   *pNode,
+    NODE_DATA       *pNode,
     void            *pArg3
 )
 {
@@ -127,8 +127,8 @@ int             test_nodeBTP_Add01(
 )
 {
     NODEBTP_DATA    *pTree = OBJ_NIL;
-    NODELNKP_DATA   *pNode = OBJ_NIL;
-    NODELNKP_DATA   *pEntry = NULL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    NODE_DATA       *pEntry = NULL;
     ERESULT         eRc;
     const
     char            *pStrA = "ABCDEFG";
@@ -148,7 +148,7 @@ int             test_nodeBTP_Add01(
         
         while (*pStrP) {
             strA[0] = *pStrP;
-            pNode = nodeLnkP_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             if (pNode) {
                 eRc = nodeBTP_Add(pTree, pNode, false);
@@ -196,7 +196,7 @@ int             test_nodeBTP_Add02(
 )
 {
     NODEBTP_DATA    *pTree = OBJ_NIL;
-    NODELNKP_DATA   *pNode = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
     ERESULT         eRc;
     //              ABCDEFG
     const
@@ -217,7 +217,7 @@ int             test_nodeBTP_Add02(
         
         while (*pStrP) {
             strA[0] = *pStrP;
-            pNode = nodeLnkP_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             if (pNode) {
                 eRc = nodeBTP_Add(pTree, pNode, false);

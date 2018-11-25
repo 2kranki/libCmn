@@ -71,62 +71,14 @@ extern "C" {
         void            *pArg3
     )
     {
-        NODELNKP_DATA   *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->pNode;
         
         if (pNode) {
-            nodeLnkP_setLeftLink(pNode, OBJ_NIL);
-            nodeLnkP_setMiddle(pNode, OBJ_NIL);
-            nodeLnkP_setParent(pNode, OBJ_NIL);
-            nodeLnkP_setRightLink(pNode, OBJ_NIL);
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
         
         return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  D e l e t e  N o d e s
-    //---------------------------------------------------------------
-    
-    /*! Delete all the nodes in the Tree using a Post-order traversal.
-     This is the best way to delete the nodes in case the sub-tree
-     is right degenerate.
-     */
-    ERESULT         nodeBTP_DeleteNodes(
-        NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
-    )
-    {
-#ifdef XYZZY
-        LISTDL_DATA     *pList = NULL;
-        NODELNKP_DATA   *pWork;
-        NODEBTP_RECORD  *pRecord = NULL;
-
-        if (pNode) {
-            
-            pWork = nodeLnkP_getLeftLink(pNode);
-            if (pWork) {
-                nodeBTP_DeleteNodes(this, pWork);
-            }
-            
-            pWork = nodeLnkP_getRightLink(pNode);
-            if (pWork) {
-                nodeBTP_DeleteNodes(this, pWork);
-            }
-            
-            nodeLnkP_setLeftLink(pNode, OBJ_NIL);
-            nodeLnkP_setMiddle(pNode, OBJ_NIL);
-            nodeLnkP_setParent(pNode, OBJ_NIL);
-            nodeLnkP_setRightLink(pNode, OBJ_NIL);
-            blocks_RecordFree((BLOCKS_DATA *)this, pNode);
-        }
-#endif
-        
-        //return ERESULT_SUCCESS;
-        return ERESULT_NOT_IMPLEMENTED;
     }
     
     
@@ -142,7 +94,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODELNKP_DATA   *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->pNode;
         
         if (pNode && pEnum) {
             eRc = nodeEnum_Append(pEnum, (NODE_DATA *)pNode);
@@ -164,7 +116,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODELNKP_DATA   *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->pNode;
         
         if (pNode) {
             if (pFind->unique == pRecord->unique) {
@@ -207,15 +159,42 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                  G r a n d p a r e n t
+    //---------------------------------------------------------------
+    
+    NODEBTP_RECORD * nodeBTP_Grandparent(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        NODEBTP_RECORD  *pParent;
+        NODEBTP_RECORD  *pGrandparent = OBJ_NIL;
+
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+        
+        pParent = pNode-pParent;
+        if (pParent)
+            pGrandparent = pParent->pParent;
+        
+        // Return to caller.
+        return pGrandparent;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                  L e f t - M o s t  C h i l d
     //---------------------------------------------------------------
     
     // The Left-Most Child is the smallest key of the sub-tree from
     // the given node.
     
-    NODELNKP_DATA * nodeBTP_LeftMostChild(
+    NODEBTP_RECORD * nodeBTP_LeftMostChild(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pNode
     )
     {
         
@@ -224,8 +203,8 @@ extern "C" {
             return NULL;
         }
         
-        while (nodeLnkP_getLeftLink(pNode)) {
-            pNode = nodeLnkP_getLeftLink(pNode);
+        while (pNode->pLeft) {
+            pNode = pNode->pLeft;
         }
         
         // Return to caller.
@@ -245,7 +224,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODELNKP_DATA   *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->pNode;
         
         if (pNode && pArray) {
             eRc = nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
@@ -266,13 +245,12 @@ extern "C" {
     
     ERESULT         nodeBTP_RotateLeft(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pNode
     )
     {
-        NODELNKP_DATA   *pParent;
-        NODELNKP_DATA   *pLeftTree;         // Left Tree of the Right node
-        NODELNKP_DATA   *pRight;
-        NODELNKP_DATA   *pWork;
+        NODEBTP_RECORD  *pParent;
+        NODEBTP_RECORD  *pLeftTree;         // Left Tree of the Right node
+        NODEBTP_RECORD  *pRight;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -284,59 +262,53 @@ extern "C" {
 #endif
         
         // Nothing to do if there is not a right link.
-        if (pNode && nodeLnkP_getRightLink(pNode))
+        if (pNode && pNode->pRight)
             ;
         else {
             return ERESULT_SUCCESS;
         }
         
         // Point to all nodes necessary to do the rotation.
-        pRight = nodeLnkP_getRightLink(pNode);
-        pParent = nodeLnkP_getParent(pNode);
-        pLeftTree = nodeLnkP_getRightLink(pNode);
-        while( pLeftTree && nodeLnkP_getLeftLink(pLeftTree) ) {  // Get left-most link.
-            pLeftTree = nodeLnkP_getLeftLink(pLeftTree);
+        pRight = pNode->pRight;
+        pParent = pNode->pParent;
+        pLeftTree = pNode->pRight;
+        while( pLeftTree && pLeftTree->pLeft ) {  // Get left-most link.
+            pLeftTree = pLeftTree->pLeft;
         }
         
         // Chain the right child to the node's parent.
         if( pParent ) {
-            pWork = nodeLnkP_getLeftLink(pNode);
-            if( pWork && (pWork == pNode)) {
-                nodeLnkP_setLeftLink(pParent, pRight);
-            }
-            pWork = nodeLnkP_getRightLink(pNode);
-            if( pWork && (pWork == pNode)) {
-                nodeLnkP_setRightLink(pParent, pRight);
-            }
+            if( pParent->pLeft == pNode )
+                pParent->pLeft = pRight;
+            if( pParent->pRight == pNode )
+                pParent->pRight = pRight;
         }
-        else {
-            uint32_t        rightIndex;
-            NODELNKP_DATA   *pRoot = nodeBTP_getRoot(this);
-            rightIndex = nodeLnkP_getIndex(pRight);
-            //FIXME: nodeArray_Put(this->pArray, rightIndex, (NODE_DATA *)pRoot);
-            //FIXME: nodeArray_Put(this->pArray, 1, (NODE_DATA *)pRight);
-        }
-        nodeLnkP_setRightLink(pNode, NULL);
-        
+        else
+            this->pRoot = pRight;
+        pRight->pParent = pNode->pParent;
+        pNode->pRight = NULL;
+
         // Now add the node after the left-most node of the
         // node's right child.
-        nodeLnkP_setLeftLink(pLeftTree, pNode);
-        //FIXME: nodeLnkP_setRightLink(pNode, pRight);
+        pLeftTree->pLeft = pNode;
+        pNode->pParent = pLeftTree;
         
         // Return to caller.
         return ERESULT_SUCCESS;
     }
     
     
+    // Rotate the given subtree rooted at pNode right one node.
+
     ERESULT         nodeBTP_RotateRight(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODEBTP_RECORD  *pNode
     )
     {
-        NODELNKP_DATA   *pParent;
-        NODELNKP_DATA   *pRightTree;
-        NODELNKP_DATA   *pLeft;
-        
+        NODEBTP_RECORD  *pParent;
+        NODEBTP_RECORD  *pRightTree;
+        NODEBTP_RECORD  *pLeft;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -346,22 +318,19 @@ extern "C" {
         }
 #endif
         
-        if (pNode && nodeLnkP_getLeftLink(pNode))
+        if (pNode && pNode->pLeft)
             ;
         else {
             return ERESULT_SUCCESS;
         }
         
         // Point to all nodes necessary to do the rotation.
-        pLeft = nodeLnkP_getLeftLink(pNode);
-        pParent = nodeLnkP_getParent(pNode);
-        pRightTree = nodeLnkP_getLeftLink(pNode);
-        while( pRightTree && nodeLnkP_getRightLink(pRightTree) )
-            pRightTree = nodeLnkP_getRightLink(pRightTree);
-        
-        //FIXME: Implement the following.
-#ifdef XYZZY
-        pParent = nodeLnkP_getParent(pNode);
+        pLeft = pNode->pLeft;
+        pParent = pNode->pParent;
+        pRightTree = pNode->pLeft;
+        while( pRightTree->pRight )
+            pRightTree = pRightTree->pRight;
+
         // Chain the left child to the node's parent.
         if( pParent ) {
             if( pParent->pLeft == pNode )
@@ -370,16 +339,83 @@ extern "C" {
                 pParent->pRight = pLeft;
         }
         else
-            //FIXME: this->pRoot = pLeft;
-            pNode->pLeft = NULL;
-        
+            this->pRoot = pLeft;
+        pLeft->pParent = pNode->pParent;
+        pNode->pLeft = NULL;
+
         // Now add the node after the right-most node of the
         // node's left child.
         pRightTree->pRight = pNode;
-#endif
-        
+        pNode->pParent = pRightTree;
+
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S i b l i n g
+    //---------------------------------------------------------------
+    
+    NODEBTP_RECORD * nodeBTP_Sibling(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        NODEBTP_RECORD  *pParent;
+        NODEBTP_RECORD  *pSibling = OBJ_NIL;
+        
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+        
+        pParent = pNode->pParent;
+        if (pParent) {
+            if (pNode == pParent->pLeft)
+                pSibling = pParent->pRight;
+            else
+                pSibling = pParent->pLeft;
+        }
+        
+        // Return to caller.
+        return pSibling;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          U n c l e
+    //---------------------------------------------------------------
+    
+    NODEBTP_RECORD * nodeBTP_Uncle(
+        NODEBTP_DATA    *this,
+        NODEBTP_RECORD  *pNode
+    )
+    {
+        NODEBTP_RECORD  *pParent;
+        NODEBTP_RECORD  *pGrandparent = OBJ_NIL;
+        NODEBTP_RECORD  *pUncle = OBJ_NIL;
+        
+        // Do initialization.
+        if (NULL == pNode) {
+            return NULL;
+        }
+        
+        pParent = pNode->pParent;
+        if (pParent)
+            pGrandparent = pParent->pParent;
+        
+        if (pGrandparent) {
+            if (pParent == pGrandparent->pLeft)
+                pUncle = pGrandparent->pRight;
+            else
+                pUncle = pGrandparent->pLeft;
+        }
+        
+        // Return to caller.
+        return pUncle;
     }
     
     
@@ -393,26 +429,26 @@ extern "C" {
      */
     ERESULT         nodeBTP_VisitNodeInRecurse(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODELNKP_DATA   *pWork;
+        NODEBTP_RECORD  *pWork;
         
         if (pNode) {
-            pWork = nodeLnkP_getLeftLink(pNode);
+            pWork = pNode->pLeft;
             if (pWork) {
                 eRc = nodeBTP_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            eRc = pScan(pObj, pNode, pArg3);
+            eRc = pScan(pObj, pNode->pNode, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
-            pWork = nodeLnkP_getRightLink(pNode);
+            pWork = pNode->pRight;
             if (pWork) {
                 eRc = nodeBTP_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
@@ -429,29 +465,29 @@ extern "C" {
      */
     ERESULT         nodeBTP_VisitNodePostRecurse(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODELNKP_DATA   *pWork;
+        NODEBTP_RECORD  *pWork;
         
         if (pNode) {
-            pWork = nodeLnkP_getLeftLink(pNode);
+            pWork = pNode->pLeft;
             if (pWork) {
                 eRc = nodeBTP_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            pWork = nodeLnkP_getRightLink(pNode);
+            pWork = pNode->pRight;
             if (pWork) {
                 eRc = nodeBTP_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            eRc = pScan(pObj, pNode, pArg3);
+            eRc = pScan(pObj, pNode->pNode, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
         }
@@ -465,26 +501,26 @@ extern "C" {
      */
     ERESULT         nodeBTP_VisitNodePreRecurse(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODELNKP_DATA   *pWork;
+        NODEBTP_RECORD  *pWork;
         
         if (pNode) {
-            eRc = pScan(pObj, pNode, pArg3);
+            eRc = pScan(pObj, pNode->pNode, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
-            pWork = nodeLnkP_getLeftLink(pNode);
+            pWork = pNode->pLeft;
             if (pWork) {
                 eRc = nodeBTP_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            pWork = nodeLnkP_getRightLink(pNode);
+            pWork = pNode->pRight;
             if (pWork) {
                 eRc = nodeBTP_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
@@ -594,7 +630,7 @@ extern "C" {
     //                          R o o t
     //---------------------------------------------------------------
     
-    NODELNKP_DATA * nodeBTP_getRoot(
+    NODE_DATA *     nodeBTP_getRoot(
         NODEBTP_DATA    *this
     )
     {
@@ -609,7 +645,7 @@ extern "C" {
 #endif
 
         // Return to caller.
-        return this->pRoot;
+        return this->pRoot->pNode;
     }
     
     
@@ -718,11 +754,11 @@ extern "C" {
     
     ERESULT         nodeBTP_Add(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode,
+        NODE_DATA       *pNode,
         bool            fReplace
     )
     {
-        NODELNKP_DATA   *pParent = OBJ_NIL;
+        NODEBTP_RECORD  *pParent = OBJ_NIL;
         NODEBTP_RECORD  *pRecord = NULL;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
@@ -746,58 +782,43 @@ extern "C" {
         obj_Retain(pNode);
         pRecord->pNode = pNode;
         pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
-        nodeLnkP_setIndex(pNode, blocks_getUnique((BLOCKS_DATA *)this));
         
-        pParent = nodeBTP_getRoot(this);
+        pParent = this->pRoot;
         if (NULL == pParent) {
-            nodeLnkP_setBalance(pNode, 0);
-            this->pRoot = pNode;
+            this->pRoot = pRecord;
             return ERESULT_SUCCESS;
         }
         
-        pParent = nodeBTP_getRoot(this);
         while (pParent) {
-            eRc = nodeLnkP_Compare(pNode, pParent);
+            eRc = node_Compare(pNode, pParent->pNode);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
                 if (fReplace) {
-                    pRecord = nodeBTP_FindUnique(this, nodeLnkP_getIndex(pParent));
-                    if (pRecord) {
-                        eRc = nodeLnkP_CopyProperties(pParent, pNode);
-                        blocks_RecordFree((BLOCKS_DATA *)this, pRecord);
-                    }
-                    else
-                        return ERESULT_GENERAL_FAILURE;
+                    obj_Release(pParent->pNode);
+                    pParent->pNode = pNode;
+                    blocks_RecordFree((BLOCKS_DATA *)this, pRecord);
                     return ERESULT_SUCCESS;
                 }
                 return ERESULT_DATA_ALREADY_EXISTS;
             }
             else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (nodeLnkP_IsLeftLink(pParent))
-                    pParent = nodeLnkP_getLeftLink(pParent);
+                if (pParent->pLeft)
+                    pParent = pParent->pLeft;
                 else {
                     // Insert new node as Left Child of Parent.
-                    if (nodeLnkP_IsLeftLink(pParent))
-                        nodeLnkP_setLeftLink(pNode, nodeLnkP_getLeftLink(pParent));
-                    else
-                        nodeLnkP_setLeftThread(pNode, nodeLnkP_getLeftThread(pParent));
-                    nodeLnkP_setParent(pNode, pParent);
-                    nodeLnkP_setBalance(pNode, 0);
-                    nodeLnkP_setLeftLink(pParent, pNode);
+                    pRecord->pLeft = pParent->pLeft;
+                    pRecord->pParent = pParent;
+                    pParent->pLeft = pRecord;
                     break;
                 }
             }
             else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (nodeLnkP_IsRightLink(pParent))
-                    pParent = nodeLnkP_getRightLink(pParent);
+                if (pParent->pRight)
+                    pParent = pParent->pRight;
                 else {
                     // Insert new node as Right Child of Parent.
-                    if (nodeLnkP_IsRightLink(pParent))
-                        nodeLnkP_setRightLink(pNode, nodeLnkP_getRightLink(pParent));
-                    else
-                        nodeLnkP_setRightThread(pNode, nodeLnkP_getRightThread(pParent));
-                    nodeLnkP_setParent(pNode, pParent);
-                    nodeLnkP_setBalance(pNode, 0);
-                    nodeLnkP_setRightLink(pParent, pNode);  // Parent's Right = Node
+                    pRecord->pRight = pParent->pRight;
+                    pRecord->pParent = pParent;
+                    pParent->pRight = pRecord;
                     break;
                 }
             }
@@ -820,7 +841,7 @@ extern "C" {
         OBJ_ID          pData
     )
     {
-        NODELNKP_DATA   *pNode = NULL;
+        NODE_DATA       *pNode = NULL;
         ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
         
         // Do initialization.
@@ -836,7 +857,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeLnkP_NewWithUTF8AndClass(pNameA, cls, pData);
+        pNode = node_NewWithUTF8AndClass(pNameA, cls, pData);
         if (pNode) {
             eRc = nodeBTP_Add(this, pNode, false);
         }
@@ -1169,12 +1190,12 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
-    NODELNKP_DATA * nodeBTP_Find(
+    NODE_DATA *     nodeBTP_Find(
         NODEBTP_DATA    *this,
-        NODELNKP_DATA   *pNode
+        NODE_DATA       *pNode
     )
     {
-        NODELNKP_DATA   *pParent;
+        NODEBTP_RECORD  *pParent;
         ERESULT         eRc;
         
         // Do initialization.
@@ -1192,21 +1213,21 @@ extern "C" {
         }
 #endif
         
-        pParent = nodeBTP_getRoot(this);
+        pParent = this->pRoot;
         while (pParent) {
-            eRc = nodeLnkP_Compare(pNode, pParent);
+            eRc = nodeLnkP_Compare(pNode, pParent->pNode);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
-                return pParent;
+                return pParent->pNode;
             }
             else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (nodeLnkP_IsLeftLink(pParent))
-                    pParent = nodeLnkP_getLeftLink(pParent);
+                if (pParent->pLeft)
+                    pParent = pParent->pLeft;
                 else
                     break;
             }
             else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (nodeLnkP_IsRightLink(pParent))
-                    pParent = nodeLnkP_getRightLink(pParent);
+                if (pParent->pRight)
+                    pParent = pParent->pRight;
                 else
                     break;
             }
@@ -1612,7 +1633,7 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     nodeBTP_ToDebugString(
-        NODEBTP_DATA      *this,
+        NODEBTP_DATA    *this,
         int             indent
     )
     {
@@ -1625,7 +1646,7 @@ extern "C" {
         LISTDL_DATA     *pList = NULL;
         BLOCKS_NODE     *pEntry = NULL;
         NODEBTP_RECORD  *pRecord;
-        NODELNKP_DATA   *pNode;
+        NODE_DATA       *pNode;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1659,7 +1680,7 @@ extern "C" {
         while (pEntry) {
             pNode = ((NODEBTP_RECORD *)(pEntry->data))->pNode;
             if (pNode) {
-                pWrkStr = nodeLnkP_ToDebugString(pNode, indent+3);
+                pWrkStr = node_ToDebugString(pNode, indent+3);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
@@ -1736,9 +1757,9 @@ extern "C" {
         void            *pArg3
     )
     {
-        NODELNKP_DATA   *pNodeP;
-        NODELNKP_DATA   *pNodeQ;
-        NODELNKP_DATA   *pNodePL;           // Parent's Left Child
+        NODEBTP_RECORD  *pNodeP;
+        NODEBTP_RECORD  *pNodeQ;
+        NODEBTP_RECORD  *pNodePL;           // Parent's Left Child
         ERESULT         eRc;
         
         // Do initialization.
@@ -1750,21 +1771,21 @@ extern "C" {
         }
 #endif
         
-        pNodeP = nodeBTP_getRoot(this);
+        pNodeP = this->pRoot;
         pNodeQ = NULL;
         
         do {
             // Descend down to the bottom of the left branch.
             while (pNodeP) {
                 pNodeQ = pNodeP;
-                pNodeP = nodeLnkP_getLeftLink(pNodeP);
+                pNodeP = pNodeP->pLeft;
             }
             // Scan the left-most node.
             if (pNodeQ) {
-                eRc = pScan(pObj, pNodeQ, pArg3);
+                eRc = pScan(pObj, pNodeQ->pNode, pArg3);
                 if (ERESULT_FAILED(eRc))
                     break;
-                pNodeP = nodeLnkP_getRightLink(pNodeQ);
+                pNodeP = pNodeQ->pRight;
             }
             // nodeQ is current node and nodeP is its right child or NULL.
             while (pNodeQ && (NULL == pNodeP)) {
@@ -1772,18 +1793,18 @@ extern "C" {
                 // the tree root is found.
                 do {
                     pNodeP = pNodeQ;
-                    pNodeQ = nodeLnkP_getParent(pNodeP);
+                    pNodeQ = pNodeP->pParent;
                     if (pNodeQ)
-                        pNodePL = nodeLnkP_getLeftLink(pNodeQ);
+                        pNodePL = pNodeQ->pLeft;
                     else
                         break;
                 } while (pNodeQ && !(pNodeP == pNodePL));
                 // Scan the ??? node.
                 if (pNodeQ) {
-                    eRc = pScan(pObj, pNodeQ, pArg3);
+                    eRc = pScan(pObj, pNodeQ->pNode, pArg3);
                     if (ERESULT_FAILED(eRc))
                         break;
-                    pNodeP = nodeLnkP_getRightLink(pNodeQ);
+                    pNodeP = pNodeQ->pRight;
                 }
             }
         } while (pNodeQ);
@@ -1817,7 +1838,7 @@ extern "C" {
         
         eRc =   nodeBTP_VisitNodeInRecurse(
                             this,
-                            nodeBTP_getRoot(this),
+                            this->pRoot,
                             pScan,
                             pObj,
                             pArg3
@@ -1853,7 +1874,7 @@ extern "C" {
         
         eRc =   nodeBTP_VisitNodePostRecurse(
                                                this,
-                                               nodeBTP_getRoot(this),
+                                               this->pRoot,
                                                pScan,
                                                pObj,
                                                pArg3
@@ -1872,9 +1893,9 @@ extern "C" {
         void            *pArg3
     )
     {
-        NODELNKP_DATA   *pNodeP;
-        NODELNKP_DATA   *pNodeQ;
-        NODELNKP_DATA   *pNodePR;           // Parent's Right Child
+        NODEBTP_RECORD  *pNodeP;
+        NODEBTP_RECORD  *pNodeQ;
+        NODEBTP_RECORD  *pNodePR;           // Parent's Right Child
         ERESULT         eRc;
         
         // In pre-order, a node is visited only when it is reached on the way
@@ -1889,7 +1910,7 @@ extern "C" {
         }
 #endif
         
-        pNodeP = nodeBTP_getRoot(this);
+        pNodeP = this->pRoot;
         pNodeQ = pNodeP;
         
         do {
@@ -1898,14 +1919,14 @@ extern "C" {
                 eRc = pScan(pObj, pNodeQ, pArg3);
                 if (ERESULT_FAILED(eRc))
                     break;
-                pNodeP = nodeLnkP_getLeftLink(pNodeQ);
+                pNodeP = pNodeQ->pLeft;
             }
             // Descend down the left branch.
             if (pNodeP) {
                 pNodeQ = pNodeP;
                 continue;
             }
-            pNodeP = nodeLnkP_getRightLink(pNodeQ);
+            pNodeP = pNodeQ->pRight;
             if (pNodeP) {
                 pNodeQ = pNodeP;
                 continue;
@@ -1916,14 +1937,14 @@ extern "C" {
                 // the tree root is found.
                 do {
                     pNodeP = pNodeQ;
-                    pNodeQ = nodeLnkP_getParent(pNodeP);
+                    pNodeQ = pNodeP->pParent;
                     if (pNodeQ) {
-                        pNodeP = nodeLnkP_getRightLink(pNodeQ);
+                        pNodeP = pNodeQ->pRight;
                         if (pNodeP) {
                             eRc = pScan(pObj, pNodeP, pArg3);
                             if (ERESULT_FAILED(eRc))
                                 break;
-                            pNodeP = nodeLnkP_getLeftLink(pNodeQ);
+                            pNodeP = pNodeQ->pLeft;
                         }
                     }
                     else
@@ -1962,7 +1983,7 @@ extern "C" {
         
         eRc =   nodeBTP_VisitNodePreRecurse(
                                               this,
-                                              nodeBTP_getRoot(this),
+                                              this->pRoot,
                                               pScan,
                                               pObj,
                                               pArg3
