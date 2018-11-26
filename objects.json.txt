@@ -180,6 +180,7 @@
         "listdl.c",
         "md5_plumb.c",
         "obj.c",
+        "rbt_tree.c",
         "shellSortPtrs.c",
         "str.c",
     ],

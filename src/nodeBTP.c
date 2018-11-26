@@ -1381,7 +1381,7 @@ extern "C" {
         
         pParent = this->pRoot;
         while (pParent) {
-            eRc = nodeLnkP_Compare(pNode, pParent->pNode);
+            eRc = node_Compare(pNode, pParent->pNode);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
                 return pParent->pNode;
             }
