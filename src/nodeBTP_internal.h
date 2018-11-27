@@ -43,6 +43,7 @@
 #include        <blocks_internal.h>
 #include        <jsonIn.h>
 #include        <nodeArray.h>
+#include        <rbt_tree.h>
 
 
 #ifndef NODEBTP_INTERNAL_H
@@ -60,16 +61,12 @@ extern "C" {
     typedef struct  nodeBTP_record_s NODEBTP_RECORD;
 #pragma pack(push, 1)
     struct  nodeBTP_record_s {
-        NODEBTP_RECORD  *pLeft;
-        NODEBTP_RECORD  *pRight;
-        NODEBTP_RECORD  *pParent;
-        uint32_t        color;
-#define NODEBTP_BLACK   0
-#define NODEBTP_RED     1
+        // RBT_NODE must be first field in this struct.
+        RBT_NODE        node;
         uint32_t        unique;
-        NODE_DATA       *pNode;
     };
 #pragma pack(pop)
+
 
     
 #pragma pack(push, 1)
@@ -81,6 +78,17 @@ extern "C" {
     
     
 
+#pragma pack(push, 1)
+    typedef struct  nodeBTP_visit_s {
+        NODEBTP_RECORD  *pRecord;       // Current Record
+        P_VOIDEXIT3_BE  pScan;
+        OBJ_ID          pObj;           // Used as first parameter of scan method
+        void            *pArg3;
+    } NODEBTP_VISIT;
+#pragma pack(pop)
+    
+    
+    
 
     //---------------------------------------------------------------
     //                  Object Data Description
@@ -94,9 +102,11 @@ struct nodeBTP_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    RBT_TREE        tree;
     NODEBTP_RECORD  *pRoot;
     uint32_t        size;		    // maximum number of elements
     ASTR_DATA       *pStr;
+    uint32_t        unique;
 
 };
 #pragma pack(pop)
@@ -115,11 +125,11 @@ struct nodeBTP_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODEBTP_SINGLETON
-    NODEBTP_DATA *     nodeBTP_getSingleton(
+    NODEBTP_DATA *     nodeBTP_getSingleton (
         void
     );
 
-    bool            nodeBTP_setSingleton(
+    bool            nodeBTP_setSingleton (
      NODEBTP_DATA       *pValue
 );
 #endif
@@ -130,126 +140,60 @@ struct nodeBTP_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeBTP_getSuperVtbl(
+    OBJ_IUNKNOWN *  nodeBTP_getSuperVtbl (
         NODEBTP_DATA     *this
     );
 
 
-    void            nodeBTP_Dealloc(
+    void            nodeBTP_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ERESULT         nodeBTP_DeleteNodes(
+    ERESULT         nodeBTP_DeleteNodes (
         NODEBTP_DATA    *this,
         NODELNKP_DATA   *pNode
     );
     
     
-    NODEBTP_RECORD * nodeBTP_FindUnique(
+    NODEBTP_RECORD * nodeBTP_FindUnique (
         NODEBTP_DATA    *this,
         uint32_t        unique
     );
     
     
-    NODEBTP_RECORD * nodeBTP_Grandparent(
+    NODEBTP_RECORD * nodeBTP_LeftMostChild (
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode
     );
     
     
-    ERESULT         nodeBTP_InsertCase1(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ERESULT         nodeBTP_InsertCase2(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ERESULT         nodeBTP_InsertCase3(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ERESULT         nodeBTP_InsertCase4(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ERESULT         nodeBTP_InsertCase5(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ERESULT         nodeBTP_InsertRepair(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    NODEBTP_RECORD * nodeBTP_LeftMostChild(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    NODEBTP_DATA *       nodeBTP_ParseObject(
+    NODEBTP_DATA *  nodeBTP_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          nodeBTP_QueryInfo(
+    void *          nodeBTP_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         nodeBTP_RotateLeft(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ERESULT         nodeBTP_RotateRight(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    NODEBTP_RECORD * nodeBTP_Sibling(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
-    ASTR_DATA *     nodeBTP_ToJSON(
+    ASTR_DATA *     nodeBTP_ToJSON (
         NODEBTP_DATA      *this
     );
 
 
-    NODEBTP_RECORD * nodeBTP_Uncle(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    );
-    
-    
 #ifdef NDEBUG
 #else
-    bool			nodeBTP_Validate(
+    bool			nodeBTP_Validate (
         NODEBTP_DATA       *this
     );
 #endif
 
 
-    ERESULT         nodeBTP_VisitNodeInRecurse(
+    ERESULT         nodeBTP_VisitNodeInRecurse (
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,
@@ -258,7 +202,7 @@ struct nodeBTP_data_s	{
     );
     
     
-    ERESULT         nodeBTP_VisitNodePostRecurse(
+    ERESULT         nodeBTP_VisitNodePostRecurse (
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode,
         P_VOIDEXIT3_BE  pScan,

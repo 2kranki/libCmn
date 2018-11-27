@@ -71,11 +71,10 @@ extern "C" {
         void            *pArg3
     )
     {
-        NODE_DATA       *pNode = pRecord->pNode;
         
-        if (pNode) {
-            obj_Release(pNode);
-            pNode = OBJ_NIL;
+        if (pRecord->node.pData) {
+            obj_Release(pRecord->node.pData);
+            pRecord->node.pData = OBJ_NIL;
         }
         
         return ERESULT_SUCCESS;
@@ -94,7 +93,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->node.pData;
         
         if (pNode && pEnum) {
             eRc = nodeEnum_Append(pEnum, (NODE_DATA *)pNode);
@@ -116,7 +115,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODE_DATA       *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->node.pData;
         
         if (pNode) {
             if (pFind->unique == pRecord->unique) {
@@ -140,16 +139,18 @@ extern "C" {
     )
     {
         LISTDL_DATA     *pList;
+        BLOCKS_NODE     *pEntry = NULL;
         NODEBTP_RECORD  *pRecord = NULL;
         
         pList = blocks_getList((BLOCKS_DATA *)this);
         if (pList) {
-            pRecord = listdl_Head(pList);
-            while (pRecord) {
+            pEntry = listdl_Head(pList);
+            while (pEntry) {
+                pRecord = (NODEBTP_RECORD *)pEntry->data;
                 if (unique == pRecord->unique) {
                     break;
                 }
-                pRecord = listdl_Next(pList, pRecord);
+                pEntry = listdl_Next(pList, pEntry);
             }
         }
         
@@ -157,187 +158,6 @@ extern "C" {
     }
     
     
-    
-    //---------------------------------------------------------------
-    //                  G r a n d p a r e n t
-    //---------------------------------------------------------------
-    
-    NODEBTP_RECORD * nodeBTP_Grandparent(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        NODEBTP_RECORD  *pParent;
-        NODEBTP_RECORD  *pGrandparent = OBJ_NIL;
-
-        // Do initialization.
-        if (NULL == pNode) {
-            return NULL;
-        }
-        
-        pParent = pNode->pParent;
-        if (pParent)
-            pGrandparent = pParent->pParent;
-        
-        // Return to caller.
-        return pGrandparent;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                I n s e r t  C a s e s
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeBTP_InsertCase1(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        ERESULT         eRc;
-        
-        BREAK_NULL(pNode);
-        if (NULL == this->pRoot) {
-            this->pRoot = pNode;
-            return ERESULT_SUCCESS;
-        }
-        else {
-            eRc = nodeBTP_InsertCase2(this, pNode);
-        }
-        
-        return eRc;
-    }
-    
-    
-    ERESULT         nodeBTP_InsertCase2(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        ERESULT         eRc;
-        
-        BREAK_NULL(pNode);
-        if (pNode->pParent->color == NODEBTP_BLACK) {
-            this->pRoot = pNode;
-            pNode->color = NODEBTP_BLACK;
-            return ERESULT_SUCCESS;
-        }
-        else {
-            eRc = nodeBTP_InsertCase3(this, pNode);
-        }
-        
-        return eRc;
-    }
-    
-    
-    ERESULT         nodeBTP_InsertCase3(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        ERESULT         eRc;
-        NODEBTP_RECORD  *pUncle;
-        NODEBTP_RECORD  *pGP;
-
-        BREAK_NULL(pNode);
-        pUncle = nodeBTP_Uncle(this, pNode);
-        if (pUncle &&  (pUncle->color == NODEBTP_RED)) {
-            pNode->pParent->color = NODEBTP_BLACK;
-            pUncle->color = NODEBTP_BLACK;
-            pGP = nodeBTP_Grandparent(this, pNode);
-            BREAK_NULL(pGP);
-            pGP->color = NODEBTP_RED;
-            eRc = nodeBTP_InsertCase1(this, pGP);
-        }
-        else {
-            eRc = nodeBTP_InsertCase4(this, pNode);
-        }
-        
-        return eRc;
-    }
-    
-    
-    ERESULT         nodeBTP_InsertCase4(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        ERESULT         eRc;
-        NODEBTP_RECORD  *pGP;
-        
-        BREAK_NULL(pNode);
-        pGP = nodeBTP_Grandparent(this, pNode);
-        if ((pNode == pNode->pParent->pRight) && (pNode->pParent == pGP->pLeft)) {
-            eRc = nodeBTP_RotateLeft(this, pNode->pParent);
-            pNode = pNode->pLeft;
-        }
-        else if ((pNode == pNode->pParent->pLeft) && (pNode->pParent == pGP->pRight)) {
-            eRc = nodeBTP_RotateLeft(this, pNode->pParent);
-            pNode = pNode->pRight;
-        }
-        eRc = nodeBTP_InsertCase5(this, pNode);
-        
-        return eRc;
-    }
-    
-    
-    ERESULT         nodeBTP_InsertCase5(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        ERESULT         eRc;
-        NODEBTP_RECORD  *pGP;
-        
-        BREAK_NULL(pNode);
-        pGP = nodeBTP_Grandparent(this, pNode);
-        BREAK_NULL(pGP);
-        pNode->pParent->color = NODEBTP_BLACK;
-        pGP->color = NODEBTP_RED;
-        if (pNode == pNode->pParent->pLeft)
-            eRc = nodeBTP_RotateRight(this, pGP);
-        else
-            eRc = nodeBTP_RotateLeft(this, pGP);
-
-        return eRc;
-    }
-    
-    
-
-    //---------------------------------------------------------------
-    //                I n s e r t  R e p a i r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeBTP_InsertRepair(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        ERESULT         eRc;
-        NODEBTP_RECORD  *pUncle = NULL;
-
-        BREAK_NULL(pNode);
-        if (NULL == pNode->pParent) {
-            eRc = nodeBTP_InsertCase1(this, pNode);
-        }
-        else if (pNode->pParent->color == NODEBTP_BLACK) {
-            eRc = nodeBTP_InsertCase2(this, pNode);
-        }
-        else  {
-            pUncle = nodeBTP_Uncle(this, pNode);
-            BREAK_NULL(pUncle);
-            if (pUncle->color == NODEBTP_RED) {
-                eRc = nodeBTP_InsertCase3(this, pNode);
-            }
-            else {
-                eRc = nodeBTP_InsertCase4(this, pNode);
-            }
-        }
-
-        return eRc;
-    }
-    
-
     
     //---------------------------------------------------------------
     //                  L e f t - M o s t  C h i l d
@@ -348,21 +168,50 @@ extern "C" {
     
     NODEBTP_RECORD * nodeBTP_LeftMostChild(
         NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
+        NODEBTP_RECORD  *pRecord
     )
     {
         
         // Do initialization.
-        if (NULL == pNode) {
+        if (NULL == pRecord) {
             return NULL;
         }
         
-        while (pNode->pLeft) {
-            pNode = pNode->pLeft;
+        if (pRecord) {
+            while (pRecord->node.pLink[RBT_LEFT]) {
+                pRecord = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_LEFT];
+            }
         }
         
         // Return to caller.
-        return pNode;
+        return pRecord;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  N o d e  C o m p a r e
+    //---------------------------------------------------------------
+    
+    int             nodeBTP_NodeCmp(
+        RBT_TREE        *this,
+        NODEBTP_RECORD  *pRecordA,
+        NODEBTP_RECORD  *pRecordB
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        NODE_DATA       *pNodeA = pRecordA->node.pData;
+        NODE_DATA       *pNodeB = pRecordB->node.pData;
+
+        eRc = node_Compare(pNodeA, pNodeB);
+        if (eRc == ERESULT_SUCCESS_EQUAL) {
+            return 0;
+        }
+        else if (eRc == ERESULT_SUCCESS_LESS_THAN) {
+            return -1;
+        }
+
+        return 1;
     }
     
     
@@ -378,7 +227,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->pNode;
+        NODE_DATA       *pNode = pRecord->node.pData;
         
         if (pNode && pArray) {
             eRc = nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
@@ -390,186 +239,28 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          R o t a t e
+    //                  V i s i t  E x i t
     //---------------------------------------------------------------
     
-    /*!
-     Rotate the tree at the given node left one rotation.
-     */
-    
-    ERESULT         nodeBTP_RotateLeft(
+    ERESULT         nodeBTP_VisitExit(
         NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
+        NODEBTP_RECORD  *pRecord,
+        NODEBTP_VISIT   *pParms
     )
     {
-        NODEBTP_RECORD  *pParent;
-        NODEBTP_RECORD  *pLeftTree;         // Left Tree of the Right node
-        NODEBTP_RECORD  *pRight;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODE_DATA       *pNode;
         
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        // Nothing to do if there is not a right link.
-        if (pNode && pNode->pRight)
-            ;
-        else {
-            return ERESULT_SUCCESS;
+        if (pRecord) {
+            pNode = pRecord->node.pData;
+            if (pNode) {
+                if (pParms->pScan) {
+                    eRc = pParms->pScan(pParms->pObj, pNode, pParms->pArg3);
+                }
+            }
         }
         
-        // Point to all nodes necessary to do the rotation.
-        pRight = pNode->pRight;
-        pParent = pNode->pParent;
-        pLeftTree = pNode->pRight;
-        while( pLeftTree && pLeftTree->pLeft ) {  // Get left-most link.
-            pLeftTree = pLeftTree->pLeft;
-        }
-        
-        // Chain the right child to the node's parent.
-        if( pParent ) {
-            if( pParent->pLeft == pNode )
-                pParent->pLeft = pRight;
-            if( pParent->pRight == pNode )
-                pParent->pRight = pRight;
-        }
-        else
-            this->pRoot = pRight;
-        pRight->pParent = pNode->pParent;
-        pNode->pRight = NULL;
-
-        // Now add the node after the left-most node of the
-        // node's right child.
-        pLeftTree->pLeft = pNode;
-        pNode->pParent = pLeftTree;
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    // Rotate the given subtree rooted at pNode right one node.
-
-    ERESULT         nodeBTP_RotateRight(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        NODEBTP_RECORD  *pParent;
-        NODEBTP_RECORD  *pRightTree;
-        NODEBTP_RECORD  *pLeft;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (pNode && pNode->pLeft)
-            ;
-        else {
-            return ERESULT_SUCCESS;
-        }
-        
-        // Point to all nodes necessary to do the rotation.
-        pLeft = pNode->pLeft;
-        pParent = pNode->pParent;
-        pRightTree = pNode->pLeft;
-        while( pRightTree->pRight )
-            pRightTree = pRightTree->pRight;
-
-        // Chain the left child to the node's parent.
-        if( pParent ) {
-            if( pParent->pLeft == pNode )
-                pParent->pLeft = pLeft;
-            if( pParent->pRight == pNode )
-                pParent->pRight = pLeft;
-        }
-        else
-            this->pRoot = pLeft;
-        pLeft->pParent = pNode->pParent;
-        pNode->pLeft = NULL;
-
-        // Now add the node after the right-most node of the
-        // node's left child.
-        pRightTree->pRight = pNode;
-        pNode->pParent = pRightTree;
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      S i b l i n g
-    //---------------------------------------------------------------
-    
-    NODEBTP_RECORD * nodeBTP_Sibling(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        NODEBTP_RECORD  *pParent;
-        NODEBTP_RECORD  *pSibling = OBJ_NIL;
-        
-        // Do initialization.
-        if (NULL == pNode) {
-            return NULL;
-        }
-        
-        pParent = pNode->pParent;
-        if (pParent) {
-            if (pNode == pParent->pLeft)
-                pSibling = pParent->pRight;
-            else
-                pSibling = pParent->pLeft;
-        }
-        
-        // Return to caller.
-        return pSibling;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          U n c l e
-    //---------------------------------------------------------------
-    
-    NODEBTP_RECORD * nodeBTP_Uncle(
-        NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode
-    )
-    {
-        NODEBTP_RECORD  *pParent;
-        NODEBTP_RECORD  *pGrandparent = OBJ_NIL;
-        NODEBTP_RECORD  *pUncle = OBJ_NIL;
-        
-        // Do initialization.
-        if (NULL == pNode) {
-            return NULL;
-        }
-        
-        pParent = pNode->pParent;
-        if (pParent)
-            pGrandparent = pParent->pParent;
-        
-        if (pGrandparent) {
-            if (pParent == pGrandparent->pLeft)
-                pUncle = pGrandparent->pRight;
-            else
-                pUncle = pGrandparent->pLeft;
-        }
-        
-        // Return to caller.
-        return pUncle;
+        return eRc;
     }
     
     
@@ -583,7 +274,7 @@ extern "C" {
      */
     ERESULT         nodeBTP_VisitNodeInRecurse(
         NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode,
+        NODEBTP_RECORD  *pRecord,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -592,17 +283,17 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         NODEBTP_RECORD  *pWork;
         
-        if (pNode) {
-            pWork = pNode->pLeft;
+        if (pRecord) {
+            pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_LEFT];
             if (pWork) {
                 eRc = nodeBTP_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            eRc = pScan(pObj, pNode->pNode, pArg3);
+            eRc = pScan(pObj, pRecord->node.pData, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
-            pWork = pNode->pRight;
+            pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_RIGHT];
             if (pWork) {
                 eRc = nodeBTP_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
@@ -619,7 +310,7 @@ extern "C" {
      */
     ERESULT         nodeBTP_VisitNodePostRecurse(
         NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode,
+        NODEBTP_RECORD  *pRecord,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -628,20 +319,20 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         NODEBTP_RECORD  *pWork;
         
-        if (pNode) {
-            pWork = pNode->pLeft;
+        if (pRecord) {
+            pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_LEFT];
             if (pWork) {
                 eRc = nodeBTP_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            pWork = pNode->pRight;
+            pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_RIGHT];
             if (pWork) {
                 eRc = nodeBTP_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            eRc = pScan(pObj, pNode->pNode, pArg3);
+            eRc = pScan(pObj, pRecord->node.pData, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
         }
@@ -655,7 +346,7 @@ extern "C" {
      */
     ERESULT         nodeBTP_VisitNodePreRecurse(
         NODEBTP_DATA    *this,
-        NODEBTP_RECORD  *pNode,
+        NODEBTP_RECORD  *pRecord,
         P_VOIDEXIT3_BE  pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
@@ -664,17 +355,17 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         NODEBTP_RECORD  *pWork;
         
-        if (pNode) {
-            eRc = pScan(pObj, pNode->pNode, pArg3);
+        if (pRecord) {
+            eRc = pScan(pObj, pRecord->node.pData, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
-            pWork = pNode->pLeft;
+            pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_LEFT];
             if (pWork) {
                 eRc = nodeBTP_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            pWork = pNode->pRight;
+            pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_RIGHT];
             if (pWork) {
                 eRc = nodeBTP_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
                 if (ERESULT_FAILED(eRc))
@@ -799,7 +490,7 @@ extern "C" {
 #endif
 
         // Return to caller.
-        return this->pRoot->pNode;
+        return this->tree.pRoot->pData;
     }
     
     
@@ -825,52 +516,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * nodeBTP_getStr(
-        NODEBTP_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        nodeBTP_setStr(
-        NODEBTP_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -912,10 +557,9 @@ extern "C" {
         bool            fReplace
     )
     {
-        NODEBTP_RECORD  *pParent = OBJ_NIL;
         NODEBTP_RECORD  *pRecord = NULL;
-        NODEBTP_RECORD  *pUncle = NULL;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        int             iRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -935,64 +579,13 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         obj_Retain(pNode);
-        pRecord->pNode = pNode;
+        pRecord->node.pData = pNode;
         pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
-        pRecord->color = NODEBTP_RED;
+        pRecord->node.color = RBT_RED;
 
-        pParent = this->pRoot;
-        if (NULL == pParent) {
-            pRecord->color = NODEBTP_BLACK;
-            this->pRoot = pRecord;
-            return ERESULT_SUCCESS;
-        }
-        
-        while (pParent) {
-            eRc = node_Compare(pNode, pParent->pNode);
-            if (ERESULT_SUCCESS_EQUAL == eRc) {
-                if (fReplace) {
-                    obj_Release(pParent->pNode);
-                    pParent->pNode = pNode;
-                    blocks_RecordFree((BLOCKS_DATA *)this, pRecord);
-                    return ERESULT_SUCCESS;
-                }
-                return ERESULT_DATA_ALREADY_EXISTS;
-            }
-            else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (pParent->pLeft)
-                    pParent = pParent->pLeft;
-                else {
-                    // Insert new node as Left Child of Parent.
-                    pRecord->pLeft = pParent->pLeft;
-                    pRecord->pParent = pParent;
-                    pParent->pLeft = pRecord;
-                    break;
-                }
-            }
-            else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (pParent->pRight)
-                    pParent = pParent->pRight;
-                else {
-                    // Insert new node as Right Child of Parent.
-                    pRecord->pRight = pParent->pRight;
-                    pRecord->pParent = pParent;
-                    pParent->pRight = pRecord;
-                    break;
-                }
-            }
-            else {
-                return ERESULT_GENERAL_FAILURE;
-            }
-        }
-        ++this->size;
-        
-        if (pRecord->pParent->color == NODEBTP_BLACK)
-            ;
-        else {
-            pUncle = nodeBTP_Uncle(this, pRecord);
-            if (pUncle && (pUncle->color == NODEBTP_RED)) {
-                
-            }
-        }
+        iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
+        if (iRc)
+            eRc = ERESULT_SUCCESS;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1054,11 +647,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         nodeBTP_Assign(
-        NODEBTP_DATA		*this,
-        NODEBTP_DATA     *pOther
+        NODEBTP_DATA	*this,
+        NODEBTP_DATA    *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1120,8 +713,8 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         nodeBTP_Compare(
-        NODEBTP_DATA     *this,
-        NODEBTP_DATA     *pOther
+        NODEBTP_DATA    *this,
+        NODEBTP_DATA    *pOther
     )
     {
         int             i = 0;
@@ -1183,11 +776,11 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODEBTP_DATA *     nodeBTP_Copy(
-        NODEBTP_DATA       *this
+    NODEBTP_DATA *  nodeBTP_Copy(
+        NODEBTP_DATA    *this
     )
     {
-        NODEBTP_DATA       *pOther = OBJ_NIL;
+        NODEBTP_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -1223,7 +816,7 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        NODEBTP_DATA   *this = objId;
+        NODEBTP_DATA    *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -1243,8 +836,6 @@ extern "C" {
         }
 #endif
 
-        nodeBTP_setStr(this, OBJ_NIL);
-
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -1261,7 +852,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         nodeBTP_Disable(
-        NODEBTP_DATA		*this
+        NODEBTP_DATA    *this
     )
     {
 
@@ -1289,7 +880,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         nodeBTP_Enable(
-        NODEBTP_DATA		*this
+        NODEBTP_DATA	*this
     )
     {
 
@@ -1356,12 +947,12 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
-    NODE_DATA *     nodeBTP_Find(
+    NODE_DATA *     nodeBTP_FindNode(
         NODEBTP_DATA    *this,
         NODE_DATA       *pNode
     )
     {
-        NODEBTP_RECORD  *pParent;
+        NODEBTP_RECORD  *pWork;
         ERESULT         eRc;
         
         // Do initialization.
@@ -1379,21 +970,21 @@ extern "C" {
         }
 #endif
         
-        pParent = this->pRoot;
-        while (pParent) {
-            eRc = node_Compare(pNode, pParent->pNode);
+        pWork = this->pRoot;
+        while (pWork) {
+            eRc = node_Compare(pNode, pWork->node.pData);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
-                return pParent->pNode;
+                return pWork->node.pData;
             }
             else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (pParent->pLeft)
-                    pParent = pParent->pLeft;
+                if (pWork->node.pLink[RBT_LEFT])
+                    pWork = (NODEBTP_RECORD *)pWork->node.pLink[RBT_LEFT];
                 else
                     break;
             }
             else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (pParent->pRight)
-                    pParent = pParent->pRight;
+                if (pWork->node.pLink[RBT_RIGHT])
+                    pWork = (NODEBTP_RECORD *)pWork->node.pLink[RBT_RIGHT];
                 else
                     break;
             }
@@ -1408,7 +999,7 @@ extern "C" {
     }
     
     
-    
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -1419,7 +1010,6 @@ extern "C" {
     {
         uint32_t        cbSize = sizeof(NODEBTP_DATA);
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        uint32_t        objSize = 0;
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1447,30 +1037,25 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTP_Vtbl);
         
-        if (((OBJ_DATA *)(nodeLnkP_Class()))->pVtbl->pQueryInfo) {
-            objSize =   (uint32_t)((OBJ_DATA *)(nodeLnkP_Class()))->pVtbl->pQueryInfo(
-                                                    nodeLnkP_Class(),
-                                                    OBJ_QUERYINFO_TYPE_OBJECT_SIZE,
-                                                    NULL
-                        );
-        }
-        if (objSize) {
-            eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, objSize);
-            if (!ERESULT_FAILED(eRc)) {
-                blocks_setDeleteExit(
-                                (BLOCKS_DATA *)this,
-                                (void *)nodeBTP_DeleteExit,
-                                this,
-                                NULL
-                );
-            }
-        }
-        if (ERESULT_FAILED(eRc) || (0 == objSize)) {
+        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEBTP_RECORD));
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        blocks_setDeleteExit(
+                        (BLOCKS_DATA *)this,
+                        (void *)nodeBTP_DeleteExit,
+                        this,
+                        NULL
+        );
         
+        rbt_Init(&this->tree, (void *)nodeBTP_NodeCmp);
+        this->tree.pNodeAlloc = (void *)blocks_RecordNew;
+        this->tree.pNodeFree = (void *)blocks_RecordFree;
+        this->tree.pObjAllocFree = this;
+        this->tree.dataSize = sizeof(NODEBTP_RECORD) - sizeof(RBT_NODE);
+
     #ifdef NDEBUG
     #else
         if( !nodeBTP_Validate(this) ) {
@@ -1844,9 +1429,22 @@ extern "C" {
         pList = blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
-            pNode = ((NODEBTP_RECORD *)(pEntry->data))->pNode;
-            if (pNode) {
-                pWrkStr = node_ToDebugString(pNode, indent+3);
+            NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
+            RBT_NODE            *pNode = &pRecord->node;
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+            }
+            eRc = AStr_AppendPrint(
+                                   pStr,
+                                   "%p  L=%p R=%p %s   D=%p\n",
+                                   pNode,
+                                   pNode->pLink[RBT_LEFT],
+                                   pNode->pLink[RBT_RIGHT],
+                                   pNode->color ? "red" : "black",
+                                   pNode->pData
+                                   );
+            if (pNode->pData) {
+                pWrkStr = node_ToDebugString(pNode->pData, indent+6);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
@@ -1916,70 +1514,6 @@ extern "C" {
     /*! Visit all the nodes in the Tree using a In-order traversal.
      */
     
-    ERESULT         nodeBTP_VisitNodesInParent(
-        NODEBTP_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    )
-    {
-        NODEBTP_RECORD  *pNodeP;
-        NODEBTP_RECORD  *pNodeQ;
-        NODEBTP_RECORD  *pNodePL;           // Parent's Left Child
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pNodeP = this->pRoot;
-        pNodeQ = NULL;
-        
-        do {
-            // Descend down to the bottom of the left branch.
-            while (pNodeP) {
-                pNodeQ = pNodeP;
-                pNodeP = pNodeP->pLeft;
-            }
-            // Scan the left-most node.
-            if (pNodeQ) {
-                eRc = pScan(pObj, pNodeQ->pNode, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    break;
-                pNodeP = pNodeQ->pRight;
-            }
-            // nodeQ is current node and nodeP is its right child or NULL.
-            while (pNodeQ && (NULL == pNodeP)) {
-                // nodeQ has no right child.  Back up until a left son or
-                // the tree root is found.
-                do {
-                    pNodeP = pNodeQ;
-                    pNodeQ = pNodeP->pParent;
-                    if (pNodeQ)
-                        pNodePL = pNodeQ->pLeft;
-                    else
-                        break;
-                } while (pNodeQ && !(pNodeP == pNodePL));
-                // Scan the ??? node.
-                if (pNodeQ) {
-                    eRc = pScan(pObj, pNodeQ->pNode, pArg3);
-                    if (ERESULT_FAILED(eRc))
-                        break;
-                    pNodeP = pNodeQ->pRight;
-                }
-            }
-        } while (pNodeQ);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
     ERESULT         nodeBTP_VisitNodesInRecurse(
         NODEBTP_DATA  *this,
         P_VOIDEXIT3_BE  pScan,
@@ -1988,7 +1522,8 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+        NODEBTP_VISIT   parms;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -2001,13 +1536,16 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        parms.pScan = pScan;
+        parms.pObj = pObj;
+        parms.pArg3 = pArg3;
         
-        eRc =   nodeBTP_VisitNodeInRecurse(
-                            this,
-                            this->pRoot,
-                            pScan,
-                            pObj,
-                            pArg3
+        eRc =   rbt_VisitNodeInRecurse(
+                        &this->tree,
+                        this->tree.pRoot,
+                        (void *)nodeBTP_VisitExit,
+                        this,
+                        &parms
                 );
         
         return eRc;
@@ -2016,6 +1554,7 @@ extern "C" {
     
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
+    
     ERESULT         nodeBTP_VisitNodesPostRecurse(
         NODEBTP_DATA    *this,
         P_VOIDEXIT3_BE  pScan,
@@ -2024,7 +1563,8 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+        NODEBTP_VISIT   parms;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -2037,93 +1577,24 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        parms.pScan = pScan;
+        parms.pObj = pObj;
+        parms.pArg3 = pArg3;
         
-        eRc =   nodeBTP_VisitNodePostRecurse(
-                                               this,
-                                               this->pRoot,
-                                               pScan,
-                                               pObj,
-                                               pArg3
-                                               );
-        
+        eRc =   rbt_VisitNodePostRecurse(
+                        &this->tree,
+                        this->tree.pRoot,
+                        (void *)nodeBTP_VisitExit,
+                        this,
+                        &parms
+                );
+
         return eRc;
     }
     
     
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
-    ERESULT         nodeBTP_VisitNodesPreParent(
-        NODEBTP_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
-        OBJ_ID          pObj,
-        void            *pArg3
-    )
-    {
-        NODEBTP_RECORD  *pNodeP;
-        NODEBTP_RECORD  *pNodeQ;
-        NODEBTP_RECORD  *pNodePR;           // Parent's Right Child
-        ERESULT         eRc;
-        
-        // In pre-order, a node is visited only when it is reached on the way
-        // down the tree.
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pNodeP = this->pRoot;
-        pNodeQ = pNodeP;
-        
-        do {
-            // Scan the left-most node.
-            if (pNodeQ) {
-                eRc = pScan(pObj, pNodeQ, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    break;
-                pNodeP = pNodeQ->pLeft;
-            }
-            // Descend down the left branch.
-            if (pNodeP) {
-                pNodeQ = pNodeP;
-                continue;
-            }
-            pNodeP = pNodeQ->pRight;
-            if (pNodeP) {
-                pNodeQ = pNodeP;
-                continue;
-            }
-            // nodeQ is current node and nodeP is its left child or NULL.
-            while (pNodeQ && (NULL == pNodeP)) {
-                // nodeQ has no right child.  Back up until a right child or
-                // the tree root is found.
-                do {
-                    pNodeP = pNodeQ;
-                    pNodeQ = pNodeP->pParent;
-                    if (pNodeQ) {
-                        pNodeP = pNodeQ->pRight;
-                        if (pNodeP) {
-                            eRc = pScan(pObj, pNodeP, pArg3);
-                            if (ERESULT_FAILED(eRc))
-                                break;
-                            pNodeP = pNodeQ->pLeft;
-                        }
-                    }
-                    else
-                        break;
-                } while (pNodeQ && (NULL == pNodeP));
-                pNodeQ = pNodeP;
-            }
-        } while (pNodeQ);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
     
     ERESULT         nodeBTP_VisitNodesPreRecurse(
         NODEBTP_DATA  *this,
@@ -2133,6 +1604,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
+        NODEBTP_VISIT   parms;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2146,15 +1618,18 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        parms.pScan = pScan;
+        parms.pObj = pObj;
+        parms.pArg3 = pArg3;
         
-        eRc =   nodeBTP_VisitNodePreRecurse(
-                                              this,
-                                              this->pRoot,
-                                              pScan,
-                                              pObj,
-                                              pArg3
-                                              );
-        
+        eRc =   rbt_VisitNodePreRecurse(
+                        &this->tree,
+                        this->tree.pRoot,
+                        (void *)nodeBTP_VisitExit,
+                        this,
+                        &parms
+                );
+
         return eRc;
     }
     

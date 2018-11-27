@@ -161,17 +161,15 @@ int             test_nodeBTP_Add01(
         }
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPre-Order Recurse: ABCDEFG\n\t      Recurse Got: ");
+        fprintf(stderr, "\tPre-Order Recurse: BADCFEG\n\t      Recurse Got: ");
         eRc = nodeBTP_VisitNodesPreRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tIn-Order Recurse: ABCDEFG\n\t      Parent Got: ");
-        eRc = nodeBTP_VisitNodesInParent(pTree, (void *)printNode, OBJ_NIL, NULL);
-        fprintf(stderr, "\n\t     Recurse Got: ");
+        fprintf(stderr, "\tIn-Order Recurse: ABCDEFG\n\t     Recurse Got: ");
         eRc = nodeBTP_VisitNodesInRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPost-Order Recurse: GFEDCBA\n\t       Recurse Got: ");
+        fprintf(stderr, "\tPost-Order Recurse: ACEGFDB\n\t       Recurse Got: ");
         eRc = nodeBTP_VisitNodesPostRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
 
@@ -230,19 +228,15 @@ int             test_nodeBTP_Add02(
         }
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPre-Order Recurse: DBACFEG\n\t       Parent Got: ");
-        //FIXME: eRc = nodeBTP_VisitNodesPreParent(pTree, (void *)printNode, OBJ_NIL, NULL);
-        fprintf(stderr, "\n\t     Recurse Got: ");
+        fprintf(stderr, "\tPre-Order Recurse: BDCFAGE\n\t      Recurse Got: ");
         eRc = nodeBTP_VisitNodesPreRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tIn-Order Recurse: ABCDEFG\n\t      Parent Got: ");
-        eRc = nodeBTP_VisitNodesInParent(pTree, (void *)printNode, OBJ_NIL, NULL);
-        fprintf(stderr, "\n\t     Recurse Got: ");
+        fprintf(stderr, "\tIn-Order Recurse: DBFCGAE\n\t     Recurse Got: ");
         eRc = nodeBTP_VisitNodesInRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPost-Order Recurse: ACBEGFD\n\t       Recurse Got: ");
+        fprintf(stderr, "\tPost-Order Recurse: DFGEACB\n\t       Recurse Got: ");
         eRc = nodeBTP_VisitNodesPostRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         

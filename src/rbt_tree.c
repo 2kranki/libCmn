@@ -39,14 +39,6 @@
 
 // rb_node
 
-RBT_NODE *              rbt_node_alloc (
-) 
-{
-    return malloc(sizeof(RBT_NODE));
-}
-
-
-
 RBT_NODE *      rbt_NodeInit (
     RBT_TREE        *this,
     RBT_NODE        *pNode,
@@ -64,6 +56,7 @@ RBT_NODE *      rbt_NodeInit (
 }
 
 
+
 RBT_NODE *      rbt_NodeNew (
     RBT_TREE        *this,
     void            *pData
@@ -79,6 +72,7 @@ RBT_NODE *      rbt_NodeNew (
 }
 
 
+
 RBT_NODE *      rbt_NodeDealloc (
     RBT_TREE        *this,
     RBT_NODE        *pNode
@@ -90,6 +84,7 @@ RBT_NODE *      rbt_NodeDealloc (
     }
     return pNode;
 }
+
 
 
 int             rbt_IsNodeRed (
@@ -106,9 +101,15 @@ int             rbt_IsNodeRed (
 }
 
 
+
 static
-RBT_NODE *              rbt_node_rotate (RBT_NODE *this, int dir) {
-    RBT_NODE                *result = NULL;
+RBT_NODE *          rbt_NodeRotate (
+    RBT_NODE            *this,
+    int                 dir
+)
+{
+    RBT_NODE            *result = NULL;
+    
     if (this) {
         result = this->pLink[!dir];
         this->pLink[!dir] = result->pLink[dir];
@@ -116,33 +117,25 @@ RBT_NODE *              rbt_node_rotate (RBT_NODE *this, int dir) {
         this->color = RBT_RED;
         result->color = RBT_BLACK;
     }
+    
     return result;
 }
+
 
 static
-RBT_NODE *          rbt_node_rotate2 (RBT_NODE *this, int dir) {
-    RBT_NODE *result = NULL;
-    if (this) {
-        this->pLink[!dir] = rbt_node_rotate(this->pLink[!dir], !dir);
-        result = rbt_node_rotate(this, dir);
-    }
-    return result;
-}
-
-
-
-// rb_tree - default callbacks
-
-void            rbt_NodeDealloc_cb (
-    RBT_TREE        *this,
-    RBT_NODE        *pNode
+RBT_NODE *          rbt_NodeRotate2 (
+    RBT_NODE            *this,
+    int                 dir
 )
 {
+    RBT_NODE            *result = NULL;
+    
     if (this) {
-        if (pNode) {
-            rbt_NodeDealloc(this, pNode);
-        }
+        this->pLink[!dir] = rbt_NodeRotate(this->pLink[!dir], !dir);
+        result = rbt_NodeRotate(this, dir);
     }
+    
+    return result;
 }
 
 
@@ -156,6 +149,8 @@ RBT_TREE *      rbt_Alloc(
     return mem_Malloc(sizeof(RBT_TREE));
 }
 
+
+
 RBT_TREE *      rbt_Init(
     RBT_TREE        *this,
     rbt_node_cmp_f  node_cmp_cb
@@ -168,6 +163,7 @@ RBT_TREE *      rbt_Init(
     }
     return this;
 }
+
 
 
 RBT_TREE *      rbt_New (
@@ -268,7 +264,7 @@ int                 rbt_Test (
 
 
 
-RBT_NODE *      rb_find(
+RBT_NODE *      rb_Find(
     RBT_TREE        *this,
     RBT_NODE        *pNode
 )
@@ -283,7 +279,7 @@ RBT_NODE *      rb_find(
 
                 // If the tree supports duplicates, they should be
                 // chained to the right subtree for this to work
-                pNodeCurrent = pNodeCurrent->pLink[cmp < 0 ? 1 : 0];
+                pNodeCurrent = pNodeCurrent->pLink[cmp < 0 ? RBT_RIGHT : RBT_LEFT];
             } else {
                 break;
             }
@@ -295,7 +291,7 @@ RBT_NODE *      rb_find(
 
 
 
-// Creates (malloc'ates) 
+// Creates (malloc'ates) node then inserts it.
 int         rbt_Insert(
     RBT_TREE        *this, 
     void            *pValue
@@ -351,9 +347,9 @@ int                 rbt_InsertNode(
                     // Hard red violation: rotations necessary
                     int dir2 = t->pLink[RBT_RIGHT] == g;
                     if (q == p->pLink[last]) {
-                        t->pLink[dir2] = rbt_node_rotate(g, !last);
+                        t->pLink[dir2] = rbt_NodeRotate(g, !last);
                     } else {
-                        t->pLink[dir2] = rbt_node_rotate2(g, !last);
+                        t->pLink[dir2] = rbt_NodeRotate2(g, !last);
                     }
                 }
           
@@ -430,7 +426,7 @@ int         rbt_Delete (
             // Push the red node down with rotations and color flips
             if (!rbt_IsNodeRed(q) && !rbt_IsNodeRed(q->pLink[dir])) {
                 if (rbt_IsNodeRed(q->pLink[!dir])) {
-                    p = p->pLink[last] = rbt_node_rotate(q, dir);
+                    p = p->pLink[last] = rbt_NodeRotate(q, dir);
                 } else if (!rbt_IsNodeRed(q->pLink[!dir])) {
                     RBT_NODE *s = p->pLink[!last];
                     if (s) {
@@ -443,9 +439,9 @@ int         rbt_Delete (
                         } else {
                             int dir2 = g->pLink[RBT_RIGHT] == p;
                             if (rbt_IsNodeRed(s->pLink[last])) {
-                                g->pLink[dir2] = rbt_node_rotate2(p, last);
+                                g->pLink[dir2] = rbt_NodeRotate2(p, last);
                             } else if (rbt_IsNodeRed(s->pLink[!last])) {
-                                g->pLink[dir2] = rbt_node_rotate(p, last);
+                                g->pLink[dir2] = rbt_NodeRotate(p, last);
                             }
                             
                             // Ensure correct coloring
@@ -617,14 +613,17 @@ rbt_iter_prev (RBT_ITER *this) {
 
 
 
-void            rbt_PrintNode(RBT_TREE *this, RBT_NODE *pNode)
+void            rbt_PrintNode(
+    RBT_TREE        *this,
+    RBT_NODE        *pNode
+)
 {
     
     if (pNode->pLink[RBT_LEFT])
         rbt_PrintNode(this, pNode->pLink[RBT_LEFT]);
     fprintf(
             stderr,
-            "\t %p  L=%p R=%p %s   %s\n",
+            "\t %p  L=%p R=%p %s   %p\n",
             pNode,
             pNode->pLink[RBT_LEFT],
             pNode->pLink[RBT_RIGHT],
@@ -636,12 +635,124 @@ void            rbt_PrintNode(RBT_TREE *this, RBT_NODE *pNode)
 }
 
 
-
 void            rbt_PrintTree (RBT_TREE *this)
 {
     fprintf(stderr, "In-order Tree Dump of %ld Nodes\n", this->size);
     rbt_PrintNode(this, this->pRoot);
     fprintf(stderr, "\n\n\n");
+}
+
+
+
+//---------------------------------------------------------------
+//                  V i s i t  N o d e s
+//---------------------------------------------------------------
+
+/*! Visit all the nodes from the given node and below in the Tree
+ using a Pre-order traversal.
+ */
+ERESULT         rbt_VisitNodeInRecurse (
+    RBT_TREE        *this,
+    RBT_NODE        *pRecord,
+    P_VOIDEXIT3_BE  pScan,
+    OBJ_ID          pObj,            // Used as first parameter of scan method
+    void            *pArg3
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RBT_NODE        *pWork;
+    
+    if (pRecord) {
+        pWork = pRecord->pLink[RBT_LEFT];
+        if (pWork) {
+            eRc = rbt_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+        eRc = pScan(pObj, pRecord, pArg3);
+        if (ERESULT_FAILED(eRc))
+            return eRc;
+        pWork = pRecord->pLink[RBT_RIGHT];
+        if (pWork) {
+            eRc = rbt_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+    }
+    
+    return eRc;
+}
+
+
+/*! Visit all the nodes from the given node and below in the Tree
+ using a Post-order traversal.
+ */
+ERESULT         rbt_VisitNodePostRecurse (
+    RBT_TREE        *this,
+    RBT_NODE        *pRecord,
+    P_VOIDEXIT3_BE  pScan,
+    OBJ_ID          pObj,            // Used as first parameter of scan method
+    void            *pArg3
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RBT_NODE        *pWork;
+    
+    if (pRecord) {
+        pWork = pRecord->pLink[RBT_LEFT];
+        if (pWork) {
+            eRc = rbt_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+        pWork = pRecord->pLink[RBT_RIGHT];
+        if (pWork) {
+            eRc = rbt_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+        eRc = pScan(pObj, pRecord, pArg3);
+        if (ERESULT_FAILED(eRc))
+            return eRc;
+    }
+    
+    return eRc;
+}
+
+
+/*! Visit all the nodes from the given node and below in the Tree
+ using a Pre-order traversal.
+ */
+ERESULT         rbt_VisitNodePreRecurse (
+    RBT_TREE        *this,
+    RBT_NODE        *pRecord,
+    P_VOIDEXIT3_BE  pScan,
+    OBJ_ID          pObj,            // Used as first parameter of scan method
+    void            *pArg3
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RBT_NODE        *pWork;
+    
+    if (pRecord) {
+        eRc = pScan(pObj, pRecord, pArg3);
+        if (ERESULT_FAILED(eRc))
+            return eRc;
+        pWork = pRecord->pLink[RBT_LEFT];
+        if (pWork) {
+            eRc = rbt_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+        pWork = pRecord->pLink[RBT_RIGHT];
+        if (pWork) {
+            eRc = rbt_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+    }
+    
+    return eRc;
 }
 
 

@@ -327,6 +327,7 @@
 		C4F1BFD821A8FBAB0048474D /* nodeEnum_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFD421A8FBA60048474D /* nodeEnum_object.c */; };
 		C4F1BFD921A8FBAB0048474D /* nodeEnum.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFD521A8FBA80048474D /* nodeEnum.c */; };
 		C4F1BFDF21A9ACF90048474D /* test_nodeBTP.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFDE21A9ACF80048474D /* test_nodeBTP.c */; };
+		C4F1BFFF21AC9E160048474D /* rbt_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFFD21AC9E140048474D /* rbt_tree.c */; };
 		C4F448FC20E846C000C5E729 /* nodeLink_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448F820E846B900C5E729 /* nodeLink_object.c */; };
 		C4F448FD20E846C000C5E729 /* nodeLink.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448FB20E846BF00C5E729 /* nodeLink.c */; };
 		C4F448FF20E8649000C5E729 /* nodeLink_JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F448FE20E8648E00C5E729 /* nodeLink_JSON.c */; };
@@ -962,6 +963,8 @@
 		C4F1BFD621A8FBA90048474D /* nodeEnum_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeEnum_internal.h; sourceTree = "<group>"; };
 		C4F1BFD721A8FBAA0048474D /* nodeEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeEnum.h; sourceTree = "<group>"; };
 		C4F1BFDE21A9ACF80048474D /* test_nodeBTP.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_nodeBTP.c; sourceTree = "<group>"; };
+		C4F1BFFD21AC9E140048474D /* rbt_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rbt_tree.c; sourceTree = "<group>"; };
+		C4F1BFFE21AC9E150048474D /* rbt_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rbt_tree.h; sourceTree = "<group>"; };
 		C4F448F820E846B900C5E729 /* nodeLink_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLink_object.c; sourceTree = "<group>"; };
 		C4F448F920E846BC00C5E729 /* nodeLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink.h; sourceTree = "<group>"; };
 		C4F448FA20E846BE00C5E729 /* nodeLink_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodeLink_internal.h; sourceTree = "<group>"; };
@@ -1441,6 +1444,8 @@
 				C4359B391FC9C42600CA858E /* ptrArray_object.c */,
 				C4359B3C1FC9C42700CA858E /* ptrArray.c */,
 				C4359B201FC9C42400CA858E /* ptrArray.h */,
+				C4F1BFFD21AC9E140048474D /* rbt_tree.c */,
+				C4F1BFFE21AC9E150048474D /* rbt_tree.h */,
 				C4359B1A1FC9C42300CA858E /* rrds32_internal.h */,
 				C4359B3D1FC9C42700CA858E /* rrds32_object.c */,
 				C4359B331FC9C42600CA858E /* rrds32.c */,
@@ -1989,6 +1994,7 @@
 				C4359A3D1FC9C38800CA858E /* hash32_object.c in Sources */,
 				C4359BD51FC9C48400CA858E /* table_object.c in Sources */,
 				C4359C071FC9C48400CA858E /* wav.c in Sources */,
+				C4F1BFFF21AC9E160048474D /* rbt_tree.c in Sources */,
 				C421230A1FE6351700F45294 /* srcError.c in Sources */,
 				C4359A6B1FC9C38800CA858E /* file_object.c in Sources */,
 				C4AA73641FDBB245001FACEC /* genObj.c in Sources */,

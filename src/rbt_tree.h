@@ -105,11 +105,11 @@ void            rbt_DeleteAll           (RBT_TREE *this);
 RBT_NODE        *rbt_Find               (RBT_TREE *this, RBT_NODE *pNode);
 RBT_TREE *      rbt_Init                (RBT_TREE *this, rbt_node_cmp_f pCmp);
 int             rbt_Insert              (RBT_TREE *this, void *pData);
+int             rbt_InsertNode          (RBT_TREE *this, RBT_NODE *pNode);
 size_t          rbt_getSize             (RBT_TREE *this);
 
-int             rbt_InsertNode          (RBT_TREE *this, RBT_NODE *node);
 
-int             rbt_Test                (RBT_TREE *this, RBT_NODE *root);
+int             rbt_Test                (RBT_TREE *this, RBT_NODE *pNode);
 
 RBT_ITER *      rbt_iter_alloc          (void);
 RBT_ITER *      rbt_iter_init           (RBT_ITER *this);
@@ -123,6 +123,36 @@ void           *rbt_iter_prev           (RBT_ITER *this);
 
 
 void            rbt_PrintTree           (RBT_TREE *this);
+
+
+ERESULT         rbt_VisitNodeInRecurse (
+    RBT_TREE        *this,
+    RBT_NODE        *pRecord,
+    P_VOIDEXIT3_BE  pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
+    //                              // error to terminate scan.
+    OBJ_ID          pObj,           // Used as first parameter of scan method
+    void            *pArg3          // Used as third parameter of scan method
+);
+
+
+ERESULT         rbt_VisitNodePostRecurse (
+    RBT_TREE        *this,
+    RBT_NODE        *pRecord,
+    P_VOIDEXIT3_BE  pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
+    //                              // error to terminate scan.
+    OBJ_ID          pObj,           // Used as first parameter of scan method
+    void            *pArg3          // Used as third parameter of scan method
+);
+
+
+ERESULT         rbt_VisitNodePreRecurse (
+    RBT_TREE        *this,
+    RBT_NODE        *pRecord,
+    P_VOIDEXIT3_BE  pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
+    //                              // error to terminate scan.
+    OBJ_ID          pObj,           // Used as first parameter of scan method
+    void            *pArg3          // Used as third parameter of scan method
+);
 
 
 #endif
