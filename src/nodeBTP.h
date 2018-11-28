@@ -106,11 +106,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODEBTP_SINGLETON
-    NODEBTP_DATA *     nodeBTP_Shared(
+    NODEBTP_DATA *  nodeBTP_Shared (
         void
     );
 
-    bool            nodeBTP_SharedReset(
+    bool            nodeBTP_SharedReset (
         void
     );
 #endif
@@ -122,17 +122,17 @@ extern "C" {
      released.
      @return    pointer to nodeBTP object if successful, otherwise OBJ_NIL.
      */
-    NODEBTP_DATA *  nodeBTP_Alloc(
+    NODEBTP_DATA *  nodeBTP_Alloc (
         void
     );
     
     
-    OBJ_ID          nodeBTP_Class(
+    OBJ_ID          nodeBTP_Class (
         void
     );
     
     
-    NODEBTP_DATA *  nodeBTP_New(
+    NODEBTP_DATA *  nodeBTP_New (
         void
     );
     
@@ -142,11 +142,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODE_DATA *     nodeBTP_getRoot(
+    NODE_DATA *     nodeBTP_getRoot (
         NODEBTP_DATA    *this
     );
     
 
+    uint32_t        nodeBTP_getSize(
+        NODEBTP_DATA       *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -167,18 +172,48 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
      error code is returned.
      */
-    ERESULT         nodeBTP_Add(
+    ERESULT         nodeBTP_Add (
         NODEBTP_DATA    *this,
         NODE_DATA       *pNode,
         bool            fReplace
     );
     
-    ERESULT         nodeBTP_AddA(
+    ERESULT         nodeBTP_AddA (
         NODEBTP_DATA    *this,
         int32_t         cls,
         const
         char            *pNameA,            // UTF-8
         OBJ_ID          pData
+    );
+    
+    
+    ERESULT         nodeBTP_Delete (
+        NODEBTP_DATA    *this,
+        NODE_DATA       *pNode
+    );
+    
+    ERESULT         nodeBTP_DeleteA (
+        NODEBTP_DATA    *this,
+        int32_t         cls,
+        const
+        char            *pName
+    );
+    
+    
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a..zA..Z_][a..zA..Z0..9_]* '}'
+     or
+     '$'[A..Za..z_][A..Za..z0..9_]*
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         nodeBTP_ExpandVars (
+        NODEBTP_DATA    *this,
+        ASTR_DATA       *pStr
     );
     
     
@@ -193,16 +228,35 @@ extern "C" {
     );
     
     
+    /*!
+     Search the Tree for a particular node using the characteristics of
+     the given node and its compare function.
+     @return    If successful, an NODE object is returned.  Otherwise,
+                OBJ_NIL.
+     */
+    NODE_DATA *     nodeBTP_Find(
+        NODEBTP_DATA    *this,
+        NODE_DATA       *pNode
+    );
+    
+    NODE_DATA *     nodeBTP_FindA(
+        NODEBTP_DATA    *this,
+        int32_t         cls,
+        const
+        char            *pNameA 
+    );
+
+    
     NODEBTP_DATA *   nodeBTP_Init(
         NODEBTP_DATA     *this
     );
 
 
-    ERESULT     nodeBTP_IsEnabled(
-        NODEBTP_DATA		*this
+    NODEARRAY_DATA * nodeBTP_Nodes(
+        NODEBTP_DATA    *this
     );
     
- 
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -264,7 +264,7 @@ int                 rbt_Test (
 
 
 
-RBT_NODE *      rb_Find(
+RBT_NODE *      rbt_Find (
     RBT_TREE        *this,
     RBT_NODE        *pNode
 )

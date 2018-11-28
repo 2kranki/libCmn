@@ -1,17 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Node Hash (nodeHash) Header
+//          Hash Table of Nodes (nodeHash) Header
 //****************************************************************
 /*
  * Program
  *			Hash Table of Nodes (nodeHash)
  * Purpose
- *			This object provides a hash table keyed by the
+ *          This object provides a hash table keyed by the
  *          node name with a pointer to the node as the data.
  *
  * Remarks
- *	1.      Nodes are stored within the hash by their name.  If the
+ *    1.    Nodes are stored within the hash by their name.  If the
  *          nodes are created for use in JSON, parser or equivalent
  *          environments, then their data will also be nodes and not
  *          the direct data.
@@ -34,7 +34,7 @@
  *                      data:   actual data object as above (ie nodeArray, false, ...)
  *
  * History
- *	07/22/2015 Generated
+ *	11/27/2018 Generated
  */
 
 
@@ -70,13 +70,17 @@
 
 
 #include        <cmn_defs.h>
+#include        <AStr.h>
 #include        <node.h>
+#include        <nodeArray.h>
+#include        <nodeEnum.h>
 
 
 #ifndef         NODEHASH_H
 #define         NODEHASH_H
 
 
+//#define   NODEHASH_SINGLETON    1
 
 #ifdef	__cplusplus
 extern "C" {
@@ -87,37 +91,44 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-    // NODEHASH_DATA is defined in node.h
+
+    typedef struct nodeHash_data_s	NODEHASH_DATA;            // Inherits from OBJ
+    typedef struct nodeHash_class_data_s NODEHASH_CLASS_DATA;   // Inherits from OBJ
+
+    typedef struct nodeHash_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in nodeHash_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(NODEHASH_DATA *);
+    } NODEHASH_VTBL;
+
+    typedef struct nodeHash_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in nodeHash_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(NODEHASH_DATA *);
+    } NODEHASH_CLASS_VTBL;
+
 
 
     // Prime numbers for hash table sizes within 16 bits
     // (Maximum size is 65535)
     typedef enum nodeHash_table_size_e {
-        NODEHASH_TABLE_SIZE_XXXXXSMALL = 5,
-        NODEHASH_TABLE_SIZE_XXXXSMALL = 17,
-        NODEHASH_TABLE_SIZE_XXXSMALL = 31,
-        NODEHASH_TABLE_SIZE_XXSMALL = 61,
-        NODEHASH_TABLE_SIZE_XSMALL = 127,
-        NODEHASH_TABLE_SIZE_SMALL = 257,
-        NODEHASH_TABLE_SIZE_MEDIUM = 2053,
-        NODEHASH_TABLE_SIZE_LARGE  = 4099,
-        NODEHASH_TABLE_SIZE_XLARGE = 16411
+        NODEHASH_TABLE_SIZE_XSMALL   = 5,
+        NODEHASH_TABLE_SIZE_SMALL    = 17,
+        NODEHASH_TABLE_SIZE_MEDIUM   = 31,
+        NODEHASH_TABLE_SIZE_LARGE    = 61,
+        NODEHASH_TABLE_SIZE_XLARGE   = 127,
+        NODEHASH_TABLE_SIZE_XXLARGE  = 257,
+        NODEHASH_TABLE_SIZE_XXXLARGE = 2053
     } NODEHASH_TABLE_SIZE;
     
-
-    // NODEHASH_DATA is defined in node.h
-    
-    typedef struct nodeHash_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in $P_object.c.
-        // Properties:
-        // Methods:
-    } NODEHASH_VTBL;
     
     
-    
-
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -128,6 +139,23 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
+#ifdef  NODEHASH_SINGLETON
+    NODEHASH_DATA *  nodeHash_Shared(
+        void
+    );
+
+    bool            nodeHash_SharedReset(
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to nodeHash object if successful, otherwise OBJ_NIL.
+     */
     NODEHASH_DATA * nodeHash_Alloc(
         void
     );
@@ -139,10 +167,14 @@ extern "C" {
     
     
     NODEHASH_DATA * nodeHash_New(
-        uint16_t        cHash           // [in] Hash Table Size
+        void
     );
     
+    NODEHASH_DATA * nodeHash_NewWithSize (
+        uint16_t        cHash       // [in] Hash Table Size
+    );
     
+
     ERESULT         nodeHash_NewFromJSONString(
         ASTR_DATA       *pString,
         NODEHASH_DATA   **ppData
@@ -154,9 +186,9 @@ extern "C" {
         char            *pString,
         NODEHASH_DATA   **ppData
     );
-    
-    
 
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -164,7 +196,7 @@ extern "C" {
 
     /* Size() returns the current number of used entries.
      * Returns:
-     *		Current Number of Entries in the Hash
+     *        Current Number of Entries in the Hash
      */
     uint32_t        nodeHash_getSize(
         NODEHASH_DATA   *this
@@ -186,14 +218,14 @@ extern "C" {
      @param     this    Object Pointer
      @param     pNode   Data Object Pointer
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
-                error code is returned.
+     error code is returned.
      */
-    ERESULT         nodeHash_Add(
+    ERESULT         nodeHash_Add (
         NODEHASH_DATA   *this,
         NODE_DATA       *pNode
     );
-
-    ERESULT         nodeHash_AddA(
+    
+    ERESULT         nodeHash_AddA (
         NODEHASH_DATA   *this,
         const
         char            *pName,             // UTF-8
@@ -209,14 +241,14 @@ extern "C" {
      @param     this    Object Pointer
      @param     pNode   Data Object Pointer
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
-                error code is returned.
+     error code is returned.
      */
-    ERESULT         nodeHash_AddUpdate(
+    ERESULT         nodeHash_AddUpdate (
         NODEHASH_DATA   *this,
         NODE_DATA       *pNode
     );
     
-    ERESULT         nodeHash_AddUpdateA(
+    ERESULT         nodeHash_AddUpdateA (
         NODEHASH_DATA    *this,
         const
         char            *pName,
@@ -224,18 +256,16 @@ extern "C" {
         OBJ_ID          pData
     );
     
-
-    /*! Add an object to the Hash Table if the supplied key does not exist
-     in the table or if duplicates are allowed.  The object being added
-     must support the compare() and hash() methods.
+    
+    /*! Calculate certain statistics about the hash table.
      @param     this        object pointer
      @param     pNumBuckets Number of Hash Buckets in Index
      @param     pNumEmpty   Number of Empty Hash Buckets
      @param     pNumMax     Maximum Number of nodes in any one Hash Bucket
      @param     pNumAvg     Average Number of nodes in Hash Buckets that
-     have nodes
+                            have nodes
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-     error code.
+                error code.
      */
     ERESULT         nodeHash_CalcHashStats(
         NODEHASH_DATA   *this,
@@ -246,69 +276,43 @@ extern "C" {
     );
     
     
-    /*!
-     Copy the hash. Any element of the Hash that has a copy method
-     will have that used to create a new object. Otherwise, the object
-     is just retained and added to the new hash.
-     @param     this    Object Pointer
-     @return    If successful, return a new hash table that must be released
-                otherwise return OBJ_NIL.
-     */
-    NODEHASH_DATA * nodeHash_Copy(
-        NODEHASH_DATA	*this
-    );
-    
-    
-    NODEHASH_DATA * nodeHash_DeepCopy(
-        NODEHASH_DATA    *this
-    );
-    
-    
-    ERESULT         nodeHash_Delete(
+    ERESULT         nodeHash_Delete (
         NODEHASH_DATA   *this,
-        int32_t         cls,
         NODE_DATA       *pNode
     );
     
-    ERESULT         nodeHash_DeleteA(
-        NODEHASH_DATA	*this,
+    ERESULT         nodeHash_DeleteA (
+        NODEHASH_DATA   *this,
         int32_t         cls,
         const
         char            *pName
     );
 
-    ERESULT         nodeHash_DeleteName(
-        NODEHASH_DATA   *this,
-        int32_t         cls,
-        NAME_DATA       *pName
-    );
     
-
     /*!
      Substitute environment variables into the current string using a BASH-like
      syntax.  Variable names should have the syntax of:
-        '$' '{'[a..zA..Z_][a..zA..Z0..9_]* '}'
-                    or
-        '$'[A..Za..z_][A..Za..z0..9_]*
+     '$' '{'[a..zA..Z_][a..zA..Z0..9_]* '}'
+     or
+     '$'[A..Za..z_][A..Za..z0..9_]*
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-                is returned.
+     is returned.
      */
-    ERESULT         nodeHash_Expand(
+    ERESULT         nodeHash_ExpandVars(
         NODEHASH_DATA   *this,
         ASTR_DATA       *pStr
     );
     
     
-    NODE_DATA *     nodeHash_Find(
+    NODE_DATA *     nodeHash_Find (
         NODEHASH_DATA   *this,
-        int32_t         cls,
         NODE_DATA       *pNode
     );
     
-    NODE_DATA *     nodeHash_FindA(
-        NODEHASH_DATA	*this,
+    NODE_DATA *     nodeHash_FindA (
+        NODEHASH_DATA    *this,
         int32_t         cls,
         const
         char            *pName
@@ -319,11 +323,11 @@ extern "C" {
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppArray Pointer to a node array pointer where data is to be returned if
-                        ERESULT_SUCCESS is returned.
+                ERESULT_SUCCESS is returned.
      @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
                 if ppArray is non-null.  Otherwise, ERESULT_* error code.
      */
-    ERESULT         nodeHash_FindArrayNodeInHashA(
+    ERESULT         nodeHash_FindArrayNodeInHashA (
         NODEHASH_DATA    *this,
         const
         char            *pSectionA,
@@ -336,7 +340,7 @@ extern "C" {
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     pInt    integer pointer where data is to be returned too if
-                        succesful ERESULT is returned.
+                succesful ERESULT is returned.
      @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
                 if pInt is non-null, otherwise, an ERESULT_* error code.
      */
@@ -349,34 +353,19 @@ extern "C" {
     
     
     /*!
-     Find a node by name and optionally a class.
-     @param     this    Object Pointer
-     @param     pName   Name Object Pointer (required)
-     @param     cls     integer class (0 == any class)
-     @return    If successful, a valid Node Object Pointer,
-                otherwise, OBJ_NIL.
-     */
-    NODE_DATA *     nodeHash_FindName(
-        NODEHASH_DATA   *this,
-        int32_t         cls,
-        NAME_DATA       *pName
-    );
-
-    
-    /*!
      Find a named node in the hash as structured in Remark #1 above.
      @param     this    Object Pointer
      @param     pSectionA Name of Node to be looked for
      @param     pTypeA  Name of Data Node ("array", "false", "hash",
-                        "integer", "null", "string" or "true")
+                "integer", "null", "string" or "true")
      @param     ppData  Pointer to Data Object Pointer to be returned if
-                        ERESULT_SUCCESS is returned.
+                ERESULT_SUCCESS is returned.
      @return    If successful, ERESULT_SUCCESS and the actual data object
                 pointer in *ppData if ppData is non-null.  Otherwise,
                 an ERESULT_* error code.
      @note      See Remark #1 above.
      */
-    ERESULT         nodeHash_FindNodeInHashA(
+    ERESULT         nodeHash_FindNodeInHashA (
         NODEHASH_DATA   *this,
         const
         char            *pSectionA,
@@ -391,13 +380,13 @@ extern "C" {
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppStr   Pointer to a string pointer to be returned if
-                        ERESULT_SUCCESS is returned and this pointer
-                        is non-null.
+     ERESULT_SUCCESS is returned and this pointer
+     is non-null.
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
-                if ppStr is non-null. Otherwise, an ERESULT_* error code.
+     if ppStr is non-null. Otherwise, an ERESULT_* error code.
      @note      See Remark #1 above.
      */
-    ERESULT         nodeHash_FindStringNodeInHashA(
+    ERESULT         nodeHash_FindStringNodeInHashA (
         NODEHASH_DATA   *this,
         const
         char            *pSectionA,
@@ -405,88 +394,61 @@ extern "C" {
     );
     
     
-    ERESULT         nodeHash_ForEach(
-        NODEHASH_DATA	*this,
-        P_VOIDEXIT2_BE  pScan,
-        OBJ_ID          pObj            // Used as first parameter of scan method
-    );
-    
-    
-    NODEHASH_DATA * nodeHash_Init(
-        NODEHASH_DATA   *this,
-        uint16_t        cHash           // [in] Hash Table Size
-    );
-
-
     /*!
-     Merge the other node hash into this one replacing nodes which have the
-     same name in each hash if requested to do so.
-     @param     this        Object Pointer
-     @param     pOther      Other hash Object Pointer which will be merged into
-                            this hash (required)
-     @param     fReplace    If true, replace existing nodes which match with
-                            the matching node from the other node hash.  If
-                            false, skip the merge of matching items.
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error code.
+     Scan all nodes in the hash in no particular order.
+     @param     this    Object Pointer
+     @param     pScan   Method to be executed for each node (required),
+                        second parameter when called is the node pointer
+     @param     pObj    First parameter of the pScan Method when called
+     @param     pArg3   Third parameter of the pScan Method when called
+     @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
+     if ppStr is non-null. Otherwise, an ERESULT_* error code.
+     @note      See Remark #1 above.
      */
-    ERESULT         nodeHash_Merge(
-        NODEHASH_DATA   *this,
-        NODEHASH_DATA   *pOther,
-        bool            fReplace
+    ERESULT         nodeHash_ForEach (
+        NODEHASH_DATA    *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,           // First parameter of scan method
+        //                              // Second parameter of scan method,
+        //                              // the node pointer (NODE_DATA *)
+        void            *pArg3          // Third parameter of scan method
     );
     
     
+    NODEHASH_DATA * nodeHash_Init (
+        NODEHASH_DATA   *this,
+        uint16_t        cHash       // [in] Hash Table Size
+    );
+
+
     /*!
      Return an array of all nodes in the hash sorted by name in
      ascending order.
      @param     this    Object Pointer
      @return    NodeArray object pointer which must be released if
-                successful.  Otherwise, OBJ_NIL and object's error
-                code is set to the specific error.
+     successful.  Otherwise, OBJ_NIL and object's error
+     code is set to the specific error.
      @warning   Remember to release the returned object.
      */
-    NODEARRAY_DATA * nodeHash_Nodes(
-        NODEHASH_DATA	*this
+    NODEARRAY_DATA * nodeHash_Nodes (
+        NODEHASH_DATA    *this
     );
     
     
     /*!
-     Return information about this object. This method can translate
-     methods to strings and vice versa, return the address of the
-     object information structure.
+     Create a string that describes this object and the objects within it.
      Example:
-     @code
-     // Return a method pointer for a string or NULL if not found.
-     void        *pMethod = nodeHash_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
-     @endcode
-     @param     objId   object pointer
-     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
-     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
-                        character string which represents the method name without
-                        the object name, "nodeHash", prefix,
-                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-                        address of the method to be found.
-     @return    If unsuccessful, NULL. Otherwise, for:
-                OBJ_QUERYINFO_TYPE_INFO: info pointer,
-                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     @code 
+        ASTR_DATA      *pDesc = nodeHash_ToDebugString(this,4);
+     @endcode 
+     @param     this    NODEHASH object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    void *          nodeHash_QueryInfo(
-        OBJ_ID          objId,
-        uint32_t        type,
-        void            *pData
-    );
-    
-    
-    /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return    If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
-     */
-    ASTR_DATA *     nodeHash_ToDebugString(
-        NODEHASH_DATA	*this,
+    ASTR_DATA *    nodeHash_ToDebugString (
+        NODEHASH_DATA     *this,
         int             indent
     );
     
@@ -497,13 +459,12 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
      otherwise OBJ_NIL.
      */
-    ASTR_DATA *     nodeHash_ToJSON(
+    ASTR_DATA *     nodeHash_ToJSON (
         NODEHASH_DATA   *this
     );
     
     
 
-    
     
 #ifdef	__cplusplus
 }

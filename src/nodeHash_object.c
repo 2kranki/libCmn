@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'nodeHash'
-//	Generated 01/24/2016 22:36:19
+//	Generated 11/27/2018 11:33:59
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,24 +32,32 @@
  */
 
 
-#include        "obj.h"
-#include        "nodeHash_internal.h"
+
+
+#define			NODEHASH_OBJECT_C	    1
+#include        <nodeHash_internal.h>
+#ifdef  NODEHASH_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
 struct nodeHash_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  NODEHASH_SINGLETON
+    volatile
+    NODEHASH_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct nodeHash_class_data_s NODEHASH_CLASS_DATA;
 
 
 
@@ -60,24 +69,30 @@ typedef struct nodeHash_class_data_s NODEHASH_CLASS_DATA;
 
 
 static
+void *          nodeHashClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+static
 const
 OBJ_INFO        nodeHash_Info;            // Forward Reference
 
 
 
-OBJ_ID          nodeHash_Class(
-    void
-);
-
-
 
 static
-bool            nodeHash_ClassIsKindOf(
+bool            nodeHashClass_IsKindOf (
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_NODEHASH_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -87,7 +102,7 @@ bool            nodeHash_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		nodeHashClass_WhoAmI (
     void
 )
 {
@@ -95,19 +110,137 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
+static
+const
+NODEHASH_CLASS_VTBL    class_Vtbl = {
+    {
+        &nodeHash_Info,
+        nodeHashClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        nodeHash_Class,
+        nodeHashClass_WhoAmI,
+        (P_OBJ_QUERYINFO)nodeHashClass_QueryInfo,
+        NULL                        // nodeHashClass_ToDebugString
+    },
+};
+
+
+
+//-----------------------------------------------------------
+//						Class Object
+//-----------------------------------------------------------
+
+NODEHASH_CLASS_DATA  nodeHash_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEHASH_CLASS, 0, 1},
+	//0
+};
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  NODEHASH_SINGLETON
+NODEHASH_DATA *     nodeHash_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(nodeHash_ClassObj.pSingleton);
+}
+
+
+bool            nodeHash_setSingleton (
+    NODEHASH_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (nodeHash_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(nodeHash_ClassObj.pSingleton));
+    }
+    nodeHash_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+NODEHASH_DATA *     nodeHash_Shared (
+    void
+)
+{
+    NODEHASH_DATA       *this = (OBJ_ID)(nodeHash_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = nodeHash_New( );
+        nodeHash_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // nodeHash_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            nodeHash_SharedReset (
+    void
+)
+{
+    NODEHASH_DATA       *this = (OBJ_ID)(nodeHash_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        nodeHash_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
 //---------------------------------------------------------------
 //                     Q u e r y  I n f o
 //---------------------------------------------------------------
 
 static
-void *          nodeHashClass_QueryInfo(
+void *          nodeHashClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEHASH_CLASS_DATA 
-                    *this = objId;
+    NODEHASH_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -117,6 +250,10 @@ void *          nodeHashClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(NODEHASH_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
@@ -150,20 +287,12 @@ void *          nodeHashClass_QueryInfo(
                         return nodeHash_New;
                     }
                     break;
-
-#ifdef XYZZY
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return nodeHash_ParseObject;
-                    }
-                    break;
-
+                    
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return nodeHashClass_WhoAmI;
                     }
                     break;
-#endif
                     
                 default:
                     break;
@@ -179,42 +308,17 @@ void *          nodeHashClass_QueryInfo(
 
 
 
-static
-const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&nodeHash_Info,
-    nodeHash_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    nodeHash_Class,
-    obj_ClassWhoAmI,
-    nodeHashClass_QueryInfo,    
-    NULL                        // class_ToDebugString
-};
-
-
-
-//-----------------------------------------------------------
-//						Class Object
-//-----------------------------------------------------------
 
 static
-const
-NODEHASH_CLASS_DATA  nodeHash_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEHASH_CLASS, 0, 1},
-	//0
-};
-
-
-
-static
-bool            nodeHash_IsKindOf(
+bool            nodeHash_IsKindOf (
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_NODEHASH == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLOCKS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -225,12 +329,12 @@ bool            nodeHash_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            nodeHash_Dealloc(
+void            nodeHash_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          nodeHash_Class(
+OBJ_ID          nodeHash_Class (
     void
 )
 {
@@ -239,7 +343,7 @@ OBJ_ID          nodeHash_Class(
 
 
 static
-uint16_t		nodeHash_WhoAmI(
+uint16_t		nodeHash_WhoAmI (
     void
 )
 {
@@ -248,13 +352,24 @@ uint16_t		nodeHash_WhoAmI(
 
 
 
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-NODEHASH_VTBL   nodeHash_Vtbl = {
+NODEHASH_VTBL     nodeHash_Vtbl = {
     {
         &nodeHash_Info,
         nodeHash_IsKindOf,
+#ifdef  NODEHASH_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
+#endif
         nodeHash_Dealloc,
         nodeHash_Class,
         nodeHash_WhoAmI,
@@ -264,10 +379,15 @@ NODEHASH_VTBL   nodeHash_Vtbl = {
         NULL,			// nodeHash_Disable,
         NULL,			// (P_OBJ_ASSIGN)nodeHash_Assign,
         NULL,			// (P_OBJ_COMPARE)nodeHash_Compare,
-        (P_OBJ_PTR)nodeHash_Copy,
-        (P_OBJ_DEEPCOPY)nodeHash_DeepCopy,
-        NULL 			// (P_OBJ_HASH)nodeHash_Hash
+        NULL, 			// (P_OBJ_PTR)nodeHash_Copy,
+        NULL, 			// (P_OBJ_PTR)nodeHash_DeepCopy,
+        NULL 			// (P_OBJ_HASH)nodeHash_Hash,
     },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //nodeHash_IsEnabled,
+ 
 };
 
 
@@ -276,9 +396,9 @@ static
 const
 OBJ_INFO        nodeHash_Info = {
     "nodeHash",
-    "Hash Table of Nodes",
+    "Hash of Nodes",	
     (OBJ_DATA *)&nodeHash_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&blocks_ClassObj,
     (OBJ_IUNKNOWN *)&nodeHash_Vtbl,
     sizeof(NODEHASH_DATA)
 };

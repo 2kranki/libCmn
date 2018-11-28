@@ -94,11 +94,11 @@ struct nodeEnum_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODEENUM_SINGLETON
-    NODEENUM_DATA *     nodeEnum_getSingleton(
+    NODEENUM_DATA * nodeEnum_getSingleton (
         void
     );
 
-    bool            nodeEnum_setSingleton(
+    bool            nodeEnum_setSingleton (
      NODEENUM_DATA       *pValue
 );
 #endif
@@ -109,35 +109,35 @@ struct nodeEnum_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeEnum_getSuperVtbl(
+    OBJ_IUNKNOWN *  nodeEnum_getSuperVtbl (
         NODEENUM_DATA     *this
     );
 
 
-    ERESULT         nodeEnum_Append(
+    ERESULT         nodeEnum_Append (
         NODEENUM_DATA   *this,
         NODE_DATA       *pNode
     );
     
     
-    void            nodeEnum_Dealloc(
+    void            nodeEnum_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODEENUM_DATA * nodeEnum_ParseObject(
+    NODEENUM_DATA * nodeEnum_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          nodeEnum_QueryInfo(
+    void *          nodeEnum_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeEnum_ToJSON(
+    ASTR_DATA *     nodeEnum_ToJSON (
         NODEENUM_DATA      *this
     );
 
@@ -146,7 +146,7 @@ struct nodeEnum_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			nodeEnum_Validate(
+    bool			nodeEnum_Validate (
         NODEENUM_DATA       *this
     );
 #endif

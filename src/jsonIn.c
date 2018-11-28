@@ -49,6 +49,7 @@
 #include        <name_internal.h>
 #include        <node_internal.h>
 #include        <nodeArray_internal.h>
+#include        <nodeBTP_internal.h>
 #include        <nodeHash_internal.h>
 #include        <null.h>
 #include        <number.h>
@@ -1299,6 +1300,20 @@ extern "C" {
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)node_ParseObject(this);
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(nodeArray_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)nodeArray_ParseObject(this);
+            return pObj;
+        }
+        
+        pInfo = obj_getInfo(nodeBTP_Class());
+        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)nodeBTP_ParseObject(this);
             return pObj;
         }
         

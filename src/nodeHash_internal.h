@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   nodeHash_internal.h
- *	Generated 07/22/2015 10:03:31
+ *	Generated 11/27/2018 11:33:59
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,96 +38,132 @@
 
 
 
-#include    <nodeHash.h>
-#include    <jsonIn.h>
-#include    <listdl.h>
-#include    <nodeList.h>
-#include    <str.h>
+
+#include        <nodeHash.h>
+#include        <blocks_internal.h>
+#include        <jsonIn.h>
+#include        <rbt_tree.h>
 
 
 #ifndef NODEHASH_INTERNAL_H
 #define	NODEHASH_INTERNAL_H
 
 
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-#if defined(__MACOSX_ENV__)
-#   define HASH_BLOCK_SIZE  4096
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#   define HASH_BLOCK_SIZE  4096
-#endif
 
+    //                      Hash Record Descriptor
     
-    //      Hash Node Descriptor
+    // The actual node pointer is the pData field of node.
+    
+    // Duplicate entries are not allowed in the red-black binary tree (RBT).
+    // So, we handle duplicates via a chain off of one entry in the RBT.
+    
 #pragma pack(push, 1)
-    typedef struct  nodeHash_node_s {
-        LISTDL_NODE     list;
-        NODE_DATA       *pNode;
-    } NODEHASH_NODE;
+    typedef struct  nodeHash_record_s {
+        RBT_NODE        node;           // MUST be first field.
+        uint32_t        hash;
+        uint32_t        unique;
+        LISTDL_DATA     dups;           // List Head or Node of Duplicate Chain
+    } NODEHASH_RECORD;
 #pragma pack(pop)
     
     
-    // Block Descriptor
-#pragma pack(push, 1)
-    typedef struct  nodeHash_block_s {
-        LISTDL_NODE     list;
-        NODEHASH_NODE   node[0];
-    } NODEHASH_BLOCK;
-#pragma pack(pop)
     
-    
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
 struct nodeHash_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
-#define NODEHASH_FLAG_DUPS  OBJ_FLAG_USER5  /* true == allow duplicates */
+    BLOCKS_DATA     super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    uint32_t        unique;         // Unique number given to entries as they are
+    //                              // added to the hash table
     uint32_t        size;
-    uint32_t        unique;
-
-    LISTDL_DATA     freeList;       // Free Node Linked List
-    LISTDL_DATA     blocks;
-    uint32_t        cBlock;         // Number of Nodes per Block
-    uint32_t        blockSize;
-    uint32_t        cHash;
-    LISTDL_DATA     *pHash;         // Main Hash Table
+    uint32_t        cHash;          // Number of Hash Buckets
+    RBT_TREE        *pHash;         // Main Hash Table
 
 };
 #pragma pack(pop)
 
     extern
+    struct nodeHash_class_data_s  nodeHash_ClassObj;
+
+    extern
     const
-    NODEHASH_VTBL   nodeHash_Vtbl;
+    NODEHASH_VTBL         nodeHash_Vtbl;
 
 
 
-    // Internal Functions
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  NODEHASH_SINGLETON
+    NODEHASH_DATA *     nodeHash_getSingleton(
+        void
+    );
+
+    bool            nodeHash_setSingleton(
+     NODEHASH_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  nodeHash_getSuperVtbl(
+        NODEHASH_DATA     *this
+    );
+
+
     void            nodeHash_Dealloc(
         OBJ_ID          objId
     );
-    
-    
-    /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned null object must be released.
-     */
+
+
     NODEHASH_DATA * nodeHash_ParseObject(
         JSONIN_DATA     *pParser
     );
+
+
+    void *          nodeHash_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     nodeHash_ToJSON(
+        NODEHASH_DATA      *this
+    );
+
+
+    RBT_TREE *      nodeHash_TreeFromHash (
+        NODEHASH_DATA   *this,
+        uint32_t        hash
+    );
     
     
+
+
 #ifdef NDEBUG
 #else
     bool			nodeHash_Validate(
-        NODEHASH_DATA       *cbp
+        NODEHASH_DATA       *this
     );
 #endif
 

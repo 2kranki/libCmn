@@ -296,7 +296,7 @@ NODELINK_VTBL     nodeLink_Vtbl = {
         node_Property,
         node_PropertyAdd,
         node_PropertyCount,
-        node_PropertyKeys
+        node_Properties
     },
     nodeLink_getIndex,
     nodeLink_setIndex,

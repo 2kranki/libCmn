@@ -190,11 +190,11 @@ extern "C" {
      Find a variable in the Substitution Variables.
      @param     this    object pointer
      @param     pName   Pointer to a UTF-8 Character String representing the
-     variable's symbolic name
+                        variable's symbolic name
      @return    If successful, string associated with the variable. Otherwise,
-     an OBJ_NIL.
+                an OBJ_NIL.
      */
-    ASTR_DATA *     genObj_DictFind(
+    ASTR_DATA *     genObj_DictFindA(
         GENOBJ_DATA     *this,
         const
         char            *pName

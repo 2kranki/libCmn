@@ -511,7 +511,7 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return (uint32_t)this->tree.size;
     }
 
 
@@ -812,7 +812,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            nodeBTP_Dealloc(
+    void            nodeBTP_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -851,7 +851,7 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeBTP_Disable(
+    ERESULT         nodeBTP_Disable (
         NODEBTP_DATA    *this
     )
     {
@@ -876,10 +876,83 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          D e l e t e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_Delete (
+        NODEBTP_DATA    *this,
+        NODE_DATA       *pNode
+    )
+    {
+        NODEBTP_RECORD  record = {0};
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode,OBJ_IDENT_NODE) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        iRc = rbt_Delete(&this->tree, pNode);
+        if (iRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_DATA_NOT_FOUND;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTP_DeleteA (
+        NODEBTP_DATA    *this,
+        int32_t         cls,
+        const
+        char            *pNameA             // UTF-8
+    )
+    {
+        ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
+        NODE_DATA       *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8AndClass(pNameA, cls, OBJ_NIL);
+        if (pNode) {
+            eRc = nodeBTP_Delete(this, pNode);
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeBTP_Enable(
+    ERESULT         nodeBTP_Enable (
         NODEBTP_DATA	*this
     )
     {
@@ -907,7 +980,7 @@ extern "C" {
     //                         E n u m
     //---------------------------------------------------------------
     
-    NODEENUM_DATA * nodeBTP_Enum(
+    NODEENUM_DATA * nodeBTP_Enum (
         NODEBTP_DATA    *this
     )
     {
@@ -947,7 +1020,7 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
-    NODE_DATA *     nodeBTP_FindNode(
+    NODE_DATA *     nodeBTP_Find (
         NODEBTP_DATA    *this,
         NODE_DATA       *pNode
     )
@@ -996,6 +1069,41 @@ extern "C" {
         
         // Return to caller.
         return OBJ_NIL;
+    }
+    
+    
+    NODE_DATA *     nodeBTP_FindA (
+        NODEBTP_DATA    *this,
+        int32_t         cls,
+        const
+        char            *pNameA             // UTF-8
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        NODE_DATA       *pFound = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if(NULL == pNameA) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8AndClass(pNameA, cls, OBJ_NIL);
+        if (pNode) {
+            pFound = nodeBTP_Find(this, pNode);
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+        }
+        
+        // Return to caller.
+        return pFound;
     }
     
     
@@ -1106,9 +1214,8 @@ extern "C" {
     //                         N o d e s
     //---------------------------------------------------------------
     
-    ERESULT         nodeBTP_Nodes(
-        NODEBTP_DATA    *this,
-        NODEARRAY_DATA  **ppNodes
+    NODEARRAY_DATA * nodeBTP_Nodes(
+        NODEBTP_DATA    *this
     )
     {
         NODEARRAY_DATA  *pNodes = OBJ_NIL;
@@ -1119,11 +1226,8 @@ extern "C" {
 #else
         if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == ppNodes ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
 #endif
         
@@ -1144,12 +1248,7 @@ extern "C" {
         }
 
         // Return to caller.
-        eRc = ERESULT_SUCCESS;
-    eom:
-        if (ppNodes) {
-            *ppNodes = pNodes;
-        }
-        return eRc;
+        return pNodes;
     }
     
     
@@ -1279,95 +1378,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  R i g t  D e g e n e r a t e
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeBTP_RightDegenerate(
-        NODEBTP_DATA    *this
-    )
-    {
-#ifdef XYZZY
-        NODELNKP_NODE   *pNode;
-        NODELNKP_NODE   *pParent;
-#endif
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#ifdef XYZZY
-        /* Alter the tree to be right degenerate (ie a singly-
-         * linked list using only the right child ptr).
-         */
-        pNode = nodeBTP_getRoot(this);
-        while( pNode ) {
-            pParent = nodeLnkP_getParent(pNode);
-            if( nodeLnkP_getLeftLink(pNode) ) {
-                nodeBTP_RotateRight(this, pNode);
-                if( pParent ) {
-                    if( nodeLnkP_getLeftLink(pParent) )
-                        pNode = nodeLnkP_getLeftLink(pParent);
-                    else
-                        pNode = nodeLnkP_getRightLink(pParent);
-                }
-                else
-                    pNode = nodeBTP_getRoot(this);
-            }
-            else
-                pNode = nodeLnkP_getRightLink(pNode);
-        }
-#endif
-        
-        // Return to caller.
-        //return ERESULT_SUCCESS;
-        return ERESULT_NOT_IMPLEMENTED;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     nodeBTP_ToJSON(
-        NODEBTP_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !nodeBTP_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1396,8 +1406,6 @@ extern "C" {
         OBJ_INFO        *pInfo;
         LISTDL_DATA     *pList = NULL;
         BLOCKS_NODE     *pEntry = NULL;
-        NODEBTP_RECORD  *pRecord;
-        NODE_DATA       *pNode;
         
         // Do initialization.
 #ifdef NDEBUG

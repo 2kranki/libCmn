@@ -75,7 +75,6 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <name.h>
-#include        <objHash.h>
 #include        <visitor.h>
 
 
@@ -151,9 +150,9 @@ extern "C" {
         bool            (*pSetOther)(NODE_DATA *, OBJ_ID);
         // Methods:
         OBJ_ID          (*pProperty)(NODE_DATA *, const char *);
-        ERESULT         (*pPropertyAdd)(NODE_DATA *, const char *, NODE_DATA *);
+        ERESULT         (*pPropertyAdd)(NODE_DATA *, const char *, OBJ_ID);
         uint32_t        (*pPropertyCount)(NODE_DATA	*);
-        ASTRARRAY_DATA * (*pPropertyKeys)(NODE_DATA *);
+        NODEARRAY_DATA * (*pPropertyKeys)(NODE_DATA *);
     } NODE_VTBL;
     
     
@@ -328,7 +327,7 @@ extern "C" {
     );
     
     
-    OBJHASH_DATA *  node_getProperties(
+    NODEBTP_DATA *  node_getProperties(
         NODE_DATA       *this
     );
     
@@ -447,8 +446,8 @@ extern "C" {
     ERESULT         node_PropertyAdd(
         NODE_DATA		*this,
         const
-        char            *pName,
-        NODE_DATA       *pData
+        char            *pNameA,
+        OBJ_ID          pData
     );
     
     
@@ -457,7 +456,7 @@ extern "C" {
     );
     
     
-    ASTRARRAY_DATA * node_PropertyKeys(
+    NODEARRAY_DATA * node_Properties(
         NODE_DATA       *this
     );
     

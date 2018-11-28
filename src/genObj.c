@@ -105,7 +105,7 @@ extern "C" {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eor;
             }
-            eRc = nodeHash_AddA(this->pDict, GENOBJ_CLASSNAME, 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_CLASSNAME, pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -114,7 +114,7 @@ extern "C" {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eor;
             }
-            eRc = nodeHash_AddA(this->pDict, GENOBJ_CLASSNAME_UC, 0, pStr2);
+            eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_CLASSNAME_UC, pStr2);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -157,47 +157,47 @@ extern "C" {
             if (OBJ_NIL == pStr1) {
                 return ERESULT_OUT_OF_MEMORY;
             }
-            eRc = nodeHash_AddA(this->pDict, GENOBJ_DATETIME, 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_DATETIME, pStr1);
             pStrUtf8 = AStr_CStringA(pStr1,NULL);
             obj_Release(pStr1);
             pStrUtf8[2] = '\0';         // Month
             pStr1 = AStr_NewA(&pStrUtf8[0]);
-            eRc = nodeHash_AddA(this->pDict, "M", 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, "M", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[5] = '\0';         // Day
             pStr1 = AStr_NewA(&pStrUtf8[3]);
-            eRc = nodeHash_AddA(this->pDict, "D", 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, "D", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[10] = '\0';         // Year
             pStr1 = AStr_NewA(&pStrUtf8[6]);
-            eRc = nodeHash_AddA(this->pDict, "Y", 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, "Y", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[13] = '\0';         // Hours
             pStr1 = AStr_NewA(&pStrUtf8[11]);
-            eRc = nodeHash_AddA(this->pDict, "H", 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, "H", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[16] = '\0';         // Mins
             pStr1 = AStr_NewA(&pStrUtf8[14]);
-            eRc = nodeHash_AddA(this->pDict, "N", 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, "N", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[19] = '\0';        // Secs
             pStr1 = AStr_NewA(&pStrUtf8[17]);
-            eRc = nodeHash_AddA(this->pDict, "S", 0, pStr1);
+            eRc = nodeBTP_AddA(this->pDict, 0, "S", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -305,7 +305,7 @@ extern "C" {
     //                        D i c t i o n a r y
     //---------------------------------------------------------------
     
-    NODEHASH_DATA * genObj_getDict(
+    NODEBTP_DATA *  genObj_getDict(
         GENOBJ_DATA     *this
     )
     {
@@ -324,7 +324,7 @@ extern "C" {
     
     bool            genObj_setDict(
         GENOBJ_DATA     *this,
-        NODEHASH_DATA   *pValue
+        NODEBTP_DATA    *pValue
     )
     {
 #ifdef NDEBUG
@@ -719,7 +719,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, pValue);
+        eRc = nodeBTP_AddA(this->pDict, 0, pName, pValue);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -731,7 +731,7 @@ extern "C" {
                     eRc = ERESULT_OUT_OF_MEMORY;
                     return eRc;
                 }
-                eRc = nodeHash_AddA(this->pDict, GENOBJ_CLASSNAME_UC, 0, pValueUC);
+                eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_CLASSNAME_UC, pValueUC);
                 obj_Release(pValueUC);
                 pValueUC = OBJ_NIL;
                 if (ERESULT_FAILED(eRc)) {
@@ -745,7 +745,7 @@ extern "C" {
                 if (OBJ_NIL == pValueUC) {
                     return ERESULT_OUT_OF_MEMORY;
                 }
-                eRc = nodeHash_AddA(this->pDict, GENOBJ_SUPER_CLASSNAME_UC, 0, pValueUC);
+                eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_SUPER_CLASSNAME_UC, pValueUC);
                 obj_Release(pValueUC);
                 pValueUC = OBJ_NIL;
                 if (ERESULT_FAILED(eRc)) {
@@ -802,7 +802,7 @@ extern "C" {
     }
     
     
-    ASTR_DATA *     genObj_DictFind(
+    ASTR_DATA *     genObj_DictFindA(
         GENOBJ_DATA     *this,
         const
         char            *pName
@@ -828,7 +828,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(this->pDict, 0, pName);
+        pNode = nodeBTP_FindA(this->pDict, 0, pName);
         if (pNode) {
             pValue = node_getData(pNode);
             BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
@@ -857,7 +857,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeHash_DeleteA(this->pDict, 0, pName);
+        eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
         eRc = genObj_DictAdd(this, pName, pValue);
         
         // Return to caller.
@@ -884,7 +884,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeHash_DeleteA(this->pDict, 0, pName);
+        eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
         eRc = genObj_DictAddA(this, pName, pValueA);
         
         // Return to caller.
@@ -917,11 +917,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -968,11 +968,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -1053,12 +1053,12 @@ extern "C" {
         BREAK_NULL(pOffset);
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
@@ -1417,11 +1417,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -1443,9 +1443,9 @@ extern "C" {
         AStr_AppendA(*ppStr, " *\t1.\tNone\n");
         AStr_AppendA(*ppStr, " * History:\n");
         AStr_AppendPrint(*ppStr, " *\t%s/%s/%s\tGenerated.\n",
-                         AStr_getData(genObj_DictFind(this, "M")),
-                         AStr_getData(genObj_DictFind(this, "D")),
-                         AStr_getData(genObj_DictFind(this, "Y"))
+                         AStr_getData(genObj_DictFindA(this, "M")),
+                         AStr_getData(genObj_DictFindA(this, "D")),
+                         AStr_getData(genObj_DictFindA(this, "Y"))
         );
         AStr_AppendA(*ppStr, " *\n");
         AStr_AppendA(*ppStr, " *\n");
@@ -1488,11 +1488,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return OBJ_NIL;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return OBJ_NIL;
         }
@@ -1726,12 +1726,12 @@ extern "C" {
         }
         AStr_AppendCharRepeatA(pOffset, offset, ' ');
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if ((OBJ_NIL == pClassName) || !obj_IsKindOf(pClassName, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if ((OBJ_NIL == pClassNameUC) || !obj_IsKindOf(pClassNameUC, OBJ_IDENT_ASTR)) {
             obj_Release(pOffset);
             return ERESULT_KEY_NOT_FOUND;
@@ -1952,7 +1952,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -1999,11 +1999,11 @@ extern "C" {
         }
 #endif
         
-        pClassName = genObj_DictFind(this, GENOBJ_CLASSNAME);
+        pClassName = genObj_DictFindA(this, GENOBJ_CLASSNAME);
         if (OBJ_NIL == pClassName) {
             return ERESULT_KEY_NOT_FOUND;
         }
-        pClassNameUC = genObj_DictFind(this, GENOBJ_CLASSNAME_UC);
+        pClassNameUC = genObj_DictFindA(this, GENOBJ_CLASSNAME_UC);
         if (OBJ_NIL == pClassNameUC) {
             return ERESULT_KEY_NOT_FOUND;
         }
@@ -2152,7 +2152,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genObj_Vtbl);
         
-        this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        this->pDict = nodeBTP_New( );
         if (OBJ_NIL == this->pDict) {
             obj_Release(this);
             return OBJ_NIL;
@@ -2386,7 +2386,7 @@ extern "C" {
                     
                 case 3:             // Substitute name;
                 {
-                    pData = genObj_DictFind(this, name);
+                    pData = genObj_DictFindA(this, name);
                     if (pData) {
                         AStr_Append(pAStr, pData);
                     }

@@ -498,7 +498,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeGraph_Vtbl);
         
-        this->pNodes = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        this->pNodes = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
         if (OBJ_NIL == this->pNodes) {
             DEBUG_BREAK();
             obj_Release(this);

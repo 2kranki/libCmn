@@ -40,7 +40,7 @@
 
 
 #include    <genObj.h>
-#include    <nodeHash.h>
+#include    <nodeBTP.h>
 #include    <szData.h>
 
 
@@ -70,7 +70,7 @@ struct genObj_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;        // Needed for Inheritance
 
     // Common Data
-    NODEHASH_DATA   *pDict;             // Dictionary
+    NODEBTP_DATA    *pDict;             // Dictionary
     ASTR_DATA       *pDateTime;
     uint8_t         fJson;              // Include JSON support
     uint8_t         fSingleton;         // Include Singleton support

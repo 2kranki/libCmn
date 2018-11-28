@@ -68,6 +68,37 @@ char        *strings[] = {
 
 
 
+ERESULT         scanExit(
+    NODEHASH_DATA   *this,
+    NODEHASH_RECORD *pRecord,
+    void            *pArg3
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RBT_NODE        *pNode = &pRecord->node;
+    NODE_DATA       *pNode2 = pRecord->node.pData;
+    char            *pName;
+    
+    pName = node_getNameUTF8(pNode2);
+    fprintf(
+        stderr,
+        "\t\t%p  L=%p R=%p %s   D=%p U=%d  cls=%4d %s\n",
+        pNode,
+        pNode->pLink[RBT_LEFT],
+        pNode->pLink[RBT_RIGHT],
+        pNode->color ? "red" : "black",
+        pNode->pData,
+        pRecord->unique,
+        node_getClass(pNode2),
+        pName
+    );
+    mem_Free(pName);
+    
+    return eRc;
+}
+
+
+
 int         setUp(
     const
     char        *pTestName
@@ -198,7 +229,7 @@ int         test_nodeHash_AddFindDelete02(
     NODEHASH_DATA   *pHash;
     NODE_DATA       *pNode;
     NODE_DATA       *pNodeFnd;
-    NODEHASH_NODE   *pIntNode;
+    NODEHASH_RECORD *pRecord;
     ERESULT         eRc;
     char            **pStrA;
     uint32_t        numBuckets;     // Number of Hash Buckets
@@ -239,21 +270,22 @@ int         test_nodeHash_AddFindDelete02(
                 numAvg
         );
         
+        fprintf(stderr, "Hash Chains %d:\n", pHash->cHash);
         iMax = pHash->cHash;
         for (i=0; i<iMax; ++i) {
-            LISTDL_DATA     *pNodeList;
+            RBT_TREE        *pTree;
             ASTR_DATA       *pStr = OBJ_NIL;
             
-            pNodeList = &pHash->pHash[i];
-            pIntNode = listdl_Head(pNodeList);
-            fprintf(stderr, "\tHash Chain %d:\n", (i+1));
-            while ( pIntNode ) {
-                pStr = node_ToDebugString(pIntNode->pNode, 4);
-                fprintf(stderr, "\t%s", AStr_getData(pStr));
-                obj_Release(pStr);
-                pIntNode = listdl_Next(pNodeList, pIntNode);
-            }
-                
+            fprintf(stderr, "\tChain %4d:\n", i);
+            pTree = &pHash->pHash[i];
+            eRc =   rbt_VisitNodeInRecurse(
+                                           pTree,
+                                           pTree->pRoot,
+                                           (void *)scanExit,
+                                           pHash,               // Used as first parameter of scan method
+                                           NULL                 // Used as third parameter of scan method
+                    );
+            
         }
         
         obj_Release(pHash);
@@ -266,6 +298,7 @@ int         test_nodeHash_AddFindDelete02(
 
 
 
+#ifdef XYZZY
 int         test_nodeHash_JSON01(
     const
     char        *pTestName
@@ -312,9 +345,11 @@ int         test_nodeHash_JSON01(
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
+#endif
 
 
 
+#ifdef XYZZY
 int         test_nodeHash_Merge01(
     const
     char        *pTestName
@@ -378,9 +413,11 @@ int         test_nodeHash_Merge01(
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
+#endif
 
 
 
+#ifdef XYZZY
 int             test_nodeHash_Expand01(
     const
     char            *pTestName
@@ -439,14 +476,15 @@ int             test_nodeHash_Expand01(
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
+#endif
 
 
 
 
 TINYTEST_START_SUITE(test_nodeHash);
-    TINYTEST_ADD_TEST(test_nodeHash_Expand01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_nodeHash_Merge01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_nodeHash_Expand01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_nodeHash_Merge01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_OpenClose,setUp,tearDown);

@@ -39,6 +39,10 @@
 
 #include    <nodeArray.h>
 #include    <objArray.h>
+#include    <jsonIn.h>
+
+
+
 
 
 #ifndef NODEARRAY_INTERNAL_H
@@ -81,6 +85,11 @@ struct nodeArray_data_s	{
     );
 
 
+    NODEARRAY_DATA * nodeArray_ParseObject(
+        JSONIN_DATA     *pParser
+    );
+    
+    
     void *          nodeArray_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,

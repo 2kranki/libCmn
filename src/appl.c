@@ -1566,7 +1566,7 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeHash_New( 17 );
+            this->pProperties = nodeHash_New( );
             if (OBJ_NIL == this->pProperties) {
                 return ERESULT_INSUFFICIENT_MEMORY;
             }

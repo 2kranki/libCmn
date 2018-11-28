@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   nodeHash_JSON.c
+ * File:   nodeArray_JSON.c
  *
- * Created on 06/19/2018 from objHash_JSON
+ * Created on 11/16/2018 from nodeHash_JSON
  */
 
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <nodeHash_internal.h>
+#include    <nodeBTP_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -49,6 +49,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <jsonIn.h>
+#include    <listdl.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -70,7 +71,7 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            nodeHash_Int64ToChrClean(
+    void            nodeBTP_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
     )
@@ -105,19 +106,19 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    NODEHASH_DATA * nodeHash_ParseObject(
+    NODEBTP_DATA *  nodeBTP_ParseObject(
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        NODEHASH_DATA   *pObject = OBJ_NIL;
+        NODEBTP_DATA    *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //uint32_t        cls = 0;
         //OBJ_ID          pObj = OBJ_NIL;
         //uint8_t         *pUtf8;
         //SRCLOC_DATA     *pSrc = OBJ_NIL;
-        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        //NODEBTP_DATA    *pTree = OBJ_NIL;
         
         pInfo = obj_getInfo(node_Class());
         
@@ -186,9 +187,9 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         nodeHash_NewFromJSONString(
+    ERESULT         nodeBTP_NewFromJSONString(
         ASTR_DATA       *pString,
-        NODEHASH_DATA   **ppData
+        NODEBTP_DATA    **ppData
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -473,10 +474,10 @@ extern "C" {
     
     
 
-    ERESULT         nodeHash_NewFromJSONStringA(
+    ERESULT         nodeBTP_NewFromJSONStringA(
         const
         char            *pString,
-        NODEHASH_DATA   **ppData
+        NODEBTP_DATA    **ppData
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
@@ -484,7 +485,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = nodeHash_NewFromJSONString(pStr, ppData);
+            eRc = nodeBTP_NewFromJSONString(pStr, ppData);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -495,8 +496,8 @@ extern "C" {
     
     
     
-    ASTR_DATA *     nodeHash_ToJSON(
-        NODEHASH_DATA   *this
+    ASTR_DATA *     nodeBTP_ToJSON(
+        NODEBTP_DATA    *this
     )
     {
         uint32_t        i;
@@ -505,7 +506,6 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA       *pData;
         LISTDL_DATA     *pList = NULL;
         BLOCKS_NODE     *pEntry = NULL;
         //NODE_DATA       *pNode;
@@ -515,13 +515,10 @@ extern "C" {
             void            *pData
         );
         //ASTR_DATA       *pWrkStr;
-        ASTR_DATA *     (*pToJSON)(
-            OBJ_ID          objId
-        );
 
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate(this) ) {
+        if( !nodeBTP_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
@@ -529,27 +526,35 @@ extern "C" {
 #endif
         pInfo = obj_getInfo(this);
 
-        // Scan the Hash Table insuring that all entries are Nodes
+        // Scan the Tree insuring that all entries are Nodes
         // which have the "ToJSON" method.
         fRc = true;
         pList = blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
-            NODEHASH_RECORD     *pRecord = (NODEHASH_RECORD *)pEntry->data;
+            NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
             RBT_NODE            *pNode = &pRecord->node;
             
-            if (!obj_IsKindOf(pNode->pData, OBJ_IDENT_NODE)) {
+            if (obj_IsKindOf(pNode->pData, OBJ_IDENT_NODE))
+                ;
+            else {
                 fRc = false;
                 break;
             }
             pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
             if (pQueryInfo) {
-                pToJSON = (*pQueryInfo)(
+                ASTR_DATA *     (*pToJSON)(
+                    OBJ_ID          objId
+                );
+                
+                pToJSON =   (*pQueryInfo)(
                                         pNode->pData,
                                         OBJ_QUERYINFO_TYPE_METHOD,
                                         "ToJSON"
-                                        );
-                if (NULL == pToJSON) {
+                            );
+                if (pToJSON)
+                    ;
+                else {
                     fRc = false;
                     break;
                 }
@@ -558,7 +563,7 @@ extern "C" {
                 fRc = false;
                 break;
             }
-            
+
             pEntry = listdl_Next(pList, pEntry);
         }
         
@@ -572,7 +577,7 @@ extern "C" {
                     pStr,
                     "{\"objectType\":\"%s\",\n\t\"count\":%d,\n\t\"entries:[\n",
                     pInfo->pClassName,
-                    this->size
+                    nodeBTP_getSize(this)
         );
         
         // Scan the Hash Table creating entries for each of the objects
@@ -581,21 +586,25 @@ extern "C" {
         pList = blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
-            NODEHASH_RECORD     *pRecord = (NODEHASH_RECORD *)pEntry->data;
+            NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
             RBT_NODE            *pNode = &pRecord->node;
             
-            pData = OBJ_NIL;
             pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
             if (pQueryInfo) {
+                ASTR_DATA *     (*pToJSON)(
+                                           OBJ_ID          objId
+                                           );
+                
                 pToJSON =   (*pQueryInfo)(
-                                      pNode->pData,
-                                      OBJ_QUERYINFO_TYPE_METHOD,
-                                      "ToJSON"
-                            );
+                                          pNode->pData,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                          );
                 if (pToJSON) {
+                    ASTR_DATA       *pData;
+                    
                     pData = (*pToJSON)(pNode->pData);
                     if (pData) {
-                        //AStr_AppendPrint(pStr, "/* %d */\n", j++);
                         AStr_Append(pStr, pData);
                         obj_Release(pData);
                         pData = OBJ_NIL;
@@ -608,6 +617,11 @@ extern "C" {
                     }
                 }
             }
+            else {
+                fRc = false;
+                break;
+            }
+            
             pEntry = listdl_Next(pList, pEntry);
         }
         AStr_AppendA(pStr, "]\n\n\n");

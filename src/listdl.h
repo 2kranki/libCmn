@@ -99,6 +99,8 @@ extern	"C" {
     // This control block must be provided on entry to every function
     // in this system.  It must be initialized to binary zeroes prior
     // to the first call to any functions within this system.
+    // Warning -- Do not add any fields before pHead and pTail since
+    //          they may be used in place of LISTDL_NODE.
     typedef struct	listdl_data_s {
         LISTDL_NODE     *pHead;
         LISTDL_NODE     *pTail;

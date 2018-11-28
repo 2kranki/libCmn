@@ -206,7 +206,7 @@ extern "C" {
             return pNode;
         }
         
-        pHash = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+        pHash = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
         if (pHash == OBJ_NIL) {
             DEBUG_BREAK();
             return OBJ_NIL;

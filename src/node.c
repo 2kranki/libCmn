@@ -667,7 +667,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //---------------------------------------------------------------
     
-    OBJHASH_DATA * node_getProperties(
+    NODEBTP_DATA *  node_getProperties(
         NODE_DATA       *this
     )
     {
@@ -687,7 +687,7 @@ extern "C" {
     
     bool            node_setProperties(
         NODE_DATA       *this,
-        OBJHASH_DATA    *pValue
+        NODEBTP_DATA    *pValue
     )
     {
 #ifdef NDEBUG
@@ -1361,12 +1361,11 @@ extern "C" {
     OBJ_ID          node_Property(
         NODE_DATA       *this,
         const
-        char            *pName
+        char            *pNameA
     )
     {
         OBJ_ID          pProperty = OBJ_NIL;
-        SZDATA_DATA     *pData = OBJ_NIL;
-        SZDATA_DATA     *pFound = OBJ_NIL;
+        NODE_DATA       *pFound = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1378,14 +1377,9 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            pData = szData_NewA(pName);
-            if (pData) {
-                pFound = objHash_Find(this->pProperties, pData);
-                obj_Release(pData);
-                pData = OBJ_NIL;
-                if (pFound) {
-                    pProperty = szData_getData(pFound);
-                }
+            pFound = nodeBTP_FindA(this->pProperties, 0, pNameA);
+            if (pFound) {
+                pProperty = node_getData(pFound);
             }
         }
         
@@ -1402,12 +1396,12 @@ extern "C" {
     ERESULT         node_PropertyAdd(
         NODE_DATA       *this,
         const
-        char            *pName,
-        NODE_DATA       *pData
+        char            *pNameA,
+        OBJ_ID          pData
     )
     {
         ERESULT         eRc;
-        SZDATA_DATA     *pSzData = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1416,31 +1410,30 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pData) {
+        if ((OBJ_NIL == pData) && obj_IsKindOf(this, OBJ_IDENT_NODE)) {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
         if (OBJ_NIL == this->pProperties) {
-            this->pProperties = objHash_New(OBJHASH_TABLE_SIZE_XXXSMALL);
+            this->pProperties = nodeBTP_New( );
             if (OBJ_NIL == this->pProperties) {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eom;
             }
         }
         
-        pSzData = szData_NewA(pName);
-        if (pSzData == OBJ_NIL) {
+        pNode = node_NewWithUTF8AndClass(pNameA, 0, pData);
+        if (pNode == OBJ_NIL) {
             eRc = ERESULT_OUT_OF_MEMORY;
             goto eom;
         }
-        szData_setData(pSzData, pData);
-        eRc = objHash_Add(this->pProperties, pSzData, NULL);
+        eRc = nodeBTP_Add(this->pProperties, pNode, true);
         if (ERESULT_FAILED(eRc)) {
             goto eom;
         }
-        obj_Release(pSzData);
-        pSzData = OBJ_NIL;
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
         
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -1470,7 +1463,7 @@ extern "C" {
         }
 #endif
         if (this->pProperties) {
-            num = objHash_getSize(this->pProperties);
+            num = nodeBTP_getSize(this->pProperties);
         }
         
         // Return to caller.
@@ -1483,16 +1476,11 @@ extern "C" {
     //                    P r o p e r t y  K e y s
     //---------------------------------------------------------------
     
-    ASTRARRAY_DATA * node_PropertyKeys(
+    NODEARRAY_DATA * node_Properties(
         NODE_DATA       *this
     )
     {
-        ERESULT         eRc;
-        ASTRARRAY_DATA  *pArray = OBJ_NIL;
-        OBJENUM_DATA    *pEnum = OBJ_NIL;
-        uint32_t        i;
-        SZDATA_DATA     *pData;
-        ASTR_DATA       *pStr = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1504,29 +1492,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            pEnum = objHash_Enum(this->pProperties);
-            if (pEnum ==  OBJ_NIL) {
-                return pArray;
-            }
-            pArray = AStrArray_New();
-            if (pArray ==  OBJ_NIL) {
-                return pArray;
-            }
-            for (;;) {
-                eRc = objEnum_Next(pEnum, 1, (OBJ_ID *)&pData, &i);
-                if (i)
-                    ;
-                else
-                    break;
-                pStr = AStr_NewA(szData_getName(pData));
-                if (pStr) {
-                    eRc = AStrArray_AppendStr(pArray, pStr, NULL);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            obj_Release(pEnum);
-            pEnum = OBJ_NIL;
+            pArray = nodeBTP_Nodes(this->pProperties);
         }
         
         // Return to caller.
@@ -1765,6 +1731,8 @@ extern "C" {
             if ( obj_IsKindOf(this, OBJ_IDENT_NODE) )
                 ;
             else if ( obj_IsKindOf(this, OBJ_IDENT_NODELINK) )
+                ;
+            else if ( obj_IsKindOf(this, OBJ_IDENT_NODELNKP) )
                 ;
             else
                 return false;

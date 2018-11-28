@@ -276,7 +276,7 @@ NODE_VTBL       node_Vtbl = {
     node_Property,
     node_PropertyAdd,
     node_PropertyCount,
-    node_PropertyKeys
+    node_Properties
 };
 
 

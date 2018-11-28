@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'objHash'
-//	Generated 01/24/2016 22:35:13
+//	Generated 11/27/2018 11:34:09
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,24 +32,32 @@
  */
 
 
-#include        "obj.h"
-#include        "objHash_internal.h"
+
+
+#define			OBJHASH_OBJECT_C	    1
+#include        <objHash_internal.h>
+#ifdef  OBJHASH_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
 struct objHash_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  OBJHASH_SINGLETON
+    volatile
+    OBJHASH_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct objHash_class_data_s OBJHASH_CLASS_DATA;
 
 
 
@@ -60,27 +69,30 @@ typedef struct objHash_class_data_s OBJHASH_CLASS_DATA;
 
 
 static
-const
-OBJ_INFO        objHash_Info;            // Forward Reference
-
-
-static
-void *          objHashClass_QueryInfo(
+void *          objHashClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 );
 
 
+static
+const
+OBJ_INFO        objHash_Info;            // Forward Reference
+
+
 
 
 static
-bool            objHash_ClassIsKindOf(
+bool            objHashClass_IsKindOf (
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_OBJHASH_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -90,7 +102,7 @@ bool            objHash_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		objHashClass_WhoAmI (
     void
 )
 {
@@ -98,17 +110,26 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&objHash_Info,
-    objHash_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    objHash_Class,
-    obj_ClassWhoAmI,
-    (P_OBJ_QUERYINFO)objHashClass_QueryInfo,
+OBJHASH_CLASS_VTBL    class_Vtbl = {
+    {
+        &objHash_Info,
+        objHashClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        objHash_Class,
+        objHashClass_WhoAmI,
+        (P_OBJ_QUERYINFO)objHashClass_QueryInfo,
+        NULL                        // objHashClass_ToDebugString
+    },
 };
 
 
@@ -117,12 +138,94 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
-const
 OBJHASH_CLASS_DATA  objHash_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJHASH_CLASS, 0, 1},
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJHASH_CLASS, 0, 1},
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  OBJHASH_SINGLETON
+OBJHASH_DATA *     objHash_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(objHash_ClassObj.pSingleton);
+}
+
+
+bool            objHash_setSingleton (
+    OBJHASH_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (objHash_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(objHash_ClassObj.pSingleton));
+    }
+    objHash_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+OBJHASH_DATA *     objHash_Shared (
+    void
+)
+{
+    OBJHASH_DATA       *this = (OBJ_ID)(objHash_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = objHash_New( );
+        objHash_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // objHash_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            objHash_SharedReset (
+    void
+)
+{
+    OBJHASH_DATA       *this = (OBJ_ID)(objHash_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        objHash_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -131,7 +234,7 @@ OBJHASH_CLASS_DATA  objHash_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          objHashClass_QueryInfo(
+void *          objHashClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -146,7 +249,7 @@ void *          objHashClass_QueryInfo(
     }
     
     switch (type) {
-            
+      
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
             return (void *)sizeof(OBJHASH_DATA);
             break;
@@ -155,12 +258,12 @@ void *          objHashClass_QueryInfo(
             return this;
             break;
             
-            // Query for an address to specific data within the object.
-            // This should be used very sparingly since it breaks the
-            // object's encapsulation.
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
-                    
+ 
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
                         return (void *)&objHash_Info;
@@ -176,19 +279,18 @@ void *          objHashClass_QueryInfo(
             return (void *)obj_getInfo(this);
             break;
             
-#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return nodeLink_ParseObject;
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return objHash_New;
                     }
                     break;
                     
-                case 'W':
+                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return nodeLinkClass_WhoAmI;
+                        return objHashClass_WhoAmI;
                     }
                     break;
                     
@@ -196,7 +298,6 @@ void *          objHashClass_QueryInfo(
                     break;
             }
             break;
-#endif
             
         default:
             break;
@@ -207,13 +308,17 @@ void *          objHashClass_QueryInfo(
 
 
 
+
 static
-bool            objHash_IsKindOf(
+bool            objHash_IsKindOf (
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_OBJHASH == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLOCKS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -224,12 +329,12 @@ bool            objHash_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            objHash_Dealloc(
+void            objHash_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          objHash_Class(
+OBJ_ID          objHash_Class (
     void
 )
 {
@@ -238,7 +343,7 @@ OBJ_ID          objHash_Class(
 
 
 static
-uint16_t		objHash_WhoAmI(
+uint16_t		objHash_WhoAmI (
     void
 )
 {
@@ -246,26 +351,43 @@ uint16_t		objHash_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-OBJHASH_VTBL    objHash_Vtbl = {
+OBJHASH_VTBL     objHash_Vtbl = {
     {
         &objHash_Info,
         objHash_IsKindOf,
+#ifdef  OBJHASH_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
+#endif
         objHash_Dealloc,
         objHash_Class,
         objHash_WhoAmI,
         (P_OBJ_QUERYINFO)objHash_QueryInfo,
         (P_OBJ_TOSTRING)objHash_ToDebugString,
-        NULL,               // objHash_Enable,
-        NULL,               // objHash_Disable,
-        (P_OBJ_ASSIGN)objHash_Assign,
-        NULL,               // (P_OBJ_COMPARE)objHash_Compare,
-        (P_OBJ_PTR)objHash_Copy,
-        NULL,               // (P_OBJ_DEEPCOPY)
-        NULL                // (P_OBJ_HASH)objHash_Hash
-    }
+        NULL,			// objHash_Enable,
+        NULL,			// objHash_Disable,
+        NULL,			// (P_OBJ_ASSIGN)objHash_Assign,
+        NULL,			// (P_OBJ_COMPARE)objHash_Compare,
+        NULL, 			// (P_OBJ_PTR)objHash_Copy,
+        NULL, 			// (P_OBJ_PTR)objHash_DeepCopy,
+        NULL 			// (P_OBJ_HASH)objHash_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //objHash_IsEnabled,
+ 
 };
 
 
@@ -274,9 +396,11 @@ static
 const
 OBJ_INFO        objHash_Info = {
     "objHash",
-    "Object Hash Table",
+    "Hash of Objects",
     (OBJ_DATA *)&objHash_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_DATA *)&blocks_ClassObj,
+    (OBJ_IUNKNOWN *)&objHash_Vtbl,
+    sizeof(OBJHASH_DATA)
 };
 
 

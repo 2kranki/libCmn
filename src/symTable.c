@@ -741,7 +741,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        pHash = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        pHash = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
         if (OBJ_NIL == pHash) {
             DEBUG_BREAK();
             obj_Release(this);
