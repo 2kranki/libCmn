@@ -4,7 +4,8 @@
  *	Generated 11/27/2018 11:33:59
  *
  * Notes:
- *  --	N/A
+ *  --  Remember that you can access all the active records via the
+ *      blocks list.  See blocks_getList().
  *
  */
 
@@ -65,7 +66,6 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct  nodeHash_record_s {
         RBT_NODE        node;           // MUST be first field.
-        uint32_t        hash;
         uint32_t        unique;
         LISTDL_DATA     dups;           // List Head or Node of Duplicate Chain
     } NODEHASH_RECORD;

@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <nodeBTP_internal.h>
+#include        <ascii.h>
 #include        <listdl.h>
 #include        <nodeEnum_internal.h>
 #include        <trace.h>
@@ -72,11 +73,15 @@ extern "C" {
     )
     {
         
-        if (pRecord->node.pData) {
-            obj_Release(pRecord->node.pData);
-            pRecord->node.pData = OBJ_NIL;
+        if (pRecord->node.pKey) {
+            obj_Release(pRecord->node.pKey);
+            pRecord->node.pKey = OBJ_NIL;
         }
-        
+        if (pRecord->node.pValue) {
+            obj_Release(pRecord->node.pValue);
+            pRecord->node.pValue = OBJ_NIL;
+        }
+
         return ERESULT_SUCCESS;
     }
     
@@ -93,7 +98,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->node.pData;
+        NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode && pEnum) {
             eRc = nodeEnum_Append(pEnum, (NODE_DATA *)pNode);
@@ -115,7 +120,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODE_DATA       *pNode = pRecord->node.pData;
+        NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode) {
             if (pFind->unique == pRecord->unique) {
@@ -194,14 +199,13 @@ extern "C" {
     //---------------------------------------------------------------
     
     int             nodeBTP_NodeCmp(
-        RBT_TREE        *this,
-        NODEBTP_RECORD  *pRecordA,
-        NODEBTP_RECORD  *pRecordB
+        void            *pKeyA,
+        void            *pKeyB
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNodeA = pRecordA->node.pData;
-        NODE_DATA       *pNodeB = pRecordB->node.pData;
+        NODE_DATA       *pNodeA = pKeyA;
+        NODE_DATA       *pNodeB = pKeyB;
 
         eRc = node_Compare(pNodeA, pNodeB);
         if (eRc == ERESULT_SUCCESS_EQUAL) {
@@ -227,7 +231,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->node.pData;
+        NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode && pArray) {
             eRc = nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
@@ -252,7 +256,7 @@ extern "C" {
         NODE_DATA       *pNode;
         
         if (pRecord) {
-            pNode = pRecord->node.pData;
+            pNode = pRecord->node.pKey;
             if (pNode) {
                 if (pParms->pScan) {
                     eRc = pParms->pScan(pParms->pObj, pNode, pParms->pArg3);
@@ -290,7 +294,7 @@ extern "C" {
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            eRc = pScan(pObj, pRecord->node.pData, pArg3);
+            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
             pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_RIGHT];
@@ -332,7 +336,7 @@ extern "C" {
                 if (ERESULT_FAILED(eRc))
                     return eRc;
             }
-            eRc = pScan(pObj, pRecord->node.pData, pArg3);
+            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
         }
@@ -356,7 +360,7 @@ extern "C" {
         NODEBTP_RECORD  *pWork;
         
         if (pRecord) {
-            eRc = pScan(pObj, pRecord->node.pData, pArg3);
+            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
             if (ERESULT_FAILED(eRc))
                 return eRc;
             pWork = (NODEBTP_RECORD *)pRecord->node.pLink[RBT_LEFT];
@@ -490,7 +494,7 @@ extern "C" {
 #endif
 
         // Return to caller.
-        return this->tree.pRoot->pData;
+        return this->tree.pRoot->pKey;
     }
     
     
@@ -578,17 +582,20 @@ extern "C" {
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        obj_Retain(pNode);
-        pRecord->node.pData = pNode;
+        pRecord->node.pKey = pNode;
         pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
         pRecord->node.color = RBT_RED;
 
         iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
-        if (iRc)
+        if (iRc) {
+            obj_Retain(pNode);
             eRc = ERESULT_SUCCESS;
+        }
+        else
+            eRc = ERESULT_DATA_ALREADY_EXISTS;
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
@@ -1017,6 +1024,155 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
+    //---------------------------------------------------------------
+    
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         nodeBTP_ExpandVars (
+        NODEBTP_DATA   *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        iBegin;
+        uint32_t        len;
+        uint32_t        lenPrefix;
+        uint32_t        lenSuffix;
+        int32_t         chr;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        ASTR_DATA       *pData = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!nodeBTP_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (0 == AStr_getLength(pStr)) {
+            return ERESULT_SUCCESS;
+        }
+        
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = AStr_CharFindNextW32(pStr, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = AStr_CharGetW32(pStr, i+1);
+                if (chr == '{') {
+                    i += 2;
+                    iBegin = i;
+                    eRc = AStr_CharFindNextW32(pStr, &i, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = i - iBegin;
+                    eRc = AStr_Mid(pStr, iBegin, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    lenPrefix = 2;
+                    lenSuffix = 1;
+                    
+                    // Find the name from the Dictionary.
+                do_replace:
+                    pNode = nodeBTP_FindA(this, 0, AStr_getData(pName));
+                    if (OBJ_NIL == pNode) {
+                        obj_Release(pName);
+                        return ERESULT_DATA_NOT_FOUND;
+                    }
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                    pData = node_getData(pNode);
+                    if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                        DEBUG_BREAK();
+                        return ERESULT_DATA_MISSING;
+                    }
+                    
+                    // Substitute the name from the Dictionary.
+                    eRc =   AStr_Remove(
+                                        pStr,
+                                        (iBegin - lenPrefix),
+                                        (len + lenPrefix + lenSuffix)
+                                        );
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStr_getData(pData));
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    i = iBegin - lenPrefix + AStr_getSize(pData);
+                    pEnvVar = NULL;
+                    pData = OBJ_NIL;
+                    pNode = OBJ_NIL;
+                    fMore = true;
+                }
+                else if (chr == '$') {
+                    eRc = AStr_Remove(pStr, i, 1);
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+                else {
+                    //chr = AStr_CharGetW32(pStr, i+1);
+                    if (ascii_isLabelFirstCharW32(chr)) {
+                        ++i;
+                        iBegin = i;
+                        for (;;) {
+                            ++i;
+                            chr = AStr_CharGetW32(pStr, i);
+                            if (!ascii_isLabelCharW32(chr)) {
+                                break;
+                            }
+                        }
+                        len = i - iBegin;
+                        eRc = AStr_Mid(pStr, iBegin, len, &pName);
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                        lenPrefix = 1;
+                        lenSuffix = 0;
+                        
+                        goto do_replace;
+                        
+                    }
+                    else
+                        return ERESULT_PARSE_ERROR;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
     
@@ -1025,8 +1181,8 @@ extern "C" {
         NODE_DATA       *pNode
     )
     {
+        NODEBTP_RECORD  record = {.node.pKey = pNode};
         NODEBTP_RECORD  *pWork;
-        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1043,28 +1199,9 @@ extern "C" {
         }
 #endif
         
-        pWork = this->pRoot;
-        while (pWork) {
-            eRc = node_Compare(pNode, pWork->node.pData);
-            if (ERESULT_SUCCESS_EQUAL == eRc) {
-                return pWork->node.pData;
-            }
-            else if (ERESULT_SUCCESS_LESS_THAN == eRc) {
-                if (pWork->node.pLink[RBT_LEFT])
-                    pWork = (NODEBTP_RECORD *)pWork->node.pLink[RBT_LEFT];
-                else
-                    break;
-            }
-            else if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                if (pWork->node.pLink[RBT_RIGHT])
-                    pWork = (NODEBTP_RECORD *)pWork->node.pLink[RBT_RIGHT];
-                else
-                    break;
-            }
-            else {
-                //return ERESULT_DATA_NOT_FOUND;
-                return OBJ_NIL;
-            }
+        pWork = (NODEBTP_RECORD *)rbt_FindNode(&this->tree, (RBT_NODE *)&record);
+        if (pWork) {
+            return pWork->node.pKey;
         }
         
         // Return to caller.
@@ -1108,6 +1245,52 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                          F o r  E a c h
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_ForEach(
+        NODEBTP_DATA    *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,               // Used as first parameter of scan method
+        void            *pArg3              // Used as third parameter of scan method
+    )
+    {
+        LISTDL_DATA     *pList = NULL;
+        BLOCKS_NODE     *pEntry = NULL;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pScan ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pList = blocks_getList((BLOCKS_DATA *)this);
+        pEntry = listdl_Head(pList);
+        while (pEntry) {
+            NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
+            
+            eRc =   pScan(pObj, pRecord->node.pKey, pArg3);
+            if (ERESULT_FAILED(eRc))
+                break;
+            
+            pEntry = listdl_Next(pList, pEntry);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -1158,7 +1341,14 @@ extern "C" {
                         NULL
         );
         
-        rbt_Init(&this->tree, (void *)nodeBTP_NodeCmp);
+        rbt_Init(
+                 &this->tree,
+                 (void *)nodeBTP_NodeCmp,
+                 (sizeof(NODEBTP_RECORD) - sizeof(RBT_NODE)),
+                 (void *)blocks_RecordNew,
+                 (void *)blocks_RecordFree,
+                 this
+        );
         this->tree.pNodeAlloc = (void *)blocks_RecordNew;
         this->tree.pNodeFree = (void *)blocks_RecordFree;
         this->tree.pObjAllocFree = this;
@@ -1449,10 +1639,10 @@ extern "C" {
                                    pNode->pLink[RBT_LEFT],
                                    pNode->pLink[RBT_RIGHT],
                                    pNode->color ? "red" : "black",
-                                   pNode->pData
+                                   pNode->pKey
                                    );
-            if (pNode->pData) {
-                pWrkStr = node_ToDebugString(pNode->pData, indent+6);
+            if (pNode->pKey) {
+                pWrkStr = node_ToDebugString(pNode->pKey, indent+6);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
@@ -1514,6 +1704,38 @@ extern "C" {
     #endif
 
 
+    
+    //---------------------------------------------------------------
+    //                     V e r i f y  T r e e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_VerifyTree(
+        NODEBTP_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        iRc = rbt_VerifyTree(&this->tree, rbt_getRoot(&this->tree));
+        if (iRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_DATA_ERROR;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                  V i s i t  N o d e s

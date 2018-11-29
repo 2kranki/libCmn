@@ -331,9 +331,9 @@ extern "C" {
         pStr = AStr_New();
         AStr_AppendPrint(
                      pStr,
-                     "{\"objectType\":\"%s\","
-                         "\"class\":\"%d\","
-                         "\"type\":\"%d\"\n",
+                     "{ \"objectType\":\"%s\", "
+                         "\"class\":%d, "
+                         "\"type\":%d\n",
                      pInfo->pClassName,
                      this->cls,
                      this->type
@@ -341,10 +341,11 @@ extern "C" {
 
         if (this->pName) {
             pWrkStr = name_ToJSON(this->pName);
-            AStr_AppendA(pStr, "\"name\":");
+            AStr_AppendA(pStr, "\t\"name\": ");
             AStr_Append(pStr, pWrkStr);\
             obj_Release(pWrkStr);
             pWrkStr = OBJ_NIL;
+            AStr_AppendA(pStr, "\n");
         }
         
         if (this->pData) {
@@ -358,7 +359,7 @@ extern "C" {
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pData);
                     if (pWrkStr) {
-                        AStr_AppendA(pStr, "\t\"data\":\n");
+                        AStr_AppendA(pStr, "\t\"data\": ");
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
                         pWrkStr = OBJ_NIL;
@@ -379,7 +380,7 @@ extern "C" {
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pOther);
                     if (pWrkStr) {
-                        AStr_AppendA(pStr, "\t\"other\":\n");
+                        AStr_AppendA(pStr, "\t\"other\": ");
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
                         pWrkStr = OBJ_NIL;
@@ -400,7 +401,7 @@ extern "C" {
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pExtra);
                     if (pWrkStr) {
-                        AStr_AppendA(pStr, "\t\"extra\":\n");
+                        AStr_AppendA(pStr, "\t\"extra\": ");
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
                         pWrkStr = OBJ_NIL;
@@ -421,7 +422,7 @@ extern "C" {
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pProperties);
                     if (pWrkStr) {
-                        AStr_AppendA(pStr, "\t\"properties\":\n");
+                        AStr_AppendA(pStr, "\t\"properties\": ");
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
                         pWrkStr = OBJ_NIL;

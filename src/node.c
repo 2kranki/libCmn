@@ -1358,7 +1358,7 @@ extern "C" {
     //                    P r o p e r t y  G e t
     //---------------------------------------------------------------
     
-    OBJ_ID          node_Property(
+    OBJ_ID          node_PropertyA (
         NODE_DATA       *this,
         const
         char            *pNameA
@@ -1370,7 +1370,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !node_Validate( this ) ) {
+        if (!node_Validate( this )) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (NULL == pNameA) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1393,7 +1397,7 @@ extern "C" {
     //                     P r o p e r t y  A d d
     //---------------------------------------------------------------
     
-    ERESULT         node_PropertyAdd(
+    ERESULT         node_PropertyAddA(
         NODE_DATA       *this,
         const
         char            *pNameA,
@@ -1409,9 +1413,6 @@ extern "C" {
         if( !node_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
-        }
-        if ((OBJ_NIL == pData) && obj_IsKindOf(this, OBJ_IDENT_NODE)) {
-            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -1429,16 +1430,15 @@ extern "C" {
             goto eom;
         }
         eRc = nodeBTP_Add(this->pProperties, pNode, true);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
         if (ERESULT_FAILED(eRc)) {
             goto eom;
         }
-        obj_Release(pNode);
-        pNode = OBJ_NIL;
         
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        obj_setLastError(this, eRc);
         return eRc;
     }
     

@@ -538,14 +538,14 @@ extern "C" {
             NODEHASH_RECORD     *pRecord = (NODEHASH_RECORD *)pEntry->data;
             RBT_NODE            *pNode = &pRecord->node;
             
-            if (!obj_IsKindOf(pNode->pData, OBJ_IDENT_NODE)) {
+            if (!obj_IsKindOf(pNode->pKey, OBJ_IDENT_NODE)) {
                 fRc = false;
                 break;
             }
-            pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+            pQueryInfo = obj_getVtbl(pNode->pKey)->pQueryInfo;
             if (pQueryInfo) {
                 pToJSON = (*pQueryInfo)(
-                                        pNode->pData,
+                                        pNode->pKey,
                                         OBJ_QUERYINFO_TYPE_METHOD,
                                         "ToJSON"
                                         );
@@ -570,7 +570,7 @@ extern "C" {
         pStr = AStr_New();
         AStr_AppendPrint(
                     pStr,
-                    "{\"objectType\":\"%s\",\n\t\"count\":%d,\n\t\"entries:[\n",
+                    "{ \"objectType\":\"%s\", \"count\":%d, \"entries\":[\n",
                     pInfo->pClassName,
                     this->size
         );
@@ -585,15 +585,15 @@ extern "C" {
             RBT_NODE            *pNode = &pRecord->node;
             
             pData = OBJ_NIL;
-            pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+            pQueryInfo = obj_getVtbl(pNode->pKey)->pQueryInfo;
             if (pQueryInfo) {
                 pToJSON =   (*pQueryInfo)(
-                                      pNode->pData,
+                                      pNode->pKey,
                                       OBJ_QUERYINFO_TYPE_METHOD,
                                       "ToJSON"
                             );
                 if (pToJSON) {
-                    pData = (*pToJSON)(pNode->pData);
+                    pData = (*pToJSON)(pNode->pKey);
                     if (pData) {
                         //AStr_AppendPrint(pStr, "/* %d */\n", j++);
                         AStr_Append(pStr, pData);

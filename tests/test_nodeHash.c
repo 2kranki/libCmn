@@ -68,7 +68,7 @@ char        *strings[] = {
 
 
 
-ERESULT         scanExit(
+ERESULT         scanPrintExit(
     NODEHASH_DATA   *this,
     NODEHASH_RECORD *pRecord,
     void            *pArg3
@@ -76,7 +76,7 @@ ERESULT         scanExit(
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     RBT_NODE        *pNode = &pRecord->node;
-    NODE_DATA       *pNode2 = pRecord->node.pData;
+    NODE_DATA       *pNode2 = pRecord->node.pKey;
     char            *pName;
     
     pName = node_getNameUTF8(pNode2);
@@ -87,7 +87,7 @@ ERESULT         scanExit(
         pNode->pLink[RBT_LEFT],
         pNode->pLink[RBT_RIGHT],
         pNode->color ? "red" : "black",
-        pNode->pData,
+        pNode->pKey,
         pRecord->unique,
         node_getClass(pNode2),
         pName
@@ -195,21 +195,26 @@ int         test_nodeHash_AddFindDelete01(
         for (i=0; i<10; ++i) {
             pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             cnt = nodeHash_getSize(pHash);
             XCTAssertTrue( (cnt == (i+1)) );
+            fprintf(stderr, "\tAdded %p - %s\n", pNode, strings[i]);
+            fprintf(stderr, "\tLooking for: %s\n", strings[i]);
             pNodeFnd = nodeHash_FindA(pHash, 0, strings[i]);
             XCTAssertTrue( (pNode) );
+            fprintf(stderr, "\t\tFound\n");
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
  
+#ifdef XYZZY
         eRc = nodeHash_DeleteA(pHash, 0, strings[5]);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         cnt = nodeHash_getSize(pHash);
         XCTAssertTrue( (cnt == 9) );
         pNodeFnd = nodeHash_FindA(pHash, 0, strings[11]);
         XCTAssertTrue( (OBJ_NIL == pNodeFnd) );
+#endif
         
         obj_Release(pHash);
         pHash = OBJ_NIL;
@@ -251,16 +256,19 @@ int         test_nodeHash_AddFindDelete02(
         while (*pStrA) {
             pNode = node_NewWithUTF8ConAndClass(*pStrA, 0, OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
-            XCTAssertTrue( (!ERESULT_FAILED(eRc)) );
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            fprintf(stderr, "\tAdded %p - %s\n", pNode, *pStrA);
+            fprintf(stderr, "\tLooking for: %s\n", *pStrA);
             pNodeFnd = nodeHash_FindA(pHash, 0, *pStrA);
             XCTAssertTrue( (pNode) );
+            fprintf(stderr, "\t\tFound\n");
             obj_Release(pNode);
             pNode = OBJ_NIL;
             ++pStrA;
         }
         
         eRc = nodeHash_CalcHashStats(pHash, &numBuckets, &numEmpty, &numMax, &numAvg);
-        XCTAssertTrue( (!ERESULT_FAILED(eRc)) );
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         fprintf(
                 stderr,
                 "\tnumBuckets=%d numEmpty=%d numMax=%d numAvg=%d\n",
@@ -279,11 +287,11 @@ int         test_nodeHash_AddFindDelete02(
             fprintf(stderr, "\tChain %4d:\n", i);
             pTree = &pHash->pHash[i];
             eRc =   rbt_VisitNodeInRecurse(
-                                           pTree,
-                                           pTree->pRoot,
-                                           (void *)scanExit,
-                                           pHash,               // Used as first parameter of scan method
-                                           NULL                 // Used as third parameter of scan method
+                                       pTree,
+                                       pTree->pRoot,
+                                       (void *)scanPrintExit,
+                                       pHash,               // Used as first parameter of scan method
+                                       NULL                 // Used as third parameter of scan method
                     );
             
         }
@@ -298,7 +306,6 @@ int         test_nodeHash_AddFindDelete02(
 
 
 
-#ifdef XYZZY
 int         test_nodeHash_JSON01(
     const
     char        *pTestName
@@ -311,6 +318,24 @@ int         test_nodeHash_JSON01(
     uint32_t        cnt;
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char        *pJsonStrA = "{ "
+    "\"objectType\":\"nodeHash\", "
+    "\"count\":2, "
+    "\"entries\":[\n"
+    "{ \"objectType\":\"node\", \"class\":0, \"type\":0\n"
+    "\t\"name\": {\"objectType\":\"name\", \"type\":2 /*NAME_TYPE_UTF8*/, \"data\":{ \"objectType\":\"utf8\", "
+    "\"len\":5, \"crc\":1943333782, \"data\":\"bobby\" }\n"
+    "}\n\n}\n"
+    ",\n"
+    "{ \"objectType\":\"node\", \"class\":0, \"type\":0\n"
+    "\t\"name\": {\"objectType\":\"name\", \"type\":2 /*NAME_TYPE_UTF8*/, \"data\":{ \"objectType\":\"utf8\", "
+    "\"len\":3, \"crc\":4123767104, \"data\":\"bob\" }\n"
+    "}\n\n}\n\n"
+    "]\n\n\n"
+    "}\n";
+    uint32_t    iRc;
+    int         index = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -320,7 +345,7 @@ int         test_nodeHash_JSON01(
     XCTAssertFalse( (OBJ_NIL == pHash) );
     if (pHash) {
         
-        for (i=0; i<10; ++i) {
+        for (i=0; i<2; ++i) {
             pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -335,6 +360,9 @@ int         test_nodeHash_JSON01(
         pStr = nodeHash_ToJSON(pHash);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON=\"%s\"\n", AStr_getData(pStr));
+        iRc = str_CompareSpcl(AStr_getData(pStr), pJsonStrA, &index);
+        fprintf(stderr, "\tCompareSpcl: %d, index=%d\n", iRc, index);
+        XCTAssertTrue( (0 == iRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
@@ -345,7 +373,6 @@ int         test_nodeHash_JSON01(
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
-#endif
 
 
 
@@ -484,7 +511,7 @@ int             test_nodeHash_Expand01(
 TINYTEST_START_SUITE(test_nodeHash);
     //TINYTEST_ADD_TEST(test_nodeHash_Expand01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_nodeHash_Merge01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_nodeHash_JSON01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_AddFindDelete01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_nodeHash_OpenClose,setUp,tearDown);

@@ -273,8 +273,8 @@ NODE_VTBL       node_Vtbl = {
     node_getName,
     node_getOther,
     node_setOther,
-    node_Property,
-    node_PropertyAdd,
+    node_PropertyA,
+    node_PropertyAddA,
     node_PropertyCount,
     node_Properties
 };

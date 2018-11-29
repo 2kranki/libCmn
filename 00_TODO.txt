@@ -4,6 +4,13 @@ The following are things that are being throught about. Whether they get done or
 will depend upon time and resources.
 
 
+-- nodeHash
+    -- Add JSON support
+    -- Add duplicate support.
+    -- Add scoping
+    -- Add cHash expansion/contraction
+
+
 -- path
     -- Need path that includes expansion of env variables and
         '~' for $HOME

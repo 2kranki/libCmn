@@ -56,9 +56,9 @@
 
 
 #include        <cmn_defs.h>
-#include        <enum.h>
 #include        <i32Array.h>
 #include        <node.h>
+#include        <nodeEnum.h>
 #include        <W32Str.h>
 
 

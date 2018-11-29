@@ -72,11 +72,15 @@ extern "C" {
     )
     {
         
-        if (pRecord->node.pData) {
-            obj_Release(pRecord->node.pData);
-            pRecord->node.pData = OBJ_NIL;
+        if (pRecord->node.pKey) {
+            obj_Release(pRecord->node.pKey);
+            pRecord->node.pKey = OBJ_NIL;
         }
-        
+        if (pRecord->node.pValue) {
+            obj_Release(pRecord->node.pValue);
+            pRecord->node.pValue = OBJ_NIL;
+        }
+
         return ERESULT_SUCCESS;
     }
     
@@ -93,7 +97,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->node.pData;
+        NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode && pEnum) {
             eRc = nodeEnum_Append(pEnum, pNode);
@@ -121,8 +125,8 @@ extern "C" {
         
         pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
         if (pTree) {
-            record.node.pData = pNode;
-            pFound = (NODEHASH_RECORD *)rbt_Find(pTree, (RBT_NODE *)&record);
+            record.node.pKey = pNode;
+            pFound = (NODEHASH_RECORD *)rbt_FindNode(pTree, (RBT_NODE *)&record);
         }
         
         // Return to caller.
@@ -147,8 +151,8 @@ extern "C" {
         if (pNode) {
             pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
             if (pTree) {
-                record.node.pData = pNode;
-                pFound = (NODEHASH_RECORD *)rbt_Find(pTree, (RBT_NODE *)&record);
+                record.node.pKey = pNode;
+                pFound = (NODEHASH_RECORD *)rbt_FindNode(pTree, (RBT_NODE *)&record);
             }
             obj_Release(pNode);
             pNode = OBJ_NIL;
@@ -165,16 +169,15 @@ extern "C" {
     //---------------------------------------------------------------
     
     int             nodeHash_NodeCompare(
-        RBT_TREE        *this,
-        NODEHASH_RECORD *pRecordA,
-        NODEHASH_RECORD *pRecordB
+        void            *pRecordA,
+        void            *pRecordB
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNodeA = pRecordA->node.pData;
-        NODE_DATA       *pNodeB = pRecordB->node.pData;
+        NODE_DATA       *pNodeA = pRecordA;
+        NODE_DATA       *pNodeB = pRecordB;
         
-        eRc = obj_getVtbl(pNodeA)->pCompare(pNodeA, pNodeB);
+        eRc = node_Compare(pNodeA, pNodeB);
         if (eRc == ERESULT_SUCCESS_EQUAL) {
             return 0;
         }
@@ -198,7 +201,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->node.pData;
+        NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode && pArray) {
             eRc = nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
@@ -397,8 +400,9 @@ extern "C" {
         NODE_DATA       *pNode
                                  )
     {
-        LISTDL_DATA     *pNodeList;
-        NODEHASH_RECORD *pEntry;
+        RBT_TREE        *pTree;
+        NODEHASH_RECORD *pRecord = NULL;
+        int             iRc;
         NODEHASH_RECORD *pEntryNew;
         NAME_DATA       *pName;
         uint32_t        hash;
@@ -418,60 +422,23 @@ extern "C" {
         }
 #endif
         
-#ifdef XYZZY
-        pName = node_getName(pNode);
-        hash = name_getHash(pName);
-        cls = node_getClass(pNode);
-        pNodeList = nodeHash_NodeListFromHash(this, hash);
-        pEntry = listdl_Head(pNodeList);
-        while ( pEntry ) {
-            if (cls) {
-                if (cls == node_getClass(pEntry->pNode)) {
-                    if (node_getHash(pEntry->pNode) == hash) {
-                        eRc = name_Compare(pName, node_getName(pEntry->pNode));
-                        if (ERESULT_SUCCESS_EQUAL == eRc) {
-                            break;
-                        }
-                        if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                            break;
-                        }
-                    }
-                }
+        pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
+        if (pTree) {
+            pRecord = blocks_RecordNew((BLOCKS_DATA *)this);
+            if (NULL == pRecord) {
+                return ERESULT_OUT_OF_MEMORY;
             }
-            else {
-                if (node_getHash(pEntry->pNode) == hash) {
-                    eRc = name_Compare(pName, node_getName(pEntry->pNode));
-                    if (ERESULT_SUCCESS_EQUAL == eRc) {
-                        break;
-                    }
-                    if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
-                        break;
-                    }
-                }
+            pRecord->node.pKey = pNode;
+            pRecord->unique = ++this->unique;
+            listdl_Init(&pRecord->dups, offsetof(NODEHASH_RECORD, dups));
+            iRc = rbt_InsertNode(pTree, (RBT_NODE *)pRecord);
+            if (iRc) {
+                obj_Retain(pNode);
+                eRc = ERESULT_SUCCESS;
             }
-            pEntry = listdl_Next(pNodeList, pEntry);
+            else
+                eRc = ERESULT_DATA_ALREADY_EXISTS;
         }
-        
-        if (ERESULT_SUCCESS_EQUAL == eRc) {
-        }
-        
-        pEntry = nodeHash_FindNodeHash(this, 0, node_getName(pNode));
-        if (pEntry && !obj_IsFlag(this, NODEHASH_FLAG_DUPS)) {
-            return ERESULT_DATA_ALREADY_EXISTS;
-        }
-        
-        // Get an internal node.
-        pEntryNew = nodeHash_GetFreeNode(this);
-        if (NULL == pEntryNew) {
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Add it to the hash chain.
-        obj_Retain(pNode);
-        pEntryNew->pNode = pNode;
-        
-        listdl_AddBefore(pNodeList, pEntry, pEntryNew);
-#endif
         
         ++this->size;
         
@@ -481,12 +448,12 @@ extern "C" {
     
     
     ERESULT         nodeHash_AddA(
-                                  NODEHASH_DATA    *this,
-                                  const
-                                  char            *pName,
-                                  int32_t         cls,
-                                  OBJ_ID          pData
-                                  )
+        NODEHASH_DATA   *this,
+        const
+        char            *pName,
+        int32_t         cls,
+        OBJ_ID          pData
+    )
     {
         ERESULT         eRc;
         NODE_DATA       *pNode = OBJ_NIL;
@@ -524,7 +491,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        char            *pNameA = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -874,13 +840,14 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    ERESULT         nodeHash_Delete(
+    ERESULT         nodeHash_Delete (
         NODEHASH_DATA   *this,
         NODE_DATA       *pNode
     )
     {
-        LISTDL_DATA     *pNodeList;
-        //NODEHASH_NODE   *pEntry = OBJ_NIL;
+        RBT_TREE        *pTree;
+        int             iRc;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -895,75 +862,55 @@ extern "C" {
         }
 #endif
       
-#ifdef XYZZY
-        pEntry = nodeHash_FindNodeHash(this, cls, node_getName(pNode));
-        if (NULL == pEntry) {
-            return ERESULT_DATA_NOT_FOUND;
+        pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
+        if (pTree) {
+            iRc = rbt_Delete(pTree, pNode);
+            if (iRc) {
+                --this->size;
+                eRc = ERESULT_SUCCESS;
+            }
+            else
+                eRc = ERESULT_DATA_NOT_FOUND;
         }
         
-        pNodeList = nodeHash_NodeListFromHash(this, node_getHash(pNode));
-        obj_Release(pEntry->pNode);
-        pEntry->pNode = OBJ_NIL;
-        listdl_Delete(pNodeList, pEntry);
-        listdl_Add2Tail(&this->freeList, pEntry);
-        --this->size;
-#endif
-        
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
-    ERESULT         nodeHash_DeleteA(
-        NODEHASH_DATA    *this,
+    ERESULT         nodeHash_DeleteA (
+        NODEHASH_DATA   *this,
         int32_t         cls,
         const
-        char            *pName
+        char            *pNameA
     )
     {
-        //ERESULT         eRc;
-        LISTDL_DATA     *pNodeList;
-        NODEHASH_RECORD *pEntry = OBJ_NIL;
-        NAME_DATA       *pNameObj = OBJ_NIL;
-        uint32_t        hash;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeHash_Validate(this) ) {
+        if (!nodeHash_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( OBJ_NIL == pName ) {
+        if (OBJ_NIL == pNameA) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-#ifdef XYZZY
-        pNameObj = name_NewUTF8(pName);
-        if(OBJ_NIL == pNameObj) {
-            DEBUG_BREAK();
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        hash = name_getHash(pNameObj);
-        pEntry = nodeHash_FindNodeHash(this, cls, pNameObj);
-        obj_Release(pNameObj);
-        pNameObj = OBJ_NIL;
-        if (NULL == pEntry) {
-            return ERESULT_DATA_NOT_FOUND;
+       
+        pNode = node_NewWithUTF8ConAndClass(pNameA, cls, OBJ_NIL);
+        if (pNode) {
+            eRc = nodeHash_Delete(this, pNode);
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
         }
         
-        pNodeList = nodeHash_NodeListFromHash(this, hash);
-        obj_Release(pEntry->pNode);
-        pEntry->pNode = OBJ_NIL;
-        listdl_Delete(pNodeList, pEntry);
-        listdl_Add2Tail(&this->freeList, pEntry);
-#endif
-        --this->size;
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
@@ -1240,7 +1187,7 @@ extern "C" {
         
         pRecord = nodeHash_FindRecord(this, pNode);
         if (pRecord) {
-            pFound = pRecord->node.pData;
+            pFound = pRecord->node.pKey;
         }
         
         // Return to caller.
@@ -1274,7 +1221,7 @@ extern "C" {
         
         pRecord = nodeHash_FindRecordA(this, cls, pNameA);
         if (pRecord) {
-            pFound = pRecord->node.pData;
+            pFound = pRecord->node.pKey;
         }
         
         // Return to caller.
@@ -1454,7 +1401,7 @@ extern "C" {
         while (pEntry) {
             NODEHASH_RECORD     *pRecord = (NODEHASH_RECORD *)pEntry->data;
             
-            eRc =   pScan(pObj, pRecord->node.pData, pArg3);
+            eRc =   pScan(pObj, pRecord->node.pKey, pArg3);
             if (ERESULT_FAILED(eRc))
                 break;
             
@@ -1477,6 +1424,8 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(NODEHASH_DATA);
+        uint32_t        i;
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1504,8 +1453,43 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeHash_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->cHash = cHash;
+        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEHASH_RECORD));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        blocks_setDeleteExit(
+                             (BLOCKS_DATA *)this,
+                             (void *)nodeHash_DeleteExit,
+                             this,
+                             NULL
+                             );
+        
+        this->cHash = cHash;
+        cbSize = cHash * sizeof(RBT_TREE);
+        this->pHash = (RBT_TREE *)mem_Malloc( cbSize );
+        if (NULL == this->pHash) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            this = NULL;
+            return this;
+        }
+        for (i=0; i<cHash; ++i) {
+            rbt_Init(
+                     &this->pHash[i],
+                     (void *)nodeHash_NodeCompare,
+                     (sizeof(NODEHASH_RECORD) - sizeof(RBT_NODE)),
+                     (void *)blocks_RecordNew,
+                     (void *)blocks_RecordFree,
+                     this
+            );
+            this->pHash[i].pNodeAlloc = (void *)blocks_RecordNew;
+            this->pHash[i].pNodeFree = (void *)blocks_RecordFree;
+            this->pHash[i].pObjAllocFree = this;
+            this->pHash[i].dataSize = (sizeof(NODEHASH_RECORD) - sizeof(RBT_NODE));
+        }
 
     #ifdef NDEBUG
     #else
@@ -1515,7 +1499,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "nodeHash::sizeof(NODEHASH_DATA) = %lu\n", sizeof(NODEHASH_DATA));
+        //fprintf(stderr, "nodeHash::sizeof(NODEHASH_DATA) = %lu\n", sizeof(NODEHASH_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEHASH_DATA));
     #endif
@@ -1805,11 +1789,11 @@ extern "C" {
                                    pNode->pLink[RBT_LEFT],
                                    pNode->pLink[RBT_RIGHT],
                                    pNode->color ? "red" : "black",
-                                   pNode->pData,
+                                   pNode->pKey,
                                    pRecord->unique
                     );
-            if (pNode->pData) {
-                pWrkStr = obj_getVtbl(pNode->pData)->pToDebugString(pNode->pData, indent+6);
+            if (pNode->pKey) {
+                pWrkStr = obj_getVtbl(pNode->pKey)->pToDebugString(pNode->pKey, indent+6);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }

@@ -54,6 +54,11 @@ typedef int  (*rbt_node_cmp_f) (RBT_TREE *this, RBT_NODE *a, RBT_NODE *b);
 typedef void (*rbt_node_f)     (RBT_TREE *this, RBT_NODE *node);
 
 
+// These colors must remain the values that they are
+// because C uses 0 and 1 as values of logical comparison
+// and ! (not).  For instance, in C, !RBTREE_BLACK == RBTREE_RED.
+// The same goes for RBT_LEFT and RBT_RIGHT.
+//
 struct rbt_node_s {
     int             color;        // Color red (1), black (0)
 #define RBT_BLACK   0
@@ -61,14 +66,15 @@ struct rbt_node_s {
     RBT_NODE        *pLink[2];    // Link left [0] and right [1]
 #define RBT_LEFT    0
 #define RBT_RIGHT   1
-    void            *pData;
+    void            *pKey;
+    void            *pValue;
 };
 
 
 struct rbt_tree_s {
     RBT_NODE            *pRoot;
-    rbt_node_cmp_f      pCmp;
-    size_t              size;
+    int                 (*pCmp)(void *, void *);
+    uint32_t            size;
     uint32_t            dataSize;
     
     RBT_NODE *          (*pNodeAlloc)(OBJ_ID);
@@ -87,29 +93,38 @@ struct rbt_iter_s {
 
 
 
-int             rbt_node_cmp_ptr_cb     (RBT_TREE *this, RBT_NODE *a, RBT_NODE *b);
+int             rbt_node_cmp_ptr_cb     (RBT_TREE *this, void *pKeyA, void *pKeyB);
 void            rbt_node_dealloc_cb     (RBT_TREE *this, RBT_NODE *node);
 
 
-RBT_NODE *      rbt_NodeNew             (RBT_TREE *this, void *pData);
-RBT_NODE *      rbt_NodeInit            (RBT_TREE *this, RBT_NODE *pNode, void *pData);
+RBT_NODE *      rbt_NodeNew             (RBT_TREE *this, void *pKey, void *pValue);
+RBT_NODE *      rbt_NodeInit            (RBT_TREE *, RBT_NODE *, void *, void *);
 RBT_NODE *      rbt_NodeDealloc         (RBT_TREE *this, RBT_NODE *pNode);
 int             rbt_IsNodeRed           (RBT_NODE *pNode);
 
+uint32_t        rbt_getSize             (RBT_TREE *this);
+RBT_NODE *      rbt_getRoot             (RBT_TREE *this);
 
 
 RBT_TREE *      rbt_Alloc               (void);
-RBT_TREE *      rbt_New                 (rbt_node_cmp_f pCmp);
-int             rbt_Delete              (RBT_TREE *this, void *pValue);
+int             rbt_Delete              (RBT_TREE *this, void *pKey);
 void            rbt_DeleteAll           (RBT_TREE *this);
-RBT_NODE        *rbt_Find               (RBT_TREE *this, RBT_NODE *pNode);
-RBT_TREE *      rbt_Init                (RBT_TREE *this, rbt_node_cmp_f pCmp);
-int             rbt_Insert              (RBT_TREE *this, void *pData);
-int             rbt_InsertNode          (RBT_TREE *this, RBT_NODE *pNode);
-size_t          rbt_getSize             (RBT_TREE *this);
+void *          rbt_Find                (RBT_TREE *this, void *pKey);
+RBT_NODE        *rbt_FindNode           (RBT_TREE *this, RBT_NODE *pNode);
+RBT_TREE *      rbt_Init (
+    RBT_TREE        *pTree,
+    int             (*pCmp)(void *, void *),
+    uint32_t        dataSize,
+    RBT_NODE *      (*pNodeAlloc)(OBJ_ID),
+    void            (*pNodeFree)(OBJ_ID, RBT_NODE *),
+    OBJ_ID          pObjAllocFree
+);
+bool            rbt_Insert              (RBT_TREE *this, void *pKey, void *pValue);
+bool            rbt_InsertNode          (RBT_TREE *this, RBT_NODE *pNode);
 
 
-int             rbt_Test                (RBT_TREE *this, RBT_NODE *pNode);
+void            rbt_DumpTree            (RBT_TREE *this);
+int             rbt_VerifyTree          (RBT_TREE *this, RBT_NODE *pNode);
 
 RBT_ITER *      rbt_iter_alloc          (void);
 RBT_ITER *      rbt_iter_init           (RBT_ITER *this);
@@ -122,7 +137,6 @@ void           *rbt_iter_prev           (RBT_ITER *this);
 
 
 
-void            rbt_PrintTree           (RBT_TREE *this);
 
 
 ERESULT         rbt_VisitNodeInRecurse (

@@ -37,7 +37,7 @@ ERESULT         printNode(
 {
     char            *pNameA;
     
-    pNameA = node_getNameUTF8((NODE_DATA *)pNode);
+    pNameA = node_getNameUTF8(pNode);
     if (pNameA) {
         fprintf(stderr, "%s", pNameA);
         mem_Free(pNameA);
@@ -128,8 +128,10 @@ int             test_nodeBTP_Add01(
 {
     NODEBTP_DATA    *pTree = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
+    NODE_DATA       *pFound = OBJ_NIL;
     NODE_DATA       *pEntry = NULL;
     ERESULT         eRc;
+    bool            fRc;
     const
     char            *pStrA = "ABCDEFG";
     const
@@ -146,6 +148,7 @@ int             test_nodeBTP_Add01(
     TINYTEST_FALSE( (OBJ_NIL == pTree) );
     if (pTree) {
         
+        pStrP = pStrA;
         while (*pStrP) {
             strA[0] = *pStrP;
             pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
@@ -153,7 +156,30 @@ int             test_nodeBTP_Add01(
             if (pNode) {
                 eRc = nodeBTP_Add(pTree, pNode, false);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-                fprintf(stderr, "\tAdded %s\n", strA);
+                fprintf(stderr, "\tAdded %p - %s\n", pNode, strA);
+                eRc = nodeBTP_VerifyTree(pTree);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                fprintf(stderr, "\tLooking for: %s\n", strA);
+                pFound = nodeBTP_Find(pTree, pNode);
+                TINYTEST_FALSE( (OBJ_NIL == pFound) );
+                fprintf(stderr, "\t\tFound\n");
+                obj_Release(pNode);
+                pNode = OBJ_NIL;
+            }
+            ++pStrP;
+        }
+        fprintf(stderr, "\n\n");
+        
+        pStrP = pStrA;
+        while (*pStrP) {
+            strA[0] = *pStrP;
+            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            TINYTEST_FALSE( (OBJ_NIL == pNode) );
+            if (pNode) {
+                fprintf(stderr, "\tLooking for: %s\n", strA);
+                pFound = nodeBTP_Find(pTree, pNode);
+                TINYTEST_FALSE( (OBJ_NIL == pFound) );
+                fprintf(stderr, "\t\tFound\n");
                 obj_Release(pNode);
                 pNode = OBJ_NIL;
             }
@@ -195,6 +221,7 @@ int             test_nodeBTP_Add02(
 {
     NODEBTP_DATA    *pTree = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
+    NODE_DATA       *pFound = OBJ_NIL;
     ERESULT         eRc;
     //              ABCDEFG
     const
@@ -212,7 +239,8 @@ int             test_nodeBTP_Add02(
     pTree = nodeBTP_Init( pTree );
     TINYTEST_FALSE( (OBJ_NIL == pTree) );
     if (pTree) {
-        
+
+        pStrP = pStrA;
         while (*pStrP) {
             strA[0] = *pStrP;
             pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
@@ -220,7 +248,11 @@ int             test_nodeBTP_Add02(
             if (pNode) {
                 eRc = nodeBTP_Add(pTree, pNode, false);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-                fprintf(stderr, "\tAdded %s\n", strA);
+                fprintf(stderr, "\tAdded %p - %s\n", pNode, strA);
+                fprintf(stderr, "\tLooking for: %s\n", strA);
+                pFound = nodeBTP_Find(pTree, pNode);
+                TINYTEST_FALSE( (OBJ_NIL == pFound) );
+                fprintf(stderr, "\t\tFound\n");
                 obj_Release(pNode);
                 pNode = OBJ_NIL;
             }
@@ -228,15 +260,33 @@ int             test_nodeBTP_Add02(
         }
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPre-Order Recurse: BDCFAGE\n\t      Recurse Got: ");
+        pStrP = pStrA;
+        while (*pStrP) {
+            strA[0] = *pStrP;
+            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            TINYTEST_FALSE( (OBJ_NIL == pNode) );
+            if (pNode) {
+                fprintf(stderr, "\tLooking for: %s\n", strA);
+                pFound = nodeBTP_Find(pTree, pNode);
+                TINYTEST_FALSE( (OBJ_NIL == pFound) );
+                fprintf(stderr, "\t\tFound\n");
+                obj_Release(pNode);
+                pNode = OBJ_NIL;
+            }
+            ++pStrP;
+        }
+        fprintf(stderr, "\n\n");
+        
+
+        fprintf(stderr, "\tPre-Order Recurse: DBACFEG\n\t      Recurse Got: ");
         eRc = nodeBTP_VisitNodesPreRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tIn-Order Recurse: DBFCGAE\n\t     Recurse Got: ");
+        fprintf(stderr, "\tIn-Order Recurse: ABCDEFG\n\t     Recurse Got: ");
         eRc = nodeBTP_VisitNodesInRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         
-        fprintf(stderr, "\tPost-Order Recurse: DFGEACB\n\t       Recurse Got: ");
+        fprintf(stderr, "\tPost-Order Recurse: ACBEGFD\n\t       Recurse Got: ");
         eRc = nodeBTP_VisitNodesPostRecurse(pTree, (void *)printNode, OBJ_NIL, NULL);
         fprintf(stderr, "\n\n");
         

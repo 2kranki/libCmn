@@ -436,14 +436,14 @@ extern "C" {
     );
     
     
-    OBJ_ID          node_Property(
+    OBJ_ID          node_PropertyA (
         NODE_DATA       *this,
         const
         char            *pName
     );
     
 
-    ERESULT         node_PropertyAdd(
+    ERESULT         node_PropertyAddA (
         NODE_DATA		*this,
         const
         char            *pNameA,
@@ -451,12 +451,12 @@ extern "C" {
     );
     
     
-    uint32_t        node_PropertyCount(
+    uint32_t        node_PropertyCount (
         NODE_DATA		*this
     );
     
     
-    NODEARRAY_DATA * node_Properties(
+    NODEARRAY_DATA * node_Properties (
         NODE_DATA       *this
     );
     

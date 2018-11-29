@@ -42,14 +42,16 @@
 RBT_NODE *      rbt_NodeInit (
     RBT_TREE        *this,
     RBT_NODE        *pNode,
-    void            *pData
+    void            *pKey,
+    void            *pValue
 )
 {
     if (pNode) {
         pNode->color = RBT_RED;
         pNode->pLink[RBT_LEFT] = NULL;
         pNode->pLink[RBT_RIGHT] = NULL;
-        pNode->pData = pData;
+        pNode->pKey = pKey;
+        pNode->pValue = pValue;
     }
     
     return pNode;
@@ -59,14 +61,15 @@ RBT_NODE *      rbt_NodeInit (
 
 RBT_NODE *      rbt_NodeNew (
     RBT_TREE        *this,
-    void            *pData
+    void            *pKey,
+    void            *pValue
 )
 {
     RBT_NODE        *pNode;
     
     pNode = this->pNodeAlloc(this->pObjAllocFree);
     if (pNode) {
-        rbt_NodeInit(this, pNode, pData);
+        rbt_NodeInit(this, pNode, pKey, pValue);
     }
     return pNode;
 }
@@ -152,33 +155,24 @@ RBT_TREE *      rbt_Alloc(
 
 
 RBT_TREE *      rbt_Init(
-    RBT_TREE        *this,
-    rbt_node_cmp_f  node_cmp_cb
+    RBT_TREE        *pTree,
+    int             (*pCmp)(void *, void *),
+    uint32_t        dataSize,
+    RBT_NODE *      (*pNodeAlloc)(OBJ_ID),
+    void            (*pNodeFree)(OBJ_ID, RBT_NODE *),
+    OBJ_ID          pObjAllocFree
 ) 
 {
-    if (this) {
-        this->pRoot = NULL;
-        this->size = 0;
-        this->pCmp = node_cmp_cb;
+    if (pTree) {
+        pTree->pRoot = NULL;
+        pTree->size = 0;
+        pTree->pCmp = pCmp;
+        pTree->dataSize = dataSize;
+        pTree->pNodeAlloc = pNodeAlloc;
+        pTree->pNodeFree = pNodeFree;
+        pTree->pObjAllocFree = pObjAllocFree;
     }
-    return this;
-}
-
-
-
-RBT_TREE *      rbt_New (
-    rbt_node_cmp_f  node_cb
-) 
-{
-    RBT_TREE        *this = NULL;
-    
-    if (node_cb) {
-        this = rbt_Alloc();
-        if (this) {
-            this = rbt_Init(this, node_cb);
-        }
-    }
-    return this;
+    return pTree;
 }
 
 
@@ -215,56 +209,35 @@ void            rbt_DeleteAll(
 
 
 
-int                 rbt_Test (
-    RBT_TREE            *this,
-    RBT_NODE            *root
-) 
+void *          rbt_Find (
+    RBT_TREE        *this,
+    void            *pKey
+)
 {
-    int                 lh;
-    int                 rh;
+    RBT_NODE        *pNodeCurrent = NULL;
+    int             cmp = 0;
     
-    if ( root == NULL )
-        return 1;
-    else {
-        RBT_NODE *ln = root->pLink[RBT_LEFT];
-        RBT_NODE *rn = root->pLink[RBT_RIGHT];
-        
-        /* Consecutive red links */
-        if (rbt_IsNodeRed(root)) {
-            if (rbt_IsNodeRed(ln) || rbt_IsNodeRed(rn)) {
-                fprintf(stderr, "ERROR - Red violation");
-                return 0;
+    if (this) {
+        pNodeCurrent = this->pRoot;
+        while (pNodeCurrent) {
+            cmp = this->pCmp(pNodeCurrent->pKey, pKey);
+            if (cmp) {
+                
+                // If the tree supports duplicates, they should be
+                // chained to the right subtree for this to work
+                pNodeCurrent = pNodeCurrent->pLink[cmp < 0];
+            } else {
+                break;
             }
         }
-        
-        lh = rbt_Test(this, ln);
-        rh = rbt_Test(this, rn);
-        
-        /* Invalid binary search tree */
-        if ( ( ln != NULL && this->pCmp(this, ln, root) >= 0 )
-            || ( rn != NULL && this->pCmp(this, rn, root) <= 0))
-        {
-            fprintf(stderr, "ERROR - Binary tree violation" );
-            return 0;
-        }
-        
-        /* Black height mismatch */
-        if ( lh != 0 && rh != 0 && lh != rh ) {
-            fprintf(stderr, "ERROR - Black violation" );
-            return 0;
-        }
-        
-        /* Only count black links */
-        if ( lh != 0 && rh != 0 )
-            return rbt_IsNodeRed ( root ) ? lh : lh + 1;
-        else
-            return 0;
     }
+    
+    return pNodeCurrent ? pNodeCurrent->pValue : NULL;
 }
 
 
 
-RBT_NODE *      rbt_Find (
+RBT_NODE *      rbt_FindNode (
     RBT_TREE        *this,
     RBT_NODE        *pNode
 )
@@ -275,11 +248,11 @@ RBT_NODE *      rbt_Find (
     if (this) {
         pNodeCurrent = this->pRoot;
         while (pNodeCurrent) {
-            if ((cmp = this->pCmp(this, pNodeCurrent, pNode))) {
+            if ((cmp = this->pCmp(pNodeCurrent->pKey, pNode->pKey))) {
 
                 // If the tree supports duplicates, they should be
                 // chained to the right subtree for this to work
-                pNodeCurrent = pNodeCurrent->pLink[cmp < 0 ? RBT_RIGHT : RBT_LEFT];
+                pNodeCurrent = pNodeCurrent->pLink[cmp < 0];
             } else {
                 break;
             }
@@ -292,14 +265,15 @@ RBT_NODE *      rbt_Find (
 
 
 // Creates (malloc'ates) node then inserts it.
-int         rbt_Insert(
+bool            rbt_Insert(
     RBT_TREE        *this, 
+    void            *pKey,
     void            *pValue
 ) 
 {
     RBT_NODE        *pNode;
 
-    pNode = rbt_NodeNew(this, pValue);
+    pNode = rbt_NodeNew(this, pKey, pValue);
 
     return rbt_InsertNode(this, pNode);
 }
@@ -307,17 +281,17 @@ int         rbt_Insert(
 
 
 // Returns 1 on success, 0 otherwise.
-int                 rbt_InsertNode(
+bool                rbt_InsertNode(
     RBT_TREE            *this,
     RBT_NODE            *node
 ) 
 {
-    int                 result = 0;
+
     if (this && node) {
         if (this->pRoot == NULL) {
             this->pRoot = node;
-            result = 1;
-        } else {
+        }
+        else {
             RBT_NODE head = { 0 }; // False tree root
             RBT_NODE *g, *t;       // Grandparent & parent
             RBT_NODE *p, *q;       // Iterator & parent
@@ -329,7 +303,7 @@ int                 rbt_InsertNode(
             q = t->pLink[RBT_RIGHT] = this->pRoot;
 
             // Search down the tree for a place to insert
-            while (1) {
+            while (true) {
                 if (q == NULL) {
 
                     // Insert node at the first null link.
@@ -355,12 +329,12 @@ int                 rbt_InsertNode(
           
                 // Stop working if we inserted a node. This
                 // check also disallows duplicates in the tree
-                if (this->pCmp(this, q, node) == 0) {
+                if (this->pCmp(q->pKey, node->pKey) == 0) {
                     break;
                 }
 
                 last = dir;
-                dir = this->pCmp(this, q, node) < 0;
+                dir = this->pCmp(q->pKey, node->pKey) < 0;
 
                 // Move the helpers down
                 if (g != NULL) {
@@ -381,7 +355,7 @@ int                 rbt_InsertNode(
         ++this->size;
     }
     
-    return 1;
+    return true;
 }
 
 
@@ -391,12 +365,12 @@ int                 rbt_InsertNode(
 // default callback to deallocate node created by rb_tree_insert(...).
 int         rbt_Delete (
     RBT_TREE    *this,
-    void        *pData
+    void        *pKey
 )
 {
     if (this->pRoot != NULL) {
         RBT_NODE head = {0}; // False tree root
-        RBT_NODE node = { .pData = pData }; // Value wrapper node
+        RBT_NODE node = { .pKey = pKey }; // Value wrapper node
         RBT_NODE *q, *p, *g; // Helpers
         RBT_NODE *f = NULL;  // Found item
         int dir = 1;
@@ -415,11 +389,11 @@ int         rbt_Delete (
             g = p;
             p = q;
             q = q->pLink[dir];
-            dir = this->pCmp(this, q, &node) < 0;
+            dir = this->pCmp(q->pKey, (&node)->pKey) < 0;
       
             // Save the node with matching value and keep
             // going; we'll do removal tasks at the end
-            if (this->pCmp(this, q, &node) == 0) {
+            if (this->pCmp(q->pKey, (&node)->pKey) == 0) {
                 f = q;
             }
 
@@ -456,10 +430,13 @@ int         rbt_Delete (
 
         // Replace and remove the saved node
         if (f) {
-            void *tmp = f->pData;
-            f->pData = q->pData;
-            q->pData = tmp;
-            
+            void *tmp = f->pKey;
+            f->pKey = q->pKey;
+            q->pKey = tmp;
+            tmp = f->pValue;
+            f->pValue = q->pValue;
+            q->pValue = tmp;
+
             p->pLink[p->pLink[RBT_RIGHT] == q] = q->pLink[q->pLink[RBT_LEFT] == NULL];
             
             rbt_NodeDealloc(this, q);
@@ -482,11 +459,26 @@ int         rbt_Delete (
 
 
 
-size_t          rbt_getSize (
+RBT_NODE *      rbt_getRoot (
     RBT_TREE        *this
 )
 {
-    size_t          result = 0;
+    RBT_NODE        *pRoot = NULL;
+    
+    if (this) {
+        pRoot = this->pRoot;
+    }
+    
+    return pRoot;
+}
+
+
+
+uint32_t        rbt_getSize (
+    RBT_TREE        *this
+)
+{
+    uint32_t        result = 0;
     
     if (this) {
         result = this->size;
@@ -554,7 +546,7 @@ void *          rbt_iter_start(RBT_ITER *this, RBT_TREE *tree, int dir)
             }
         }
 
-        result = this->node == NULL ? NULL : this->node->pData;
+        result = this->node == NULL ? NULL : this->node->pKey;
     }
     return result;
 }
@@ -586,7 +578,7 @@ void *          rbt_iter_move (RBT_ITER *this, int dir) {
             this->node = this->path[--this->top];
         } while (last == this->node->pLink[dir]);
     }
-    return this->node == NULL ? NULL : this->node->pData;
+    return this->node == NULL ? NULL : this->node->pKey;
 }
 
 void *
@@ -613,33 +605,96 @@ rbt_iter_prev (RBT_ITER *this) {
 
 
 
-void            rbt_PrintNode(
+void            rbt_DumpTreeNode (
     RBT_TREE        *this,
     RBT_NODE        *pNode
 )
 {
     
     if (pNode->pLink[RBT_LEFT])
-        rbt_PrintNode(this, pNode->pLink[RBT_LEFT]);
+        rbt_DumpTreeNode(this, pNode->pLink[RBT_LEFT]);
     fprintf(
             stderr,
-            "\t %p  L=%p R=%p %s   %p\n",
+            "\t %p  L=%p R=%p %s   %p:%p\n",
             pNode,
             pNode->pLink[RBT_LEFT],
             pNode->pLink[RBT_RIGHT],
             pNode->color ? "red" : "black",
-            pNode->pData
+            pNode->pKey,
+            pNode->pValue
     );
     if (pNode->pLink[RBT_RIGHT])
-        rbt_PrintNode(this, pNode->pLink[RBT_RIGHT]);
+        rbt_DumpTreeNode(this, pNode->pLink[RBT_RIGHT]);
 }
 
 
-void            rbt_PrintTree (RBT_TREE *this)
+void            rbt_DumpTree (RBT_TREE *this)
 {
-    fprintf(stderr, "In-order Tree Dump of %ld Nodes\n", this->size);
-    rbt_PrintNode(this, this->pRoot);
+    fprintf(stderr, "In-order Tree Dump of %d Nodes\n", this->size);
+    rbt_DumpTreeNode(this, this->pRoot);
     fprintf(stderr, "\n\n\n");
+}
+
+
+
+int                 rbt_VerifyTree (
+    RBT_TREE            *this,
+    RBT_NODE            *pNode
+)
+{
+    int                 lh;
+    int                 rh;
+    int                 cmp;
+    
+    if ( pNode == NULL )
+        return 1;
+    else {
+        RBT_NODE *ln = pNode->pLink[RBT_LEFT];
+        RBT_NODE *rn = pNode->pLink[RBT_RIGHT];
+        
+        /* Consecutive red links */
+        if (rbt_IsNodeRed(pNode)) {
+            if (rbt_IsNodeRed(ln) || rbt_IsNodeRed(rn)) {
+                rbt_DumpTree(this);
+                DEBUG_BREAK();
+                fprintf(stderr, "ERROR - Red violation\n\n");
+                return 0;
+            }
+        }
+        
+        lh = rbt_VerifyTree(this, ln);
+        rh = rbt_VerifyTree(this, rn);
+        
+        /* Invalid binary search tree */
+        if ( ln != NULL && (cmp = this->pCmp(ln->pKey, pNode->pKey)) >= 0 )
+        {
+            rbt_DumpTree(this);
+            DEBUG_BREAK();
+            fprintf(stderr, "ERROR - Binary tree left node violation\n\n" );
+            return 0;
+        }
+        if ( rn != NULL && (cmp = this->pCmp(rn->pKey, pNode->pKey)) <= 0)
+        {
+            rbt_DumpTree(this);
+            DEBUG_BREAK();
+            fprintf(stderr, "ERROR - Binary tree right node violation\n\n" );
+            return 0;
+        }
+
+        /* Black height mismatch */
+        if ( lh != 0 && rh != 0 && lh != rh ) {
+            rbt_DumpTree(this);
+            DEBUG_BREAK();
+            fprintf(stderr, "ERROR - Black violation\n\n" );
+            return 0;
+        }
+        
+        /* Only count black links */
+        if ( lh != 0 && rh != 0 )
+            return rbt_IsNodeRed (pNode) ? lh : lh + 1;
+        else
+            return 0;
+    }
 }
 
 

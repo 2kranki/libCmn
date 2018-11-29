@@ -507,7 +507,7 @@ extern "C" {
                 else {
                     pStr1 = name_getUTF8(this);
                     pStr2 = name_getUTF8(pOther);
-                    i = strcmp(pStr1, pStr2);
+                    i = utf8_StrCmp(pStr1, pStr2);
                     mem_Free((void *)pStr1);
                     mem_Free((void *)pStr2);
                 }
@@ -520,7 +520,7 @@ extern "C" {
                 }
                 pStr1 = name_getUTF8(this);
                 pStr2 = name_getUTF8(pOther);
-                i = strcmp(pStr1, pStr2);
+                i = utf8_StrCmp(pStr1, pStr2);
                 mem_Free((void *)pStr1);
                 mem_Free((void *)pStr2);
                 break;
@@ -528,17 +528,19 @@ extern "C" {
             case NAME_TYPE_UTF8:
             case NAME_TYPE_UTF8_CON:
                 if (pOther->type == NAME_TYPE_UTF8) {
-                    i = strcmp(this->pChrs, pOther->pChrs);
+                    i = utf8_StrCmp(this->pChrs, pOther->pChrs);
+                    break;
                 }
                 else if (pOther->type == NAME_TYPE_UTF8_CON) {
-                    i = strcmp(this->pChrs, pOther->pChrs);
+                    i = utf8_StrCmp(this->pChrs, pOther->pChrs);
+                    break;
                 }
-                if (pOther->type == NAME_TYPE_ASTR) {
+                else if (pOther->type == NAME_TYPE_ASTR) {
                     eRc = AStr_Compare(this->pObj, pOther->pObj);
                     return eRc;
                 }
                 pStr2 = name_getUTF8(pOther);
-                i = strcmp(this->pChrs, pStr2);
+                i = utf8_StrCmp(this->pChrs, pStr2);
                 mem_Free((void *)pStr2);
                 break;
                 

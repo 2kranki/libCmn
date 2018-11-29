@@ -242,7 +242,9 @@ extern "C" {
      entry address. Halt the scan if an error return code is returned
      by the scan routine.
      @param     this    Object Pointer
-     @param     pScan   Scan Routine Address
+     @param     pScan   Scan Routine Address, Second parameter for the
+                        Scan Routine is the Object pointer from the
+                        current array entry
      @param     pObj    First Parameter for the Scan Routine (optional)
      @param     pArg3   Third Parameter for the Scan Routine (optional)
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*

@@ -1010,7 +1010,6 @@ int         test_AStr_JSON01(
 )
 {
     ERESULT     eRc;
-    uint32_t    iRc;
     ASTR_DATA   *pObj = OBJ_NIL;
     ASTR_DATA   *pJsonStr = OBJ_NIL;
     ASTR_DATA   *pJsonStrOut = OBJ_NIL;
@@ -1022,7 +1021,8 @@ int         test_AStr_JSON01(
         "\"data\":\"abc\""
     
     "}\n";
-    uint32_t    index = 0;
+    uint32_t    iRc;
+    int         index = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     

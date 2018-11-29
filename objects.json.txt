@@ -197,6 +197,7 @@
     "programs": ["genGetterSetter", "genMake", "lexFileToJSON", "md5Util"],
     "tests": [
         "listdl.c",
+        "rbt_tree.c",
         "str.c"
      ]
 }

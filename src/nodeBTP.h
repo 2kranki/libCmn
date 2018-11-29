@@ -201,6 +201,17 @@ extern "C" {
     
     
     /*!
+     Create an enumerator for the Tree.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+     OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    NODEENUM_DATA * nodeBTP_Enum(
+        NODEBTP_DATA    *this
+    );
+    
+    
+    /*!
      Substitute environment variables into the current string using a BASH-like
      syntax.  Variable names should have the syntax of:
      '$' '{'[a..zA..Z_][a..zA..Z0..9_]* '}'
@@ -209,22 +220,11 @@ extern "C" {
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-     is returned.
+                is returned.
      */
     ERESULT         nodeBTP_ExpandVars (
         NODEBTP_DATA    *this,
         ASTR_DATA       *pStr
-    );
-    
-    
-    /*!
-     Create an enumerator for the Tree.
-     @return    If successful, an ENUM object is returned.  Otherwise,
-                OBJ_NIL.
-     @warning   Remember to release the returned ENUM object.
-     */
-    NODEENUM_DATA * nodeBTP_Enum(
-        NODEBTP_DATA    *this
     );
     
     
@@ -246,6 +246,19 @@ extern "C" {
         char            *pNameA 
     );
 
+    
+    /*!
+     Scan all the nodes of the Tree in no particular order.
+     @return    ERESULT_SUCCESS if successful completion.  Otherwise, an ERESULT_*
+                error code is returned.
+     */
+    ERESULT         nodeBTP_ForEach(
+        NODEBTP_DATA    *this,
+        P_VOIDEXIT3_BE  pScan,
+        OBJ_ID          pObj,               // Used as first parameter of scan method
+        void            *pArg3              // Used as third parameter of scan method
+    );
+    
     
     NODEBTP_DATA *   nodeBTP_Init(
         NODEBTP_DATA     *this
@@ -272,6 +285,11 @@ extern "C" {
     ASTR_DATA *    nodeBTP_ToDebugString(
         NODEBTP_DATA     *this,
         int             indent
+    );
+    
+    
+    ERESULT         nodeBTP_VerifyTree(
+        NODEBTP_DATA    *this
     );
     
     

@@ -133,63 +133,64 @@ int         test_node_Property01(
     NODE_DATA       *pObj = OBJ_NIL;
     ASTR_DATA       *pAStr = OBJ_NIL;
     const
-    char            *pStr = NULL;
+    char            *pStrA = NULL;
     ASTR_DATA       *pAWrk = OBJ_NIL;
-    ASTRARRAY_DATA  *pKeys = OBJ_NIL;
+    NODEARRAY_DATA  *pKeys = OBJ_NIL;
     uint32_t        i;
+    NODE_DATA       *pNode = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = node_NewWithUTF8ConAndClass("abc", 0, OBJ_NIL);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pStr = "c";
-        pAStr = AStr_NewA(pStr);
+        pStrA = "c";
+        pAStr = AStr_NewA(pStrA);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
-        eRc = node_PropertyAdd(pObj, pStr, (OBJ_ID)pAStr);
+        eRc = node_PropertyAddA(pObj, pStrA, pAStr);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        pAWrk = node_Property(pObj, pStr);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        pAWrk = node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
         
-        pStr = "a";
-        pAStr = AStr_NewA(pStr);
+        pStrA = "a";
+        pAStr = AStr_NewA(pStrA);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
-        eRc = node_PropertyAdd(pObj, pStr, (OBJ_ID)pAStr);
+        eRc = node_PropertyAddA(pObj, pStrA, pAStr);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        pAWrk = node_Property(pObj, pStr);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        pAWrk = node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
         
-        pStr = "b";
-        pAStr = AStr_NewA(pStr);
+        pStrA = "b";
+        pAStr = AStr_NewA(pStrA);
         XCTAssertFalse( (OBJ_NIL == pAStr) );
-        eRc = node_PropertyAdd(pObj, pStr, (OBJ_ID)pAStr);
+        eRc = node_PropertyAddA(pObj, pStrA, pAStr);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        pAWrk = node_Property(pObj, pStr);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        pAWrk = node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
         
-        pStr = "a";
-        pAWrk = node_Property(pObj, pStr);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStr)) );
+        pStrA = "a";
+        pAWrk = node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
 
-        pKeys = node_PropertyKeys(pObj);
+        pKeys = node_Properties(pObj);
         XCTAssertFalse( (OBJ_NIL == pKeys) );
-        i = AStrArray_getSize(pKeys);
+        i = nodeArray_getSize(pKeys);
         XCTAssertTrue( (3 == i) );
-        pAWrk = AStrArray_Get(pKeys, 1);
-        XCTAssertFalse( (OBJ_NIL == pAWrk) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, "a")) );
-        pAWrk = AStrArray_Get(pKeys, 2);
-        XCTAssertFalse( (OBJ_NIL == pAWrk) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, "b")) );
-        pAWrk = AStrArray_Get(pKeys, 3);
-        XCTAssertFalse( (OBJ_NIL == pAWrk) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, "c")) );
+        pNode = nodeArray_Get(pKeys, 1);
+        XCTAssertFalse( (OBJ_NIL == pNode) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(node_getData(pNode), "a")) );
+        pNode = nodeArray_Get(pKeys, 2);
+        XCTAssertFalse( (OBJ_NIL == pNode) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(node_getData(pNode), "b")) );
+        pNode = nodeArray_Get(pKeys, 3);
+        XCTAssertFalse( (OBJ_NIL == pNode) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(node_getData(pNode), "c")) );
         obj_Release(pKeys);
         pKeys = OBJ_NIL;
 

@@ -4,7 +4,8 @@
  *	Generated 11/22/2018 23:21:01
  *
  * Notes:
- *  --	N/A
+ *  --	Remember that you can access all the active records via the
+ *      blocks list.  See blocks_getList().
  *
  */
 

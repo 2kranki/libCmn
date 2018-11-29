@@ -535,20 +535,20 @@ extern "C" {
             NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
             RBT_NODE            *pNode = &pRecord->node;
             
-            if (obj_IsKindOf(pNode->pData, OBJ_IDENT_NODE))
+            if (obj_IsKindOf(pNode->pKey, OBJ_IDENT_NODE))
                 ;
             else {
                 fRc = false;
                 break;
             }
-            pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+            pQueryInfo = obj_getVtbl(pNode->pKey)->pQueryInfo;
             if (pQueryInfo) {
                 ASTR_DATA *     (*pToJSON)(
                     OBJ_ID          objId
                 );
                 
                 pToJSON =   (*pQueryInfo)(
-                                        pNode->pData,
+                                        pNode->pKey,
                                         OBJ_QUERYINFO_TYPE_METHOD,
                                         "ToJSON"
                             );
@@ -589,21 +589,21 @@ extern "C" {
             NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
             RBT_NODE            *pNode = &pRecord->node;
             
-            pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+            pQueryInfo = obj_getVtbl(pNode->pKey)->pQueryInfo;
             if (pQueryInfo) {
                 ASTR_DATA *     (*pToJSON)(
                                            OBJ_ID          objId
                                            );
                 
                 pToJSON =   (*pQueryInfo)(
-                                          pNode->pData,
+                                          pNode->pKey,
                                           OBJ_QUERYINFO_TYPE_METHOD,
                                           "ToJSON"
                                           );
                 if (pToJSON) {
                     ASTR_DATA       *pData;
                     
-                    pData = (*pToJSON)(pNode->pData);
+                    pData = (*pToJSON)(pNode->pKey);
                     if (pData) {
                         AStr_Append(pStr, pData);
                         obj_Release(pData);

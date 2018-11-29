@@ -1194,6 +1194,11 @@ OBJS += $(OBJDIR)/nodeBTP.o
 $(OBJDIR)/nodeBTP.o: $(SRCDIR)/nodeBTP.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeLnkP.h $(SRCDIR)/nodeArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
+OBJS += $(OBJDIR)/nodeBTP_JSON.o
+
+$(OBJDIR)/nodeBTP_JSON.o: $(SRCDIR)/nodeBTP_JSON.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
 TESTS += test_nodeBTP
 
 test_nodeBTP: $(TEST_SRC)/test_nodeBTP.c 
@@ -1446,27 +1451,6 @@ $(OBJDIR)/objEnum.o: $(SRCDIR)/objEnum.c $(SRCDIR)/cmn_defs.h
 TESTS += test_objEnum
 
 test_objEnum: $(TEST_SRC)/test_objEnum.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
-OBJS += $(OBJDIR)/objHash_object.o
-
-$(OBJDIR)/objHash_object.o: $(SRCDIR)/objHash_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/objHash.o
-
-$(OBJDIR)/objHash.o: $(SRCDIR)/objHash.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/objHash_JSON.o
-
-$(OBJDIR)/objHash_JSON.o: $(SRCDIR)/objHash_JSON.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += test_objHash
-
-test_objHash: $(TEST_SRC)/test_objHash.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2423,6 +2407,12 @@ $(OBJDIR)/str.o: $(SRCDIR)/str.c
 TESTS += test_listdl
 
 test_listdl: $(TEST_SRC)/test_listdl.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+TESTS += test_rbt_tree
+
+test_rbt_tree: $(TEST_SRC)/test_rbt_tree.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
