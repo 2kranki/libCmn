@@ -118,7 +118,7 @@ int         test_parser_Properties01(
     if (pObj) {
 
         XCTAssertTrue( (0 == parser_PropertyCount(pObj)) );
-        pNode = node_NewWithUTF8AndClass("abc", 0, OBJ_NIL);
+        pNode = node_NewWithUTF8AndClass(0, "abc", OBJ_NIL);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         eRc = parser_PropertyAdd(pObj, pNode);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );

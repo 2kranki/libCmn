@@ -204,9 +204,9 @@ extern "C" {
     
     
     NODE_DATA *     node_NewWithUTF8AndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -238,9 +238,9 @@ extern "C" {
     
     
     NODE_DATA *     node_NewWithUTF8ConAndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -1424,7 +1424,7 @@ extern "C" {
             }
         }
         
-        pNode = node_NewWithUTF8AndClass(pNameA, 0, pData);
+        pNode = node_NewWithUTF8AndClass(0, pNameA, pData);
         if (pNode == OBJ_NIL) {
             eRc = ERESULT_OUT_OF_MEMORY;
             goto eom;

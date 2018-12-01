@@ -586,7 +586,7 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pClose) {
-            pNode = nodeLink_NewWithUTF8ConAndClass(")", NODE_CLASS_CLOSE, OBJ_NIL);
+            pNode = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_CLOSE, ")", OBJ_NIL);
             if (pNode) {
                 this->pClose = pNode;
             }
@@ -713,7 +713,7 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pOpen) {
-            pNode = nodeLink_NewWithUTF8ConAndClass("(", NODE_CLASS_OPEN, OBJ_NIL);
+            pNode = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_OPEN, "(", OBJ_NIL);
             if (pNode) {
                 this->pOpen = pNode;
             }
@@ -1415,9 +1415,9 @@ extern "C" {
     
     uint32_t    nodeTree_NodeNewUTF8(
         NODETREE_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -1435,7 +1435,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeLink_NewWithUTF8ConAndClass(pName, cls, pData);
+        pNode = nodeLink_NewWithUTF8ConAndClass(cls, pName, pData);
         if( pNode == OBJ_NIL ) {
             DEBUG_BREAK();
             obj_setLastError(this, ERESULT_INVALID_PARAMETER);

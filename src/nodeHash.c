@@ -147,7 +147,7 @@ extern "C" {
         RBT_TREE        *pTree;
         
         // Do initialization.
-        pNode = node_NewWithUTF8AndClass(pNameA, cls, OBJ_NIL);
+        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
             if (pTree) {
@@ -449,9 +449,9 @@ extern "C" {
     
     ERESULT         nodeHash_AddA(
         NODEHASH_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -471,7 +471,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pName, cls, pData);
+        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
         if (OBJ_NIL == pNode) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -513,11 +513,11 @@ extern "C" {
     }
     
     
-    ERESULT         nodeHash_AddUpdateA(
-        NODEHASH_DATA    *this,
+    ERESULT         nodeHash_AddUpdateA (
+        NODEHASH_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -537,7 +537,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pName, cls, pData);
+        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
         if (OBJ_NIL == pNode) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -901,7 +901,7 @@ extern "C" {
         }
 #endif
        
-        pNode = node_NewWithUTF8ConAndClass(pNameA, cls, OBJ_NIL);
+        pNode = node_NewWithUTF8ConAndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             eRc = nodeHash_Delete(this, pNode);
             obj_Release(pNode);

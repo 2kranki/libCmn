@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   main_internal.h
- *	Generated 11/04/2018 19:06:53
+ *	Generated 11/30/2018 16:54:35
  *
  * Notes:
  *  --	N/A
@@ -40,7 +40,10 @@
 
 
 #include        <main.h>
+#include        <appl_internal.h>
 #include        <jsonIn.h>
+#include        <nodeBTP.h>
+#include        <textOut.h>
 
 
 #ifndef MAIN_INTERNAL_H
@@ -63,18 +66,22 @@ extern "C" {
 struct main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    APPL_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    uint16_t        osType;         // See OSTYPE
+    uint16_t        outType;        // See OUTTYPE
+    uint16_t        fBackup;        // true == backup output file if it exists
+    uint16_t        rsvd16;
+    NODEBTP_DATA    *pDict;
+    DBPRS_DATA      *pPrs;
+    OBJ_ID          pGen;
+    PATH_DATA       *pFilePath;
+    PATH_DATA       *pOutputPath;
+    TEXTOUT_DATA    *pOutput;
+    NODE_DATA       *pNodes;
+    ASTR_DATA       *pOut;
 
 };
 #pragma pack(pop)
@@ -93,11 +100,11 @@ struct main_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  MAIN_SINGLETON
-    MAIN_DATA *     main_getSingleton(
+    MAIN_DATA *     main_getSingleton (
         void
     );
 
-    bool            main_setSingleton(
+    bool            main_setSingleton (
      MAIN_DATA       *pValue
 );
 #endif
@@ -108,38 +115,135 @@ struct main_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  main_getSuperVtbl(
+    bool            main_setParser (
+        MAIN_DATA       *this,
+        DBPRS_DATA      *pValue
+    );
+    
+    
+    OBJ_IUNKNOWN *  main_getSuperVtbl (
         MAIN_DATA     *this
     );
 
 
-    void            main_Dealloc(
+    void            main_Dealloc (
         OBJ_ID          objId
     );
 
 
-    MAIN_DATA *       main_ParseObject(
+    ERESULT         main_DictAdd(
+                                 MAIN_DATA       *this,
+                                 const
+                                 char            *pName,
+                                 OBJ_ID          pData
+                                 );
+    
+    ERESULT         main_DictAddA(
+                                  MAIN_DATA       *this,
+                                  const
+                                  char            *pName,
+                                  const
+                                  char            *pData
+                                  );
+    
+    ERESULT         main_DictAddUpdate(
+                                       MAIN_DATA       *this,
+                                       const
+                                       char            *pName,
+                                       OBJ_ID          pData
+                                       );
+    
+    ERESULT         main_DictAddUpdateA(
+                                        MAIN_DATA        *this,
+                                        const
+                                        char            *pName,
+                                        const
+                                        char            *pData
+                                        );
+    
+    ERESULT         main_ParseArgsDefault(
+                                          MAIN_DATA        *this
+                                          );
+    
+    int             main_ParseArgsLong(
+                                       MAIN_DATA       *this,
+                                       int             *pArgC,
+                                       const
+                                       char            ***pppArgV
+                                       );
+    
+    int             main_ParseArgsShort(
+                                        MAIN_DATA       *this,
+                                        int             *pArgC,
+                                        const
+                                        char            ***pppArgV
+                                        );
+    
+    ERESULT         main_ParseInputFile(
+                                        MAIN_DATA       *this,
+                                        PATH_DATA       *pPath
+                                        );
+    
+    ERESULT         main_ParseInputStr(
+                                       MAIN_DATA       *this,
+                                       const
+                                       char            *pStr
+                                       );
+    
+    ERESULT         main_ProcessInit(
+                                     MAIN_DATA       *this
+                                     );
+    
+    ERESULT         main_ProcessArg(
+                                    MAIN_DATA       *this,
+                                    ASTR_DATA       *pStr
+                                    );
+
+    
+    MAIN_DATA *       main_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          main_QueryInfo(
+    void *          main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     main_ToJSON(
+    ASTR_DATA *     main_ToJSON (
         MAIN_DATA      *this
     );
 
 
+    ERESULT         main_UsageDesc(
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pProgramPath
+    );
+    
+    
+    ERESULT         main_UsageProgLine(
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pProgramPath,
+        const
+        char            *pNameA
+    );
+    
+    
+    ERESULT         main_UsageOptions(
+        MAIN_DATA       *this,
+        FILE            *pOutput
+    );
+    
+    
 
 
 #ifdef NDEBUG
 #else
-    bool			main_Validate(
+    bool			main_Validate (
         MAIN_DATA       *this
     );
 #endif

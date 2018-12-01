@@ -277,7 +277,7 @@ extern	"C" {
     )
     {
         OBJ_DATA        *this;
-        uint16_t        newSize;
+        uint32_t        newSize;
         
 #ifdef NDEBUG
 #else
@@ -1229,6 +1229,7 @@ extern	"C" {
 #else
         if (0 == this->cbRetainCount) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         if (this->pVtbl->pRelease) {
@@ -1268,6 +1269,7 @@ extern	"C" {
 #else
         if (0 == this->cbRetainCount) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         

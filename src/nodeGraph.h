@@ -160,15 +160,16 @@ extern "C" {
 
     ERESULT         nodeGraph_NodeAddA(
         NODEGRAPH_DATA  *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     );
 
     
     NODE_DATA *     nodeGraph_FindA(
         NODEGRAPH_DATA  *this,
+        int32_t         cls,
         const
         char            *pName
     );

@@ -136,16 +136,16 @@ extern "C" {
     );
     
     NODELNKP_DATA * nodeLnkP_NewWithUTF8AndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     );
     
     NODELNKP_DATA * nodeLnkP_NewWithUTF8ConAndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     );
     

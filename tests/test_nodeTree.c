@@ -69,61 +69,61 @@ NODETREE_DATA * createTestTree01(
         return pTree;
     }
     
-    pNodeA = nodeLink_NewWithUTF8ConAndClass("A", 0, OBJ_NIL);
+    pNodeA = nodeLink_NewWithUTF8ConAndClass(0, "A", OBJ_NIL);
     if  (OBJ_NIL == pNodeA) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeB = nodeLink_NewWithUTF8ConAndClass("B", 0, OBJ_NIL);
+    pNodeB = nodeLink_NewWithUTF8ConAndClass(0, "B", OBJ_NIL);
     if  (OBJ_NIL == pNodeB) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeC = nodeLink_NewWithUTF8ConAndClass("C", 0, OBJ_NIL);
+    pNodeC = nodeLink_NewWithUTF8ConAndClass(0, "C", OBJ_NIL);
     if  (OBJ_NIL == pNodeC) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeD = nodeLink_NewWithUTF8ConAndClass("D", 0, OBJ_NIL);
+    pNodeD = nodeLink_NewWithUTF8ConAndClass(0, "D", OBJ_NIL);
     if  (OBJ_NIL == pNodeD) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeE = nodeLink_NewWithUTF8ConAndClass("E", 0, OBJ_NIL);
+    pNodeE = nodeLink_NewWithUTF8ConAndClass(0, "E", OBJ_NIL);
     if  (OBJ_NIL == pNodeE) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeF = nodeLink_NewWithUTF8ConAndClass("F", 0, OBJ_NIL);
+    pNodeF = nodeLink_NewWithUTF8ConAndClass(0, "F", OBJ_NIL);
     if  (OBJ_NIL == pNodeF) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeG = nodeLink_NewWithUTF8ConAndClass("G", 0, OBJ_NIL);
+    pNodeG = nodeLink_NewWithUTF8ConAndClass(0, "G", OBJ_NIL);
     if  (OBJ_NIL == pNodeG) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeH = nodeLink_NewWithUTF8ConAndClass("H", 0, OBJ_NIL);
+    pNodeH = nodeLink_NewWithUTF8ConAndClass(0, "H", OBJ_NIL);
     if  (OBJ_NIL == pNodeH) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeJ = nodeLink_NewWithUTF8ConAndClass("J", 0, OBJ_NIL);
+    pNodeJ = nodeLink_NewWithUTF8ConAndClass(0, "J", OBJ_NIL);
     if  (OBJ_NIL == pNodeJ) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeK = nodeLink_NewWithUTF8ConAndClass("K", 0, OBJ_NIL);
+    pNodeK = nodeLink_NewWithUTF8ConAndClass(0, "K", OBJ_NIL);
     if  (OBJ_NIL == pNodeK) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -261,69 +261,69 @@ NODETREE_DATA * createTestTree02(
         return pTree;
     }
     
-    pNodeA = nodeLink_NewWithUTF8ConAndClass("a", 0, OBJ_NIL);
+    pNodeA = nodeLink_NewWithUTF8ConAndClass(0, "a", OBJ_NIL);
     if  (OBJ_NIL == pNodeA) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeB = nodeLink_NewWithUTF8ConAndClass("b", 0, OBJ_NIL);
+    pNodeB = nodeLink_NewWithUTF8ConAndClass(0, "b", OBJ_NIL);
     if  (OBJ_NIL == pNodeB) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeC = nodeLink_NewWithUTF8ConAndClass("c", 0, OBJ_NIL);
+    pNodeC = nodeLink_NewWithUTF8ConAndClass(0, "c", OBJ_NIL);
     if  (OBJ_NIL == pNodeC) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeD = nodeLink_NewWithUTF8ConAndClass("d", 0, OBJ_NIL);
+    pNodeD = nodeLink_NewWithUTF8ConAndClass(0, "d", OBJ_NIL);
     if  (OBJ_NIL == pNodeD) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeE = nodeLink_NewWithUTF8ConAndClass("e", 0, OBJ_NIL);
+    pNodeE = nodeLink_NewWithUTF8ConAndClass(0, "e", OBJ_NIL);
     if  (OBJ_NIL == pNodeE) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeF = nodeLink_NewWithUTF8ConAndClass("f", 0, OBJ_NIL);
+    pNodeF = nodeLink_NewWithUTF8ConAndClass(0, "f", OBJ_NIL);
     if  (OBJ_NIL == pNodeF) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeG = nodeLink_NewWithUTF8ConAndClass("*1", 0, OBJ_NIL);
+    pNodeG = nodeLink_NewWithUTF8ConAndClass(0, "*1", OBJ_NIL);
     if  (OBJ_NIL == pNodeG) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeH = nodeLink_NewWithUTF8ConAndClass("+", 0, OBJ_NIL);
+    pNodeH = nodeLink_NewWithUTF8ConAndClass(0, "+", OBJ_NIL);
     if  (OBJ_NIL == pNodeH) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeI = nodeLink_NewWithUTF8ConAndClass("/", 0, OBJ_NIL);
+    pNodeI = nodeLink_NewWithUTF8ConAndClass(0, "/", OBJ_NIL);
     if  (OBJ_NIL == pNodeI) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     
-    pNodeJ = nodeLink_NewWithUTF8ConAndClass("-", 0, OBJ_NIL);
+    pNodeJ = nodeLink_NewWithUTF8ConAndClass(0, "-", OBJ_NIL);
     if  (OBJ_NIL == pNodeI) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     
-    pNodeK = nodeLink_NewWithUTF8ConAndClass("*2", 0, OBJ_NIL);
+    pNodeK = nodeLink_NewWithUTF8ConAndClass(0, "*2", OBJ_NIL);
     if  (OBJ_NIL == pNodeI) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -1401,9 +1401,9 @@ int         test_nodeTree_Node01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        pNodeA = nodeLink_NewWithUTF8ConAndClass("A", 0, OBJ_NIL);
+        pNodeA = nodeLink_NewWithUTF8ConAndClass(0, "A", OBJ_NIL);
         XCTAssertFalse( (OBJ_NIL == pNodeA) );
-        pNodeB = nodeLink_NewWithUTF8ConAndClass("B", 0, OBJ_NIL);
+        pNodeB = nodeLink_NewWithUTF8ConAndClass(0, "B", OBJ_NIL);
         XCTAssertFalse( (OBJ_NIL == pNodeB) );
 
         nodeA = nodeTree_ChildAdd(pObj, 0, pNodeA);
@@ -1462,7 +1462,7 @@ int         test_nodeTree_NodeLinkChild(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pNodeA = nodeLink_NewWithUTF8ConAndClass("A", 0, OBJ_NIL);
+        pNodeA = nodeLink_NewWithUTF8ConAndClass(0, "A", OBJ_NIL);
         XCTAssertFalse( (OBJ_NIL == pNodeA) );
 
         // Set up root.
@@ -1472,11 +1472,11 @@ int         test_nodeTree_NodeLinkChild(
         pNode = nodeTree_Node(pObj, nodeA);
         XCTAssertTrue( (pNodeA == pNode) );
 
-        nodeB = nodeTree_NodeNewUTF8(pObj, "B", 10, OBJ_NIL);
+        nodeB = nodeTree_NodeNewUTF8(pObj, 10, "B", OBJ_NIL);
         XCTAssertTrue( (nodeB == 2) );
-        nodeC = nodeTree_NodeNewUTF8(pObj, "C", 20, OBJ_NIL);
+        nodeC = nodeTree_NodeNewUTF8(pObj, 20, "C", OBJ_NIL);
         XCTAssertTrue( (nodeC == 3) );
-        nodeD = nodeTree_NodeNewUTF8(pObj, "D", 30, OBJ_NIL);
+        nodeD = nodeTree_NodeNewUTF8(pObj, 30, "D", OBJ_NIL);
         XCTAssertTrue( (nodeD == 4) );
         
         eRc = nodeTree_NodeLinkChild(pObj, nodeA, nodeB);

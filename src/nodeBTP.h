@@ -1,16 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEBTP Console Transmit Task (nodeBTP) Header
+//          Red-Black Binary Tree of Nodes (nodeBTP) Header
 //****************************************************************
 /*
  * Program
- *			Separate nodeBTP (nodeBTP)
+ *			Red-Black Binary Tree of Nodes (nodeBTP)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate nodeBTP to run things without complications
- *          of interfering with the main nodeBTP. A nodeBTP may be 
- *          called a nodeBTP on other O/S's.
+ *			This object provides a Red-Black Binary Tree of Nodes.
+ *          It is good for a quick indexed list or array of Nodes
+ *          with order.
+ *
+ *          Currently, it does not handle duplicate entries.
  *
  * Remarks
  *	1.      None

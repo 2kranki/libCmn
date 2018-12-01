@@ -169,7 +169,7 @@ int         test_nodeArray_Add01(
     if (pArray) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = nodeArray_AppendNode(pArray, pNode, &idx);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeArray_getSize(pArray);
@@ -183,14 +183,12 @@ int         test_nodeArray_Add01(
         
         for (i=0; i<10; ++i) {
             pNode = OBJ_NIL;
-            eRc = nodeArray_FindA(pArray, strings[i], &pNode);
-            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+            pNode = nodeArray_FindA(pArray, 0, strings[i]);
             XCTAssertFalse( (pNode == OBJ_NIL) );
         }
         
         pNode = OBJ_NIL;
-        eRc = nodeArray_FindA(pArray, "xyzzy", &pNode);
-        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        pNode = nodeArray_FindA(pArray, 0, "xyzzy");
         XCTAssertTrue( (pNode == OBJ_NIL) );
         
         obj_Release(pArray);
@@ -227,7 +225,7 @@ int         test_nodeArray_Add02(
     if (pArray) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             XCTAssertFalse( (OBJ_NIL == pNode) );
             node_setClass(pNode, i+1);
             eRc = nodeArray_AppendNode(pArray, pNode, &idx);

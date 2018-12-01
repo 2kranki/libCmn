@@ -227,9 +227,9 @@ extern "C" {
     
     ERESULT         nodeHash_AddA (
         NODEHASH_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,             // UTF-8
-        int32_t         cls,
         OBJ_ID          pData
     );
     
@@ -249,10 +249,10 @@ extern "C" {
     );
     
     ERESULT         nodeHash_AddUpdateA (
-        NODEHASH_DATA    *this,
+        NODEHASH_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     );
     
@@ -312,7 +312,7 @@ extern "C" {
     );
     
     NODE_DATA *     nodeHash_FindA (
-        NODEHASH_DATA    *this,
+        NODEHASH_DATA   *this,
         int32_t         cls,
         const
         char            *pName
@@ -448,7 +448,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    nodeHash_ToDebugString (
-        NODEHASH_DATA     *this,
+        NODEHASH_DATA   *this,
         int             indent
     );
     

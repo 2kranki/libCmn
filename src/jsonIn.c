@@ -412,7 +412,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8ConAndClass("array", 0, pArray);
+        pNode = node_NewWithUTF8ConAndClass(0, "array", pArray);
         
         return pNode;
     }
@@ -433,7 +433,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8ConAndClass("hash", 0, pHash);
+        pNode = node_NewWithUTF8ConAndClass(0, "hash", pHash);
         
         return pNode;
     }
@@ -454,7 +454,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8ConAndClass("string", 0, pStr);
+        pNode = node_NewWithUTF8ConAndClass(0, "string", pStr);
         
         return pNode;
     }

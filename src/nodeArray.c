@@ -664,14 +664,12 @@ extern "C" {
     //                          F i n d
     //---------------------------------------------------------------
     
-    ERESULT         nodeArray_FindA(
-        NODEARRAY_DATA	*this,
-        const
-        char            *pName,
-        NODE_DATA       **ppNode
+    NODE_DATA *     nodeArray_Find (
+        NODEARRAY_DATA  *this,
+        NODE_DATA       *pNode
     )
     {
-        NODE_DATA       *pNode = OBJ_NIL;
+        NODE_DATA       *pWork = OBJ_NIL;
         uint32_t        size;
         uint32_t        i;
         ERESULT         eRc;
@@ -681,33 +679,64 @@ extern "C" {
 #else
         if( !nodeArray_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
-        if( OBJ_NIL == pName ) {
+        if( OBJ_NIL == pNode ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
         }
 #endif
-
+        
         size = nodeArray_getSize(this);
         for (i=0; i<size; ++i) {
-            pNode = (NODE_DATA *)objArray_Get(this->pArray, i+1);
-            if (pNode) {
-                eRc = name_CompareA(node_getName(pNode), pName);
+            pWork = (NODE_DATA *)objArray_Get(this->pArray, i+1);
+            if (pWork) {
+                eRc = node_Compare(pNode, pWork);
                 if( eRc == ERESULT_SUCCESS_EQUAL ) {
-                    if (ppNode) {
-                        *ppNode = pNode;
-                    }
-                    return ERESULT_SUCCESSFUL_COMPLETION;
+                    return pWork;
                 }
             }
         }
         
         // Return to caller.
-        if (ppNode) {
-            *ppNode = OBJ_NIL;
+        return OBJ_NIL;
+    }
+    
+    
+    NODE_DATA *     nodeArray_FindA(
+        NODEARRAY_DATA	*this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        NODE_DATA       *pFound = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
-        return ERESULT_DATA_NOT_FOUND;
+        if( OBJ_NIL == pNameA ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
+        pFound = nodeArray_Find(this, pNode);
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        
+        // Return to caller.
+        return pFound;
     }
     
     

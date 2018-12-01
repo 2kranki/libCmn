@@ -233,7 +233,7 @@ int         test_rbt_Tree_AddFind01(
         while (*pStrA) {
             NODE_RECORD     newRcd = {0};
             fprintf(stderr, "\tInserting %s\n", *pStrA);
-            pRecord = blocks_RecordNew(pBlocks);
+            //pRecord = blocks_RecordNew(pBlocks);
             fRc = rbt_Insert(pTree, *pStrA, *pStrA);
             TINYTEST_TRUE( (fRc) );
             fRc = rbt_VerifyTree(pTree, pTree->pRoot);
@@ -253,6 +253,23 @@ int         test_rbt_Tree_AddFind01(
             pFound = rbt_Find(pTree, *pStrA);
             XCTAssertTrue( (0 == strcmp(pFound, *pStrA)) );
             fprintf(stderr, "\t\tFound\n");
+            ++pStrA;
+        }
+        
+        fprintf(stderr, "\tDeleting every other entry:\n");
+        pStrA = strings;
+        while (*pStrA) {
+            NODE_RECORD     newRcd = {0};
+            fprintf(stderr, "\tDeleting %s\n", *pStrA);
+            iRc = rbt_Delete(pTree, *pStrA);
+            TINYTEST_TRUE( (iRc) );
+            fRc = rbt_VerifyTree(pTree, pTree->pRoot);
+            TINYTEST_TRUE( (fRc) );
+            fprintf(stderr, "\tFinding %s\n", *pStrA);
+            pFound = rbt_Find(pTree, *pStrA);
+            TINYTEST_TRUE( (NULL == pFound) );
+            fprintf(stderr, "\t\tNot Found\n");
+            ++pStrA;
             ++pStrA;
         }
         

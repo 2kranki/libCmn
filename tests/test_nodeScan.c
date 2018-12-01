@@ -68,49 +68,49 @@ NODETREE_DATA * createTestTree01(
         return pTree;
     }
     
-    pNodeA = nodeLink_NewWithUTF8ConAndClass("+", NODE_CLASS_ADD, OBJ_NIL);
+    pNodeA = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_ADD, "+", OBJ_NIL);
     if  (OBJ_NIL == pNodeA) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     
-    pNodeB = nodeLink_NewWithUTF8ConAndClass("*", NODE_CLASS_MULTIPLY, OBJ_NIL);
+    pNodeB = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_MULTIPLY, "*", OBJ_NIL);
     if  (OBJ_NIL == pNodeB) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
 
-    pNodeC = nodeLink_NewWithUTF8ConAndClass("a", NODE_CLASS_VARIABLE, OBJ_NIL);
+    pNodeC = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_VARIABLE, "a", OBJ_NIL);
     if  (OBJ_NIL == pNodeC) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
 
-    pNodeD = nodeLink_NewWithUTF8ConAndClass("b", NODE_CLASS_VARIABLE, OBJ_NIL);
+    pNodeD = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_VARIABLE, "b", OBJ_NIL);
     if  (OBJ_NIL == pNodeD) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
 
-    pNodeE = nodeLink_NewWithUTF8ConAndClass("*", NODE_CLASS_MULTIPLY, OBJ_NIL);
+    pNodeE = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_MULTIPLY, "*", OBJ_NIL);
     if  (OBJ_NIL == pNodeE) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
 
-    pNodeF = nodeLink_NewWithUTF8ConAndClass("c", NODE_CLASS_VARIABLE, OBJ_NIL);
+    pNodeF = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_VARIABLE, "c", OBJ_NIL);
     if  (OBJ_NIL == pNodeF) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
 
-    pNodeG = nodeLink_NewWithUTF8ConAndClass("d", NODE_CLASS_VARIABLE, OBJ_NIL);
+    pNodeG = nodeLink_NewWithUTF8ConAndClass(NODE_CLASS_VARIABLE, "d", OBJ_NIL);
     if  (OBJ_NIL == pNodeG) {
         obj_Release(pTree);
         pTree = OBJ_NIL;

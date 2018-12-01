@@ -111,9 +111,9 @@ extern "C" {
 
 
     NODELINK_DATA * nodeLink_NewWithUTF8AndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -138,10 +138,10 @@ extern "C" {
     }
 
     
-    NODELINK_DATA * nodeLink_NewWithUTF8ConAndClass(
+    NODELINK_DATA * nodeLink_NewWithUTF8ConAndClass (
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {

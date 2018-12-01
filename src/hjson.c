@@ -317,7 +317,7 @@ extern "C" {
                 
             case LEXJ_KWD_FALSE:
                 pFalse = false_New();
-                pNode = node_NewWithUTF8ConAndClass("false", 0, pFalse);
+                pNode = node_NewWithUTF8ConAndClass(0, "false", pFalse);
                 obj_Release(pFalse);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tfalse\n");
@@ -325,7 +325,7 @@ extern "C" {
                 
             case LEXJ_KWD_NULL:
                 pNull = null_New();
-                pNode = node_NewWithUTF8ConAndClass("null", 0, pNull);
+                pNode = node_NewWithUTF8ConAndClass(0, "null", pNull);
                 obj_Release(pNull);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tnull\n");
@@ -333,7 +333,7 @@ extern "C" {
                 
             case LEXJ_KWD_TRUE:
                 pTrue = true_New();
-                pNode = node_NewWithUTF8ConAndClass("true", 0, pTrue);
+                pNode = node_NewWithUTF8ConAndClass(0, "true", pTrue);
                 obj_Release(pTrue);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\ttrue\n");
@@ -385,7 +385,7 @@ extern "C" {
         
         if (pStr) {
             TRC_OBJ(this, "\tname: \"%s\"\n", AStr_getData(pStr));
-            pNode = node_NewWithUTF8ConAndClass("name", 0, pStr);
+            pNode = node_NewWithUTF8ConAndClass(0, "name", pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -457,7 +457,7 @@ extern "C" {
                     AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tinteger: \"%s\"\n", AStr_getData(pStr));
-                pNode = node_NewWithUTF8ConAndClass("integer", 0, pStr);
+                pNode = node_NewWithUTF8ConAndClass(0, "integer", pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
@@ -470,7 +470,7 @@ extern "C" {
                     AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tfloat: \"%s\"\n", AStr_getData(pStr));
-                pNode = node_NewWithUTF8ConAndClass("float", 0, pStr);
+                pNode = node_NewWithUTF8ConAndClass(0, "float", pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
@@ -563,7 +563,7 @@ extern "C" {
             obj_Release(pStrA);
         }
 #endif
-        pNode = node_NewWithUTF8AndClass(pszName, 0, pData);
+        pNode = node_NewWithUTF8AndClass(0, pszName, pData);
         mem_Free((void *)pszName);
         pszName = NULL;
         obj_Release(pData);
@@ -1504,14 +1504,14 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
+     @code
         ASTR_DATA      *pDesc = hjson_ToDebugString(this,4);
-     @endcode:
-     @param:    this    HJSON object pointer
-     @param:    indent  number of characters to indent every line of output, can be 0
-     @return:   If successful, an AStr object which must be released containing the
+     @endcode
+     @param     this    HJSON object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning: Remember to release the returned AStr object.
+     @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     hjson_ToDebugString(
         HJSON_DATA      *this,

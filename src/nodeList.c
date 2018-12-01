@@ -356,9 +356,9 @@ extern "C" {
     
     ERESULT         nodeList_Add2HeadA(
         NODELIST_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -374,7 +374,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pName, cls, pData);
+        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
         if (pNode) {
             eRc = objList_Add2Head((OBJLIST_DATA *)this, pNode);
             if (ERESULT_FAILED(eRc))
@@ -419,9 +419,9 @@ extern "C" {
     
     ERESULT         nodeList_Add2TailA(
         NODELIST_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -437,7 +437,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pName, cls, pData);
+        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
         if (pNode) {
             eRc = objList_Add2Tail((OBJLIST_DATA *)this, pNode);
             if (ERESULT_FAILED(eRc))
@@ -686,7 +686,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_NOT_IMPLEMENTED;
-        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+        //OBJLIST_RECORD  *pEntry = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG

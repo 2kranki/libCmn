@@ -151,7 +151,7 @@ int             test_nodeBTP_Add01(
         pStrP = pStrA;
         while (*pStrP) {
             strA[0] = *pStrP;
-            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(0, strA, OBJ_NIL);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             if (pNode) {
                 eRc = nodeBTP_Add(pTree, pNode, false);
@@ -173,7 +173,7 @@ int             test_nodeBTP_Add01(
         pStrP = pStrA;
         while (*pStrP) {
             strA[0] = *pStrP;
-            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(0, strA, OBJ_NIL);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             if (pNode) {
                 fprintf(stderr, "\tLooking for: %s\n", strA);
@@ -243,7 +243,7 @@ int             test_nodeBTP_Add02(
         pStrP = pStrA;
         while (*pStrP) {
             strA[0] = *pStrP;
-            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(0, strA, OBJ_NIL);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             if (pNode) {
                 eRc = nodeBTP_Add(pTree, pNode, false);
@@ -263,7 +263,7 @@ int             test_nodeBTP_Add02(
         pStrP = pStrA;
         while (*pStrP) {
             strA[0] = *pStrP;
-            pNode = node_NewWithUTF8AndClass(strA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(0, strA, OBJ_NIL);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             if (pNode) {
                 fprintf(stderr, "\tLooking for: %s\n", strA);

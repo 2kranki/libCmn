@@ -257,11 +257,16 @@ extern "C" {
                 ppNode will contain the node ptr otherwise an error code
                 will be returned.
      */
-    ERESULT         nodeArray_FindA(
-        NODEARRAY_DATA   *this,
+    NODE_DATA *     nodeArray_Find (
+        NODEARRAY_DATA  *this,
+        NODE_DATA       *pNode
+    );
+    
+    NODE_DATA *     nodeArray_FindA (
+        NODEARRAY_DATA  *this,
+        int32_t         cls,
         const
-        char             *pName,
-        NODE_DATA        **ppNode
+        char             *pName
     );
     
     

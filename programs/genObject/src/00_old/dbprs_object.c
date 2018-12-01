@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'genScan'
-//	Generated 11/04/2018 19:07:28
+//	Class Object Metods and Tables for 'dbprs'
+//	Generated 09/04/2018 13:50:27
 
 
 /*
@@ -33,12 +33,10 @@
 
 
 
+//#define   DBPRS_IS_SINGLETON     1
 
-#define			GENSCAN_OBJECT_C	    1
-#include        <genScan_internal.h>
-#ifdef  GENSCAN_SINGLETON
-#include        <psxLock.h>
-#endif
+#define			DBPRS_OBJECT_C	    1
+#include        <dbprs_internal.h>
 
 
 
@@ -46,18 +44,15 @@
 //                  Class Object Definition
 //===========================================================
 
-struct genScan_class_data_s	{
+struct dbprs_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  GENSCAN_SINGLETON
-    volatile
-    GENSCAN_DATA       *pSingleton;
-#endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
+typedef struct dbprs_class_data_s DBPRS_CLASS_DATA;
 
 
 
@@ -69,7 +64,7 @@ struct genScan_class_data_s	{
 
 
 static
-void *          genScanClass_QueryInfo(
+void *          dbprsClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +73,17 @@ void *          genScanClass_QueryInfo(
 
 static
 const
-OBJ_INFO        genScan_Info;            // Forward Reference
+OBJ_INFO        dbprs_Info;            // Forward Reference
 
 
 
 
 static
-bool            genScanClass_IsKindOf(
+bool            dbprsClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_GENSCAN_CLASS == classID) {
+    if (MAIN_IDENT_DBPRS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -99,34 +94,25 @@ bool            genScanClass_IsKindOf(
 
 
 static
-uint16_t		genScanClass_WhoAmI(
+uint16_t		dbprsClass_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_GENSCAN_CLASS;
+    return MAIN_IDENT_DBPRS_CLASS;
 }
 
 
-
-
-//===========================================================
-//                 Class Object Vtbl Definition
-//===========================================================
-
 static
 const
-GENSCAN_CLASS_VTBL    class_Vtbl = {
-    {
-        &genScan_Info,
-        genScanClass_IsKindOf,
-        obj_RetainNull,
-        obj_ReleaseNull,
-        NULL,
-        genScan_Class,
-        genScanClass_WhoAmI,
-        (P_OBJ_QUERYINFO)genScanClass_QueryInfo,
-        NULL                        // genScanClass_ToDebugString
-    },
+OBJ_IUNKNOWN    obj_Vtbl = {
+	&dbprs_Info,
+    dbprsClass_IsKindOf,
+    obj_RetainNull,
+    obj_ReleaseNull,
+    NULL,
+    dbprs_Class,
+    dbprsClass_WhoAmI,
+    (P_OBJ_QUERYINFO)dbprsClass_QueryInfo
 };
 
 
@@ -135,94 +121,11 @@ GENSCAN_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-GENSCAN_CLASS_DATA  genScan_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_GENSCAN_CLASS, 0, 1},
+const
+DBPRS_CLASS_DATA  dbprs_ClassObj = {
+    {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_DBPRS_CLASS, 0, 1},
 	//0
 };
-
-
-
-//---------------------------------------------------------------
-//          S i n g l e t o n  M e t h o d s
-//---------------------------------------------------------------
-
-#ifdef  GENSCAN_SINGLETON
-GENSCAN_DATA *     genScan_getSingleton(
-    void
-)
-{
-    return (OBJ_ID)(genScan_ClassObj.pSingleton);
-}
-
-
-bool            genScan_setSingleton(
-    GENSCAN_DATA       *pValue
-)
-{
-    PSXLOCK_DATA    *pLock = OBJ_NIL;
-    bool            fRc;
-    
-    pLock = psxLock_New();
-    if (OBJ_NIL == pLock) {
-        DEBUG_BREAK();
-        return false;
-    }
-    fRc = psxLock_Lock(pLock);
-    if (!fRc) {
-        DEBUG_BREAK();
-        obj_Release(pLock);
-        pLock = OBJ_NIL;
-        return false;
-    }
-    
-    obj_Retain(pValue);
-    if (genScan_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(genScan_ClassObj.pSingleton));
-    }
-    genScan_ClassObj.pSingleton = pValue;
-    
-    fRc = psxLock_Unlock(pLock);
-    obj_Release(pLock);
-    pLock = OBJ_NIL;
-    return true;
-}
-
-
-
-GENSCAN_DATA *     genScan_Shared(
-    void
-)
-{
-    GENSCAN_DATA       *this = (OBJ_ID)(genScan_ClassObj.pSingleton);
-    
-    if (NULL == this) {
-        this = genScan_New( );
-        genScan_setSingleton(this);
-        obj_Release(this);          // Shared controls object retention now.
-        // genScan_ClassObj.pSingleton = OBJ_NIL;
-    }
-    
-    return this;
-}
-
-
-
-void            genScan_SharedReset(
-    void
-)
-{
-    GENSCAN_DATA       *this = (OBJ_ID)(genScan_ClassObj.pSingleton);
-    
-    if (this) {
-        obj_Release(this);
-        genScan_ClassObj.pSingleton = OBJ_NIL;
-    }
-    
-}
-
-
-
-#endif
 
 
 
@@ -231,13 +134,13 @@ void            genScan_SharedReset(
 //---------------------------------------------------------------
 
 static
-void *          genScanClass_QueryInfo(
+void *          dbprsClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    GENSCAN_CLASS_DATA *this = objId;
+    DBPRS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -259,7 +162,7 @@ void *          genScanClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&genScan_Info;
+                        return (void *)&dbprs_Info;
                     }
                     break;
                     
@@ -272,18 +175,19 @@ void *          genScanClass_QueryInfo(
             return (void *)obj_getInfo(this);
             break;
             
+#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'N':
-                    if (str_Compare("New", (char *)pStr) == 0) {
-                        return genScan_New;
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return dbprs_ParseObject;
                     }
                     break;
-                    
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return genScanClass_WhoAmI;
+                        return dbprsClass_WhoAmI;
                     }
                     break;
                     
@@ -291,6 +195,7 @@ void *          genScanClass_QueryInfo(
                     break;
             }
             break;
+#endif
             
         default:
             break;
@@ -302,12 +207,17 @@ void *          genScanClass_QueryInfo(
 
 
 
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 static
-bool            genScan_IsKindOf(
+bool            dbprs_IsKindOf(
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_GENSCAN == classID) {
+    if (MAIN_IDENT_DBPRS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -319,64 +229,57 @@ bool            genScan_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            genScan_Dealloc(
+void            dbprs_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          genScan_Class(
+OBJ_ID          dbprs_Class(
     void
 )
 {
-    return (OBJ_ID)&genScan_ClassObj;
+    return (OBJ_ID)&dbprs_ClassObj;
 }
 
 
 static
-uint16_t		genScan_WhoAmI(
+uint16_t		dbprs_WhoAmI(
     void
 )
 {
-    return OBJ_IDENT_GENSCAN;
+    return MAIN_IDENT_DBPRS;
 }
 
 
-
-
-
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
-
 const
-GENSCAN_VTBL     genScan_Vtbl = {
+DBPRS_VTBL     dbprs_Vtbl = {
     {
-        &genScan_Info,
-        genScan_IsKindOf,
-#ifdef  GENSCAN_IS_SINGLETON
+        &dbprs_Info,
+        dbprs_IsKindOf,
+#ifdef  DBPRS_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        genScan_Dealloc,
-        genScan_Class,
-        genScan_WhoAmI,
-        (P_OBJ_QUERYINFO)genScan_QueryInfo,
-        (P_OBJ_TOSTRING)genScan_ToDebugString,
-        NULL,			// genScan_Enable,
-        NULL,			// genScan_Disable,
-        NULL,			// (P_OBJ_ASSIGN)genScan_Assign,
-        NULL,			// (P_OBJ_COMPARE)genScan_Compare,
-        NULL, 			// (P_OBJ_PTR)genScan_Copy,
-        NULL, 			// (P_OBJ_PTR)genScan_DeepCopy,
-        NULL 			// (P_OBJ_HASH)genScan_Hash,
+        dbprs_Dealloc,
+        dbprs_Class,
+        dbprs_WhoAmI,
+        (P_OBJ_QUERYINFO)dbprs_QueryInfo,
+        (P_OBJ_TOSTRING)dbprs_ToDebugString,
+        NULL,			// dbprs_Enable,
+        NULL,			// dbprs_Disable,
+        NULL,			// (P_OBJ_ASSIGN)dbprs_Assign,
+        NULL,			// (P_OBJ_COMPARE)dbprs_Compare,
+        NULL, 			// (P_OBJ_PTR)dbprs_Copy,
+        NULL, 			// (P_OBJ_PTR)dbprs_DeepCopy,
+        NULL 			// (P_OBJ_HASH)dbprs_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //genScan_IsEnabled,
+    //dbprs_IsEnabled,
  
 };
 
@@ -384,15 +287,13 @@ GENSCAN_VTBL     genScan_Vtbl = {
 
 static
 const
-OBJ_INFO        genScan_Info = {
-    "genScan",
-    "genScan",	// <-- Fill in description
-    (OBJ_DATA *)&genScan_ClassObj,
+OBJ_INFO        dbprs_Info = {
+    "dbprs",
+    "genMake Database Parser",
+    (OBJ_DATA *)&dbprs_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&genScan_Vtbl
+    (OBJ_IUNKNOWN *)&dbprs_Vtbl
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
 
 
 

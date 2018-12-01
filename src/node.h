@@ -206,17 +206,17 @@ extern "C" {
     
     
     NODE_DATA *     node_NewWithUTF8AndClass(
-        const
-        char            *pName,
         int32_t         cls,
+        const
+        char            *pNameA,
         OBJ_ID          pData
     );
     
     
     NODE_DATA *     node_NewWithUTF8ConAndClass(
-        const
-        char            *pName,
         int32_t         cls,
+        const
+        char            *pNameA,
         OBJ_ID          pData
     );
     
@@ -390,7 +390,7 @@ extern "C" {
         NODE_DATA       *this,
         int32_t         cls,
         const
-        char            *pName
+        char            *pNameA
     );
     
 

@@ -138,7 +138,7 @@ int         test_nodeEnum_Test01(
         
         fprintf(stderr, "\tAppending data:\n");
         for(i=0; i<cStringTable; ++i) {
-            pNode = node_NewWithUTF8AndClass(pStringTable[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8AndClass(0, pStringTable[i], OBJ_NIL);
             if (pNode) {
                 eRc = nodeEnum_Append(pObj, pNode);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );

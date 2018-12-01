@@ -623,7 +623,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pNameA, cls, pData);
+        pNode = node_NewWithUTF8AndClass(cls, pNameA, pData);
         if (pNode) {
             eRc = nodeBTP_Add(this, pNode, false);
         }
@@ -942,7 +942,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pNameA, cls, OBJ_NIL);
+        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             eRc = nodeBTP_Delete(this, pNode);
             obj_Release(pNode);
@@ -1232,7 +1232,7 @@ extern "C" {
         }
 #endif
         
-        pNode = node_NewWithUTF8AndClass(pNameA, cls, OBJ_NIL);
+        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             pFound = nodeBTP_Find(this, pNode);
             obj_Release(pNode);

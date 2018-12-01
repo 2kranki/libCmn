@@ -579,9 +579,9 @@ extern "C" {
     
     ERESULT         nodeGraph_NodeAddA(
         NODEGRAPH_DATA  *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -600,7 +600,7 @@ extern "C" {
         BREAK_NULL(this->pNodes);
 #endif
         
-        eRc = nodeHash_AddA(this->pNodes, pName, cls, (void *)pData);
+        eRc = nodeHash_AddA(this->pNodes, cls, pName, (void *)pData);
 
         // Return to caller.
         return eRc;

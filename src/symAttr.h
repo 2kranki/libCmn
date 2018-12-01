@@ -122,7 +122,7 @@ extern "C" {
      released.
      @return    pointer to symAttr object if successful, otherwise OBJ_NIL.
      */
-    SYMATTR_DATA *     symAttr_Alloc(
+    SYMATTR_DATA *  symAttr_Alloc(
         void
     );
     
@@ -132,7 +132,7 @@ extern "C" {
     );
     
     
-    SYMATTR_DATA *     symAttr_New(
+    SYMATTR_DATA *  symAttr_New(
         void
     );
     

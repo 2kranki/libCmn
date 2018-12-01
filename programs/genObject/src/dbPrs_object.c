@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'exec'
-//	Generated 11/04/2018 19:07:50
+//	Class Object Metods and Tables for 'dbPrs'
+//	Generated 11/30/2018 16:55:05
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			EXEC_OBJECT_C	    1
-#include        <exec_internal.h>
-#ifdef  EXEC_SINGLETON
+#define			DBPRS_OBJECT_C	    1
+#include        <dbPrs_internal.h>
+#ifdef  DBPRS_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct exec_class_data_s	{
+struct dbPrs_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  EXEC_SINGLETON
+#ifdef  DBPRS_SINGLETON
     volatile
-    EXEC_DATA       *pSingleton;
+    DBPRS_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct exec_class_data_s	{
 
 
 static
-void *          execClass_QueryInfo(
+void *          dbPrsClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          execClass_QueryInfo(
 
 static
 const
-OBJ_INFO        exec_Info;            // Forward Reference
+OBJ_INFO        dbPrs_Info;            // Forward Reference
 
 
 
 
 static
-bool            execClass_IsKindOf(
+bool            dbPrsClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_EXEC_CLASS == classID) {
+    if (OBJ_IDENT_DBPRS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -99,11 +99,11 @@ bool            execClass_IsKindOf(
 
 
 static
-uint16_t		execClass_WhoAmI(
+uint16_t		dbPrsClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_EXEC_CLASS;
+    return OBJ_IDENT_DBPRS_CLASS;
 }
 
 
@@ -115,17 +115,17 @@ uint16_t		execClass_WhoAmI(
 
 static
 const
-EXEC_CLASS_VTBL    class_Vtbl = {
+DBPRS_CLASS_VTBL    class_Vtbl = {
     {
-        &exec_Info,
-        execClass_IsKindOf,
+        &dbPrs_Info,
+        dbPrsClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        exec_Class,
-        execClass_WhoAmI,
-        (P_OBJ_QUERYINFO)execClass_QueryInfo,
-        NULL                        // execClass_ToDebugString
+        dbPrs_Class,
+        dbPrsClass_WhoAmI,
+        (P_OBJ_QUERYINFO)dbPrsClass_QueryInfo,
+        NULL                        // dbPrsClass_ToDebugString
     },
 };
 
@@ -135,8 +135,8 @@ EXEC_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-EXEC_CLASS_DATA  exec_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_EXEC_CLASS, 0, 1},
+DBPRS_CLASS_DATA  dbPrs_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DBPRS_CLASS, 0, 1},
 	//0
 };
 
@@ -146,23 +146,23 @@ EXEC_CLASS_DATA  exec_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  EXEC_SINGLETON
-EXEC_DATA *     exec_getSingleton(
+#ifdef  DBPRS_SINGLETON
+DBPRS_DATA *     dbPrs_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(exec_ClassObj.pSingleton);
+    return (OBJ_ID)(dbPrs_ClassObj.pSingleton);
 }
 
 
-bool            exec_setSingleton(
-    EXEC_DATA       *pValue
+bool            dbPrs_setSingleton (
+    DBPRS_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
     bool            fRc;
     
-    pLock = psxLock_New();
+    pLock = psxLock_New( );
     if (OBJ_NIL == pLock) {
         DEBUG_BREAK();
         return false;
@@ -176,10 +176,10 @@ bool            exec_setSingleton(
     }
     
     obj_Retain(pValue);
-    if (exec_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(exec_ClassObj.pSingleton));
+    if (dbPrs_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(dbPrs_ClassObj.pSingleton));
     }
-    exec_ClassObj.pSingleton = pValue;
+    dbPrs_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -189,17 +189,17 @@ bool            exec_setSingleton(
 
 
 
-EXEC_DATA *     exec_Shared(
+DBPRS_DATA *     dbPrs_Shared (
     void
 )
 {
-    EXEC_DATA       *this = (OBJ_ID)(exec_ClassObj.pSingleton);
+    DBPRS_DATA       *this = (OBJ_ID)(dbPrs_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = exec_New( );
-        exec_setSingleton(this);
+        this = dbPrs_New( );
+        dbPrs_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // exec_ClassObj.pSingleton = OBJ_NIL;
+        // dbPrs_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -207,15 +207,15 @@ EXEC_DATA *     exec_Shared(
 
 
 
-void            exec_SharedReset(
+void            dbPrs_SharedReset (
     void
 )
 {
-    EXEC_DATA       *this = (OBJ_ID)(exec_ClassObj.pSingleton);
+    DBPRS_DATA       *this = (OBJ_ID)(dbPrs_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        exec_ClassObj.pSingleton = OBJ_NIL;
+        dbPrs_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -231,13 +231,13 @@ void            exec_SharedReset(
 //---------------------------------------------------------------
 
 static
-void *          execClass_QueryInfo(
+void *          dbPrsClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    EXEC_CLASS_DATA *this = objId;
+    DBPRS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -247,6 +247,10 @@ void *          execClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(DBPRS_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
@@ -259,7 +263,7 @@ void *          execClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&exec_Info;
+                        return (void *)&dbPrs_Info;
                     }
                     break;
                     
@@ -277,13 +281,13 @@ void *          execClass_QueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return exec_New;
+                        return dbPrs_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return execClass_WhoAmI;
+                        return dbPrsClass_WhoAmI;
                     }
                     break;
                     
@@ -303,11 +307,11 @@ void *          execClass_QueryInfo(
 
 
 static
-bool            exec_IsKindOf(
+bool            dbPrs_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_EXEC == classID) {
+    if (OBJ_IDENT_DBPRS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -319,25 +323,25 @@ bool            exec_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            exec_Dealloc(
+void            dbPrs_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          exec_Class(
+OBJ_ID          dbPrs_Class (
     void
 )
 {
-    return (OBJ_ID)&exec_ClassObj;
+    return (OBJ_ID)&dbPrs_ClassObj;
 }
 
 
 static
-uint16_t		exec_WhoAmI(
+uint16_t		dbPrs_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_EXEC;
+    return OBJ_IDENT_DBPRS;
 }
 
 
@@ -349,34 +353,34 @@ uint16_t		exec_WhoAmI(
 //===========================================================
 
 const
-EXEC_VTBL     exec_Vtbl = {
+DBPRS_VTBL     dbPrs_Vtbl = {
     {
-        &exec_Info,
-        exec_IsKindOf,
-#ifdef  EXEC_IS_SINGLETON
+        &dbPrs_Info,
+        dbPrs_IsKindOf,
+#ifdef  DBPRS_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        exec_Dealloc,
-        exec_Class,
-        exec_WhoAmI,
-        (P_OBJ_QUERYINFO)exec_QueryInfo,
-        (P_OBJ_TOSTRING)exec_ToDebugString,
-        NULL,			// exec_Enable,
-        NULL,			// exec_Disable,
-        NULL,			// (P_OBJ_ASSIGN)exec_Assign,
-        NULL,			// (P_OBJ_COMPARE)exec_Compare,
-        NULL, 			// (P_OBJ_PTR)exec_Copy,
-        NULL, 			// (P_OBJ_PTR)exec_DeepCopy,
-        NULL 			// (P_OBJ_HASH)exec_Hash,
+        dbPrs_Dealloc,
+        dbPrs_Class,
+        dbPrs_WhoAmI,
+        (P_OBJ_QUERYINFO)dbPrs_QueryInfo,
+        (P_OBJ_TOSTRING)dbPrs_ToDebugString,
+        NULL,			// dbPrs_Enable,
+        NULL,			// dbPrs_Disable,
+        NULL,			// (P_OBJ_ASSIGN)dbPrs_Assign,
+        NULL,			// (P_OBJ_COMPARE)dbPrs_Compare,
+        NULL, 			// (P_OBJ_PTR)dbPrs_Copy,
+        NULL, 			// (P_OBJ_PTR)dbPrs_DeepCopy,
+        NULL 			// (P_OBJ_HASH)dbPrs_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //exec_IsEnabled,
+    //dbPrs_IsEnabled,
  
 };
 
@@ -384,15 +388,14 @@ EXEC_VTBL     exec_Vtbl = {
 
 static
 const
-OBJ_INFO        exec_Info = {
-    "exec",
-    "exec",	// <-- Fill in description
-    (OBJ_DATA *)&exec_ClassObj,
+OBJ_INFO        dbPrs_Info = {
+    "dbPrs",
+    "Database Parser",
+    (OBJ_DATA *)&dbPrs_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&exec_Vtbl
+    (OBJ_IUNKNOWN *)&dbPrs_Vtbl,
+    sizeof(DBPRS_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
 
 
 

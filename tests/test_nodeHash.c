@@ -193,7 +193,7 @@ int         test_nodeHash_AddFindDelete01(
     if (pHash) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             cnt = nodeHash_getSize(pHash);
@@ -207,14 +207,12 @@ int         test_nodeHash_AddFindDelete01(
             pNode = OBJ_NIL;
         }
  
-#ifdef XYZZY
         eRc = nodeHash_DeleteA(pHash, 0, strings[5]);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         cnt = nodeHash_getSize(pHash);
         XCTAssertTrue( (cnt == 9) );
         pNodeFnd = nodeHash_FindA(pHash, 0, strings[11]);
         XCTAssertTrue( (OBJ_NIL == pNodeFnd) );
-#endif
         
         obj_Release(pHash);
         pHash = OBJ_NIL;
@@ -254,7 +252,7 @@ int         test_nodeHash_AddFindDelete02(
         
         pStrA = strings;
         while (*pStrA) {
-            pNode = node_NewWithUTF8ConAndClass(*pStrA, 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, *pStrA, OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             fprintf(stderr, "\tAdded %p - %s\n", pNode, *pStrA);
@@ -282,7 +280,7 @@ int         test_nodeHash_AddFindDelete02(
         iMax = pHash->cHash;
         for (i=0; i<iMax; ++i) {
             RBT_TREE        *pTree;
-            ASTR_DATA       *pStr = OBJ_NIL;
+            //ASTR_DATA       *pStr = OBJ_NIL;
             
             fprintf(stderr, "\tChain %4d:\n", i);
             pTree = &pHash->pHash[i];
@@ -346,7 +344,7 @@ int         test_nodeHash_JSON01(
     if (pHash) {
         
         for (i=0; i<2; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = nodeHash_Add(pHash, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeHash_getSize(pHash);

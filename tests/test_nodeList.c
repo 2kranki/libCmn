@@ -178,7 +178,7 @@ int         test_nodeList_AddFindDelete01(
     if (pList) {
         
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = nodeList_Add2Head(pList, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeList_getSize(pList);
@@ -188,7 +188,7 @@ int         test_nodeList_AddFindDelete01(
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
-        
+
 #ifdef XYZZY
         eRc = nodeList_DeleteA(pList, 0, strings[5]);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -234,7 +234,7 @@ int         test_nodeList_AddFindDelete02(
         
         for (i=0; i<10; ++i) {
             fprintf(stderr, "\tAdding %s\n", strings[i]);
-            pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = nodeList_Add2Head(pList, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = nodeList_getSize(pList);

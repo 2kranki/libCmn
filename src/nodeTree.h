@@ -114,7 +114,7 @@ extern "C" {
         ERESULT         (*pNodeDelete)(OBJ_ID,uint32_t);
         ERESULT         (*pNodeLinkChild)(OBJ_ID,uint32_t,uint32_t);
         uint32_t        (*pNodeNew)(OBJ_ID,NODELINK_DATA *);
-        uint32_t        (*pNodeNewUTF8)(OBJ_ID,const char *,uint32_t,OBJ_ID);
+        uint32_t        (*pNodeNewUTF8)(OBJ_ID,uint32_t,const char *,OBJ_ID);
         uint32_t        (*pNodeParent)(OBJ_ID,uint32_t);
         ERESULT         (*pNodes)(OBJ_ID,NODEARRAY_DATA **);
         ERESULT         (*pPrintTree)(OBJ_ID);
@@ -400,9 +400,9 @@ extern "C" {
      */
     uint32_t    nodeTree_NodeNewUTF8(
         NODETREE_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     );
     

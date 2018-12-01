@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   genScan_internal.h
- *	Generated 11/04/2018 19:07:28
+ * File:   dbPrs_internal.h
+ *	Generated 11/30/2018 16:55:05
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,17 @@
 
 
 
-#include        <genScan.h>
+#include        <dbPrs.h>
+#include        <hjson.h>
 #include        <jsonIn.h>
+#include        <nodeBTP.h>
 
 
-#ifndef GENSCAN_INTERNAL_H
-#define	GENSCAN_INTERNAL_H
+
+
+
+#ifndef DBPRS_INTERNAL_H
+#define	DBPRS_INTERNAL_H
 
 
 
@@ -60,7 +65,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct genScan_data_s	{
+struct dbPrs_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -70,21 +75,20 @@ struct genScan_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    GENBASE_DATA    *pGen;
+    JSONIN_DATA     *pJson;
+    NODEHASH_DATA   *pDict;
+    NODE_DATA       *pNodes;
 
 };
 #pragma pack(pop)
 
     extern
-    struct genScan_class_data_s  genScan_ClassObj;
+    struct dbPrs_class_data_s  dbPrs_ClassObj;
 
     extern
     const
-    GENSCAN_VTBL         genScan_Vtbl;
+    DBPRS_VTBL         dbPrs_Vtbl;
 
 
 
@@ -92,13 +96,13 @@ struct genScan_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  GENSCAN_SINGLETON
-    GENSCAN_DATA *     genScan_getSingleton(
+#ifdef  DBPRS_SINGLETON
+    DBPRS_DATA *     dbPrs_getSingleton (
         void
     );
 
-    bool            genScan_setSingleton(
-     GENSCAN_DATA       *pValue
+    bool            dbPrs_setSingleton (
+     DBPRS_DATA       *pValue
 );
 #endif
 
@@ -108,30 +112,25 @@ struct genScan_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  genScan_getSuperVtbl(
-        GENSCAN_DATA     *this
+    OBJ_IUNKNOWN *  dbPrs_getSuperVtbl (
+        DBPRS_DATA     *this
     );
 
 
-    void            genScan_Dealloc(
+    void            dbPrs_Dealloc (
         OBJ_ID          objId
     );
 
 
-    GENSCAN_DATA *       genScan_ParseObject(
-        JSONIN_DATA     *pParser
-    );
-
-
-    void *          genScan_QueryInfo(
+    void *          dbPrs_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     genScan_ToJSON(
-        GENSCAN_DATA      *this
+    ASTR_DATA *     dbPrs_ToJSON (
+        DBPRS_DATA      *this
     );
 
 
@@ -139,8 +138,8 @@ struct genScan_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			genScan_Validate(
-        GENSCAN_DATA       *this
+    bool			dbPrs_Validate (
+        DBPRS_DATA       *this
     );
 #endif
 
@@ -150,5 +149,5 @@ struct genScan_data_s	{
 }
 #endif
 
-#endif	/* GENSCAN_INTERNAL_H */
+#endif	/* DBPRS_INTERNAL_H */
 

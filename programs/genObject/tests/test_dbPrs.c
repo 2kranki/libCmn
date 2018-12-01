@@ -1,5 +1,5 @@
 /*
- *	Generated 11/04/2018 19:07:50
+ *	Generated 11/30/2018 16:55:05
  */
 
 
@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <exec_internal.h>
+#include    <dbPrs_internal.h>
 
 
 
@@ -74,18 +74,18 @@ int             tearDown(
 
 
 
-int             test_exec_OpenClose(
+int             test_dbPrs_OpenClose(
     const
     char            *pTestName
 )
 {
-    EXEC_DATA	    *pObj = OBJ_NIL;
+    DBPRS_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = exec_Alloc( );
+    pObj = dbPrs_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = exec_Init( pObj );
+    pObj = dbPrs_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,11 +102,11 @@ int             test_exec_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_exec);
-    TINYTEST_ADD_TEST(test_exec_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_dbPrs);
+    TINYTEST_ADD_TEST(test_dbPrs_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_exec);
+TINYTEST_MAIN_SINGLE_SUITE(test_dbPrs);
 
 
 

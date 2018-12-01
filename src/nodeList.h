@@ -178,9 +178,9 @@ extern "C" {
     
     ERESULT         nodeList_Add2HeadA(
         NODELIST_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     );
     
@@ -191,9 +191,9 @@ extern "C" {
     
     ERESULT         nodeList_Add2TailA(
         NODELIST_DATA   *this,
+        int32_t         cls,
         const
         char            *pName,
-        int32_t         cls,
         OBJ_ID          pData
     );
     
@@ -204,20 +204,20 @@ extern "C" {
     
     
     // Deletes first entry in list that matches the name.
-    ERESULT         nodeList_DeleteA(
-        NODELIST_DATA    *this,
+    ERESULT         nodeList_DeleteA (
+        NODELIST_DATA   *this,
         int32_t         cls,
         const
         char            *pName
     );
     
     
-    ERESULT         nodeList_DeleteHead(
+    ERESULT         nodeList_DeleteHead (
         NODELIST_DATA    *this
     );
     
     
-    ERESULT         nodeList_DeleteTail(
+    ERESULT         nodeList_DeleteTail (
         NODELIST_DATA    *this
     );
     
@@ -232,7 +232,7 @@ extern "C" {
     );
     
     
-    NODE_DATA *     nodeList_FindA(
+    NODE_DATA *     nodeList_FindA (
         NODELIST_DATA   *this,
         int32_t         cls,
         const

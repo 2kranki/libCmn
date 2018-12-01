@@ -117,13 +117,13 @@ int         test_nodeGraph_Simple01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = nodeGraph_NodeAddA(pObj, "1", 0, OBJ_NIL);
+        eRc = nodeGraph_NodeAddA(pObj, 0, "1", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, "2", 0, OBJ_NIL);
+        eRc = nodeGraph_NodeAddA(pObj, 0, "2", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, "3", 0, OBJ_NIL);
+        eRc = nodeGraph_NodeAddA(pObj, 0, "3", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, "4", 0, OBJ_NIL);
+        eRc = nodeGraph_NodeAddA(pObj, 0, "4", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);

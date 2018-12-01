@@ -86,8 +86,8 @@
 #include        <path.h>
 
 
-#ifndef         GENMAKE_H
-#define         GENMAKE_H
+#ifndef         GENOBJECT_H
+#define         GENOBJECT_H
 
 
 
@@ -101,34 +101,30 @@ extern "C" {
     //****************************************************************
 
 
-    typedef enum main_idents_e {
-        MAIN_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
-        MAIN_IDENT_DBPRS,
-        MAIN_IDENT_DBPRS_CLASS,
-        MAIN_IDENT_GENBASE,
-        MAIN_IDENT_GENBASE_CLASS,
-        MAIN_IDENT_GENOSX,
-        MAIN_IDENT_GENOSX_CLASS,
-        MAIN_IDENT_GENWIN,
-        MAIN_IDENT_GENWIN_CLASS,
-        MAIN_IDENT_MAIN,
-        MAIN_IDENT_MAIN_CLASS,
-    } MAIN_IDENTS;
+    typedef enum obj_genObject_idents_e {
+        OBJ_GENOBJECT_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
+        OBJ_IDENT_DBPRS,
+        OBJ_IDENT_DBPRS_CLASS,
+        OBJ_IDENT_GENBASE,
+        OBJ_IDENT_GENBASE_CLASS,
+        //OBJ_IDENT_MAIN,               // Defined in cmn_defs
+        //OBJ_IDENT_MAIN_CLASS
+    } OBJ_GENOBJECT_IDENTS;
     
 
-    typedef enum genMake_os_e {
-        GENMAKE_OS_UNKNOW=0,
-        GENMAKE_OS_MACOSX,
-        GENMAKE_OS_MSC32,
-        GENMAKE_OS_MSC64,
-        GENMAKE_OS_PIC32
-    } GENMAKE_OS;
+    typedef enum genObject_os_e {
+        GENOBJECT_OS_UNKNOW=0,
+        GENOBJECT_OS_MACOSX,
+        GENOBJECT_OS_MSC32,
+        GENOBJECT_OS_MSC64,
+        GENOBJECT_OS_PIC32
+    } GENOBJECT_OS;
     
-    typedef enum genMake_type_e {
-        GENMAKE_TYPE_UNKNOW=0,
-        GENMAKE_TYPE_LIB,
-        GENMAKE_TYPE_PGM
-    } GENMAKE_TYPE;
+    typedef enum genObject_type_e {
+        GENOBJECT_TYPE_UNKNOW=0,
+        GENOBJECT_TYPE_LIB,
+        GENOBJECT_TYPE_PGM
+    } GENOBJECT_TYPE;
 
 
     
@@ -160,5 +156,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* GENMAKE_H */
+#endif	/* GENOBJECT_H */
 

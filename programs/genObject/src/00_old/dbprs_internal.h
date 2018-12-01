@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   exec_internal.h
- *	Generated 11/04/2018 19:07:50
+ * File:   dbprs_internal.h
+ *	Generated 09/04/2018 13:50:27
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,13 @@
 
 
 
-#include        <exec.h>
+#include        <dbprs.h>
+#include        <hjson.h>
 #include        <jsonIn.h>
 
 
-#ifndef EXEC_INTERNAL_H
-#define	EXEC_INTERNAL_H
+#ifndef DBPRS_INTERNAL_H
+#define	DBPRS_INTERNAL_H
 
 
 
@@ -60,7 +61,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct exec_data_s	{
+struct dbprs_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -69,38 +70,24 @@ struct exec_data_s	{
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
+    GENBASE_DATA    *pGen;
+    JSONIN_DATA     *pJson;
+    NODEHASH_DATA   *pDict;
+    NODE_DATA       *pNodes;
     ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    uint8_t         fLib;           // true == library, false == program
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)
 
     extern
-    struct exec_class_data_s  exec_ClassObj;
+    const
+    struct dbprs_class_data_s  dbprs_ClassObj;
 
     extern
     const
-    EXEC_VTBL         exec_Vtbl;
-
-
-
-    //---------------------------------------------------------------
-    //              Class Object Method Forward Definitions
-    //---------------------------------------------------------------
-
-#ifdef  EXEC_SINGLETON
-    EXEC_DATA *     exec_getSingleton(
-        void
-    );
-
-    bool            exec_setSingleton(
-     EXEC_DATA       *pValue
-);
-#endif
+    DBPRS_VTBL         dbprs_Vtbl;
 
 
 
@@ -108,30 +95,25 @@ struct exec_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  exec_getSuperVtbl(
-        EXEC_DATA     *this
+    OBJ_IUNKNOWN *  dbprs_getSuperVtbl(
+        DBPRS_DATA     *this
     );
 
 
-    void            exec_Dealloc(
+    void            dbprs_Dealloc(
         OBJ_ID          objId
     );
 
 
-    EXEC_DATA *       exec_ParseObject(
-        JSONIN_DATA     *pParser
-    );
-
-
-    void *          exec_QueryInfo(
+    void *          dbprs_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     exec_ToJSON(
-        EXEC_DATA      *this
+    ASTR_DATA *     dbprs_ToJSON(
+        DBPRS_DATA      *this
     );
 
 
@@ -139,8 +121,8 @@ struct exec_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			exec_Validate(
-        EXEC_DATA       *this
+    bool			dbprs_Validate(
+        DBPRS_DATA       *this
     );
 #endif
 
@@ -150,5 +132,5 @@ struct exec_data_s	{
 }
 #endif
 
-#endif	/* EXEC_INTERNAL_H */
+#endif	/* DBPRS_INTERNAL_H */
 

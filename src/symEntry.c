@@ -113,9 +113,9 @@ extern "C" {
 
 
     SYMENTRY_DATA *    gmrNode_NewWithUTF8AndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {
@@ -141,9 +141,9 @@ extern "C" {
     
     
     SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass(
+        int32_t         cls,
         const
         char            *pNameA,
-        int32_t         cls,
         OBJ_ID          pData
     )
     {

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'main'
-//	Generated 11/04/2018 19:06:53
+//	Generated 11/30/2018 16:54:35
 
 
 /*
@@ -69,7 +69,7 @@ struct main_class_data_s	{
 
 
 static
-void *          mainClass_QueryInfo(
+void *          mainClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -84,12 +84,15 @@ OBJ_INFO        main_Info;            // Forward Reference
 
 
 static
-bool            mainClass_IsKindOf(
+bool            mainClass_IsKindOf (
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_MAIN_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_APPL_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -99,7 +102,7 @@ bool            mainClass_IsKindOf(
 
 
 static
-uint16_t		mainClass_WhoAmI(
+uint16_t		mainClass_WhoAmI (
     void
 )
 {
@@ -147,7 +150,7 @@ MAIN_CLASS_DATA  main_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  MAIN_SINGLETON
-MAIN_DATA *     main_getSingleton(
+MAIN_DATA *     main_getSingleton (
     void
 )
 {
@@ -155,14 +158,14 @@ MAIN_DATA *     main_getSingleton(
 }
 
 
-bool            main_setSingleton(
+bool            main_setSingleton (
     MAIN_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
     bool            fRc;
     
-    pLock = psxLock_New();
+    pLock = psxLock_New( );
     if (OBJ_NIL == pLock) {
         DEBUG_BREAK();
         return false;
@@ -189,7 +192,7 @@ bool            main_setSingleton(
 
 
 
-MAIN_DATA *     main_Shared(
+MAIN_DATA *     main_Shared (
     void
 )
 {
@@ -207,7 +210,7 @@ MAIN_DATA *     main_Shared(
 
 
 
-void            main_SharedReset(
+void            main_SharedReset (
     void
 )
 {
@@ -231,7 +234,7 @@ void            main_SharedReset(
 //---------------------------------------------------------------
 
 static
-void *          mainClass_QueryInfo(
+void *          mainClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -247,6 +250,10 @@ void *          mainClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(MAIN_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
@@ -303,12 +310,15 @@ void *          mainClass_QueryInfo(
 
 
 static
-bool            main_IsKindOf(
+bool            main_IsKindOf (
     uint16_t		classID
 )
 {
     if (OBJ_IDENT_MAIN == classID) {
        return true;
+    }
+    if (OBJ_IDENT_APPL == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -319,12 +329,12 @@ bool            main_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            main_Dealloc(
+void            main_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          main_Class(
+OBJ_ID          main_Class (
     void
 )
 {
@@ -333,7 +343,7 @@ OBJ_ID          main_Class(
 
 
 static
-uint16_t		main_WhoAmI(
+uint16_t		main_WhoAmI (
     void
 )
 {
@@ -386,13 +396,12 @@ static
 const
 OBJ_INFO        main_Info = {
     "main",
-    "main",	// <-- Fill in description
+    "Main Object for Object Generation Program",
     (OBJ_DATA *)&main_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&main_Vtbl
+    (OBJ_IUNKNOWN *)&main_Vtbl,
+    sizeof(MAIN_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
 
 
 
