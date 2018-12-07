@@ -670,6 +670,17 @@ extern "C" {
     
     
     /*!
+     Create a new string from the current one that the first character only
+     is translated to lower case.
+     @return    If successful, an new AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     AStr_ToLowerName(
+        ASTR_DATA      *this
+    );
+    
+    
+    /*!
      Create a string that describes this object and the
      objects within it.
      Example:
@@ -721,6 +732,17 @@ extern "C" {
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *     AStr_ToUpper(
+        ASTR_DATA      *this
+    );
+    
+    
+    /*!
+     Create a new string from the current one that the first character only
+     is translated to upper case.
+     @return    If successful, an new AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     AStr_ToUpperName(
         ASTR_DATA      *this
     );
     

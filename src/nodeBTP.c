@@ -637,6 +637,97 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      A d d  U p d a t e
+    //---------------------------------------------------------------
+    
+    ERESULT         nodeBTP_AddUpdate(
+        NODEBTP_DATA    *this,
+        NODE_DATA       *pNode,
+        bool            fReplace
+    )
+    {
+        NODE_DATA       *pFound;
+        NODEBTP_RECORD  *pRecord = NULL;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        int             iRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pNode) || !obj_IsKindOf(pNode,OBJ_IDENT_NODE) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pFound = nodeBTP_Find(this, pNode);
+        if (pFound) {
+            eRc = nodeBTP_Delete(this, pNode);
+        }
+        
+        pRecord = blocks_RecordNew((BLOCKS_DATA *)this);
+        if (NULL == pRecord) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pRecord->node.pKey = pNode;
+        pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
+        pRecord->node.color = RBT_RED;
+        
+        iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
+        if (iRc) {
+            obj_Retain(pNode);
+            eRc = ERESULT_SUCCESS;
+        }
+        else
+            eRc = ERESULT_DATA_ALREADY_EXISTS;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         nodeBTP_AddUpdateA(
+        NODEBTP_DATA    *this,
+        int32_t         cls,
+        const
+        char            *pNameA,            // UTF-8
+        OBJ_ID          pData
+    )
+    {
+        NODE_DATA       *pNode = NULL;
+        ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !nodeBTP_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pNode = node_NewWithUTF8AndClass(cls, pNameA, pData);
+        if (pNode) {
+            eRc = nodeBTP_AddUpdate(this, pNode, false);
+        }
+        obj_Release(pNode);
+        pNode = OBJ_NIL;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     

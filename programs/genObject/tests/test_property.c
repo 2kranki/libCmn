@@ -1,5 +1,5 @@
 /*
- *	Generated 11/30/2018 16:55:05
+ *	Generated 12/02/2018 23:32:21
  */
 
 
@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <dbPrs_internal.h>
+#include    <property_internal.h>
 
 
 
@@ -74,18 +74,18 @@ int             tearDown(
 
 
 
-int             test_dbPrs_OpenClose(
+int             test_property_OpenClose(
     const
     char            *pTestName
 )
 {
-    DBPRS_DATA	    *pObj = OBJ_NIL;
+    PROPERTY_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = dbPrs_Alloc( );
+    pObj = property_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = dbPrs_Init( pObj );
+    pObj = property_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -101,39 +101,12 @@ int             test_dbPrs_OpenClose(
 
 
 
-int             test_dbPrs_Properties01(
-    const
-    char            *pTestName
-)
-{
-    DBPRS_DATA        *pObj = OBJ_NIL;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = dbPrs_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = dbPrs_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        // Test something.
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
 
-
-
-
-TINYTEST_START_SUITE(test_dbPrs);
-    TINYTEST_ADD_TEST(test_dbPrs_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_property);
+    TINYTEST_ADD_TEST(test_property_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_dbPrs);
+TINYTEST_MAIN_SINGLE_SUITE(test_property);
 
 
 

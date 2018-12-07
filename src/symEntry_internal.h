@@ -131,6 +131,10 @@ extern "C" {
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;
+        uint32_t        size;               // Data Size in Bytes
+        uint16_t        ptr;                // Pointer level
+        uint16_t        align;              // Required Storage Alignment
+        //                                  // (0 == None)
         uint32_t        idxHashNext;        // Hash Index Chain
         uint32_t        idxHashPrev;
         uint32_t        idxScopeNext;
@@ -140,8 +144,6 @@ extern "C" {
         uint32_t        idxChildTail;
         uint32_t        idxSibHead;         // Sibling Chain
         uint32_t        idxSibTail;
-        uint32_t        size;               // Data Size in Bytes
-        uint32_t        ptr;                // Pointer level
         uint32_t        attr;               // symAttr Index
     } SYM_ENTRY;
     

@@ -1011,7 +1011,7 @@ extern "C" {
         }
         
         if (nodeBTP_FindA(this->pDict, 0, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
+            eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
         }
         eRc = nodeBTP_AddA(this->pDict, 0, pName,  (void *)pData);
         
@@ -1056,7 +1056,7 @@ extern "C" {
         if (nodeBTP_FindA(this->pDict, 0, pName)) {
             eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
         }
-        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
+        eRc = nodeBTP_AddA(this->pDict, 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -1432,7 +1432,7 @@ ASTR_DATA *     genBase_CompileRules(
 ERESULT         genBase_GenMakefile(
     GENBASE_DATA        *this,
     NODE_DATA           *pNodes,
-    NODEHASH_DATA       *pDict,
+    NODEBTP_DATA        *pDict,
     DATETIME_DATA       *pDateTime,
     TEXTOUT_DATA        *pOutput
 )
@@ -1865,7 +1865,7 @@ ERESULT         genBase_GenMakefile(
         }
 #endif
         if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
-            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibNamePrefix");
+            pNode = nodeBTP_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibNamePrefix");
             pLibNamePrefix = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));

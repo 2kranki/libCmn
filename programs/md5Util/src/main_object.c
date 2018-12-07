@@ -77,7 +77,7 @@ bool            main_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_MAIN_CLASS == classID) {
+    if (OBJ_IDENT_MAIN_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -92,7 +92,7 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return MAIN_IDENT_MAIN_CLASS;
+    return OBJ_IDENT_MAIN_CLASS;
 }
 
 
@@ -127,7 +127,7 @@ bool            main_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_MAIN == classID) {
+    if (OBJ_IDENT_MAIN == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -157,7 +157,7 @@ uint16_t		main_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_MAIN;
+    return OBJ_IDENT_MAIN;
 }
 
 

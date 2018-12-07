@@ -1,56 +1,19 @@
 {
-    "name":"md5Util",
-    "type":"program",
-    "lib_deps":["Cmn"],
-    "headers_private":
-    [
-        "md5Util.h"
-    ],
-    "headers_public":
-    [
-    ],
-    "headers_test":
-    [
-        "test_defs.h"
-    ],
-    "objects":
-    {
-        "exec":["md5Util"],
-        "main":["md5Util"]
+    program: {
+        "name":"md5Util",
+        "libDeps":["Cmn"],
+        "headers_private":["mainProgram.h"],
+        "main":"mainProgram.c"
+    }
+    "objects": {
+        "exec":{"srcDeps":["mainProgram.h"], "test":true},
+        "main":{"srcDeps":["mainProgram.h"], "test":true},
     },
-    "routines":
-    [
+    "routines": [
         "mainProgram.c"
     ],
-    "macosx": {
-    },
-    "win32": {
-    },
-        "md5Util":
-        {
-            "headers_private":
-            [
-                "md5Util.h"
-            ],
-            "objects":
-            {
-                "exec":["md5Util"],
-                "main":["md5Util"]
-            }
-            "routines":
-            [
-                "mainProgram.c"
-            ],
-            "tests":
-            {
-                "test_exec.c":null,
-                "test_main.c":null
-            }   
-        }
-    },
-    "tests":
-    {
-        "test_exec.c":null,
-        "test_main.c":null
-    }
+    "macosx": [
+    ],
+    "win32": [
+    ],
 }

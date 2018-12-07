@@ -83,7 +83,7 @@ bool            execClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_EXEC_CLASS == classID) {
+    if (OBJ_IDENT_EXEC_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -98,7 +98,7 @@ uint16_t		execClass_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_EXEC_CLASS;
+    return OBJ_IDENT_EXEC_CLASS;
 }
 
 
@@ -213,7 +213,7 @@ bool            exec_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_EXEC == classID) {
+    if (OBJ_IDENT_EXEC == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -243,7 +243,7 @@ uint16_t		exec_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_EXEC;
+    return OBJ_IDENT_EXEC;
 }
 
 

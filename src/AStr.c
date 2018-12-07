@@ -2948,8 +2948,44 @@ extern "C" {
         return pStr;
     }
     
+
+    
+    //---------------------------------------------------------------
+    //                       T o  L o w e r  N a m e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     AStr_ToLowerName(
+        ASTR_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        char            *pData;
+        uint32_t        lenStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_Copy(this);
+        if (pStr) {
+            lenStr = AStr_getLength(pStr);
+            if (lenStr) {
+                pData = array_Ptr(pStr->pData, 1);
+                if( (*pData >= 'A') && (*pData <= 'Z') )
+                    *pData = (char)(*pData + ('a' - 'A'));
+            }
+        }
+        
+        return pStr;
+    }
     
     
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -3093,6 +3129,42 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                       T o  U p p e r  N a m e
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     AStr_ToUpperName(
+        ASTR_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        char            *pData;
+        uint32_t        lenStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_Copy(this);
+        if (pStr) {
+            lenStr = AStr_getLength(pStr);
+            if (lenStr) {
+                pData = array_Ptr(pStr->pData, 1);
+                if( (*pData >= 'a') && (*pData <= 'z') )
+                    *pData = (char)(*pData - ('a' - 'A'));
+            }
+        }
+        
+        return pStr;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                     T o  U t f 8  F i l e
     //---------------------------------------------------------------

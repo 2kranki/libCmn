@@ -139,8 +139,10 @@ extern "C" {
         OBJ_IDENT_UNKNOWN=0,
         OBJ_IDENT_SHARED,               // Special Inherited Class for Shared Objects
         OBJ_IDENT_SHARED_CLASS,
-        OBJ_IDENT_MAIN,                 // Main Program Object
+        OBJ_IDENT_MAIN,                 // Main Program Object       (Used in Programs)
         OBJ_IDENT_MAIN_CLASS,
+        OBJ_IDENT_EXEC,                 // Exec Object               (Used in Programs)
+        OBJ_IDENT_EXEC_CLASS,
         OBJ_IDENT_APPL,                 // Application Base Object
         OBJ_IDENT_APPL_CLASS,
         OBJ_IDENT_ARRAY,                // Expandable Array

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   dbPrs_internal.h
- *	Generated 11/30/2018 16:55:05
+ * File:   property_internal.h
+ *	Generated 12/02/2018 23:32:21
  *
  * Notes:
  *  --	N/A
@@ -39,17 +39,12 @@
 
 
 
-#include        <dbPrs.h>
-#include        <hjson.h>
+#include        <property.h>
 #include        <jsonIn.h>
-#include        <nodeBTP.h>
 
 
-
-
-
-#ifndef DBPRS_INTERNAL_H
-#define	DBPRS_INTERNAL_H
+#ifndef PROPERTY_INTERNAL_H
+#define	PROPERTY_INTERNAL_H
 
 
 
@@ -65,30 +60,38 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct dbPrs_data_s	{
+struct property_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-    GENBASE_DATA    *pGen;
-    JSONIN_DATA     *pJson;
-    NODEBTP_DATA    *pDict;
-    NODE_DATA       *pNodes;
+    ASTR_DATA       *pName;
+    ASTR_DATA       *pDataName;
+    ASTR_DATA       *pDesc;
+    ASTR_DATA       *pDescShort;
+    ASTR_DATA       *pType;
+    ASTR_DATA       *pTypeInternal;
+    uint32_t        cls;
+    uint32_t        len;
+    uint32_t        shift;
+    uint32_t        mask;
+    uint32_t        ptrlvl;
+    uint8_t         fGenGet;
+    uint8_t         fGenSet;
+    uint8_t         fGenInternal;
+    uint8_t         fOwned;
 
 };
 #pragma pack(pop)
 
     extern
-    struct dbPrs_class_data_s  dbPrs_ClassObj;
+    struct property_class_data_s  property_ClassObj;
 
     extern
     const
-    DBPRS_VTBL         dbPrs_Vtbl;
+    PROPERTY_VTBL         property_Vtbl;
 
 
 
@@ -96,13 +99,13 @@ struct dbPrs_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  DBPRS_SINGLETON
-    DBPRS_DATA *     dbPrs_getSingleton (
+#ifdef  PROPERTY_SINGLETON
+    PROPERTY_DATA *     property_getSingleton (
         void
     );
 
-    bool            dbPrs_setSingleton (
-     DBPRS_DATA       *pValue
+    bool            property_setSingleton (
+     PROPERTY_DATA       *pValue
 );
 #endif
 
@@ -112,25 +115,30 @@ struct dbPrs_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  dbPrs_getSuperVtbl (
-        DBPRS_DATA     *this
+    OBJ_IUNKNOWN *  property_getSuperVtbl (
+        PROPERTY_DATA     *this
     );
 
 
-    void            dbPrs_Dealloc (
+    void            property_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          dbPrs_QueryInfo (
+    PROPERTY_DATA *       property_ParseObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          property_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     dbPrs_ToJSON (
-        DBPRS_DATA      *this
+    ASTR_DATA *     property_ToJSON (
+        PROPERTY_DATA      *this
     );
 
 
@@ -138,8 +146,8 @@ struct dbPrs_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			dbPrs_Validate (
-        DBPRS_DATA       *this
+    bool			property_Validate (
+        PROPERTY_DATA       *this
     );
 #endif
 
@@ -149,5 +157,5 @@ struct dbPrs_data_s	{
 }
 #endif
 
-#endif	/* DBPRS_INTERNAL_H */
+#endif	/* PROPERTY_INTERNAL_H */
 

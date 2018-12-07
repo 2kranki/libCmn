@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C42B153121B4EAAF00994331 /* property_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C42B152F21B4EAAE00994331 /* property_object.c */; };
+		C42B153221B4EAAF00994331 /* property.c in Sources */ = {isa = PBXBuildFile; fileRef = C42B153021B4EAAF00994331 /* property.c */; };
 		C459806721B1DF1C001B8375 /* libCmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C459806621B1DF1C001B8375 /* libCmn.a */; };
 		C459807D21B1E19B001B8375 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C459806821B1E196001B8375 /* main.c */; };
 		C459808621B1E19C001B8375 /* main_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C459807B21B1E19B001B8375 /* main_object.c */; };
@@ -30,6 +32,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C42B152D21B4EAAD00994331 /* property.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = property.h; sourceTree = "<group>"; };
+		C42B152E21B4EAAE00994331 /* property_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = property_internal.h; sourceTree = "<group>"; };
+		C42B152F21B4EAAE00994331 /* property_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = property_object.c; sourceTree = "<group>"; };
+		C42B153021B4EAAF00994331 /* property.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = property.c; sourceTree = "<group>"; };
 		C459805821B1DE0F001B8375 /* test_genObject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_genObject; sourceTree = BUILT_PRODUCTS_DIR; };
 		C459806621B1DF1C001B8375 /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../../../Support/lib/macosx/libCmn/libCmn.a; sourceTree = "<group>"; };
 		C459806821B1E196001B8375 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -103,6 +109,10 @@
 				C459807B21B1E19B001B8375 /* main_object.c */,
 				C459806821B1E196001B8375 /* main.c */,
 				C459807C21B1E19B001B8375 /* main.h */,
+				C42B152E21B4EAAE00994331 /* property_internal.h */,
+				C42B152F21B4EAAE00994331 /* property_object.c */,
+				C42B153021B4EAAF00994331 /* property.c */,
+				C42B152D21B4EAAD00994331 /* property.h */,
 			);
 			name = src;
 			path = ../../src;
@@ -172,11 +182,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C42B153221B4EAAF00994331 /* property.c in Sources */,
 				C459808F21B1EC8D001B8375 /* test_dbPrs.c in Sources */,
 				C45DF54821B30069003F0C35 /* genBase.c in Sources */,
 				C459808621B1E19C001B8375 /* main_object.c in Sources */,
 				C45DF54921B30069003F0C35 /* genBase_object.c in Sources */,
 				C459807D21B1E19B001B8375 /* main.c in Sources */,
+				C42B153121B4EAAF00994331 /* property_object.c in Sources */,
 				C459808D21B1EABD001B8375 /* dbPrs_object.c in Sources */,
 				C459808C21B1EABD001B8375 /* dbPrs.c in Sources */,
 			);

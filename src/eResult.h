@@ -135,8 +135,9 @@ extern "C" {
         ERESULT_INVALID_ACCESS_CODE         = -40,
         ERESULT_INVALID_DATA                = -41,
         ERESULT_INVALID_FILE                = -42,
-        ERESULT_OUT_OF_RANGE                = -43,
-        ERESULT_UNSUPPORTED_PARAMETER       = -44,
+        ERESULT_INVALID_OPCODE              = -43,
+        ERESULT_OUT_OF_RANGE                = -44,
+        ERESULT_UNSUPPORTED_PARAMETER       = -45,
         
         // File Related Errors
         ERESULT_CLOSE_ERROR                 = -64,
@@ -193,7 +194,9 @@ extern "C" {
         ERESULT_BIT_SYNTAX                  = -143,
         ERESULT_HEX_SYNTAX                  = -144,
         ERESULT_OCT_SYNTAX                  = -145,
-       
+        ERESULT_OVERFLOW                    = -146,
+        ERESULT_SPECIFICATION               = -147,
+
         ERESULT_BUSY                        = -256,
         ERESULT_NOT_BUSY                    = -257,
         ERESULT_SHARING_VIOLATION           = -258,

@@ -8,11 +8,10 @@
         "main":"mainProgram.c"
     },
     "objects":{
-        "exec":{"srcDeps":["genObject.h"], "test":null},
-        "genNode":{"srcDeps":["genObject.h"], "test":null},
-        "genTree":{"srcDeps":["genObject.h"], "test":null},
-        "genScan":{"srcDeps":["genObject.h"], "test":null},
+        "dbPrs":{"srcDeps":["genObject.h"], "test":null},
+        "genBase":{"srcDeps":["genObject.h"], "test":null},
         "main":{"srcDeps":["genObject.h"], "test":null},
+        property:{"srcDeps":["genObject.h"], "test":true},
     },
     "macosx": {
     },

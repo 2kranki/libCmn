@@ -110,7 +110,8 @@ extern "C" {
     typedef enum sym_type_e {
         SYM_TYPE_UNDEFINED=0,
         SYM_TYPE_ARRAY,
-        SYM_TYPE_CONSTANT,
+        SYM_TYPE_CONSTANT_NUMBER,
+        SYM_TYPE_CONSTANT_STRING,           // Character or Bit String
         SYM_TYPE_FUNCTION,
         SYM_TYPE_MACRO,
         SYM_TYPE_STRUCT,
@@ -124,19 +125,26 @@ extern "C" {
         uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        flags;
         uint32_t        nameHash;
-        char            name[129];          // Name with trailing NUL
-        char            genName[65];        // Generated External Name with trailing NUL
+        char            name[64];           // Name with trailing NUL
+        char            genName[64];        // Generated External Name with trailing NUL
         uint32_t        nameToken;          // szTbl Token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;
         uint32_t        size;               // Data Size in Bytes
-        uint32_t        ptr;                // Pointer level (1 per *)
+        uint16_t        ptr;                // Pointer level (1 per *)
+        uint16_t        align;              // Required Storage Alignment
+        //                                  // (0 == None)
         union {
             uint32_t        misc[4];            // Set Overall Size.
             struct {
+                uint32_t        addr;
                 uint32_t        value;
-            } constantType;
+            } constantNumberType;
+            struct {
+                uint32_t        addr;
+                uint8_t         *pStr;      // Pointer to binary string w/length of size.
+            } constantStringType;
             struct {
                 uint32_t        offset;
             } memberType;

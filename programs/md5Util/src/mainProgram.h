@@ -71,11 +71,11 @@ extern "C" {
 
 
     typedef enum main_idents_e {
-        MAIN_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
-        MAIN_IDENT_EXEC,
-        MAIN_IDENT_EXEC_CLASS,
-        MAIN_IDENT_MAIN,
-        MAIN_IDENT_MAIN_CLASS,
+        OBJ_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
+        OBJ_IDENT_EXEC,
+        OBJ_IDENT_EXEC_CLASS,
+        // MAIN_IDENT_MAIN,                 // Defined in libCmn
+        // MAIN_IDENT_MAIN_CLASS,
     } MAIN_IDENTS;
     
 

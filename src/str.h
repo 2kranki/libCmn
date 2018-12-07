@@ -159,8 +159,8 @@ bool            str_Copy(
 
 
 /* Duplicate() copies the Input String to a new string that
- * was allocated with malloc(). 
- * The string will need to be free()'d when you are done with it.
+ * was allocated with mem_Malloc().
+ * The string will need to be mem_Free()'d when you are done with it.
  * Returns:
  *	NULL				=	Unsuccessful Completion
  *	string ptr          =	Duplicated String Address
@@ -177,8 +177,8 @@ W32CHR_T *      str_DupW32(
 
 
 /* DupLeft() copies the leftmost cChrs characters of the Input
- * String to a new string that was allocated with malloc(). 
- * The string will need to be free()'d when you are done with it.
+ * String to a new string that was allocated with mem_Malloc().
+ * The string will need to be mem_Free()'d when you are done with it.
  * Returns:
  *	NULL				=	Unsuccessful Completion
  *	string ptr          =	Duplicated String Address
@@ -423,7 +423,7 @@ APIRET APIENTRY str_Str2Long(
 
 
 /* str_ToLower() converts all upper case letters in a string
- * to lower case.
+ * to lower case in place.
  * Returns:
  *     pointer to input string
  */
@@ -437,7 +437,7 @@ W32CHR_T *      str_ToLowerW32(
 
 
 /* str_ToUpper() converts all lower case letters in a string
- * to upper case.
+ * to upper case in place.
  * Returns:
  *      pointer to input string
  */

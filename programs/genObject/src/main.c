@@ -337,7 +337,7 @@ extern "C" {
         pKey = osTypeID;
         pStr = AStr_NewA("msc64");
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeBTP_AddUpdateA(main_getDict(this), 0, pKey, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
@@ -347,13 +347,13 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-        //FIXME: eRc = main_DictAddUpdate(this, "outBase", "\\\\C:\\");
+        //FIXME: eRc = main_DictAddUpdate(this, 0, "outBase", "\\\\C:\\");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
             exit(EXIT_FAILURE);
         }
         
-        //FIXME: eRc = main_DictAddUpdate(this, "tmpBase", "\\TEMP");
+        //FIXME: eRc = main_DictAddUpdate(this, 0, "tmpBase", "\\TEMP");
         if (ERESULT_FAILED(eRc) ) {
             fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
             exit(EXIT_FAILURE);
@@ -410,10 +410,10 @@ extern "C" {
 
 
     MAIN_DATA *     main_NewFromArgV(
-                                     uint16_t        cArgs,
-                                     char            **ppArgs,
-                                     char            **ppEnv
-                                     )
+        uint16_t        cArgs,
+        char            **ppArgs,
+        char            **ppEnv
+    )
     {
         MAIN_DATA       *this;
         ERESULT         eRc;
@@ -442,8 +442,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     APPL_DATA *     main_getAppl(
-                                 MAIN_DATA       *this
-                                 )
+        MAIN_DATA       *this
+    )
     {
         
         // Validate the input parameters.
@@ -464,9 +464,9 @@ extern "C" {
     //                  D i c t i o n a r y
     //---------------------------------------------------------------
     
-    NODEHASH_DATA * main_getDict(
-                                 MAIN_DATA       *this
-                                 )
+    NODEBTP_DATA *  main_getDict(
+        MAIN_DATA       *this
+    )
     {
         
         // Validate the input parameters.
@@ -483,9 +483,9 @@ extern "C" {
     
     
     bool            main_setDict(
-                                 MAIN_DATA       *this,
-                                 NODEHASH_DATA   *pValue
-                                 )
+        MAIN_DATA       *this,
+        NODEBTP_DATA    *pValue
+    )
     {
 #ifdef NDEBUG
 #else
@@ -1173,7 +1173,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        eRc = nodeBTP_AddA(this->pDict, 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -1181,12 +1181,12 @@ extern "C" {
     
     
     ERESULT         main_DictAddA(
-                                  MAIN_DATA       *this,
-                                  const
-                                  char            *pName,
-                                  const
-                                  char            *pData
-                                  )
+        MAIN_DATA       *this,
+        const
+        char            *pName,
+        const
+        char            *pData
+    )
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
@@ -1217,7 +1217,7 @@ extern "C" {
             }
         }
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        eRc = nodeBTP_AddA(this->pDict, 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -1482,7 +1482,7 @@ extern "C" {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
                 //genBase_setMakeType(pGen, GENMAKE_TYPE_LIB);
-                eRc = dbPrs_ParseLibrary(pPrs, pHashWrk);
+                //eRc = dbPrs_ParseLibrary(pPrs, pHashWrk);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -1508,7 +1508,7 @@ extern "C" {
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
                     //genBase_setMakeType(pGen, GENMAKE_TYPE_PGM);
-                    eRc = dbprs_ParseProgram(pPrs, pHashWrk);
+                    //eRc = dbprs_ParseProgram(pPrs, pHashWrk);
                     if (ERESULT_FAILED(eRc)) {
                         fprintf(
                                 stderr,
@@ -1566,7 +1566,7 @@ extern "C" {
         if (pNode) {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                eRc = dbPrs_ParseRoutines(pPrs, pArray);
+                //eRc = dbPrs_ParseRoutines(pPrs, pArray);
             }
             else {
                 fprintf(
@@ -1582,7 +1582,7 @@ extern "C" {
         if (pNode) {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                eRc = dbPrs_ParseTests(pPrs, pArray);
+                //eRc = dbPrs_ParseTests(pPrs, pArray);
             }
             else {
                 fprintf(
@@ -1601,7 +1601,7 @@ extern "C" {
                 if (pNode) {
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
-                        eRc = dbPrs_ParseRoutines(pPrs, pArray);
+                        //eRc = dbPrs_ParseRoutines(pPrs, pArray);
                     }
                     else {
                         fprintf(
@@ -1620,7 +1620,7 @@ extern "C" {
                 if (pNode) {
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
-                        eRc = dbPrs_ParseRoutines(pPrs, pArray);
+                        //eRc = dbPrs_ParseRoutines(pPrs, pArray);
                     }
                     else {
                         fprintf(
@@ -1638,7 +1638,7 @@ extern "C" {
                 if (pNode) {
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
-                        eRc = dbPrs_ParseRoutines(pPrs, pArray);
+                        //eRc = dbPrs_ParseRoutines(pPrs, pArray);
                     }
                     else {
                         fprintf(
@@ -1919,7 +1919,8 @@ extern "C" {
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
+
+
     
     //---------------------------------------------------------------
     //              P a r s e  I n p u t  F i l e

@@ -165,7 +165,7 @@ int             test_dbprs_Object01(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "AStr");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "AStr");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObject(pObj, pNode);
@@ -243,7 +243,7 @@ int             test_dbprs_Object02(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "appl");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "appl");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObject(pObj, pNode);
@@ -324,7 +324,7 @@ int             test_dbprs_Object03(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "AStr");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "AStr");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObject(pObj, pNode);
@@ -402,7 +402,7 @@ int             test_dbprs_Object04(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "appl");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "appl");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObject(pObj, pNode);
@@ -473,7 +473,7 @@ int             test_dbprs_Object05(
         //obj_TraceSet(pObj, true);
         pStr = AStr_NewA("appl");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        pNode = node_NewWithUTF8AndClass("string", 0, pStr);
+        pNode = node_NewWithUTF8AndClass(0, "string", pStr);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -551,7 +551,7 @@ int             test_dbprs_Object06(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "appl");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "appl");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObject(pObj, pNode);
@@ -653,7 +653,7 @@ int             test_dbprs_Objects01(
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pHash = node_getData(pNode);
-        pNode = nodeHash_FindA(pHash, "AStr1");
+        pNode = nodeHash_FindA(pHash, 0, "AStr1");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseObjects(pObj, pHash);
@@ -727,7 +727,7 @@ int             test_dbprs_Routine01(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "listdl.c");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "listdl.c");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseRoutine(pObj, pNode);
@@ -800,7 +800,7 @@ int             test_dbprs_Routine02(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "listdl.c");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "listdl.c");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         eRc = dbprs_ParseRoutine(pObj, pNode);
@@ -885,7 +885,7 @@ int             test_dbprs_Library01(
     
     pGen  = genOSX_New(OBJ_NIL);
     TINYTEST_FALSE( (OBJ_NIL == pGen) );
-    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
     TINYTEST_FALSE( (OBJ_NIL == pDict) );
     genBase_setDict((GENBASE_DATA *)pGen, pDict);
 
@@ -901,7 +901,7 @@ int             test_dbprs_Library01(
         pStr = AStr_NewA("~/Support/lib/${SYS}");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
-            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            eRc = nodeHash_AddA(pDict, 0, libBaseID, pStr);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -914,7 +914,7 @@ int             test_dbprs_Library01(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "library");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "library");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pHash = jsonIn_CheckNodeDataForHash(pNode);
@@ -1008,7 +1008,7 @@ int             test_dbprs_Library02(
     
     pGen  = genOSX_New(OBJ_NIL);
     TINYTEST_FALSE( (OBJ_NIL == pGen) );
-    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
     TINYTEST_FALSE( (OBJ_NIL == pDict) );
     genBase_setDict((GENBASE_DATA *)pGen, pDict);
     
@@ -1024,7 +1024,7 @@ int             test_dbprs_Library02(
         pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
-            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            eRc = nodeHash_AddA(pDict, 0, libBaseID, pStr);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -1037,7 +1037,7 @@ int             test_dbprs_Library02(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "library");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "library");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pHash = jsonIn_CheckNodeDataForHash(pNode);
@@ -1127,7 +1127,7 @@ int             test_dbprs_Program01(
     
     pGen  = genOSX_New(OBJ_NIL);
     TINYTEST_FALSE( (OBJ_NIL == pGen) );
-    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
     TINYTEST_FALSE( (OBJ_NIL == pDict) );
     genBase_setDict((GENBASE_DATA *)pGen, pDict);
     
@@ -1143,7 +1143,7 @@ int             test_dbprs_Program01(
         pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
-            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            eRc = nodeHash_AddA(pDict, 0, libBaseID, pStr);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -1156,7 +1156,7 @@ int             test_dbprs_Program01(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "program");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "program");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pHash = jsonIn_CheckNodeDataForHash(pNode);
@@ -1250,7 +1250,7 @@ int             test_dbprs_Program02(
     
     pGen  = genOSX_New(OBJ_NIL);
     TINYTEST_FALSE( (OBJ_NIL == pGen) );
-    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
     TINYTEST_FALSE( (OBJ_NIL == pDict) );
     genBase_setDict((GENBASE_DATA *)pGen, pDict);
     
@@ -1266,7 +1266,7 @@ int             test_dbprs_Program02(
         pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
-            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            eRc = nodeHash_AddA(pDict, 0, libBaseID, pStr);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -1279,7 +1279,7 @@ int             test_dbprs_Program02(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "program");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "program");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pHash = jsonIn_CheckNodeDataForHash(pNode);
@@ -1376,7 +1376,7 @@ int             test_dbprs_Program03(
     
     pGen  = genOSX_New(OBJ_NIL);
     TINYTEST_FALSE( (OBJ_NIL == pGen) );
-    pDict = nodeHash_New(NODEHASH_TABLE_SIZE_XXXSMALL);
+    pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
     TINYTEST_FALSE( (OBJ_NIL == pDict) );
     genBase_setDict((GENBASE_DATA *)pGen, pDict);
     
@@ -1392,7 +1392,7 @@ int             test_dbprs_Program03(
         pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
-            eRc = nodeHash_AddA(pDict, libBaseID, 0, pStr);
+            eRc = nodeHash_AddA(pDict, 0, libBaseID, pStr);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -1405,7 +1405,7 @@ int             test_dbprs_Program03(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "program");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "program");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pHash = jsonIn_CheckNodeDataForHash(pNode);
@@ -1491,7 +1491,7 @@ int             test_dbprs_Tests01(
         pNode = dbprs_getNodes(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
-        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), "tests");
+        pNode = nodeHash_FindA((NODEHASH_DATA *)node_getData(pNode), 0, "tests");
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE( (obj_IsKindOf(pNode, OBJ_IDENT_NODE)) );
         pArray = jsonIn_CheckNodeDataForArray(pNode);

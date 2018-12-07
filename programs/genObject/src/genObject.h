@@ -109,6 +109,8 @@ extern "C" {
         OBJ_IDENT_GENBASE_CLASS,
         //OBJ_IDENT_MAIN,               // Defined in cmn_defs
         //OBJ_IDENT_MAIN_CLASS
+        OBJ_IDENT_PROPERTY,
+        OBJ_IDENT_PROPERTY_CLASS,
     } OBJ_GENOBJECT_IDENTS;
     
 

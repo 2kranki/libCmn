@@ -1,5 +1,5 @@
 //
-//  main.c
+//  mainProgram.c
 //
 //  Created by bob on 7/17/17.
 //
@@ -7,7 +7,7 @@
 
 
 //#include        <stdio.h>
-#include        <md5Util.h>
+#include        <mainProgram.h>
 #include        <main.h>
 
 

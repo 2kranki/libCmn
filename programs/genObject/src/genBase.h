@@ -399,7 +399,7 @@ extern "C" {
     ERESULT         genBase_GenMakefile(
         GENBASE_DATA        *this,
         NODE_DATA           *pNodes,
-        NODEHASH_DATA       *pDict,
+        NODEBTP_DATA        *pDict,
         DATETIME_DATA       *pDateTime,
         TEXTOUT_DATA        *pOutput
     );
