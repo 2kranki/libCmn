@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <AStrArray.h>
 
 
 #ifndef         SCANNER_H
@@ -153,6 +154,21 @@ extern "C" {
         char            **ppCmdStr,         // NUL terminated string pointer
         uint32_t        *pScannedLen        // [out] Scanned Length
         //                                  // (not including leading whitespace)
+    );
+    
+    
+    /*!
+     Set up an ArgC/ArgV type array given a command line string
+     excluding the program name.
+     @param     pCmdStrA    Pointer to a UTF-8 Argument character string
+     @return    If successful, an AStrArray object which must be
+                released containing the Argument Array, otherwise
+                OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStrArray object.
+     */
+    ASTRARRAY_DATA * scanner_ScanStringToAstrArray(
+        const
+        char            *pCmdStrA
     );
     
     

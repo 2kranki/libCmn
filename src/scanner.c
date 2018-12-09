@@ -715,7 +715,8 @@ extern "C" {
     
     
     
-    /*! Set up an ArgC/ArgV type array given a command line string
+    /*!
+     Set up an ArgC/ArgV type array given a command line string
      excluding the program name.
      @param     pCmdStrA    Pointer to a UTF-8 Argument character string
      @return    If successful, an AStrArray object which must be
@@ -726,7 +727,7 @@ extern "C" {
     ASTRARRAY_DATA * scanner_ScanStringToAstrArray(
         const
         char            *pCmdStrA
-        )
+    )
     {
         ERESULT         eRc;
         bool            fRc;
@@ -778,7 +779,11 @@ extern "C" {
                 obj_Release(pArg);
                 pArg = OBJ_NIL;
             }
-            
+
+            // Pass over white space.
+            if ((',' == *pCurChr) || ('\t' == *pCurChr)) {
+                ++pCurChr;
+            }
         }
         
         // Return to caller.

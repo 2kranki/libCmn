@@ -445,8 +445,95 @@ int             test_scanner_ScanOct01(
 
 
 
+int             test_scanner_AStrArray01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+    char            *testString;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = scanner_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = scanner_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        testString = "a";
+        fprintf(stderr, "Scanning: %s\n", testString);
+        pArray = scanner_ScanStringToAstrArray(testString);
+        {
+            ASTR_DATA           *pStr;
+            pStr = AStrArray_ToDebugString(pArray, 4);
+            if (pStr) {
+                fprintf(stderr, "\tAStrArray =\n%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
+        }
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        TINYTEST_TRUE( (2 == AStrArray_getSize(pArray)) );
+        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        
+        testString = "a,b";
+        fprintf(stderr, "Scanning: %s\n", testString);
+        pArray = scanner_ScanStringToAstrArray(testString);
+        {
+            ASTR_DATA           *pStr;
+            pStr = AStrArray_ToDebugString(pArray, 4);
+            if (pStr) {
+                fprintf(stderr, "\tAStrArray =\n%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
+        }
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
+        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "b");
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        
+        testString = "a b";
+        fprintf(stderr, "Scanning: %s\n", testString);
+        pArray = scanner_ScanStringToAstrArray(testString);
+        {
+            ASTR_DATA           *pStr;
+            pStr = AStrArray_ToDebugString(pArray, 4);
+            if (pStr) {
+                fprintf(stderr, "\tAStrArray =\n%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
+        }
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
+        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "b");
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_scanner);
+    TINYTEST_ADD_TEST(test_scanner_AStrArray01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_scanner_ScanOct01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_scanner_ScanHex01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_scanner_ScanDec01,setUp,tearDown);
