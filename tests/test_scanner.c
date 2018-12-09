@@ -278,6 +278,37 @@ int             test_scanner_ScanDec01(
         TINYTEST_TRUE( (fRc) );
         TINYTEST_TRUE( (*pCurChr == ',') );
         
+        testString = " +10,";
+        pCurChr = testString;
+        cScanned = 0;
+        value = 0;
+        fRc = scanner_ScanDec32(&pCurChr, &cScanned, &value);
+        TINYTEST_TRUE( (pCurChr == (testString + 4)) );
+        TINYTEST_TRUE( (4 == cScanned) );
+        TINYTEST_TRUE( (10 == value) );
+        TINYTEST_TRUE( (fRc) );
+        TINYTEST_TRUE( (*pCurChr == ',') );
+        
+        testString = " x,";
+        pCurChr = testString;
+        cScanned = 0;
+        value = 0;
+        fRc = scanner_ScanDec32(&pCurChr, &cScanned, &value);
+        TINYTEST_TRUE( (pCurChr == testString) );
+        TINYTEST_TRUE( (0 == cScanned) );
+        TINYTEST_TRUE( (0 == value) );
+        TINYTEST_TRUE( (!fRc) );
+        
+        testString = " 1x,";
+        pCurChr = testString;
+        cScanned = 0;
+        value = 0;
+        fRc = scanner_ScanDec32(&pCurChr, &cScanned, &value);
+        TINYTEST_TRUE( (pCurChr == testString) );
+        TINYTEST_TRUE( (0 == cScanned) );
+        TINYTEST_TRUE( (0 == value) );
+        TINYTEST_TRUE( (!fRc) );
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

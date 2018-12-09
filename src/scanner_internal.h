@@ -103,7 +103,7 @@ struct scanner_data_s	{
     );
 
 
-    SCANNER_DATA *       scanner_ParseObject(
+    SCANNER_DATA *  scanner_ParseObject(
         JSONIN_DATA     *pParser
     );
 
@@ -115,6 +115,46 @@ struct scanner_data_s	{
     );
 
 
+    /*!
+     Scan a UTF-8 hexadecimal value such as ([1-9a-fA-F][0-9a-fA-F]*).
+     (('-' | ) [1-9][0-9]+). The converted value scanned is returned if scan
+     is successful. Nothing is changed if the scan is unsuccessful.
+     @param     ppCmdStr    [in/out] pointer to a UTF-8 string pointer. On output
+     the pointer will be updated just past the last acceptable
+     character scanned.
+     @param     pScannedLen Optional pointer to number of characters which created
+     the returned string
+     @param     pValue      Optional pointer to where value will be returned
+     @return    If successful, true and *pValue contains the amount converted,
+     otherwise false.
+     */
+    bool            scanner_ScanHex32(
+        char            **ppCmdStr,         // NUL terminated string pointer
+        uint32_t        *pScannedLen,       // (returned) Scanned Length
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
+    /*!
+     Scan a UTF-8 octal value such as ([1-7][0-7]*). The converted value scanned
+     is returned if scan is successful. Nothing is changed if the scan is unsuc-
+     cessful.
+     @param     ppCmdStr    [in/out] pointer to a UTF-8 string pointer. On output
+     the pointer will be updated just past the last acceptable
+     character scanned.
+     @param     pScannedLen Optional pointer to number of characters which created
+     the returned string
+     @param     pValue      Optional pointer to where value will be returned
+     @return    If successful, true and *pValue contains the amount converted,
+     otherwise false.
+     */
+    bool            scanner_ScanOct32(
+        char            **ppCmdStr,         // NUL terminated string pointer
+        uint32_t        *pScannedLen,       // (returned) Scanned Length
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
     ASTR_DATA *     scanner_ToJSON(
         SCANNER_DATA      *this
     );

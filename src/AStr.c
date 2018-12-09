@@ -3091,6 +3091,29 @@ extern "C" {
     
 
     //---------------------------------------------------------------
+    //                      T o  S t d e r r
+    //---------------------------------------------------------------
+    
+    ERESULT         AStr_ToStderr(
+        ASTR_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        fprintf(stderr, "%s", AStr_getData(this));
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                       T o  U p p e r
     //---------------------------------------------------------------
     

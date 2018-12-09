@@ -296,7 +296,8 @@ OBJ_INFO        scanner_Info = {
     "Command Line Scanner",
     (OBJ_DATA *)&scanner_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&scanner_Vtbl
+    (OBJ_IUNKNOWN *)&scanner_Vtbl,
+    sizeof(SCANNER_DATA)
 };
 
 

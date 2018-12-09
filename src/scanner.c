@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <scanner_internal.h>
 #include        <ascii.h>
+#include        <AStrArray.h>
 #include        <hex.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -63,14 +64,87 @@ extern "C" {
     ****************************************************************/
 
 #ifdef XYZZY
-    static
-    void            scanner_task_body(
-        void            *pData
+    bool            scanner_ParseCmdStr(
+        SCANNER_DATA    *cbp,
+        char            *pCmdStr,
+        uint32_t        *pNumArgs,
+        
     )
     {
-        //SCANNER_DATA  *this = pData;
+        uint16_t        cbSize;
+        int             Num = 0;
+        int             cArgs = 0;
+        char            *pCurCmd;
+        char            quote;
         
+        /* Do initialization.
+         */
+        if( pCmdStr == NULL )
+            return( false );
+        cbp->cArg = 1;
+        cbSize = 2 * sizeof(char *);
+        cbp->ppArg = (char **)mem_Malloc( cbSize );
+        if( cbp->ppArg ) {
+            cbp->flags |= GOT_ARGV;
+        }
+        else
+            return false;
+        *(cbp->ppArg) = "";     // Set program name.
+        
+        /* Scan off the each parameter.
+         */
+        while( *pCmdStr ) {
+            pCurCmd = NULL;
+            // Pass over white space.
+            while( *pCmdStr && ((*pCmdStr == ' ') || (*pCmdStr == '\n')
+                                || (*pCmdStr == '\r') || (*pCmdStr == '\t')) )
+                ++pCmdStr;
+            // Handle Quoted Arguments.
+            if( (*pCmdStr == '\"') || (*pCmdStr == '\'') ) {
+                quote = *pCmdStr++;
+                pCurCmd = pCmdStr;
+                while( *pCmdStr && (*pCmdStr != quote) ) {
+                    ++pCmdStr;
+                }
+                if( *pCmdStr ) {
+                    *pCmdStr = '\0';
+                    ++pCmdStr;
+                }
+            }
+            // Handle Non-Quoted Arguments.
+            else if( *pCmdStr ) {
+                pCurCmd = pCmdStr;
+                // Scan until white space.
+                while( *pCmdStr && !((*pCmdStr == ' ') || (*pCmdStr == '\n')
+                                     || (*pCmdStr == '\r') || (*pCmdStr == '\t')) ) {
+                    ++pCmdStr;
+                }
+                if( *pCmdStr ) {
+                    *pCmdStr = '\0';
+                    ++pCmdStr;
+                }
+            }
+            else
+                continue;
+            // Add the command to the array.
+            if( pCurCmd ) {
+                ++Num;
+                cbp->ppArg = (char **)mem_Realloc( cbp->ppArg, ((Num + 2) * sizeof(char *)) );
+                if( cbp->ppArg ) {
+                    cbp->ppArg[Num]   = pCurCmd;
+                    cbp->ppArg[Num+1] = NULL;
+                    ++cbp->cArg;
+                }
+                else
+                    return( false );
+            }
+        }
+        
+        // Return to caller.
+        return true;
     }
+    
+    
 #endif
 
 
@@ -258,7 +332,7 @@ extern "C" {
         // Do initialization.
         if( NULL == ppCmdStr ) {
             fRc = false;
-            goto Exit00;
+            goto Exit90;
         }
         pCurChr = *ppCmdStr;
         
@@ -267,15 +341,27 @@ extern "C" {
 
         chrLen = utf8_Utf8ToW32(pCurChr, &chr);
         if (0 == chrLen) {
-            goto Exit00;
+            goto Exit90;
         }
         
-        if ( ('0' == chr) && (('x' == *(pCurChr+1)) || ('X' == *(pCurChr+1))) ) {
-            pCurChr += 2;
-            cLen += 2;
-            fRc = scanner_ScanHex32(&pCurChr, &cDec, &value);
-            cLen += cDec;
-            goto Exit00;
+        if ('0' == chr) {
+            if (('x' == *(pCurChr+1)) || ('X' == *(pCurChr+1))) {
+                pCurChr += 2;
+                cLen += 2;
+                fRc = scanner_ScanHex32(&pCurChr, &cDec, &value);
+                cLen += cDec;
+                goto Exit80;
+            }
+            else {
+                pCurChr += 1;
+                cLen += 1;
+                if (*pCurChr)
+                    fRc = scanner_ScanOct32(&pCurChr, &cDec, &value);
+                else                // Stand-alone zero
+                    fRc = true;
+                cLen += cDec;
+                goto Exit80;
+            }
         }
         
         if( '-' == chr ) {
@@ -283,7 +369,11 @@ extern "C" {
             cLen += chrLen;
             pCurChr += chrLen;
         }
-        
+        else if( '+' == chr ) {
+            cLen += chrLen;
+            pCurChr += chrLen;
+        }
+
         for (;;) {
             chrLen = utf8_Utf8ToW32(pCurChr, &chr);
             if (chrLen) {
@@ -300,6 +390,7 @@ extern "C" {
                 break;
         }
         
+    Exit80:
         if (chrLen) {
             if( ('\0' == chr) || ('\t' == chr) || (',' == chr) || (' ' == chr) ) {
                 if( cDec ) {
@@ -320,17 +411,17 @@ extern "C" {
         }
         
         // Return to caller.
-    Exit00:
-        if( ppCmdStr ) {
+    Exit90:
+        if( fRc && ppCmdStr ) {
             *ppCmdStr = pCurChr;
         }
-        if( pScannedLen ) {
+        if( fRc && pScannedLen ) {
             *pScannedLen = cLen;
         }
-        if( pValue ) {
+        if( fRc && pValue ) {
             *pValue = value;
         }
-        return( fRc );
+        return fRc;
     }
     
     
@@ -396,13 +487,13 @@ extern "C" {
             fRc = true;
         }
     Exit00:
-        if( ppCmdStr ) {
+        if( fRc && ppCmdStr ) {
             *ppCmdStr = pCurChr;
         }
-        if( pScannedLen ) {
+        if( fRc && pScannedLen ) {
             *pScannedLen = cLen;
         }
-        if( pValue ) {
+        if( fRc && pValue ) {
             *pValue = value;
         }
         return fRc;
@@ -460,13 +551,13 @@ extern "C" {
             fRc = true;
         }
     Exit00:
-        if( ppCmdStr ) {
+        if( fRc && ppCmdStr ) {
             *ppCmdStr = pCurChr;
         }
-        if( pScannedLen ) {
+        if( fRc && pScannedLen ) {
             *pScannedLen = cLen;
         }
-        if( pValue ) {
+        if( fRc && pValue ) {
             *pValue = value;
         }
         return fRc;
@@ -620,6 +711,78 @@ extern "C" {
             *pScannedLen = cOutput;
         }
         return pStr;
+    }
+    
+    
+    
+    /*! Set up an ArgC/ArgV type array given a command line string
+     excluding the program name.
+     @param     pCmdStrA    Pointer to a UTF-8 Argument character string
+     @return    If successful, an AStrArray object which must be
+                released containing the Argument Array, otherwise
+                OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStrArray object.
+     */
+    ASTRARRAY_DATA * scanner_ScanStringToAstrArray(
+        const
+        char            *pCmdStrA
+        )
+    {
+        ERESULT         eRc;
+        bool            fRc;
+        char            *pCurCmd;
+        uint32_t        cmdLen = 0;
+        char            *pCurChr;
+        ASTRARRAY_DATA  *pArgs = OBJ_NIL;
+        ASTR_DATA       *pArg = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(pCmdStrA && (utf8_StrLenA(pCmdStrA) > 0))
+            ;
+        else {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        pArgs = AStrArray_New( );
+        if (OBJ_NIL == pArgs) {
+            DEBUG_BREAK();
+            //return ERESULT_OUT_OF_MEMORY;
+            return OBJ_NIL;
+        }
+        pCurChr = (char *)pCmdStrA;
+        
+        // Set up program name argument.
+        pArg = AStr_NewA("");
+        if (pArg) {
+            eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
+            obj_Release(pArg);
+            pArg = OBJ_NIL;
+        }
+        
+        // Scan off the each parameter.
+        while( pCurChr && *pCurChr ) {
+            pCurCmd = NULL;
+            cmdLen = 0;
+            
+            // Pass over white space.
+            fRc = scanner_ScanWhite(&pCurChr, NULL);
+            
+            // Handle Quoted Arguments.
+            pArg = scanner_ScanStringToAStr(&pCurChr, NULL);
+            if (pArg) {
+                eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
+                obj_Release(pArg);
+                pArg = OBJ_NIL;
+            }
+            
+        }
+        
+        // Return to caller.
+        return pArgs;
     }
     
     
@@ -1155,7 +1318,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "scanner::sizeof(SCANNER_DATA) = %lu\n", sizeof(SCANNER_DATA));
+        //fprintf(stderr, "scanner::sizeof(SCANNER_DATA) = %lu\n", sizeof(SCANNER_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SCANNER_DATA));
     #endif

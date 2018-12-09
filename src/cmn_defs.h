@@ -278,8 +278,6 @@ extern "C" {
         OBJ_IDENT_LISTDL_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching
         OBJ_IDENT_LRU_CLASS,
-        OBJ_IDENT_MACRO,
-        OBJ_IDENT_MACRO_CLASS,
         OBJ_IDENT_MD5CHKSUM,            // MD5 Check Sum Calculation
         OBJ_IDENT_MD5CHKSUM_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C

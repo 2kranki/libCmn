@@ -1025,22 +1025,6 @@ test_lru: $(TEST_SRC)/test_lru.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/macro_object.o
-
-$(OBJDIR)/macro_object.o: $(SRCDIR)/macro_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/macro.o
-
-$(OBJDIR)/macro.o: $(SRCDIR)/macro.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += test_macro
-
-test_macro: $(TEST_SRC)/test_macro.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
 OBJS += $(OBJDIR)/md5ChkSum_object.o
 
 $(OBJDIR)/md5ChkSum_object.o: $(SRCDIR)/md5ChkSum_object.c 

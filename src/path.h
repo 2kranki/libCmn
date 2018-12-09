@@ -471,6 +471,15 @@ extern "C" {
     
     
     /*!
+     Copy the string to stderr.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     */
+    ERESULT         path_ToStderr(
+        PATH_DATA        *this
+    );
+    
+    
+    /*!
      Create a path from the current one that is extended by a version number
      just before the file extension.  For example, "/a/abc.txt"  becomes
      "/a/abc.0000.txt".  Note that the version number is 4 digits.

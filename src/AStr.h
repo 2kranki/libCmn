@@ -716,6 +716,15 @@ extern "C" {
     
     
     /*!
+     Copy the string to stderr.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     */
+    ERESULT         AStr_ToStderr(
+        ASTR_DATA       *this
+    );
+    
+    
+    /*!
      Create a new string from the current one.
      @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.

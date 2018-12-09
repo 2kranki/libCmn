@@ -1782,6 +1782,30 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      T o  S t d e r r
+    //---------------------------------------------------------------
+    
+    ERESULT         path_ToStderr(
+        PATH_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        fprintf(stderr, "%s", path_getData(this));
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      T o V e r s i o n e d
     //---------------------------------------------------------------
     

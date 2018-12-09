@@ -333,11 +333,13 @@ extern "C" {
                      pStr,
                      "{ \"objectType\":\"%s\", "
                          "\"class\":%d, "
-                         "\"type\":%d\n",
+                         "\"type\":%d, "
+                         "\"unique\":%d,\n",
                      pInfo->pClassName,
                      this->cls,
-                     this->type
-                     );
+                     this->type,
+                     this->unique
+        );
 
         if (this->pName) {
             pWrkStr = name_ToJSON(this->pName);

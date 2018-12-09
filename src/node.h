@@ -345,6 +345,9 @@ extern "C" {
     );
     
     
+    uint32_t        node_getUnique(
+        NODE_DATA       *this
+    );
 
     
     //---------------------------------------------------------------
@@ -405,20 +408,6 @@ extern "C" {
      */
     NODEARRAY_DATA * node_DataToArray(
         NODE_DATA       *this
-    );
-    
-    
-    NODE_DATA *     node_InitWithInt(
-        NODE_DATA       *this,
-        int64_t         ident,
-        OBJ_ID          pData
-    );
-    
-    
-    NODE_DATA *     node_InitWithName(
-        NODE_DATA       *this,
-        NAME_DATA       *pName,         // Retained, not copied
-        OBJ_ID          pData
     );
     
     

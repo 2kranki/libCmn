@@ -37,23 +37,6 @@
 
 
 //-----------------------------------------------------------
-//                  Class Object Definition
-//-----------------------------------------------------------
-
-struct node_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
-    OBJ_DATA        super;
-    
-    // Common Data
-    //uint32_t        misc;
-};
-typedef struct node_class_data_s NODE_CLASS_DATA;
-
-
-
-
-//-----------------------------------------------------------
 //                  Class Methods
 //-----------------------------------------------------------
 

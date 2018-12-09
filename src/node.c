@@ -55,15 +55,15 @@
 extern "C" {
 #endif
     
-    typedef struct node_class_data_s {
+    typedef struct node_class_desc_s {
         int             integer;
         const
         char            *pDescription;
-    } NODE_CLASS_DATA;
+    } NODE_CLASS_DESC;
 
     
     static
-    NODE_CLASS_DATA     classTable[] = {
+    NODE_CLASS_DESC     classTable[] = {
         {NODE_CLASS_UNKNOWN,    "NODE_CLASS_UNKNOWN"},
         {NODE_CLASS_ROOT,       "NODE_CLASS_ROOT"},
         {NODE_CLASS_ANY,        "NODE_CLASS_ANY"},
@@ -154,10 +154,14 @@ extern "C" {
     )
     {
         NODE_DATA       *this;
+        NODE_CLASS_DATA *pClass;
         
         this = node_Alloc( );
         if (this) {
+            pClass = node_Class( );
             this = node_Init(this);
+            if (this)
+                this->unique = ++pClass->unique;
         }
         
         return this;
@@ -172,9 +176,15 @@ extern "C" {
     {
         NODE_DATA       *this;
         
-        this = node_Alloc( );
+        this = node_New( );
         if (this) {
-            this = node_InitWithInt(this, ident, pData);
+            this->pName = name_NewInt(ident);
+            if (OBJ_NIL == this->pName) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            node_setData(this, pData);
         }
         
         return this;
@@ -193,9 +203,18 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = node_Alloc( );
+        this = node_New( );
         if (this) {
-            this = node_InitWithName(this, pName, pData);
+            if (pName) {
+                obj_Retain(pName);
+                this->pName = pName;
+                if (OBJ_NIL == this->pName) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+            }
+            node_setData(this, pData);
         }
         
         return this;
@@ -217,19 +236,16 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = node_Alloc( );
+        this = node_New( );
         if (this) {
-            this = node_Init(this);
-            if (this) {
-                if (pNameA) {
-                    pName = name_NewUTF8(pNameA);
-                    node_setName(this, pName);
-                    obj_Release(pName);
-                    pName = OBJ_NIL;
-                }
-                node_setClass(this, cls);
-                node_setData(this, pData);
+            if (pNameA) {
+                pName = name_NewUTF8(pNameA);
+                node_setName(this, pName);
+                obj_Release(pName);
+                pName = OBJ_NIL;
             }
+            node_setClass(this, cls);
+            node_setData(this, pData);
         }
         
         return this;
@@ -251,19 +267,16 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = node_Alloc( );
+        this = node_New( );
         if (this) {
-            this = node_Init(this);
-            if (this) {
-                if (pNameA) {
-                    pName = name_NewUTF8Con(pNameA);
-                    node_setName(this, pName);
-                    obj_Release(pName);
-                    pName = OBJ_NIL;
-                }
-                node_setClass(this, cls);
-                node_setData(this, pData);
+            if (pNameA) {
+                pName = name_NewUTF8Con(pNameA);
+                node_setName(this, pName);
+                obj_Release(pName);
+                pName = OBJ_NIL;
             }
+            node_setClass(this, cls);
+            node_setData(this, pData);
         }
         
         return this;
@@ -744,6 +757,46 @@ extern "C" {
         }
 #endif
         this->type = value;
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       U n i q u e
+    //---------------------------------------------------------------
+    
+    uint32_t        node_getUnique(
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->unique;
+    }
+    
+    
+    bool            node_setUnique(
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        this->unique = value;
         return true;
     }
     
@@ -1260,73 +1313,6 @@ extern "C" {
 
      
 
-    NODE_DATA *     node_InitWithInt(
-        NODE_DATA       *this,
-        int64_t         ident,
-        OBJ_ID          pData
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this->pName = name_NewInt(ident);
-        if (OBJ_NIL == this->pName) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        node_setData(this, pData);
-        
-        return this;
-    }
-    
-    
-    
-    NODE_DATA *     node_InitWithName(
-        NODE_DATA       *this,
-        NAME_DATA       *pName,
-        OBJ_ID          pData
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = node_Init( this );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        if (pName) {
-            obj_Retain(pName);
-            this->pName = pName;
-            if (OBJ_NIL == this->pName) {
-                DEBUG_BREAK();
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-        }
-        
-        node_setData(this, pData);
-        
-        return this;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------

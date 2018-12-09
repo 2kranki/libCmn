@@ -58,6 +58,29 @@ extern "C" {
 
 
     
+    //-----------------------------------------------------------
+    //                  Class Object Definition
+    //-----------------------------------------------------------
+    
+#pragma pack(push, 1)
+    struct node_class_data_s    {
+        /* Warning - OBJ_DATA must be first in this object!
+         */
+        OBJ_DATA        super;
+        
+        // Common Data
+        uint32_t        unique;
+    };
+#pragma pack(pop)
+    typedef struct node_class_data_s NODE_CLASS_DATA;
+    
+    
+    
+    
+    //-----------------------------------------------------------
+    //                      Object Definition
+    //-----------------------------------------------------------
+    
 #pragma pack(push, 1)
 struct node_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
@@ -70,6 +93,7 @@ struct node_data_s	{
     // Common Data
     int32_t         cls;
     int32_t         type;
+    uint32_t        unique;
     NAME_DATA       *pName;
     OBJ_ID          pData;
     OBJ_ID          pExtra;
