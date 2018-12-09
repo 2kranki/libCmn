@@ -51,6 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <objArray.h>
 
 
 #ifndef         ASTRARRAY_H
@@ -118,6 +119,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    OBJARRAY_DATA *  AStrArray_getArray(
+        ASTRARRAY_DATA  *this
+    );
+    
+    
     uint32_t        AStrArray_getSize(
         ASTRARRAY_DATA	*this
     );
