@@ -905,14 +905,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -949,14 +949,14 @@ extern "C" {
         }
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -984,17 +984,17 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        if (nodeHash_FindA(this->pDict, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, pName);
+        if (nodeHash_FindA(this->pDict, 0, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
         }
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -1027,17 +1027,17 @@ extern "C" {
         }
 
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        if (nodeHash_FindA(this->pDict, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, pName);
+        if (nodeHash_FindA(this->pDict, 0, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
         }
-        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -1123,7 +1123,7 @@ extern "C" {
 
                     // Find the name from the Dictionary.
                 do_replace:
-                    pNode = nodeHash_FindA(this->pDict, AStr_getData(pName));
+                    pNode = nodeHash_FindA(this->pDict, 0, AStr_getData(pName));
                     if (OBJ_NIL == pNode) {
                         obj_Release(pName);
                         return ERESULT_DATA_NOT_FOUND;
@@ -1950,7 +1950,7 @@ ERESULT         genBase_GenMakefile(
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibInstalledPath) && this->pDict) {
-            pNode = nodeHash_FindA(this->pDict, "LibInstalledPath");
+            pNode = nodeHash_FindA(this->pDict, 0, "LibInstalledPath");
             pLibInstalledPath = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
@@ -2012,7 +2012,7 @@ ERESULT         genBase_GenMakefile(
         }
 #endif
         if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
-            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibNamePrefix");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibNamePrefix");
             pLibNamePrefix = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));

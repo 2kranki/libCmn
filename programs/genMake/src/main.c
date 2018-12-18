@@ -88,7 +88,7 @@ extern "C" {
             "backup",
             'n',
             CMDUTL_ARG_OPTION_NONE,
-            APPL_ARG_INCR,
+            CMDUTL_TYPE_INCR,
             offsetof(MAIN_DATA, fBackup),
             NULL,
             "Backup output file if it exists"
@@ -332,7 +332,7 @@ extern "C" {
         pKey = osTypeID;
         pStr = AStr_NewA("msc64");
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(main_getDict(this), pKey, 0, pStr);
+            eRc = nodeHash_AddUpdateA(main_getDict(this), 0, pKey, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
@@ -415,7 +415,7 @@ extern "C" {
         if (this) {
             this = main_Init(this);
             if (this) {
-                eRc =   main_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
+                eRc = main_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
             }
         }
         return this;
@@ -1103,14 +1103,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -1147,14 +1147,14 @@ extern "C" {
         }
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -1182,17 +1182,17 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        if (nodeHash_FindA(this->pDict, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, pName);
+        if (nodeHash_FindA(this->pDict, 0, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
         }
-        eRc = nodeHash_AddA(this->pDict, pName, 0, (void *)pData);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -1225,17 +1225,17 @@ extern "C" {
         }
         
         if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
             if (OBJ_NIL == this->pDict) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        if (nodeHash_FindA(this->pDict, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, pName);
+        if (nodeHash_FindA(this->pDict, 0, pName)) {
+            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
         }
-        eRc = nodeHash_AddA(this->pDict, pName, 0, pStr);
+        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -1416,7 +1416,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
-        pNode = nodeHash_FindA(pHash, "library");
+        pNode = nodeHash_FindA(pHash, 0, "library");
         if (pNode) {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
@@ -1442,7 +1442,7 @@ extern "C" {
             }
         }
         else {
-            pNode = nodeHash_FindA(node_getData(this->pNodes), "program");
+            pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "program");
             if (pNode) {
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
@@ -1477,7 +1477,7 @@ extern "C" {
             }
         }
 
-        pNode = nodeHash_FindA(node_getData(this->pNodes), "objects");
+        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "objects");
         if (pNode) {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
@@ -1501,7 +1501,7 @@ extern "C" {
             }
         }
         
-        pNode = nodeHash_FindA(node_getData(this->pNodes), "routines");
+        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "routines");
         if (pNode) {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
@@ -1517,7 +1517,7 @@ extern "C" {
             }
         }
         
-        pNode = nodeHash_FindA(node_getData(this->pNodes), "tests");
+        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "tests");
         if (pNode) {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
@@ -1536,7 +1536,7 @@ extern "C" {
         switch (this->osType) {
                 
             case OSTYPE_MACOS:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), "macosx");
+                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "macosx");
                 if (pNode) {
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
@@ -1555,7 +1555,7 @@ extern "C" {
                 break;
                 
             case OSTYPE_MSC32:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), "win32");
+                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win32");
                 if (pNode) {
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
@@ -1573,7 +1573,7 @@ extern "C" {
                 break;
                 
             case OSTYPE_MSC64:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), "win64");
+                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win64");
                 if (pNode) {
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
@@ -1650,7 +1650,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&main_Vtbl);
         
-        this->pDict = nodeHash_New(NODEHASH_TABLE_SIZE_SMALL);
+        this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
         if (OBJ_NIL == this->pDict) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1743,7 +1743,7 @@ extern "C" {
         pStr = AStr_NewA("win64");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), osTypeID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, osTypeID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
@@ -1756,7 +1756,7 @@ extern "C" {
 
         pStr = AStr_NewA("d");
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), makeTypeID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, makeTypeID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
                 exit(EXIT_FAILURE);
@@ -1767,7 +1767,7 @@ extern "C" {
         
         pStr = AStr_NewA("lib");
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), resultTypeID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, resultTypeID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1787,7 +1787,7 @@ extern "C" {
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), libBaseID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, libBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1807,7 +1807,7 @@ extern "C" {
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), outBaseID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, outBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1822,7 +1822,7 @@ extern "C" {
         
         pStr = AStr_NewA("./src");
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), srcBaseID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, srcBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1842,7 +1842,7 @@ extern "C" {
         pStr = AStr_NewA("${TMP}");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(main_getDict(this), tmpBaseID, 0, pStr);
+            eRc = nodeHash_AddA(main_getDict(this), 0, tmpBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,

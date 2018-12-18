@@ -276,11 +276,6 @@ extern "C" {
     );
 
 
-    int             main_Run(
-        MAIN_DATA		*this
-    );
-    
-    
     /*!
      Set up to parse the given input resetting any prior parse data.
      @param     this        object pointer

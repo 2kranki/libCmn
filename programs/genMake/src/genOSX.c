@@ -810,6 +810,7 @@ extern "C" {
 #endif
         pLibObjectPath =    nodeHash_FindA(
                                 genBase_getDict((GENBASE_DATA *)this),
+                                0,
                                 "LibObjectPath"
                             );
         if (NULL == pLibObjectPath) {
@@ -817,6 +818,7 @@ extern "C" {
         }
         pLibObjectPrefix =  nodeHash_FindA(
                                 genBase_getDict((GENBASE_DATA *)this),
+                                0,
                                 "LibObjectPrefix"
                             );
         pStr = AStr_New();
@@ -1785,7 +1787,7 @@ extern "C" {
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibIncludePath) && genBase_getDict((GENBASE_DATA *)this)) {
-            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibIncludePath");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibIncludePath");
             pLibIncludePath = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibIncludePath=\"%s\"", (pLibIncludePath ? pLibIncludePath : ""));
@@ -1849,7 +1851,7 @@ extern "C" {
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
         if ((OBJ_NIL == pLibInstalledPath) && genBase_getDict((GENBASE_DATA *)this)) {
-            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibInstalledPath");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibInstalledPath");
             pLibInstalledPath = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
@@ -1904,7 +1906,7 @@ extern "C" {
         }
 #endif
         if ((OBJ_NIL == pLibNamePrefix) && genBase_getDict((GENBASE_DATA *)this)) {
-            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), "LibNamePrefix");
+            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibNamePrefix");
             pLibNamePrefix = AStr_getData(node_getData(pNode));
         }
         TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
@@ -2012,13 +2014,16 @@ extern "C" {
                 break;
             case GENMAKE_TYPE_PGM:
                 AStr_AppendA(pStr, ".PHONY: link\n");
-                pWrk = AStr_NewA("link: $$(OBJS) src/${" mainID "}\n");
+                //pWrk = AStr_NewA("link: $$(OBJS) src/${" mainID "}\n");
+                AStr_AppendA(pStr, "link: $$(OBJS)\n");
+#ifdef XYZZY
                 if (pWrk) {
                     eRc = genBase_DictExpand((GENBASE_DATA *)this, pWrk);
                     AStr_AppendPrint(pStr, AStr_getData(pWrk));
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
+#endif
                 AStr_AppendPrint(
                                  pStr,
                                  "\tCC -o $(OBJDIR)/$(PGMNAM) "
@@ -2128,14 +2133,16 @@ extern "C" {
             ASTR_DATA       *pNamePrefixUpper = OBJ_NIL;
             pNode = nodeHash_FindA(
                                    genBase_getDict((GENBASE_DATA *)this),
+                                   0,
                                    libBaseID
-                                   );
+                    );
             if (pNode) {
                 pLibBase = AStr_getData(node_getData(pNode));
                 AStr_AppendPrint(pOut, "LIB_BASE = %s\n", pLibBase);
             }
             pNode = nodeHash_FindA(
                             genBase_getDict((GENBASE_DATA *)this),
+                            0,
                             namePrefixID
                     );
             pNamePrefix = node_getData(pNode);

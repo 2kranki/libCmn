@@ -115,6 +115,21 @@ extern "C" {
     );
     
     
+    /*!
+     Validate the input character buffer to insure that it is hexadecimal
+     data.
+     @param     cLen        (input) length of hexadecimal character data
+     @param     pInput      (input) point to hexadecimal character data
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         hex_IsHex(
+        uint32_t        cLen,
+        const
+        char            *pInput
+    );
+    
+    
     uint8_t *        hex_DataFromJSONString(
         ASTR_DATA       *pString,
         uint32_t        *pLength
@@ -166,7 +181,8 @@ extern "C" {
     
     
     /*!
-     Try to convert the hexadecimal character string to binary data.
+     Try to convert the hexadecimal character string to binary data.  This
+     assumes that there will be 2 hexadecimal characters per byte of data.
      @return:
         If successful, ERESULT_SUCCESS and a pValue which contains the
         data.  Otherwise, an ERESULT_* error code.
@@ -240,10 +256,10 @@ extern "C" {
      */
     uint32_t        hex_put16Bytes_32(
         HEX_DATA		*this,
-        uint32_t        offset,
-        uint32_t        cData,
+        uint32_t        offset,             // Offset to be displayed
+        uint32_t        cData,              // Length of input data
         const
-        uint8_t         *pData,
+        uint8_t         *pData,             // Input data pointer
         uint32_t        *pLen,              // Remaining length of buffer
         //                                  // (Decremented if char added)
         char            **ppBuffer          // Ascii representation of digit stored

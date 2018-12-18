@@ -176,6 +176,19 @@ extern "C" {
     
     
     /*!
+     Verify that a NUL-terminated string is valid decimal characters
+     with an optional leading sign of '-' or '+'.
+     @param     pStr    NUL-terminated string pointer
+     @return    If string contains only decimal characters, ERESULT_SUCCESS,
+                otherwise, an ERESULT_* Error Code.
+     */
+    ERESULT         dec_IsDec(
+        const
+        char            *pStr
+    );
+    
+    
+    /*!
      If successful, buffer will contain ascii representation of number
      with leading zeros and trailing NUL char. First byte will be '-'
      for negative value or ' '.
@@ -330,26 +343,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     dec_Disable(
-        DEC_DATA		*this
-    );
-
-
-    ERESULT     dec_Enable(
-        DEC_DATA		*this
-    );
-
-   
     DEC_DATA *   dec_Init(
         DEC_DATA     *this
     );
 
 
-    ERESULT     dec_IsEnabled(
-        DEC_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -1364,7 +1364,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
-        pNode = nodeHash_FindA(pPrimaryHash, "name");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "name");
         if (NULL == pNode) {
         }
         else {
@@ -1372,7 +1372,7 @@ extern "C" {
             pName = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pName, OBJ_IDENT_ASTR)));
         }
-        pNode = nodeHash_FindA(pPrimaryHash, "lib_deps");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "lib_deps");
         if (NULL == pNode) {
         }
         else {
@@ -1380,7 +1380,7 @@ extern "C" {
             pLibDeps = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pLibDeps, OBJ_IDENT_NODEARRAY)));
         }
-        pNode = nodeHash_FindA(pPrimaryHash, "objects");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "objects");
         if (NULL == pNode) {
         }
         else {
@@ -1388,7 +1388,7 @@ extern "C" {
             pObjects = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pObjects, OBJ_IDENT_NODEHASH)));
         }
-        pNode = nodeHash_FindA(pPrimaryHash, "routines");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "routines");
         if (NULL == pNode) {
         }
         else {
@@ -1396,7 +1396,7 @@ extern "C" {
             pRoutines = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pRoutines, OBJ_IDENT_NODEARRAY)));
         }
-        pNode = nodeHash_FindA(pPrimaryHash, "programs");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "programs");
         if (NULL == pNode) {
         }
         else {
@@ -1404,7 +1404,7 @@ extern "C" {
             pPrograms = node_getData(pNode);
             BREAK_FALSE((obj_IsKindOf(pPrograms, OBJ_IDENT_NODEARRAY)));
         }
-        pNode = nodeHash_FindA(pPrimaryHash, "tests");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "tests");
         if (NULL == pNode) {
         }
         else {
@@ -1413,7 +1413,7 @@ extern "C" {
             BREAK_FALSE((obj_IsKindOf(pTests, OBJ_IDENT_NODEHASH)));
         }
 #ifdef XYZZZY
-        pNode = nodeHash_FindA(pPrimaryHash, "win32");
+        pNode = nodeHash_FindA(pPrimaryHash, 0, "win32");
         if (NULL == pNode) {
         }
         else {

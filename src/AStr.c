@@ -2254,6 +2254,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     I s  N u m e r i c
+    //---------------------------------------------------------------
+    
+    ERESULT         AStr_IsNumeric(
+        ASTR_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_PARSE_ERROR;
+        W32CHR_T        *pData;
+        uint32_t        lenStr;
+        uint32_t        curIndex = 1;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_DATA;
+        }
+#endif
+        lenStr = AStr_getLength(this);
+        pData = array_Ptr(this->pData, curIndex);
+        if (pData) {
+            if (lenStr > 2) {
+                if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'X'))) {
+                    eRc = hex_IsHex((lenStr - 2), (const char *)(pData + 2));
+                }
+                else {
+                    eRc = dec_IsDec((const char *)pData);
+                }
+            }
+            else {
+                eRc = dec_IsDec((const char *)pData);
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     I s  O n l y  A S C I I
     //---------------------------------------------------------------
     
@@ -2864,7 +2907,7 @@ extern "C" {
 #endif
 
         pData  = array_Ptr(this->pData, 1);
-        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'x'))) {
+        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'X'))) {
             num = hex_getInt64A(pData);
         }
         else {
@@ -2898,7 +2941,7 @@ extern "C" {
 #endif
         
         pData  = array_Ptr(this->pData, 1);
-        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'x'))) {
+        if ((*pData == '0') && ((*(pData+1) == 'x') || (*(pData+1) == 'X'))) {
             num = (uint64_t)hex_getInt64A(pData);
         }
         else {

@@ -1139,11 +1139,11 @@ extern "C" {
                     obj_Release(pDebug);
                 }
 #endif
-                pHashNode = nodeHash_FindA(pHash, srcDepsID);
+                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
                 if (pHashNode) {
                     pDepsObj = jsonIn_CheckNodeDataForArray(pHashNode);
                 }
-                pHashNode = nodeHash_FindA(pHash, "json");
+                pHashNode = nodeHash_FindA(pHash, 0, "json");
                 if (pHashNode) {
                     pData = node_getData(pHashNode);
                     if (pData) {
@@ -1167,11 +1167,11 @@ extern "C" {
                                 NODE_DATA           *pHashNode;
                                 pHash = pData;
                                 fJson = true;
-                                pHashNode = nodeHash_FindA(pHash, srcDepsID);
+                                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
                                 if (pHashNode) {
                                     pDepsJson = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
-                                pHashNode = nodeHash_FindA(pHash, "srcs");
+                                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
                                 if (pHashNode) {
                                     pSrcsJson = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
@@ -1179,11 +1179,11 @@ extern "C" {
                         }
                     }
                 }
-                pHashNode = nodeHash_FindA(pHash, "srcs");
+                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
                 if (pHashNode) {
                     pSrcsObj = jsonIn_CheckNodeDataForArray(pHashNode);
                 }
-                pHashNode = nodeHash_FindA(pHash, "test");
+                pHashNode = nodeHash_FindA(pHash, 0, "test");
                 if (pHashNode) {
                     pData = node_getData(pHashNode);
                     if (pData) {
@@ -1207,11 +1207,11 @@ extern "C" {
                                 NODE_DATA           *pHashNode;
                                 pHash = pData;
                                 fTest = true;
-                                pHashNode = nodeHash_FindA(pHash, srcDepsID);
+                                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
                                 if (pHashNode) {
                                     pDepsTest = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
-                                pHashNode = nodeHash_FindA(pHash, "srcs");
+                                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
                                 if (pHashNode) {
                                     pSrcsTest = jsonIn_CheckNodeDataForArray(pHashNode);
                                 }
@@ -1513,7 +1513,7 @@ extern "C" {
             else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                 NODE_DATA           *pHashNode;
                 pHash = pData;
-                pHashNode = nodeHash_FindA(pHash, srcDepsID);
+                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
                 if (pHashNode) {
                     pData = node_getData(pHashNode);    // Get "array" node.
                     pData = node_getData(pData);        // Get NodeArray.
@@ -1521,7 +1521,7 @@ extern "C" {
                         pDepsObj = pData;
                     }
                 }
-                pHashNode = nodeHash_FindA(pHash, "srcs");
+                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
                 if (pHashNode) {
                     pData = node_getData(pHashNode);    // Get "array" node.
                     pData = node_getData(pData);        // Get NodeArray.
@@ -1529,7 +1529,7 @@ extern "C" {
                         pSrcsObj = pData;
                     }
                 }
-                pHashNode = nodeHash_FindA(pHash, "test");
+                pHashNode = nodeHash_FindA(pHash, 0, "test");
                 if (pHashNode) {
                     pData = node_getData(pHashNode);
                     if (pData) {
@@ -1553,7 +1553,7 @@ extern "C" {
                                 NODE_DATA           *pHashNode;
                                 pHash = pData;
                                 fTest = true;
-                                pHashNode = nodeHash_FindA(pHash, "deps");
+                                pHashNode = nodeHash_FindA(pHash, 0, "deps");
                                 if (pHashNode) {
                                     pData = node_getData(pHashNode);    // Get "array" node.
                                     pData = node_getData(pData);        // Get NodeArray.
@@ -1561,7 +1561,7 @@ extern "C" {
                                         pDepsTest = pData;
                                     }
                                 }
-                                pHashNode = nodeHash_FindA(pHash, "srcs");
+                                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
                                 if (pHashNode) {
                                     pData = node_getData(pHashNode);    // Get "array" node.
                                     pData = node_getData(pData);        // Get NodeArray.
@@ -1754,7 +1754,7 @@ extern "C" {
             else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
                 NODE_DATA           *pHashNode;
                 pHash = pData;
-                pHashNode = nodeHash_FindA(pHash, srcDepsID);
+                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
                 if (pHashNode) {
                     pData = node_getData(pHashNode);    // Get "array" node.
                     pData = node_getData(pData);        // Get NodeArray.
@@ -1762,7 +1762,7 @@ extern "C" {
                         pDepsObj = pData;
                     }
                 }
-                pHashNode = nodeHash_FindA(pHash, "srcs");
+                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
                 if (pHashNode) {
                     pData = node_getData(pHashNode);    // Get "array" node.
                     pData = node_getData(pData);        // Get NodeArray.

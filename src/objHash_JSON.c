@@ -456,7 +456,8 @@ extern "C" {
             OBJHASH_RECORD      *pRecord = (OBJHASH_RECORD *)pEntry->data;
             RBT_NODE            *pNode = &pRecord->node;
             
-            pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+            //FIXME: pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+#ifdef XYZZY
             if (pQueryInfo) {
                 pToJSON = (*pQueryInfo)(
                                         pNode->pData,
@@ -472,6 +473,7 @@ extern "C" {
                 fRc = false;
                 break;
             }
+#endif
 
             pEntry = listdl_Next(pList, pEntry);
         }

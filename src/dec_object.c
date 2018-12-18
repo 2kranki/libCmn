@@ -361,6 +361,39 @@ void            dec_Int32ToChr(
 
 
 
+ERESULT         dec_IsDec(
+    const
+    char            *pStr
+)
+{
+    
+    // Do initialization.
+    if( NULL == pStr ) {
+        return ERESULT_PARSE_ERROR;
+    }
+    
+    // Get the sign if present.
+    if( *pStr == '-' ) {
+        ++pStr;
+    }
+    else if( *pStr == '+' ) {
+        ++pStr;
+    }
+    
+    while (*pStr) {
+        if ((*pStr >= '0') && (*pStr <= '9')) {
+            ++pStr;
+        }
+        else
+            return ERESULT_PARSE_ERROR;
+    }
+    
+    // Return to caller.
+    return ERESULT_SUCCESS;
+}
+
+
+
 //----------------------------------------------------------------
 //						dec_putInt64
 //----------------------------------------------------------------

@@ -340,6 +340,52 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     I s  H e x  D a t a
+    //---------------------------------------------------------------
+    
+    /*!
+     Validate the input character buffer to insure that it is hexadecimal
+     data.
+     @param     cLen        (input) length of hexadecimal character data
+     @param     pInput      (input) point to hexadecimal character data
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         hex_IsHex(
+        uint32_t        cLen,
+        const
+        char            *pInput
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i = 0;
+        int             high;
+        const
+        char            *pChr;
+        
+        // Do initialization.
+        if( (cLen == 0) || (cLen & 1) ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if( NULL == pInput )
+            return ERESULT_INVALID_PARAMETER;
+        
+        pChr = pInput;
+        for( i=0; i<(cLen / 2); ++i) {
+            high = hex_DigitToIntA(*pChr++);
+            if( -1 == high ) {
+                eRc = ERESULT_PARSE_ERROR;
+                break;
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     S c a n  H e x
     //---------------------------------------------------------------
 

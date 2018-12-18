@@ -109,11 +109,14 @@ extern "C" {
     } APPL_VTBL;
 
     
+    
+#ifdef XYZZY
     typedef enum appl_arg_class_e {
         APPL_ARG_UNKNOWN=0,
         APPL_ARG_PROGRAM,           //
         APPL_ARG_GROUP,             // Execute given routine
     } APPL_ARG_CLASS;
+
     
     typedef enum appl_arg_type_e {
         //APPL_ARG_UNKNOWN=0,       // Defined above
@@ -129,6 +132,7 @@ extern "C" {
         APPL_ARG_PATH,              // Path object parameter
         APPL_ARG_STRING,            // AStr object parameter
     } APPL_ARG_TYPE;
+
     
     typedef struct appl_clo_s    {
         W32CHR_T        argChr;             // UTF-8 Argument Character (optional)
@@ -147,6 +151,9 @@ extern "C" {
         const
         char            *pDesc;             // Argument Description
     } APPL_CLO;
+#endif
+
+    
     
 
 
