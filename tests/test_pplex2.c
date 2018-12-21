@@ -124,9 +124,7 @@ int         test_pplex2_Input01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_Alloc();
-        XCTAssertFalse( (OBJ_NIL == pSrc) );
-        pSrc = srcFile_InitAStr(pSrc, pBuf, pPath, 1, 4, true, true);
+        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -329,9 +327,7 @@ int         test_pplex2_Input02(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_Alloc();
-        XCTAssertFalse( (OBJ_NIL == pSrc) );
-        pSrc = srcFile_InitAStr( pSrc, pBuf, pPath, 1, 4, true, true );
+        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -392,7 +388,7 @@ int         test_pplex2_Input02(
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 XCTAssertTrue( (PPLEX_CONSTANT_TEXT == token_getClass(pToken)) );
                 pWrkA = token_ToDataString(pToken);
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrkA, "\n a += b + c;\n\n")) );
+                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrkA, "\n    a += b + c;\n\n")) );
                 obj_Release(pWrkA);
                 pWrkA = OBJ_NIL;
                 pToken = lex_TokenAdvance(pLex, 1);
@@ -441,9 +437,7 @@ int         test_pplex2_Input03(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_Alloc();
-        XCTAssertFalse( (OBJ_NIL == pSrc) );
-        pSrc = srcFile_InitAStr( pSrc, pBuf, pPath, 1, 4, true, true );
+        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             

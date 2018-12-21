@@ -14,8 +14,4 @@
         "genWIN":{"srcDeps":["genMake.h"], "test":null},
         "main":{"srcDeps":["genMake.h"], "test":null},
     },
-    "macosx": {
-    },
-    "win32": {
-    },
 }

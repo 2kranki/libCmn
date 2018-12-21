@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   srcFile.c
- *	Generated 06/17/2015 11:21:15
+ *	Generated 12/18/2018 10:08:34
  *
  */
 
@@ -41,14 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <srcFile_internal.h>
-#include    <token_internal.h>
-#include    <ascii.h>
-#include    <szTbl.h>
-#include    <trace.h>
-#include    <utf8.h>
-#include    <stdio.h>
-#include    <wchar.h>
+#include        <srcFile_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -65,166 +62,8 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    W32CHR_T        srcFile_UnicodeGetc(
-        SRCFILE_DATA    *this
-    );
-    
-    
-    static
-    ERESULT         srcFile_FileGetc(
-        SRCFILE_DATA    *this,
-        W32CHR_T        *pChar
-    )
-    {
-        W32CHR_T        chr;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        chr = fgetwc(this->pFile);
-        if( chr == ASCII_CPM_EOF ) {
-            while ((chr = fgetwc(this->pFile)) != EOF) {
-            }
-        }
-        *pChar = chr;
-        
-        return ERESULT_SUCCESS;
-    }
 
-    
-    
-    static
-    ERESULT         srcFile_u8ArrayGetc(
-        SRCFILE_DATA    *this,
-        W32CHR_T        *pChar
-    )
-    {
-        char            chrs[8];
-        W32CHR_T        chr = -1;
-        uint32_t        len;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        chrs[0] = 0;
-        ++this->loc.offset;
-        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->loc.offset);
-        if (0 == chrs[0]) {
-            *pChar = EOF;
-            return ERESULT_EOF_ERROR;
-        }
-        if (chrs[0] > 0x7F) {
-            len = utf8_ChrLen(chrs[0]);
-            --len;
-            chr = 1;
-            while (len--) {
-                ++this->loc.offset;
-                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->loc.offset);
-                if (0 == chrs[0]) {
-                    *pChar = EOF;
-                    return ERESULT_EOF_ERROR;
-                }
-            }
-            len = utf8_Utf8ToW32(chrs, &chr);
-        }
-        if( chr == ASCII_CPM_EOF ) {
-            this->loc.offset = u8Array_getSize(this->pU8Array);
-            chr = EOF;
-        }
-        *pChar = chr;
-        
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    static
-    W32CHR_T        srcFile_UnicodeGetc(
-        SRCFILE_DATA    *this
-    )
-    {
-        ERESULT         eRc;
-        W32CHR_T        chr = EOF;
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        switch (this->type) {
-                
-            case OBJ_IDENT_FILE:
-                eRc = srcFile_FileGetc(this, &chr);
-                if (ERESULT_HAS_FAILED(eRc) || (chr == EOF) || feof(this->pFile)) {
-                    chr = EOF;
-                }
-                break;
-                
-            case OBJ_IDENT_FBSI:
-                eRc = fbsi_Getwc(this->pFbsi, &chr );
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    chr = EOF;
-                }
-                if( chr == ASCII_CPM_EOF ) {
-                    while ((chr != EOF) && ERESULT_IS_SUCCESSFUL(eRc)) {
-                        eRc = fbsi_Getwc(this->pFbsi, &chr );
-                    }
-                    chr = EOF;
-                }
-                break;
-                
-            case OBJ_IDENT_ASTR:
-                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->loc.offset++ );
-                if( chr == ASCII_CPM_EOF ) {
-                    this->loc.offset = AStr_getLength(this->pAStr);
-                    chr = EOF;
-                }
-                break;
-                
-            case OBJ_IDENT_U8ARRAY:
-                eRc = srcFile_u8ArrayGetc(this, &chr);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    chr = EOF;
-                }
-                break;
-                
-            case OBJ_IDENT_W32STR:
-                chr = W32Str_CharGetW32(this->pW32Str, (uint32_t)this->loc.offset++ );
-                if( chr == ASCII_CPM_EOF ) {
-                    this->loc.offset = W32Str_getLength(this->pW32Str);
-                    chr = EOF;
-                }
-                break;
-                
-            default:
-                chr = EOF;
-                break;
-        }
-        
-        return chr;
-    }
-    
-    
-    
-    
-    
+
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -235,7 +74,8 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SRCFILE_DATA *     srcFile_Alloc(
+    SRCFILE_DATA *  srcFile_Alloc (
+        void
     )
     {
         SRCFILE_DATA    *this;
@@ -243,68 +83,122 @@ extern "C" {
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
-        return( this );
+        return this;
     }
 
+
+
+    SRCFILE_DATA *  srcFile_New (
+        void
+    )
+    {
+        SRCFILE_DATA       *this;
+        
+        this = srcFile_Alloc( );
+        if (this) {
+            this = srcFile_Init(this);
+        } 
+        return this;
+    }
 
 
     SRCFILE_DATA *  srcFile_NewFromAStr(
         ASTR_DATA       *pStr,        // Buffer of file data
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
         SRCFILE_DATA    *this = OBJ_NIL;
+        ERESULT         eRc;
+        TOKEN_DATA      *pToken;
         
-        this = srcFile_Alloc( );
+        this = srcFile_New( );
         if (this) {
-            this = srcFile_InitAStr(this, pStr, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs);
+            eRc = textIn_SetupAStr((TEXTIN_DATA *)this, pStr, pFilePath, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            
+            obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
+            pToken = token_Init(&this->curchr);
+            if (OBJ_NIL == pToken) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            srcFile_InputAdvance(this, this->sizeInputs);
         }
         
         return this;
     }
-        
     
-
+    
     SRCFILE_DATA *  srcFile_NewFromFile(
         FILE            *pFile,
         uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
+        ERESULT         eRc;
         SRCFILE_DATA    *this = OBJ_NIL;
-        
-        this = srcFile_Alloc( );
+        TOKEN_DATA      *pToken;
+
+        this = srcFile_New( );
         if (this) {
-            this = srcFile_InitFile(this, pFile, fileIndex, tabSize, fExpandTabs, fRemoveNLs);
+            eRc = textIn_SetupFile((TEXTIN_DATA *)this, OBJ_NIL, fileIndex, pFile, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            
+            obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
+            pToken = token_Init(&this->curchr);
+            if (OBJ_NIL == pToken) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            srcFile_InputAdvance(this, this->sizeInputs);
         }
         
         return this;
     }
-    
     
     
     SRCFILE_DATA *  srcFile_NewFromPath(
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
+        ERESULT         eRc;
         SRCFILE_DATA    *this = OBJ_NIL;
-        
-        this = srcFile_Alloc( );
+        TOKEN_DATA      *pToken;
+
+        this = srcFile_New( );
         if (this) {
-            this = srcFile_InitPath(this, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs);
+            eRc = textIn_SetupPath((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            
+            obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
+            pToken = token_Init(&this->curchr);
+            if (OBJ_NIL == pToken) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            srcFile_InputAdvance(this, this->sizeInputs);
         }
         
         return this;
@@ -312,14 +206,62 @@ extern "C" {
     
     
     
+
     
-    
-    
+
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
-    bool            srcFile_getBackTrack(
+    //---------------------------------------------------------------
+    //                    F i l e  I n d e x
+    //---------------------------------------------------------------
+    
+    uint16_t        srcFile_getFileIndex (
+        SRCFILE_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return textIn_getFileIndex((TEXTIN_DATA *)this);
+    }
+    
+    
+    bool            srcFile_setFileIndex (
+        SRCFILE_DATA    *this,
+        uint16_t        value
+    )
+    {
+        bool            fRc;
+        
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = textIn_setFileIndex((TEXTIN_DATA *)this, value);
+        
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         P a t h
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     srcFile_getPath (
         SRCFILE_DATA    *this
     )
     {
@@ -327,117 +269,86 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) )
-            return false;
-#endif
-        
-        // Return to caller.
-        return this->fBackTrack;
-    }
-    
-    
-    bool            srcFile_setBackTrack(
-        SRCFILE_DATA    *this,
-        bool            fValue
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate( this ) )
-            return false;
-#endif
-        
-        if (fValue) {
-            this->fBackTrack = true;
-        }
-        else {
-            this->fBackTrack = false;
-        }
-        
-        // Return to caller.
-        return true;
-    }
-    
-    
-    
-    bool            srcFile_getExpandTabs(
-        SRCFILE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
         
-        return (this->flags & FLG_TAB) ? true : false;
+        return textIn_getPath((TEXTIN_DATA *)this);
     }
     
     
-    bool            srcFile_setExpandTabs(
+    bool            srcFile_setPath (
         SRCFILE_DATA    *this,
-        bool            value
+        PATH_DATA       *pValue
     )
     {
+        bool            fRc;
+
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (value) {
-            this->flags |= FLG_TAB;
-        }
-        else {
-            this->flags &= ~FLG_TAB;
-        }
+        fRc = textIn_setPath((TEXTIN_DATA *)this, pValue);
         
-        return true;
+        return fRc;
     }
     
     
     
-    uint16_t        srcFile_getFileIndex(
-        SRCFILE_DATA    *this
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        srcFile_getPriority (
+        SRCFILE_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
-        
-        return this->loc.fileIndex;
+
+        //return this->priority;
+        return 0;
     }
-    
-    bool            srcFile_setFileIndex(
-        SRCFILE_DATA    *this,
+
+
+    bool            srcFile_setPriority (
+        SRCFILE_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        this->loc.fileIndex = value;
+
+        //this->priority = value;
+
         return true;
     }
+
+
+
+    //---------------------------------------------------------------
+    //                  R e m o v e  N L s
+    //---------------------------------------------------------------
     
-    
-    
-    bool            srcFile_getStripCR(
+    bool            srcFile_getRemoveNLs (
         SRCFILE_DATA    *this
     )
     {
@@ -445,71 +356,128 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) )
-            return false;
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
 #endif
         
-        // Return to caller.
-        return this->fStripCR;
+        return textIn_getRemoveNLs((TEXTIN_DATA *)this);
     }
     
-
-    bool            srcFile_setStripCR(
+    
+    bool            srcFile_setRemoveNLs (
         SRCFILE_DATA    *this,
         bool            fValue
     )
     {
+        bool            fRc;
         
-        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) )
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
             return false;
+        }
 #endif
         
-        this->fStripCR = fValue;
+        fRc = textIn_setRemoveNLs((TEXTIN_DATA *)this, fValue);
         
-        // Return to caller.
-        return true;
+        return fRc;
     }
     
     
     
-    uint16_t        srcFile_getTabSize(
-        SRCFILE_DATA    *this
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        srcFile_getSize (
+        SRCFILE_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  srcFile_getSuperVtbl (
+        SRCFILE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
 
-        return this->tabSize;
+        
+        return this->pSuperVtbl;
     }
+    
+  
 
-    bool            srcFile_setTabSize(
+    //---------------------------------------------------------------
+    //                      T a b  S i z e
+    //---------------------------------------------------------------
+    
+    uint16_t        srcFile_getTabSize (
+        SRCFILE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return textIn_getTabSize((TEXTIN_DATA *)this);
+    }
+    
+    
+    bool            srcFile_setTabSize (
         SRCFILE_DATA    *this,
         uint16_t        value
     )
     {
+        bool            fRc;
+        
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
+            return false;
         }
 #endif
-        this->tabSize = value;
-        return true;
+        
+        fRc = textIn_setTabSize((TEXTIN_DATA *)this, value);
+        
+        return fRc;
     }
-
-
-
-
     
+    
+    
+
 
     //===============================================================
     //                          M e t h o d s
@@ -517,14 +485,193 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       A s s i g n
+    //---------------------------------------------------------------
+    
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before 
+     a copy of the object is performed.
+     Example:
+     @code 
+        ERESULT eRc = srcFile_Assign(this,pOther);
+     @endcode 
+     @param     this    SRCFILE object pointer
+     @param     pOther  a pointer to another SRCFILE object
+     @return    If successful, ERESULT_SUCCESS otherwise an 
+                ERESULT_* error 
+     */
+    ERESULT         srcFile_Assign (
+        SRCFILE_DATA		*this,
+        SRCFILE_DATA     *pOther
+    )
+    {
+        ERESULT     eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!srcFile_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Release objects and areas in other object.
+#ifdef  XYZZY
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
+        }
+#endif
+
+        // Create a copy of objects and areas in this object placing
+        // them in other.
+#ifdef  XYZZY
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+            }
+            else {
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
+            }
+        }
+#endif
+
+        // Copy other data from this object to other.
+        
+        //goto eom;
+
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    eom:
+        //FIXME: Implement the assignment.        
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         srcFile_Compare (
+        SRCFILE_DATA     *this,
+        SRCFILE_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!srcFile_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+    
+    //---------------------------------------------------------------
+    //                          C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        srcFile      *pCopy = srcFile_Copy(this);
+     @endcode 
+     @param     this    SRCFILE object pointer
+     @return    If successful, a SRCFILE object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    SRCFILE_DATA *     srcFile_Copy (
+        SRCFILE_DATA       *this
+    )
+    {
+        SRCFILE_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = srcFile_New( );
+        if (pOther) {
+            eRc = srcFile_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        //obj_Release(pOther);
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            srcFile_Dealloc(
+    void            srcFile_Dealloc (
         OBJ_ID          objId
     )
     {
-        SRCFILE_DATA    *this = objId;
+        SRCFILE_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -532,48 +679,18 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate(this) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if ((this->type == OBJ_IDENT_ASTR) && (this->pAStr)) {
-            obj_Release(this->pAStr);
-            this->pAStr = OBJ_NIL;
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((SRCFILE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
-        
-        if ((this->type == OBJ_IDENT_FBSI) && (this->pFbsi)) {
-            obj_Release(this->pFbsi);
-            this->pFbsi = OBJ_NIL;
-        }
-        
-        if ((this->type == OBJ_IDENT_FILE) && (this->pFile)
-            && !(this->flags & FLG_FILE)) {
-            fclose(this->pFile);
-            this->pFile = NULL;
-        }
-        
-        if ((this->type == OBJ_IDENT_U8ARRAY) && (this->pU8Array)) {
-            obj_Release(this->pU8Array);
-            this->pU8Array = OBJ_NIL;
-        }
-        
-        if ((this->type == OBJ_IDENT_W32STR) && (this->pW32Str)) {
-            obj_Release(this->pW32Str);
-            this->pW32Str = OBJ_NIL;
-        }
-        
-        if (this->pPath) {
-            obj_Release(this->pPath);
-            this->pPath = OBJ_NIL;
-        }
-        
-        if (this->pTokens) {
-            obj_Release(this->pTokens);
-            this->pTokens = OBJ_NIL;
-        }
-        
+#endif
+
         if (this->pInputs) {
             mem_Free(this->pInputs);
             this->pInputs = OBJ_NIL;
@@ -582,10 +699,68 @@ extern "C" {
         }
         
         obj_setVtbl(this, this->pSuperVtbl);
-        obj_Dealloc( this );
-        this = NULL;
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      D i s a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         srcFile_Disable (
+        SRCFILE_DATA		*this
+    )
+    {
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        // Put code here...
+
+        obj_Disable(this);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          E n a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         srcFile_Enable (
+        SRCFILE_DATA		*this
+    )
+    {
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        obj_Enable(this);
+
+        // Put code here...
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
 
 
@@ -594,54 +769,37 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SRCFILE_DATA *  srcFile_Init(
-        SRCFILE_DATA    *this,
-        PATH_DATA       *pPath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+    SRCFILE_DATA *  srcFile_Init (
+        SRCFILE_DATA    *this
     )
     {
-        TOKEN_DATA      *pToken;
-        //ERESULT         eRc;
+        uint32_t        cbSize = sizeof(SRCFILE_DATA);
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        this = obj_Init(this, obj_getSize(this), OBJ_IDENT_SRCFILE);
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFile_Vtbl);
-
-        this->loc.fileIndex = fileIndex;
-        obj_setSize( &this->curchr, sizeof(TOKEN_DATA) );
-        pToken = token_Init(&this->curchr);
-        if (OBJ_NIL == pToken) {
+        /* cbSize can be zero if Alloc() was not called and we are
+         * are passed the address of a zero'd area.
+         */
+        //cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
+        if (cbSize == 0) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 
-        if( fRemoveNLs )
-            this->flags |= FLG_NNL;
-        if( fExpandTabs )
-            this->flags |= FLG_TAB;
-        this->flags  |= FLG_EOF;
-        if (pPath) {
-            this->pPath  = path_Copy(pPath);
-            this->pFileName = szTbl_StringToString(
-                                            szTbl_Shared(),
-                                            path_getData(this->pPath)
-                              );
+        this = (OBJ_ID)textIn_Init((TEXTIN_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SRCFILE);
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
         }
-        this->loc.lineNo  = 1;
-        this->loc.colNo   = 0;
-        this->tabSize = tabSize;
+        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCFILE);      // Needed for Inheritance
+        this->pSuperVtbl = obj_getVtbl(this);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFile_Vtbl);
         
         this->sizeInputs = 4;
         this->pInputs = mem_Calloc(this->sizeInputs, sizeof(TOKEN_DATA));
@@ -653,12 +811,14 @@ extern "C" {
         
     #ifdef NDEBUG
     #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->loc.lineNo);
+#ifdef __APPLE__
+        //fprintf(stderr, "srcFile::sizeof(SRCFILE_DATA) = %lu\n", sizeof(SRCFILE_DATA));
+#endif
         BREAK_NOT_BOUNDARY4(sizeof(SRCFILE_DATA));
     #endif
 
@@ -666,241 +826,19 @@ extern "C" {
     }
 
      
-
-    SRCFILE_DATA *  srcFile_InitAStr(
-        SRCFILE_DATA    *this,
-        ASTR_DATA       *pStr,        // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pStr) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        obj_Retain(pStr);
-        
-        this = srcFile_Init( this, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == this) {
-            //obj_Release(this);
-            obj_Release(pStr);
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = OBJ_IDENT_ASTR;
-        this->pAStr = pStr;
-        this->flags &= ~FLG_EOF;
-        this->flags |= FLG_OPN;
-        this->loc.offset = 1;
-        
-        srcFile_InputAdvance(this, this->sizeInputs);
-        
-        return this;
-    }
-    
-    
-    
-    SRCFILE_DATA *  srcFile_InitFile(
-        SRCFILE_DATA    *this,
-        FILE            *pFile,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pFile) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this = srcFile_Init( this, OBJ_NIL, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = OBJ_IDENT_FILE;
-        this->pFile = pFile;
-        this->flags &= ~FLG_EOF;
-        this->flags |= FLG_OPN;
-        this->flags |= FLG_FILE;
-        
-        srcFile_InputAdvance(this, this->sizeInputs);
-        
-        return this;
-    }
-    
-    
-    
-    SRCFILE_DATA *  srcFile_InitPath(
-        SRCFILE_DATA    *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        char            *pszFileName;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pFilePath) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this = srcFile_Init( this, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = OBJ_IDENT_FILE;
-        pszFileName = path_CStringA(pFilePath);
-        if (pszFileName) {
-            this->pFile = fopen( pszFileName, "r" );
-            if (NULL == this->pFile) {
-                fprintf(    stderr,
-                        "Fatal Error - Could not open Input File - %s.\n",
-                        pszFileName
-                        );
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-            this->flags &= ~FLG_EOF;
-            this->flags |= FLG_OPN;
-            mem_Free(pszFileName);
-            pszFileName = NULL;
-        }
-        else {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        srcFile_InputAdvance(this, this->sizeInputs);
-        
-        return this;
-    }
-    
-    
-    
-    SRCFILE_DATA *  srcFile_InitU8Array(
-        SRCFILE_DATA    *cbp,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        
-        if (OBJ_NIL == cbp) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pBuffer) {
-            DEBUG_BREAK();
-            obj_Release(cbp);
-            return OBJ_NIL;
-        }
-        obj_Retain(pBuffer);
-        
-        cbp = srcFile_Init( cbp, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
-            obj_Release(pBuffer);
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        cbp->type = OBJ_IDENT_U8ARRAY;
-        cbp->pU8Array = pBuffer;
-        cbp->flags &= ~FLG_EOF;
-        cbp->flags |= FLG_OPN;
-        
-        srcFile_InputAdvance(cbp, cbp->sizeInputs);
-        
-        return cbp;
-    }
-    
-    
-    
-    SRCFILE_DATA *  srcFile_InitW32Str(
-        SRCFILE_DATA    *cbp,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        
-        if (OBJ_NIL == cbp) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pWStr) {
-            DEBUG_BREAK();
-            obj_Release(cbp);
-            return OBJ_NIL;
-        }
-        obj_Retain(pWStr);
-        
-        cbp = srcFile_Init( cbp, pFilePath, fileIndex, tabSize, fExpandTabs, fRemoveNLs );
-        if (OBJ_NIL == cbp) {
-            obj_Release(cbp);
-            obj_Release(pWStr);
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        cbp->type = OBJ_IDENT_W32STR;
-        cbp->pW32Str = pWStr;
-        cbp->flags &= ~FLG_EOF;
-        cbp->flags |= FLG_OPN;
-        cbp->loc.offset = 1;
-        
-        srcFile_InputAdvance(cbp, cbp->sizeInputs);
-        
-        return cbp;
-    }
-    
-    
     
     //--------------------------------------------------------------
     //                  I n p u t  A d v a n c e
     //--------------------------------------------------------------
     
-    TOKEN_DATA *    srcFile_InputAdvance(
+    TOKEN_DATA *    srcFile_InputAdvance (
         SRCFILE_DATA    *this,
         uint16_t        numChrs
     )
     {
         uint32_t        i;
-        TOKEN_DATA      *pToken;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -913,7 +851,7 @@ extern "C" {
         
         // Shift inputs.
         for (i=0; i<numChrs; ++i) {
-            srcFile_InputNextChar(this);
+            eRc = srcFile_InputNextChar(this);
         }
         
         pToken = &this->pInputs[this->curInputs];
@@ -928,18 +866,22 @@ extern "C" {
     //               I n p u t  L o o k  A h e a d
     //--------------------------------------------------------------
     
-    TOKEN_DATA *    srcFile_InputLookAhead(
+    TOKEN_DATA *    srcFile_InputLookAhead (
         SRCFILE_DATA    *this,
         uint16_t        num
     )
     {
         uint16_t        idx;
-        TOKEN_DATA      *pToken;
+        TOKEN_DATA      *pToken = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcFile_Validate( this ) ) {
+        if (!srcFile_Validate( this )) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (num > this->sizeInputs) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -963,10 +905,12 @@ extern "C" {
         SRCFILE_DATA        *this
     )
     {
-        int32_t             chr;
+        ERESULT             eRc;
         TOKEN_DATA          *pToken;
+        TEXTIN_CHRLOC       chrLoc;
+        W32CHR_T            chr;
         int32_t             cls;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -976,46 +920,7 @@ extern "C" {
         }
 #endif
         
-        chr = srcFile_UnicodeGetc(this);
-        if (chr > 0) {
-            switch (chr) {
-                    
-                case '\b':
-                    if (this->loc.colNo) {
-                        --this->loc.colNo;
-                    }
-                    break;
-                    
-                case '\f':
-                case '\n':
-                    ++this->loc.lineNo;
-                    this->loc.colNo = 0;
-                    break;
-                    
-                case '\r':
-                    this->loc.colNo = 0;
-                    break;
-                    
-                case '\t':
-                    if( this->tabSize ) {
-                        chr = ' ';
-                        if( ((this->loc.colNo-1) % this->tabSize) )
-                            this->loc.colNo += ((this->loc.colNo-1) % this->tabSize);
-                        else
-                            this->loc.colNo += this->tabSize;
-                    }
-                    else {
-                        ++this->loc.colNo;
-                    }
-                    break;
-                    
-                default:
-                    if (chr) {
-                        ++this->loc.colNo;
-                    }
-                    break;
-            }
-        }
+        chr = textIn_NextChar((TEXTIN_DATA *)this);
         if (chr >= 0) {
             cls = ascii_toLexicalClassW32(chr);
         }
@@ -1025,12 +930,12 @@ extern "C" {
         
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
-        obj_FlagOff(pToken, OBJ_FLAG_INIT);
+        this->fInit = 1;
         token_InitCharW32(
-                    pToken,
-                    &this->loc,
-                    cls,
-                    chr
+                          pToken,
+                          &this->super.curChr.loc,
+                          cls,
+                          chr
         );
         this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         
@@ -1041,100 +946,275 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  S t r i n g
+    //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ASTR_DATA *     srcFile_ToDebugString(
-        SRCFILE_DATA    *this,
-        int             indent
+    ERESULT         srcFile_IsEnabled (
+        SRCFILE_DATA		*this
     )
     {
-        char            str[256];
-        int             j;
-        ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (obj_IsEnabled(this)) {
+            return ERESULT_SUCCESS_TRUE;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = srcFile_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "srcFile", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          srcFile_QueryInfo (
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        SRCFILE_DATA     *this = objId;
+        const
+        char            *pStr = pData;
         
         if (OBJ_NIL == this) {
-            return OBJ_NIL;
+            return NULL;
         }
-        
-        pStr = AStr_New();
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return NULL;
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(srcFile) path=%s ",
-                     this,
-                     (this->pPath ? path_getData(this->pPath) : "")
-                     );
-        AStr_AppendA(pStr, str);
+#endif
         
-        switch (this->type) {
+        switch (type) {
                 
-            case OBJ_IDENT_FILE:
-                AStr_AppendA(pStr, "Type=FILE\n");
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(SRCFILE_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)srcFile_Class();
                 break;
                 
-            case OBJ_IDENT_FBSI:
-                AStr_AppendA(pStr, "Type=FBSI\n");
-                break;
-                
-            case OBJ_IDENT_ASTR:
-                AStr_AppendA(pStr, "Type=AStr\n");
-                if (this->pAStr) {
-                    if (((OBJ_DATA *)(this->pAStr))->pVtbl->pToDebugString) {
-                        pWrkStr =   ((OBJ_DATA *)(this->pAStr))->pVtbl->pToDebugString(
-                                                        this->pAStr,
-                                                        indent+3
-                                    );
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
                     }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'D':
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return srcFile_Disable;
+                        }
+                        break;
+
+                    case 'E':
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return srcFile_Enable;
+                        }
+                        break;
+
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return srcFile_ToDebugString;
+                        }
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return srcFile_ToJSON;
+                        }
+                        break;
+                        
+                    default:
+                        break;
                 }
                 break;
                 
-            case OBJ_IDENT_U8ARRAY:
-                AStr_AppendA(pStr, "Type=U8Array\n");
-                if (this->pAStr) {
-                    if (((OBJ_DATA *)(this->pU8Array))->pVtbl->pToDebugString) {
-                        pWrkStr =   ((OBJ_DATA *)(this->pU8Array))->pVtbl->pToDebugString(
-                                                        this->pU8Array,
-                                                        indent+3
-                                    );
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
-                    }
-                }
-                break;
-                
-            case OBJ_IDENT_W32STR:
-                AStr_AppendA(pStr, "Type=WStr\n");
-                if (this->pAStr) {
-                    if (((OBJ_DATA *)(this->pW32Str))->pVtbl->pToDebugString) {
-                        pWrkStr =   ((OBJ_DATA *)(this->pW32Str))->pVtbl->pToDebugString(
-                                                        this->pW32Str,
-                                                        indent+3
-                                    );
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
-                    }
-                }
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == srcFile_ToDebugString)
+                    return "ToDebugString";
+                if (pData == srcFile_ToJSON)
+                    return "ToJSON";
                 break;
                 
             default:
-                AStr_AppendA(pStr, "Type=UNKNOWN\n");
-                DEBUG_BREAK();
                 break;
         }
         
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+     ASTR_DATA *     srcFile_ToJSON (
+        SRCFILE_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
         }
-        j = snprintf( str, sizeof(str), " %p(srcFile)}\n", this );
-        AStr_AppendA(pStr, str);
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
+        }
+        
+        return pStr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = srcFile_ToDebugString(this,4);
+     @endcode 
+     @param     this    SRCFILE object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     srcFile_ToDebugString (
+        SRCFILE_DATA      *this,
+        int             indent
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+#ifdef  XYZZY        
+        ASTR_DATA       *pWrkStr;
+#endif
+        const
+        OBJ_INFO        *pInfo;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+              
+        pInfo = obj_getInfo(this);
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    srcFile_getSize(this)
+            );
+
+#ifdef  XYZZY        
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                    this->pData,
+                                                    indent+3
+                            );
+                AStr_Append(pStr, pWrkStr);
+                obj_Release(pWrkStr);
+            }
+        }
+#endif
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
         return pStr;
     }
@@ -1147,20 +1227,33 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            srcFile_Validate(
+    bool            srcFile_Validate (
         SRCFILE_DATA      *this
     )
     {
-        if(this) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SRCFILE) )
+ 
+        // WARNING: We have established that we have a valid pointer
+        //          in 'this' yet.
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_SRCFILE))
                 ;
-            else
+            else {
+                // 'this' is not our kind of data. We really don't
+                // know what that it is at this point. 
                 return false;
+            }
         }
-        else
+        else {
+            // 'this' is NULL.
             return false;
-        if( !(obj_getSize(this) >= sizeof(SRCFILE_DATA)) )
+        }
+        // Now, we have validated that we have a valid pointer in
+        // 'this'.
+
+
+        if (!(obj_getSize(this) >= sizeof(SRCFILE_DATA))) {
             return false;
+        }
 
         // Return to caller.
         return true;

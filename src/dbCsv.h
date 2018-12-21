@@ -195,26 +195,9 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    DBCSV_DATA *    dbCsv_InitAStr(
-        DBCSV_DATA      *this,
-        ASTR_DATA       *pSzStr,        // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
+    DBCSV_DATA *    dbCsv_Init(
+        DBCSV_DATA      *this
     );
-    
-    DBCSV_DATA *    dbCsv_InitPath(
-        DBCSV_DATA      *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize                 // Tab Spacing if any
-    );
-    
-    DBCSV_DATA *    dbCsv_InitW32Str(
-        DBCSV_DATA      *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    );
-
     
     /*!
      Parse the string/file given and return an object array of records where

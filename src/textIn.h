@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <srcLoc.h>
 
 
 #ifndef         TEXTIN_H
@@ -81,7 +82,14 @@ extern "C" {
         //bool        (*pIsEnabled)(TEXTIN_DATA *);
     } TEXTIN_VTBL;
 
-
+    
+    typedef struct textIn_chr_s {
+        SRCLOC          loc;
+        int32_t         cls;        // ASCII Class
+        W32CHR_T        chr;
+    } TEXTIN_CHRLOC;
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -98,30 +106,85 @@ extern "C" {
      released.
      @return    pointer to textIn object if successful, otherwise OBJ_NIL.
      */
-    TEXTIN_DATA *     textIn_Alloc(
+    TEXTIN_DATA *     textIn_Alloc (
         void
     );
     
     
-    TEXTIN_DATA *     textIn_New(
+    TEXTIN_DATA *     textIn_New (
         void
     );
     
-    TEXTIN_DATA *   textIn_NewFromAStr(
+    TEXTIN_DATA *   textIn_NewFromAStr (
         ASTR_DATA       *pStr,          // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
+    TEXTIN_DATA *  textIn_NewFromFile (
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        FILE            *pFile,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    TEXTIN_DATA *  textIn_NewFromPath (
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     textIn_getLastError(
-        TEXTIN_DATA		*this
+    uint16_t        textIn_getFileIndex (
+        TEXTIN_DATA     *this
     );
 
+    bool            textIn_setFileIndex (
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    );
+    
+
+    PATH_DATA *     textIn_getPath (
+        TEXTIN_DATA     *this
+    );
+    
+    
+    /*!
+     The Remove NL property allows for NLs to be skipped as
+     input but still reflected in the statistics.
+     */
+    bool            textIn_getRemoveNLs (
+        TEXTIN_DATA     *this
+    );
+    
+    bool            textIn_setRemoveNLs (
+        TEXTIN_DATA     *this,
+        bool            fValue
+    );
+
+    
+    /*!
+     The Tab Size property if non-zero causes horizontal tabs
+     to be expanded to spaces to multiples of the tabl size.
+     The default is zero (ie no tab expansion).
+     */
+    uint16_t        textIn_getTabSize (
+        TEXTIN_DATA     *this
+    );
+    
+    bool            textIn_setTabSize (
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    );
+    
+    
 
 
     
@@ -129,51 +192,14 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    TEXTIN_DATA *  textIn_InitAStr(
-        TEXTIN_DATA     *this,
-        ASTR_DATA       *pStr,        // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
-    );
-
-    TEXTIN_DATA *  textIn_InitFile(
-        TEXTIN_DATA     *this,
-        FILE            *pFile,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    TEXTIN_DATA *  textIn_Init (
+        TEXTIN_DATA     *this
     );
     
     
-    /*! Initialize this object to read data from file using the path given.
-        Assume that file data is in UTF-8 format.
-     */
-    TEXTIN_DATA *  textIn_InitPath(
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    );
-
-    
-    /*! Initialize this object to read data from u8Array assuming that it is
-        UTF-8 data.
-     */
-    TEXTIN_DATA *  textIn_InitU8Array(
-        TEXTIN_DATA     *this,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    );
-    
-    TEXTIN_DATA *  textIn_InitWStr(
-        TEXTIN_DATA     *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    );
-    
-
     /*! Get the location for the last character received.
      */
-    ERESULT         textIn_Location(
+    ERESULT         textIn_Location (
         TEXTIN_DATA     *this,
         uint16_t        *pFilenameIndex,
         size_t          *pOffset,
@@ -188,11 +214,48 @@ extern "C" {
                 character from the file, otherwise, an ERESULT_* error and
                 *pChar contains EOF(-1).
      */
-    W32CHR_T            textIn_NextChar(
-        TEXTIN_DATA         *this
+    W32CHR_T        textIn_NextChar (
+        TEXTIN_DATA     *this
     );
     
+    ERESULT         textIn_NextChrLoc(
+        TEXTIN_DATA     *this,
+        TEXTIN_CHRLOC   *pChr               // [out] next char is returned here
+    );
     
+
+    ERESULT         textIn_SetupAStr(
+        TEXTIN_DATA     *this,
+        ASTR_DATA       *pStr,        // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,    // File Path Index for a separate path table
+        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
+    );
+    
+    ERESULT         textIn_SetupFile (
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        FILE            *pFile,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    ERESULT         textIn_SetupPath (
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    ERESULT         textIn_SetupU8Array (
+        TEXTIN_DATA     *this,
+        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -205,7 +268,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    textIn_ToDebugString(
+    ASTR_DATA *    textIn_ToDebugString (
         TEXTIN_DATA     *this,
         int             indent
     );

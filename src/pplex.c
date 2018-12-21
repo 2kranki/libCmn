@@ -997,9 +997,7 @@ extern "C" {
                                 pStr,
                                 pPath,
                                 1,
-                                4,                  // tabsize
-                                true,               // true == Expand Tabs
-                                !this->fReturnNL    // true == Remove NL's
+                                4                   // tabsize
                         );
         if (OBJ_NIL == this->pSrc) {
             DEBUG_BREAK();
@@ -1054,9 +1052,7 @@ extern "C" {
         this->pSrc =    srcFile_NewFromPath(
                                             pPath,
                                             1,
-                                            4,                  // tabsize
-                                            true,               // true == Expand Tabs
-                                            !this->fReturnNL    // true == Remove NL's
+                                            4                   // tabsize
                         );
         if (OBJ_NIL == this->pSrc) {
             DEBUG_BREAK();

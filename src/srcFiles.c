@@ -289,64 +289,6 @@ extern "C" {
     }
 
      
-    SRCFILES_DATA * srcFiles_InitAStr(
-        SRCFILES_DATA   *this,
-        ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        SRCFILE_DATA    *pSrc;
-        
-        this = srcFiles_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        pSrc = srcFile_Alloc();
-        pSrc = srcFile_InitAStr(pSrc, pAStr, pFilePath, fileIndex, tabSize, false, false);
-        if (OBJ_NIL == pSrc) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        srcFiles_StackPush(this,pSrc);
-
-        return this;
-    }
-    
-    
-    SRCFILES_DATA * srcFiles_InitW32Str(
-        SRCFILES_DATA   *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    )
-    {
-        SRCFILE_DATA    *pSrc;
-        
-        this = srcFiles_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        pSrc = srcFile_Alloc();
-        pSrc = srcFile_InitW32Str(pSrc, pWStr, pFilePath, fileIndex, tabSize, false, false);
-        if (OBJ_NIL == pSrc) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        srcFiles_StackPush(this,pSrc);
-        
-        return this;
-    }
-    
-    
 
     //--------------------------------------------------------------
     //                  I n p u t  A d v a n c e
@@ -402,6 +344,36 @@ extern "C" {
         return pToken;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                          N e w  S r c
+    //---------------------------------------------------------------
+    
+    SRCFILES_DATA * srcFiles_NewSrcFromAStr(
+        SRCFILES_DATA   *this,
+        ASTR_DATA       *pAStr,         // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        SRCFILE_DATA    *pSrc;
+        
+        this = srcFiles_Init( this );
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pSrc = srcFile_NewFromAStr(pAStr, pFilePath, fileIndex, tabSize);
+        if (OBJ_NIL == pSrc) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        srcFiles_StackPush(this, pSrc);
+        
+        return this;
+    }
     
     
     

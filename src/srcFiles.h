@@ -132,28 +132,6 @@ extern "C" {
     );
 
 
-    SRCFILES_DATA * srcFiles_InitAStr(
-        SRCFILES_DATA   *this,
-        ASTR_DATA       *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
-    SRCFILES_DATA * srcFiles_InitW32Str(
-        SRCFILES_DATA   *this,
-        W32STR_DATA     *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
     TOKEN_DATA *    srcFiles_InputAdvance(
         SRCFILES_DATA   *this,
         uint16_t        numChrs
@@ -163,6 +141,15 @@ extern "C" {
     TOKEN_DATA *    srcFiles_InputLookAhead(
         SRCFILES_DATA   *this,
         uint16_t        num
+    );
+    
+    
+    SRCFILES_DATA * srcFiles_NewSrcFromAStr(
+        SRCFILES_DATA   *this,
+        ASTR_DATA       *pAStr,         // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
     
     

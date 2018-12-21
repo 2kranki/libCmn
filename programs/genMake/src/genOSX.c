@@ -2014,16 +2014,13 @@ extern "C" {
                 break;
             case GENMAKE_TYPE_PGM:
                 AStr_AppendA(pStr, ".PHONY: link\n");
-                //pWrk = AStr_NewA("link: $$(OBJS) src/${" mainID "}\n");
-                AStr_AppendA(pStr, "link: $$(OBJS)\n");
-#ifdef XYZZY
+                pWrk = AStr_NewA("link: $$(OBJS) src/${" mainID "}\n");
                 if (pWrk) {
                     eRc = genBase_DictExpand((GENBASE_DATA *)this, pWrk);
                     AStr_AppendPrint(pStr, AStr_getData(pWrk));
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
-#endif
                 AStr_AppendPrint(
                                  pStr,
                                  "\tCC -o $(OBJDIR)/$(PGMNAM) "

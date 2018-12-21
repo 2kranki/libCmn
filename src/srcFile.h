@@ -1,28 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              Read a Source File  (srcFile) Header
+//          SRCFILE Console Transmit Task (srcFile) Header
 //****************************************************************
 /*
  * Program
- *				Read a Source File (srcFile)
+ *			Separate srcFile (srcFile)
  * Purpose
- *				This takes a file from several different sources
- *              and tokenizes it into a stream of tokens to be used
- *              for parsing. These routines are UTF-8 aware and
- *              will tokenize a multi-byte character into one token.
+ *			This object provides a standardized way of handling
+ *          a separate srcFile to run things without complications
+ *          of interfering with the main srcFile. A srcFile may be 
+ *          called a srcFile on other O/S's.
  *
  * Remarks
- *	1.      EOF(-1) denotes the end of file. So, the token class
- *          and token character will be set to EOF for every
- *          access at EOF.
- *  2.      Tokens use UCS-32 characters. For UTF-8 data, there are
- *          two possible indices, the relative byte within the data 
- *          and the relative UCS-32 character within the data.  We
- *          use the relative UCS-32 character index.
+ *	1.      None
  *
  * History
- *	06/17/2015 Generated
+ *	12/18/2018 Generated
  */
 
 
@@ -58,17 +52,18 @@
 
 
 #include        <cmn_defs.h>
-#include        <ascii.h>
-#include        <fbsi.h>
-#include        <path.h>
 #include        <AStr.h>
+#include        <path.h>
 #include        <token.h>
-#include        <u8Array.h>
-#include        <W32Str.h>
 
 
 #ifndef         SRCFILE_H
 #define         SRCFILE_H
+
+
+//#define   SRCFILE_SINGLETON    1
+
+
 
 
 
@@ -82,17 +77,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct srcFile_data_s	SRCFILE_DATA;
+    typedef struct srcFile_data_s	SRCFILE_DATA;            // Inherits from OBJ
+    typedef struct srcFile_class_data_s SRCFILE_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct srcFile_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in consumer_object.c.
+        // method names to the vtbl definition in srcFile_object.c.
         // Properties:
         // Methods:
+        //bool        (*pIsEnabled)(SRCFILE_DATA *);
     } SRCFILE_VTBL;
-    
-    
+
+    typedef struct srcFile_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in srcFile_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SRCFILE_DATA *);
+    } SRCFILE_CLASS_VTBL;
+
 
 
 
@@ -105,81 +110,113 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SRCFILE_DATA *     srcFile_Alloc(
+#ifdef  SRCFILE_SINGLETON
+    SRCFILE_DATA *  srcFile_Shared (
+        void
+    );
+
+    bool            srcFile_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to srcFile object if successful, otherwise OBJ_NIL.
+     */
+    SRCFILE_DATA *  srcFile_Alloc (
         void
     );
     
+    
+    OBJ_ID          srcFile_Class (
+        void
+    );
+    
+    
+    SRCFILE_DATA *  srcFile_New (
+        void
+    );
     
     SRCFILE_DATA *  srcFile_NewFromAStr(
         ASTR_DATA       *pStr,          // Buffer of file data
         PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
         uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
     
     SRCFILE_DATA *  srcFile_NewFromFile(
         FILE            *pFile,
         uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
     
     SRCFILE_DATA *  srcFile_NewFromPath(
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
     
     
 
-    
+
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            srcFile_getExpandTabs (
+        SRCFILE_DATA    *this
+    );
+    
+    bool            srcFile_setExpandTabs (
+        SRCFILE_DATA    *this,
+        bool            fValue
+    );
+
+    
     /*!
-     The Back-Tracking property tells SrcFile that it must save all
-     tokens provided using a recovery mechanism of:
-        srcFile_BT_Start()
-            .
-            .
-            .
-        srcFile_BT_Restore() or srcFile_BT_Restart()
-            .
-            .
-            .
-        srcFile_BT_End()
-     See below for documentation srcFile_BT methods.
+     The file index property is meant to index some table for the
+     file path information.
      */
-    bool            srcFile_getBackTrack(
-        SRCFILE_DATA    *this
+    uint16_t        srcFile_getFileIndex (
+        SRCFILE_DATA     *this
     );
     
-    bool            srcFile_setBackTrack(
+    bool            srcFile_setFileIndex (
+        SRCFILE_DATA    *this,
+        uint16_t        value
+    );
+
+    
+    /*!
+     The Remove NL property allows for NLs to be skipped as
+     input but still reflected in the statistics.
+     */
+    bool            srcFile_getRemoveNLs (
+        SRCFILE_DATA    *this
+    );
+
+    bool            srcFile_setRemoveNLs (
         SRCFILE_DATA    *this,
         bool            fValue
     );
     
     
-    uint16_t        srcFile_getFileIndex(
+    /*!
+     The Tab Size property if non-zero causes horizontal tabs
+     to be expanded to spaces to multiples of the tabl size.
+     The default is zero (ie no tab expansion).
+     */
+    uint16_t        srcFile_getTabSize (
         SRCFILE_DATA    *this
     );
     
-    
-    bool            srcFile_getStripCR(
-        SRCFILE_DATA    *this
-    );
-    
-    bool            srcFile_setStripCR(
+    bool            srcFile_setTabSize (
         SRCFILE_DATA    *this,
-        bool            fValue
+        uint16_t        value
     );
     
     
@@ -189,93 +226,54 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    SRCFILE_DATA *   srcFile_Init (
+        SRCFILE_DATA     *this
+    );
+    
+    
     /*!
-     Start accumulating advanced tokens for possible backtracking.
-     @return:   If successful, ERESULT_SUCCESS. Otherwise, an 
-                ERESULT_* error code.
+     Advance the input the number of characters specified.
+     @param     this    object pointer
+     @param     numChrs number of characters to advance (must be > 0)
+     @return    The current token character or OBJ_NIL if an error occurred.
      */
-    ERESULT         srcFile_BT_Start(
-        SRCFILE_DATA    *this
-    );
-
-    
-    SRCFILE_DATA *  srcFile_InitAStr(
-        SRCFILE_DATA    *this,
-        ASTR_DATA       *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
-    SRCFILE_DATA *  srcFile_InitFile(
-        SRCFILE_DATA    *this,
-        FILE            *pFile,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
-    SRCFILE_DATA *  srcFile_InitPath(
-        SRCFILE_DATA    *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
-    SRCFILE_DATA *  srcFile_InitU8Array(
-        SRCFILE_DATA    *this,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t		tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
-    SRCFILE_DATA *  srcFile_InitW32Str(
-        SRCFILE_DATA    *this,
-        W32STR_DATA     *pW32Str,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs,
-        bool            fRemoveNLs
-    );
-    
-    
-    TOKEN_DATA *    srcFile_InputAdvance(
+    TOKEN_DATA *    srcFile_InputAdvance (
         SRCFILE_DATA    *this,
         uint16_t        numChrs
     );
     
     
-    TOKEN_DATA *    srcFile_InputLookAhead(
+    /*!
+     Look ahead the number of characters specified.
+     @param     this    object pointer
+     @param     num     number of characters to look ahead (must be > 0)
+     @return    The token character or OBJ_NIL if an error occurred.
+     */
+    TOKEN_DATA *    srcFile_InputLookAhead (
         SRCFILE_DATA    *this,
         uint16_t        num
     );
     
     
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = srcFile_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcFile_ToDebugString(
-        SRCFILE_DATA    *this,
+    ASTR_DATA *    srcFile_ToDebugString (
+        SRCFILE_DATA     *this,
         int             indent
     );
     
     
+
     
 #ifdef	__cplusplus
 }

@@ -486,6 +486,11 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u12Array_Vtbl);
         
         this->pArray = array_NewWithSize(1);
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else

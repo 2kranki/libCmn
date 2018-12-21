@@ -663,15 +663,11 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pInput = srcFile_Alloc( );
-        this->pInput = srcFile_InitAStr(
-                                    this->pInput,
+        this->pInput = srcFile_NewFromAStr(
                                     pStr,
                                     OBJ_NIL,
                                     1,
-                                    tabSize,
-                                    fExpandTabs,
-                                    false
+                                    tabSize
                         );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -728,9 +724,7 @@ extern "C" {
         this->pInput =  srcFile_NewFromFile(
                             pFile,
                             1,
-                            tabSize,
-                            fExpandTabs,
-                            false
+                            tabSize
                         );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -787,9 +781,7 @@ extern "C" {
         this->pInput =  srcFile_NewFromPath(
                                         pFilePath,
                                         1,
-                                        tabSize,
-                                        fExpandTabs,
-                                        false
+                                        tabSize
                         );
         if (OBJ_NIL == this) {
             DEBUG_BREAK();

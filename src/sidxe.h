@@ -1,13 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Simple Index (sidx) Header
+//          Simple Index Extended (sidxe) Header
 //****************************************************************
 /*
  * Program
- *			Simple Index (sidx)
+ *			Simple Index Extended (sidxe)
  * Purpose
- *			This object provides a simple index into some other
+ *          This object provides a simple index into some other
  *          set of objects. It stores an index amount and an
  *          offset in its table. When a value is needed, the
  *          closest value and offset will be returned. The index
@@ -20,11 +20,12 @@
  *          automatically adjust when it gets full. It just makes
  *          it easier to get to some point in a file or process
  *          if that is needed.
+ *
  * Remarks
- *	1.      ???
+ *	1.      None
  *
  * History
- *	09/07/2015 Generated
+ *	12/18/2018 Generated
  */
 
 
@@ -59,14 +60,20 @@
 
 
 
-
-
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <srcLoc.h>
 
 
-#ifndef         SIDX_H
-#define         SIDX_H
+
+
+#ifndef         SIDXE_H
+#define         SIDXE_H
+
+
+//#define   SIDXE_SINGLETON    1
+
+
 
 
 
@@ -80,19 +87,30 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct sidx_data_s	SIDX_DATA;
+    typedef struct sidxe_data_s	SIDXE_DATA;            // Inherits from OBJ
+    typedef struct sidxe_class_data_s SIDXE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct sidx_vtbl_s    {
+    typedef struct sidxe_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in fatFCB_object.c.
+        // method names to the vtbl definition in sidxe_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CB_DATA *);
-    } SIDX_VTBL;
-    
-    
+        //bool        (*pIsEnabled)(SIDXE_DATA *);
+    } SIDXE_VTBL;
 
+    typedef struct sidxe_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in sidxe_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SIDXE_DATA *);
+    } SIDXE_CLASS_VTBL;
+
+
+    
+    
 
 
     /****************************************************************
@@ -104,71 +122,116 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SIDX_DATA *     sidx_Alloc(
-        uint16_t    tableSize
+#ifdef  SIDXE_SINGLETON
+    SIDXE_DATA *    sidxe_Shared (
+        void
+    );
+
+    bool            sidxe_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to sidxe object if successful, otherwise OBJ_NIL.
+     */
+    SIDXE_DATA *    sidxe_Alloc (
+        void
     );
     
     
-    SIDX_DATA *     sidx_New(
-        uint16_t    tableSize
+    OBJ_ID          sidxe_Class (
+        void
     );
     
     
+    SIDXE_DATA *    sidxe_New (
+        void
+    );
+    
+    SIDXE_DATA *    sidxe_NewWithMax (
+        uint16_t        max
+    );
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        sidx_getInterval(
-        SIDX_DATA       *this
+    uint32_t        sidxe_getInterval (
+        SIDXE_DATA      *this
     );
     
     
-    uint16_t        sidx_getSize(
-        SIDX_DATA       *this
+    uint16_t        sidxe_getMax (
+        SIDXE_DATA      *this
     );
     
+    bool            sidxe_setMax (
+        SIDXE_DATA      *this,
+        uint16_t        value
+    );
+
     
+    uint32_t        sidxe_getSize (
+        SIDXE_DATA      *this
+    );
+    
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // Every time that a new item is added to the object that needs
-    // indexing, AddIndex() should be called. It will only save the
-    // item based on the current interval.
-    bool            sidx_AddIndex(
-        SIDX_DATA       *this,
-        uint32_t        index,
-        size_t          offset
-    );
-    
-
-    // FindIndex() finds the closest index in its table that minimizes
-    // the forward search needed to find the actual object needed.
-    bool            sidx_FindIndex(
-        SIDX_DATA		*this,
-        uint32_t        index,
-        uint32_t        *pIndex,
-        size_t          *pOffset
+    ERESULT         sidxe_Add (
+        SIDXE_DATA      *this,
+        SRCLOC          *pLoc
     );
     
     
-    SIDX_DATA *     sidx_Init(
-        SIDX_DATA       *this,
-        uint32_t        interval
+    ERESULT         sidxe_FindLineNo (
+        SIDXE_DATA      *this,
+        uint32_t        lineNo,
+        SRCLOC          *pLoc
+    );
+    
+    
+    SIDXE_DATA *   sidxe_Init (
+        SIDXE_DATA     *this
     );
 
 
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Reset the index as if it was just created with no data.
+     @param     this    object pointer
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
      */
-    ASTR_DATA *     sidx_ToDebugString(
-        SIDX_DATA       *this,
+    ERESULT         sidxe_Reset (
+        SIDXE_DATA      *this
+    );
+    
+    
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = sidxe_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    sidxe_ToDebugString (
+        SIDXE_DATA     *this,
         int             indent
     );
     
@@ -179,5 +242,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* SIDX_H */
+#endif	/* SIDXE_H */
 

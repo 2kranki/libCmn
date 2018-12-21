@@ -62,7 +62,7 @@ extern "C" {
     ****************************************************************/
 
     static
-    ERESULT         textIn_FileGetc(
+    ERESULT         textIn_FileGetc (
         TEXTIN_DATA     *this,
         W32CHR_T        *pChar
     )
@@ -72,7 +72,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -91,7 +91,7 @@ extern "C" {
     
     
     static
-    ERESULT         textIn_u8ArrayGetc(
+    ERESULT         textIn_u8ArrayGetc (
         TEXTIN_DATA     *this,
         W32CHR_T        *pChar
     )
@@ -103,15 +103,15 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate( this ) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         chrs[0] = 0;
-        ++this->fileOffset;
-        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->fileOffset);
+        ++this->curChr.loc.offset;
+        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->curChr.loc.offset);
         if (0 == chrs[0]) {
             *pChar = EOF;
             return ERESULT_EOF_ERROR;
@@ -121,8 +121,8 @@ extern "C" {
             --len;
             chr = 1;
             while (len--) {
-                ++this->fileOffset;
-                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->fileOffset);
+                ++this->curChr.loc.offset;
+                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->curChr.loc.offset);
                 if (0 == chrs[0]) {
                     *pChar = EOF;
                     return ERESULT_EOF_ERROR;
@@ -131,7 +131,7 @@ extern "C" {
             len = utf8_Utf8ToW32(chrs, &chr);
         }
         if( chr == ASCII_CPM_EOF ) {
-            this->fileOffset = u8Array_getSize(this->pU8Array);
+            this->curChr.loc.offset = u8Array_getSize(this->pU8Array);
             chr = EOF;
         }
         *pChar = chr;
@@ -142,7 +142,7 @@ extern "C" {
     
     
     static
-    W32CHR_T        textIn_UnicodeGetc(
+    W32CHR_T        textIn_UnicodeGetc (
         TEXTIN_DATA     *this
     )
     {
@@ -152,7 +152,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate( this ) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -168,9 +168,9 @@ extern "C" {
                 break;
                 
             case TEXTIN_TYPE_ASTR:
-                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->fileOffset++ );
+                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curChr.loc.offset++);
                 if( chr == ASCII_CPM_EOF ) {
-                    this->fileOffset = AStr_getLength(this->pAStr);
+                    this->curChr.loc.offset = AStr_getLength(this->pAStr);
                     chr = EOF;
                 }
                 break;
@@ -183,9 +183,9 @@ extern "C" {
                 break;
                 
             case TEXTIN_TYPE_WSTR:
-                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->fileOffset++ );
+                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curChr.loc.offset++ );
                 if( chr == ASCII_CPM_EOF ) {
-                    this->fileOffset = W32Str_getLength(this->pWStr);
+                    this->curChr.loc.offset = W32Str_getLength(this->pWStr);
                     chr = EOF;
                 }
                 break;
@@ -212,7 +212,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    TEXTIN_DATA *   textIn_Alloc(
+    TEXTIN_DATA *   textIn_Alloc (
     )
     {
         TEXTIN_DATA     *this;
@@ -228,30 +228,69 @@ extern "C" {
 
 
 
-    TEXTIN_DATA *     textIn_New(
+    TEXTIN_DATA *     textIn_New (
     )
     {
         TEXTIN_DATA       *this;
         
         this = textIn_Alloc( );
         if (this) {
-            this = textIn_Init(this, OBJ_NIL, 0);
+            this = textIn_Init(this);
         } 
         return this;
     }
 
 
-    TEXTIN_DATA *   textIn_NewFromAStr(
+    TEXTIN_DATA *   textIn_NewFromAStr (
         ASTR_DATA       *pStr,          // Buffer of file data
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
         TEXTIN_DATA     *this = OBJ_NIL;
+        ERESULT         eRc;
         
-        this = textIn_Alloc( );
+        this = textIn_New( );
         if (this) {
-            this = textIn_InitAStr(this, pStr, pFilePath, tabSize);
+            eRc = textIn_SetupAStr(this, pStr, pFilePath, fileIndex, tabSize);
+        }
+        
+        return this;
+    }
+    
+    
+    TEXTIN_DATA *   textIn_NewFromFile (
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        FILE            *pFile,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        TEXTIN_DATA     *this = OBJ_NIL;
+        ERESULT         eRc;
+        
+        this = textIn_New( );
+        if (this) {
+            eRc = textIn_SetupFile(this, pFilePath, fileIndex, pFile, tabSize);
+        }
+        
+        return this;
+    }
+    
+    
+    TEXTIN_DATA *   textIn_NewFromPath (
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        TEXTIN_DATA     *this = OBJ_NIL;
+        ERESULT         eRc;
+        
+        this = textIn_New( );
+        if (this) {
+            eRc = textIn_SetupPath(this, pFilePath, fileIndex, tabSize);
         }
         
         return this;
@@ -259,6 +298,7 @@ extern "C" {
     
     
     
+
 
     
 
@@ -267,53 +307,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                    F i l e  I n d e x
     //---------------------------------------------------------------
     
-    ERESULT         textIn_getLastError(
+    uint16_t        textIn_getFileIndex (
         TEXTIN_DATA     *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return 0;
         }
 #endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        
+        return this->curChr.loc.fileIndex;
     }
-
-
-    bool            textIn_setLastError(
+    
+    
+    bool            textIn_setFileIndex (
         TEXTIN_DATA     *this,
-        ERESULT         value
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        this->eRc = value;
+        this->curChr.loc.fileIndex = value;
         
         return true;
     }
     
     
-
+    
     //---------------------------------------------------------------
     //                           P a t h
     //---------------------------------------------------------------
     
-    PATH_DATA *     textIn_getPath(
+    PATH_DATA *     textIn_getPath (
         TEXTIN_DATA     *this
     )
     {
@@ -321,25 +360,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return this->pPath;
     }
     
     
-    bool            textIn_setPath(
+    bool            textIn_setPath (
         TEXTIN_DATA     *this,
         PATH_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -351,7 +389,6 @@ extern "C" {
         }
         this->pPath = pValue;
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -361,7 +398,7 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        textIn_getPriority(
+    uint16_t        textIn_getPriority (
         TEXTIN_DATA     *this
     )
     {
@@ -369,26 +406,25 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        textIn_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            textIn_setPriority(
+    bool            textIn_setPriority (
         TEXTIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -396,29 +432,69 @@ extern "C" {
 
         //this->priority = value;
 
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
 
 
     //---------------------------------------------------------------
+    //                  R e m o v e  N L s
+    //---------------------------------------------------------------
+    
+    bool            textIn_getRemoveNLs (
+        TEXTIN_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->fStripNL;
+    }
+    
+    
+    bool            textIn_setRemoveNLs (
+        TEXTIN_DATA     *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fStripNL = fValue ? 1 : 0;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        textIn_getSize(
+    uint32_t        textIn_getSize (
         TEXTIN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -428,7 +504,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA *     textIn_getStr(
+    ASTR_DATA *     textIn_getStr (
         TEXTIN_DATA     *this
     )
     {
@@ -436,25 +512,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return this->pAStr;
     }
     
     
-    bool            textIn_setStr(
+    bool            textIn_setStr (
         TEXTIN_DATA     *this,
         ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -466,7 +541,6 @@ extern "C" {
         }
         this->pAStr = pValue;
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -476,7 +550,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  textIn_getSuperVtbl(
+    OBJ_IUNKNOWN *  textIn_getSuperVtbl (
         TEXTIN_DATA     *this
     )
     {
@@ -484,20 +558,61 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
   
 
+    //---------------------------------------------------------------
+    //                       T a b  S i z e
+    //---------------------------------------------------------------
     
+    uint16_t        textIn_getTabSize (
+        TEXTIN_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->tabSize;
+    }
+    
+    
+    bool            textIn_setTabSize (
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->tabSize = value;
+        
+        return true;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                          M e t h o d s
@@ -521,20 +636,21 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         textIn_Assign(
+    ERESULT         textIn_Assign (
         TEXTIN_DATA		*this,
-        TEXTIN_DATA      *pOther
+        TEXTIN_DATA     *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !textIn_Validate(pOther) ) {
+        if (!textIn_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -567,11 +683,76 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        textIn_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        textIn_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return textIn_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                        C l o s e
+    //---------------------------------------------------------------
+    
+    ERESULT         textIn_Close (
+        TEXTIN_DATA   *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        switch (this->type) {
+                
+            case TEXTIN_TYPE_ASTR:
+                if (this->pAStr) {
+                    obj_Release(this->pAStr);
+                    this->pAStr = OBJ_NIL;
+                }
+                break;
+                
+            case TEXTIN_TYPE_FILE:
+                if (this->pFile) {
+                    if (0 == this->fFile) {
+                        fclose(this->pFile);
+                    }
+                    this->pFile = NULL;
+                }
+                break;
+                
+            case TEXTIN_TYPE_U8ARRAY:
+                if (this->pU8Array) {
+                    obj_Release(this->pU8Array);
+                    this->pU8Array = OBJ_NIL;
+                }
+                break;
+                
+            case TEXTIN_TYPE_WSTR:
+                if (this->pWStr) {
+                    obj_Release(this->pWStr);
+                    this->pWStr = OBJ_NIL;
+                }
+                break;
+                
+       }
+        this->fFile = 0;
+        this->fOpen = 0;
+        this->type = TEXTIN_TYPE_UNKNOWN;
+
+        if (this->pSidx) {
+            sidxe_Reset(this->pSidx);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -591,17 +772,17 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the TEXTIN object.
      */
-    TEXTIN_DATA *     textIn_Copy(
-        TEXTIN_DATA       *this
+    TEXTIN_DATA *   textIn_Copy (
+        TEXTIN_DATA     *this
     )
     {
-        TEXTIN_DATA       *pOther = OBJ_NIL;
+        TEXTIN_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -618,7 +799,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -628,11 +808,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            textIn_Dealloc(
+    void            textIn_Dealloc (
         OBJ_ID          objId
     )
     {
-        TEXTIN_DATA   *this = objId;
+        TEXTIN_DATA     *this = objId;
+        ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -640,31 +821,14 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        if ((this->type == TEXTIN_TYPE_ASTR) && (this->pAStr)) {
-            obj_Release(this->pAStr);
-            this->pAStr = OBJ_NIL;
-        }
-        
-        if ((this->type == TEXTIN_TYPE_FILE) && (this->pFile)) {
-            fclose(this->pFile);
-            this->pFile = NULL;
-        }
-        
-        if ((this->type == TEXTIN_TYPE_U8ARRAY) && (this->pU8Array)) {
-            obj_Release(this->pU8Array);
-            this->pU8Array = OBJ_NIL;
-        }
-        
-        if ((this->type == TEXTIN_TYPE_WSTR) && (this->pWStr)) {
-            obj_Release(this->pWStr);
-            this->pWStr = OBJ_NIL;
-        }
+        eRc = textIn_Close(this);
+        textIn_setPath(this, OBJ_NIL);
         
         if (this->pSidx) {
             obj_Release(this->pSidx);
@@ -686,7 +850,7 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         textIn_Disable(
+    ERESULT         textIn_Disable (
         TEXTIN_DATA		*this
     )
     {
@@ -694,7 +858,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -705,7 +869,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -715,7 +878,7 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         textIn_Enable(
+    ERESULT         textIn_Enable (
         TEXTIN_DATA		*this
     )
     {
@@ -723,7 +886,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -734,7 +897,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -744,10 +906,8 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    TEXTIN_DATA *   textIn_Init(
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pPath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    TEXTIN_DATA *   textIn_Init (
+        TEXTIN_DATA     *this
     )
     {
         uint32_t        cbSize = sizeof(TEXTIN_DATA);
@@ -778,23 +938,15 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&textIn_Vtbl);
         
-        textIn_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->flags  |= FLG_EOF;
-        if (pPath) {
-            this->pPath  = path_Copy(pPath);
-            this->pPathA = szTbl_StringToString(
-                                         szTbl_Shared(),
-                                         path_getData(this->pPath)
-                            );
-        }
-        this->lineNo  = 1;
-        this->colNo   = 0;
-        this->tabSize = tabSize;
-        this->state = TEXTIN_STATE_NORMAL;
 #if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        this->pSidx = sidx_New(3072);
+        this->pSidx = sidxe_NewWithMax(3072);
+        if (OBJ_NIL == this->pSidx) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 #endif
-
+        
     #ifdef NDEBUG
     #else
         if( !textIn_Validate(this) ) {
@@ -806,7 +958,7 @@ extern "C" {
         //fprintf(stderr, "textIn::offsetof(eRc) = %lu\n", offsetof(TEXTIN_DATA,eRc));
         //fprintf(stderr, "textIn::sizeof(TEXTIN_DATA) = %lu\n", sizeof(TEXTIN_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
+        //BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(TEXTIN_DATA));
     #endif
 
@@ -814,201 +966,6 @@ extern "C" {
     }
 
      
-    TEXTIN_DATA *  textIn_InitAStr(
-        TEXTIN_DATA     *this,
-        ASTR_DATA       *pStr,        // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pStr) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        obj_Retain(pStr);
-        
-        this = textIn_Init(this, pFilePath, tabSize);
-        if (OBJ_NIL == this) {
-            //obj_Release(this);
-            obj_Release(pStr);
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = TEXTIN_TYPE_ASTR;
-        this->pAStr = pStr;
-        this->flags &= ~FLG_EOF;
-        this->flags |= FLG_OPN;
-        this->fileOffset = 1;
-        
-        return this;
-    }
-    
-    
-    
-    TEXTIN_DATA *  textIn_InitFile(
-        TEXTIN_DATA     *this,
-        FILE            *pFile,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pFile) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this = textIn_Init(this, OBJ_NIL, tabSize);
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = TEXTIN_TYPE_FILE;
-        this->pFile = pFile;
-        this->flags &= ~FLG_EOF;
-        this->flags |= FLG_OPN;
-        this->flags |= FLG_FILE;
-        
-        return this;
-    }
-    
-    
-    
-    TEXTIN_DATA *  textIn_InitPath(
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    )
-    {
-        char            *pszFileName;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pFilePath) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        this = textIn_Init(this, pFilePath, tabSize);
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = TEXTIN_TYPE_FILE;
-        pszFileName = path_CStringA(pFilePath);
-        if (pszFileName) {
-            this->pFile = fopen(pszFileName, "r");
-            if (NULL == this->pFile) {
-                fprintf(stderr,
-                        "Fatal Error - Could not open Input File - %s.\n",
-                        pszFileName
-                );
-                obj_Release(this);
-                return OBJ_NIL;
-            }
-            this->flags &= ~FLG_EOF;
-            this->flags |= FLG_OPN;
-            mem_Free(pszFileName);
-            pszFileName = NULL;
-        }
-        else {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        return this;
-    }
-    
-    
-    
-    TEXTIN_DATA *  textIn_InitU8Array(
-        TEXTIN_DATA     *this,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pBuffer) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        obj_Retain(pBuffer);
-        
-        this = textIn_Init(this, pFilePath, tabSize);
-        if (OBJ_NIL == this) {
-            obj_Release(this);
-            obj_Release(pBuffer);
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = TEXTIN_TYPE_U8ARRAY;
-        this->pU8Array = pBuffer;
-        this->flags &= ~FLG_EOF;
-        this->flags |= FLG_OPN;
-        
-        return this;
-    }
-    
-    
-    
-    TEXTIN_DATA *  textIn_InitWStr(
-        TEXTIN_DATA     *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pWStr) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        obj_Retain(pWStr);
-        
-        this = textIn_Init(this, pFilePath, tabSize);
-        if (OBJ_NIL == this) {
-            obj_Release(this);
-            obj_Release(pWStr);
-            return OBJ_NIL;
-        }
-        
-        // Open the file.
-        this->type = TEXTIN_TYPE_WSTR;
-        this->pWStr = pWStr;
-        this->flags &= ~FLG_EOF;
-        this->flags |= FLG_OPN;
-        this->fileOffset = 1;
-        
-        return this;
-    }
     
     
     
@@ -1017,7 +974,7 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         textIn_IsEnabled(
+    ERESULT         textIn_IsEnabled (
         TEXTIN_DATA		*this
     )
     {
@@ -1025,19 +982,17 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            textIn_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        textIn_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1047,7 +1002,7 @@ extern "C" {
     //                     L o c a t i o n
     //---------------------------------------------------------------
     
-    ERESULT         textIn_Location(
+    ERESULT         textIn_Location (
         TEXTIN_DATA     *this,
         uint16_t        *pFilenameIndex,
         size_t          *pOffset,
@@ -1059,7 +1014,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1068,14 +1023,13 @@ extern "C" {
         if (pFilenameIndex)
             *pFilenameIndex = this->filenameIndex;
         if (pOffset)
-            *pOffset = this->fileOffset;
+            *pOffset = this->curChr.loc.offset;
         if (pLineNo)
-            *pLineNo = this->lineNo;
+            *pLineNo = this->curChr.loc.lineNo;
         if (pColNo)
-            *pColNo = this->colNo;
+            *pColNo = this->curChr.loc.colNo;
         
         // Return to caller.
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1085,12 +1039,11 @@ extern "C" {
     //                      N e x t  C h a r
     //--------------------------------------------------------------
     
-    W32CHR_T            textIn_NextChar(
+    W32CHR_T            textIn_NextChar (
         TEXTIN_DATA         *this
     )
     {
         W32CHR_T            chr = 0;
-        int32_t             cls = 0;
         ERESULT             eRc = ERESULT_SUCCESS;
         
         // Do initialization.
@@ -1101,13 +1054,13 @@ extern "C" {
             return -2;
         }
 #endif
-        this->eRc = ERESULT_SUCCESS;
 
+    again:
         switch (this->state) {
             case TEXTIN_STATE_IN_TAB:
-                if (this->colNo % this->tabSize) {
+                if (this->curChr.loc.colNo % this->tabSize) {
                     chr = ' ';
-                    ++this->colNo;
+                    ++this->curChr.loc.colNo;
                     break;
                 }
                 this->state = TEXTIN_STATE_NORMAL;
@@ -1118,8 +1071,8 @@ extern "C" {
                     switch (chr) {
                             
                         case '\b':
-                            if (this->colNo) {
-                                --this->colNo;
+                            if (this->curChr.loc.colNo) {
+                                --this->curChr.loc.colNo;
                             }
                             break;
                             
@@ -1128,25 +1081,29 @@ extern "C" {
                             
                         case '\f':
                         case '\n':
-                            ++this->lineNo;
-                            this->colNo = 0;
+                            ++this->curChr.loc.lineNo;
+                            this->curChr.loc.colNo = 0;
 #if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-                            sidx_AddIndex(this->pSidx, this->lineNo, this->fileOffset);
+                            sidxe_Add(this->pSidx, &this->curChr.loc);
 #endif
+                            if (this->fStripNL && ('\n' == chr))
+                                goto again;
                             break;
                             
                         case '\r':
-                            this->colNo = 0;
+                            this->curChr.loc.colNo = 0;
+                            if (this->fStripCR)
+                                goto again;
                             break;
                             
                         case '\t':
                             if( this->tabSize ) {
                                 chr = ' ';
-                                ++this->colNo;
+                                ++this->curChr.loc.colNo;
                                 this->state = TEXTIN_STATE_IN_TAB;
                             }
                             else {
-                                ++this->colNo;
+                                ++this->curChr.loc.colNo;
                             }
                             break;
                             
@@ -1156,7 +1113,7 @@ extern "C" {
                             
                         default:
                             if (chr) {
-                                ++this->colNo;
+                                ++this->curChr.loc.colNo;
                             }
                             break;
                     }
@@ -1169,21 +1126,43 @@ extern "C" {
         
         
         if (chr >= 0) {
-            cls = ascii_toLexicalClassW32(chr);
+            this->curChr.cls = ascii_toLexicalClassW32(chr);
         }
         else {
-            cls = EOF;
+            this->curChr.cls = EOF;
         }
         
         // Return to caller.
-        if (chr == EOF) {
-            this->eRc = ERESULT_DATA_NOT_FOUND;
-        }
         return chr;
     }
     
     
+    ERESULT         textIn_NextChrLoc (
+        TEXTIN_DATA     *this,
+        TEXTIN_CHRLOC   *pChr
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        textIn_NextChar(this);
+        if (pChr) {
+            *pChr = this->curChr;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1210,7 +1189,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          textIn_QueryInfo(
+    void *          textIn_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1225,7 +1204,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!textIn_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1283,6 +1262,230 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          S e t u p
+    //---------------------------------------------------------------
+    
+    ERESULT         textIn_SetupBase(
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pPath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !textIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = textIn_Close(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        textIn_setPath(this, OBJ_NIL);
+
+        // We must reset all the fields here.
+        this->type = TEXTIN_TYPE_UNKNOWN;
+        this->tabSize = tabSize;
+        this->state = TEXTIN_STATE_NORMAL;
+        this->fFile = 0;
+        this->fOpen = 0;
+        this->fStripCR = 0;
+        this->fStripNL = 0;
+        this->fAtEOF = 1;
+        if (pPath) {
+            this->pPath  = path_Copy(pPath);
+            if (OBJ_NIL == this->pPath) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            this->pPathA =  szTbl_StringToString(
+                                        szTbl_Shared(),
+                                        path_getData(this->pPath)
+                            );
+        }
+        this->curChr.loc.lineNo  = 1;
+        this->curChr.loc.colNo   = 0;
+        this->state = TEXTIN_STATE_NORMAL;
+        
+        return ERESULT_SUCCESS;
+    }
+
+    
+    ERESULT         textIn_SetupAStr(
+        TEXTIN_DATA     *this,
+        ASTR_DATA       *pStr,        // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !textIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = textIn_SetupBase(this, pFilePath, tabSize);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+
+        // Open the file.
+        this->type = TEXTIN_TYPE_ASTR;
+        obj_Retain(pStr);
+        this->pAStr = pStr;
+        this->fAtEOF = 0;
+        this->fOpen = 1;
+        this->curChr.loc.fileIndex = fileIndex;
+        this->curChr.loc.offset = 1;    // AStr is relative to 1.
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         textIn_SetupFile (
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        FILE            *pFile,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !textIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pFile) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = textIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+        
+        // Open the file.
+        this->type = TEXTIN_TYPE_FILE;
+        this->pFile = pFile;
+        this->fAtEOF = 0;
+        this->fOpen = 1;
+        this->fFile = 1;
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         textIn_SetupPath (
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        char            *pszFileName;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !textIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pFilePath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = textIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        
+        // Open the file.
+        this->type = TEXTIN_TYPE_FILE;
+        pszFileName = path_CStringA(pFilePath);
+        if (pszFileName) {
+            this->pFile = fopen(pszFileName, "r");
+            if (NULL == this->pFile) {
+                mem_Free(pszFileName);
+                return ERESULT_FILE_NOT_FOUND;
+            }
+            this->fAtEOF = 0;
+            this->fFile = 0;
+            this->fOpen = 1;
+            mem_Free(pszFileName);
+            pszFileName = NULL;
+        }
+        else {
+            eRc = ERESULT_GENERAL_FAILURE;
+        }
+        
+        return eRc;
+    }
+    
+    
+    ERESULT  textIn_SetupU8Array (
+        TEXTIN_DATA     *this,
+        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !textIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pBuffer) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = textIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        
+        // Open the file.
+        this->type = TEXTIN_TYPE_U8ARRAY;
+        obj_Retain(pBuffer);
+        this->pU8Array = pBuffer;
+        this->fAtEOF = 0;
+        this->fOpen = 1;
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1299,7 +1502,7 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     textIn_ToDebugString(
-        TEXTIN_DATA      *this,
+        TEXTIN_DATA     *this,
         int             indent
     )
     {
@@ -1357,7 +1560,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1391,7 +1593,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        textIn_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1428,12 +1629,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(TEXTIN_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

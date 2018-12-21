@@ -73,7 +73,7 @@ struct u12Array_data_s	{
 
     extern
     const
-    U12ARRAY_VTBL         u12Array_Vtbl;
+    U12ARRAY_VTBL   u12Array_Vtbl;
 
 
     // Internal Functions

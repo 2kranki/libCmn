@@ -128,6 +128,20 @@ extern "C" {
     );
     
     
+    /*!
+     Misc property can be used for any purpose needed.  It is not
+     used by this object.
+     */
+    uint32_t        array_getMisc(
+        ARRAY_DATA     *this
+    );
+    
+    bool            array_setMisc(
+        ARRAY_DATA      *this,
+        uint32_t        value
+    );
+
+    
     uint32_t        array_getSize(
         ARRAY_DATA      *this
     );
@@ -213,6 +227,21 @@ extern "C" {
         ARRAY_DATA      *this,
         uint32_t        offset,             // in elements (relative to 1)
         uint32_t        numElems
+    );
+    
+    
+    /*!
+     Delete the odd entries in array shifting the elements down that are to
+     be kept. After completion, the size is adjusted down and the misc field
+     is doubled.  This is meant to be used where the array is  being used to
+     index some table or file and the array needs to be compressed on occasion.
+     For an example of this, see the sidxe object.
+     @param     this    Object Pointer
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         array_DeleteOdd(
+        ARRAY_DATA      *this
     );
     
     
@@ -353,7 +382,7 @@ extern "C" {
     /*!
      Zeroes the data in the array and adjust array size if needed.
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-     error.
+                error.
      */
     ERESULT         array_Zero(
         ARRAY_DATA      *this,

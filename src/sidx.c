@@ -164,8 +164,8 @@ extern "C" {
     //                        A d d  I n d e x
     //---------------------------------------------------------------
     
-    bool            sidx_AddIndex(
-        SIDX_DATA       *cbp,
+    bool            sidx_AddIndex (
+        SIDX_DATA       *this,
         uint32_t        index,
         size_t          offset
     )
@@ -178,35 +178,35 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !sidx_Validate( cbp ) ) {
+        if( !sidx_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        if (0 == cbp->used) {
-            if ( (index % cbp->interval) == 0 ) {
-                pEntry = &cbp->elems[cbp->used++];
+        if (0 == this->used) {
+            if ( (index % this->interval) == 0 ) {
+                pEntry = &this->elems[this->used++];
                 pEntry->index = index;
                 pEntry->offset = offset;
-                cbp->max = index;
+                this->max = index;
             }
         }
         else {
-            if ((index > cbp->max) && ((index % cbp->interval) == 0)) {
-                if (cbp->size == cbp->used) {
+            if ((index > this->max) && ((index % this->interval) == 0)) {
+                if (this->size == this->used) {
                     // Remove every other entry and double interval.
-                    iMax = cbp->size >> 1;
+                    iMax = this->size >> 1;
                     for (i=0; i<iMax; ++i) {
-                        cbp->elems[i] = cbp->elems[i*2];
+                        this->elems[i] = this->elems[i*2];
                     }
-                    cbp->used = cbp->used >> 1;
-                    cbp->interval = cbp->interval << 1;
+                    this->used = this->used >> 1;
+                    this->interval = this->interval << 1;
                 }
-                pEntry = &cbp->elems[cbp->used++];
+                pEntry = &this->elems[this->used++];
                 pEntry->index = index;
                 pEntry->offset = offset;
-                cbp->max = index;
+                this->max = index;
             }
         }
         

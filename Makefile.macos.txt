@@ -1806,6 +1806,22 @@ test_sidx: $(TEST_SRC)/test_sidx.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/sidxe_object.o
+
+$(OBJDIR)/sidxe_object.o: $(SRCDIR)/sidxe_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/sidxe.o
+
+$(OBJDIR)/sidxe.o: $(SRCDIR)/sidxe.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/srcLoc.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_sidxe
+
+test_sidxe: $(TEST_SRC)/test_sidxe.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/srcError_object.o
 
 $(OBJDIR)/srcError_object.o: $(SRCDIR)/srcError_object.c 

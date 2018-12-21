@@ -225,7 +225,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pArray;
     }
     
@@ -248,7 +247,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->elemSize;
     }
     
@@ -268,7 +266,6 @@ extern "C" {
         
         this->elemSize = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -292,7 +289,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->max;
     }
     
@@ -312,7 +308,48 @@ extern "C" {
         
         this->max = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          M i s c
+    //---------------------------------------------------------------
+    
+    uint32_t        array_getMisc(
+        ARRAY_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->misc;
+    }
+    
+    
+    bool            array_setMisc(
+        ARRAY_DATA      *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->misc = value;
+        
         return true;
     }
     
@@ -368,7 +405,6 @@ extern "C" {
         
         this->size = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -392,7 +428,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->fZeroNew;
     }
     
@@ -412,7 +447,6 @@ extern "C" {
         
         this->fZeroNew = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -843,7 +877,47 @@ extern "C" {
     }
     
     
+    ERESULT         array_DeleteOdd(
+        ARRAY_DATA      *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint8_t         *pSrc;
+        uint8_t         *pDest;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        // Remove every other entry and double interval.
+        iMax = this->size >> 1;
+        for (i=1; i<iMax; ++i) {
+            pSrc = array_Ptr(this, ((i << 1) + 1));
+            pDest = array_Ptr(this, (i + 1));
+            memmove(pDest, pSrc, this->elemSize);
+        }
+        if (this->fZeroNew && (this->size - iMax)) {
+            pDest = array_Ptr(this, (iMax + 1));
+            i = (this->size - iMax) * this->elemSize;
+            if (i) {
+                memset(pDest, 0, i);
+            }
+        }
+        this->size = iMax;
+        this->misc = this->misc << 1;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                        E x p a n d
     //---------------------------------------------------------------

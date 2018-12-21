@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   srcFile_internal.h
- *	Generated 06/17/2015 11:21:15
+ *	Generated 12/18/2018 10:08:34
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,64 +39,55 @@
 
 
 
+#include        <srcFile.h>
+#include        <jsonIn.h>
+#include        <textIn_internal.h>
+#include        <token_internal.h>
+
+
+
+
 #ifndef SRCFILE_INTERNAL_H
 #define	SRCFILE_INTERNAL_H
 
 
-#include    <srcFile.h>
-#include    <srcLoc.h>
-#include    <objArray.h>
-#include    <token_internal.h>
-#include    <tokenList.h>
-#include    <stdio.h>
+
+#define     PROPERTY_PATH_OWNED 1
+#define     PROPERTY_STR_OWNED 1
+
+
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
 struct srcFile_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
-#define SRCFILE_INIT_DONE   OBJ_FLAG_USER1
+    TEXTIN_DATA     super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    PATH_DATA       *pPath;
-    const
-    char            *pFileName;
-    union {
-        FBSI_DATA           *pFbsi;
-        ASTR_DATA           *pAStr;
-        FILE                *pFile;
-        U8ARRAY_DATA        *pU8Array;
-        W32STR_DATA         *pW32Str;
-    };
-    uint16_t        type;               // OBJ_CLASS_FBSI or OBJ_CLASS_SBUF
-    uint16_t        flags;              /* Flags */
-#define FLG_EOF         0x8000                  /* End-of-File has been reached. */
-#define FLG_INS         0x4000                  /* Lines are being inserted. */
-#define FLG_NNL         0x2000                  /* Remove all '\n's. */
-#define FLG_OPN         0x1000                  /* File is open and useable. */
-#define FLG_TAB         0x0800                  /* Expand Horizontal Tabs. */
-#define FLG_FILE        0x0400                  /* FILE file was provided */
-    uint8_t         fStripCR;
-    uint8_t         fBackTrack;
-    uint16_t        tabSize;            /* Tab Spacing Size */
-    SRCLOC          loc;
     TOKEN_DATA      curchr;             /*  Current Character */
-
-    // Input Routines
-    TOKENLIST_DATA  *pTokens;
-    uint32_t        rsvd32;
     uint16_t        sizeInputs;
     uint16_t        curInputs;
     TOKEN_DATA      *pInputs;
-    
+    uint8_t         fInit;
+    uint8_t         rsvd8[3];
+
 };
 #pragma pack(pop)
+
+    extern
+    struct srcFile_class_data_s  srcFile_ClassObj;
 
     extern
     const
@@ -103,27 +95,64 @@ struct srcFile_data_s	{
 
 
 
-    // Internal Functions
-    bool            srcFile_setFileIndex(
-        SRCFILE_DATA    *this,
-        uint16_t        value
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SRCFILE_SINGLETON
+    SRCFILE_DATA *  srcFile_getSingleton (
+        void
     );
-    
-    
-    void            srcFile_Dealloc(
+
+    bool            srcFile_setSingleton (
+     SRCFILE_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  srcFile_getSuperVtbl (
+        SRCFILE_DATA    *this
+    );
+
+
+    void            srcFile_Dealloc (
         OBJ_ID          objId
     );
-    
 
-    int32_t         srcFile_InputNextChar(
-        SRCFILE_DATA	*cbp
+
+    ERESULT         srcFile_InputNextChar (
+        SRCFILE_DATA    *this
     );
     
     
+    SRCFILE_DATA *  srcFile_ParseObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          srcFile_QueryInfo (
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+    ASTR_DATA *     srcFile_ToJSON (
+        SRCFILE_DATA    *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			srcFile_Validate(
-        SRCFILE_DATA       *cbp
+    bool			srcFile_Validate (
+        SRCFILE_DATA    *this
     );
 #endif
 

@@ -138,9 +138,7 @@ int         test_pplex3_Input01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_Alloc( );
-        XCTAssertFalse( (OBJ_NIL == pSrc) );
-        pSrc = srcFile_InitAStr( pSrc, pBuf, pPath, 1, 4, true, true );
+        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -297,9 +295,7 @@ int         test_pplex3_Input02(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_Alloc( );
-        XCTAssertFalse( (OBJ_NIL == pSrc) );
-        pSrc = srcFile_InitAStr( pSrc, pBuf, pPath, 1, 4, true, true );
+        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             

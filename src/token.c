@@ -1114,7 +1114,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_Init( this );
+        this = token_Init(this);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1141,7 +1141,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = token_InitFnLCC( this, pLoc, cls );
+        this = token_InitFnLCC(this, pLoc, cls);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }

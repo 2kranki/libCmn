@@ -42,7 +42,7 @@
 #include    <textIn.h>
 #include    <srcLoc_internal.h>
 #include    <ascii.h>
-#include    <sidx.h>
+#include    <sidxe.h>
 #include    <u8Array.h>
 #include    <W32Str.h>
 
@@ -87,7 +87,6 @@ struct textIn_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     union {
         ASTR_DATA           *pAStr;
         FILE                *pFile;
@@ -95,20 +94,16 @@ struct textIn_data_s	{
         W32STR_DATA         *pWStr;
     };
     uint16_t        type;               // OBJ_CLASS_FBSI or OBJ_CLASS_SBUF
-    uint16_t        flags;              /* Flags */
-#define FLG_EOF         0x8000                  /* End-of-File has been reached. */
-#define FLG_INS         0x4000                  /* Lines are being inserted. */
-#define FLG_NNL         0x2000                  /* Remove all '\n's. */
-#define FLG_OPN         0x1000                  /* File is open and useable. */
-#define FLG_TAB         0x0800                  /* Expand Horizontal Tabs. */
-#define FLG_FILE        0x0400                  /* FILE file was provided */
-    uint32_t        lineNo;             /* Current Line Number */
-    uint16_t        colNo;              /* Current Column Number */
     uint16_t        tabSize;            /* Tab Spacing Size */
-    size_t          fileOffset;
-    uint8_t         fStripCR;
     uint8_t         state;
-    uint8_t         rsvd8_1[2];
+    uint8_t         fFile;              // true == FILE parameter was supplied and
+    //                                  //          we are not responsible for closing
+    //                                  //          it. Otherwise, we are.
+    uint8_t         fOpen;
+    uint8_t         fStripCR;
+    uint8_t         fStripNL;
+    uint8_t         fAtEOF;
+    uint8_t         rsvd8[2];
     PATH_DATA       *pPath;
     const
     char            *pPathA;
@@ -116,8 +111,9 @@ struct textIn_data_s	{
     uint16_t        filenameIndex;
     uint16_t        rsvd16;
 #if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    SIDX_DATA       *pSidx;
+    SIDXE_DATA      *pSidx;
 #endif
+    TEXTIN_CHRLOC   curChr;
 
 };
 #pragma pack(pop)
@@ -136,12 +132,18 @@ struct textIn_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            textIn_setLastError(
+    bool            textIn_setPath(
         TEXTIN_DATA     *this,
-        ERESULT         value
+        PATH_DATA       *pValue
     );
-
-
+    
+    
+    bool            textIn_setTabSize(
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    );
+    
+    
     OBJ_IUNKNOWN *  textIn_getSuperVtbl(
         TEXTIN_DATA     *this
     );
@@ -153,9 +155,7 @@ struct textIn_data_s	{
 
 
     TEXTIN_DATA *   textIn_Init(
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pPath,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+        TEXTIN_DATA     *this
     );
     
     
@@ -166,6 +166,13 @@ struct textIn_data_s	{
     );
 
 
+    ERESULT         textIn_SetupBase(
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pPath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    
     ASTR_DATA *     textIn_ToJSON(
         TEXTIN_DATA      *this
     );

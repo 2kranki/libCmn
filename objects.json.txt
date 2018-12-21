@@ -138,6 +138,7 @@
         "screen":["cmn_defs.h","AStr.h"],
         "sgraph":["cmn_defs.h","AStr.h"],
         "sidx":["cmn_defs.h","AStr.h"],
+        "sidxe":["cmn_defs.h","AStr.h","srcLoc.h"],
         "srcError":["cmn_defs.h","AStr.h"],
         "srcErrors":["cmn_defs.h","AStr.h"],
         "srcFile":["cmn_defs.h","AStr.h","ascii.h","fbsi.h","path.h","token.h",

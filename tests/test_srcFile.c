@@ -1,5 +1,5 @@
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 12/18/2018 10:08:34
  */
 
 
@@ -24,6 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <szTbl.h>
+#include    <token_internal.h>
 #include    <trace.h>
 #include    <srcFile_internal.h>
 
@@ -31,13 +32,14 @@
 
 static
 const
-char        *pFilePath = "/Users/bob/Support/vogel/template.h.txt"; // Currently 248 bytes
+char        *pFilePath = "/Users/bob/git/libCmn/tests/files/test_objects.json.txt";
+// Currently 853 bytes
 
 
 static
 char        *pTest01 =  "class abc {\n"
-                        "\tint a;\n"
-                        "\tchar\t\txyzzy(void);\n"
+                            "\tint a;\n"
+                            "\tchar\t\txyzzy(void);\n"
                         "}\n";
 
 
@@ -48,9 +50,9 @@ char        *pTest02 =  "\xC2\xA0" "class" "\xE2\x81\xA0" "abc;\n";
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -62,16 +64,17 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    szTbl_SharedReset();    
-    trace_SharedReset( ); 
+    
+    szTbl_SharedReset();
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -94,24 +97,49 @@ int         tearDown(
 
 
 
-int         test_srcFile_OpenClose(
+int             test_srcFile_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    SRCFILE_DATA	*pObj = OBJ_NIL;
+    SRCFILE_DATA	    *pObj = OBJ_NIL;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = srcFile_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = srcFile_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        // Test something.
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int                 test_srcFile_General01 (
+    const
+    char            *pTestName
+)
+{
+    SRCFILE_DATA    *pObj = OBJ_NIL;
     ASTR_DATA       *pBuf = OBJ_NIL;
     PATH_DATA       *pPath = path_NewA("abc");
-   
+    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pBuf = AStr_NewA(pTest01);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
-    
     if (pBuf) {
-        pObj = srcFile_Alloc();
-        XCTAssertFalse( (OBJ_NIL == pObj) );
-        pObj = srcFile_InitAStr( pObj, pBuf, pPath, 1, 4, true, true );
+        
+        pObj = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pObj) {
             obj_Release(pObj);
@@ -122,7 +150,7 @@ int         test_srcFile_OpenClose(
     }
     obj_Release(pPath);
     pPath = OBJ_NIL;
-
+    
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
@@ -131,7 +159,7 @@ int         test_srcFile_OpenClose(
 
 int         test_srcFile_Buffer01(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     SRCFILE_DATA    *pSource = OBJ_NIL;
@@ -153,9 +181,7 @@ int         test_srcFile_Buffer01(
     XCTAssertTrue( (17 == i) );
     TRC( "\tpBuf = %p\n", pBuf );
     
-    pSource = srcFile_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pSource) );
-    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 1, 4, true, false );
+    pSource = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     
@@ -179,7 +205,7 @@ int         test_srcFile_Buffer01(
                     colNo,
                     cls,
                     chr
-            );
+                    );
             srcFile_InputAdvance(pSource, 1);
         }
         
@@ -203,7 +229,7 @@ int         test_srcFile_File(
     char        *pTestName
 )
 {
-    SRCFILE_DATA	*pObj  = OBJ_NIL;
+    SRCFILE_DATA    *pObj  = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     uint32_t        count  = 0;
     TOKEN_DATA      *pToken;
@@ -214,12 +240,10 @@ int         test_srcFile_File(
     pPath = path_NewA(pFilePath);
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
-    pObj = srcFile_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = srcFile_InitPath( pObj, pPath, 1, 4, true, false );
+    pObj = srcFile_NewFromPath(pPath, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-
+        
         for ( ;; ) {
             pToken = srcFile_InputLookAhead(pObj, 1);
             if (OBJ_NIL == pToken) {
@@ -249,9 +273,9 @@ int         test_srcFile_File(
 
 
 int         test_srcFile_Test02(
-    const
-    char        *pTestName
-)
+                                const
+                                char        *pTestName
+                                )
 {
     SRCFILE_DATA    *pSource = OBJ_NIL;
     ASTR_DATA       *pBuf = OBJ_NIL;
@@ -270,9 +294,7 @@ int         test_srcFile_Test02(
     XCTAssertTrue( (12 == i) );
     //TRC( "\tpBuf = %p\n", pBuffer );
     
-    pSource = srcFile_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pSource) );
-    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 1, 4, true, false );
+    pSource = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     obj_TraceSet(pSource,true);
@@ -441,7 +463,7 @@ int         test_srcFile_Test02(
 
 int         test_srcFile_Test03(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     SRCFILE_DATA    *pSource = OBJ_NIL;
@@ -461,9 +483,7 @@ int         test_srcFile_Test03(
     XCTAssertTrue( (12 == i) );
     //TRC( "\tpBuf = %p\n", pBuffer );
     
-    pSource = srcFile_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pSource) );
-    pSource = srcFile_InitAStr( pSource, pBuf, pPath, 1, 4, true, false );
+    pSource = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     obj_TraceSet(pSource,true);
@@ -635,7 +655,7 @@ int         test_srcFile_Test03(
         XCTAssertTrue( (1 == fileIndex) );
         srcFile_InputAdvance(pSource, 1);
         
-       pToken = srcFile_InputLookAhead(pSource, 1);
+        pToken = srcFile_InputLookAhead(pSource, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         XCTAssertTrue( (token_Validate(pToken)) );
         chr = token_getChrW32(pToken);
@@ -683,6 +703,7 @@ TINYTEST_START_SUITE(test_srcFile);
     TINYTEST_ADD_TEST(test_srcFile_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcFile_File,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcFile_Buffer01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFile_General01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcFile_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

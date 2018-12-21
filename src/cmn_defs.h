@@ -410,6 +410,8 @@ extern "C" {
         OBJ_IDENT_SGRAPH_CLASS,
         OBJ_IDENT_SIDX,                 // Simple Integer Index
         OBJ_IDENT_SIDX_CLASS,
+        OBJ_IDENT_SIDXE,                // Simple Integer Index with extended info
+        OBJ_IDENT_SIDXE_CLASS,
         OBJ_IDENT_SRC,
         OBJ_IDENT_SRC_CLASS,
         OBJ_IDENT_SRCERROR,             // Source Error Message

@@ -611,8 +611,116 @@ int         test_array_Xchg01(
 
 
 
+int         test_array_DeleteOdd01(
+    const
+    char            *pTestName
+)
+{
+    ARRAY_DATA      *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    char            *pStrA;
+    uint32_t        i;
+    uint32_t        len;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = array_NewWithSize(1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        i = array_getElemSize(pObj);
+        XCTAssertTrue( (1 == i) );
+        array_setZeroNew(pObj, true);
+        array_setMisc(pObj, 1);
+        i = array_getMisc(pObj);
+        XCTAssertTrue( (1 == i) );
+
+        pStrA = "abcdef";
+        len = (uint16_t)(strlen(pStrA));
+        XCTAssertTrue( (len == 6) );
+        eRc = array_InsertData(pObj, 1, len, pStrA);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        i = array_getSize(pObj);
+        XCTAssertTrue( (len == i) );
+        pStrA = array_Ptr(pObj, 1);
+        XCTAssertTrue( (0 == strncmp("abcdef", pStrA, len)) );
+        
+        eRc = array_DeleteOdd(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        i = array_getSize(pObj);
+        XCTAssertTrue( ((len >> 1) == i) );
+        pStrA = array_Ptr(pObj, 1);
+        XCTAssertTrue( (0 == strncmp("ace", pStrA, (len >> 1))) );
+        i = array_getMisc(pObj);
+        XCTAssertTrue( (2 == i) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_array_DeleteOdd02(
+    const
+    char            *pTestName
+)
+{
+    ARRAY_DATA      *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    char            *pStrA;
+    uint32_t        i;
+    uint32_t        len;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = array_NewWithSize(1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        i = array_getElemSize(pObj);
+        XCTAssertTrue( (1 == i) );
+        array_setZeroNew(pObj, true);
+        array_setMisc(pObj, 1);
+        i = array_getMisc(pObj);
+        XCTAssertTrue( (1 == i) );
+        
+        pStrA = "abcde";
+        len = (uint16_t)(strlen(pStrA));
+        XCTAssertTrue( (len == 5) );
+        eRc = array_InsertData(pObj, 1, len, pStrA);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        i = array_getSize(pObj);
+        XCTAssertTrue( (len == i) );
+        pStrA = array_Ptr(pObj, 1);
+        XCTAssertTrue( (0 == strncmp("abcde", pStrA, len)) );
+        
+        eRc = array_DeleteOdd(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        i = array_getSize(pObj);
+        XCTAssertTrue( ((len >> 1) == i) );
+        pStrA = array_Ptr(pObj, 1);
+        XCTAssertTrue( (0 == strncmp("ace", pStrA, (len >> 1))) );
+        i = array_getMisc(pObj);
+        XCTAssertTrue( (2 == i) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_array);
+    TINYTEST_ADD_TEST(test_array_DeleteOdd02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_array_DeleteOdd01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_array_Xchg01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_array_Ptr01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_array_Delete02,setUp,tearDown);

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   array_internal.h
- *	Generated 11/08/2017 09:27:01
+ * File:   sidxe_internal.h
+ *	Generated 12/18/2018 10:26:03
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,17 @@
 
 
 
-#include    <array.h>
+#include        <sidxe.h>
+#include        <array.h>
+#include        <jsonIn.h>
 
 
-#ifndef ARRAY_INTERNAL_H
-#define	ARRAY_INTERNAL_H
+#ifndef SIDXE_INTERNAL_H
+#define	SIDXE_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -58,31 +64,45 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct array_data_s	{
+#pragma pack(push, 1)
+struct sidxe_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        fZeroNew;       // Zero new space added
-    uint16_t        elemSize;       // Element Size
-    uint32_t        size;           // Controlled by User
-    uint32_t        max;            // Number of Array Elements
-    uint32_t        misc;           // Controlled by User
-    uint8_t         *pArray;
+    uint16_t        max;		    // maximum number of entries
+    uint16_t        reserved;
+    uint32_t        maxLineNo;
+    ASTR_DATA       *pStr;
+    ARRAY_DATA      *pArray;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct array_class_data_s  array_ClassObj;
+    struct sidxe_class_data_s  sidxe_ClassObj;
 
     extern
     const
-    ARRAY_VTBL         array_Vtbl;
+    SIDXE_VTBL         sidxe_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SIDXE_SINGLETON
+    SIDXE_DATA *     sidxe_getSingleton (
+        void
+    );
+
+    bool            sidxe_setSingleton (
+     SIDXE_DATA       *pValue
+);
+#endif
 
 
 
@@ -90,76 +110,30 @@ struct array_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            array_setElemSize(
-        ARRAY_DATA      *this,
-        uint16_t        value
+    OBJ_IUNKNOWN *  sidxe_getSuperVtbl (
+        SIDXE_DATA     *this
     );
-    
-    
-    uint32_t        array_getMax(
-        ARRAY_DATA     *this
-    );
-    
-    
-    bool            array_setSize(
-        ARRAY_DATA      *this,
-        uint32_t        value
-    );
-    
-    
-    bool            array_setZeroNew(
-        ARRAY_DATA      *this,
-        uint16_t        value
-    );
-    
-    
-    ARRAY_DATA *    array_Copy(
-        ARRAY_DATA      *this
-    );
-    
-    
-    void            array_Dealloc(
+
+
+    void            sidxe_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ARRAY_DATA *    array_DeepCopy(
-        ARRAY_DATA      *this
+    SIDXE_DATA *       sidxe_ParseObject (
+        JSONIN_DATA     *pParser
     );
-    
-    
-    ERESULT         array_Expand(
-        ARRAY_DATA      *this,
-        uint32_t        min
-    );
-    
-    
-    void            array_FreeArray(
-        ARRAY_DATA      *this
-    );
-    
-    
-    uint32_t        array_OffsetOf(
-        ARRAY_DATA      *this,
-        uint32_t        index
-    );
-    
-    
-    void *          array_Ptr(
-        ARRAY_DATA      *this,
-        uint32_t        elem        // Element Number (relative to 1)
-    );
-    
-    
-    void *          array_QueryInfo(
+
+
+    void *          sidxe_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     array_ToJSON(
-        ARRAY_DATA      *this
+    ASTR_DATA *     sidxe_ToJSON (
+        SIDXE_DATA      *this
     );
 
 
@@ -167,8 +141,8 @@ struct array_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			array_Validate(
-        ARRAY_DATA      *this
+    bool			sidxe_Validate (
+        SIDXE_DATA       *this
     );
 #endif
 
@@ -178,5 +152,5 @@ struct array_data_s	{
 }
 #endif
 
-#endif	/* ARRAY_INTERNAL_H */
+#endif	/* SIDXE_INTERNAL_H */
 

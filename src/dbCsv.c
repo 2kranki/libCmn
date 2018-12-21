@@ -666,13 +666,13 @@ extern "C" {
     DBCSV_DATA *     dbCsv_New(
     )
     {
-        DBCSV_DATA       *cbp;
+        DBCSV_DATA       *this;
         
-        cbp = dbCsv_Alloc( );
-        if (cbp) {
-            cbp = dbCsv_Init( cbp );
+        this = dbCsv_Alloc( );
+        if (this) {
+            this = dbCsv_Init(this);
         } 
-        return( cbp );
+        return this;
     }
 
 
@@ -683,13 +683,17 @@ extern "C" {
         uint16_t		tabSize         // Tab Spacing if any
     )
     {
-        DBCSV_DATA       *cbp;
+        DBCSV_DATA       *this;
         
-        cbp = dbCsv_Alloc( );
-        if (cbp) {
-            cbp = dbCsv_InitAStr( cbp, pAStr, pPath, tabSize );
+        this = dbCsv_New( );
+        if (this) {
+            this->pSrc = srcFile_NewFromAStr(pAStr, pPath, 1, tabSize);
+            if (OBJ_NIL == this->pSrc) {
+                obj_Release(this);
+                return OBJ_NIL;
+            }
         }
-        return( cbp );
+        return this;
     }
 
     
@@ -699,13 +703,15 @@ extern "C" {
         uint16_t		tabSize         // Tab Spacing if any
     )
     {
-        DBCSV_DATA       *cbp;
+        DBCSV_DATA       *this;
         
-        cbp = dbCsv_Alloc( );
-        if (cbp) {
-            cbp = dbCsv_InitPath( cbp, pPath, tabSize );
+        this = dbCsv_New( );
+        this->pSrc = srcFile_NewFromPath(pPath, 1, tabSize);
+        if (OBJ_NIL == this->pSrc) {
+            obj_Release(this);
+            return OBJ_NIL;
         }
-        return( cbp );
+        return this;
     }
     
     
@@ -971,104 +977,7 @@ extern "C" {
         return this;
     }
 
-     
-    DBCSV_DATA *    dbCsv_InitAStr(
-        DBCSV_DATA      *this,
-        ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pAStr) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this = dbCsv_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this->pSrc = srcFile_Alloc();
-        this->pSrc = srcFile_InitAStr(this->pSrc, pAStr, pPath, 1, tabSize, false, false);
-        if (OBJ_NIL == this->pSrc) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        return this;
-    }
-    
-    
-    DBCSV_DATA *    dbCsv_InitPath(
-        DBCSV_DATA      *this,
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pPath) {
-            fprintf( stderr, "Fatal Error - Missing input source file path.\n" );
-            return OBJ_NIL;
-        }
-        
-        this = dbCsv_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this->pSrc = srcFile_NewFromPath(pPath, 1, tabSize, false, false);
-        if (OBJ_NIL == this->pSrc) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        return this;
-    }
-    
-    
-    DBCSV_DATA *    dbCsv_InitW32Str(
-        DBCSV_DATA      *this,
-        W32STR_DATA     *pWStr,         // Buffer of file data
-        PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
-    )
-    {
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        if (OBJ_NIL == pWStr) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this = dbCsv_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this->pSrc = srcFile_InitW32Str(this->pSrc, pWStr, pPath, 1, tabSize, false, false);
-        if (OBJ_NIL == this->pSrc) {
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        return this;
-    }
-    
-    
-    
+             
     
     //---------------------------------------------------------------
     //                      P a r s e  F i l e

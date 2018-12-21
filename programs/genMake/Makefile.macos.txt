@@ -13,7 +13,7 @@ CFLAGS += -I$(LIBCMN_BASE)/include
 CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
 CFLAGS += -D__MACOSX_ENV__
 
-TEST_FLGS = -Itests $(CFLAGS_LIBS)
+TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses
 
 INSTALL_BASE = $(HOME)/Support/bin
 INSTALLDIR = $(INSTALL_BASE)
@@ -143,7 +143,7 @@ install:
 
 
 .PHONY: link
-link: $(OBJS) src/mainProgram.c
+link: $(OBJS) $(SRCDIR)/mainProgram.c
 	CC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^
 
 

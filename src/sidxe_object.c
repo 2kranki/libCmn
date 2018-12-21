@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'srcFile'
-//	Generated 12/18/2018 10:08:34
+//	Class Object Metods and Tables for 'sidxe'
+//	Generated 12/18/2018 10:26:03
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			SRCFILE_OBJECT_C	    1
-#include        <srcFile_internal.h>
-#ifdef  SRCFILE_SINGLETON
+#define			SIDXE_OBJECT_C	    1
+#include        <sidxe_internal.h>
+#ifdef  SIDXE_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct srcFile_class_data_s	{
+struct sidxe_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  SRCFILE_SINGLETON
+#ifdef  SIDXE_SINGLETON
     volatile
-    SRCFILE_DATA       *pSingleton;
+    SIDXE_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct srcFile_class_data_s	{
 
 
 static
-void *          srcFileClass_QueryInfo (
+void *          sidxeClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,21 +78,18 @@ void *          srcFileClass_QueryInfo (
 
 static
 const
-OBJ_INFO        srcFile_Info;            // Forward Reference
+OBJ_INFO        sidxe_Info;            // Forward Reference
 
 
 
 
 static
-bool            srcFileClass_IsKindOf (
+bool            sidxeClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SRCFILE_CLASS == classID) {
+    if (OBJ_IDENT_SIDXE_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_TEXTIN_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -102,11 +99,11 @@ bool            srcFileClass_IsKindOf (
 
 
 static
-uint16_t		srcFileClass_WhoAmI (
+uint16_t		sidxeClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_SRCFILE_CLASS;
+    return OBJ_IDENT_SIDXE_CLASS;
 }
 
 
@@ -118,17 +115,17 @@ uint16_t		srcFileClass_WhoAmI (
 
 static
 const
-SRCFILE_CLASS_VTBL    class_Vtbl = {
+SIDXE_CLASS_VTBL    class_Vtbl = {
     {
-        &srcFile_Info,
-        srcFileClass_IsKindOf,
+        &sidxe_Info,
+        sidxeClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        srcFile_Class,
-        srcFileClass_WhoAmI,
-        (P_OBJ_QUERYINFO)srcFileClass_QueryInfo,
-        NULL                        // srcFileClass_ToDebugString
+        sidxe_Class,
+        sidxeClass_WhoAmI,
+        (P_OBJ_QUERYINFO)sidxeClass_QueryInfo,
+        NULL                        // sidxeClass_ToDebugString
     },
 };
 
@@ -138,8 +135,8 @@ SRCFILE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-SRCFILE_CLASS_DATA  srcFile_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SRCFILE_CLASS, 0, 1},
+SIDXE_CLASS_DATA  sidxe_ClassObj = {
+    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SIDXE_CLASS, 0, 1},
 	//0
 };
 
@@ -149,17 +146,17 @@ SRCFILE_CLASS_DATA  srcFile_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  SRCFILE_SINGLETON
-SRCFILE_DATA *     srcFile_getSingleton (
+#ifdef  SIDXE_SINGLETON
+SIDXE_DATA *     sidxe_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(srcFile_ClassObj.pSingleton);
+    return (OBJ_ID)(sidxe_ClassObj.pSingleton);
 }
 
 
-bool            srcFile_setSingleton (
-    SRCFILE_DATA       *pValue
+bool            sidxe_setSingleton (
+    SIDXE_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -179,10 +176,10 @@ bool            srcFile_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (srcFile_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(srcFile_ClassObj.pSingleton));
+    if (sidxe_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(sidxe_ClassObj.pSingleton));
     }
-    srcFile_ClassObj.pSingleton = pValue;
+    sidxe_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -192,17 +189,17 @@ bool            srcFile_setSingleton (
 
 
 
-SRCFILE_DATA *     srcFile_Shared (
+SIDXE_DATA *     sidxe_Shared (
     void
 )
 {
-    SRCFILE_DATA       *this = (OBJ_ID)(srcFile_ClassObj.pSingleton);
+    SIDXE_DATA       *this = (OBJ_ID)(sidxe_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = srcFile_New( );
-        srcFile_setSingleton(this);
+        this = sidxe_New( );
+        sidxe_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // srcFile_ClassObj.pSingleton = OBJ_NIL;
+        // sidxe_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -210,15 +207,15 @@ SRCFILE_DATA *     srcFile_Shared (
 
 
 
-void            srcFile_SharedReset (
+void            sidxe_SharedReset (
     void
 )
 {
-    SRCFILE_DATA       *this = (OBJ_ID)(srcFile_ClassObj.pSingleton);
+    SIDXE_DATA       *this = (OBJ_ID)(sidxe_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        srcFile_ClassObj.pSingleton = OBJ_NIL;
+        sidxe_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -234,13 +231,13 @@ void            srcFile_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          srcFileClass_QueryInfo (
+void *          sidxeClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    SRCFILE_CLASS_DATA *this = objId;
+    SIDXE_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -251,7 +248,7 @@ void *          srcFileClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(SRCFILE_DATA);
+            return (void *)sizeof(SIDXE_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -266,7 +263,7 @@ void *          srcFileClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&srcFile_Info;
+                        return (void *)&sidxe_Info;
                     }
                     break;
                     
@@ -284,13 +281,13 @@ void *          srcFileClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return srcFile_New;
+                        return sidxe_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return srcFileClass_WhoAmI;
+                        return sidxeClass_WhoAmI;
                     }
                     break;
                     
@@ -310,15 +307,12 @@ void *          srcFileClass_QueryInfo (
 
 
 static
-bool            srcFile_IsKindOf (
+bool            sidxe_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_SRCFILE == classID) {
+    if (OBJ_IDENT_SIDXE == classID) {
        return true;
-    }
-    if (OBJ_IDENT_TEXTIN == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -329,25 +323,25 @@ bool            srcFile_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            srcFile_Dealloc (
+void            sidxe_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          srcFile_Class (
+OBJ_ID          sidxe_Class (
     void
 )
 {
-    return (OBJ_ID)&srcFile_ClassObj;
+    return (OBJ_ID)&sidxe_ClassObj;
 }
 
 
 static
-uint16_t		srcFile_WhoAmI (
+uint16_t		sidxe_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_SRCFILE;
+    return OBJ_IDENT_SIDXE;
 }
 
 
@@ -359,34 +353,34 @@ uint16_t		srcFile_WhoAmI (
 //===========================================================
 
 const
-SRCFILE_VTBL     srcFile_Vtbl = {
+SIDXE_VTBL     sidxe_Vtbl = {
     {
-        &srcFile_Info,
-        srcFile_IsKindOf,
-#ifdef  SRCFILE_IS_SINGLETON
+        &sidxe_Info,
+        sidxe_IsKindOf,
+#ifdef  SIDXE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        srcFile_Dealloc,
-        srcFile_Class,
-        srcFile_WhoAmI,
-        (P_OBJ_QUERYINFO)srcFile_QueryInfo,
-        (P_OBJ_TOSTRING)srcFile_ToDebugString,
-        NULL,			// srcFile_Enable,
-        NULL,			// srcFile_Disable,
-        NULL,			// (P_OBJ_ASSIGN)srcFile_Assign,
-        NULL,			// (P_OBJ_COMPARE)srcFile_Compare,
-        NULL, 			// (P_OBJ_PTR)srcFile_Copy,
-        NULL, 			// (P_OBJ_PTR)srcFile_DeepCopy,
-        NULL 			// (P_OBJ_HASH)srcFile_Hash,
+        sidxe_Dealloc,
+        sidxe_Class,
+        sidxe_WhoAmI,
+        (P_OBJ_QUERYINFO)sidxe_QueryInfo,
+        (P_OBJ_TOSTRING)sidxe_ToDebugString,
+        NULL,			// sidxe_Enable,
+        NULL,			// sidxe_Disable,
+        NULL,			// (P_OBJ_ASSIGN)sidxe_Assign,
+        NULL,			// (P_OBJ_COMPARE)sidxe_Compare,
+        NULL, 			// (P_OBJ_PTR)sidxe_Copy,
+        NULL, 			// (P_OBJ_PTR)sidxe_DeepCopy,
+        NULL 			// (P_OBJ_HASH)sidxe_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //srcFile_IsEnabled,
+    //sidxe_IsEnabled,
  
 };
 
@@ -394,13 +388,13 @@ SRCFILE_VTBL     srcFile_Vtbl = {
 
 static
 const
-OBJ_INFO        srcFile_Info = {
-    "srcFile",
-    "Tokenize a Source File",	
-    (OBJ_DATA *)&srcFile_ClassObj,
+OBJ_INFO        sidxe_Info = {
+    "sidxe",
+    "Simple Index with Extended Information",
+    (OBJ_DATA *)&sidxe_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&srcFile_Vtbl,
-    sizeof(SRCFILE_DATA)
+    (OBJ_IUNKNOWN *)&sidxe_Vtbl,
+    sizeof(SIDXE_DATA)
 };
 
 
