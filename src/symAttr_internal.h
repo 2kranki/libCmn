@@ -96,14 +96,15 @@ extern "C" {
     typedef enum sym_storage_e {
         SYM_STORAGE_UNDEFINED=0,
         SYM_STORAGE_AUTO,           // Auto allocated local identifiers
+        SYM_STORAGE_ENTRY,
         SYM_STORAGE_EXTERN,
         SYM_STORAGE_LOCAL,
-        SYM_STORAGE_MEMBER,         // ???
+        SYM_STORAGE_MEMBER,         // Member of Union or Structure
         SYM_STORAGE_PUBLIC,
-        SYM_STORAGE_SPROTO,         // ???
+        SYM_STORAGE_SPROTO,         // Prototype
         SYM_STORAGE_STATIC,         // static identifiers in global context
         SYM_STORAGE_STATIC_LOCAL,   // static identifiers in local context
-        SYM_STORAGE_STRUCT
+        SYM_STORAGE_STRUCT          // ???
     } SYM_STORAGE;
     
     

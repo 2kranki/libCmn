@@ -1517,7 +1517,8 @@ extern "C" {
     //                P a r s e  W h i t e  S p a c e
     //---------------------------------------------------------------
     
-    /* Parse white space until eol.
+    /*!
+     Parse white space until eol or non-whitespace character.
      */
     bool            lex_ParseWhiteSpace(
         LEX_DATA        *this

@@ -298,16 +298,6 @@ extern "C" {
     );
     
     
-    /*!
-     This routine discards all tokens accumulated since the last checkpoint
-     and terminates the checkpoint process.
-     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
-     */
-    ERESULT         lex_Restart(
-        LEX_DATA        *this
-    );
-    
-    
     LEX_DATA *      lex_Init(
         LEX_DATA        *this,
         uint16_t        k                   // Size of Look-ahead token buffer

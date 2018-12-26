@@ -150,7 +150,8 @@ extern "C" {
     
     /*!
      Convert 0-15 to an ascii character. For instance, 10 becomes 'a'.
-     @return:   if successful, the converted character. Otherwise, '?' is returned.
+     @return:   if successful, the converted character. Otherwise,
+                '?' is returned.
      */
     char            hex_DigitToChrA(
         int             value
