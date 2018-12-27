@@ -144,9 +144,28 @@ extern "C" {
     );
     
     
-    SRCFILES_DATA * srcFiles_NewSrcFromAStr(
+    /*!
+     Create a new srcFile object from the given parameters and push it to the
+     top of the stack.
+     */
+    ERESULT         srcFiles_NewSrcFromAStr(
         SRCFILES_DATA   *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    ERESULT         srcFiles_NewSrcFromFile(
+        SRCFILES_DATA   *this,
+        FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+    
+    
+    ERESULT         srcFiles_NewSrcFromPath(
+        SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)

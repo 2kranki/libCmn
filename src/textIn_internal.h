@@ -85,6 +85,7 @@ struct textIn_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+#define TEXTIN_FLAG_SAVCHR  OBJ_FLAG_USER1
 
     // Common Data
     union {
@@ -114,6 +115,7 @@ struct textIn_data_s	{
     SIDXE_DATA      *pSidx;
 #endif
     TEXTIN_CHRLOC   curChr;
+    TEXTIN_CHRLOC   savChr;
 
 };
 #pragma pack(pop)

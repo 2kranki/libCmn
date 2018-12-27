@@ -903,6 +903,88 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          G e t  L i n e
+    //---------------------------------------------------------------
+    
+    ERESULT         textIn_GetLine (
+        TEXTIN_DATA     *this,
+        char            *pBuffer,
+        int             size,
+        SRCLOC          *pLoc
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        W32CHR_T        chr;
+        int             chrSize;
+        SRCLOC          loc = {0};
+        char            chrData[11];
+        bool            fMore = true;
+        bool            fLoc = false;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pBuffer) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (size > 1)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        *pBuffer = '\0';
+        --size;                         // Allow space for trailing NUL.
+        
+        while (fMore) {
+            chr = textIn_NextChar(this);
+            switch (chr) {
+                case '\n':
+                    fMore = false;
+                    break;
+                case '\r':
+                    break;
+                case ASCII_CPM_EOF:
+                case EOF:
+                    eRc = ERESULT_EOF_ERROR;
+                    fMore = false;
+                    break;
+                default:
+                    if (!fLoc) {
+                        loc = this->curChr.loc;
+                        fLoc = true;
+                    }
+                    chrSize = utf8_W32ToChrCon(chr, chrData);
+                    if (chrSize && (chrSize < size)) {
+                        str_Concat(pBuffer, size, chrData);
+                        pBuffer += chrSize;
+                        size -= chrSize;
+                    }
+                    else {
+                        fMore = false;
+                        this->savChr = this->curChr;
+                        obj_FlagOn(this, TEXTIN_FLAG_SAVCHR);
+                    }
+                    break;
+            }
+        }
+
+        // Return to caller.
+        if (pLoc) {
+            *pLoc = loc;
+        }
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -1066,7 +1148,13 @@ extern "C" {
                 this->state = TEXTIN_STATE_NORMAL;
                 
             case TEXTIN_STATE_NORMAL:
-                chr = textIn_UnicodeGetc(this);
+                if (obj_Flag(this, TEXTIN_FLAG_SAVCHR)) {
+                    this->curChr = this->savChr;
+                    obj_FlagOff(this, TEXTIN_FLAG_SAVCHR);
+                }
+                else {
+                    chr = textIn_UnicodeGetc(this);
+                }
                 if (chr > 0) {
                     switch (chr) {
                             

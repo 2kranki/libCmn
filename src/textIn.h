@@ -192,6 +192,27 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Read a line of text into the given buffer if it will fit. Ignore
+     '\r' in the file.
+     @param     this    object pointer
+     @param     pBuffer UTF-8 Buffer for data
+     @param     size    size of buffer
+     @param     pLoc    Address of SRCLOC used to indicate the first
+                        character of the line
+     @return    If successful, ERESULT_SUCCESS and pBuffer contains the
+                line of UTF-8 text.  ERESULT_EOF_ERROR if end of file
+                is reached for first character.  Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         textIn_GetLine (
+        TEXTIN_DATA     *this,
+        char            *pBuffer,
+        int             size,
+        SRCLOC          *pLoc
+    );
+    
+    
     TEXTIN_DATA *  textIn_Init (
         TEXTIN_DATA     *this
     );
@@ -262,7 +283,7 @@ extern "C" {
      @code 
         ASTR_DATA      *pDesc = textIn_ToDebugString(this,4);
      @endcode 
-     @param     this    TEXTIN object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.

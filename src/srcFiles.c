@@ -350,7 +350,7 @@ extern "C" {
     //                          N e w  S r c
     //---------------------------------------------------------------
     
-    SRCFILES_DATA * srcFiles_NewSrcFromAStr(
+    ERESULT         srcFiles_NewSrcFromAStr(
         SRCFILES_DATA   *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
@@ -360,23 +360,85 @@ extern "C" {
     {
         SRCFILE_DATA    *pSrc;
         
-        this = srcFiles_Init( this );
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
         }
+#endif
         
         pSrc = srcFile_NewFromAStr(pAStr, pFilePath, fileIndex, tabSize);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
-            return OBJ_NIL;
+            return ERESULT_OUT_OF_MEMORY;
         }
         srcFiles_StackPush(this, pSrc);
         
-        return this;
+        return ERESULT_SUCCESS;
     }
     
     
+    ERESULT         srcFiles_NewSrcFromFile(
+        SRCFILES_DATA   *this,
+        FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        SRCFILE_DATA    *pSrc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pSrc = srcFile_NewFromFile(pFile, fileIndex, tabSize);
+        if (OBJ_NIL == pSrc) {
+            obj_Release(this);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        srcFiles_StackPush(this, pSrc);
+        
+        return ERESULT_SUCCESS;
+    }
+
     
+    ERESULT         srcFiles_NewSrcFromPath(
+        SRCFILES_DATA   *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        SRCFILE_DATA    *pSrc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pSrc = srcFile_NewFromPath(pFilePath, fileIndex, tabSize);
+        if (OBJ_NIL == pSrc) {
+            obj_Release(this);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        srcFiles_StackPush(this, pSrc);
+        
+        return ERESULT_SUCCESS;
+    }
+
+    
+
     //---------------------------------------------------------------
     //                      S t a c k  G e t
     //---------------------------------------------------------------
