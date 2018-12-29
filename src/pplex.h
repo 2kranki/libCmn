@@ -431,7 +431,7 @@ extern "C" {
      table as normal.
      */
     bool            pplex_setKeywordParseFunction(
-        PPLEX_DATA     *this,
+        PPLEX_DATA      *this,
         bool            (*pUserExit)(OBJ_ID, TOKEN_DATA *),
         OBJ_ID          pUserObj
     );
@@ -572,6 +572,28 @@ extern "C" {
         TOKEN_DATA *    (*pChrAdvance)(OBJ_ID,uint16_t),
         TOKEN_DATA *    (*pChrLookAhead)(OBJ_ID,uint16_t),
         OBJ_ID          pSrcObj
+    );
+    
+    
+    /*!
+     Setup the input to the first lexer in the chain so that all
+     tokens are taken from this source.  It is assumed that the
+     advance and look-ahead methods return character tokens which
+     will be accumulated as needed by the lexer chain.
+     @param     this    Object Pointer
+     @param     value   If true, allow multi-character constants that would
+                        normally be a single character constant and mark all
+                        character constants as PPLEX_CONSTANT_STRING. If false
+                        which is the default, handle single character constants
+                        as normal.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error.
+     @Warning   This should only be executed after the lexer chain is created
+                with CreateLexers().
+     */
+    ERESULT         pplex_SetupMultiCharConstant (
+        PPLEX_DATA      *this,
+        bool            value
     );
     
     

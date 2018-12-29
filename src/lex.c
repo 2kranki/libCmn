@@ -232,6 +232,46 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //  A l l o w  M u l t i - b y t e  C h a r  C o n s t a n t s
+    //---------------------------------------------------------------
+    
+    bool            lex_getMultiCharConstant (
+        LEX_DATA        *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!lex_Validate(this)) {
+            DEBUG_BREAK();
+        }
+#endif
+        return obj_IsFlag(this, LEX_MULTICHRCON);
+    }
+    
+    
+    bool            lex_setMultiCharConstant (
+        LEX_DATA        *this,
+        bool            value
+    )
+    {
+        bool            fRc;
+        
+#ifdef NDEBUG
+#else
+        if (!lex_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = obj_FlagSet(this, LEX_MULTICHRCON, value);
+        
+        return fRc;
+    }
+    
+    
+    
     bool            lex_setParserFunction(
         LEX_DATA        *this,
         bool            (*pParser)(OBJ_ID, TOKEN_DATA *),
@@ -838,7 +878,11 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            srcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pInput->data.src,
+                                                "Malformed Unicode Escape Sequence - \\uHH"
+                                                );
                             return false;
                         }
                     }
@@ -851,7 +895,11 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            srcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pInput->data.src,
+                                                "Malformed Unicode Escape Sequence - \\uHHHH"
+                                                );
                             return false;
                         }
                     }
@@ -956,7 +1004,11 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            srcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pInput->data.src,
+                                                "Malformed Unicode Escape Sequence - \\uHH"
+                                                );
                             return false;
                         }
                     }
@@ -969,7 +1021,11 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            srcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pInput->data.src,
+                                                "Malformed Unicode Escape Sequence - \\UHHHH"
+                                                );
                             return false;
                         }
                     }
@@ -982,7 +1038,11 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            //FIXME: ErrorFatal Malformed unicode escape seq
+                            srcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pInput->data.src,
+                                                "Malformed Unicode Escape Sequence - \\xHH"
+                            );
                             return false;
                         }
                     }

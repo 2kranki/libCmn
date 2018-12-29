@@ -169,7 +169,7 @@ extern "C" {
                 
             case TEXTIN_TYPE_ASTR:
                 chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curChr.loc.offset++);
-                if( chr == ASCII_CPM_EOF ) {
+                if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
                     this->curChr.loc.offset = AStr_getLength(this->pAStr);
                     chr = EOF;
                 }

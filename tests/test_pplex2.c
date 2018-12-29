@@ -46,6 +46,12 @@ char        *pTestInput02 =
 "%}\n";
 
 
+static
+const
+char        *pTestInput03 =
+"\ta += =a'71';\n";
+
+
 
 
 int         setUp(
@@ -529,8 +535,107 @@ int         test_pplex2_Input03(
 
 
 
+int         test_pplex2_Input04(
+    const
+    char            *pTestName
+)
+{
+    SRCFILE_DATA    *pSrc = OBJ_NIL;
+    ASTR_DATA       *pBuf = OBJ_NIL;
+    LEX_DATA        *pLex = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    bool            fRc;
+    PATH_DATA       *pPath = path_NewA("abc");
+    ASTR_DATA       *pWrkA = OBJ_NIL;
+    
+    pBuf = AStr_NewA("a += '+=+';");
+    XCTAssertFalse( (OBJ_NIL == pBuf) );
+    if (pBuf) {
+        
+        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        XCTAssertFalse( (OBJ_NIL == pSrc) );
+        if (pSrc) {
+            
+            pLex = (LEX_DATA *)pplex2_New(2);
+            XCTAssertFalse( (OBJ_NIL == pLex) );
+            fRc = pplex2_setKwdSelection((PPLEX2_DATA *)pLex,-1);
+            XCTAssertTrue( (fRc) );
+            if (pLex) {
+                
+                obj_TraceSet(pLex, true);
+                pplex2_setReturnNL((PPLEX2_DATA *)pLex, true);
+                pplex2_setReturnWS((PPLEX2_DATA *)pLex, false);
+                lex_setMultiCharConstant(pLex, true);
+
+                fRc =   lex_setSourceFunction(
+                                              pLex,
+                                              (void *)srcFile_InputAdvance,
+                                              (void *)srcFile_InputLookAhead,
+                                              pSrc
+                                              );
+                XCTAssertTrue( (fRc) );
+                
+                pToken = lex_TokenLookAhead(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                XCTAssertTrue( (PPLEX_IDENTIFIER == token_getClass(pToken)) );
+                pWrkA = token_ToDataString(pToken);
+                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrkA, "a")) );
+                obj_Release(pWrkA);
+                pWrkA = OBJ_NIL;
+                pToken = lex_TokenAdvance(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                
+                pToken = lex_TokenLookAhead(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                XCTAssertTrue( (PPLEX_OP_ASSIGN_ADD == token_getClass(pToken)) );
+                pToken = lex_TokenAdvance(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                
+                pToken = lex_TokenLookAhead(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                XCTAssertTrue( (PPLEX_CONSTANT_STRING == token_getClass(pToken)) );
+                pWrkA = token_ToDataString(pToken);
+                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrkA, "'+=+'")) );
+                obj_Release(pWrkA);
+                pWrkA = OBJ_NIL;
+                pToken = lex_TokenAdvance(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                
+                pToken = lex_TokenLookAhead(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                XCTAssertTrue( (PPLEX_SEP_SEMICOLON == token_getClass(pToken)) );
+                pToken = lex_TokenAdvance(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                
+                pToken = lex_TokenLookAhead(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                XCTAssertTrue( (PPLEX_CLASS_EOF == token_getClass(pToken)) );
+                pToken = lex_TokenAdvance(pLex, 1);
+                XCTAssertFalse( (OBJ_NIL == pToken) );
+                
+                obj_Release(pLex);
+                pLex = OBJ_NIL;
+            }
+            
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+        }
+        
+        obj_Release(pBuf);
+        pBuf = OBJ_NIL;
+    }
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    szTbl_SharedReset();
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_pplex2);
+    TINYTEST_ADD_TEST(test_pplex2_Input04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_pplex2_Input03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_pplex2_Input02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_pplex2_Input01,setUp,tearDown);

@@ -1439,7 +1439,48 @@ extern "C" {
     }
     
     
+    ERESULT         pplex_SetupMultiCharConstant (
+        PPLEX_DATA      *this,
+        bool            value
+    )
+    {
+        bool            fRc;
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        
+        
+#ifdef NDEBUG
+#else
+        if (!pplex_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Now set the srcFile object as the lexer input.
+        if (this->pLex1) {
+            fRc =   lex_setMultiCharConstant(
+                        this->pLex1,
+                        value
+                    );
+        }
+        if (this->pLex2) {
+            fRc =   lex_setMultiCharConstant(
+                        this->pLex2,
+                        value
+                    );
+        }
+        if (this->pLex3) {
+            fRc =   lex_setMultiCharConstant(
+                        this->pLex3,
+                        value
+                    );
+        }
+
+        return ERESULT_SUCCESS;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

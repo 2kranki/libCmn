@@ -70,7 +70,7 @@ struct pplex2_data_s	{
     // OBJ_FLAG_USER1-OBJ_FLAG_USER4 Reserved for Lex
 #define PPLEX2_RETURN_NL    OBJ_FLAG_USER5
 #define PPLEX2_RETURN_WS    OBJ_FLAG_USER6
-    
+
     uint16_t        kwdSel;         // Kewword Class Selection
     bool            fComments;      // TRUE == Include Comments in Token Stream
 

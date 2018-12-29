@@ -277,6 +277,11 @@ extern "C" {
     
     
 
+    
+    //---------------------------------------------------------------
+    //                     R e t u r n  N L s
+    //---------------------------------------------------------------
+    
     bool            pplex2_getReturnNL(
         PPLEX2_DATA     *this
     )
@@ -314,22 +319,26 @@ extern "C" {
     
     
     
-    bool            pplex2_getReturnWS(
-        PPLEX2_DATA     *cbp
+    //---------------------------------------------------------------
+    //                R e t u r n  W h i t e s p a c e
+    //---------------------------------------------------------------
+    
+    bool            pplex2_getReturnWS (
+        PPLEX2_DATA     *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !pplex2_Validate( cbp ) ) {
+        if (!pplex2_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
-        return obj_IsFlag(cbp, PPLEX2_RETURN_WS);
+        return obj_IsFlag(this, PPLEX2_RETURN_WS);
     }
     
     
-    bool            pplex2_setReturnWS(
-        PPLEX2_DATA     *cbp,
+    bool            pplex2_setReturnWS (
+        PPLEX2_DATA     *this,
         bool            value
     )
     {
@@ -337,13 +346,13 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !pplex2_Validate( cbp ) ) {
+        if (!pplex2_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         
-        fRc = obj_FlagSet(cbp, PPLEX2_RETURN_WS, value);
+        fRc = obj_FlagSet(this, PPLEX2_RETURN_WS, value);
         
         return fRc;
     }
@@ -365,7 +374,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            pplex2_Dealloc(
+    void            pplex2_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -378,7 +387,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !pplex2_Validate(this) ) {
+        if (!pplex2_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -813,13 +822,24 @@ extern "C" {
                     
                 case '\'':           /*** '\'' ***/
                     ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
-                    lex_ParseChrCon((LEX_DATA *)this, '\'');
+                    if (lex_getMultiCharConstant((LEX_DATA *)this)) {
+                        while(lex_ParseChrCon((LEX_DATA *)this,'\''))
+                            ;
+                    }
+                    else {
+                        lex_ParseChrCon((LEX_DATA *)this, '\'');
+                    }
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
                     cls = token_getClass(pInput);
                     if (cls == '\'') {
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
                         lex_InputAdvance((LEX_DATA *)this, 1);
-                        newCls = PPLEX_CONSTANT_CHAR;
+                        if (lex_getMultiCharConstant((LEX_DATA *)this)) {
+                            newCls = PPLEX_CONSTANT_STRING;
+                        }
+                        else {
+                            newCls = PPLEX_CONSTANT_CHAR;
+                        }
                         fMore = false;
                         break;
                     }

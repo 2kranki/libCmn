@@ -219,18 +219,18 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    LEX_DATA *     lex_Alloc(
+    LEX_DATA *     lex_Alloc (
         void
     );
     
     
-    LEX_DATA *     lex_New(
+    LEX_DATA *     lex_New (
         uint16_t        k
     );
     
     
     const
-    int32_t *       lex_SetWhiteSpace(
+    int32_t *       lex_SetWhiteSpace (
         void
     );
 
@@ -239,22 +239,32 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT_DATA *  lex_getErrors(
+    ERESULT_DATA *  lex_getErrors (
         LEX_DATA        *this
     );
     
-    bool            lex_setErrors(
+    bool            lex_setErrors (
         LEX_DATA        *this,
         ERESULT_DATA    *pValue
     );
     
     
-    ERESULT         lex_getLastError(
+    ERESULT         lex_getLastError (
         LEX_DATA        *this
     );
     
     
-    bool            lex_setParserFunction(
+    bool            lex_getMultiCharConstant (
+        LEX_DATA        *this
+    );
+    
+    bool            lex_setMultiCharConstant (
+        LEX_DATA        *this,
+        bool            value
+    );
+
+    
+    bool            lex_setParserFunction (
         LEX_DATA        *this,
         bool            (*pParser)(OBJ_ID, TOKEN_DATA *),
         OBJ_ID          pParseObj
@@ -269,12 +279,12 @@ extern "C" {
     );
     
     
-    W32STR_DATA *   lex_getString(
+    W32STR_DATA *   lex_getString (
         LEX_DATA        *this
     );
     
     
-    TOKEN_DATA *    lex_getToken(
+    TOKEN_DATA *    lex_getToken (
         LEX_DATA		*this
     );
     
@@ -293,12 +303,12 @@ extern "C" {
      it is the same as a Discard() followed by a Checkpoint().
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
      */
-    ERESULT         lex_Checkpoint(
+    ERESULT         lex_Checkpoint (
         LEX_DATA        *this
     );
     
     
-    LEX_DATA *      lex_Init(
+    LEX_DATA *      lex_Init (
         LEX_DATA        *this,
         uint16_t        k                   // Size of Look-ahead token buffer
     );
@@ -310,7 +320,7 @@ extern "C" {
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lex_InputAdvance(
+    TOKEN_DATA *    lex_InputAdvance (
         LEX_DATA        *this,
         uint16_t        num
     );
@@ -322,7 +332,7 @@ extern "C" {
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lex_InputLookAhead(
+    TOKEN_DATA *    lex_InputLookAhead (
         LEX_DATA        *this,
         uint16_t        num
     );
@@ -333,7 +343,7 @@ extern "C" {
      terminates the checkpoint process.
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
      */
-    ERESULT         lex_Restart(
+    ERESULT         lex_Restart (
         LEX_DATA		*this
     );
     
@@ -344,7 +354,7 @@ extern "C" {
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lex_TokenAdvance(
+    TOKEN_DATA *    lex_TokenAdvance (
         LEX_DATA		*this,
         uint16_t        numChrs
     );
@@ -356,7 +366,7 @@ extern "C" {
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lex_TokenLookAhead(
+    TOKEN_DATA *    lex_TokenLookAhead (
         LEX_DATA        *this,
         uint16_t        num
     );
@@ -370,7 +380,7 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
                 otherwise ERESULT_ERROR_???.
      */
-    ERESULT         lex_TokenPush(
+    ERESULT         lex_TokenPush (
         LEX_DATA        *this,
         TOKEN_DATA      *pChr
     );
@@ -382,7 +392,7 @@ extern "C" {
      @return:   If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     lex_ToDebugString(
+    ASTR_DATA *     lex_ToDebugString (
         LEX_DATA        *this,
         int             indent
     );
