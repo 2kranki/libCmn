@@ -170,6 +170,11 @@ extern "C" {
     );
     
     
+    uint32_t        srcErrors_getNumErrors(
+        SRCERRORS_DATA  *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------

@@ -51,7 +51,8 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -101,9 +102,65 @@ int         test_srcFiles_OpenClose(
 
 
 
+int         test_srcFiles_Test01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    SRCFILES_DATA   *pObj = OBJ_NIL;
+    const
+    char            *pPathA = "~/git/libCmn/tests/files/e360_ex1_bal.txt";
+    TOKEN_DATA      *pToken;
+    int32_t         cls;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+
+    pObj = srcFiles_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = srcFiles_NewSrcFromPath(pObj, pPath, 0, 4);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        for (;;) {
+            pToken = srcFiles_InputLookAhead(pObj, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            cls = token_getClass(pToken);
+            if (cls == -1)
+                break;
+            {
+                pStr = token_ToDebugString(pToken, 0);
+                fprintf(stderr, "\ttoken text=\"%s\"\n",
+                        AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            pToken = srcFiles_InputAdvance(pObj, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_srcFiles);
-  TINYTEST_ADD_TEST(test_srcFiles_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFiles_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcFiles_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_srcFiles);

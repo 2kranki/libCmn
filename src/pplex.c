@@ -982,7 +982,7 @@ extern "C" {
     )
     {
         bool            fRc;
-        //ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         
 #ifdef NDEBUG
@@ -1005,23 +1005,13 @@ extern "C" {
         }
         
         // Now set the srcFile object as the lexer input.
-        if (this->pLex1) {
-            fRc =   lex_setSourceFunction(
-                          this->pLex1,
-                          (void *)srcFile_InputAdvance,
-                          (void *)srcFile_InputLookAhead,
-                          this->pSrc
-                    );
-        }
-        else {
-            fRc =   lex_setSourceFunction(
-                        this->pLex2,
-                        (void *)srcFile_InputAdvance,
-                        (void *)srcFile_InputLookAhead,
-                        this->pSrc
-                    );
-        }
-        if (!fRc) {
+        eRc =   pplex_SetupInputSource(
+                                    this,
+                                    (void *)srcFile_InputAdvance,
+                                    (void *)srcFile_InputLookAhead,
+                                    this->pSrc
+                );
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this->pSrc);
             this->pSrc = OBJ_NIL;
@@ -1038,7 +1028,7 @@ extern "C" {
     )
     {
         bool            fRc;
-        //ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         
 #ifdef NDEBUG
@@ -1060,29 +1050,19 @@ extern "C" {
         }
         
         // Now set the srcFile object as the lexer input.
-        if (this->pLex1) {
-            fRc =   lex_setSourceFunction(
-                                          this->pLex1,
-                                          (void *)srcFile_InputAdvance,
-                                          (void *)srcFile_InputLookAhead,
-                                          this->pSrc
-                                          );
-        }
-        else {
-            fRc =   lex_setSourceFunction(
-                                          this->pLex2,
-                                          (void *)srcFile_InputAdvance,
-                                          (void *)srcFile_InputLookAhead,
-                                          this->pSrc
-                                          );
-        }
-        if (!fRc) {
+        eRc =   pplex_SetupInputSource(
+                                       this,
+                                       (void *)srcFile_InputAdvance,
+                                       (void *)srcFile_InputLookAhead,
+                                       this->pSrc
+                );
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this->pSrc);
             this->pSrc = OBJ_NIL;
             return ERESULT_FAILURE;
         }
-        
+
         return ERESULT_SUCCESS;
     }
     
@@ -1406,6 +1386,56 @@ extern "C" {
         }
         
         return obj_QueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S e t u p
+    //---------------------------------------------------------------
+    
+    ERESULT         pplex_SetupInputSource (
+        PPLEX_DATA      *this,
+        TOKEN_DATA *    (*pSrcChrAdvance)(OBJ_ID,uint16_t),
+        TOKEN_DATA *    (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
+        OBJ_ID          pSrcObj
+    )
+    {
+        bool            fRc;
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        
+        
+#ifdef NDEBUG
+#else
+        if (!pplex_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        // Now set the srcFile object as the lexer input.
+        if (this->pLex1) {
+            fRc =   lex_setSourceFunction(
+                                          this->pLex1,
+                                          (void *)pSrcChrAdvance,
+                                          (void *)pSrcChrLookAhead,
+                                          pSrcObj
+                    );
+        }
+        else {
+            fRc =   lex_setSourceFunction(
+                                          this->pLex2,
+                                          (void *)pSrcChrAdvance,
+                                          (void *)pSrcChrLookAhead,
+                                          pSrcObj
+                    );
+        }
+        if (!fRc) {
+            DEBUG_BREAK();
+            return ERESULT_FAILURE;
+        }
+        
+        return ERESULT_SUCCESS;
     }
     
     

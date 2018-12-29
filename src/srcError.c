@@ -880,10 +880,13 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) fileNo=%d LineNo=%d ColNo=%d error=%s\n",
                     this,
                     pInfo->pClassName,
-                    srcError_getSize(this)
+                    this->loc.fileIndex,
+                    this->loc.lineNo,
+                    this->loc.colNo,
+                    AStr_getData(this->pErrorStr)
             );
 
 #ifdef  XYZZY        

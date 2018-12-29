@@ -205,7 +205,11 @@ extern "C" {
         char                asciiChar
     );
     
+    bool                ascii_isAlphaW32(
+        W32CHR_T            asciiChar
+    );
     
+
     bool                ascii_isAlphanumericA(
         char                asciiChar
     );

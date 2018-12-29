@@ -172,7 +172,7 @@ extern "C" {
     );
     
     
-    SRCFILE_DATA *  srcFiles_StackPop(
+    ERESULT         srcFiles_StackPop(
         SRCFILES_DATA   *this
     );
     

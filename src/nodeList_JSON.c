@@ -499,13 +499,13 @@ extern "C" {
         NODELIST_DATA   *this
     )
     {
-        uint32_t        i;
+        //uint32_t        i;
         uint32_t        j;
         bool            fRc;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA       *pData;
+        //ASTR_DATA       *pData;
 #ifdef XYZZY
         LISTDL_DATA     *pNodeList;
         NODELIST_NODE   *pEntry;

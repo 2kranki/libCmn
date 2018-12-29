@@ -309,6 +309,34 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                N u m b e r  o f  E r r o r s
+    //---------------------------------------------------------------
+    
+    uint32_t        srcErrors_getNumErrors(
+        SRCERRORS_DATA     *this
+    )
+    {
+        uint32_t            num = 0;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !srcErrors_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if (this->pErrors) {
+            num = objArray_getSize(this->pErrors);
+        }
+        
+        return num;
+    }
+
+    
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -1140,16 +1168,14 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     srcErrors_ToDebugString(
-        SRCERRORS_DATA      *this,
+        SRCERRORS_DATA  *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -1178,6 +1204,12 @@ extern "C" {
                     (srcErrors_getFatal(this) ? "fatal_error(s)" : "")
             );
 
+        pWrkStr = objArray_ToDebugString(this->pErrors, (indent + 3));
+        if (pWrkStr) {
+            AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
 #ifdef  XYZZY        
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {

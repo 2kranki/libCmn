@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <pplex_internal.h>
+#include    <srcErrors.h>
 #include    <szTbl.h>
 
 
@@ -51,7 +52,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
+    srcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( ); 
     mem_Release( );
@@ -116,6 +117,7 @@ int         test_pplex_Input01(
     PATH_DATA       *pPath = path_NewA("abc");
     ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
+    int32_t         cls;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -229,6 +231,17 @@ int         test_pplex_Input01(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
+    cls = srcErrors_getNumErrors(srcErrors_Shared());
+    if (cls) {
+        fprintf(stderr, "\n\n\n\t%d ERRORS Occurred:\n", cls);
+        pStr = srcErrors_ToDebugString(srcErrors_Shared(), 0);
+        if (pStr) {
+            fprintf(stderr, "\t%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+    }
+    
     fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
@@ -245,6 +258,7 @@ int         test_pplex_Input02(
     PATH_DATA       *pPath = path_NewA("~/Support/ll1/tests/test_gmr01.txt");
     ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
+    int32_t         cls;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -1255,6 +1269,17 @@ int         test_pplex_Input02(
         
     obj_Release(pPath);
     pPath = OBJ_NIL;
+    
+    cls = srcErrors_getNumErrors(srcErrors_Shared());
+    if (cls) {
+        fprintf(stderr, "\n\n\n\t%d ERRORS Occurred:\n", cls);
+        pStr = srcErrors_ToDebugString(srcErrors_Shared(), 0);
+        if (pStr) {
+            fprintf(stderr, "\t%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+    }
     
     fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;

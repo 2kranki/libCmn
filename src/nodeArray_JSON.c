@@ -499,8 +499,8 @@ extern "C" {
         NODEARRAY_DATA  *this
     )
     {
-        uint32_t        i;
-        uint32_t        j;
+        //uint32_t        i;
+        //uint32_t        j;
         bool            fRc;
         ASTR_DATA       *pStr;
         const

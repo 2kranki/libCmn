@@ -20,7 +20,9 @@
  *          and output being well defined.
  *
  * Remarks
- *	1.      None.
+ *	1.      If errors occur in the lexical phase, then the shared object
+ *          for srcErrors will contain the errors and their associated
+ *          data such as line and column numbers.
  *
  * History
  *	09/29/2015 Generated
@@ -91,11 +93,11 @@ extern "C" {
 
     typedef enum pplex_lang_e {
         PPLEX_LANG_UNKNOWN=0,
-        PPLEX_LANG_C=0x8000,
-        PPLEX_LANG_CPP=0x4000,
-        PPLEX_LANG_LL1=0x0800,
-        PPLEX_LANG_MSC=0x2000,
-        PPLEX_LANG_OBJC=0x1000,
+        PPLEX_LANG_C    = 0x8000,
+        PPLEX_LANG_CPP  = 0x4000,
+        PPLEX_LANG_LL1  = 0x0800,
+        PPLEX_LANG_MSC  = 0x2000,
+        PPLEX_LANG_OBJC = 0x1000,
     } PPLEX_LANG;
     
     
@@ -403,8 +405,41 @@ extern "C" {
     );
     
     
+    /*!
+     This sets the language for pplex2 and pplex3. See
+     PPLEX_LANG for the possible options.
+     */
+    uint16_t        pplex_getLang(
+        PPLEX_DATA     *this
+    );
+    
+    bool            pplex_setLang(
+        PPLEX_DATA     *this,
+        uint16_t        value
+    );
+
+    
+    /*! Add a user exit that takes precedence over the all the keyword
+     table searches.  The user exit should set the token class if
+     it needs to which is what would have happened had it been found
+     in a keyword table.
+     
+     @return    non-zero if the exit handled the token passed to it. The
+     lexical status will be updated as if the token was
+     found in a keyword table except the token is not
+     changed.  zero indicates to perform the keyword
+     table as normal.
+     */
+    bool            pplex_setKeywordParseFunction(
+        PPLEX_DATA     *this,
+        bool            (*pUserExit)(OBJ_ID, TOKEN_DATA *),
+        OBJ_ID          pUserObj
+    );
+    
+    
     /*! If true, then NL tokens are passed to the user of this system.
      Otherwise, the default is that NL tokens are skipped over.
+     @warning   This must be done before you create the lexers.
      */
     bool            pplex_getReturnNL(
         PPLEX_DATA      *this
@@ -419,6 +454,7 @@ extern "C" {
     /*! If true, then White-Space tokens (which include comments) are passed
      to the user of this system.  Otherwise, the default is that White-Space
      tokens are skipped over.
+     @warning   This must be done before you create the lexers.
      */
     bool            pplex_getReturnWS(
         PPLEX_DATA      *this
@@ -430,32 +466,6 @@ extern "C" {
     );
     
 
-    bool            pplex_setSourceFunction(
-        PPLEX_DATA      *this,
-        TOKEN_DATA *    (*pSrcChrAdvance)(OBJ_ID, uint16_t),
-        TOKEN_DATA *    (*pSrcChrLookAhead)(OBJ_ID, uint16_t),
-        OBJ_ID          pSrcObj
-    );
-    
-    
-    /*! Add a user exit that takes precedence over the all the keyword
-        table searches.  The user exit should set the token class if
-        it needs to which is what would have happened had it been found
-        in a keyword table.
-     
-     @return    non-zero if the exit handled the token passed to it. The
-                lexical status will be updated as if the token was
-                found in a keyword table except the token is not
-                changed.  zero indicates to perform the keyword
-                table as normal.
-     */
-    bool            pplex_setKeywordParseFunction(
-        PPLEX_DATA     *this,
-        bool            (*pUserExit)(OBJ_ID, TOKEN_DATA *),
-        OBJ_ID          pUserObj
-    );
-    
-    
 
     
     //---------------------------------------------------------------
@@ -540,6 +550,28 @@ extern "C" {
     TOKEN_DATA *    pplex_InputLookAhead(
         PPLEX_DATA      *this,
         uint16_t        num
+    );
+    
+    
+    /*!
+     Setup the input to the first lexer in the chain so that all
+     tokens are taken from this source.  It is assumed that the
+     advance and look-ahead methods return character tokens which
+     will be accumulated as needed by the lexer chain.
+     @param     this    Object Pointer
+     @param     pChrAdvance   Advance N chars method
+     @param     pChrLookAhead Lookahead N chars method
+     @param     pSrcObj Object which contains the Advance and Lookahead methods
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     @Warning   This should only be executed after the lexer chain is created
+                with CreateLexers().
+     */
+    ERESULT         pplex_SetupInputSource (
+        PPLEX_DATA      *this,
+        TOKEN_DATA *    (*pChrAdvance)(OBJ_ID,uint16_t),
+        TOKEN_DATA *    (*pChrLookAhead)(OBJ_ID,uint16_t),
+        OBJ_ID          pSrcObj
     );
     
     

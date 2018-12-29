@@ -61,7 +61,8 @@ struct srcFiles_data_s	{
     ASTRARRAY_DATA  *pPaths;
     OBJARRAY_DATA   *pStack;
     SRCFILE_DATA    *pTop;
-    bool            fReuse;
+    uint8_t         fReuse;
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)

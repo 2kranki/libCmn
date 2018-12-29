@@ -252,6 +252,52 @@ int             test_textIn_GetLine01(
 
 
 
+int             test_textIn_GetLine02(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ERESULT         eRc;
+    char            buffer[128];
+    SRCLOC          loc = {0};
+    const
+    char            *pFilePathA = "~/git/libCmn/tests/files/test_hjson_01.txt";
+    PATH_DATA       *pFilePath = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pFilePath = path_NewA(pFilePathA);
+    TINYTEST_FALSE( (OBJ_NIL == pFilePath) );
+    path_Clean(pFilePath);
+    eRc = path_IsFile(pFilePath);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+    pObj = textIn_NewFromPath(pFilePath, 0, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = textIn_GetLine(pObj, buffer, 128, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (0 == strcmp(buffer, "{")) );
+        
+        eRc = textIn_GetLine(pObj, buffer, 128, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (0 == strcmp(buffer, "    \"one\": {")) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pFilePath);
+    pFilePath = OBJ_NIL;
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_textIn);
     TINYTEST_ADD_TEST(test_textIn_GetLine01,setUp,tearDown);

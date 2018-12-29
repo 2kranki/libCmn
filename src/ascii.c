@@ -432,7 +432,24 @@ extern "C" {
     }
     
     
+    bool                ascii_isAlphaW32(
+        W32CHR_T            asciiChar
+    )
+    {
+        bool                fRc = false;
+        
+        if ( asciiChar > 127 ) {
+            fRc = false;
+        }
+        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Alpha ) {
+            fRc = true;
+        }
+        
+        return( fRc );
+    }
     
+    
+
     
     //**********************************************************
     //                i s A l p h a n u m e r i c

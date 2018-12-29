@@ -1391,6 +1391,7 @@ extern "C" {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
+            path_Clean(this->pPath);
             this->pPathA =  szTbl_StringToString(
                                         szTbl_Shared(),
                                         path_getData(this->pPath)
@@ -1512,7 +1513,7 @@ extern "C" {
         
         // Open the file.
         this->type = TEXTIN_TYPE_FILE;
-        pszFileName = path_CStringA(pFilePath);
+        pszFileName = path_CStringA(this->pPath);
         if (pszFileName) {
             this->pFile = fopen(pszFileName, "r");
             if (NULL == this->pFile) {

@@ -273,7 +273,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFiles_Vtbl);
         
-        //cbp->stackSize = obj_getMisc1(cbp);
+        this->pStack = objArray_New( );
 
     #ifdef NDEBUG
     #else
@@ -433,6 +433,8 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         srcFiles_StackPush(this, pSrc);
+        obj_Release(pSrc);
+        pSrc = OBJ_NIL;
         
         return ERESULT_SUCCESS;
     }
@@ -471,8 +473,8 @@ extern "C" {
     //                      S t a c k  P o p
     //---------------------------------------------------------------
     
-    SRCFILE_DATA *  srcFiles_StackPop(
-        SRCFILES_DATA   *cbp
+    ERESULT         srcFiles_StackPop(
+        SRCFILES_DATA   *this
     )
     {
         SRCFILE_DATA	*pItem = OBJ_NIL;
@@ -480,24 +482,26 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcFiles_Validate( cbp ) ) {
+        if( !srcFiles_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         /* Pop 1 element from the top of the parse stack.
          */
-        if( objArray_getSize(cbp->pStack) ) {
-            pItem = objArray_DeleteLast(cbp->pStack);
-            cbp->pTop = pItem;
+        if( objArray_getSize(this->pStack) ) {
+            pItem = objArray_DeleteLast(this->pStack);
+            obj_Release(pItem);
+            pItem = OBJ_NIL;
+            this->pTop = objArray_GetLast(this->pStack);
         }
         else {
-            cbp->pTop = OBJ_NIL;
+            return ERESULT_DATA_NOT_FOUND;
         }
         
         // Return to caller.
-        return pItem;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -526,6 +530,14 @@ extern "C" {
         }
 #endif
         
+        if (OBJ_NIL == this->pStack) {
+            this->pStack = objArray_New( );
+            if (OBJ_NIL == this->pStack) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
         eRc = objArray_AppendObj(this->pStack, pItem, NULL);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -544,7 +556,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     SRCFILE_DATA *  srcFiles_StackTop(
-        SRCFILES_DATA   *cbp
+        SRCFILES_DATA   *this
     )
     {
         SRCFILE_DATA	*pItem = OBJ_NIL;
@@ -552,13 +564,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcFiles_Validate( cbp ) ) {
+        if( !srcFiles_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
        
-        pItem = cbp->pTop;
+        pItem = this->pTop;
         
         // Return to caller.
         return pItem;
