@@ -189,10 +189,11 @@ static
 const
 OBJ_INFO        compiler_Info = {
     "compiler",
-    "compiler",				
+    "Compiler Base",				
     (OBJ_DATA *)&compiler_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&compiler_Vtbl
+    (OBJ_IUNKNOWN *)&compiler_Vtbl,
+    sizeof(COMPILER_DATA)
 };
 
 

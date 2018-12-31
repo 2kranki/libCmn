@@ -267,10 +267,10 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                              L e x e r
     //---------------------------------------------------------------
     
-    ERESULT         compiler_getLastError(
+    OBJ_ID          compiler_getLexer (
         COMPILER_DATA   *this
     )
     {
@@ -278,35 +278,41 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate(this) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        return this->eRc;
+        return this->pLexer;
     }
+
     
-    
-    bool            compiler_setLastError(
+    bool            compiler_setLexer (
         COMPILER_DATA   *this,
-        ERESULT         value
+        OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate(this) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        this->eRc = value;
+        obj_Retain(pValue);
+        if (this->pLexer) {
+            obj_Release(this->pLexer);
+        }
+        this->pLexer = pValue;
         
         return true;
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                        L i s t i n g
+    //---------------------------------------------------------------
     
     OBJ_ID          compiler_getListing(
         COMPILER_DATA   *cbp
@@ -659,39 +665,43 @@ extern "C" {
     
     
     
-    OBJ_ID          compiler_getSymbolTable(
-        COMPILER_DATA   *cbp
+    //---------------------------------------------------------------
+    //                  S y m b o l  T a b l e
+    //---------------------------------------------------------------
+    
+    OBJ_ID          compiler_getSymbolTable (
+        COMPILER_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pSymbolTable;
+        return this->pSymbolTable;
     }
     
-    bool            compiler_setSymbolTable(
-        COMPILER_DATA   *cbp,
+    bool            compiler_setSymbolTable (
+        COMPILER_DATA   *this,
         OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pSymbolTable) {
-            obj_Release(cbp->pSymbolTable);
+        if (this->pSymbolTable) {
+            obj_Release(this->pSymbolTable);
         }
-        cbp->pSymbolTable = pValue;
+        this->pSymbolTable = pValue;
         
         return true;
     }
@@ -862,6 +872,7 @@ extern "C" {
 
         (void)compiler_setErrors(this, OBJ_NIL);
         (void)compiler_setInputPath(this, OBJ_NIL);
+        (void)compiler_setLexer(this, OBJ_NIL);
         (void)compiler_setListing(this, OBJ_NIL);
         (void)compiler_setOutputDir(this, OBJ_NIL);
         (void)compiler_setProgramName(this, OBJ_NIL);

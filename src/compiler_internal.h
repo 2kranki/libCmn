@@ -62,7 +62,6 @@ struct compiler_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    ERESULT         eRc;
     ERESULT_DATA    *pErrors;
     OBJ_ID          pListing;
     PATH_DATA       *pInputPath;
@@ -72,6 +71,7 @@ struct compiler_data_s	{
     SRCFILES_DATA   *pSourceFiles;
     SZTBL_DATA      *pStringTable;
     OBJ_ID          pFileTable;
+    OBJ_ID          pLexer;
     OBJ_ID          pSymbolTable;
     NODETREE_DATA   *pParseTree;
     NODEARRAY_DATA  *pQueue0;

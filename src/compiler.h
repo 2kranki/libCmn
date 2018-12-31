@@ -54,6 +54,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <lex.h>
 #include        <node.h>
 #include        <objArray.h>
 #include        <path.h>
@@ -149,6 +150,16 @@ extern "C" {
     
     ERESULT         compiler_getLastError(
         COMPILER_DATA   *this
+    );
+    
+    
+    OBJ_ID          compiler_getLexer(
+        COMPILER_DATA   *this
+    );
+    
+    bool            compiler_setLexer(
+        COMPILER_DATA   *this,
+        OBJ_ID          pValue
     );
     
     
