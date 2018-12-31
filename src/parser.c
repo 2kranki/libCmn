@@ -234,39 +234,39 @@ extern "C" {
     
     
     COMPILER_DATA *  parser_getCompiler(
-        PARSER_DATA     *cbp
+        PARSER_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if (!parser_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pCompiler;
+        return this->pCompiler;
     }
     
     
     bool            parser_setCompiler(
-        PARSER_DATA     *cbp,
+        PARSER_DATA     *this,
         COMPILER_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pCompiler) {
-            obj_Release(cbp->pCompiler);
+        if (this->pCompiler) {
+            obj_Release(this->pCompiler);
         }
-        cbp->pCompiler = pValue;
+        this->pCompiler = pValue;
         
         return true;
     }
@@ -281,7 +281,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !parser_Validate(this) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -296,14 +296,14 @@ extern "C" {
     
     
     uint16_t        parser_getPriority(
-        PARSER_DATA     *cbp
+        PARSER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
@@ -312,14 +312,14 @@ extern "C" {
         return 0;
     }
 
-    bool            parser_setPriority(
-        PARSER_DATA     *cbp,
+    bool            parser_setPriority (
+        PARSER_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
@@ -329,30 +329,30 @@ extern "C" {
 
 
 
-    OBJARRAY_DATA * parser_getSemanticStack(
-        PARSER_DATA     *cbp
+    OBJARRAY_DATA * parser_getSemanticStack (
+        PARSER_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pSemanticStack;
+        return this->pSemanticStack;
     }
     
     
     uint32_t        parser_getSize(
-        PARSER_DATA       *cbp
+        PARSER_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( cbp ) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
@@ -370,7 +370,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !parser_Validate( this ) ) {
+        if (!parser_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }

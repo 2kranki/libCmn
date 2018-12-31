@@ -189,18 +189,14 @@ extern "C" {
     
     
     /*!
-     Add the given node to the Hash. If duplicates are not allowed, then
-     the node's name must not exist in the Hash.  Otherwise, the node will
-     be added to the head of the Hash list effectively blocking access to
-     other nodes with the same name.  The A versions creates a node from
-     the data given before trying to add it to the Hash.
+     Add the given node to the Hash. Duplicates are not allowed.
      @param     this        Object Pointer
      @param     pNode       Data Object Pointer
      @param     fReplace    true == replace current entry if it exists,
-     otherwise, return ERESULT_DATA_ALREADY_EXISTS
-     error.
+                            otherwise, return ERESULT_DATA_ALREADY_EXISTS
+                            error.
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
-     error code is returned.
+                error code is returned.
      */
     ERESULT         nodeBTP_AddUpdate (
         NODEBTP_DATA    *this,

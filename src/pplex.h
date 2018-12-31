@@ -93,11 +93,14 @@ extern "C" {
 
     typedef enum pplex_lang_e {
         PPLEX_LANG_UNKNOWN=0,
-        PPLEX_LANG_C    = 0x8000,
-        PPLEX_LANG_CPP  = 0x4000,
-        PPLEX_LANG_LL1  = 0x0800,
-        PPLEX_LANG_MSC  = 0x2000,
-        PPLEX_LANG_OBJC = 0x1000,
+        PPLEX_LANG_ASM      = 0x8000,           // Base Assembler Keywords
+        PPLEX_LANG_ASM86    = 0x4000,           // Intel 8x86 Assembler Keywords Extension
+        PPLEX_LANG_ASM360   = 0x2000,           // IBM 360 Assembler Keywords Extension
+        PPLEX_LANG_C        = 0x1000,           // Base C Keywords
+        PPLEX_LANG_CPP      = 0x0800,           // C++ Keywords Extension of C
+        PPLEX_LANG_LL1      = 0x0400,
+        PPLEX_LANG_MSC      = 0x0200,           // Microsoft C Extensions of C
+        PPLEX_LANG_OBJC     = 0x0100,           // Obj-C Keywords Extension of C
     } PPLEX_LANG;
     
     
@@ -222,21 +225,31 @@ extern "C" {
         PPLEX_KWD_BYCOPY,
         PPLEX_KWD_BYREF,
         PPLEX_KWD_CASE,
+        PPLEX_KWD_CCW,                      // ASM360
         PPLEX_KWD_CDECL,
         PPLEX_KWD_CHAR,
         PPLEX_KWD_CLASS,
+        PPLEX_KWD_CNOP,                     // ASM360
         PPLEX_KWD_CONST,
         PPLEX_KWD_CONTINUE,
+        PPLEX_KWD_COPY,                     // ASM360
+        PPLEX_KWD_CSECT,                    // ASM360
+        PPLEX_KWD_DC,                       // ASM
         PPLEX_KWD_DEFAULT,
         PPLEX_KWD_DELETE,
         PPLEX_KWD_DO,
         PPLEX_KWD_DOUBLE,
+        PPLEX_KWD_DROP,                     // ASM360
+        PPLEX_KWD_DS,                       // ASM
+        PPLEX_KWD_DSECT,                    // ASM360
         PPLEX_KWD_ELSE,
         PPLEX_KWD_EMIT,
-        PPLEX_KWD_END,
-        PPLEX_KWD_ENTRY,
+        PPLEX_KWD_END,                      // C | ASM
+        PPLEX_KWD_ENTRY,                    // C | ASM
         PPLEX_KWD_ENUM,
-        PPLEX_KWD_EXTERN,
+        PPLEX_KWD_EQU,                      // ASM
+        PPLEX_KWD_EXTERN,                   // C | ASM
+        PPLEX_KWD_EXTRN,                    // ASM
         PPLEX_KWD_FAR,
         PPLEX_KWD_FLOAT,
         PPLEX_KWD_FOR,
@@ -256,8 +269,11 @@ extern "C" {
         PPLEX_KWD_INT64,
         PPLEX_KWD_INT128,
         PPLEX_KWD_INT256,
-        PPLEX_KWD_INTERNAL,                // LL1
+        PPLEX_KWD_INTERNAL,                 // LL1
         PPLEX_KWD_LONG,
+        PPLEX_KWD_LTORG,                    // ASM360
+        PPLEX_KWD_MACRO,                    // ASM
+        PPLEX_KWD_MEND,                     // ASM
         PPLEX_KWD_NEAR,
         PPLEX_KWD_NEW,
         PPLEX_KWD_NONATOMIC,
@@ -266,6 +282,7 @@ extern "C" {
         PPLEX_KWD_OFFSETOF,
         PPLEX_KWD_ONEWAY,
         PPLEX_KWD_OPERATOR,
+        PPLEX_KWD_ORG,                      // ASM
         PPLEX_KWD_OUT,
         PPLEX_KWD_OVERLOAD,
         PPLEX_KWD_PASCAL,
@@ -276,12 +293,14 @@ extern "C" {
         PPLEX_KWD_REGISTER,
         PPLEX_KWD_RETAIN,
         PPLEX_KWD_RETURN,
+        PPLEX_KWD_RSECT,                    // ASM360
         PPLEX_KWD_SELECT,
         PPLEX_KWD_SELF,
         PPLEX_KWD_SETTER,
         PPLEX_KWD_SHORT,
         PPLEX_KWD_SIGNED,
         PPLEX_KWD_SIZEOF,
+        PPLEX_KWD_START,                    // ASM360
         PPLEX_KWD_STATIC,
         PPLEX_KWD_STRONG,
         PPLEX_KWD_STRUCT,
@@ -298,11 +317,13 @@ extern "C" {
         PPLEX_KWD_UINT256,
         PPLEX_KWD_UNION,
         PPLEX_KWD_UNSIGNED,
+        PPLEX_KWD_USING,                   // ASM360
         PPLEX_KWD_VIRTUAL,
         PPLEX_KWD_VOID,
         PPLEX_KWD_VOLATILE,
         PPLEX_KWD_WEAK,
         PPLEX_KWD_WHILE,
+        PPLEX_KWD_WXTRN,                    // ASM
 
         PPLEX_CLASS_SPCL_GROUP=LEX_CLASS_SPCL_GROUP,
         PPLEX_SPCL_AT_LBRACK,               // @[

@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          PARSER Console Transmit Task (parser) Header
+//                  Parser Base (parser) Header
 //****************************************************************
 /*
  * Program
- *				Separate parser (parser)
+ *			Parser Base (parser)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate parser to run things without complications
- *              of interfering with the main parser. A parser may be 
- *              called a parser on other O/S's.
+ *			This object provides a base object for a parser.  It
+ *          contains the basic elements that most parsers need.
  *
  * Remarks
  *	1.      Using this object allows for testable code, because a

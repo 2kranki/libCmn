@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <srcFiles_internal.h>
+#include    <szTbl.h>
 
 
 
