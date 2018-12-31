@@ -184,13 +184,13 @@ extern "C" {
     );
     
     
-    NODETREE_DATA * compiler_getParseTree(
+    OBJ_ID          compiler_getParseTree(
         COMPILER_DATA   *this
     );
     
     bool            compiler_setParseTree(
         COMPILER_DATA   *this,
-        NODETREE_DATA   *pValue
+        OBJ_ID          pValue
     );
     
     

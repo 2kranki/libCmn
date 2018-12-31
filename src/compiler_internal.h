@@ -73,7 +73,7 @@ struct compiler_data_s	{
     OBJ_ID          pFileTable;
     OBJ_ID          pLexer;
     OBJ_ID          pSymbolTable;
-    NODETREE_DATA   *pParseTree;
+    OBJ_ID          pParseTree;
     NODEARRAY_DATA  *pQueue0;
     NODEARRAY_DATA  *pQueue1;
     OBJARRAY_DATA   *pQueue2;

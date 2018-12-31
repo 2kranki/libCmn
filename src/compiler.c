@@ -392,40 +392,40 @@ extern "C" {
     
     
     
-    NODETREE_DATA * compiler_getParseTree(
-        COMPILER_DATA   *cbp
+    OBJ_ID          compiler_getParseTree (
+        COMPILER_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pParseTree;
+        return this->pParseTree;
     }
     
     
     bool            compiler_setParseTree(
-        COMPILER_DATA   *cbp,
-        NODETREE_DATA   *pValue
+        COMPILER_DATA   *this,
+        OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pParseTree) {
-            obj_Release(cbp->pParseTree);
+        if (this->pParseTree) {
+            obj_Release(this->pParseTree);
         }
-        cbp->pParseTree = pValue;
+        this->pParseTree = pValue;
         
         return true;
     }
@@ -1196,7 +1196,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "compiler::sizeof(COMPILER_DATA) = %lu\n", sizeof(COMPILER_DATA));
+        //fprintf(stderr, "compiler::sizeof(COMPILER_DATA) = %lu\n", sizeof(COMPILER_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(COMPILER_DATA));
 #endif
