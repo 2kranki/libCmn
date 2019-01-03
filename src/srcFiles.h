@@ -150,8 +150,8 @@ extern "C" {
      */
     ERESULT         srcFiles_NewSrcFromAStr(
         SRCFILES_DATA   *this,
-        ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pFilePath,
+        ASTR_DATA       *pAStr,         // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );

@@ -687,7 +687,7 @@ extern "C" {
         
         this = dbCsv_New( );
         if (this) {
-            this->pSrc = srcFile_NewFromAStr(pAStr, pPath, 1, tabSize);
+            this->pSrc = srcFile_NewFromAStr(pPath, pAStr, 1, tabSize);
             if (OBJ_NIL == this->pSrc) {
                 obj_Release(this);
                 return OBJ_NIL;

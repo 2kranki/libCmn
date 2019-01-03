@@ -133,7 +133,7 @@ int         test_lex_Input01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pBuf, pPath, 4);
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -285,7 +285,7 @@ int         test_lex_Number01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -350,7 +350,7 @@ int         test_lex_Number02(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -414,7 +414,7 @@ int         test_lex_Number03(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             
@@ -665,7 +665,7 @@ int         test_lex_Strings04(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             

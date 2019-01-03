@@ -352,8 +352,8 @@ extern "C" {
     
     ERESULT         srcFiles_NewSrcFromAStr(
         SRCFILES_DATA   *this,
+        PATH_DATA       *pFilePath,     // [in] doc only
         ASTR_DATA       *pAStr,         // Buffer of file data
-        PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
@@ -369,12 +369,14 @@ extern "C" {
         }
 #endif
         
-        pSrc = srcFile_NewFromAStr(pAStr, pFilePath, fileIndex, tabSize);
+        pSrc = srcFile_NewFromAStr(pFilePath, pAStr, fileIndex, tabSize);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
             return ERESULT_OUT_OF_MEMORY;
         }
         srcFiles_StackPush(this, pSrc);
+        obj_Release(pSrc);
+        pSrc = OBJ_NIL;
         
         return ERESULT_SUCCESS;
     }
@@ -404,7 +406,9 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         srcFiles_StackPush(this, pSrc);
-        
+        obj_Release(pSrc);
+        pSrc = OBJ_NIL;
+
         return ERESULT_SUCCESS;
     }
 
@@ -524,7 +528,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if  (NULL == pItem) {
+        if  ((NULL == pItem) || !(obj_IsKindOf(pItem, OBJ_IDENT_SRCFILE))) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }

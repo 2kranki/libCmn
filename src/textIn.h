@@ -116,8 +116,8 @@ extern "C" {
     );
     
     TEXTIN_DATA *   textIn_NewFromAStr (
+        PATH_DATA       *pFilePath,     // Optoinal Path used for Documentation Only
         ASTR_DATA       *pStr,          // Buffer of file data
-        PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
@@ -247,10 +247,10 @@ extern "C" {
 
     ERESULT         textIn_SetupAStr(
         TEXTIN_DATA     *this,
-        ASTR_DATA       *pStr,        // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,    // File Path Index for a separate path table
-        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
+        PATH_DATA       *pFilePath,     // Optoinal Path used for Documentation Only
+        ASTR_DATA       *pStr,          // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
     
     ERESULT         textIn_SetupFile (

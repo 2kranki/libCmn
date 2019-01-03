@@ -143,8 +143,8 @@ int         test_pplex_Input01(
         
         eRc =   pplex_CreateSourceFromAStr(
                                       (PPLEX_DATA *)pLex,
-                                      pBuf,
-                                      pPath
+                                      pPath,
+                                      pBuf
                 );
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         

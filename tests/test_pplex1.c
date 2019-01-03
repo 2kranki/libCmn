@@ -123,7 +123,7 @@ int         test_pplex1_Input01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pSrc = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
             

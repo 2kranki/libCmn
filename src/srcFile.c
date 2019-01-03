@@ -106,8 +106,8 @@ extern "C" {
 
 
     SRCFILE_DATA *  srcFile_NewFromAStr(
-        ASTR_DATA       *pStr,        // Buffer of file data
         PATH_DATA       *pFilePath,
+        ASTR_DATA       *pStr,        // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
@@ -118,7 +118,7 @@ extern "C" {
         
         this = srcFile_New( );
         if (this) {
-            eRc = textIn_SetupAStr((TEXTIN_DATA *)this, pStr, pFilePath, fileIndex, tabSize);
+            eRc = textIn_SetupAStr((TEXTIN_DATA *)this, pFilePath, pStr, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);

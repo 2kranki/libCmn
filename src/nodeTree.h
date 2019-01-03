@@ -357,7 +357,7 @@ extern "C" {
      back into the main tree. 
      @param     this    NODETREE_DATA object pointer
      @param     parent  parent node index (relative to 1)
-     @param     index   child index (2 <= index <= order) This index is
+     @param     child   child index (2 <= index <= order) This index is
                         relative to 1.
      @return    LastError (If successful, LastError == ERESULT_SUCCESS,
                 otherwise LastError == ERESULT_* error code).
@@ -365,7 +365,7 @@ extern "C" {
     ERESULT     nodeTree_NodeLinkChild(
         NODETREE_DATA   *this,
         uint32_t        parent,
-        uint32_t        index       // Relative to 1
+        uint32_t        child           // Relative to 1
     );
     
     
@@ -419,6 +419,9 @@ extern "C" {
     );
     
     
+    /*!
+     Print the tree to stdout.
+     */
     ERESULT         nodeTree_PrintTree(
         NODETREE_DATA	*this
     );

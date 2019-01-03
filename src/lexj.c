@@ -664,8 +664,8 @@ extern "C" {
         }
         
         this->pInput = srcFile_NewFromAStr(
-                                    pStr,
                                     OBJ_NIL,
+                                    pStr,
                                     1,
                                     tabSize
                         );

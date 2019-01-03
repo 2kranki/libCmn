@@ -139,7 +139,7 @@ int                 test_srcFile_General01 (
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
-        pObj = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+        pObj = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         if (pObj) {
             obj_Release(pObj);
@@ -181,7 +181,7 @@ int         test_srcFile_Buffer01(
     XCTAssertTrue( (17 == i) );
     TRC( "\tpBuf = %p\n", pBuf );
     
-    pSource = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+    pSource = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     
@@ -294,7 +294,7 @@ int         test_srcFile_Test02(
     XCTAssertTrue( (12 == i) );
     //TRC( "\tpBuf = %p\n", pBuffer );
     
-    pSource = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+    pSource = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     obj_TraceSet(pSource,true);
@@ -483,7 +483,7 @@ int         test_srcFile_Test03(
     XCTAssertTrue( (12 == i) );
     //TRC( "\tpBuf = %p\n", pBuffer );
     
-    pSource = srcFile_NewFromAStr(pBuf, pPath, 1, 4);
+    pSource = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
     fprintf( stderr, "\tpSource = %p\n", pSource );
     obj_TraceSet(pSource,true);

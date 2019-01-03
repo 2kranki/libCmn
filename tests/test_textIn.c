@@ -115,7 +115,7 @@ int             test_textIn_Input01(
     
     pStr = AStr_NewA("abc\n");
     TINYTEST_FALSE( (OBJ_NIL == pStr) );
-    pObj = textIn_NewFromAStr(pStr, OBJ_NIL, 1, 4);
+    pObj = textIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -161,7 +161,7 @@ int             test_textIn_Input02(
     
     pStr = AStr_NewA("abc\tdef\n");
     TINYTEST_FALSE( (OBJ_NIL == pStr) );
-    pObj = textIn_NewFromAStr(pStr, OBJ_NIL, 1, 4);
+    pObj = textIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -220,7 +220,7 @@ int             test_textIn_GetLine01(
     
     pStr = AStr_NewA("abc\n\ndef\n");
     TINYTEST_FALSE( (OBJ_NIL == pStr) );
-    pObj = textIn_NewFromAStr(pStr, OBJ_NIL, 1, 4);
+    pObj = textIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         

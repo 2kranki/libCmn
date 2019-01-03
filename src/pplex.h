@@ -522,8 +522,8 @@ extern "C" {
      */
     ERESULT         pplex_CreateSourceFromAStr(
         PPLEX_DATA      *this,
-        ASTR_DATA       *pStr,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        ASTR_DATA       *pStr
     );
     
     

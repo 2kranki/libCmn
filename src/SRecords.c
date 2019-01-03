@@ -752,8 +752,8 @@ extern "C" {
         }
 
         this->pSrc =    srcFile_NewFromAStr(
-                                            pStr,
                                             OBJ_NIL,
+                                            pStr,
                                             1,
                                             4                   // tabsize
                         );
