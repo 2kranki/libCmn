@@ -142,7 +142,15 @@ NODELIST_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 NODELIST_CLASS_DATA  nodeList_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELIST_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(NODELIST_CLASS_DATA),        // cbSize
+        OBJ_IDENT_NODELIST_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

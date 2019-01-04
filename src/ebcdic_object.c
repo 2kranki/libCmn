@@ -205,7 +205,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 EBCDIC_CLASS_DATA  ebcdic_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_EBCDIC_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(EBCDIC_CLASS_DATA),          // cbSize
+        OBJ_IDENT_EBCDIC_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

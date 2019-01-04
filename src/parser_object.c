@@ -96,7 +96,7 @@ uint16_t		parser_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&parser_Info,
     parser_ClassIsKindOf,
     obj_RetainNull,
@@ -114,7 +114,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 PARSER_CLASS_DATA  parser_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PARSER_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(PARSER_CLASS_DATA),          // cbSize
+        OBJ_IDENT_PARSER_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

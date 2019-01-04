@@ -119,8 +119,16 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 APPL_CLASS_DATA  appl_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_APPL_CLASS, 0, 1},
-    0
+    {
+        &obj_Vtbl,                  // pVtbl
+        sizeof(APPL_CLASS_DATA),    // cbSize
+        OBJ_IDENT_APPL_CLASS,       // cbIdent
+        0,                          // cbFlags
+        0,                          // eRc
+        1,                          // cbRetainCount
+        {0}                         // cbMisc
+    },
+    0                           // pSingleton
 };
 
 

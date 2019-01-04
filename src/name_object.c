@@ -192,7 +192,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 NAME_CLASS_DATA  name_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NAME_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(NAME_CLASS_DATA),            // cbSize
+        OBJ_IDENT_NAME_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	0
 };
 

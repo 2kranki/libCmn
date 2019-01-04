@@ -1807,7 +1807,7 @@ extern "C" {
         token_setClass(&this->token, newClass);
         if (fSaveStr && this->pStr) {
             strToken =  szTbl_StringW32ToToken(
-                                 szTbl_Shared(),
+                                 OBJ_NIL,
                                  W32Str_getData(this->pStr)
                         );
             BREAK_ZERO(strToken);

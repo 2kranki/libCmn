@@ -203,7 +203,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 NODEARC_CLASS_DATA  nodeArc_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEARC_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(NODEARC_CLASS_DATA),         // cbSize
+        OBJ_IDENT_NODEARC_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

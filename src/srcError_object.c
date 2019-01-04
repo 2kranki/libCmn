@@ -98,7 +98,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&srcError_Info,
     srcError_ClassIsKindOf,
     obj_RetainNull,
@@ -116,7 +116,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 SRCERROR_CLASS_DATA  srcError_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SRCERROR_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(SRCERROR_CLASS_DATA),        // cbSize
+        OBJ_IDENT_SRCERROR_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

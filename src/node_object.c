@@ -178,7 +178,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 NODE_CLASS_DATA  node_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODE_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(NODE_CLASS_DATA),            // cbSize
+        OBJ_IDENT_NODE_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

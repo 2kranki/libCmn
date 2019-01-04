@@ -104,7 +104,7 @@ uint16_t		visitorClass_WhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&visitor_Info,
     visitorClass_IsKindOf,
     obj_RetainNull,
@@ -123,7 +123,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 VISITOR_CLASS_DATA  visitor_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_VISITOR_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(VISITOR_CLASS_DATA),         // cbSize
+        OBJ_IDENT_VISITOR_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

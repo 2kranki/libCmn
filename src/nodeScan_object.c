@@ -175,7 +175,7 @@ void *          nodeScanClass_QueryInfo(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&nodeScan_Info,
     nodeScan_ClassIsKindOf,
     obj_RetainNull,
@@ -194,7 +194,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 NODESCAN_CLASS_DATA  nodeScan_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODESCAN_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(NODESCAN_CLASS_DATA),       // cbSize
+        OBJ_IDENT_NODESCAN_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

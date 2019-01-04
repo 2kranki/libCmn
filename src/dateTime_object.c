@@ -116,7 +116,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 DATETIME_CLASS_DATA  dateTime_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DATETIME_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(DATETIME_CLASS_DATA),        // cbSize
+        OBJ_IDENT_DATETIME_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

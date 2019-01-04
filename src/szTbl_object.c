@@ -67,7 +67,7 @@ OBJ_INFO        szTbl_Info;            // Forward Reference
 
 
 static
-void *          szTblClass_QueryInfo(
+void *          szTblClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -77,7 +77,7 @@ void *          szTblClass_QueryInfo(
 
 
 static
-bool            szTbl_ClassIsKindOf(
+bool            szTbl_ClassIsKindOf (
     uint16_t		classID
 )
 {
@@ -92,7 +92,7 @@ bool            szTbl_ClassIsKindOf(
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		obj_ClassWhoAmI (
     void
 )
 {
@@ -122,13 +122,21 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 SZTBL_CLASS_DATA  szTbl_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SZTBL_CLASS, 0, 1},
-	OBJ_NIL
+    {
+        &obj_Vtbl,                  // pVtbl
+        sizeof(SZTBL_CLASS_DATA),   // cbSize
+        OBJ_IDENT_SZTBL_CLASS,      // cbIdent
+        0,                          // cbFlags
+        0,                          // eRc
+        1,                          // cbRetainCount
+        {0}                         // cbMisc
+    },
+	OBJ_NIL                     // pShared
 };
 
 
 
-SZTBL_DATA *     szTbl_getShared(
+SZTBL_DATA *     szTbl_getShared (
 )
 {
     SZTBL_CLASS_DATA    *pClass;
@@ -143,7 +151,7 @@ SZTBL_DATA *     szTbl_getShared(
 }
 
 
-bool            szTbl_setShared(
+bool            szTbl_setShared (
     SZTBL_DATA      *pValue
 )
 {
@@ -167,7 +175,7 @@ bool            szTbl_setShared(
 
 
 static
-bool            szTbl_IsKindOf(
+bool            szTbl_IsKindOf (
     uint16_t		classID
 )
 {
@@ -183,12 +191,12 @@ bool            szTbl_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            szTbl_Dealloc(
+void            szTbl_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          szTbl_Class(
+OBJ_ID          szTbl_Class (
     void
 )
 {
@@ -201,7 +209,7 @@ OBJ_ID          szTbl_Class(
 //---------------------------------------------------------------
 
 static
-void *          szTblClass_QueryInfo(
+void *          szTblClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -267,27 +275,24 @@ void *          szTblClass_QueryInfo(
 
 
 
-SZTBL_DATA *     szTbl_Shared(
+SZTBL_DATA *     szTbl_Shared (
 )
 {
     SZTBL_CLASS_DATA    *pClass;
     
     pClass = szTbl_Class( );
-    if (pClass->pShared) {
-    }
-    else {
-        pClass->pShared = szTbl_Alloc( );
-        if (pClass->pShared) {
-            pClass->pShared = szTbl_Init(pClass->pShared);
-        }
+    BREAK_NULL(pClass);
+    if (OBJ_NIL == pClass->pShared) {
+        pClass->pShared = szTbl_New( );
     }
     
+    BREAK_NULL(pClass->pShared);
     return pClass->pShared;
 }
 
 
 
-SZTBL_DATA *     szTbl_SharedReplace(
+SZTBL_DATA *     szTbl_SharedReplace (
     SZTBL_DATA      *this
 )
 {
@@ -296,7 +301,7 @@ SZTBL_DATA *     szTbl_SharedReplace(
 }
 
 
-SZTBL_DATA *     szTbl_SharedReset(
+SZTBL_DATA *     szTbl_SharedReset (
 )
 {
     szTbl_setShared(OBJ_NIL);
@@ -306,7 +311,7 @@ SZTBL_DATA *     szTbl_SharedReset(
 
 
 static
-uint16_t		szTbl_WhoAmI(
+uint16_t		szTbl_WhoAmI (
     void
 )
 {

@@ -117,7 +117,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 BLOCK16_CLASS_DATA  block16_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BLOCK16_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(BLOCK16_CLASS_DATA),         // cbSize
+        OBJ_IDENT_BLOCK16_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

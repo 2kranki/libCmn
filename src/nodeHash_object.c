@@ -139,7 +139,15 @@ NODEHASH_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 NODEHASH_CLASS_DATA  nodeHash_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEHASH_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(NODEHASH_CLASS_DATA),        // cbSize
+        OBJ_IDENT_NODEHASH_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

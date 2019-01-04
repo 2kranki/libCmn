@@ -116,7 +116,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 LEX_CLASS_DATA  lex_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_LEX_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(LEX_CLASS_DATA),             // cbSize
+        OBJ_IDENT_LEX_CLASS,                // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

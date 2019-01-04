@@ -97,7 +97,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&psxThread_Info,
     psxThread_ClassIsKindOf,
     obj_RetainNull,
@@ -116,7 +116,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 PSXTHREAD_CLASS_DATA  psxThread_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PSXTHREAD_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(PSXTHREAD_CLASS_DATA),       // cbSize
+        OBJ_IDENT_PSXTHREAD_CLASS,          // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

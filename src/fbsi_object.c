@@ -117,7 +117,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 FBSI_CLASS_DATA  fbsi_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_FBSI_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(FBSI_CLASS_DATA),            // cbSize
+        OBJ_IDENT_FBSI_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

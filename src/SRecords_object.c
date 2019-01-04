@@ -104,7 +104,7 @@ uint16_t		SRecordsClass_WhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&SRecords_Info,
     SRecordsClass_IsKindOf,
     obj_RetainNull,
@@ -123,7 +123,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 SRECORDS_CLASS_DATA  SRecords_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SRECORDS_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(SRECORDS_CLASS_DATA),        // cbSize
+        OBJ_IDENT_SRECORDS_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

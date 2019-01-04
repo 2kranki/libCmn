@@ -125,7 +125,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 NODELINK_CLASS_DATA  nodeLink_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODELINK_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&obj_Vtbl,    // pVtbl
+        sizeof(NODELINK_CLASS_DATA),        // cbSize
+        OBJ_IDENT_NODELINK_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

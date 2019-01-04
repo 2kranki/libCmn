@@ -136,7 +136,15 @@ SIDXE_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 SIDXE_CLASS_DATA  sidxe_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SIDXE_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(SIDXE_CLASS_DATA),        // cbSize
+        OBJ_IDENT_SIDXE_CLASS,           // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

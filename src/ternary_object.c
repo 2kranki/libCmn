@@ -99,7 +99,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&ternary_Info,
     ternary_ClassIsKindOf,
     obj_RetainNull,
@@ -118,7 +118,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 TERNARY_CLASS_DATA  ternary_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_TERNARY_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(TERNARY_CLASS_DATA),         // cbSize
+        OBJ_IDENT_TERNARY_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

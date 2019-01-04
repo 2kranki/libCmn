@@ -200,7 +200,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 NODEGRAPH_CLASS_DATA  nodeGraph_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEGRAPH_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&obj_Vtbl,    // pVtbl
+        sizeof(NODEGRAPH_CLASS_DATA),       // cbSize
+        OBJ_IDENT_NODEGRAPH_CLASS,          // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

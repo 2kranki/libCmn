@@ -98,7 +98,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&objMethod_Info,
     objMethod_ClassIsKindOf,
     obj_RetainNull,
@@ -116,7 +116,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 OBJMETHOD_CLASS_DATA  objMethod_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJMETHOD_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(OBJMETHOD_CLASS_DATA),       // cbSize
+        OBJ_IDENT_OBJMETHOD_CLASS,          // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

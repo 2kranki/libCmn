@@ -35,6 +35,22 @@
 #include        "trctbl_internal.h"
 
 
+//-----------------------------------------------------------
+//                  Class Object Definition
+//-----------------------------------------------------------
+
+struct trctbl_class_data_s    {
+    /* Warning - OBJ_DATA must be first in this object!
+     */
+    OBJ_DATA        super;
+    
+    // Common Data
+    //uint32_t        misc;
+};
+typedef struct trctbl_class_data_s TRCTBL_CLASS_DATA;
+
+
+
 
 
 
@@ -70,7 +86,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
     NULL,
     trctbl_ClassIsKindOf,
     obj_RetainNull,
@@ -88,12 +104,16 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 static
 const
-OBJ_DATA        trctbl_ClassObj = {
-    &obj_Vtbl,
-    sizeof(OBJ_DATA),
-    OBJ_IDENT_TRCTBL_CLASS,
-    0,
-    1
+TRCTBL_CLASS_DATA   trctbl_ClassObj = {
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(TRCTBL_CLASS_DATA),          // cbSize
+        OBJ_IDENT_TRCTBL_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 };
 
 

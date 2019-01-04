@@ -91,7 +91,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&u8Array_Info,
     u8Array_ClassIsKindOf,
     obj_RetainNull,
@@ -110,7 +110,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 U8ARRAY_CLASS_DATA  u8Array_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_U8ARRAY_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(U8ARRAY_CLASS_DATA),         // cbSize
+        OBJ_IDENT_U8ARRAY_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

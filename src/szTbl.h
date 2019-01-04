@@ -103,27 +103,27 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SZTBL_DATA *    szTbl_Alloc(
+    SZTBL_DATA *    szTbl_Alloc (
         void
     );
     
     
-    OBJ_ID          szTbl_Class(
+    OBJ_ID          szTbl_Class (
         void
     );
 
 
-    SZTBL_DATA *     szTbl_New(
+    SZTBL_DATA *     szTbl_New (
         void
     );
     
     
-    SZTBL_DATA *    szTbl_NewFromJSONString(
+    SZTBL_DATA *    szTbl_NewFromJSONString (
         ASTR_DATA       *pString
     );
     
     
-    SZTBL_DATA *    szTbl_NewFromJSONStringA(
+    SZTBL_DATA *    szTbl_NewFromJSONStringA (
         const
         char            *pString
     );
@@ -134,13 +134,13 @@ extern "C" {
      best to use this table rather than create a separate one.
      @return    If successful, a pointer to the shared szTbl.  Otherwise, OBJ_NIL.
      */
-    SZTBL_DATA *    szTbl_Shared(
+    SZTBL_DATA *    szTbl_Shared (
         void
     );
     
     
     // Release the Shared String Table.
-    SZTBL_DATA *    szTbl_SharedReset(
+    SZTBL_DATA *    szTbl_SharedReset (
         void
     );
     
@@ -151,12 +151,7 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         szTbl_getLastError(
-        SZTBL_DATA      *this
-    );
-    
-    
-    uint32_t        szTbl_getSize(
+    uint32_t        szTbl_getSize (
         SZTBL_DATA       *this
     );
     
@@ -167,7 +162,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SZTBL_DATA *     szTbl_Init(
+    SZTBL_DATA *     szTbl_Init (
         SZTBL_DATA      *this
     );
 
@@ -176,14 +171,14 @@ extern "C" {
      * the address of the string in the table.
      */
     const
-    char *          szTbl_StringToString(
+    char *          szTbl_StringToString (
         SZTBL_DATA      *this,
         const
         char            *pStr           // [in]
     );
     
     const
-    char *          szTbl_StringW32ToString(
+    char *          szTbl_StringW32ToString (
         SZTBL_DATA      *this,
         const
         W32CHR_T        *pStr           // [in]
@@ -204,28 +199,28 @@ extern "C" {
                 propriate ERESULT_* error is put in Last Errorreturned and
                 *pToken contains 0.
      */
-    uint32_t         szTbl_StringToToken(
+    uint32_t         szTbl_StringToToken (
         SZTBL_DATA      *this,
         const
         char            *pStr           // [in]
     );
     
     
-    uint32_t         szTbl_StringW32ToToken(
+    uint32_t         szTbl_StringW32ToToken (
         SZTBL_DATA      *this,
         const
         W32CHR_T        *pStr          // [in]
     );
     
     
-    uint32_t        szTbl_TokenToHash(
+    uint32_t        szTbl_TokenToHash (
         SZTBL_DATA      *this,
         uint32_t        token           // [in]
     );
     
     
     const
-    char *           szTbl_TokenToString(
+    char *           szTbl_TokenToString (
         SZTBL_DATA      *this,
         uint32_t        token           // [in]
     );
@@ -243,13 +238,13 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     szTbl_ToDebugString(
+    ASTR_DATA *     szTbl_ToDebugString (
         SZTBL_DATA      *this,
         int             indent
     );
 
     
-    ASTR_DATA *     szTbl_ToJSON(
+    ASTR_DATA *     szTbl_ToJSON (
         SZTBL_DATA      *this
     );
     

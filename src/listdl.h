@@ -121,7 +121,7 @@ extern	"C" {
     // Returns:
     //	Record Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_Add2Head(
+    void * 			listdl_Add2Head (
         LISTDL_DATA     *this,
         void			*pRecord
     );
@@ -132,7 +132,7 @@ extern	"C" {
     // Returns:
     //	Record Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_Add2Tail(
+    void * 			listdl_Add2Tail (
         LISTDL_DATA     *this,
         void			*pRecord
     );
@@ -143,7 +143,7 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_AddAfter(
+    void * 			listdl_AddAfter (
         LISTDL_DATA     *this,
         void			*pRecord,
         void			*pInsert				// New Record to be added
@@ -155,14 +155,14 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_AddBefore(
+    void * 			listdl_AddBefore (
         LISTDL_DATA     *this,
         void			*pRecord,
         void			*pInsert				// New Record to be added
     );
 
 
-    bool             listdl_ClearNode(
+    bool             listdl_ClearNode (
         LISTDL_DATA     *pCB,
         void            *pRecord
     );
@@ -172,7 +172,7 @@ extern	"C" {
     // entry in the Doubly-Linked List otherwise false. This is
     // a relatively slow operation since it searches the list from
     // the head.
-    bool 			listdl_Contains(
+    bool 			listdl_Contains (
         LISTDL_DATA		*this,
         void			*pRecord				// Node
     );
@@ -182,7 +182,7 @@ extern	"C" {
     // List.
     // Returns:
     //	Number of Nodes
-    uint32_t 		listdl_Count(
+    uint32_t 		listdl_Count (
         LISTDL_DATA     *this
      );
 
@@ -192,7 +192,7 @@ extern	"C" {
     // List.
     // Returns:
     //	Number of Nodes
-    uint32_t 		listdl_DATALength(
+    uint32_t 		listdl_DATALength (
         void
     );
 
@@ -202,7 +202,7 @@ extern	"C" {
     // Returns:
     //	TRUE			=	Successful Completion
     //	FALSE        	=	Unsuccessful Completion
-    bool 			listdl_Delete(
+    bool 			listdl_Delete (
         LISTDL_DATA		*this,
          void			*pRecord				// Node already in List or NULL
     );
@@ -214,7 +214,7 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_DeleteHead(
+    void * 			listdl_DeleteHead (
         LISTDL_DATA     *this
     );
         
@@ -225,7 +225,7 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_DeleteTail(
+    void * 			listdl_DeleteTail (
         LISTDL_DATA     *this
     );
         
@@ -233,7 +233,7 @@ extern	"C" {
     // Head() returns the first entry in the Doubly-Linked List.
     // The Current Entry is set to the First Entry in the List.
     // Returns:
-    void * 			listdl_Head(
+    void * 			listdl_Head (
         LISTDL_DATA		*this
      );
 
@@ -247,7 +247,7 @@ extern	"C" {
     	Node Ptr		=	Successful Completion
     	NULL        	=	Unsuccessful Completion
      */
-    void * 			listdl_Index(
+    void * 			listdl_Index (
         LISTDL_DATA		*this,
         int32_t			index					// (relative to 1)
     );
@@ -264,7 +264,7 @@ extern	"C" {
                         find the LISTDL_NODE.
      @return    If successful, true. Otherwise, false.
      */
-    bool 			listdl_Init(
+    bool 			listdl_Init (
         LISTDL_DATA		*this,
         uint32_t		offset 					// Offset of Node Field within Structure
     );
@@ -274,7 +274,7 @@ extern	"C" {
     // Returns:
     //	TRUE			=	Successful Completion
     //	FALSE        	=	Unsuccessful Completion
-    bool 			listdl_IsValidList(
+    bool 			listdl_IsValidList (
         LISTDL_DATA		*this
      );
 
@@ -284,7 +284,7 @@ extern	"C" {
     // Returns:
     //	TRUE			=	Successful Completion
     //	FALSE        	=	Unsuccessful Completion
-    bool 			listdl_Move2Head(
+    bool 			listdl_Move2Head (
         LISTDL_DATA     *pCB,
         void			*pCurrent
     );
@@ -297,7 +297,7 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_Next(
+    void * 			listdl_Next (
         LISTDL_DATA		*this,
          void			*pRecord				// Node already in List or NULL
     );
@@ -310,7 +310,7 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_Prev(
+    void * 			listdl_Prev (
         LISTDL_DATA		*this,
         void			*pRecord				// Node already in List or NULL
     );
@@ -322,7 +322,7 @@ extern	"C" {
     // Returns:
     //	TRUE			=	Successful Completion
     //	FALSE        	=	Unsuccessful Completion
-    bool 			listdl_Sort(
+    bool 			listdl_Sort (
         LISTDL_DATA		*this,
         int             (*pCompare)(void *p0, void *p1)
     );
@@ -333,7 +333,7 @@ extern	"C" {
     // Returns:
     //	Node Ptr		=	Successful Completion
     //	NULL        	=	Unsuccessful Completion
-    void * 			listdl_Tail(
+    void * 			listdl_Tail (
         LISTDL_DATA		*this
     );
     

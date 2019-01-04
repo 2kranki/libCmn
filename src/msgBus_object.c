@@ -118,7 +118,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 MSGBUS_CLASS_DATA  msgBus_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_MSGBUS_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(MSGBUS_CLASS_DATA),          // cbSize
+        OBJ_IDENT_MSGBUS_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

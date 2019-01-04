@@ -104,7 +104,6 @@ struct szTbl_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     SZHASH_DATA     *pHashTable;
     PTRARRAY_DATA   *pPtrArray;
     SZTBL_HEAP      *pHeap;

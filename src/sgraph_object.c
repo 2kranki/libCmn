@@ -104,7 +104,7 @@ uint16_t		sgraphClass_WhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&sgraph_Info,
     sgraphClass_IsKindOf,
     obj_RetainNull,
@@ -123,7 +123,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 SGRAPH_CLASS_DATA  sgraph_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SGRAPH_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(SGRAPH_CLASS_DATA),          // cbSize
+        OBJ_IDENT_SGRAPH_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

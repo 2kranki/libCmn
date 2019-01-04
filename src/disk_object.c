@@ -124,7 +124,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 DISK_CLASS_DATA  disk_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DISK_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(DISK_CLASS_DATA),            // cbSize
+        OBJ_IDENT_DISK_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

@@ -118,7 +118,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 ENUM_CLASS_DATA  enum_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_ENUM_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(ENUM_CLASS_DATA),            // cbSize
+        OBJ_IDENT_ENUM_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

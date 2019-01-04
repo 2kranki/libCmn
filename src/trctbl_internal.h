@@ -90,12 +90,12 @@ extern "C" {
 // Internal Functions
 #ifdef RMW_DEBUG
 bool			trctbl_Validate(
-	TRCTBL_DATA       *cbp
+	TRCTBL_DATA     *cbp
 );
 #endif
 
-    void            trctbl_Dealloc(
-        OBJ_ID          objId
+    void        trctbl_Dealloc(
+        OBJ_ID      objId
     );
     
 

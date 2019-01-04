@@ -139,7 +139,15 @@ NODEBTP_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 NODEBTP_CLASS_DATA  nodeBTP_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_NODEBTP_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(NODEBTP_CLASS_DATA),         // cbSize
+        OBJ_IDENT_NODEBTP_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

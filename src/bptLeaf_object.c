@@ -123,7 +123,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 BPTLEAF_CLASS_DATA  bptLeaf_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_BPTLEAF_CLASS, 0, 1},
+    {
+        &obj_Vtbl,                          // pVtbl
+        sizeof(BPTLEAF_CLASS_DATA),         // cbSize
+        OBJ_IDENT_BPTLEAF_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

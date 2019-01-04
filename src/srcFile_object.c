@@ -139,7 +139,15 @@ SRCFILE_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 SRCFILE_CLASS_DATA  srcFile_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SRCFILE_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(SRCFILE_CLASS_DATA),         // cbSize
+        OBJ_IDENT_SRCFILE_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

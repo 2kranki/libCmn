@@ -142,7 +142,15 @@ SYMATTR_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 SYMATTR_CLASS_DATA  symAttr_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_SYMATTR_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(SYMATTR_CLASS_DATA),         // cbSize
+        OBJ_IDENT_SYMATTR_CLASS,            // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

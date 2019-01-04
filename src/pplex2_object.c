@@ -101,7 +101,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&pplex2_Info,
     pplex2_ClassIsKindOf,
     obj_RetainNull,
@@ -120,7 +120,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 PPLEX2_CLASS_DATA  pplex2_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_PPLEX2_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(PPLEX2_CLASS_DATA),          // cbSize
+        OBJ_IDENT_PPLEX2_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

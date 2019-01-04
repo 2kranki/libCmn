@@ -98,7 +98,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&xml_Info,
     xml_ClassIsKindOf,
     obj_RetainNull,
@@ -117,7 +117,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 static
 const
 XML_CLASS_DATA  xml_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_XML_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(XML_CLASS_DATA),             // cbSize
+        OBJ_IDENT_XML_CLASS,                // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 
