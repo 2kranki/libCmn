@@ -613,10 +613,12 @@ extern "C" {
                    (PPLEX2_DATA *)this->pLex2,
                    value
        );
-        pplex3_setKwdSelection(
-                   (PPLEX3_DATA *)this->pLex3,
-                   value
-       );
+        if (this->pLex3) {
+            pplex3_setKwdSelection(
+                                   (PPLEX3_DATA *)this->pLex3,
+                                   value
+            );
+        }
 
         this->lang = value;
         

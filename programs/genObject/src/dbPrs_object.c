@@ -136,7 +136,15 @@ DBPRS_CLASS_VTBL    class_Vtbl = {
 //-----------------------------------------------------------
 
 DBPRS_CLASS_DATA  dbPrs_ClassObj = {
-    {(const OBJ_IUNKNOWN *)&class_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_DBPRS_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(DBPRS_CLASS_DATA),           // cbSize
+        OBJ_IDENT_DBPRS_CLASS,              // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

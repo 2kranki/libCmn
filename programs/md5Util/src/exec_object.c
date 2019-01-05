@@ -104,7 +104,7 @@ uint16_t		execClass_WhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&exec_Info,
     execClass_IsKindOf,
     obj_RetainNull,
@@ -123,7 +123,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 EXEC_CLASS_DATA  exec_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_EXEC_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(EXEC_CLASS_DATA),            // cbSize
+        OBJ_IDENT_EXEC_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

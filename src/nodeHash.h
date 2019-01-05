@@ -16,7 +16,7 @@
  *          environments, then their data will also be nodes and not
  *          the direct data.
  *
- *          The data nodes with have names of "array", "false", "hash",
+ *          The data nodes will have names of "array", "false", "hash",
  *          "integer", "null", "string" or "true" generally.  The node's
  *          data object will be the actual data such as:
  *                  "array"     == nodeArray object

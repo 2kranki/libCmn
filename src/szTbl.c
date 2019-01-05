@@ -230,6 +230,10 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
+        if (OBJ_NIL == this->pHashTable) {
+            DEBUG_BREAK();
+            return 0;
+        }
         if (NULL == pStr) {
             return 0;
         }
@@ -418,6 +422,10 @@ extern "C" {
             DEBUG_BREAK();
             return NULL;
         }
+        if (OBJ_NIL == this->pHashTable) {
+            DEBUG_BREAK();
+            return NULL;
+        }
         if (NULL == pStr) {
             return NULL;
         }
@@ -502,6 +510,10 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
+        if (OBJ_NIL == this->pHashTable) {
+            DEBUG_BREAK();
+            return 0;
+        }
         if (NULL == pStr) {
             return 0;
         }
@@ -583,6 +595,10 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
+        if (OBJ_NIL == this->pHashTable) {
+            DEBUG_BREAK();
+            return 0;
+        }
         if (NULL == pStr) {
             return 0;
         }
@@ -660,6 +676,10 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
+        if (OBJ_NIL == this->pPtrArray) {
+            DEBUG_BREAK();
+            return 0;
+        }
 #endif
         
         pNode = (SZTBL_NODE *)ptrArray_GetData(this->pPtrArray, token);
@@ -689,6 +709,10 @@ extern "C" {
         if (!szTbl_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
+        }
+        if (OBJ_NIL == this->pPtrArray) {
+            DEBUG_BREAK();
+            return 0;
         }
 #endif
         

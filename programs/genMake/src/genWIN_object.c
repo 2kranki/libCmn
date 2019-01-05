@@ -107,7 +107,7 @@ uint16_t		genWINClass_WhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&genWIN_Info,
     genWINClass_IsKindOf,
     obj_RetainNull,
@@ -126,7 +126,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 GENWIN_CLASS_DATA  genWIN_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_GENWIN_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(GENWIN_CLASS_DATA),          // cbSize
+        OBJ_IDENT_GENWIN_CLASS,             // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

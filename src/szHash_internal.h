@@ -58,6 +58,7 @@ extern "C" {
     typedef struct  szHash_node_s {
         LISTDL_NODE     list;
         uint32_t        hash;
+        uint32_t        unique;
         void            *pData;
         //uint16_t        keyLen;
         //uint16_t        rsvd;
@@ -83,8 +84,6 @@ struct szHash_data_s	{
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
     
-    ERESULT         eRc;
-
     // Compare two keys returning -1 if key1 < key2, 0 if key1 == key2,
     // 1 if key1 > key2
     int             (*pCompare)(const char *pKey1,const char *pKey2);

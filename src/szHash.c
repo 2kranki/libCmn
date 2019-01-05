@@ -55,6 +55,18 @@ extern "C" {
 #endif
     
 
+    uint16_t        tblSizes[] = {
+        SZHASH_TABLE_SIZE_XXXXXSMALL,
+        SZHASH_TABLE_SIZE_XXXXSMALL,
+        SZHASH_TABLE_SIZE_XXXSMALL,
+        SZHASH_TABLE_SIZE_XXSMALL,
+        SZHASH_TABLE_SIZE_XSMALL,
+        SZHASH_TABLE_SIZE_SMALL,
+        SZHASH_TABLE_SIZE_MEDIUM,
+        SZHASH_TABLE_SIZE_LARGE,
+        SZHASH_TABLE_SIZE_XLARGE,
+        0
+    };
     
 
 
@@ -339,7 +351,6 @@ extern "C" {
         }
 #endif
         
-        this->eRc = ERESULT_SUCCESS;
         return this->fDups ? true : false;
     }
     
@@ -358,50 +369,6 @@ extern "C" {
 #endif
         
         this->fDups = fValue ? 1 : 0;
-        
-        this->eRc = ERESULT_SUCCESS;
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         szHash_getLastError(
-        SZHASH_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !szHash_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            szHash_setLastError(
-        SZHASH_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !szHash_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
         
         return true;
     }
@@ -471,7 +438,7 @@ extern "C" {
         else {
             pNode = szHash_FindNode(this, hash, pszKey);
             if (pNode) {
-                fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
+                //fprintf( stderr, "Node Key = %s already exists\n", pNode->pszKey);
                 return ERESULT_DATA_ALREADY_EXISTS;
             }
         }
@@ -493,6 +460,7 @@ extern "C" {
         pNode->pszKey = pszKey;
         pNode->pData  = pData;
         pNode->hash   = hash;
+        pNode->unique = ++this->unique;
         
         pNodeList = szHash_NodeListFromHash(this, hash);
         listdl_Add2Head(pNodeList, pNode);
@@ -618,7 +586,6 @@ extern "C" {
         if (pEnum)
             ;
         else {
-            this->eRc = ERESULT_OUT_OF_MEMORY;
             return pEnum;
         }
         
@@ -632,7 +599,6 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return pEnum;
     }
     

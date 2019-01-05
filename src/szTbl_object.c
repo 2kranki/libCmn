@@ -156,12 +156,8 @@ bool            szTbl_setShared (
 )
 {
     SZTBL_CLASS_DATA    *pClass;
-    SZTBL_DATA          *pShared = OBJ_NIL;
     
     pClass = szTbl_Class( );
-    if (pClass->pShared) {
-        pShared = pClass->pShared;
-    }
 
     obj_Retain(pValue);
     if (pClass->pShared) {
@@ -285,7 +281,6 @@ SZTBL_DATA *     szTbl_Shared (
     if (OBJ_NIL == pClass->pShared) {
         pClass->pShared = szTbl_New( );
     }
-    
     BREAK_NULL(pClass->pShared);
     return pClass->pShared;
 }

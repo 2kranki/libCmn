@@ -104,7 +104,7 @@ uint16_t		dbprsClass_WhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&dbprs_Info,
     dbprsClass_IsKindOf,
     obj_RetainNull,
@@ -123,7 +123,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 DBPRS_CLASS_DATA  dbprs_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_DBPRS_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(DBPRS_CLASS_DATA),           // cbSize
+        OBJ_IDENT_DBPRS_CLASS,              // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 

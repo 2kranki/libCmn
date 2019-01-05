@@ -1378,7 +1378,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeLink_IsEnabled(
-        NODELINK_DATA		*this
+        NODELINK_DATA	*this
     )
     {
         

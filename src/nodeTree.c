@@ -74,50 +74,52 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    ERESULT         nodeTree_PrintNode(
+    ERESULT         nodeTree_PrintNode (
         NODETREE_DATA	*this,
         uint32_t        index,
         uint16_t        indent
     )
     {
         NODELINK_DATA   *pNode = OBJ_NIL;
-#ifdef XYZZY
-        NODE_DATA       *pChild;
+        NODELINK_DATA   *pChild;
         uint32_t        i;
         uint32_t        iMax;
-#endif
+        uint32_t        idxChild;
         const
         char            *pName;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeTree_Validate(this) ) {
+        if (!nodeTree_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
+        pNode = nodeTree_Node(this, index);
+        if (OBJ_NIL == pNode) {
+        }
+        
         if (indent) {
             ASTR_DATA       *pStr;
             pStr = AStr_NewFromCharA(indent, ' ');
             fprintf(stdout, "%s", AStr_getData(pStr));
             obj_Release(pStr);
         }
+        
         pName = node_getNameUTF8((NODE_DATA *)pNode);
         fprintf(stdout, "%s ", pName);
         mem_Free((void *)pName);
         fprintf(stdout, "\n");
         
-#ifdef XYZZY
-        iMax = node_ChildCount(pNode);
-        for (i=1; i<=iMax; ++i) {
-            pChild = node_Child(pNode, i);
-            if (pChild) {
-                nodeTree_PrintNode(this, pChild, indent+4);
+        iMax = nodeTree_ChildCount(this, index);
+        for (i=0; i<iMax; ++i) {
+            pChild = nodeTree_Child(this, index, i, &idxChild);
+            if (idxChild) {
+                nodeTree_PrintNode(this, idxChild, indent+4);
             }
         }
-#endif
         
         // Return to caller.
         return true;
@@ -788,7 +790,7 @@ extern "C" {
         
         pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, parent);
         if (pNode) {
-            childIndex = nodeLink_getSibling(pNode);
+            childIndex = nodeLink_getChild(pNode);
             pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
             if (pChild) {
                 while (index-- && childIndex) {
@@ -1400,12 +1402,13 @@ extern "C" {
 #endif
         
         eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
-        if (!ERESULT_FAILED(eRc)) {
-            nodeLink_setIndex(pNode, index);
-            obj_setLastError(this, ERESULT_SUCCESS);
+        if (ERESULT_FAILED(eRc)) {
+            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            index = 0;
         }
         else {
-            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+            nodeLink_setIndex(pNode, index);
+            obj_setLastError(this, ERESULT_SUCCESS);
         }
         
         // Return to caller.
@@ -1442,14 +1445,7 @@ extern "C" {
             return 0;
         }
 
-        eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
-        if (!ERESULT_FAILED(eRc)) {
-            nodeLink_setIndex(pNode, index);
-            obj_setLastError(this, ERESULT_SUCCESS);
-        }
-        else {
-            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
-        }
+        index = nodeTree_NodeNew(this, pNode);
         
         obj_Release(pNode);
         pNode = OBJ_NIL;
@@ -1575,7 +1571,7 @@ extern "C" {
 #endif
         
         printf("\n\n\n");
-        nodeTree_PrintNode(this,1,0);
+        nodeTree_PrintNode(this, 1, 0);
         printf("\n\n\n");
         
         // Return to caller.

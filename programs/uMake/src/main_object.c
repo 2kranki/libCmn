@@ -101,7 +101,7 @@ uint16_t		obj_ClassWhoAmI(
 
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
+OBJ_IUNKNOWN    class_Vtbl = {
 	&main_Info,
     main_ClassIsKindOf,
     obj_RetainNull,
@@ -119,7 +119,15 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 MAIN_CLASS_DATA  main_ClassObj = {
-    {&obj_Vtbl, sizeof(OBJ_DATA), MAIN_IDENT_MAIN_CLASS, 0, 1},
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
+        sizeof(MAIN_CLASS_DATA),            // cbSize
+        OBJ_IDENT_MAIN_CLASS,               // cbIdent
+        0,                                  // cbFlags
+        0,                                  // eRc
+        1,                                  // cbRetainCount
+        {0}                                 // cbMisc
+    },
 	//0
 };
 
