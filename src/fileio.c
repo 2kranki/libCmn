@@ -729,7 +729,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            fileio_Dealloc(
+    void            fileio_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -741,7 +741,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -768,7 +768,7 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    bool            fileio_Enable(
+    bool            fileio_Enable (
         FILEIO_DATA		*this
     )
     {
@@ -776,7 +776,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -792,6 +792,80 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          G e t s
+    //---------------------------------------------------------------
+    
+    ERESULT         fileio_Gets (
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         *pChr;
+        uint8_t         chr = 0;
+        uint32_t        amtRead;
+        off_t           fileOffset;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!fileio_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (cBuffer > 1)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pBuffer) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        --cBuffer;                      // Allow for trailing NUL.
+        
+        pChr = pBuffer;
+        for (;;) {
+            if (--cBuffer == 0)
+                break;
+            eRc = fileio_Read(this, 1, &chr, &amtRead);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            if (!(1 == amtRead))
+                break;
+            if (chr == '\n')
+                break;
+            if (chr == '\r')
+                break;
+            *pChr++ = chr;
+        }
+        *pChr++ = '\0';                 // Add trailing NUL.
+
+        // Remove '\r' '\n' or '\n' '\r' combination.
+        if ((chr == '\n') || (chr == '\r')) {
+            eRc = fileio_Read(this, 1, &chr, &amtRead);
+            if (!ERESULT_FAILED(eRc) && (1 == amtRead)) {
+                if ((chr == '\n') || (chr == '\r'))
+                    ;
+                else {
+                    fileOffset = fileio_SeekCur(this, 0);
+                    --fileOffset;
+                    fileOffset = fileio_SeekCur(this, fileOffset);
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

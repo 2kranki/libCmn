@@ -199,6 +199,22 @@ extern "C" {
     );
     
     
+    /*!
+     Read a line from the file and store it into the buffer. Stop when either
+     (cBuffer - 1) characters are read, the newline character is read, or the
+     end-of-file is reached, whichever comes first.
+     @param     this    object pointer
+     @param     cBuffer size of the buffer which must be greater than 1
+     @param     pBuffer buffer pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         fileio_Gets (
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    );
+    
+    
     FILEIO_DATA *   fileio_Init(
         FILEIO_DATA     *this
     );

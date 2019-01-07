@@ -112,37 +112,54 @@ int         test_fileio_Read01(
     FILEIO_DATA     *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = "/Users/bob/Support/testFiles/test_objects.json.txt";
+    char            *pPathA = "~/git/libCmn/tests/files/test_objects.json.txt";
     int64_t         fileSize = 0;
+    uint8_t         buffer[256];
     uint8_t         *pBuffer = NULL;
     uint32_t        amtRead = 0;
+    off_t           fileOffset;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pPath = path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    path_Clean(pPath);
+    fprintf(stderr, "\tpath=%s\n", path_getData(pPath));
+    TINYTEST_FALSE( (ERESULT_FAILED(path_IsFile(pPath))) );
 
-    pObj = fileio_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = fileio_Init(pObj);
+
+    pObj = fileio_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
         eRc = fileio_Open(pObj, pPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        fileSize = file_SizeA(pPathA);
+        fileSize = fileio_Size(pObj);
         TINYTEST_FALSE( (-1 == fileSize) );
 
         if (fileSize) {
             pBuffer = mem_Malloc(fileSize);
             TINYTEST_FALSE( (NULL == pBuffer) );
-            eRc = fileio_Read(pObj, fileSize, pBuffer, &amtRead);
+            eRc = fileio_Read(pObj, (uint32_t)fileSize, pBuffer, &amtRead);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             TINYTEST_TRUE( (amtRead == fileSize) );
             mem_Free(pBuffer);
             pBuffer = NULL;
         }
+        
+        fileOffset = fileio_Seek(pObj, 0);
+        TINYTEST_TRUE( (0 == fileOffset) );
+        
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "{")) );
+
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, " \"name\":")) );
 
         eRc = fileio_Close(pObj, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
