@@ -74,33 +74,33 @@
 /* Local function declarations
  */
 static
-bool            rrds32_FileExtend(
+bool            rrds32_FileExtend (
 	RRDS32_DATA      *this,
 	uint32_t         lsn                /* Block to extend to */
 );
 static
-ERESULT         rrds32_Header_Read(
+ERESULT         rrds32_Header_Read (
     RRDS32_DATA     *this,
     RRDS32_HEADER   *pBuffer
 );
 static
-ERESULT         rrds32_Header_Write(
+ERESULT         rrds32_Header_Write (
     RRDS32_DATA     *this
 );
 static
-ERESULT         rrds32_LSN_Read(
+ERESULT         rrds32_LSN_Read (
     RRDS32_DATA    *this,
     uint32_t       recordNum,
     uint8_t        *pBuffer
 );
 static
-ERESULT         rrds32_LSN_Write(
+ERESULT         rrds32_LSN_Write (
     RRDS32_DATA    *this,
     uint32_t       recordNum,
     uint8_t        *pBuffer
 );
 static
-size_t          rrds32_RecordOffset(
+size_t          rrds32_RecordOffset (
     RRDS32_DATA    *this,
     uint32_t       recordNum
 );
@@ -112,7 +112,7 @@ size_t          rrds32_RecordOffset(
 //                      F i l e  C l o s e
 //----------------------------------------------------------------
 static
-ERESULT         rrds32_FileClose(
+ERESULT         rrds32_FileClose (
     RRDS32_DATA     *this,
     bool            fDelete
 )
@@ -167,7 +167,7 @@ ERESULT         rrds32_FileClose(
  *          RRDS_ERROR_WRITE =   Disk Write Error
  */
 static
-bool            rrds32_FileExtend(
+bool            rrds32_FileExtend (
 	RRDS32_DATA     *this,
 	uint32_t        recordNum           /* Record to extend to */
 )
@@ -216,7 +216,7 @@ bool            rrds32_FileExtend(
 //                      R e a d  H e a d e r
 //----------------------------------------------------------------
 static
-ERESULT         rrds32_Header_Read(
+ERESULT         rrds32_Header_Read (
     RRDS32_DATA     *this,
     RRDS32_HEADER   *pBuffer
 )
@@ -232,15 +232,13 @@ ERESULT         rrds32_Header_Read(
         ;
     else {
         DEBUG_BREAK();
-        rrds32_setLastError(this, ERESULT_SEEK_ERROR);
-        return -1;
+        return ERESULT_SEEK_ERROR;
     }
     
     // Read the data.
     eRc = fileio_Read(this->pIO, this->headerSize, pBuffer, &amtRead);
     
     // Return to Caller.
-    rrds32_setLastError(this, eRc);
     return eRc;
 }
 
@@ -250,7 +248,7 @@ ERESULT         rrds32_Header_Read(
 //                  W r i t e  H e a d e r
 //----------------------------------------------------------------
 static
-ERESULT         rrds32_Header_Write(
+ERESULT         rrds32_Header_Write (
     RRDS32_DATA     *this
 )
 {
@@ -264,15 +262,13 @@ ERESULT         rrds32_Header_Write(
         ;
     else {
         DEBUG_BREAK();
-        rrds32_setLastError(this, ERESULT_SEEK_ERROR);
-        return -1;
+        return ERESULT_SEEK_ERROR;
     }
     
     // Read the data.
     eRc = fileio_Write(this->pIO, this->headerSize, this->pHeader);
     
     // Return to Caller.
-    rrds32_setLastError(this, eRc);
     return eRc;
 }
 
@@ -282,7 +278,7 @@ ERESULT         rrds32_Header_Write(
 //              R e a d  D a t a  U s i n g  L S N
 //----------------------------------------------------------------
 static
-ERESULT         rrds32_LSN_Read(
+ERESULT         rrds32_LSN_Read (
     RRDS32_DATA     *this,
     uint32_t        lsn,
     uint8_t         *pBuffer
@@ -300,15 +296,13 @@ ERESULT         rrds32_LSN_Read(
         ;
     else {
         DEBUG_BREAK();
-        rrds32_setLastError(this, ERESULT_SEEK_ERROR);
-        return -1;
+        return ERESULT_SEEK_ERROR;
     }
     
     // Read the data.
     eRc = fileio_Read(this->pIO, this->pHeader->recordSize, pBuffer, &amtRead);
 
     // Return to Caller.
-    rrds32_setLastError(this, eRc);
     return eRc;
 }
 
@@ -318,7 +312,7 @@ ERESULT         rrds32_LSN_Read(
 //              W r i t e  D a t a  U s i n g  L S N
 //----------------------------------------------------------------
 static
-ERESULT         rrds32_LSN_Write(
+ERESULT         rrds32_LSN_Write (
     RRDS32_DATA     *this,
     uint32_t        lsn,
     uint8_t         *pBuffer
@@ -335,8 +329,7 @@ ERESULT         rrds32_LSN_Write(
         ;
     else {
         DEBUG_BREAK();
-        rrds32_setLastError(this, ERESULT_SEEK_ERROR);
-        return -1;
+        return ERESULT_SEEK_ERROR;
     }
     
     // Write the data.
@@ -347,7 +340,6 @@ ERESULT         rrds32_LSN_Write(
     }
     
     // Return to Caller.
-    rrds32_setLastError(this, eRc);
     return eRc;
 }
 
@@ -357,7 +349,7 @@ ERESULT         rrds32_LSN_Write(
 //      BlockOffset - calculate file offset from Record Number
 //----------------------------------------------------------------
 static
-size_t          rrds32_RecordOffset(
+size_t          rrds32_RecordOffset (
     RRDS32_DATA    *this,
     uint32_t       recordNum
 )
@@ -375,7 +367,7 @@ size_t          rrds32_RecordOffset(
 //----------------------------------------------------------------
 //              Set up the FileIO and LRU objects
 //----------------------------------------------------------------
-ERESULT         rrds32_Setup(
+ERESULT         rrds32_Setup (
     RRDS32_DATA     *this,
     PATH_DATA       *pPath,
     uint16_t        cLRU,           // Number of LRU Buffers
@@ -386,14 +378,12 @@ ERESULT         rrds32_Setup(
     this->pIO = fileio_New( );
     if (OBJ_NIL == this->pIO) {
         DEBUG_BREAK();
-        rrds32_setLastError(this, ERESULT_OBJECT_CREATION);
         return ERESULT_OBJECT_CREATION;
     }
     
     this->pLRU = lru_New(recordSize, cLRU);
     if (OBJ_NIL == this->pLRU) {
         DEBUG_BREAK();
-        rrds32_setLastError(this, ERESULT_OBJECT_CREATION);
         return ERESULT_OBJECT_CREATION;
     }
     
@@ -407,7 +397,6 @@ ERESULT         rrds32_Setup(
     }
     
     // Return to caller.
-    rrds32_setLastError(this, ERESULT_SUCCESS);
     return ERESULT_SUCCESS;
 }
 
@@ -431,7 +420,7 @@ ERESULT         rrds32_Setup(
 //                        A l l o c
 //---------------------------------------------------------------
 
-RRDS32_DATA *   rrds32_Alloc(
+RRDS32_DATA *   rrds32_Alloc (
 )
 {
     RRDS32_DATA     *this;
@@ -451,7 +440,7 @@ RRDS32_DATA *   rrds32_Alloc(
 //                          N e w
 //---------------------------------------------------------------
 
-RRDS32_DATA *   rrds32_New(
+RRDS32_DATA *   rrds32_New (
 )
 {
     RRDS32_DATA     *this;
@@ -479,7 +468,7 @@ RRDS32_DATA *   rrds32_New(
 //      getRecordNum - Get the Number of Blocks in the File
 //----------------------------------------------------------------
 
-uint32_t         rrds32_getRecordNum(
+uint32_t         rrds32_getRecordNum (
     RRDS32_DATA 		*this
 )
 {
@@ -488,7 +477,7 @@ uint32_t         rrds32_getRecordNum(
 	 */
 #ifdef NDEBUG
 #else
-    if ( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return 0;
     }
@@ -496,7 +485,7 @@ uint32_t         rrds32_getRecordNum(
     
 	/* Return to caller.
 	 */
-	return( this->pHeader->recordNum );
+	return this->pHeader->recordNum;
 }
 
 
@@ -506,7 +495,7 @@ uint32_t         rrds32_getRecordNum(
 //              getRecordSize - Get the Record Size
 //----------------------------------------------------------------
 
-uint16_t        rrds32_getRecordSize(
+uint16_t        rrds32_getRecordSize (
     RRDS32_DATA        *this
 )
 {
@@ -515,14 +504,14 @@ uint16_t        rrds32_getRecordSize(
 	 */
 #ifdef NDEBUG
 #else
-    if ( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return 0;
     }
 #endif
     
 	// Return to caller.
-	return( this->pHeader->recordSize );
+	return this->pHeader->recordSize;
 }
 
 
@@ -531,7 +520,7 @@ uint16_t        rrds32_getRecordSize(
 //              getFillChar - Get the Fill Character
 //----------------------------------------------------------------
 
-char            rrds32_getFillChar(
+char            rrds32_getFillChar (
     RRDS32_DATA     *this
 )
 {
@@ -540,18 +529,18 @@ char            rrds32_getFillChar(
 	 */
 #ifdef NDEBUG
 #else
-    if ( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return 0;
     }
 #endif
     
 	// Return to caller.
-	return( this->pHeader->fillChar );
+	return this->pHeader->fillChar;
 }
 
 
-bool            rrds32_setFillChar(
+bool            rrds32_setFillChar (
     RRDS32_DATA     *this,
     char            value
 )
@@ -561,7 +550,7 @@ bool            rrds32_setFillChar(
      */
 #ifdef NDEBUG
 #else
-    if ( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return false;
     }
@@ -576,50 +565,11 @@ bool            rrds32_setFillChar(
 
 
 
-ERESULT         rrds32_getLastError(
-    RRDS32_DATA     *this
-)
-{
-    
-    // Validate the input parameters.
-#ifdef NDEBUG
-#else
-    if( !rrds32_Validate(this) ) {
-        DEBUG_BREAK();
-        return this->eRc;
-    }
-#endif
-    
-    //this->eRc = ERESULT_SUCCESS;
-    return this->eRc;
-}
-
-
-bool            rrds32_setLastError(
-    RRDS32_DATA     *this,
-    ERESULT         value
-)
-{
-#ifdef NDEBUG
-#else
-    if( !rrds32_Validate(this) ) {
-        DEBUG_BREAK();
-        return false;
-    }
-#endif
-    
-    this->eRc = value;
-    
-    return true;
-}
-
-
-
 //----------------------------------------------------------------
 //              getUserSize - Get the User Area Size
 //----------------------------------------------------------------
 
-uint16_t        rrds32_getUserSize(
+uint16_t        rrds32_getUserSize (
     RRDS32_DATA        *this
 )
 {
@@ -628,7 +578,7 @@ uint16_t        rrds32_getUserSize(
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return 0;
     }
@@ -637,7 +587,7 @@ uint16_t        rrds32_getUserSize(
     size -= offsetof(RRDS32_HEADER, userData);
     
 	// Return to caller.
-	return( size );
+	return size;
 }
 
 
@@ -647,7 +597,7 @@ uint16_t        rrds32_getUserSize(
 //          getUserPtr - Get a pointer to the User Area
 //----------------------------------------------------------------
 
-uint8_t *       rrds32_getUserPtr(
+uint8_t *       rrds32_getUserPtr (
     RRDS32_DATA        *this
 )
 {
@@ -655,7 +605,7 @@ uint8_t *       rrds32_getUserPtr(
 	// Do initialization.
 #ifdef NDEBUG
 #else
-    if ( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return 0;
     }
@@ -683,7 +633,7 @@ uint8_t *       rrds32_getUserPtr(
  * Returns
  *          Nothing
  */
-ERESULT         rrds32_Close(
+ERESULT         rrds32_Close (
 	RRDS32_DATA     *this,
     bool            fDelete
 )
@@ -695,7 +645,7 @@ ERESULT         rrds32_Close(
 #else
     if ( !rrds32_Validate(this) ) {
         DEBUG_BREAK();
-        return this->eRc;
+        return ERESULT_INVALID_OBJECT;
     }
 #endif
 
@@ -706,7 +656,6 @@ ERESULT         rrds32_Close(
     }
 
 	// Return to caller.
-    this->eRc = ERESULT_SUCCESS;
 	return ERESULT_SUCCESS;
 }
 
@@ -717,7 +666,7 @@ ERESULT         rrds32_Close(
 //                  Create - Create a File
 //----------------------------------------------------------------
 
-ERESULT         rrds32_Create(
+ERESULT         rrds32_Create (
     RRDS32_DATA     *this,
     PATH_DATA       *pPath,
     uint16_t        cLRU,           // Number of LRU Buffers
@@ -731,29 +680,25 @@ ERESULT         rrds32_Create(
 #else
     if ( !rrds32_Validate(this) ) {
         DEBUG_BREAK();              // Should not happen!
-        return this->eRc;
+        return ERESULT_INVALID_OBJECT;
     }
     if (OBJ_NIL == pPath) {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
     if (0 == (recordSize & 0x3))
         ;
     else {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
     if (0 == (headerSize & 0x3))
         ;
     else {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
     if (((cLRU == 0) || (cLRU > 1)) && !(cLRU == 34))
         ;
     else {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
 #endif
     
@@ -763,8 +708,7 @@ ERESULT         rrds32_Create(
     }
     this->pHeader = (RRDS32_HEADER *)mem_Calloc(1, headerSize);
     if (NULL == this->pHeader) {
-        this->eRc = ERESULT_OUT_OF_MEMORY;
-        return this->eRc;
+        return ERESULT_OUT_OF_MEMORY;
     }
     this->pHeader->cbSize = headerSize;
     //this->pHeader->cbFlags = 0;
@@ -775,38 +719,32 @@ ERESULT         rrds32_Create(
 
     eRc = rrds32_Setup(this, pPath, cLRU, recordSize, headerSize);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
     
 	// Create the file.
     eRc = fileio_Create(this->pIO, pPath);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
     
     eRc = rrds32_Header_Write(this);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
 
     eRc = fileio_Close(this->pIO, false);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
 
     eRc = fileio_Open(this->pIO, pPath);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
     
 	// Return to caller.
-    this->eRc = ERESULT_SUCCESS;
-	return this->eRc;
+	return ERESULT_SUCCESS;
 }
 
 
@@ -816,7 +754,7 @@ ERESULT         rrds32_Create(
 //                    D e a l l o c
 //----------------------------------------------------------------
 
-void            rrds32_Dealloc(
+void            rrds32_Dealloc (
     OBJ_ID          objId
 )
 {
@@ -849,7 +787,7 @@ void            rrds32_Dealloc(
 //                      Init - Initialize the object
 //----------------------------------------------------------------
 
-RRDS32_DATA *   rrds32_Init(
+RRDS32_DATA *   rrds32_Init (
     RRDS32_DATA     *this
 )
 {
@@ -888,7 +826,7 @@ RRDS32_DATA *   rrds32_Init(
 //                      Open - Open a File
 //----------------------------------------------------------------
 
-ERESULT         rrds32_Open(
+ERESULT         rrds32_Open (
     RRDS32_DATA     *this,
     PATH_DATA       *pPath,
     uint16_t        cLRU            // Number of LRU Buffers
@@ -903,43 +841,37 @@ ERESULT         rrds32_Open(
 #else
     if ( !rrds32_Validate(this) ) {
         DEBUG_BREAK();
-        return this->eRc;
+        return ERESULT_INVALID_OBJECT;
     }
 #endif    
 
     // Set up the FileIO and LRU objects.
     eRc = rrds32_Setup(this, pPath, cLRU, 0, 0);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
     
     eRc = fileio_Open(this->pIO, pPath);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
     
     eRc = fileio_Read(this->pIO, sizeof(RRDS32_HEADER), (uint8_t *)&header, &amtRead);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
     this->headerSize = header.cbSize;
     this->pHeader = (RRDS32_HEADER *)mem_Malloc(this->headerSize);
     if (NULL == this->pHeader) {
-        this->eRc = ERESULT_OUT_OF_MEMORY;
-        return this->eRc;
+        return ERESULT_OUT_OF_MEMORY;
     }
 
     eRc = rrds32_Header_Read(this, this->pHeader);
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = eRc;
         return eRc;
     }
 
 	// Return to caller.
-    this->eRc = ERESULT_SUCCESS;
 	return ERESULT_SUCCESS;
 }
 
@@ -949,7 +881,7 @@ ERESULT         rrds32_Open(
 //                     Q u e r y  I n f o
 //---------------------------------------------------------------
 
-void *          rrds32_QueryInfo(
+void *          rrds32_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -964,7 +896,7 @@ void *          rrds32_QueryInfo(
     }
 #ifdef NDEBUG
 #else
-    if( !rrds32_Validate(this) ) {
+    if (!rrds32_Validate(this)) {
         DEBUG_BREAK();
         return NULL;
     }
@@ -1012,7 +944,7 @@ void *          rrds32_QueryInfo(
 //              RecordRead - Read a Block into Memory
 //----------------------------------------------------------------
 
-ERESULT         rrds32_RecordRead(
+ERESULT         rrds32_RecordRead (
     RRDS32_DATA     *this,
     uint32_t        recordNum,
     uint8_t         *pData
@@ -1034,12 +966,10 @@ ERESULT         rrds32_RecordRead(
     }
 #endif
     if( recordNum == 0 ) {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
     if( recordNum > this->pHeader->recordNum ) {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
     
     // Read the Block into Memory.
@@ -1049,13 +979,11 @@ ERESULT         rrds32_RecordRead(
     eRc = rrds32_LSN_Read(this, recordNum, pData);
 #endif
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = ERESULT_IO_ERROR;
-        return this->eRc;
+        return ERESULT_IO_ERROR;
     }
 
     // Return to caller.
-    this->eRc = ERESULT_SUCCESS;
-    return this->eRc;
+    return ERESULT_SUCCESS;
 }
 
 
@@ -1065,7 +993,7 @@ ERESULT         rrds32_RecordRead(
 //              RecordWrite - Write a Block to the File
 //----------------------------------------------------------------
 
-ERESULT         rrds32_RecordWrite(
+ERESULT         rrds32_RecordWrite (
     RRDS32_DATA     *this,
     uint32_t        recordNum,
     uint8_t         *pData
@@ -1086,8 +1014,7 @@ ERESULT         rrds32_RecordWrite(
     }
 #endif
     if( recordNum == 0 ) {
-        this->eRc = ERESULT_INVALID_PARAMETER;
-        return this->eRc;
+        return ERESULT_INVALID_PARAMETER;
     }
     
     /* Fill the File if a block is accessed beyond the end of the
@@ -1097,8 +1024,7 @@ ERESULT         rrds32_RecordWrite(
         if( rrds32_FileExtend( this, recordNum-1 ) )
             ;
         else {
-            this->eRc = ERESULT_IO_ERROR;
-            return this->eRc;
+            return ERESULT_IO_ERROR;
         }
     }
     
@@ -1109,13 +1035,11 @@ ERESULT         rrds32_RecordWrite(
     eRc = rrds32_LSN_Write(this, recordNum, pData);
 #endif
     if (ERESULT_FAILED(eRc)) {
-        this->eRc = ERESULT_IO_ERROR;
-        return this->eRc;
+        return ERESULT_IO_ERROR;
     }
     
     // Return to caller.
-    this->eRc = ERESULT_SUCCESS;
-    return this->eRc;
+    return ERESULT_SUCCESS;
 }
 
 
@@ -1125,7 +1049,7 @@ ERESULT         rrds32_RecordWrite(
 //                       T o  S t r i n g
 //---------------------------------------------------------------
 
-ASTR_DATA *     rrds32_ToDebugString(
+ASTR_DATA *     rrds32_ToDebugString (
     RRDS32_DATA     *this,
     int             indent
 )
@@ -1181,8 +1105,8 @@ ASTR_DATA *     rrds32_ToDebugString(
 
 #ifdef NDEBUG
 #else
-bool			rrds32_Validate(
-    RRDS32_DATA        *this
+bool			rrds32_Validate (
+    RRDS32_DATA     *this
 )
 {
     
@@ -1201,12 +1125,10 @@ bool			rrds32_Validate(
     
     
     if( !(obj_getSize(this) >= sizeof(RRDS32_DATA)) ) {
-        this->eRc = ERESULT_INVALID_OBJECT;
         return false;
     }
     
     // Return to caller.
-    this->eRc = ERESULT_SUCCESS;
     return true;
 }
 #endif

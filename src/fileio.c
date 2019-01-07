@@ -687,6 +687,12 @@ extern "C" {
             obj_Release(this->pPath);
         }
         this->pPath = path_Copy(pPath);
+        if (this->pPath) {
+            path_Clean(this->pPath);
+        }
+        else {
+            return ERESULT_OUT_OF_MEMORY;
+        }
 
         //  Open the File.
 #if defined(__MACOSX_ENV__)
@@ -891,6 +897,12 @@ extern "C" {
             obj_Release(this->pPath);
         }
         this->pPath = path_Copy(pPath);
+        if (this->pPath) {
+            path_Clean(this->pPath);
+        }
+        else {
+            return ERESULT_OUT_OF_MEMORY;
+        }
         
         //  Open the File.
 #if defined(__MACOSX_ENV__)
@@ -908,6 +920,11 @@ extern "C" {
                              );
 #endif
         if(-1 == fileHandle) {
+            if (errno == ENOENT) {
+                fileio_setLastError(this, ERESULT_FILE_NOT_FOUND);
+                return ERESULT_FILE_NOT_FOUND;
+            }
+            //perror(NULL);
             fileio_setLastError(this, ERESULT_OPEN_ERROR);
             return ERESULT_OPEN_ERROR;
         }

@@ -124,17 +124,17 @@ extern	"C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
     
-    RRDS32_DATA *   rrds32_Alloc(
+    RRDS32_DATA *   rrds32_Alloc (
         void
     );
     
     
-    OBJ_ID          rrds32_Class(
+    OBJ_ID          rrds32_Class (
         void
     );
     
     
-    RRDS32_DATA *   rrds32_New(
+    RRDS32_DATA *   rrds32_New (
         void
     );
     
@@ -146,18 +146,13 @@ extern	"C" {
     
     /* GetFillChar() returns the current Fill Character.
      */
-    char            rrds32_getFillChar(
+    char            rrds32_getFillChar (
         RRDS32_DATA 	*this
     );
     
-    bool            rrds32_setFillChar(
+    bool            rrds32_setFillChar (
         RRDS32_DATA     *this,
         char            value
-    );
-    
-    
-    ERESULT         rrds32_getLastError(
-        RRDS32_DATA     *this
     );
     
     
@@ -167,28 +162,28 @@ extern	"C" {
      *    RRDS_OK            =    Successful Completion
      *    RRDS_ERROR_BADCB    =    Invalid RRDS_CB Pointer
      */
-    uint32_t         rrds32_getRecordNum(
+    uint32_t         rrds32_getRecordNum (
         RRDS32_DATA     *this
     );
     
     
     /* GetRecordSize() returns the record size.
      */
-    uint16_t        rrds32_getRecordSize(
+    uint16_t        rrds32_getRecordSize (
         RRDS32_DATA     *this
     );
     
     
     /* GetUserSize() returns the User Area size.
      */
-    uint16_t        rrds32_getUserSize(
+    uint16_t        rrds32_getUserSize (
         RRDS32_DATA 	*this
     );
     
     
     /* GetUserPtr() returns a pointer to the User Area.
      */
-    uint8_t *       rrds32_getUserPtr(
+    uint8_t *       rrds32_getUserPtr (
         RRDS32_DATA 	*this
     );
     
@@ -206,7 +201,7 @@ extern	"C" {
      @Return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*
                 error.
       */
-    ERESULT         rrds32_Close(
+    ERESULT         rrds32_Close (
         RRDS32_DATA     *this,
         bool            fDelete
     );
@@ -217,7 +212,7 @@ extern	"C" {
      * RRDS I/O calls.  Use Close() to flush buffers and close the
      * file. Use Destroy() to close the file deleting it.
      */
-    ERESULT         rrds32_Create(
+    ERESULT         rrds32_Create (
         RRDS32_DATA     *this,
         PATH_DATA       *pPath,
         uint16_t        cLRU,           // Number of LRU Buffers
@@ -226,7 +221,7 @@ extern	"C" {
     );
 
 
-    RRDS32_DATA *	rrds32_Init(
+    RRDS32_DATA *	rrds32_Init (
         RRDS32_DATA     *this
     );
     
@@ -238,7 +233,7 @@ extern	"C" {
      * this routine.
      * Returns NULL on unsuccessful completion.
      */
-    ERESULT         rrds32_Open(
+    ERESULT         rrds32_Open (
         RRDS32_DATA     *this,
         PATH_DATA       *pPath,
         uint16_t        cLRU            // Number of LRU Buffers
@@ -256,7 +251,7 @@ extern	"C" {
      *    RRDS_ERROR_SEEK    =    Disk Seek Error
      *    RRDS_ERROR_WRITE    =    Disk Write Error in File Extend
      */
-    ERESULT         rrds32_RecordRead(
+    ERESULT         rrds32_RecordRead (
         RRDS32_DATA     *this,
         uint32_t        recordNum,
         uint8_t         *pData
@@ -272,7 +267,7 @@ extern	"C" {
      *    RRDS_ERROR_SEEK    =    Disk Seek Error
      *    RRDS_ERROR_WRITE    =    Disk Write Error in File Extend
      */
-    ERESULT         rrds32_RecordWrite(
+    ERESULT         rrds32_RecordWrite (
         RRDS32_DATA     *this,
         uint32_t        recordNum,
         uint8_t         *pData    // Data Ptr (if NULL, a FillChar record is written)
@@ -292,7 +287,7 @@ extern	"C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     rrds32_ToDebugString(
+    ASTR_DATA *     rrds32_ToDebugString (
         RRDS32_DATA     *this,
         int             indent
     );

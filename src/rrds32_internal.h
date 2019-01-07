@@ -96,11 +96,10 @@ struct rrds32_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    ERESULT         eRc;
     FILEIO_DATA     *pIO;
     LRU_DATA        *pLRU;
     uint32_t        size;           // Maximum Number of Entries
-	uint32_t        headerSize;    // Header Length
+	uint32_t        headerSize;     // Header Length
     RRDS32_HEADER   *pHeader;
 
 };
@@ -116,12 +115,6 @@ struct rrds32_data_s	{
     
     
     // Internal Functions
-    bool            rrds32_setLastError(
-        RRDS32_DATA     *this,
-        ERESULT         value
-    );
-    
-    
     void            rrds_Dealloc(
         OBJ_ID          objId
     );

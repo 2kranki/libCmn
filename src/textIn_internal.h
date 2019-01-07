@@ -104,7 +104,11 @@ struct textIn_data_s	{
     uint8_t         fStripCR;
     uint8_t         fStripNL;
     uint8_t         fAtEOF;
-    uint8_t         rsvd8[2];
+    uint8_t         fCols80;            // true == IBM 80 Column Card Input
+    //                                  //      (ie cols 1-71 data,
+    //                                  //          col 72 continuation indicator,
+    //                                  //          cols 73-80 sequence number)
+    uint8_t         fSeq80;             // Validate sequence numbers
     PATH_DATA       *pPath;
     const
     char            *pPathA;

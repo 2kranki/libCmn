@@ -307,6 +307,48 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //              8 0  C o l u m n  C a r d s
+    //---------------------------------------------------------------
+    
+    bool            textIn_getCols80 (
+        TEXTIN_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->fCols80;
+    }
+    
+    
+    bool            textIn_setCols80 (
+        TEXTIN_DATA     *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fCols80 = fValue ? 1 : 0;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                    F i l e  I n d e x
     //---------------------------------------------------------------
     
@@ -473,6 +515,48 @@ extern "C" {
 #endif
         
         this->fStripNL = fValue ? 1 : 0;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //  C h e c k  8 0  C o l u m n  C a r d  S e q u e n c e  N u m
+    //---------------------------------------------------------------
+    
+    bool            textIn_getSeq80 (
+        TEXTIN_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return this->fSeq80;
+    }
+    
+    
+    bool            textIn_setSeq80 (
+        TEXTIN_DATA     *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!textIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->fSeq80 = fValue ? 1 : 0;
         
         return true;
     }
