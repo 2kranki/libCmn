@@ -116,6 +116,18 @@ extern "C" {
     );
     
     
+    void            TranslateAsciiToEbcdic (
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    );
+    
+    
+    void            TranslateEbcdicToAscii (
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    );
+    
+    
 
 
     //---------------------------------------------------------------

@@ -131,7 +131,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    EBCDIC_DATA *     ebcdic_Alloc(
+    EBCDIC_DATA *     ebcdic_Alloc (
     )
     {
         EBCDIC_DATA     *this;
@@ -147,7 +147,7 @@ extern "C" {
 
 
 
-    EBCDIC_DATA *     ebcdic_New(
+    EBCDIC_DATA *     ebcdic_New (
     )
     {
         EBCDIC_DATA       *this;
@@ -161,7 +161,7 @@ extern "C" {
 
 
 
-    uint8_t         asciiToEbcdic(
+    uint8_t         asciiToEbcdic (
         char            asciiChar
     )
     {
@@ -169,12 +169,42 @@ extern "C" {
     }
     
 
-    
-    char            ebcdicToAscii(
+
+    char            ebcdicToAscii (
         uint8_t         ebcdicChar
     )
     {
         return Ebcdic2AsciiTable[ebcdicChar & 0xFF];
+    }
+    
+    
+    
+    void            TranslateAsciiToEbcdic (
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    )
+    {
+        while (--cBuffer) {
+            if (*pBuffer == '\0')
+                break;
+            *pBuffer = asciiToEbcdic(*pBuffer);
+            ++pBuffer;
+        }
+    }
+    
+    
+    
+    void            TranslateEbcdicToAscii (
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    )
+    {
+        while (--cBuffer) {
+            if (*pBuffer == '\0')
+                break;
+            *pBuffer = ebcdicToAscii(*pBuffer);
+            ++pBuffer;
+        }
     }
     
     
