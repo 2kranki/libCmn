@@ -158,6 +158,26 @@ bool            str_Copy(
 );
 
 
+/* str_CopyFill() copies the Input String to the Output String in-
+ * cluding the nul-terminator for the Maximum number of Chars
+ * specified.  If the input string is shorter than the output
+ * area, then the output is filled with the fill char. The input
+ * string length is either the length given or finding a NUL
+ * terminator. The Output String is always left NUL-terminated.
+ * Returns:
+ *    TRUE                =    Successful Completion
+ *    FALSE               =    Output Field Overflow or Invalid Parameters
+ */
+bool            str_CopyFill(
+    char            *pszOut,        /* Output Buffer Pointer */
+    int             outLen,         /* Output Buffer Length */
+    const
+    char            *pszIn,         /* Input String Pointer */
+    int             inLen,          /* Input Buffer Length */
+    char            fillChar
+);
+
+
 /* Duplicate() copies the Input String to a new string that
  * was allocated with mem_Malloc().
  * The string will need to be mem_Free()'d when you are done with it.

@@ -119,6 +119,53 @@ int         test_str_Concat(
 
 
 
+int         test_str_CopyFill01(
+    const
+    char        *pTestName
+)
+{
+    char            test[8];
+    bool            fRc;
+    int             i;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    fRc = str_CopyFill( test, sizeof(test), "abc", 3, ' ' );
+    XCTAssertTrue( (fRc) );
+    //                     01234567
+    i = str_Compare(test, "abc    ");
+    XCTAssertTrue( (0 == i) );
+    
+    fRc = str_CopyFill( test, sizeof(test), "abc", 5, ' ' );
+    XCTAssertTrue( (fRc) );
+    //                     01234567
+    i = str_Compare(test, "abc    ");
+    XCTAssertTrue( (0 == i) );
+
+    fRc = str_CopyFill( test, sizeof(test), "abc", 2, ' ' );
+    XCTAssertTrue( (!fRc) );
+    //                     01234567
+    i = str_Compare(test, "ab     ");
+    XCTAssertTrue( (0 == i) );
+
+    fRc = str_CopyFill( test, sizeof(test), "", 0, ' ' );
+    XCTAssertTrue( (fRc) );
+    //                     01234567
+    i = str_Compare(test, "       ");
+    XCTAssertTrue( (0 == i) );
+    
+    fRc = str_CopyFill( test, sizeof(test), NULL, 0, ' ' );
+    XCTAssertTrue( (fRc) );
+    //                     01234567
+    i = str_Compare(test, "       ");
+    XCTAssertTrue( (0 == i) );
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_str_DupA(
     const
     char        *pTestName
@@ -243,11 +290,12 @@ int         test_str_Lindex(
 
 
 TINYTEST_START_SUITE(test_str);
-  TINYTEST_ADD_TEST(test_str_Lindex,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_str_DupRight,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_str_DupLeft,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_str_DupA,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_str_Concat,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_Lindex,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_DupRight,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_DupLeft,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_DupA,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_CopyFill01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_Concat,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_str);

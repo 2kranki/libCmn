@@ -170,6 +170,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    PATH_DATA *     rrds_getPath (
+        RRDS_DATA       *this
+    );
+    
+    
     /*!
      The record size property should be set before a dataset/file
      is opened or created. This size does not include any record

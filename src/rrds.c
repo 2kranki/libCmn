@@ -443,6 +443,34 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          P a t h
+    //---------------------------------------------------------------
+    
+    PATH_DATA *     rrds_getPath (
+        RRDS_DATA       *this
+    )
+    {
+        PATH_DATA       *pPath = OBJ_NIL;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!rrds_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if (this->pIO) {
+            pPath = fileio_getPath(this->pIO);
+        }
+        
+        return pPath;
+    }
+    
+   
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     

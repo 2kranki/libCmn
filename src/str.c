@@ -431,6 +431,48 @@ bool            str_Copy(
 }
 
 
+bool            str_CopyFill(
+    char            *pszOut,        /* Output Buffer Pointer */
+    int             outLen,         /* Output Buffer Length */
+    const
+    char            *pszIn,         /* Input String Pointer */
+    int             inLen,          /* Input Buffer Length */
+    char            fillChar
+)
+{
+    int             i = 0;
+    bool            fRc = true;
+    
+    // Do initialization.
+    if( outLen > 0 )
+        ;
+    else
+        return false;
+    if( NULL == pszOut )
+        return false;
+    
+    // Copy the String.
+    if (pszIn) {
+        for( i=0; (*pszIn && inLen-- && (i < (outLen - 1))); i++ ) {
+            *pszOut++ = *pszIn++;
+        }
+        if( *pszIn )
+            fRc = false;
+    }
+    
+    //  Fill the remainder of the output string.
+    for( ; (i < (outLen - 1)); i++ ) {
+        *pszOut++ = fillChar;
+    }
+    
+    // Add trailing NUL terminator.
+    *pszOut++ = '\0';
+
+    // Return to caller.
+    return fRc;
+}
+
+
 
 
 //----------------------------------------------------------
