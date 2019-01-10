@@ -79,7 +79,8 @@ extern "C" {
 
    
 #define outBaseID       "outBase"       /* Base Directory for output */
-#define tmpBaseID       "tmpBase"       /*  Temporary Base Directory */
+#define srcFileID       "srcFile"       /* Input Source File Path */
+#define srcBaseID       "srcBase"       /* Input Source Base Directory */
 
     
     
@@ -89,9 +90,6 @@ extern "C" {
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
     ****************************************************************/
 
-
-    
-    
 
     
 #ifdef	__cplusplus

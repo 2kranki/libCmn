@@ -1342,7 +1342,9 @@ extern "C" {
 #endif
         
         appl_UsageNoMsg(this);
-        exit(4);
+        this->exitRC = 4;
+        
+        return ERESULT_GENERAL_FAILURE;
     }
     
     

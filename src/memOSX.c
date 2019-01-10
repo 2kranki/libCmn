@@ -409,10 +409,30 @@ extern "C" {
                     fprintf(stderr, "\t\tFlag: User8\n");
                 }
                 pObj = (OBJ_DATA *)pData;
-                if (pObj->pVtbl->pToDebugString) {
+                if (pObj->pVtbl && pObj->pVtbl->pToDebugString) {
                     pStr = pObj->pVtbl->pToDebugString(pObj, 0);
                     fprintf(stderr, "debug: \n%s\n\n\n", AStr_getData(pStr));
                     obj_Release(pStr);
+                }
+                else {
+                    fprintf( stderr, "\nData @ %p:\n", pData );
+                    pBuffer = buffer;
+                    size = (uint32_t)pActual->cbSize;
+                    //if (size > 128)
+                        //size = 128;
+                    if (0 == size)
+                        size = 1;
+                    pBytes = pData;
+                    for (;;) {
+                        hex_putBytes16_32(size, pBytes, 2048, &pBuffer);
+                        fprintf(stderr, "%s\n", buffer);
+                        pBytes += 16;
+                        pBuffer = buffer;
+                        if (size <= 16)
+                            break;
+                        size -= 16;
+                    }
+                    fprintf(stderr, "\n");
                 }
             }
             else {

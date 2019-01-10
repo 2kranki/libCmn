@@ -330,6 +330,73 @@ extern "C" {
     }
     
     
+    ERESULT         fbsi_Gets2 (
+        FBSI_DATA       *this,
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         *pChr;
+        int32_t         chr = 0;
+        uint32_t        amtRead;
+        off_t           fileOffset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!fbsi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (cBuffer > 1)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pBuffer) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        --cBuffer;                      // Allow for trailing NUL.
+        
+        pChr = pBuffer;
+        for (;;) {
+            if (--cBuffer == 0)
+                break;
+            eRc = fbsi_Getwc(this, &chr);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            if (chr == '\n')
+                break;
+            if (chr == '\r')
+                break;
+            *pChr++ = chr;
+        }
+        *pChr++ = '\0';                 // Add trailing NUL.
+        
+        // Remove '\r' '\n' or '\n' '\r' combination.
+        if ((chr == '\n') || (chr == '\r')) {
+            eRc = fbsi_Getwc(this, &chr);
+            if (!ERESULT_FAILED(eRc)) {
+                if ((chr == '\n') || (chr == '\r'))
+                    ;
+                else {
+                    //FIXME: fileOffset = fileio_SeekCur(this, 0);
+                    //FIXME: --fileOffset;
+                    //FIXME: fileOffset = fileio_SeekCur(this, fileOffset);
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                          I n i t

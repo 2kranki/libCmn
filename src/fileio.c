@@ -63,7 +63,7 @@ extern "C" {
      */
 #ifdef NOT_NEEDED_YET
     static
-    bool            fileio_FileDelete(
+    bool            fileio_FileDelete (
         const
         char            *pFileName
     );
@@ -72,7 +72,7 @@ extern "C" {
     
 #ifdef NOT_NEEDED_YET
     static
-    bool            fileio_FileExtend(
+    bool            fileio_FileExtend (
         FILEIO_DATA      *this,
         uint32_t         Block           /* Block to extend to */
     );
@@ -95,7 +95,7 @@ extern "C" {
      */
 #ifdef NOT_NEEDED_YET
     static
-    int             fileio_FileCreate(
+    int             fileio_FileCreate (
         const
         char            *pFilePath
     )
@@ -126,7 +126,7 @@ extern "C" {
      */
 #ifdef NOT_NEEDED_YET
     static
-    bool            fileio_FileDelete(
+    bool            fileio_FileDelete (
         const
         char            *pFileName
     )
@@ -160,7 +160,7 @@ extern "C" {
      */
 #ifdef NOT_NEEDED_YET
     static
-    bool            fileio_FileExtend(
+    bool            fileio_FileExtend (
         FILEIO_DATA     *this,
         uint32_t        recordNum           /* Record to extend to */
     )
@@ -218,7 +218,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    FILEIO_DATA *   fileio_Alloc(
+    FILEIO_DATA *   fileio_Alloc (
     )
     {
         FILEIO_DATA     *this;
@@ -234,7 +234,7 @@ extern "C" {
 
 
 
-    FILEIO_DATA *   fileio_New(
+    FILEIO_DATA *   fileio_New (
     )
     {
         FILEIO_DATA     *this;
@@ -248,7 +248,7 @@ extern "C" {
 
 
 
-    FILEIO_DATA *   fileio_NewCreate(
+    FILEIO_DATA *   fileio_NewCreate (
         PATH_DATA       *pPath
     )
     {
@@ -282,7 +282,7 @@ extern "C" {
     
     
     
-    FILEIO_DATA *   fileio_NewOpen(
+    FILEIO_DATA *   fileio_NewOpen (
         PATH_DATA       *pPath
     )
     {
@@ -311,7 +311,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    bool            fileio_getAppend(
+    bool            fileio_getAppend (
         FILEIO_DATA     *this
     )
     {
@@ -320,7 +320,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -338,7 +338,7 @@ extern "C" {
         return false;
     }
     
-    bool            fileio_setAppend(
+    bool            fileio_setAppend (
         FILEIO_DATA     *this,
         bool            fValue
     )
@@ -346,7 +346,7 @@ extern "C" {
         int             fileFlags;
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -369,7 +369,7 @@ extern "C" {
     
     
     
-    ERESULT         fileio_getLastError(
+    PATH_DATA *     fileio_getPath (
         FILEIO_DATA     *this
     )
     {
@@ -377,46 +377,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-        
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-    
-    
-    bool            fileio_setLastError(
-        FILEIO_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !fileio_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-    
-    PATH_DATA *     fileio_getPath(
-        FILEIO_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -426,14 +387,14 @@ extern "C" {
     }
     
     
-    bool          fileio_setPath(
+    bool          fileio_setPath (
         FILEIO_DATA     *this,
         PATH_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -454,7 +415,7 @@ extern "C" {
     
     
     
-    uint16_t      fileio_getPriority(
+    uint16_t      fileio_getPriority (
         FILEIO_DATA     *this
     )
     {
@@ -462,7 +423,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -472,14 +433,14 @@ extern "C" {
         return 0;
     }
 
-    bool            fileio_setPriority(
+    bool            fileio_setPriority (
         FILEIO_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -492,13 +453,13 @@ extern "C" {
 
 
 
-    uint32_t        fileio_getSize(
+    uint32_t        fileio_getSize (
         FILEIO_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -520,7 +481,7 @@ extern "C" {
     //                       A s s i g n
     //---------------------------------------------------------------
     
-    ERESULT         fileio_Assign(
+    ERESULT         fileio_Assign (
         FILEIO_DATA		*this,
         FILEIO_DATA      *pOther
     )
@@ -530,11 +491,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !fileio_Validate(pOther) ) {
+        if (!fileio_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -582,7 +543,7 @@ extern "C" {
     //                          C l o s e
     //---------------------------------------------------------------
     
-    ERESULT     fileio_Close(
+    ERESULT     fileio_Close (
         FILEIO_DATA *this,
         bool        fDelete
     )
@@ -592,7 +553,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -605,7 +566,6 @@ extern "C" {
         //  Close the File.
         this->fileHandle = close(this->fileHandle);
         if (this->fileHandle == -1) {
-            fileio_setLastError(this, ERESULT_CLOSE_ERROR);
             return ERESULT_CLOSE_ERROR;
         }
         obj_FlagSet(this, FILEIO_FILE_OPEN, false);
@@ -617,7 +577,6 @@ extern "C" {
         fileio_setPath(this, OBJ_NIL);
 
         // Return to caller.
-        fileio_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -627,7 +586,7 @@ extern "C" {
     //                          C o p y
     //---------------------------------------------------------------
     
-    FILEIO_DATA *     fileio_Copy(
+    FILEIO_DATA *     fileio_Copy (
         FILEIO_DATA       *this
     )
     {
@@ -637,7 +596,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -663,7 +622,7 @@ extern "C" {
     //                          C r e a t e
     //---------------------------------------------------------------
     
-    ERESULT         fileio_Create(
+    ERESULT         fileio_Create (
         FILEIO_DATA     *this,
         PATH_DATA       *pPath
     )
@@ -673,13 +632,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
         if (pPath == OBJ_NIL) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -712,14 +670,12 @@ extern "C" {
                              );
 #endif
         if (fileHandle == -1) {
-            fileio_setLastError(this, ERESULT_OPEN_ERROR);
             return ERESULT_OPEN_ERROR;
         }
         this->fileHandle = fileHandle;
         obj_FlagSet(this, FILEIO_FILE_OPEN, true);
         
         // Return to caller.
-        fileio_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -853,9 +809,7 @@ extern "C" {
                 if ((chr == '\n') || (chr == '\r'))
                     ;
                 else {
-                    fileOffset = fileio_SeekCur(this, 0);
-                    --fileOffset;
-                    fileOffset = fileio_SeekCur(this, fileOffset);
+                    fileOffset = fileio_SeekCur(this, -1);
                 }
             }
         }
@@ -870,7 +824,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    FILEIO_DATA *   fileio_Init(
+    FILEIO_DATA *   fileio_Init (
         FILEIO_DATA     *this
     )
     {
@@ -920,7 +874,7 @@ extern "C" {
     //                       I s O p e n
     //---------------------------------------------------------------
     
-    bool            fileio_IsOpen(
+    bool            fileio_IsOpen (
         FILEIO_DATA		*this
     )
     {
@@ -928,7 +882,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -947,7 +901,7 @@ extern "C" {
     //                          O p e n
     //----------------------------------------------------------------
     
-    ERESULT         fileio_Open(
+    ERESULT         fileio_Open (
         FILEIO_DATA     *this,
         PATH_DATA       *pPath
     )
@@ -963,7 +917,6 @@ extern "C" {
         }
         if (pPath == OBJ_NIL) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -995,18 +948,15 @@ extern "C" {
 #endif
         if(-1 == fileHandle) {
             if (errno == ENOENT) {
-                fileio_setLastError(this, ERESULT_FILE_NOT_FOUND);
                 return ERESULT_FILE_NOT_FOUND;
             }
             //perror(NULL);
-            fileio_setLastError(this, ERESULT_OPEN_ERROR);
             return ERESULT_OPEN_ERROR;
         }
         this->fileHandle = fileHandle;
         obj_FlagSet(this, FILEIO_FILE_OPEN, true);
         
         // Return to Caller.
-        fileio_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1016,7 +966,7 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          fileio_QueryInfo(
+    void *          fileio_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1031,7 +981,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1087,19 +1037,20 @@ extern "C" {
     //                          R e a d
     //----------------------------------------------------------------
 
-    ERESULT         fileio_Read(
+    ERESULT         fileio_Read (
         FILEIO_DATA     *this,
         uint32_t        cBuffer,            // (in)
         void            *pBuffer,           // (in)
         uint32_t        *pReadCount         // (out)
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         size_t          bytes_read;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1108,7 +1059,6 @@ extern "C" {
         // Read in the area.
         bytes_read = read(this->fileHandle, pBuffer, cBuffer);
         if (-1 == bytes_read) {
-            fileio_setLastError(this, ERESULT_READ_ERROR);
             return ERESULT_READ_ERROR;
         }
         if (pReadCount) {
@@ -1117,13 +1067,11 @@ extern "C" {
         if(bytes_read == cBuffer)
             ;
         else {
-            fileio_setLastError(this, ERESULT_SUCCESS_PARTIAL_DATA);
-            return ERESULT_SUCCESS_PARTIAL_DATA;
+            eRc = ERESULT_SUCCESS_PARTIAL_DATA;
         }
         
         // Return to Caller.
-        fileio_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
@@ -1132,7 +1080,7 @@ extern "C" {
     //                          S e e k
     //----------------------------------------------------------------
     
-    off_t           fileio_Seek(
+    off_t           fileio_Seek (
         FILEIO_DATA     *this,
         off_t           offset
     )
@@ -1142,7 +1090,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1150,19 +1098,13 @@ extern "C" {
         
         //  Position within the File.
         fileOffset = lseek(this->fileHandle, offset, SEEK_SET);
-        if(fileOffset == -1) {
-            fileio_setLastError(this, ERESULT_SEEK_ERROR);
-        }
-        else {
-            fileio_setLastError(this, ERESULT_SUCCESS);
-        }
         
         // Return to Caller.
         return fileOffset;
     }
     
     
-    off_t           fileio_SeekCur(
+    off_t           fileio_SeekCur (
         FILEIO_DATA     *this,
         off_t           offset
     )
@@ -1172,7 +1114,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1180,19 +1122,13 @@ extern "C" {
         
         //  Position within the File.
         fileOffset = lseek(this->fileHandle, offset, SEEK_CUR);
-        if(fileOffset == -1) {
-            fileio_setLastError(this, ERESULT_SEEK_ERROR);
-        }
-        else {
-            fileio_setLastError(this, ERESULT_SUCCESS);
-        }
         
         // Return to Caller.
         return fileOffset;
     }
     
     
-    off_t           fileio_SeekEnd(
+    off_t           fileio_SeekEnd (
         FILEIO_DATA     *this,
         off_t           offset
     )
@@ -1202,7 +1138,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1210,12 +1146,6 @@ extern "C" {
         
         //  Position within the File.
         fileOffset = lseek(this->fileHandle, offset, SEEK_END);
-        if(fileOffset == -1) {
-            fileio_setLastError(this, ERESULT_SEEK_ERROR);
-        }
-        else {
-            fileio_setLastError(this, ERESULT_SUCCESS);
-        }
         
         // Return to Caller.
         return fileOffset;
@@ -1227,7 +1157,7 @@ extern "C" {
     //                          S i z e
     //---------------------------------------------------------------
     
-    size_t          fileio_Size(
+    size_t          fileio_Size (
         FILEIO_DATA     *this
     )
     {
@@ -1240,7 +1170,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return -1;
         }
@@ -1269,7 +1199,7 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     fileio_ToDebugString(
+    ASTR_DATA *     fileio_ToDebugString (
         FILEIO_DATA      *this,
         int             indent
     )
@@ -1353,7 +1283,7 @@ extern "C" {
      *          ERESULT_SEEK_ERROR  =   Disk Seek Error
      *          ERESULT_WRITE_ERROR =   Disk Write Error
      */
-    ERESULT         fileio_Write(
+    ERESULT         fileio_Write (
         FILEIO_DATA     *this,
         uint32_t        cBuffer,
         const
@@ -1365,7 +1295,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !fileio_Validate(this) ) {
+        if (!fileio_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1374,18 +1304,15 @@ extern "C" {
         // Write the data.
         bytes_written = write(this->fileHandle, pBuffer, cBuffer);
         if (bytes_written == -1) {
-            fileio_setLastError(this, ERESULT_WRITE_ERROR);
             return ERESULT_WRITE_ERROR;
         }
         if(bytes_written == cBuffer)
             ;
         else {
-            fileio_setLastError(this, ERESULT_WRITE_ERROR);
             return ERESULT_WRITE_ERROR;
         }
         
         // Return to Caller.
-        fileio_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     

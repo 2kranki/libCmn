@@ -302,6 +302,11 @@ extern "C" {
     );
     
     
+    ERESULT         path_Delete(
+        PATH_DATA        *this
+    );
+    
+    
     /*!
      Substitute hash values or environment variables into the current string
      using a BASH-like syntax with the hash value having the highest priority.

@@ -933,7 +933,7 @@ extern "C" {
     //                          D a t e s
     //---------------------------------------------------------------
     
-    ERESULT         path_DateLastUpdated(
+    ERESULT         path_DateLastUpdated (
        PATH_DATA        *this,
        DATETIME_DATA    **ppDate
     )
@@ -952,7 +952,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !path_Validate(this) ) {
+        if (!path_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1013,6 +1013,82 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                       D e l e t e
+    //---------------------------------------------------------------
+    
+    ERESULT         path_Delete(
+        PATH_DATA        *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        const
+        char            *pStrA = NULL;
+#ifdef __MACOSX_ENV__
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        bool            bRc;
+#endif
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!path_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pStrA = path_getData(this);
+        if (NULL == pStrA) {
+            return ERESULT_INTERNAL_ERROR;
+        }
+        
+#ifdef __MACOSX_ENV__
+        iRc = stat(pStrA, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
+                iRc = unlink(pStrA);
+                if (0 == iRc) {
+                    eRc = ERESULT_SUCCESS;
+                }
+                else {
+                    eRc = ERESULT_FILE_OPERATION_FAILED;
+                }
+            }
+            else if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
+                iRc = rmdir(pStrA);
+                if (0 == iRc) {
+                    eRc = ERESULT_SUCCESS;
+                }
+                else {
+                    eRc = ERESULT_FILE_OPERATION_FAILED;
+                }
+            }
+            else
+                eRc = ERESULT_FILE_OPERATION_FAILED;
+        }
+        else
+            eRc = ERESULT_PATH_NOT_FOUND;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        //TODO: DeleteFileW is more pwerful. Need to investgate using
+        //      it instead
+        bRc = DeleteFileA(pStrA);
+        if (bRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_FILE_OPERATION_FAILED;
+#endif
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
     //---------------------------------------------------------------
@@ -1124,8 +1200,8 @@ extern "C" {
     //                       I s D i r
     //---------------------------------------------------------------
     
-    ERESULT         path_IsDir(
-        PATH_DATA		*cbp
+    ERESULT         path_IsDir (
+        PATH_DATA		*this
     )
     {
         char            *pStr = NULL;
@@ -1133,29 +1209,25 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if (!path_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        pStr = (char *)AStr_getData((ASTR_DATA *)cbp);
+        pStr = (char *)path_getData(this);
 #ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
                 eRc = ERESULT_SUCCESS;
             }
-            else
-                eRc = ERESULT_FAILURE_FALSE;
         }
-        else
-            eRc = ERESULT_PATH_NOT_FOUND;
 #endif
         
         // Return to caller.
@@ -1168,8 +1240,8 @@ extern "C" {
     //                       I s E x i s t i n g
     //---------------------------------------------------------------
     
-    ERESULT         path_IsExisting(
-        PATH_DATA		*cbp
+    ERESULT         path_IsExisting (
+        PATH_DATA		*this
     )
     {
         const
@@ -1178,25 +1250,23 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if (!path_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pStr = AStr_getData((ASTR_DATA *)cbp);
+        pStr = (char *)path_getData(this);
 #ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             eRc = ERESULT_SUCCESS;
         }
-        else
-            eRc = ERESULT_PATH_NOT_FOUND;
 #endif
         
         // Return to caller.
@@ -1209,8 +1279,8 @@ extern "C" {
     //                       I s F i l e
     //---------------------------------------------------------------
     
-    ERESULT         path_IsFile(
-        PATH_DATA		*cbp
+    ERESULT         path_IsFile (
+        PATH_DATA		*this
     )
     {
         const
@@ -1218,30 +1288,33 @@ extern "C" {
 #ifdef __MACOSX_ENV__
         struct stat     statBuffer;
         int             iRc;
+        //int             ourErrno;
 #endif
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if (!path_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pStr = AStr_getData((ASTR_DATA *)cbp);
+        pStr = (char *)path_getData(this);
 #ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
+#ifdef XYZZY
+        ourErrno = errno;
+        if (ourErrno) {
+            perror(NULL);
+        }
+#endif
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
                 eRc = ERESULT_SUCCESS;
             }
-            else
-                eRc = ERESULT_FAILURE_FALSE;
         }
-        else
-            eRc = ERESULT_PATH_NOT_FOUND;
 #endif
         
         // Return to caller.
@@ -1254,8 +1327,8 @@ extern "C" {
     //                       I s L i n k
     //---------------------------------------------------------------
     
-    ERESULT         path_IsLink(
-        PATH_DATA		*cbp
+    ERESULT         path_IsLink (
+        PATH_DATA		*this
     )
     {
         const
@@ -1264,29 +1337,25 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !path_Validate( cbp ) ) {
+        if (!path_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        pStr = AStr_getData((ASTR_DATA *)cbp);
+        pStr = (char *)path_getData(this);
 #ifdef __MACOSX_ENV__
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
                 eRc = ERESULT_SUCCESS;
             }
-            else
-                eRc = ERESULT_FAILURE_FALSE;
         }
-        else
-            eRc = ERESULT_PATH_NOT_FOUND;
 #endif
         
         // Return to caller.

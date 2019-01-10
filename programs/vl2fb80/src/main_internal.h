@@ -52,7 +52,8 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_PATHIN_OWNED 1
+#define     PROPERTY_PATHOUT_OWNED 1
 
 
 
@@ -82,22 +83,14 @@ struct main_data_s	{
 
     // Common Data
     NODEBTP_DATA    *pDict;
-    PATH_DATA       *pFilePath;
-    PATH_DATA       *pOutputPath;
+    PATH_DATA       *pDirOut;
     uint16_t        size;		    // maximum number of elements
     uint16_t        fBackup;        // true == backup output file if it exists
-    uint8_t         fSeq;           // true == generate sequence numbers
-    uint8_t         fEbcdic;        // true == translate output to ebcdic;
-    ASTR_DATA       *pStr;
+    uint16_t        fSeq;           // true == generate sequence numbers
+    uint16_t        fEbcdic;        // true == translate output to ebcdic;
+    //uint16_t        rsvd16;
     uint32_t        seqBgn;
     uint32_t        seqInc;
-    PATH_DATA       *pPathIn;
-    PATH_DATA       *pPathOut;
-    FILEIO_DATA     *pIn;
-    RRDS_DATA       *pOut;
-    uint8_t         rcdOut[80];
-    uint8_t         rcdIn[512];
-    uint32_t        rrdsRcd;
 };
 #pragma pack(pop)
 
@@ -187,6 +180,13 @@ struct main_data_s	{
     ERESULT         main_ProcessArg(
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
+    );
+    
+    
+    ERESULT         main_ProcessRecords (
+        MAIN_DATA       *this,
+        PATH_DATA       *pPathIn,
+        PATH_DATA       *pPathOut
     );
     
     

@@ -1235,6 +1235,7 @@ extern "C" {
                 if (obj_Flag(this, TEXTIN_FLAG_SAVCHR)) {
                     this->curChr = this->savChr;
                     obj_FlagOff(this, TEXTIN_FLAG_SAVCHR);
+                    break;
                 }
                 else {
                     chr = textIn_UnicodeGetc(this);

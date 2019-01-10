@@ -64,7 +64,6 @@ struct fileio_data_s	{
 #define FILEIO_FILE_OPEN    OBJ_FLAG_USER1
 
     // Common Data
-    ERESULT         eRc;
     PATH_DATA       *pPath;
     int             fileHandle;
     LRU_DATA        *pLRU;
@@ -82,12 +81,6 @@ struct fileio_data_s	{
 
 
     // Internal Functions
-    bool            fileio_setLastError(
-        FILEIO_DATA     *this,
-        ERESULT         value
-    );
-    
-    
     void            fileio_Dealloc(
         OBJ_ID          objId
     );

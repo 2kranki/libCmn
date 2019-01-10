@@ -59,8 +59,7 @@
 #define         MAIN_H
 
 
-//#define   MAIN_SINGLETON    1
-#define     PROPERTY_STR_OWNED 1
+#define     MAIN_SINGLETON     1
 
 
 
@@ -114,7 +113,7 @@ extern "C" {
         void
     );
 
-    bool            main_SharedReset (
+    void            main_SharedReset (
         void
     );
 #endif
@@ -153,26 +152,24 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     main_Disable (
-        MAIN_DATA		*this
-    );
-
-
-    ERESULT     main_Enable (
-        MAIN_DATA		*this
-    );
-
-   
-    MAIN_DATA *   main_Init (
-        MAIN_DATA     *this
-    );
-
-
-    ERESULT     main_IsEnabled (
-        MAIN_DATA		*this
+    int             main_Exec (
+        MAIN_DATA       *this
     );
     
- 
+    
+    MAIN_DATA *     main_Init (
+        MAIN_DATA       *this
+    );
+
+
+    ERESULT         main_SetupFromArgV(
+        MAIN_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
+    );
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -1173,6 +1173,7 @@ extern "C" {
                                             pOption->pLongName
                                 );
                             }
+                            return eRc;
                         }
                     }
                     break;

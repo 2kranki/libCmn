@@ -102,12 +102,12 @@ extern "C" {
      released.
      @return:   pointer to fileio object if successful, otherwise OBJ_NIL.
      */
-    FILEIO_DATA *   fileio_Alloc(
+    FILEIO_DATA *   fileio_Alloc (
         void
     );
     
     
-    FILEIO_DATA *   fileio_New(
+    FILEIO_DATA *   fileio_New (
         void
     );
     
@@ -118,7 +118,7 @@ extern "C" {
      @param     pPath   Path file name to be created
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    FILEIO_DATA *   fileio_NewCreate(
+    FILEIO_DATA *   fileio_NewCreate (
         PATH_DATA       *pPath
     );
     
@@ -128,7 +128,7 @@ extern "C" {
      @param     pPath   File's Path
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    FILEIO_DATA *   fileio_NewOpen(
+    FILEIO_DATA *   fileio_NewOpen (
         PATH_DATA       *pPath
     );
     
@@ -145,26 +145,26 @@ extern "C" {
      Attribute to true, you force all further writes while it
      is in effect to be at the end of the file.
      */
-    bool            fileio_getAppend(
+    bool            fileio_getAppend (
         FILEIO_DATA     *this
     );
     
-    bool            fileio_setAppend(
+    bool            fileio_setAppend (
         FILEIO_DATA     *this,
         bool            fValue
     );
     
 
-    ERESULT         fileio_getLastError(
+    ERESULT         fileio_getLastError (
         FILEIO_DATA     *this
     );
     
     
-    PATH_DATA *     fileio_getPath(
+    PATH_DATA *     fileio_getPath (
         FILEIO_DATA     *this
     );
     
-    bool            fileio_setPath(
+    bool            fileio_setPath (
         FILEIO_DATA     *this,
         PATH_DATA       *pValue
     );
@@ -182,7 +182,7 @@ extern "C" {
      @param     fDelete If true, delete the file after closing it.
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    ERESULT         fileio_Close(
+    ERESULT         fileio_Close (
         FILEIO_DATA     *this,
         bool            fDelete
     );
@@ -193,7 +193,7 @@ extern "C" {
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    ERESULT         fileio_Create(
+    ERESULT         fileio_Create (
         FILEIO_DATA     *this,
         PATH_DATA       *pPath
     );
@@ -215,12 +215,12 @@ extern "C" {
     );
     
     
-    FILEIO_DATA *   fileio_Init(
+    FILEIO_DATA *   fileio_Init (
         FILEIO_DATA     *this
     );
 
 
-    bool            fileio_IsOpen(
+    bool            fileio_IsOpen (
         FILEIO_DATA     *this
     );
     
@@ -230,7 +230,7 @@ extern "C" {
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    ERESULT         fileio_Open(
+    ERESULT         fileio_Open (
         FILEIO_DATA		*this,
         PATH_DATA       *pPath
     );
@@ -246,7 +246,7 @@ extern "C" {
      @param     pReadCount  Optional Amount actually read pointer
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    ERESULT         fileio_Read(
+    ERESULT         fileio_Read (
         FILEIO_DATA     *this,
         uint32_t        cBuffer,
         void            *pBuffer,
@@ -261,19 +261,19 @@ extern "C" {
      @return    If successful, offset within file; otherwise -1 and an ERESULT_*
                 error is set in Last Error.
      */
-    off_t           fileio_Seek(
+    off_t           fileio_Seek (
         FILEIO_DATA     *this,
         off_t           offset
     );
     
     
-    off_t           fileio_SeekCur(
+    off_t           fileio_SeekCur (
         FILEIO_DATA     *this,
         off_t           offset
     );
     
     
-    off_t           fileio_SeekEnd(
+    off_t           fileio_SeekEnd (
         FILEIO_DATA     *this,
         off_t           offset
     );
@@ -284,7 +284,7 @@ extern "C" {
      @param     this    object pointer
      @return    If successful, size of the file; otherwise -1.
      */
-    size_t          fileio_Size(
+    size_t          fileio_Size (
         FILEIO_DATA     *this
     );
     
@@ -301,7 +301,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     fileio_ToDebugString(
+    ASTR_DATA *     fileio_ToDebugString (
         FILEIO_DATA     *this,
         int             indent
     );
@@ -314,7 +314,7 @@ extern "C" {
      @param     pBuffer Data block pointer
      @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
      */
-    ERESULT         fileio_Write(
+    ERESULT         fileio_Write (
         FILEIO_DATA     *this,
         uint32_t        cBuffer,
         const

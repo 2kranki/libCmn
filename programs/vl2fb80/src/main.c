@@ -46,6 +46,7 @@
 
 
 
+#define     PROPERTY_DIROUT_OWNED 1
 
 
 
@@ -67,31 +68,31 @@ extern "C" {
             "Backup output file if it exists"
         },
         {
-            "file",
-            'f',
-            CMDUTL_ARG_OPTION_REQUIRED,
-            CMDUTL_TYPE_PATH,
-            offsetof(MAIN_DATA, pFilePath),
+            "ebcdic",
+            'e',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_INCR,
+            offsetof(MAIN_DATA, fEbcdic),
             NULL,
-            "Input File Path"
+            "Translate output to ebcdic"
         },
         {
             "out",
             'o',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
-            offsetof(MAIN_DATA, pOutputPath),
+            offsetof(MAIN_DATA, pDirOut),
             NULL,
-            "Output File Path"
+            "Output Directory Path"
         },
         {
-            "dirtmp",
-            't',
-            CMDUTL_ARG_OPTION_REQUIRED,
-            CMDUTL_TYPE_PATH,
-            offsetof(MAIN_DATA, pOutputPath),
+            "seq",
+            0,
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_INCR,
+            offsetof(MAIN_DATA, fSeq),
             NULL,
-            "Temporary Directory Base Path"
+            "Add sequence numbers to output"
         },
         {0}
     };
@@ -236,10 +237,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  F i l e  P a t h
+    //                  O u t p u t  D i r e c t o r y
     //---------------------------------------------------------------
     
-    PATH_DATA *     main_getFilePath(
+    PATH_DATA *     main_getDirOut(
         MAIN_DATA       *this
     )
     {
@@ -247,17 +248,17 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !main_Validate(this) ) {
+        if (!main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return this->pFilePath;
+        return this->pDirOut;
     }
     
     
-    bool            main_setFilePath(
+    bool            main_setDirOut(
         MAIN_DATA       *this,
         PATH_DATA       *pValue
     )
@@ -271,56 +272,10 @@ extern "C" {
 #endif
         
         obj_Retain(pValue);
-        if (this->pFilePath) {
-            obj_Release(this->pFilePath);
+        if (this->pDirOut) {
+            obj_Release(this->pDirOut);
         }
-        this->pFilePath = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  O u t p u t  P a t h
-    //---------------------------------------------------------------
-    
-    PATH_DATA *     main_getOutputPath(
-        MAIN_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pOutputPath;
-    }
-    
-    
-    bool            main_setOutputPath(
-        MAIN_DATA       *this,
-        PATH_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pOutputPath) {
-            obj_Release(this->pOutputPath);
-        }
-        this->pOutputPath = pValue;
+        this->pDirOut = pValue;
         
         return true;
     }
@@ -391,54 +346,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * main_getStr (
-        MAIN_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!main_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        main_setStr (
-        MAIN_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!main_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -678,9 +585,7 @@ extern "C" {
 #endif
 
         main_setDict(this, OBJ_NIL);
-        main_setFilePath(this, OBJ_NIL);
-        main_setOutputPath(this, OBJ_NIL);
-        main_setStr(this, OBJ_NIL);
+        main_setDirOut(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1024,7 +929,7 @@ extern "C" {
                       (void *)main_UsageDesc,
                       (void *)main_UsageProgLine,
                       (void *)main_UsageOptions
-                      );
+        );
 
     #ifdef NDEBUG
     #else
@@ -1034,7 +939,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "main::sizeof(MAIN_DATA) = %lu\n", sizeof(MAIN_DATA));
+        //fprintf(stderr, "main::sizeof(MAIN_DATA) = %lu\n", sizeof(MAIN_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
     #endif
@@ -1093,10 +998,10 @@ extern "C" {
 #endif
       
 #if defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("$(HOME)/Support/bin");
+        pStr = AStr_NewA("$(HOME)/Support/out");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("C:/PROGRAMS");
+        pStr = AStr_NewA("C:/out");
 #endif
         if (pStr) {
             eRc = nodeBTP_AddA(main_getDict(this), 0, outBaseID, pStr);
@@ -1112,26 +1017,10 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-#if defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("${TMPDIR}");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("${TMP}");
-#endif
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, tmpBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tmpBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
+        this->fSeq = 1;
+        this->seqBgn = 1000;
+        this->seqInc = 1000;
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1152,8 +1041,9 @@ extern "C" {
         PATH_DATA       *pDir = OBJ_NIL;
         PATH_DATA       *pFileName = OBJ_NIL;
         PATH_DATA       *pArgDir = OBJ_NIL;
-        PATH_DATA       *pMakefile = OBJ_NIL;
-        PATH_DATA       *pMakepath = OBJ_NIL;
+        ASTR_DATA       *pDrvOut = OBJ_NIL;
+        PATH_DATA       *pDirOut = OBJ_NIL;
+        PATH_DATA       *pPathOut = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1167,12 +1057,19 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+        if (appl_getDebug((APPL_DATA *)this)) {
+            if (pStr) {
+                fprintf(stderr, "\tArg = (%d)%s\n", AStr_getLength(pStr), AStr_getData(pStr));
+            }
+            else {
+                fprintf(stderr, "\tArg = NULL\n");
+            }
+        }
+
         if (!appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
         }
         
-#ifdef XYZZY
         pPath = path_NewFromAStr(pStr);
         appl_ErrorFatalOnBool(
                               (OBJ_NIL == pPath),
@@ -1203,72 +1100,61 @@ extern "C" {
                               path_getData(pPath)
                               );
         eRc = main_DictAddA(this, srcBaseID, (void *)pArgDir);
-        
+        appl_ErrorFatalOnEresult(
+                                 eRc,
+                                 "FATAL - Failed to add 'srcBaseID' to Dictionary!\n"
+                                 );
+
         eRc = main_DictAddA(this, srcFileID, path_getData(pPath));
-        if (ERESULT_FAILED(eRc) ) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
-            exit(EXIT_FAILURE);
+        appl_ErrorFatalOnEresult(
+                                 eRc,
+                                 "FATAL - Failed to add 'srcFile' to Dictionary!\n"
+        );
+        
+        eRc = path_SplitPath(this->pDirOut, &pDrvOut, &pDirOut, OBJ_NIL);
+        appl_ErrorFatalOnEresult(
+                                 eRc,
+                                 "FATAL - Unable to extract info from Output Dir, %s!\n",
+                                 path_getData(pPath)
+                                 );
+        if (appl_getDebug((APPL_DATA *)this)) {
+            if (pDrvOut) {
+                fprintf(stderr, "\tDrvOut = \"%s\"\n", AStr_getData(pDrvOut));
+            }
+            if (pDirOut) {
+                fprintf(stderr, "\tDirOut = \"%s\"\n", path_getData(pDirOut));
+            }
         }
-#endif
-        
-        //FIXME: eRc = main_ParseInputFile(this, pPath);
-        obj_Release(pPath);
-        pPath = OBJ_NIL;
-        
-#ifdef XYZZY
-        if (OBJ_NIL == this->pOutputPath) {
-            pMakefile = path_NewA("Makefile.${" osTypeID "}.txt");
-            if (OBJ_NIL == pMakefile) {
-                DEBUG_BREAK();
-                fprintf(
-                        stderr,
-                        "FATAL - Unable to create Makefile name!\n"
-                        );
-                exit(EXIT_FAILURE);
-            }
-            pMakepath = path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
-            if (OBJ_NIL == pMakefile) {
-                DEBUG_BREAK();
-                fprintf(
-                        stderr,
-                        "FATAL - Unable to create Makepath!\n"
-                        );
-                exit(EXIT_FAILURE);
-            }
-            eRc = path_ExpandVars(pMakepath, this->pDict);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to expand Makepath\n");
-                exit(EXIT_FAILURE);
-            }
-            eRc = path_IsFile(pMakepath);
-            if (!ERESULT_FAILED(eRc) && this->fBackup) {
-                eRc = path_VersionedRename(pMakepath);
-            }
-            this->pOutputPath = pMakepath;
-            this->pOutput = textOut_NewFromPath(pMakepath);
-            if (OBJ_NIL == this->pOutput) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to open \n");
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pMakefile);
-            pMakefile = OBJ_NIL;
+        pPathOut = path_NewFromDriveDirFilename(pDrvOut, pDirOut, pFileName);
+        appl_ErrorFatalOnBool(
+                              (OBJ_NIL == pPathOut),
+                              "FATAL - Unable to create output file path, %s!\n",
+                              path_getData(pPathOut)
+        );
+        obj_Retain(pDrvOut);
+        pDrvOut = OBJ_NIL;
+        obj_Retain(pDirOut);
+        pDirOut = OBJ_NIL;
+        eRc = path_Clean(pPathOut);
+        eRc = path_IsDir(pPathOut);
+        appl_ErrorFatalOnBool(
+                              (!ERESULT_FAILED(eRc)),
+                              "FATAL - Output file path, %s, is a directory!\n",
+                              path_getData(pPathOut)
+                              );
+        eRc = path_IsFile(pPathOut);
+        if (!ERESULT_FAILED(eRc) && this->fBackup) {
+            eRc = path_VersionedRename(pPathOut);
         }
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\tCreating %s\n", path_getData(this->pOutputPath));
-        }
-        
-        eRc = main_GenMakefile(this);
-        
-        obj_Release(this->pOutput);
-        this->pOutput = OBJ_NIL;
-#endif
+        eRc = path_Delete(pPathOut);
+
+        eRc = main_ProcessRecords(this, pPath, pPathOut);
         
         // Return to caller.
-        obj_Release(pMakepath);
-        pMakepath = OBJ_NIL;
+        obj_Release(pPathOut);
+        pPathOut = OBJ_NIL;
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
         obj_Release(pArgDir);
         pArgDir = OBJ_NIL;
         obj_Release(pDrive);
@@ -1286,90 +1172,23 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         main_ProcessRecords (
-        MAIN_DATA       *this
-    )
-    {
-        ERESULT         eRc;
-        uint32_t        inSize;
-        bool            fContinued = false;
-        int             beg;
-        int             max;
-        uint8_t         *pCurChr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!main_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        for (;;) {
-            // Read the next input record.
-            eRc = fileio_Gets(this->pIn, sizeof(this->rcdIn), this->rcdIn);
-            if (ERESULT_FAILED(eRc)) {
-                DEBUG_BREAK();
-                return eRc;
-            }
-            
-            // Create one or more output records from it.
-            inSize = utf8_StrLenA((const char *)this->rcdIn);
-            pCurChr = this->rcdIn;
-            while (inSize) {
-                beg = 0;
-                if (fContinued) {
-                    beg = 15;
-                }
-                max = 71 - beg + 1;
-                if (max > inSize)
-                    max = inSize;
-                if (beg)
-                    memset(this->rcdOut, ' ', (beg + 1));
-                memmove((this->rcdOut + beg), pCurChr, max);
-                inSize -= max;
-                if (inSize > 0) {
-                    fContinued = true;
-                    this->rcdOut[71] = 'X';
-                }
-                else
-                    this->rcdOut[71] = ' ';
-                if (this->fSeq) {
-                    char            seq[11];
-                    dec_Uint32ToChr(this->seqBgn, seq);
-                    memmove(this->rcdOut+72, seq+2, (80 - 73 + 1));
-                    this->seqBgn += this->seqInc;
-                }
-                else
-                    memset(this->rcdOut+72, ' ', (80 - 73 + 1));
-                if (this->fEbcdic) {
-                    TranslateAsciiToEbcdic(80, this->rcdOut);
-                }
-                eRc = rrds_RecordWrite(this->pOut, ++this->rrdsRcd, this->rcdOut);
-                if (ERESULT_FAILED(eRc)) {
-                    DEBUG_BREAK();
-                    return eRc;
-                }
-            }
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                P r o c e s s  S e t u p
-    //---------------------------------------------------------------
-    
-    ERESULT         main_Setup (
         MAIN_DATA       *this,
         PATH_DATA       *pPathIn,
         PATH_DATA       *pPathOut
     )
     {
         ERESULT         eRc;
+        FILEIO_DATA     *pIn;
+        RRDS_DATA       *pOut;
+        uint32_t        seqNum = this->seqBgn;
+        uint8_t         rcdOut[81];
+        uint8_t         rcdIn[512];
+        uint32_t        rrdsRcd = 0;
+        uint32_t        inSize;
+        bool            fContinued = false;
+        int             beg;
+        int             max;
+        uint8_t         *pCurChr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1387,22 +1206,100 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        // Setup the input path.
-        this->pPathIn = path_Copy(pPathIn);
-        if (OBJ_NIL == this->pPathIn) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+        rcdOut[80] = '\0';
+        if (appl_getVerbose((APPL_DATA *)this)) {
+            fprintf(stderr, "\tCreating file, %s\n", path_getData(pPathOut));
         }
-        path_Clean(this->pPathIn);
-        eRc = path_IsFile(this->pPathIn);
+        
+        pIn = fileio_New( );
+        if (OBJ_NIL == pIn) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = fileio_Open(pIn, pPathIn);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            obj_Release(this->pPathIn);
-            this->pPathIn = OBJ_NIL;
+            obj_Release(pIn);
             return eRc;
         }
+
+        pOut = rrds_New();
+        if (OBJ_NIL == pOut) {
+            obj_Release(pIn);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = rrds_Create(pOut, pPathOut, 0);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pIn);
+            obj_Release(pOut);
+           return eRc;
+        }
+
+        for (;;) {
+            // Read the next input record.
+            eRc = fileio_Gets(pIn, sizeof(rcdIn), rcdIn);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(pIn);
+                obj_Release(pOut);
+                return eRc;
+            }
+            
+            // Create one or more output records from it.
+            inSize = utf8_StrLenA((const char *)rcdIn);
+            if (0 == inSize) {
+                break;
+            }
+            //fprintf(stderr, "in:  %3d \"%s\"\n", inSize, rcdIn);
+            pCurChr = rcdIn;
+            while (inSize) {
+                memset(rcdOut, ' ', (71 - 1 + 1));
+                beg = 0;
+                if (fContinued) {
+                    beg = 15;
+                }
+                max = 71 - beg + 1;
+                if (max > inSize)
+                    max = inSize;
+                if (beg)
+                    memset(rcdOut, ' ', (beg + 1));
+                memmove((rcdOut + beg), pCurChr, max);
+                inSize -= max;
+                if (inSize > 0) {
+                    fContinued = true;
+                    rcdOut[71] = 'X';
+                }
+                else
+                    rcdOut[71] = ' ';
+                if (this->fSeq) {
+                    char            seq[11];
+                    dec_Uint32ToChr(seqNum, seq);
+                    memmove(rcdOut+72, seq+2, (80 - 73 + 1));
+                    seqNum += this->seqInc;
+                }
+                else
+                    memset(rcdOut+72, ' ', (80 - 73 + 1));
+                if (this->fEbcdic) {
+                    TranslateAsciiToEbcdic(80, rcdOut);
+                }
+                //fprintf(stderr, "out: %2d \"%s\"\n", rrdsRcd, rcdOut);
+                eRc = rrds_RecordWrite(pOut, ++rrdsRcd, rcdOut);
+                if (ERESULT_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    obj_Release(pIn);
+                    obj_Release(pOut);
+                    return eRc;
+                }
+            }
+        }
         
+        eRc = fileio_Close(pIn, false);
+        obj_Release(pIn);
+        pIn = OBJ_NIL;
+        eRc = rrds_Close(pOut, false);
+        obj_Release(pOut);
+        pOut = OBJ_NIL;
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1741,13 +1638,11 @@ extern "C" {
         }
 #endif
         
-        fprintf(pOutput, "  --clp              Set type to Command Line Program\n");
-        fprintf(pOutput, "                     (Default is Library)\n");
-        fprintf(pOutput, "  --macosx           Generate MacOSX nmake file (default)\n");
-        fprintf(pOutput, "  --msc32            Generate MSC Win32 nmake file\n");
-        fprintf(pOutput, "  --msc64            Generate MSC Win64 nmake file\n");
-        fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
-        
+        fprintf(pOutput, "  -b, --backup       Backup the output file if present\n");
+        fprintf(pOutput, "  -e, --ebcdic       Translate the output to EBCDIC\n");
+        fprintf(pOutput, "  -o, --out dir      Output the generated data to <directory>\n");
+        fprintf(pOutput, "  --seq              Generate sequence numbers (default)\n");
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1781,7 +1676,7 @@ extern "C" {
         }
 #endif
         
-        fprintf(pOutput, "  %s [options] input_path\n", pNameA);
+        fprintf(pOutput, "  %s [options] input_path(s)\n", pNameA);
         
         // Return to caller.
         return ERESULT_SUCCESS;

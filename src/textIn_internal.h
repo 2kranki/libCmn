@@ -94,7 +94,7 @@ struct textIn_data_s	{
         U8ARRAY_DATA        *pU8Array;
         W32STR_DATA         *pWStr;
     };
-    uint16_t        type;               // OBJ_CLASS_FBSI or OBJ_CLASS_SBUF
+    uint16_t        type;               // see TEXTIN_TYPE
     uint16_t        tabSize;            /* Tab Spacing Size */
     uint8_t         state;
     uint8_t         fFile;              // true == FILE parameter was supplied and

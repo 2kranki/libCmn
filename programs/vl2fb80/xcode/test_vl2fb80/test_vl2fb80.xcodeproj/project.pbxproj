@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		C44BF4C321E2B10100175791 /* libCmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C44BF4C221E2B10100175791 /* libCmn.a */; };
 		C44BF4C521E2B15B00175791 /* libEmu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C44BF4C421E2B15B00175791 /* libEmu.a */; };
-		C44BF4D021E30D8200175791 /* exec.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF4CA21E30D8100175791 /* exec.c */; };
-		C44BF4D121E30D8200175791 /* exec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF4CC21E30D8100175791 /* exec_object.c */; };
 		C44BF4D221E30D8200175791 /* main_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF4CE21E30D8200175791 /* main_object.c */; };
 		C44BF4D321E30D8200175791 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF4CF21E30D8200175791 /* main.c */; };
 		C44BF4D921E3FCF600175791 /* test_main.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF4D821E3FCF600175791 /* test_main.c */; };
@@ -32,12 +30,8 @@
 		C44BF4AA21E2AF1600175791 /* test_vl2fb80 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_vl2fb80; sourceTree = BUILT_PRODUCTS_DIR; };
 		C44BF4C221E2B10100175791 /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../../../Support/lib/macosx/libCmn/libCmn.a; sourceTree = "<group>"; };
 		C44BF4C421E2B15B00175791 /* libEmu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libEmu.a; path = ../../../../../Support/lib/macosx/libEmu/libEmu.a; sourceTree = "<group>"; };
-		C44BF4C721E30D8100175791 /* exec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exec.h; sourceTree = "<group>"; };
 		C44BF4C821E30D8100175791 /* main_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main_internal.h; sourceTree = "<group>"; };
 		C44BF4C921E30D8100175791 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
-		C44BF4CA21E30D8100175791 /* exec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = exec.c; sourceTree = "<group>"; };
-		C44BF4CB21E30D8100175791 /* exec_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exec_internal.h; sourceTree = "<group>"; };
-		C44BF4CC21E30D8100175791 /* exec_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = exec_object.c; sourceTree = "<group>"; };
 		C44BF4CD21E30D8200175791 /* mainProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mainProgram.h; sourceTree = "<group>"; };
 		C44BF4CE21E30D8200175791 /* main_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main_object.c; sourceTree = "<group>"; };
 		C44BF4CF21E30D8200175791 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -97,10 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				C44BF4CD21E30D8200175791 /* mainProgram.h */,
-				C44BF4CB21E30D8100175791 /* exec_internal.h */,
-				C44BF4CC21E30D8100175791 /* exec_object.c */,
-				C44BF4CA21E30D8100175791 /* exec.c */,
-				C44BF4C721E30D8100175791 /* exec.h */,
 				C44BF4C821E30D8100175791 /* main_internal.h */,
 				C44BF4CE21E30D8200175791 /* main_object.c */,
 				C44BF4CF21E30D8200175791 /* main.c */,
@@ -168,8 +158,6 @@
 			files = (
 				C44BF4D321E30D8200175791 /* main.c in Sources */,
 				C44BF4D221E30D8200175791 /* main_object.c in Sources */,
-				C44BF4D021E30D8200175791 /* exec.c in Sources */,
-				C44BF4D121E30D8200175791 /* exec_object.c in Sources */,
 				C44BF4D921E3FCF600175791 /* test_main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

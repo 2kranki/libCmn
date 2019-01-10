@@ -91,6 +91,9 @@ bool            mainClass_IsKindOf (
     if (OBJ_IDENT_MAIN_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_APPL_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -313,6 +316,9 @@ bool            main_IsKindOf (
 {
     if (OBJ_IDENT_MAIN == classID) {
        return true;
+    }
+    if (OBJ_IDENT_APPL == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;

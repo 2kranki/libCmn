@@ -159,8 +159,18 @@ int         test_fileio_Read01(
         eRc = fileio_Gets(pObj, 256, buffer);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, " \"name\":")) );
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "    \"name\":")) );
 
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "        \"libXYZZY\",")) );
+        
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "    \"lib_deps\": ")) );
+        
         eRc = fileio_Close(pObj, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         

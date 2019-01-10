@@ -9,9 +9,6 @@
         //"exec":{"srcDeps":["mainProgram.h"], "test":true},
         "main":{"srcDeps":["mainProgram.h"], "test":true},
     },
-    "routines": [
-        "mainProgram.c"
-    ],
     "macosx": [
     ],
     "win32": [

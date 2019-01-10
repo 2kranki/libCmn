@@ -44,22 +44,6 @@ TESTS =
 
 
 
-OBJS += $(OBJDIR)/exec_object.o
-
-$(OBJDIR)/exec_object.o: $(SRCDIR)/exec_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/exec.o
-
-$(OBJDIR)/exec.o: $(SRCDIR)/exec.c $(SRCDIR)/mainProgram.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += test_exec
-
-test_exec: $(TEST_SRC)/test_exec.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
 OBJS += $(OBJDIR)/main_object.o
 
 $(OBJDIR)/main_object.o: $(SRCDIR)/main_object.c 
@@ -75,11 +59,6 @@ TESTS += test_main
 test_main: $(TEST_SRC)/test_main.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
-
-OBJS += $(OBJDIR)/mainProgram.o
-
-$(OBJDIR)/mainProgram.o: $(SRCDIR)/mainProgram.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 
 

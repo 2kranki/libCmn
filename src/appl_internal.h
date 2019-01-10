@@ -59,13 +59,14 @@ struct appl_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     DATETIME_DATA   *pDateTime;
     NODEHASH_DATA   *pProperties;
     
     // Program Arguments and Options
+    int32_t         exitRC;         // Exit Return Code
     uint16_t        fDebug;
     uint16_t        fForce;
     uint16_t        fQuiet;

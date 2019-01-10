@@ -134,7 +134,8 @@ extern "C" {
     // and a shortName of 0.
     typedef struct cmdutl_option_s {
         char            *pLongName;         // "--" option_name (optional, may be NULL)
-        W32CHR_T        shortName;          // "-" option_name (required)
+        W32CHR_T        shortName;          // "-" option_name (optional, may be '\0')
+        // Note - either a long or short name must be specified. Both may be specified.
         uint16_t        argOption;          // See CMDUTIL_ARG_OPTION above.
         uint16_t        argType;            // See CMDUTIL_TYPE above.
         uint32_t        offset;             // Option Offset

@@ -16,10 +16,11 @@
 
 int             main(
     int             cArgs,
-    const
-    char            *ppArgv[]
+    char            *ppArgV[],
+    char            **ppEnv
 )
 {
+    ERESULT         eRc;
     int             iRc = 0;
     MAIN_DATA       *pMain = OBJ_NIL;
     
@@ -28,6 +29,14 @@ int             main(
         fprintf(stderr, "FATAL ERROR - \n");
         exit(EXIT_FAILURE);
     }
+
+    eRc = main_SetupFromArgV(pMain, cArgs, ppArgV, ppEnv);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "FATAL - Failed to set up arguments!\n\n\n");
+        return 8;
+    }
+    
+    iRc = main_Exec(pMain);
 
     obj_Release(pMain);
     pMain = OBJ_NIL;

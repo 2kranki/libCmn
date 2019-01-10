@@ -118,6 +118,7 @@ extern "C" {
         ERESULT_NOT_SUPPORTED               = -7,
         ERESULT_UNKNOWN                     = -8,
         ERESULT_OBJECT_CREATION             = -9,
+        ERESULT_INTERNAL_ERROR              = -10,
 
         ERESULT_INSUFFICIENT_MEMORY         = -16,
         ERESULT_OUT_OF_MEMORY               = -16,
