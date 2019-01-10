@@ -77,6 +77,15 @@ extern "C" {
             "Translate output to ebcdic"
         },
         {
+            "ictl",
+            'e',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_NUMBER,
+            offsetof(MAIN_DATA, fEbcdic),
+            NULL,
+            "Continuation Column Number"
+        },
+        {
             "out",
             'o',
             CMDUTL_ARG_OPTION_REQUIRED,
@@ -1020,6 +1029,7 @@ extern "C" {
         this->fSeq = 1;
         this->seqBgn = 1000;
         this->seqInc = 1000;
+        this->ictl = 16;
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1131,9 +1141,9 @@ extern "C" {
                               "FATAL - Unable to create output file path, %s!\n",
                               path_getData(pPathOut)
         );
-        obj_Retain(pDrvOut);
+        obj_Release(pDrvOut);
         pDrvOut = OBJ_NIL;
-        obj_Retain(pDirOut);
+        obj_Release(pDirOut);
         pDirOut = OBJ_NIL;
         eRc = path_Clean(pPathOut);
         eRc = path_IsDir(pPathOut);
@@ -1250,21 +1260,23 @@ extern "C" {
             if (0 == inSize) {
                 break;
             }
-            //fprintf(stderr, "in:  %3d \"%s\"\n", inSize, rcdIn);
+            fContinued = false;
+            fprintf(stderr, "in:  %3d \"%s\"\n", inSize, rcdIn);
             pCurChr = rcdIn;
             while (inSize) {
                 memset(rcdOut, ' ', (71 - 1 + 1));
                 beg = 0;
                 if (fContinued) {
-                    beg = 15;
+                    beg = this->ictl - 1;
                 }
-                max = 71 - beg + 1;
+                max = 71 - beg;
                 if (max > inSize)
                     max = inSize;
-                if (beg)
-                    memset(rcdOut, ' ', (beg + 1));
+                //if (beg)
+                    //memset(rcdOut, ' ', (beg + 1));
                 memmove((rcdOut + beg), pCurChr, max);
                 inSize -= max;
+                pCurChr += max;
                 if (inSize > 0) {
                     fContinued = true;
                     rcdOut[71] = 'X';
@@ -1282,7 +1294,7 @@ extern "C" {
                 if (this->fEbcdic) {
                     TranslateAsciiToEbcdic(80, rcdOut);
                 }
-                //fprintf(stderr, "out: %2d \"%s\"\n", rrdsRcd, rcdOut);
+                fprintf(stderr, "out: %2d \"%s\"\n", rrdsRcd, rcdOut);
                 eRc = rrds_RecordWrite(pOut, ++rrdsRcd, rcdOut);
                 if (ERESULT_FAILED(eRc)) {
                     DEBUG_BREAK();

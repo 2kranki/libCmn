@@ -137,7 +137,7 @@ int             test_main_Test01(
     const
     char            *pPathInA = "~/git/libCmn/tests/files/e360_ex1_bal.txt";
     const
-    char            *pPathChkA = "~/git/libCmn/tests/files/e360_ex1_bal.seq.txt";
+    char            *pPathChkA = "~/git/libCmn/tests/files/e360_ex1_bal.f80.txt";
     PATH_DATA       *pPathIn = OBJ_NIL;
     const
     char            *pPathOutA = "/tmp/e360_ex1_bal.txt";
@@ -167,6 +167,7 @@ int             test_main_Test01(
         pObj->fSeq = 1;
         pObj->seqBgn = 1000;
         pObj->seqInc = 1000;
+        pObj->ictl = 16;
         eRc = main_ProcessRecords(pObj, pPathIn, pPathOut);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
@@ -210,9 +211,85 @@ int             test_main_Test02(
     ERESULT         eRc;
     MAIN_DATA       *pObj = OBJ_NIL;
     const
+    char            *pPathInA = "~/git/libCmn/tests/files/e360_ex2_bal.txt";
+    const
+    char            *pPathChkA = "~/git/libCmn/tests/files/e360_ex2_bal.f80.txt";
+    PATH_DATA       *pPathIn = OBJ_NIL;
+    const
+    char            *pPathOutA = "/tmp/e360_ex2_bal.f80.txt";
+    PATH_DATA       *pPathOut = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    int             iRc;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = main_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = main_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pPathIn = path_NewA(pPathInA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathIn) );
+        path_Clean(pPathIn);
+        eRc = path_IsFile(pPathIn);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pPathOut = path_NewA(pPathOutA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathOut) );
+        path_Clean(pPathOut);
+        eRc = path_Delete(pPathOut);
+        
+        pObj->fSeq = 1;
+        pObj->seqBgn = 1000;
+        pObj->seqInc = 1000;
+        pObj->ictl = 16;
+        eRc = main_ProcessRecords(pObj, pPathIn, pPathOut);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        obj_Release(pPathIn);
+        pPathIn = OBJ_NIL;
+        pPathIn = path_NewA(pPathChkA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathIn) );
+        path_Clean(pPathIn);
+        eRc = path_IsFile(pPathIn);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr = AStr_NewA("diff ");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        AStr_Append(pStr, (ASTR_DATA *)pPathOut);
+        AStr_AppendA(pStr, "  ");
+        AStr_Append(pStr, (ASTR_DATA *)pPathIn);
+        iRc = system(AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pPathIn);
+        pPathIn = OBJ_NIL;
+        obj_Release(pPathOut);
+        pPathOut = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_main_Test03(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    MAIN_DATA       *pObj = OBJ_NIL;
+    const
     char            *pPathInA = "~/git/libCmn/tests/files/e360_ex1_bal.txt";
     const
-    char            *pPathChkA = "~/git/libCmn/tests/files/e360_ex1_bal.seq.txt";
+    char            *pPathChkA = "~/git/libCmn/tests/files/e360_ex1_bal.f80.txt";
     PATH_DATA       *pPathIn = OBJ_NIL;
     const
     char            *pPathOutA = "/tmp/e360_ex1_bal.txt";
@@ -268,6 +345,7 @@ int             test_main_Test02(
 
 
 TINYTEST_START_SUITE(test_main);
+    TINYTEST_ADD_TEST(test_main_Test03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_OpenClose,setUp,tearDown);

@@ -91,6 +91,7 @@ struct main_data_s	{
     //uint16_t        rsvd16;
     uint32_t        seqBgn;
     uint32_t        seqInc;
+    uint32_t        ictl;
 };
 #pragma pack(pop)
 
