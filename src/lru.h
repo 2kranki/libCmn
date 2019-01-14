@@ -143,11 +143,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         lru_getLastError(
-        LRU_DATA		*this
-    );
-
-
     /*!
      Set the logical sector read routine. It is assumed that this routine
      will always read sectorSize bytes.

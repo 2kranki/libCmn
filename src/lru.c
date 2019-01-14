@@ -163,29 +163,9 @@ extern "C" {
     //===============================================================
 
     //----------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                          P r i o r i t y
     //----------------------------------------------------------------
     
-    ERESULT         lru_getLastError(
-        LRU_DATA        *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !lru_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-
     uint16_t        lru_getPriority(
         LRU_DATA        *this
     )
@@ -194,13 +174,12 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        this->eRc = ERESULT_SUCCESS;
         //return this->priority;
         return 0;
     }
@@ -212,7 +191,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -220,7 +199,6 @@ extern "C" {
 
         //this->priority = value;
 
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
 
@@ -238,7 +216,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -247,7 +225,6 @@ extern "C" {
         this->pLogicalRead = pLogicalRead;
         this->pReadObject = pReadObject;
         
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     
@@ -259,12 +236,12 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        this->eRc = ERESULT_SUCCESS;
+
         return 0;
     }
 
@@ -282,7 +259,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -291,7 +268,6 @@ extern "C" {
         this->pLogicalWrite = pLogicalWrite;
         this->pWriteObject = pWriteObject;
         
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     
@@ -332,13 +308,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
-        if( !lru_Validate(pOther) ) {
+        if (!lru_Validate(pOther)) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
@@ -371,10 +347,10 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        this->eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
+        eRc = ERESULT_SUCCESS;
+        eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
     //eom:
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -404,7 +380,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -421,7 +397,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -444,7 +419,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -486,14 +461,13 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            this->eRc = ERESULT_INVALID_OBJECT;
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -502,8 +476,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
 
 
@@ -520,9 +493,9 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
         
@@ -531,8 +504,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
 
 
@@ -598,7 +570,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -630,7 +602,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -676,18 +648,18 @@ extern "C" {
     )
     {
         LRU_SECTOR      *pSector = NULL;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if (pBuffer == NULL) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -695,8 +667,7 @@ extern "C" {
         pSector = lru_FindLSN(this, lsn);
         if (pSector) {
             memmove(pBuffer, pSector->data, this->sectorSize);
-            this->eRc = ERESULT_SUCCESS;
-            return this->eRc;
+            return ERESULT_SUCCESS;
         }
         
         // Get a sector to use.
@@ -709,11 +680,11 @@ extern "C" {
         }
         
         // Set up the sector.
-        this->eRc = this->pLogicalRead(this->pReadObject, lsn, pSector->data);
-        if (ERESULT_FAILED(this->eRc)) {
+        eRc = this->pLogicalRead(this->pReadObject, lsn, pSector->data);
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             listdl_Add2Head(&this->freeList, pSector);
-            return this->eRc;
+            return eRc;
         }
         pSector->lsn = lsn;
         memmove(pBuffer, pSector->data, this->sectorSize);
@@ -722,8 +693,7 @@ extern "C" {
         listdl_Add2Head(&this->hashLists[lsn % NUM_HASH_LIST], pSector);
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -808,9 +778,8 @@ extern "C" {
         LRU_DATA      *this
     )
     {
-        this->eRc = ERESULT_INVALID_OBJECT;
         if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_LRU) )
+            if (obj_IsKindOf(this, OBJ_IDENT_LRU))
                 ;
             else
                 return false;
@@ -821,7 +790,6 @@ extern "C" {
             return false;
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif
@@ -838,19 +806,19 @@ extern "C" {
         uint8_t         *pBuffer
     )
     {
+        ERESULT         eRc;
         LRU_SECTOR      *pSector = NULL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lru_Validate(this) ) {
+        if (!lru_Validate(this)) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if (pBuffer == NULL) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -858,8 +826,7 @@ extern "C" {
         pSector = lru_FindLSN(this, lsn);
         if (pSector) {
             memmove(pSector->data, pBuffer, this->sectorSize);
-            this->eRc = ERESULT_SUCCESS;
-            return this->eRc;
+            return ERESULT_SUCCESS;
         }
         else {
             // Get a sector to use.
@@ -878,16 +845,15 @@ extern "C" {
         // Set up the sector and write it out.
         pSector->lsn = lsn;
         memmove(pSector->data, pBuffer, this->sectorSize);
-        this->eRc = this->pLogicalWrite(this->pReadObject, lsn, pBuffer);
-        if (ERESULT_FAILED(this->eRc)) {
+        eRc = this->pLogicalWrite(this->pReadObject, lsn, pBuffer);
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             listdl_Add2Head(&this->freeList, pSector);
-            return this->eRc;
+            return eRc;
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'hash32'
-//	Generated 01/12/2019 11:49:55
+//	Class Object Metods and Tables for 'bpt32lf'
+//	Generated 01/12/2019 14:04:41
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			HASH32_OBJECT_C	    1
-#include        <hash32_internal.h>
-#ifdef  HASH32_SINGLETON
+#define			BPT32LF_OBJECT_C	    1
+#include        <bpt32lf_internal.h>
+#ifdef  BPT32LF_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct hash32_class_data_s	{
+struct bpt32lf_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  HASH32_SINGLETON
+#ifdef  BPT32LF_SINGLETON
     volatile
-    HASH32_DATA       *pSingleton;
+    BPT32LF_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct hash32_class_data_s	{
 
 
 static
-void *          hash32Class_QueryInfo (
+void *          bpt32lfClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          hash32Class_QueryInfo (
 
 static
 const
-OBJ_INFO        hash32_Info;            // Forward Reference
+OBJ_INFO        bpt32lf_Info;            // Forward Reference
 
 
 
 
 static
-bool            hash32Class_IsKindOf (
+bool            bpt32lfClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HASH32_CLASS == classID) {
+    if (OBJ_IDENT_BPT32LF_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -99,11 +99,11 @@ bool            hash32Class_IsKindOf (
 
 
 static
-uint16_t		hash32Class_WhoAmI (
+uint16_t		bpt32lfClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_HASH32_CLASS;
+    return OBJ_IDENT_BPT32LF_CLASS;
 }
 
 
@@ -115,17 +115,17 @@ uint16_t		hash32Class_WhoAmI (
 
 static
 const
-HASH32_CLASS_VTBL    class_Vtbl = {
+BPT32LF_CLASS_VTBL    class_Vtbl = {
     {
-        &hash32_Info,
-        hash32Class_IsKindOf,
+        &bpt32lf_Info,
+        bpt32lfClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        hash32_Class,
-        hash32Class_WhoAmI,
-        (P_OBJ_QUERYINFO)hash32Class_QueryInfo,
-        NULL                        // hash32Class_ToDebugString
+        bpt32lf_Class,
+        bpt32lfClass_WhoAmI,
+        (P_OBJ_QUERYINFO)bpt32lfClass_QueryInfo,
+        NULL                        // bpt32lfClass_ToDebugString
     },
 };
 
@@ -135,11 +135,11 @@ HASH32_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-HASH32_CLASS_DATA  hash32_ClassObj = {
+BPT32LF_CLASS_DATA  bpt32lf_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(HASH32_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_HASH32_CLASS,                     // cbIdent
+        sizeof(BPT32LF_CLASS_DATA),                  // cbSize
+        OBJ_IDENT_BPT32LF_CLASS,                     // cbIdent
         0,                                      // cbFlags
         0,                                      // eRc
         1,                                      // cbRetainCount
@@ -154,17 +154,17 @@ HASH32_CLASS_DATA  hash32_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  HASH32_SINGLETON
-HASH32_DATA *     hash32_getSingleton (
+#ifdef  BPT32LF_SINGLETON
+BPT32LF_DATA *     bpt32lf_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(hash32_ClassObj.pSingleton);
+    return (OBJ_ID)(bpt32lf_ClassObj.pSingleton);
 }
 
 
-bool            hash32_setSingleton (
-    HASH32_DATA       *pValue
+bool            bpt32lf_setSingleton (
+    BPT32LF_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -184,10 +184,10 @@ bool            hash32_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (hash32_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(hash32_ClassObj.pSingleton));
+    if (bpt32lf_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(bpt32lf_ClassObj.pSingleton));
     }
-    hash32_ClassObj.pSingleton = pValue;
+    bpt32lf_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -197,17 +197,17 @@ bool            hash32_setSingleton (
 
 
 
-HASH32_DATA *     hash32_Shared (
+BPT32LF_DATA *     bpt32lf_Shared (
     void
 )
 {
-    HASH32_DATA       *this = (OBJ_ID)(hash32_ClassObj.pSingleton);
+    BPT32LF_DATA       *this = (OBJ_ID)(bpt32lf_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = hash32_New( );
-        hash32_setSingleton(this);
+        this = bpt32lf_New( );
+        bpt32lf_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // hash32_ClassObj.pSingleton = OBJ_NIL;
+        // bpt32lf_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -215,15 +215,15 @@ HASH32_DATA *     hash32_Shared (
 
 
 
-void            hash32_SharedReset (
+void            bpt32lf_SharedReset (
     void
 )
 {
-    HASH32_DATA       *this = (OBJ_ID)(hash32_ClassObj.pSingleton);
+    BPT32LF_DATA       *this = (OBJ_ID)(bpt32lf_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        hash32_ClassObj.pSingleton = OBJ_NIL;
+        bpt32lf_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -239,13 +239,13 @@ void            hash32_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          hash32Class_QueryInfo (
+void *          bpt32lfClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    HASH32_CLASS_DATA *this = objId;
+    BPT32LF_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -256,7 +256,7 @@ void *          hash32Class_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(HASH32_DATA);
+            return (void *)sizeof(BPT32LF_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -271,7 +271,7 @@ void *          hash32Class_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&hash32_Info;
+                        return (void *)&bpt32lf_Info;
                     }
                     break;
                     
@@ -289,13 +289,13 @@ void *          hash32Class_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return hash32_New;
+                        return bpt32lf_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return hash32Class_WhoAmI;
+                        return bpt32lfClass_WhoAmI;
                     }
                     break;
                     
@@ -315,11 +315,11 @@ void *          hash32Class_QueryInfo (
 
 
 static
-bool            hash32_IsKindOf (
+bool            bpt32lf_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HASH32 == classID) {
+    if (OBJ_IDENT_BPT32LF == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -331,25 +331,25 @@ bool            hash32_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            hash32_Dealloc (
+void            bpt32lf_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          hash32_Class (
+OBJ_ID          bpt32lf_Class (
     void
 )
 {
-    return (OBJ_ID)&hash32_ClassObj;
+    return (OBJ_ID)&bpt32lf_ClassObj;
 }
 
 
 static
-uint16_t		hash32_WhoAmI (
+uint16_t		bpt32lf_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_HASH32;
+    return OBJ_IDENT_BPT32LF;
 }
 
 
@@ -361,34 +361,34 @@ uint16_t		hash32_WhoAmI (
 //===========================================================
 
 const
-HASH32_VTBL     hash32_Vtbl = {
+BPT32LF_VTBL     bpt32lf_Vtbl = {
     {
-        &hash32_Info,
-        hash32_IsKindOf,
-#ifdef  HASH32_IS_SINGLETON
+        &bpt32lf_Info,
+        bpt32lf_IsKindOf,
+#ifdef  BPT32LF_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        hash32_Dealloc,
-        hash32_Class,
-        hash32_WhoAmI,
-        (P_OBJ_QUERYINFO)hash32_QueryInfo,
-        (P_OBJ_TOSTRING)hash32_ToDebugString,
-        NULL,			// hash32_Enable,
-        NULL,			// hash32_Disable,
-        NULL,			// (P_OBJ_ASSIGN)hash32_Assign,
-        NULL,			// (P_OBJ_COMPARE)hash32_Compare,
-        NULL, 			// (P_OBJ_PTR)hash32_Copy,
-        NULL, 			// (P_OBJ_PTR)hash32_DeepCopy,
-        NULL 			// (P_OBJ_HASH)hash32_Hash,
+        bpt32lf_Dealloc,
+        bpt32lf_Class,
+        bpt32lf_WhoAmI,
+        (P_OBJ_QUERYINFO)bpt32lf_QueryInfo,
+        (P_OBJ_TOSTRING)bpt32lf_ToDebugString,
+        NULL,			// bpt32lf_Enable,
+        NULL,			// bpt32lf_Disable,
+        NULL,			// (P_OBJ_ASSIGN)bpt32lf_Assign,
+        NULL,			// (P_OBJ_COMPARE)bpt32lf_Compare,
+        NULL, 			// (P_OBJ_PTR)bpt32lf_Copy,
+        NULL, 			// (P_OBJ_PTR)bpt32lf_DeepCopy,
+        NULL 			// (P_OBJ_HASH)bpt32lf_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //hash32_IsEnabled,
+    //bpt32lf_IsEnabled,
  
 };
 
@@ -396,13 +396,13 @@ HASH32_VTBL     hash32_Vtbl = {
 
 static
 const
-OBJ_INFO        hash32_Info = {
-    "hash32",
-    "32-Bit Hash Table",
-    (OBJ_DATA *)&hash32_ClassObj,
+OBJ_INFO        bpt32lf_Info = {
+    "bpt32lf",
+    "B-Plus 32-Bit Tree Leaf Node",
+    (OBJ_DATA *)&bpt32lf_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&hash32_Vtbl,
-    sizeof(HASH32_DATA)
+    (OBJ_IUNKNOWN *)&bpt32lf_Vtbl,
+    sizeof(BPT32LF_DATA)
 };
 
 

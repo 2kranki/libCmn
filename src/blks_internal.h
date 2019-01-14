@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   lru_internal.h
- *	Generated 10/21/2016 23:23:20
+ * File:   blks_internal.h
+ *	Generated 01/13/2019 16:16:32
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,12 +38,18 @@
 
 
 
-#include    <lru.h>
-#include    <listdl.h>
+
+#include        <blks.h>
+#include        <jsonIn.h>
+#include        <ptrArray.h>
 
 
-#ifndef LRU_INTERNAL_H
-#define	LRU_INTERNAL_H
+#ifndef BLKS_INTERNAL_H
+#define	BLKS_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -50,83 +57,91 @@
 extern "C" {
 #endif
 
-    
-#define NUM_HASH_LIST   23          /* Should be a prime number */
 
 
-#pragma pack(push, 1)
-    typedef struct lru_sector_s	{
-        LISTDL_NODE     lruList;
-        LISTDL_NODE     hashList;
-        uint32_t        lsn;                // Logical Sector Number
-        uint8_t         data[0];
-    } LRU_SECTOR;
-#pragma pack(pop)
-    
-    
-    
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct lru_data_s	{
+struct blks_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        sectorSize;
-    uint32_t        cacheSize;
-    
-    ERESULT         (*pLogicalRead)(
-        OBJ_ID          pObj,
-        uint32_t        lsn,                // Logical Sector Number
-        uint8_t         *pBuffer            // Buffer of sectorSize bytes
-    );
-    OBJ_ID          pReadObject;
-    
-    ERESULT         (*pLogicalWrite)(
-        OBJ_ID          pWriteObject,
-        uint32_t        lsn,                // Logical Sector Number
-        uint8_t         *pBuffer            // Buffer of sectorSize bytes
-    );
-    OBJ_ID          pWriteObject;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
+    uint32_t        blockSize;
+    PTRARRAY_DATA   *pIndex;
 
-    volatile
-    int32_t         numReads;
-    volatile
-    int32_t         numWrites;
-
-    LISTDL_DATA     freeList;
-    LISTDL_DATA     lruList;
-    LISTDL_DATA     hashLists[NUM_HASH_LIST];
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct lru_class_data_s  lru_ClassObj;
+    struct blks_class_data_s  blks_ClassObj;
 
     extern
     const
-    LRU_VTBL         lru_Vtbl;
+    BLKS_VTBL         blks_Vtbl;
 
 
-    // Internal Functions
-    void            lru_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  BLKS_SINGLETON
+    BLKS_DATA *     blks_getSingleton (
+        void
+    );
+
+    bool            blks_setSingleton (
+     BLKS_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  blks_getSuperVtbl (
+        BLKS_DATA     *this
+    );
+
+
+    void            blks_Dealloc (
         OBJ_ID          objId
     );
 
-    void *          lru_QueryInfo(
+
+    BLKS_DATA *       blks_ParseObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          blks_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
+    ASTR_DATA *     blks_ToJSON (
+        BLKS_DATA      *this
+    );
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			lru_Validate(
-        LRU_DATA       *cbp
+    bool			blks_Validate (
+        BLKS_DATA       *this
     );
 #endif
 
@@ -136,5 +151,5 @@ struct lru_data_s	{
 }
 #endif
 
-#endif	/* LRU_INTERNAL_H */
+#endif	/* BLKS_INTERNAL_H */
 

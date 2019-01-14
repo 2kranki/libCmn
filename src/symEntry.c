@@ -177,10 +177,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                         A l i g n
+    //---------------------------------------------------------------
+    
+    uint16_t        symEntry_getAlign (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->align;
+    }
+    
+    
+    bool            symEntry_setAlign (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->align = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          C l a s s
     //---------------------------------------------------------------
     
-    int32_t         symEntry_getClass(
+    int32_t         symEntry_getClass (
         SYMENTRY_DATA    *this
     )
     {
@@ -188,7 +230,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -198,7 +240,7 @@ extern "C" {
     }
     
     
-    bool            symEntry_setClass(
+    bool            symEntry_setClass (
         SYMENTRY_DATA   *this,
         int32_t         value
     )
@@ -206,7 +248,7 @@ extern "C" {
         bool            fRc;
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -220,10 +262,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                         L e v e l
+    //              D u p l i c a t i o n  F a c t o r
     //---------------------------------------------------------------
     
-    int16_t         symEntry_getLevel(
+    uint16_t        symEntry_getDup (
         SYMENTRY_DATA   *this
     )
     {
@@ -231,7 +273,134 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->dup;
+    }
+    
+    
+    bool            symEntry_setDup (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->dup = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        symEntry_getIndex (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return nodeLink_getIndex((NODELINK_DATA *)this);
+    }
+    
+    
+    bool            symEntry_setIndex (
+        SYMENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+        bool            fRc;
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = nodeLink_setIndex((NODELINK_DATA *)this, value);
+        
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         L e n g t h
+    //---------------------------------------------------------------
+    
+    uint16_t        symEntry_getLength (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->len;
+    }
+    
+    
+    bool            symEntry_setLength (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->level = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                         L e v e l
+    //---------------------------------------------------------------
+    
+    int16_t         symEntry_getLevel (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -241,14 +410,14 @@ extern "C" {
     }
     
     
-    bool            symEntry_setLevel(
+    bool            symEntry_setLevel (
         SYMENTRY_DATA   *this,
         int16_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -265,7 +434,7 @@ extern "C" {
     //                      N o d e
     //---------------------------------------------------------------
     
-    NODE_DATA *     symEntry_getNode(
+    NODE_DATA *     symEntry_getNode (
         SYMENTRY_DATA   *this
     )
     {
@@ -273,7 +442,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -283,12 +452,30 @@ extern "C" {
     }
     
     
+    NODELINK_DATA * symEntry_getNodeLink (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (NODELINK_DATA *)this;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        symEntry_getPriority(
+    uint16_t        symEntry_getPriority (
         SYMENTRY_DATA   *this
     )
     {
@@ -296,7 +483,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -307,14 +494,14 @@ extern "C" {
     }
 
 
-    bool            symEntry_setPriority(
+    bool            symEntry_setPriority (
         SYMENTRY_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -331,13 +518,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        symEntry_getSize(
+    uint32_t        symEntry_getSize (
         SYMENTRY_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -352,7 +539,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * symEntry_getStr(
+    ASTR_DATA * symEntry_getStr (
         SYMENTRY_DATA     *this
     )
     {
@@ -360,7 +547,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -370,14 +557,14 @@ extern "C" {
     }
     
     
-    bool        symEntry_setStr(
+    bool        symEntry_setStr (
         SYMENTRY_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -398,7 +585,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  symEntry_getSuperVtbl(
+    OBJ_IUNKNOWN *  symEntry_getSuperVtbl (
         SYMENTRY_DATA     *this
     )
     {
@@ -406,7 +593,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -422,7 +609,7 @@ extern "C" {
     //                          T y p e
     //---------------------------------------------------------------
     
-    int32_t         symEntry_getType(
+    int32_t         symEntry_getType (
         SYMENTRY_DATA    *this
     )
     {
@@ -430,7 +617,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -440,7 +627,7 @@ extern "C" {
     }
     
     
-    bool            symEntry_setType(
+    bool            symEntry_setType (
         SYMENTRY_DATA   *this,
         int32_t         value
     )
@@ -448,7 +635,7 @@ extern "C" {
         bool            fRc;
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -457,6 +644,48 @@ extern "C" {
         fRc = node_setType((NODE_DATA *)this, value);
         
         return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       V a l u e
+    //---------------------------------------------------------------
+    
+    uint32_t        symEntry_getValue (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->value;
+    }
+    
+    
+    bool            symEntry_setValue (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->value = value;
+        
+        return true;
     }
     
     
@@ -485,9 +714,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         symEntry_Assign(
-        SYMENTRY_DATA		*this,
-        SYMENTRY_DATA     *pOther
+    ERESULT         symEntry_Assign (
+        SYMENTRY_DATA   *this,
+        SYMENTRY_DATA   *pOther
     )
     {
         ERESULT     eRc;
@@ -495,11 +724,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !symEntry_Validate(pOther) ) {
+        if (!symEntry_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -551,7 +780,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         symEntry_Compare(
+    ERESULT         symEntry_Compare (
         SYMENTRY_DATA     *this,
         SYMENTRY_DATA     *pOther
     )
@@ -567,11 +796,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !symEntry_Validate(pOther) ) {
+        if (!symEntry_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -615,7 +844,7 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SYMENTRY_DATA *     symEntry_Copy(
+    SYMENTRY_DATA *     symEntry_Copy (
         SYMENTRY_DATA       *this
     )
     {
@@ -625,7 +854,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -651,7 +880,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            symEntry_Dealloc(
+    void            symEntry_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -663,7 +892,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -692,7 +921,7 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         symEntry_Disable(
+    ERESULT         symEntry_Disable (
         SYMENTRY_DATA		*this
     )
     {
@@ -700,7 +929,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -720,7 +949,7 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         symEntry_Enable(
+    ERESULT         symEntry_Enable (
         SYMENTRY_DATA		*this
     )
     {
@@ -728,7 +957,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -748,7 +977,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SYMENTRY_DATA *   symEntry_Init(
+    SYMENTRY_DATA *   symEntry_Init (
         SYMENTRY_DATA       *this
     )
     {
@@ -785,7 +1014,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -805,7 +1034,7 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         symEntry_IsEnabled(
+    ERESULT         symEntry_IsEnabled (
         SYMENTRY_DATA		*this
     )
     {
@@ -813,7 +1042,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -870,7 +1099,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -960,8 +1189,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     symEntry_ToDebugString(
-        SYMENTRY_DATA      *this,
+    ASTR_DATA *     symEntry_ToDebugString (
+        SYMENTRY_DATA   *this,
         int             indent
     )
     {
@@ -977,7 +1206,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !symEntry_Validate(this) ) {
+        if (!symEntry_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1035,15 +1264,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            symEntry_Validate(
-        SYMENTRY_DATA      *this
+    bool            symEntry_Validate (
+        SYMENTRY_DATA   *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SYMENTRY) )
+            if (obj_IsKindOf(this, OBJ_IDENT_SYMENTRY))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1059,7 +1288,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SYMENTRY_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(SYMENTRY_DATA))) {
             return false;
         }
 

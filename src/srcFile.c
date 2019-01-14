@@ -742,7 +742,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         srcFile_Enable (
-        SRCFILE_DATA		*this
+        SRCFILE_DATA	*this
     )
     {
 
@@ -905,9 +905,9 @@ extern "C" {
         SRCFILE_DATA        *this
     )
     {
-        ERESULT             eRc;
+        //ERESULT             eRc;
         TOKEN_DATA          *pToken;
-        TEXTIN_CHRLOC       chrLoc;
+        //TEXTIN_CHRLOC       chrLoc;
         W32CHR_T            chr;
         int32_t             cls;
 
@@ -1093,6 +1093,52 @@ extern "C" {
         }
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S k i p  T o E O L
+    //---------------------------------------------------------------
+    
+    /*!
+     Advance the input the number of characters needed to get the
+     current Input Char to be EOL.
+     @param     this    object pointer
+     @return    If successful, ERROR_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         srcFile_SkipToEOL (
+        SRCFILE_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        W32CHR_T        chr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (srcFile_getRemoveNLs(this))
+            return ERESULT_INVALID_REQUEST;
+        
+        for (;;) {
+            pToken = &this->pInputs[this->curInputs];
+            chr = token_getChrW32(pToken);
+            if (chr == '\n')
+                break;
+            eRc = srcFile_InputNextChar(this);
+            if (ERESULT_FAILED(eRc))
+                break;
+        }
+        
+        // Return to caller.
+        return eRc;
     }
     
     

@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SYMATTR Console Transmit Task (symAttr) Header
+//          Hash Table Base (hashtbl) Header
 //****************************************************************
 /*
  * Program
- *			Separate symAttr (symAttr)
+ *			Hash Table Base (hashtbl)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate symAttr to run things without complications
- *          of interfering with the main symAttr. A symAttr may be 
- *          called a symAttr on other O/S's.
+ *          a separate hashtbl to run things without complications
+ *          of interfering with the main hashtbl. A hashtbl may be 
+ *          called a hashtbl on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/04/2018 Generated
+ *	01/12/2019 Generated
  */
 
 
@@ -53,14 +53,17 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <nodeLink.h>
 
 
-#ifndef         SYMATTR_H
-#define         SYMATTR_H
+#ifndef         HASHTBL_H
+#define         HASHTBL_H
 
 
-//#define   SYMATTR_SINGLETON    1
+//#define   HASHTBL_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -72,26 +75,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct symAttr_data_s	SYMATTR_DATA;            // Inherits from OBJ
-    typedef struct symAttr_class_data_s SYMATTR_CLASS_DATA;   // Inherits from OBJ
+    typedef struct hashtbl_data_s	HASHTBL_DATA;            // Inherits from OBJ
+    typedef struct hashtbl_class_data_s HASHTBL_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct symAttr_vtbl_s	{
+    typedef struct hashtbl_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in symAttr_object.c.
+        // method names to the vtbl definition in hashtbl_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SYMATTR_DATA *);
-    } SYMATTR_VTBL;
+        //bool        (*pIsEnabled)(HASHTBL_DATA *);
+    } HASHTBL_VTBL;
 
-    typedef struct symAttr_class_vtbl_s	{
+    typedef struct hashtbl_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in symAttr_object.c.
+        // method names to the vtbl definition in hashtbl_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SYMATTR_DATA *);
-    } SYMATTR_CLASS_VTBL;
+        //bool        (*pIsEnabled)(HASHTBL_DATA *);
+    } HASHTBL_CLASS_VTBL;
 
 
 
@@ -105,12 +108,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SYMATTR_SINGLETON
-    SYMATTR_DATA *  symAttr_Shared(
+#ifdef  HASHTBL_SINGLETON
+    HASHTBL_DATA *     hashtbl_Shared (
         void
     );
 
-    bool            symAttr_SharedReset(
+    bool            hashtbl_SharedReset (
         void
     );
 #endif
@@ -120,19 +123,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to symAttr object if successful, otherwise OBJ_NIL.
+     @return    pointer to hashtbl object if successful, otherwise OBJ_NIL.
      */
-    SYMATTR_DATA *  symAttr_Alloc(
+    HASHTBL_DATA *     hashtbl_Alloc (
         void
     );
     
     
-    OBJ_ID          symAttr_Class(
+    OBJ_ID          hashtbl_Class (
         void
     );
     
     
-    SYMATTR_DATA *  symAttr_New(
+    HASHTBL_DATA *     hashtbl_New (
         void
     );
     
@@ -142,21 +145,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    int32_t         symAttr_getClass(
-        SYMATTR_DATA    *this
-    );
-    
-    
-    NODE_DATA *     symAttr_getNode(
-        SYMATTR_DATA    *this
-    );
-    
-    
-    int32_t         symAttr_getType(
-        SYMATTR_DATA    *this
-    );
-    
-    
 
 
     
@@ -164,23 +152,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     symAttr_Disable(
-        SYMATTR_DATA		*this
+    ERESULT     hashtbl_Disable (
+        HASHTBL_DATA		*this
     );
 
 
-    ERESULT     symAttr_Enable(
-        SYMATTR_DATA		*this
+    ERESULT     hashtbl_Enable (
+        HASHTBL_DATA		*this
     );
 
    
-    SYMATTR_DATA *   symAttr_Init(
-        SYMATTR_DATA     *this
+    HASHTBL_DATA *   hashtbl_Init (
+        HASHTBL_DATA     *this
     );
 
 
-    ERESULT     symAttr_IsEnabled(
-        SYMATTR_DATA		*this
+    ERESULT     hashtbl_IsEnabled (
+        HASHTBL_DATA		*this
     );
     
  
@@ -188,16 +176,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = symAttr_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = hashtbl_ToDebugString(this,4);
      @endcode 
-     @param     this    SYMATTR object pointer
+     @param     this    HASHTBL object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    symAttr_ToDebugString(
-        SYMATTR_DATA     *this,
+    ASTR_DATA *    hashtbl_ToDebugString (
+        HASHTBL_DATA     *this,
         int             indent
     );
     
@@ -208,5 +196,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* SYMATTR_H */
+#endif	/* HASHTBL_H */
 

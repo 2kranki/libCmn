@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'hash32'
-//	Generated 01/12/2019 11:49:55
+//	Class Object Metods and Tables for 'blks'
+//	Generated 01/13/2019 16:16:32
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			HASH32_OBJECT_C	    1
-#include        <hash32_internal.h>
-#ifdef  HASH32_SINGLETON
+#define			BLKS_OBJECT_C	    1
+#include        <blks_internal.h>
+#ifdef  BLKS_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct hash32_class_data_s	{
+struct blks_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  HASH32_SINGLETON
+#ifdef  BLKS_SINGLETON
     volatile
-    HASH32_DATA       *pSingleton;
+    BLKS_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct hash32_class_data_s	{
 
 
 static
-void *          hash32Class_QueryInfo (
+void *          blksClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          hash32Class_QueryInfo (
 
 static
 const
-OBJ_INFO        hash32_Info;            // Forward Reference
+OBJ_INFO        blks_Info;            // Forward Reference
 
 
 
 
 static
-bool            hash32Class_IsKindOf (
+bool            blksClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HASH32_CLASS == classID) {
+    if (OBJ_IDENT_BLKS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -99,11 +99,11 @@ bool            hash32Class_IsKindOf (
 
 
 static
-uint16_t		hash32Class_WhoAmI (
+uint16_t		blksClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_HASH32_CLASS;
+    return OBJ_IDENT_BLKS_CLASS;
 }
 
 
@@ -115,17 +115,17 @@ uint16_t		hash32Class_WhoAmI (
 
 static
 const
-HASH32_CLASS_VTBL    class_Vtbl = {
+BLKS_CLASS_VTBL    class_Vtbl = {
     {
-        &hash32_Info,
-        hash32Class_IsKindOf,
+        &blks_Info,
+        blksClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        hash32_Class,
-        hash32Class_WhoAmI,
-        (P_OBJ_QUERYINFO)hash32Class_QueryInfo,
-        NULL                        // hash32Class_ToDebugString
+        blks_Class,
+        blksClass_WhoAmI,
+        (P_OBJ_QUERYINFO)blksClass_QueryInfo,
+        NULL                        // blksClass_ToDebugString
     },
 };
 
@@ -135,11 +135,11 @@ HASH32_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-HASH32_CLASS_DATA  hash32_ClassObj = {
+BLKS_CLASS_DATA  blks_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(HASH32_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_HASH32_CLASS,                     // cbIdent
+        sizeof(BLKS_CLASS_DATA),                  // cbSize
+        OBJ_IDENT_BLKS_CLASS,                     // cbIdent
         0,                                      // cbFlags
         0,                                      // eRc
         1,                                      // cbRetainCount
@@ -154,17 +154,17 @@ HASH32_CLASS_DATA  hash32_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  HASH32_SINGLETON
-HASH32_DATA *     hash32_getSingleton (
+#ifdef  BLKS_SINGLETON
+BLKS_DATA *     blks_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(hash32_ClassObj.pSingleton);
+    return (OBJ_ID)(blks_ClassObj.pSingleton);
 }
 
 
-bool            hash32_setSingleton (
-    HASH32_DATA       *pValue
+bool            blks_setSingleton (
+    BLKS_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -184,10 +184,10 @@ bool            hash32_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (hash32_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(hash32_ClassObj.pSingleton));
+    if (blks_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(blks_ClassObj.pSingleton));
     }
-    hash32_ClassObj.pSingleton = pValue;
+    blks_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -197,17 +197,17 @@ bool            hash32_setSingleton (
 
 
 
-HASH32_DATA *     hash32_Shared (
+BLKS_DATA *     blks_Shared (
     void
 )
 {
-    HASH32_DATA       *this = (OBJ_ID)(hash32_ClassObj.pSingleton);
+    BLKS_DATA       *this = (OBJ_ID)(blks_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = hash32_New( );
-        hash32_setSingleton(this);
+        this = blks_New( );
+        blks_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // hash32_ClassObj.pSingleton = OBJ_NIL;
+        // blks_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -215,15 +215,15 @@ HASH32_DATA *     hash32_Shared (
 
 
 
-void            hash32_SharedReset (
+void            blks_SharedReset (
     void
 )
 {
-    HASH32_DATA       *this = (OBJ_ID)(hash32_ClassObj.pSingleton);
+    BLKS_DATA       *this = (OBJ_ID)(blks_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        hash32_ClassObj.pSingleton = OBJ_NIL;
+        blks_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -239,13 +239,13 @@ void            hash32_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          hash32Class_QueryInfo (
+void *          blksClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    HASH32_CLASS_DATA *this = objId;
+    BLKS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -256,7 +256,7 @@ void *          hash32Class_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(HASH32_DATA);
+            return (void *)sizeof(BLKS_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -271,7 +271,7 @@ void *          hash32Class_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&hash32_Info;
+                        return (void *)&blks_Info;
                     }
                     break;
                     
@@ -289,13 +289,13 @@ void *          hash32Class_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return hash32_New;
+                        return blks_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return hash32Class_WhoAmI;
+                        return blksClass_WhoAmI;
                     }
                     break;
                     
@@ -315,11 +315,11 @@ void *          hash32Class_QueryInfo (
 
 
 static
-bool            hash32_IsKindOf (
+bool            blks_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HASH32 == classID) {
+    if (OBJ_IDENT_BLKS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -331,25 +331,25 @@ bool            hash32_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            hash32_Dealloc (
+void            blks_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          hash32_Class (
+OBJ_ID          blks_Class (
     void
 )
 {
-    return (OBJ_ID)&hash32_ClassObj;
+    return (OBJ_ID)&blks_ClassObj;
 }
 
 
 static
-uint16_t		hash32_WhoAmI (
+uint16_t		blks_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_HASH32;
+    return OBJ_IDENT_BLKS;
 }
 
 
@@ -361,34 +361,34 @@ uint16_t		hash32_WhoAmI (
 //===========================================================
 
 const
-HASH32_VTBL     hash32_Vtbl = {
+BLKS_VTBL     blks_Vtbl = {
     {
-        &hash32_Info,
-        hash32_IsKindOf,
-#ifdef  HASH32_IS_SINGLETON
+        &blks_Info,
+        blks_IsKindOf,
+#ifdef  BLKS_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        hash32_Dealloc,
-        hash32_Class,
-        hash32_WhoAmI,
-        (P_OBJ_QUERYINFO)hash32_QueryInfo,
-        (P_OBJ_TOSTRING)hash32_ToDebugString,
-        NULL,			// hash32_Enable,
-        NULL,			// hash32_Disable,
-        NULL,			// (P_OBJ_ASSIGN)hash32_Assign,
-        NULL,			// (P_OBJ_COMPARE)hash32_Compare,
-        NULL, 			// (P_OBJ_PTR)hash32_Copy,
-        NULL, 			// (P_OBJ_PTR)hash32_DeepCopy,
-        NULL 			// (P_OBJ_HASH)hash32_Hash,
+        blks_Dealloc,
+        blks_Class,
+        blks_WhoAmI,
+        (P_OBJ_QUERYINFO)blks_QueryInfo,
+        (P_OBJ_TOSTRING)blks_ToDebugString,
+        NULL,			// blks_Enable,
+        NULL,			// blks_Disable,
+        NULL,			// (P_OBJ_ASSIGN)blks_Assign,
+        NULL,			// (P_OBJ_COMPARE)blks_Compare,
+        NULL, 			// (P_OBJ_PTR)blks_Copy,
+        NULL, 			// (P_OBJ_PTR)blks_DeepCopy,
+        NULL 			// (P_OBJ_HASH)blks_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //hash32_IsEnabled,
+    //blks_IsEnabled,
  
 };
 
@@ -396,13 +396,13 @@ HASH32_VTBL     hash32_Vtbl = {
 
 static
 const
-OBJ_INFO        hash32_Info = {
-    "hash32",
-    "32-Bit Hash Table",
-    (OBJ_DATA *)&hash32_ClassObj,
+OBJ_INFO        blks_Info = {
+    "blks",
+    "A List of Memory Blocks",
+    (OBJ_DATA *)&blks_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&hash32_Vtbl,
-    sizeof(HASH32_DATA)
+    (OBJ_IUNKNOWN *)&blks_Vtbl,
+    sizeof(BLKS_DATA)
 };
 
 

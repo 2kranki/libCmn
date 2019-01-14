@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'hash32'
-//	Generated 01/12/2019 11:49:55
+//	Class Object Metods and Tables for 'memFile'
+//	Generated 01/13/2019 15:55:16
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			HASH32_OBJECT_C	    1
-#include        <hash32_internal.h>
-#ifdef  HASH32_SINGLETON
+#define			MEMFILE_OBJECT_C	    1
+#include        <memFile_internal.h>
+#ifdef  MEMFILE_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct hash32_class_data_s	{
+struct memFile_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  HASH32_SINGLETON
+#ifdef  MEMFILE_SINGLETON
     volatile
-    HASH32_DATA       *pSingleton;
+    MEMFILE_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct hash32_class_data_s	{
 
 
 static
-void *          hash32Class_QueryInfo (
+void *          memFileClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,18 +78,21 @@ void *          hash32Class_QueryInfo (
 
 static
 const
-OBJ_INFO        hash32_Info;            // Forward Reference
+OBJ_INFO        memFile_Info;            // Forward Reference
 
 
 
 
 static
-bool            hash32Class_IsKindOf (
+bool            memFileClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HASH32_CLASS == classID) {
+    if (OBJ_IDENT_MEMFILE_CLASS == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLKS_CLASS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -99,11 +102,11 @@ bool            hash32Class_IsKindOf (
 
 
 static
-uint16_t		hash32Class_WhoAmI (
+uint16_t		memFileClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_HASH32_CLASS;
+    return OBJ_IDENT_MEMFILE_CLASS;
 }
 
 
@@ -115,17 +118,17 @@ uint16_t		hash32Class_WhoAmI (
 
 static
 const
-HASH32_CLASS_VTBL    class_Vtbl = {
+MEMFILE_CLASS_VTBL    class_Vtbl = {
     {
-        &hash32_Info,
-        hash32Class_IsKindOf,
+        &memFile_Info,
+        memFileClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        hash32_Class,
-        hash32Class_WhoAmI,
-        (P_OBJ_QUERYINFO)hash32Class_QueryInfo,
-        NULL                        // hash32Class_ToDebugString
+        memFile_Class,
+        memFileClass_WhoAmI,
+        (P_OBJ_QUERYINFO)memFileClass_QueryInfo,
+        NULL                        // memFileClass_ToDebugString
     },
 };
 
@@ -135,11 +138,11 @@ HASH32_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-HASH32_CLASS_DATA  hash32_ClassObj = {
+MEMFILE_CLASS_DATA  memFile_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(HASH32_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_HASH32_CLASS,                     // cbIdent
+        sizeof(MEMFILE_CLASS_DATA),                  // cbSize
+        OBJ_IDENT_MEMFILE_CLASS,                     // cbIdent
         0,                                      // cbFlags
         0,                                      // eRc
         1,                                      // cbRetainCount
@@ -154,17 +157,17 @@ HASH32_CLASS_DATA  hash32_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  HASH32_SINGLETON
-HASH32_DATA *     hash32_getSingleton (
+#ifdef  MEMFILE_SINGLETON
+MEMFILE_DATA *     memFile_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(hash32_ClassObj.pSingleton);
+    return (OBJ_ID)(memFile_ClassObj.pSingleton);
 }
 
 
-bool            hash32_setSingleton (
-    HASH32_DATA       *pValue
+bool            memFile_setSingleton (
+    MEMFILE_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -184,10 +187,10 @@ bool            hash32_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (hash32_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(hash32_ClassObj.pSingleton));
+    if (memFile_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(memFile_ClassObj.pSingleton));
     }
-    hash32_ClassObj.pSingleton = pValue;
+    memFile_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -197,17 +200,17 @@ bool            hash32_setSingleton (
 
 
 
-HASH32_DATA *     hash32_Shared (
+MEMFILE_DATA *     memFile_Shared (
     void
 )
 {
-    HASH32_DATA       *this = (OBJ_ID)(hash32_ClassObj.pSingleton);
+    MEMFILE_DATA       *this = (OBJ_ID)(memFile_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = hash32_New( );
-        hash32_setSingleton(this);
+        this = memFile_New( );
+        memFile_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // hash32_ClassObj.pSingleton = OBJ_NIL;
+        // memFile_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -215,15 +218,15 @@ HASH32_DATA *     hash32_Shared (
 
 
 
-void            hash32_SharedReset (
+void            memFile_SharedReset (
     void
 )
 {
-    HASH32_DATA       *this = (OBJ_ID)(hash32_ClassObj.pSingleton);
+    MEMFILE_DATA       *this = (OBJ_ID)(memFile_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        hash32_ClassObj.pSingleton = OBJ_NIL;
+        memFile_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -239,13 +242,13 @@ void            hash32_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          hash32Class_QueryInfo (
+void *          memFileClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    HASH32_CLASS_DATA *this = objId;
+    MEMFILE_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -256,7 +259,7 @@ void *          hash32Class_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(HASH32_DATA);
+            return (void *)sizeof(MEMFILE_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -271,7 +274,7 @@ void *          hash32Class_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&hash32_Info;
+                        return (void *)&memFile_Info;
                     }
                     break;
                     
@@ -289,13 +292,13 @@ void *          hash32Class_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return hash32_New;
+                        return memFile_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return hash32Class_WhoAmI;
+                        return memFileClass_WhoAmI;
                     }
                     break;
                     
@@ -315,12 +318,15 @@ void *          hash32Class_QueryInfo (
 
 
 static
-bool            hash32_IsKindOf (
+bool            memFile_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_HASH32 == classID) {
+    if (OBJ_IDENT_MEMFILE == classID) {
        return true;
+    }
+    if (OBJ_IDENT_BLKS == classID) {
+        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -331,25 +337,25 @@ bool            hash32_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            hash32_Dealloc (
+void            memFile_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          hash32_Class (
+OBJ_ID          memFile_Class (
     void
 )
 {
-    return (OBJ_ID)&hash32_ClassObj;
+    return (OBJ_ID)&memFile_ClassObj;
 }
 
 
 static
-uint16_t		hash32_WhoAmI (
+uint16_t		memFile_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_HASH32;
+    return OBJ_IDENT_MEMFILE;
 }
 
 
@@ -361,34 +367,34 @@ uint16_t		hash32_WhoAmI (
 //===========================================================
 
 const
-HASH32_VTBL     hash32_Vtbl = {
+MEMFILE_VTBL     memFile_Vtbl = {
     {
-        &hash32_Info,
-        hash32_IsKindOf,
-#ifdef  HASH32_IS_SINGLETON
+        &memFile_Info,
+        memFile_IsKindOf,
+#ifdef  MEMFILE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        hash32_Dealloc,
-        hash32_Class,
-        hash32_WhoAmI,
-        (P_OBJ_QUERYINFO)hash32_QueryInfo,
-        (P_OBJ_TOSTRING)hash32_ToDebugString,
-        NULL,			// hash32_Enable,
-        NULL,			// hash32_Disable,
-        NULL,			// (P_OBJ_ASSIGN)hash32_Assign,
-        NULL,			// (P_OBJ_COMPARE)hash32_Compare,
-        NULL, 			// (P_OBJ_PTR)hash32_Copy,
-        NULL, 			// (P_OBJ_PTR)hash32_DeepCopy,
-        NULL 			// (P_OBJ_HASH)hash32_Hash,
+        memFile_Dealloc,
+        memFile_Class,
+        memFile_WhoAmI,
+        (P_OBJ_QUERYINFO)memFile_QueryInfo,
+        (P_OBJ_TOSTRING)memFile_ToDebugString,
+        NULL,			// memFile_Enable,
+        NULL,			// memFile_Disable,
+        NULL,			// (P_OBJ_ASSIGN)memFile_Assign,
+        NULL,			// (P_OBJ_COMPARE)memFile_Compare,
+        NULL, 			// (P_OBJ_PTR)memFile_Copy,
+        NULL, 			// (P_OBJ_PTR)memFile_DeepCopy,
+        NULL 			// (P_OBJ_HASH)memFile_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //hash32_IsEnabled,
+    //memFile_IsEnabled,
  
 };
 
@@ -396,13 +402,13 @@ HASH32_VTBL     hash32_Vtbl = {
 
 static
 const
-OBJ_INFO        hash32_Info = {
-    "hash32",
-    "32-Bit Hash Table",
-    (OBJ_DATA *)&hash32_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&hash32_Vtbl,
-    sizeof(HASH32_DATA)
+OBJ_INFO        memFile_Info = {
+    "memFile",
+    "Memory Based File",
+    (OBJ_DATA *)&memFile_ClassObj,
+    (OBJ_DATA *)&blks_ClassObj,
+    (OBJ_IUNKNOWN *)&memFile_Vtbl,
+    sizeof(MEMFILE_DATA)
 };
 
 

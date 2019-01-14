@@ -169,14 +169,22 @@ extern "C" {
         OBJ_IDENT_BLKIDX16,             // Data Block of variable sized data and
         //                              // an optional fixed sized area
         OBJ_IDENT_BLKIDX16_CLASS,
+        OBJ_IDENT_BLKS,                 // A list of Data Blocks
+        OBJ_IDENT_BLKS_CLASS,
         OBJ_IDENT_BLOCK16,              // Data Block with an optional fixed sized area
         //                              // and Fixed Sized Data Area
         OBJ_IDENT_BLOCK16_CLASS,
         OBJ_IDENT_BLOCK32,              // Data Block with an optional Fixed Sized Header
         //                              // and Fixed Sized Data Area
         OBJ_IDENT_BLOCK32_CLASS,
-        OBJ_IDENT_BLOCKS,               // A list of Data Blocks
+        OBJ_IDENT_BLOCKS,               // A list of Data Blocks and Records
         OBJ_IDENT_BLOCKS_CLASS,
+        OBJ_IDENT_BPT32IDX,             // B-Plus 32-Bit Tree Index Node
+        OBJ_IDENT_BPT32IDX_CLASS,
+        OBJ_IDENT_BPT32LF,              // B-Plus 32-Bit Tree Leaf Node
+        OBJ_IDENT_BPT32LF_CLASS,
+        OBJ_IDENT_BPT32,                // B-Plus 32-Bit Tree
+        OBJ_IDENT_BPT32_CLASS,
         OBJ_IDENT_BPTINDEX,             // B-Plus Index Node
         OBJ_IDENT_BPTINDEX_CLASS,
         OBJ_IDENT_BPTLEAF,              // B-Plus Leaf Node
@@ -256,8 +264,10 @@ extern "C" {
         OBJ_IDENT_GENOBJ_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
-        OBJ_IDENT_HASH32,
+        OBJ_IDENT_HASH32,               // 32-Bit Key Hash Table
         OBJ_IDENT_HASH32_CLASS,
+        OBJ_IDENT_HASHTBL,              // Hash Table Base
+        OBJ_IDENT_HASHTBL_CLASS,
         OBJ_IDENT_HEX,                  // Hex Input/Output
         OBJ_IDENT_HEX_CLASS,
         OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser
@@ -280,6 +290,8 @@ extern "C" {
         OBJ_IDENT_LRU_CLASS,
         OBJ_IDENT_MD5CHKSUM,            // MD5 Check Sum Calculation
         OBJ_IDENT_MD5CHKSUM_CLASS,
+        OBJ_IDENT_MEMFILE,              // Memory-Based File
+        OBJ_IDENT_MEMFILE_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMOSX,               // Memory Debug for OSX

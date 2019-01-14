@@ -122,11 +122,18 @@ extern "C" {
     } SYM_TYPE;
     
     
+    typedef enum sym_reloc_e {
+        SYM_RELOC_UNDEFINED=0,
+        SYM_RELOC_ABSOLUTE,
+        SYM_RELOC_RELOCATABLE,
+    } SYM_RELOC;
+    
+    
     typedef struct sym_entry_s {
         uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        flags;
         uint32_t        nameHash;
-        char            name[129];
+        char            name[128];
         uint32_t        nameToken;          // szTbl Token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
@@ -135,6 +142,8 @@ extern "C" {
         uint16_t        ptr;                // Pointer level
         uint16_t        align;              // Required Storage Alignment
         //                                  // (0 == None)
+        uint16_t        reloc;
+        uint16_t        rsvd16;
         uint32_t        idxHashNext;        // Hash Index Chain
         uint32_t        idxHashPrev;
         uint32_t        idxScopeNext;
@@ -162,12 +171,12 @@ struct symEntry_data_s	{
     // Common Data
     uint16_t        size;		    // maximum number of elements
     int16_t         level;
+    uint16_t        align;
+    uint16_t        len;
+    uint16_t        dup;            // Duplication Factor
+    uint16_t        rsvd16;
+    uint32_t        value;
     ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
@@ -218,12 +227,6 @@ struct symEntry_data_s	{
     );
 
 
-    bool            symEntry_setType(
-        SYMENTRY_DATA   *this,
-        int32_t         value
-    );
-    
-    
     void            symEntry_Dealloc(
         OBJ_ID          objId
     );

@@ -62,7 +62,7 @@ struct compiler_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-    ERESULT_DATA    *pErrors;
+    SRCERRORS_DATA  *pErrors;
     OBJ_ID          pListing;
     PATH_DATA       *pInputPath;
     PATH_DATA       *pOutputDir;
@@ -79,9 +79,8 @@ struct compiler_data_s	{
     OBJARRAY_DATA   *pQueue2;
     OBJARRAY_DATA   *pQueue3;
     NODEHASH_DATA   *pProperties;
-    uint8_t         fTrace;
-    uint8_t         rsvd8;
     uint16_t        numErrors;
+    uint16_t        rsvd16;
 
 };
 #pragma pack(pop)

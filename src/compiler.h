@@ -1,21 +1,17 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          COMPILER Console Transmit Task (compiler) Header
+//          Compiler Base Object (compiler) Header
 //****************************************************************
 /*
  * Program
- *				Separate compiler (compiler)
+ *				Compiler Base Object (compiler)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate compiler to run things without complications
- *              of interfering with the main compiler. A compiler may be 
- *              called a compiler on other O/S's.
+ *				This object provides the fundamental objects or pointers
+ *              needed by a compiler.
  *
  * Remarks
- *	1.      This object is generally a shared object since there is
- *          primarily only one being used at a time and other objects
- *          rely on its services.
+ *	1.      None
  *
  * History
  *	06/18/2015 Generated
@@ -127,13 +123,13 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT_DATA *  compiler_getErrors(
+    SRCERRORS_DATA * compiler_getErrors(
         COMPILER_DATA   *this
     );
     
     bool            compiler_setErrors(
         COMPILER_DATA   *this,
-        ERESULT_DATA    *pValue
+        SRCERRORS_DATA  *pValue
     );
     
     
@@ -294,16 +290,29 @@ extern "C" {
     
     
     /*!
+     Create and set up the srcErrors object if it doesn't already exist.
+     @param     this    object pointer
+     @return    If successful, a srcErrors object; otherwise,
+                OBJ_NIL.
+     */
+    SRCERRORS_DATA * compiler_Errors (
+        COMPILER_DATA   *this
+    );
+    
+    
+    /*!
      Create a File Index to be used in tokens, error messages and
      other objects that need to reference back to a specific source
      location.
+     @param     this    object pointer
+     @param     pszPath UTF-8 File Path pointer
      @return    If successful, an integer greater than zero; otherwise,
                 zero.
      */
     uint32_t        compiler_FilePathToIndex(
         COMPILER_DATA   *this,
         const
-        char            *pszFilePath
+        char            *pszPath
     );
     
     

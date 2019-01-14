@@ -1,24 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  HASH32 Table (hash32)
+//          HASH32 Console Transmit Task (hash32) Header
 //****************************************************************
 /*
  * Program
- *				hash32 table (hash32)
+ *			Separate hash32 (hash32)
  * Purpose
- *				These subroutines provide an open chained hash
- *              table for keys of uint32_t. Internal nodes are
- *              blocked to limit memory fragmentation and the
- *              maximum hash table size is 65535. The overall
- *              size can grow bigger since it would be 65535
- *              chains of nodes.
+ *			This object provides a standardized way of handling
+ *          a separate hash32 to run things without complications
+ *          of interfering with the main hash32. A hash32 may be 
+ *          called a hash32 on other O/S's.
  *
  * Remarks
- *	1.      N/A
+ *	1.      None
  *
  * History
- *	06/07/2015 Generated
+ *	01/12/2019 Generated
  */
 
 
@@ -54,10 +52,16 @@
 
 
 #include        <cmn_defs.h>
+#include        <AStr.h>
 
 
 #ifndef         HASH32_H
 #define         HASH32_H
+
+
+//#define   HASH32_SINGLETON    1
+
+
 
 
 
@@ -71,31 +75,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct hash32_data_s	HASH32_DATA;
+    typedef struct hash32_data_s	HASH32_DATA;            // Inherits from OBJ
+    typedef struct hash32_class_data_s HASH32_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct hash32_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in hex_object.c.
+        // method names to the vtbl definition in hash32_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(HEX_DATA *);
+        //bool        (*pIsEnabled)(HASH32_DATA *);
     } HASH32_VTBL;
-    
-    
 
-    // Prime numbers for hash table sizes within 16 bits
-    // (Maximum size is 65535)
-    typedef enum hash32_table_size_e {
-        HASH32_TABLE_SIZE_XXXSMALL = 31,
-        HASH32_TABLE_SIZE_XXSMALL = 61,
-        HASH32_TABLE_SIZE_XSMALL = 127,
-        HASH32_TABLE_SIZE_SMALL = 257,
-        HASH32_TABLE_SIZE_MEDIUM = 2053,
-        HASH32_TABLE_SIZE_LARGE  = 4099,
-        HASH32_TABLE_SIZE_XLARGE = 16411
-    } HASH32_TABLE_SIZE;
-    
+    typedef struct hash32_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in hash32_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(HASH32_DATA *);
+    } HASH32_CLASS_VTBL;
+
 
 
 
@@ -108,14 +108,34 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the hash32.
+#ifdef  HASH32_SINGLETON
+    HASH32_DATA *     hash32_Shared (
+        void
+    );
+
+    bool            hash32_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to hash32 object if successful, otherwise OBJ_NIL.
      */
-    HASH32_DATA *   hash32_Alloc(
+    HASH32_DATA *     hash32_Alloc (
         void
     );
     
     
-    OBJ_ID          hash32_Class(
+    OBJ_ID          hash32_Class (
+        void
+    );
+    
+    
+    HASH32_DATA *     hash32_New (
         void
     );
     
@@ -125,59 +145,52 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        hash32_getCount(
-        HASH32_DATA     *this
-    );
 
-
-    bool            hash32_getDuplicates(
-        HASH32_DATA     *this
-    );
-    
-    bool            hash32_setDuplicates(
-        HASH32_DATA     *this,
-        bool            fValue
-    );
-    
 
     
-
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    bool            hash32_Add(
-        HASH32_DATA     *this,
-        uint32_t        key,
-        void			*pData
-    );
-    
-    
-    bool            hash32_Delete(
-        HASH32_DATA     *this,
-        uint32_t        key
-    );
-    
-    
-    void *          hash32_Find(
-        HASH32_DATA     *this,
-        uint32_t        key
-    );
-    
-    
-    HASH32_DATA *   hash32_Init(
-        HASH32_DATA     *this,
-        uint16_t        cHash           // Hash Table Size (Prime Number)                                  
+    ERESULT     hash32_Disable (
+        HASH32_DATA		*this
     );
 
 
-    bool            hash32_Update(
-        HASH32_DATA     *this,
-        uint32_t        key,
-        void            *pData
+    ERESULT     hash32_Enable (
+        HASH32_DATA		*this
     );
 
+   
+    HASH32_DATA *   hash32_Init (
+        HASH32_DATA     *this
+    );
+
+
+    ERESULT     hash32_IsEnabled (
+        HASH32_DATA		*this
+    );
     
+ 
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = hash32_ToDebugString(this,4);
+     @endcode 
+     @param     this    HASH32 object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    hash32_ToDebugString (
+        HASH32_DATA     *this,
+        int             indent
+    );
+    
+    
+
     
 #ifdef	__cplusplus
 }

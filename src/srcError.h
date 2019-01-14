@@ -113,6 +113,11 @@ extern "C" {
     
     
     SRCERROR_DATA * srcError_New(
+        void
+    );
+    
+    
+    SRCERROR_DATA * srcError_NewFromData(
         uint16_t        severity,
         const
         SRCLOC          *pLoc,

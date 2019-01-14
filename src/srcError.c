@@ -88,7 +88,7 @@ extern "C" {
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+        this = obj_Alloc(cbSize);
         
         // Return to caller.
         return this;
@@ -97,6 +97,21 @@ extern "C" {
 
 
     SRCERROR_DATA * srcError_New(
+        void
+    )
+    {
+        SRCERROR_DATA   *this;
+        
+        this = srcError_Alloc( );
+        if (this) {
+            this = srcError_Init(this);
+        }
+        return this;
+    }
+    
+    
+    
+    SRCERROR_DATA * srcError_NewFromData(
         uint16_t        severity,
         const
         SRCLOC          *pLoc,
@@ -116,6 +131,10 @@ extern "C" {
                 }
                 if (pErrorString) {
                     this->pErrorStr = AStr_NewA(pErrorString);
+                    if (OBJ_NIL == this->pErrorStr) {
+                        obj_Release(this);
+                        return OBJ_NIL;
+                    }
                 }
             }
         } 
@@ -141,6 +160,10 @@ extern "C" {
                 }
                 if (pErrorString) {
                     this->pErrorStr = AStr_Copy(pErrorString);
+                    if (OBJ_NIL == this->pErrorStr) {
+                        obj_Release(this);
+                        return OBJ_NIL;
+                    }
                 }
             }
         }
@@ -166,6 +189,10 @@ extern "C" {
                     srcError_setLocation(this, token_getLoc(pToken));
                 }
                 this->pErrorStr = AStr_NewA(pErrorString);
+                if (OBJ_NIL == this->pErrorStr) {
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
             }
         }
         return this;
@@ -542,7 +569,7 @@ extern "C" {
         }
 #endif
         
-        pOther =    srcError_New(
+        pOther =    srcError_NewFromData(
                                  this->severity,
                                  &this->loc,
                                  AStr_getData(this->pErrorStr)

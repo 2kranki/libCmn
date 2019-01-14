@@ -161,7 +161,9 @@ extern "C" {
      The Fatal Error Exit is executed anytime that a fatal error
      is added to the collection. If the exit returns an eresult
      error code then the exit process is terminated and program
-     termination is aborted.
+     termination is aborted (ie the program will continue to run).
+     Otherwise, the program is immediately terminated on any of the
+     ERESULT successful completion codes.
      */
     bool            srcErrors_setFatalExit(
         SRCERRORS_DATA  *this,
@@ -190,8 +192,7 @@ extern "C" {
      @param     pLocation Location of first character where error occurred (optional)
      @param     pErrorString  A character string describing the error without
                         the source location
-     @return    If successful, true; otherwise, false and an ERESULT_*
-                error will be set in Last Error.
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_* error code.
      */
     bool        srcErrors_AddErrorA(
         SRCERRORS_DATA  *this,
@@ -204,6 +205,12 @@ extern "C" {
     );
     
     
+    ERESULT         srcErrors_AddFatal(
+        SRCERRORS_DATA  *this,
+        SRCERROR_DATA   *pError
+    );
+    
+    
     /*!
      Create a new fatal error and add it to the internal collection.
      Execute the Fatal Error Exit if available.
@@ -212,8 +219,7 @@ extern "C" {
      @param     pLocation Location of first character where error occurred (optional)
      @param     pErrorString  A character string describing the error without
                             the source location
-     @return    If successful, true; otherwise, false and an ERESULT_*
-     error will be set in Last Error.
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_* error code.
      */
     ERESULT         srcErrors_AddFatalA(
         SRCERRORS_DATA  *this,
@@ -229,13 +235,34 @@ extern "C" {
      Create a new fatal error and add it to the internal collection.
      Execute the Fatal Error Exit if available.
      @param     this    SRCERRORS object pointer (if OBJ_NIL,
+                        srcErrors_Shared() is used.)
+     @param     pLocation       Location of first character where error occurred
+                                (optional)
+     @param     pErrorString    A character string describing the error without
+                                the source location
+     @param     arg_ptr         a va_list pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_* error code.
+     */
+    ERESULT         srcErrors_AddFatalArgsA(
+        SRCERRORS_DATA  *this,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    );
+    
+    
+    /*!
+     Create a new fatal error and add it to the internal collection.
+     Execute the Fatal Error Exit if available.
+     @param     this    SRCERRORS object pointer (if OBJ_NIL,
      srcErrors_Shared() is used.)
      @param     pToken  Pointer to a token object
      @param     pExpected  A character string describing the expected tokens
-     @return    If successful, true; otherwise, false and an ERESULT_*
-     error will be set in Last Error.
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_* error code.
      */
-    bool        srcErrors_AddFatalExpectingA(
+    ERESULT     srcErrors_AddFatalExpectingA(
         SRCERRORS_DATA  *this,
         TOKEN_DATA      *pToken,
         const
@@ -254,7 +281,7 @@ extern "C" {
      @return    If successful, true; otherwise, false and an ERESULT_*
                 error will be set in Last Error.
      */
-    bool        srcErrors_AddFatalFromTokenA(
+    ERESULT     srcErrors_AddFatalFromTokenA(
         SRCERRORS_DATA  *this,
         TOKEN_DATA      *pToken,
         const

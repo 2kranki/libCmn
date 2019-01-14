@@ -106,7 +106,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SYMENTRY_SINGLETON
-    SYMENTRY_DATA *     symEntry_Shared(
+    SYMENTRY_DATA * symEntry_Shared(
         void
     );
 
@@ -159,10 +159,50 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint16_t        symEntry_getAlign (
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setAlign (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    );
+
+    
     int32_t         symEntry_getClass(
         SYMENTRY_DATA   *this
     );
     
+    
+    uint16_t        symEntry_getDup (
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setDup (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    );
+    
+    
+    uint32_t        symEntry_getIndex(
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setIndex(
+        SYMENTRY_DATA   *this,
+        uint32_t        value
+    );
+
+    
+    uint16_t        symEntry_getLength (
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setLength (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    );
+
     
     int16_t         symEntry_getLevel(
         SYMENTRY_DATA   *this
@@ -174,11 +214,30 @@ extern "C" {
     );
     
     
-    int32_t         symEntry_getType(
+    NODELINK_DATA * symEntry_getNodeLink(
         SYMENTRY_DATA   *this
     );
     
     
+    int32_t         symEntry_getType(
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setType(
+        SYMENTRY_DATA   *this,
+        int32_t         value
+    );
+    
+    
+    uint32_t        symEntry_getValue (
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setValue (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    );
+
 
 
     

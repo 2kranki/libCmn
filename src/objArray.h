@@ -259,7 +259,7 @@ extern "C" {
     
     
     /*!
-     Find the nth entry in the array.
+     Find the index'th entry in the array.
      @param     this    objArray object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
@@ -267,11 +267,22 @@ extern "C" {
         OBJARRAY_DATA	*this,
         uint32_t        index       // Relative to 1
     );
+
     
+    /*!
+     Find entry 1 in the array.
+     @param     this    objArray object pointer
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     */
     OBJ_ID          objArray_GetFirst(
         OBJARRAY_DATA	*this
     );
     
+    /*!
+     Find entry 1 in the array.
+     @param     this    objArray object pointer
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     */
     OBJ_ID          objArray_GetLast(
         OBJARRAY_DATA	*this
     );

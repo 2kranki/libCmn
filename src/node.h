@@ -456,7 +456,7 @@ extern "C" {
      @code
      ASTR_DATA      *pDesc = node_ToDebugString(this,4);
      @endcode
-     @param     this    NODE object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.

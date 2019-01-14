@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   hash32.c
- *	Generated 01/12/2019 11:49:55
+ * File:   hashtbl.c
+ *	Generated 01/12/2019 11:49:43
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <hash32_internal.h>
+#include        <hashtbl_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            hash32_task_body (
+    void            hashtbl_task_body (
         void            *pData
     )
     {
-        //HASH32_DATA  *this = pData;
+        //HASHTBL_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    HASH32_DATA *     hash32_Alloc (
+    HASHTBL_DATA *     hashtbl_Alloc (
         void
     )
     {
-        HASH32_DATA       *this;
-        uint32_t        cbSize = sizeof(HASH32_DATA);
+        HASHTBL_DATA       *this;
+        uint32_t        cbSize = sizeof(HASHTBL_DATA);
         
         // Do initialization.
         
@@ -101,15 +101,15 @@ extern "C" {
 
 
 
-    HASH32_DATA *     hash32_New (
+    HASHTBL_DATA *     hashtbl_New (
         void
     )
     {
-        HASH32_DATA       *this;
+        HASHTBL_DATA       *this;
         
-        this = hash32_Alloc( );
+        this = hashtbl_Alloc( );
         if (this) {
-            this = hash32_Init(this);
+            this = hashtbl_Init(this);
         } 
         return this;
     }
@@ -126,15 +126,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        hash32_getPriority (
-        HASH32_DATA     *this
+    uint16_t        hashtbl_getPriority (
+        HASHTBL_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            hash32_setPriority (
-        HASH32_DATA     *this,
+    bool            hashtbl_setPriority (
+        HASHTBL_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        hash32_getSize (
-        HASH32_DATA       *this
+    uint32_t        hashtbl_getSize (
+        HASHTBL_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -190,15 +190,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * hash32_getStr (
-        HASH32_DATA     *this
+    ASTR_DATA * hashtbl_getStr (
+        HASHTBL_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -208,14 +208,14 @@ extern "C" {
     }
     
     
-    bool        hash32_setStr (
-        HASH32_DATA     *this,
+    bool        hashtbl_setStr (
+        HASHTBL_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -238,15 +238,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  hash32_getSuperVtbl (
-        HASH32_DATA     *this
+    OBJ_IUNKNOWN *  hashtbl_getSuperVtbl (
+        HASHTBL_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -275,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = hash32_Assign(this,pOther);
+        ERESULT eRc = hashtbl_Assign(this,pOther);
      @endcode 
-     @param     this    HASH32 object pointer
-     @param     pOther  a pointer to another HASH32 object
+     @param     this    HASHTBL object pointer
+     @param     pOther  a pointer to another HASHTBL object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         hash32_Assign (
-        HASH32_DATA		*this,
-        HASH32_DATA     *pOther
+    ERESULT         hashtbl_Assign (
+        HASHTBL_DATA		*this,
+        HASHTBL_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -292,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!hash32_Validate(pOther)) {
+        if (!hashtbl_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -348,9 +348,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         hash32_Compare (
-        HASH32_DATA     *this,
-        HASH32_DATA     *pOther
+    ERESULT         hashtbl_Compare (
+        HASHTBL_DATA     *this,
+        HASHTBL_DATA     *pOther
     )
     {
         int             i = 0;
@@ -364,11 +364,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!hash32_Validate(pOther)) {
+        if (!hashtbl_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -405,32 +405,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        hash32      *pCopy = hash32_Copy(this);
+        hashtbl      *pCopy = hashtbl_Copy(this);
      @endcode 
-     @param     this    HASH32 object pointer
-     @return    If successful, a HASH32 object which must be 
+     @param     this    HASHTBL object pointer
+     @return    If successful, a HASHTBL object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    HASH32_DATA *     hash32_Copy (
-        HASH32_DATA       *this
+    HASHTBL_DATA *     hashtbl_Copy (
+        HASHTBL_DATA       *this
     )
     {
-        HASH32_DATA       *pOther = OBJ_NIL;
+        HASHTBL_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = hash32_New( );
+        pOther = hashtbl_New( );
         if (pOther) {
-            eRc = hash32_Assign(this, pOther);
+            eRc = hashtbl_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -448,11 +448,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            hash32_Dealloc (
+    void            hashtbl_Dealloc (
         OBJ_ID          objId
     )
     {
-        HASH32_DATA   *this = objId;
+        HASHTBL_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -460,7 +460,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -468,11 +468,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((HASH32_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((HASHTBL_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        hash32_setStr(this, OBJ_NIL);
+        hashtbl_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -495,8 +495,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         hash32_Disable (
-        HASH32_DATA		*this
+    ERESULT         hashtbl_Disable (
+        HASHTBL_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -504,7 +504,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -530,8 +530,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         hash32_Enable (
-        HASH32_DATA		*this
+    ERESULT         hashtbl_Enable (
+        HASHTBL_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -539,7 +539,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -559,11 +559,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    HASH32_DATA *   hash32_Init (
-        HASH32_DATA       *this
+    HASHTBL_DATA *   hashtbl_Init (
+        HASHTBL_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(HASH32_DATA);
+        uint32_t        cbSize = sizeof(HASHTBL_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -580,32 +580,29 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_HASH32);
+        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_HASHTBL);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_HASH32);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_HASHTBL);      // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&hash32_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&hashtbl_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
-
     #ifdef NDEBUG
     #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "hash32::sizeof(HASH32_DATA) = %lu\n", sizeof(HASH32_DATA));
+        fprintf(stderr, "hashtbl::sizeof(HASHTBL_DATA) = %lu\n", sizeof(HASHTBL_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(HASH32_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(HASHTBL_DATA));
     #endif
 
         return this;
@@ -617,8 +614,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         hash32_IsEnabled (
-        HASH32_DATA		*this
+    ERESULT         hashtbl_IsEnabled (
+        HASHTBL_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -626,7 +623,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -653,14 +650,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = hash32_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = hashtbl_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "hash32", prefix,
+                        the object name, "hashtbl", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -668,13 +665,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          hash32_QueryInfo (
+    void *          hashtbl_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        HASH32_DATA     *this = objId;
+        HASHTBL_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -683,7 +680,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -692,11 +689,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(HASH32_DATA);
+            return (void *)sizeof(HASHTBL_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)hash32_Class();
+                return (void *)hashtbl_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -726,22 +723,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return hash32_Disable;
+                            return hashtbl_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return hash32_Enable;
+                            return hashtbl_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return hash32_ToDebugString;
+                            return hashtbl_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return hash32_ToJSON;
+                            return hashtbl_ToJSON;
                         }
                         break;
                         
@@ -751,9 +748,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == hash32_ToDebugString)
+                if (pData == hashtbl_ToDebugString)
                     return "ToDebugString";
-                if (pData == hash32_ToJSON)
+                if (pData == hashtbl_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -770,8 +767,8 @@ extern "C" {
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     hash32_ToJSON (
-        HASH32_DATA      *this
+     ASTR_DATA *     hashtbl_ToJSON (
+        HASHTBL_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -782,7 +779,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -813,16 +810,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = hash32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = hashtbl_ToDebugString(this,4);
      @endcode 
-     @param     this    HASH32 object pointer
+     @param     this    HASHTBL object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     hash32_ToDebugString (
-        HASH32_DATA      *this,
+    ASTR_DATA *     hashtbl_ToDebugString (
+        HASHTBL_DATA      *this,
         int             indent
     )
     {
@@ -838,7 +835,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!hashtbl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -859,7 +856,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    hash32_getSize(this)
+                    hashtbl_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -896,15 +893,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            hash32_Validate (
-        HASH32_DATA      *this
+    bool            hashtbl_Validate (
+        HASHTBL_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_HASH32))
+            if (obj_IsKindOf(this, OBJ_IDENT_HASHTBL))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -920,7 +917,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(HASH32_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(HASHTBL_DATA))) {
             return false;
         }
 

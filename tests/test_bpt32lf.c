@@ -1,0 +1,213 @@
+/*
+ *	Generated 01/12/2019 14:04:41
+ */
+
+
+
+
+
+// All code under test must be linked into the Unit Test bundle
+// Test Macros:
+//      TINYTEST_ASSERT(condition)
+//      TINYTEST_ASSERT_MSG(condition,msg)
+//      TINYTEST_EQUAL(expected, actual)
+//      TINYTEST_EQUAL_MSG(expected, actual, msg)
+//      TINYTEST_FALSE_MSG(condition,msg)
+//      TINYTEST_FALSE(condition)
+//      TINYTEST_TRUE_MSG(pointer,msg)
+//      TINYTEST_TRUE(condition)
+
+
+
+
+
+#include    <tinytest.h>
+#include    <cmn_defs.h>
+#include    <trace.h>
+#include    <bpt32lf_internal.h>
+
+
+
+int             setUp(
+    const
+    char            *pTestName
+)
+{
+    mem_Init( );
+    trace_Shared( ); 
+    // Put setup code here. This method is called before the invocation of each
+    // test method in the class.
+    
+    return 1; 
+}
+
+
+int             tearDown(
+    const
+    char            *pTestName
+)
+{
+    // Put teardown code here. This method is called after the invocation of each
+    // test method in the class.
+
+    
+    trace_SharedReset( ); 
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
+    mem_Release( );
+    
+    return 1; 
+}
+
+
+
+
+
+
+int             test_bpt32lf_OpenClose(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    BPT32LF_DATA        *pObj = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = bpt32lf_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = bpt32lf_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        //obj_TraceSet(pObj, true);
+        
+        // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_bpt32lf_Insert01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    BPT32LF_DATA    *pObj = OBJ_NIL;
+    uint32_t        d;
+    uint32_t        k;
+    uint32_t        i;
+    ASTR_DATA       *pStr;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = bpt32lf_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = bpt32lf_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = bpt32lf_SetupSizes(pObj, 256, sizeof(uint32_t));
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr = bpt32lf_ToDebugString(pObj, 3);
+        fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        for (i=0; i<10; i=i+2) {
+            k = i + 1;
+            d = i;
+            fprintf(stderr, "\tInserting: %d\n", k);
+            eRc = bpt32lf_Insert(pObj, k, &d);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            pStr = bpt32lf_ToDebugString(pObj, 3);
+            fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = bpt32lf_ToDebugString(pObj, 3);
+        fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        for (i=1; i<10; i=i+2) {
+            k = i + 1;
+            d = i;
+            fprintf(stderr, "\tInserting: %d\n", k);
+            eRc = bpt32lf_Insert(pObj, k, &d);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            pStr = bpt32lf_ToDebugString(pObj, 3);
+            fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        fprintf(stderr, "\tDeleting: 3\n");
+        eRc = bpt32lf_Delete(pObj, 3);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pStr = bpt32lf_ToDebugString(pObj, 3);
+        fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        fprintf(stderr, "\tDeleting: 10\n");
+        eRc = bpt32lf_Delete(pObj, 10);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr = bpt32lf_ToDebugString(pObj, 3);
+        fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        fprintf(stderr, "\tDeleting: 1\n");
+        eRc = bpt32lf_Delete(pObj, 1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pStr = bpt32lf_ToDebugString(pObj, 3);
+        fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+
+TINYTEST_START_SUITE(test_bpt32lf);
+    TINYTEST_ADD_TEST(test_bpt32lf_Insert01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_bpt32lf_OpenClose,setUp,tearDown);
+TINYTEST_END_SUITE();
+
+TINYTEST_MAIN_SINGLE_SUITE(test_bpt32lf);
+
+
+
+
+

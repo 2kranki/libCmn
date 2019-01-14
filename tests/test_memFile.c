@@ -1,5 +1,5 @@
 /*
- *	Generated 01/12/2019 11:49:55
+ *	Generated 01/13/2019 15:55:16
  */
 
 
@@ -23,8 +23,9 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <str.h>
 #include    <trace.h>
-#include    <hash32_internal.h>
+#include    <memFile_internal.h>
 
 
 
@@ -74,19 +75,19 @@ int             tearDown(
 
 
 
-int             test_hash32_OpenClose(
+int             test_memFile_OpenClose(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    HASH32_DATA	    *pObj = OBJ_NIL;
+    MEMFILE_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = hash32_Alloc( );
+    pObj = memFile_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = hash32_Init( pObj );
+    pObj = memFile_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -105,26 +106,39 @@ int             test_hash32_OpenClose(
 
 
 
-int             test_hash32_Insert01(
+int             test_memFile_Insert01(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    HASH32_DATA     *pObj = OBJ_NIL;
+    MEMFILE_DATA    *pObj = OBJ_NIL;
+    //uint32_t        i;
+    //uint32_t        index;
+    uint8_t         data[8];
+    uint8_t         *pData = data;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = hash32_Alloc( );
+    pObj = memFile_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = hash32_Init( pObj );
+    pObj = memFile_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
         //obj_TraceSet(pObj, true);
-        
-        // Test something.
+        eRc = memFile_SetupSizes(pObj, 8);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        str_Copy((char *)data, sizeof(data), "2222222");
+        eRc = memFile_Write(pObj, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        str_Copy((char *)data, sizeof(data), "0000000");
+        pData = data;
+        eRc = memFile_Read(pObj, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE((0 == strcmp((char *)pData, "2222222")));
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -137,12 +151,12 @@ int             test_hash32_Insert01(
 
 
 
-TINYTEST_START_SUITE(test_hash32);
-    TINYTEST_ADD_TEST(test_hash32_Insert01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_hash32_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_memFile);
+    TINYTEST_ADD_TEST(test_memFile_Insert01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_memFile_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_hash32);
+TINYTEST_MAIN_SINGLE_SUITE(test_memFile);
 
 
 

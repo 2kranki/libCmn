@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   hash32_internal.h
- *	Generated 01/12/2019 11:49:55
+ * File:   memFile_internal.h
+ *	Generated 01/13/2019 15:55:16
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,13 @@
 
 
 
-#include        <hash32.h>
+#include        <memFile.h>
+#include        <blks_internal.h>
 #include        <jsonIn.h>
 
 
-#ifndef HASH32_INTERNAL_H
-#define	HASH32_INTERNAL_H
+#ifndef MEMFILE_INTERNAL_H
+#define	MEMFILE_INTERNAL_H
 
 
 
@@ -64,10 +65,10 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct hash32_data_s	{
+struct memFile_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    BLKS_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
@@ -79,11 +80,11 @@ struct hash32_data_s	{
 #pragma pack(pop)
 
     extern
-    struct hash32_class_data_s  hash32_ClassObj;
+    struct memFile_class_data_s  memFile_ClassObj;
 
     extern
     const
-    HASH32_VTBL         hash32_Vtbl;
+    MEMFILE_VTBL         memFile_Vtbl;
 
 
 
@@ -91,13 +92,13 @@ struct hash32_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  HASH32_SINGLETON
-    HASH32_DATA *     hash32_getSingleton (
+#ifdef  MEMFILE_SINGLETON
+    MEMFILE_DATA *     memFile_getSingleton (
         void
     );
 
-    bool            hash32_setSingleton (
-     HASH32_DATA       *pValue
+    bool            memFile_setSingleton (
+     MEMFILE_DATA       *pValue
 );
 #endif
 
@@ -107,30 +108,30 @@ struct hash32_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  hash32_getSuperVtbl (
-        HASH32_DATA     *this
+    OBJ_IUNKNOWN *  memFile_getSuperVtbl (
+        MEMFILE_DATA     *this
     );
 
 
-    void            hash32_Dealloc (
+    void            memFile_Dealloc (
         OBJ_ID          objId
     );
 
 
-    HASH32_DATA *       hash32_ParseObject (
+    MEMFILE_DATA *       memFile_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          hash32_QueryInfo (
+    void *          memFile_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     hash32_ToJSON (
-        HASH32_DATA      *this
+    ASTR_DATA *     memFile_ToJSON (
+        MEMFILE_DATA      *this
     );
 
 
@@ -138,8 +139,8 @@ struct hash32_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			hash32_Validate (
-        HASH32_DATA       *this
+    bool			memFile_Validate (
+        MEMFILE_DATA       *this
     );
 #endif
 
@@ -149,5 +150,5 @@ struct hash32_data_s	{
 }
 #endif
 
-#endif	/* HASH32_INTERNAL_H */
+#endif	/* MEMFILE_INTERNAL_H */
 

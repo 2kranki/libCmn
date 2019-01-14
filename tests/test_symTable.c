@@ -100,9 +100,7 @@ int             test_symTable_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = symTable_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = symTable_Init( pObj );
+    pObj = symTable_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 

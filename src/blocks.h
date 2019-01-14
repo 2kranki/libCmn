@@ -120,7 +120,12 @@ extern "C" {
     );
     
     
-    uint32_t        blocks_AvailableSize(
+    /*!
+     Calculate the amount of space available in a block once this object's
+     overhead is removed.
+     @return:   the number of bytes available (-1 == blockSize is too small)
+     */
+    int32_t         blocks_AvailableSize(
         uint32_t        blockSize       // If 0, use default size.
     );
     
@@ -203,18 +208,6 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Return the address of the index'th active record.
-     @param     this    Object Pointer
-     @param     index   number of item on the active list (relative to 1)
-     @return:   If successful, address of the record. Otherwise, NULL.
-     */
-    void *          blocks_ActiveIndex(
-        BLOCKS_DATA    *this,
-        int32_t        index                    // (relative to 1)
-    );
-    
-    
-    /*!
      Create an Enumerator that will enumerate through all the blocks.
      @return    If successful, valid enumerator. Otherwise, OBJ_NIL.
                 error code.
@@ -253,6 +246,18 @@ extern "C" {
     ERESULT         blocks_RecordFree(
         BLOCKS_DATA     *this,
         void            *pRecord
+    );
+    
+    
+    /*!
+     Return the address of the index'th record.
+     @param     this    Object Pointer
+     @param     index   number of item on the active list (relative to 1)
+     @return:   If successful, address of the record. Otherwise, NULL.
+     */
+    void *          blocks_RecordGet(
+        BLOCKS_DATA    *this,
+        int32_t        index                    // (relative to 1)
     );
     
     

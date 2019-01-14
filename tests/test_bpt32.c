@@ -1,5 +1,5 @@
 /*
- *	Generated 01/12/2019 11:49:55
+ *	Generated 01/12/2019 14:04:44
  */
 
 
@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <hash32_internal.h>
+#include    <bpt32_internal.h>
 
 
 
@@ -74,19 +74,19 @@ int             tearDown(
 
 
 
-int             test_hash32_OpenClose(
+int             test_bpt32_OpenClose(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    HASH32_DATA	    *pObj = OBJ_NIL;
+    BPT32_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = hash32_Alloc( );
+    pObj = bpt32_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = hash32_Init( pObj );
+    pObj = bpt32_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -105,44 +105,12 @@ int             test_hash32_OpenClose(
 
 
 
-int             test_hash32_Insert01(
-    const
-    char            *pTestName
-)
-{
-    ERESULT         eRc = ERESULT_SUCCESS;
-    HASH32_DATA     *pObj = OBJ_NIL;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = hash32_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = hash32_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        //obj_TraceSet(pObj, true);
-        
-        // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
 
-
-
-
-TINYTEST_START_SUITE(test_hash32);
-    TINYTEST_ADD_TEST(test_hash32_Insert01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_hash32_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_bpt32);
+    TINYTEST_ADD_TEST(test_bpt32_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_hash32);
+TINYTEST_MAIN_SINGLE_SUITE(test_bpt32);
 
 
 

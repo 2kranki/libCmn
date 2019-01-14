@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   hash32.c
- *	Generated 01/12/2019 11:49:55
+ * File:   blks.c
+ *	Generated 01/13/2019 16:16:32
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <hash32_internal.h>
+#include        <blks_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            hash32_task_body (
+    void            blks_task_body (
         void            *pData
     )
     {
-        //HASH32_DATA  *this = pData;
+        //BLKS_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    HASH32_DATA *     hash32_Alloc (
+    BLKS_DATA *     blks_Alloc (
         void
     )
     {
-        HASH32_DATA       *this;
-        uint32_t        cbSize = sizeof(HASH32_DATA);
+        BLKS_DATA       *this;
+        uint32_t        cbSize = sizeof(BLKS_DATA);
         
         // Do initialization.
         
@@ -101,15 +101,15 @@ extern "C" {
 
 
 
-    HASH32_DATA *     hash32_New (
+    BLKS_DATA *     blks_New (
         void
     )
     {
-        HASH32_DATA       *this;
+        BLKS_DATA       *this;
         
-        this = hash32_Alloc( );
+        this = blks_Alloc( );
         if (this) {
-            this = hash32_Init(this);
+            this = blks_Init(this);
         } 
         return this;
     }
@@ -123,18 +123,87 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      B l o c k  S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        blks_getBlockSize (
+        BLKS_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!blks_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->blockSize;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+    
+    PTRARRAY_DATA * blks_getIndex (
+        BLKS_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!blks_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pIndex;
+    }
+    
+    
+    bool            blks_setIndex (
+        BLKS_DATA       *this,
+        PTRARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!blks_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pIndex) {
+            obj_Release(this->pIndex);
+        }
+#endif
+        this->pIndex = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        hash32_getPriority (
-        HASH32_DATA     *this
+    uint16_t        blks_getPriority (
+        BLKS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +214,14 @@ extern "C" {
     }
 
 
-    bool            hash32_setPriority (
-        HASH32_DATA     *this,
+    bool            blks_setPriority (
+        BLKS_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,84 +238,36 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        hash32_getSize (
-        HASH32_DATA       *this
+    uint32_t        blks_getSize (
+        BLKS_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return 0;
+        return ptrArray_getSize(this->pIndex);
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * hash32_getStr (
-        HASH32_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!hash32_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        hash32_setStr (
-        HASH32_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!hash32_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  hash32_getSuperVtbl (
-        HASH32_DATA     *this
+    OBJ_IUNKNOWN *  blks_getSuperVtbl (
+        BLKS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -266,6 +287,60 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+    
+    /*!
+     Add a new block to this list.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         blks_Add (
+        BLKS_DATA       *this,
+        uint8_t         **ppData,
+        uint32_t        *pIndex
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         *pData = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!blks_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->blockSize)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+#endif
+        
+        pData = (uint8_t *)mem_Malloc(this->blockSize);
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = ptrArray_AppendData(this->pIndex, pData, pIndex);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            mem_Free(pData);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        // Return to caller.
+        if (ppData)
+            *ppData = pData;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -275,16 +350,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = hash32_Assign(this,pOther);
+        ERESULT eRc = blks_Assign(this,pOther);
      @endcode 
-     @param     this    HASH32 object pointer
-     @param     pOther  a pointer to another HASH32 object
+     @param     this    BLKS object pointer
+     @param     pOther  a pointer to another BLKS object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         hash32_Assign (
-        HASH32_DATA		*this,
-        HASH32_DATA     *pOther
+    ERESULT         blks_Assign (
+        BLKS_DATA		*this,
+        BLKS_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -292,11 +367,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!hash32_Validate(pOther)) {
+        if (!blks_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -348,9 +423,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         hash32_Compare (
-        HASH32_DATA     *this,
-        HASH32_DATA     *pOther
+    ERESULT         blks_Compare (
+        BLKS_DATA     *this,
+        BLKS_DATA     *pOther
     )
     {
         int             i = 0;
@@ -364,11 +439,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!hash32_Validate(pOther)) {
+        if (!blks_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -405,32 +480,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        hash32      *pCopy = hash32_Copy(this);
+        blks      *pCopy = blks_Copy(this);
      @endcode 
-     @param     this    HASH32 object pointer
-     @return    If successful, a HASH32 object which must be 
+     @param     this    BLKS object pointer
+     @return    If successful, a BLKS object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    HASH32_DATA *     hash32_Copy (
-        HASH32_DATA       *this
+    BLKS_DATA *     blks_Copy (
+        BLKS_DATA       *this
     )
     {
-        HASH32_DATA       *pOther = OBJ_NIL;
+        BLKS_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = hash32_New( );
+        pOther = blks_New( );
         if (pOther) {
-            eRc = hash32_Assign(this, pOther);
+            eRc = blks_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -448,11 +523,14 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            hash32_Dealloc (
+    void            blks_Dealloc (
         OBJ_ID          objId
     )
     {
-        HASH32_DATA   *this = objId;
+        BLKS_DATA   *this = objId;
+        uint32_t    i;
+        uint32_t    iMax;
+        uint8_t     *pData;
 
         // Do initialization.
         if (NULL == this) {
@@ -460,7 +538,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -468,11 +546,20 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((HASH32_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((BLKS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        hash32_setStr(this, OBJ_NIL);
+        if (this->pIndex) {
+            iMax = ptrArray_getSize(this->pIndex);
+            for (i=0; i<iMax; ++i) {
+                pData = ptrArray_GetData(this->pIndex, i+1);
+                if (pData)
+                    mem_Free(pData);
+            }
+            obj_Release(this->pIndex);
+            this->pIndex = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -495,8 +582,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         hash32_Disable (
-        HASH32_DATA		*this
+    ERESULT         blks_Disable (
+        BLKS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -504,7 +591,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -530,8 +617,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         hash32_Enable (
-        HASH32_DATA		*this
+    ERESULT         blks_Enable (
+        BLKS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -539,7 +626,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -556,14 +643,62 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+    
+    /*!
+     Find a block in the list by its index.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         blks_Get (
+        BLKS_DATA       *this,
+        uint32_t        index,              // [in] Index (Relative to 1)
+        uint8_t         **ppData            // [out] Optional returned data pointer.
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         *pData = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!blks_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->blockSize)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
+#endif
+        
+        pData = (uint8_t *)ptrArray_GetData(this->pIndex, index);
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        
+        // Return to caller.
+        if (ppData)
+            *ppData = pData;
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    HASH32_DATA *   hash32_Init (
-        HASH32_DATA       *this
+    BLKS_DATA *   blks_Init (
+        BLKS_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(HASH32_DATA);
+        uint32_t        cbSize = sizeof(BLKS_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -581,31 +716,31 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_HASH32);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BLKS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_HASH32);         // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_BLKS);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&hash32_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&blks_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "hash32::sizeof(HASH32_DATA) = %lu\n", sizeof(HASH32_DATA));
+        //fprintf(stderr, "blks::sizeof(BLKS_DATA) = %lu\n", sizeof(BLKS_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(HASH32_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(BLKS_DATA));
     #endif
 
         return this;
@@ -617,8 +752,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         hash32_IsEnabled (
-        HASH32_DATA		*this
+    ERESULT         blks_IsEnabled (
+        BLKS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -626,7 +761,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -653,14 +788,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = hash32_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = blks_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "hash32", prefix,
+                        the object name, "blks", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -668,13 +803,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          hash32_QueryInfo (
+    void *          blks_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        HASH32_DATA     *this = objId;
+        BLKS_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -683,7 +818,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -692,11 +827,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(HASH32_DATA);
+            return (void *)sizeof(BLKS_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)hash32_Class();
+                return (void *)blks_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -726,22 +861,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return hash32_Disable;
+                            return blks_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return hash32_Enable;
+                            return blks_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return hash32_ToDebugString;
+                            return blks_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return hash32_ToJSON;
+                            return blks_ToJSON;
                         }
                         break;
                         
@@ -751,9 +886,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == hash32_ToDebugString)
+                if (pData == blks_ToDebugString)
                     return "ToDebugString";
-                if (pData == hash32_ToJSON)
+                if (pData == blks_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -766,12 +901,50 @@ extern "C" {
     
     
     
+    //----------------------------------------------------------
+    //                      S e t u p
+    //----------------------------------------------------------
+    
+    ERESULT         blks_SetupSizes(
+        BLKS_DATA       *this,
+        uint32_t        blockSize
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!blks_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (blockSize > 0)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        this->blockSize = blockSize;
+        this->pIndex = ptrArray_New();
+        if (OBJ_NIL == this->pIndex) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     hash32_ToJSON (
-        HASH32_DATA      *this
+     ASTR_DATA *     blks_ToJSON (
+        BLKS_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -782,7 +955,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -813,16 +986,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = hash32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = blks_ToDebugString(this,4);
      @endcode 
-     @param     this    HASH32 object pointer
+     @param     this    BLKS object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     hash32_ToDebugString (
-        HASH32_DATA      *this,
+    ASTR_DATA *     blks_ToDebugString (
+        BLKS_DATA      *this,
         int             indent
     )
     {
@@ -838,7 +1011,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!hash32_Validate(this)) {
+        if (!blks_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -859,7 +1032,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    hash32_getSize(this)
+                    blks_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -896,15 +1069,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            hash32_Validate (
-        HASH32_DATA      *this
+    bool            blks_Validate (
+        BLKS_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_HASH32))
+            if (obj_IsKindOf(this, OBJ_IDENT_BLKS))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -920,7 +1093,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(HASH32_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(BLKS_DATA))) {
             return false;
         }
 

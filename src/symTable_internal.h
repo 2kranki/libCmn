@@ -74,11 +74,6 @@ struct symTable_data_s	{
     ASTR_DATA       *pStr;
     OBJARRAY_DATA   *pStack;
 
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
-
 };
 #pragma pack(pop)
 

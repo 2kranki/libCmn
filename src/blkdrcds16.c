@@ -1069,8 +1069,8 @@ extern "C" {
         shiftFirstRcd = index + 1;
         shiftLastRcd = this->pBlock->numRecords;
         
-        if( dataSize == pIndex->idxSize ) {
-        }
+        if( dataSize == pIndex->idxSize )
+            ;
         else {
             if (dataSize < pIndex->idxSize) {
                 dataShiftOff = pIndex->idxSize - dataSize;

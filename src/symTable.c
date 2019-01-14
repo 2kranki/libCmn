@@ -284,6 +284,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        
         pHash = objArray_Get(this->pStack, this->cHashes);
         if (OBJ_NIL == pHash) {
             DEBUG_BREAK();
@@ -683,6 +684,7 @@ extern "C" {
             return OBJ_NIL; //ERESULT_INVALID_PARAMETER;
         }
 #endif
+        
         pHash = objArray_Get(this->pStack, this->cHashes);
         if (OBJ_NIL == pHash) {
             DEBUG_BREAK();

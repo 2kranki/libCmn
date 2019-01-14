@@ -146,40 +146,40 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT_DATA *  compiler_getErrors(
-        COMPILER_DATA   *cbp
+    SRCERRORS_DATA * compiler_getErrors (
+        COMPILER_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
         
-        return cbp->pErrors;
+        return this->pErrors;
     }
     
     
     bool            compiler_setErrors(
-        COMPILER_DATA   *cbp,
-        ERESULT_DATA    *pValue
+        COMPILER_DATA   *this,
+        SRCERRORS_DATA  *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate( cbp ) ) {
+        if( !compiler_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         obj_Retain(pValue);
-        if (cbp->pErrors) {
-            obj_Release(cbp->pErrors);
+        if (this->pErrors) {
+            obj_Release(this->pErrors);
         }
-        cbp->pErrors = pValue;
+        this->pErrors = pValue;
         
         return true;
     }
@@ -864,7 +864,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !compiler_Validate(this) ) {
+        if (!compiler_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -906,12 +906,39 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                         E r r o r
+    //                         E r r o r (s)
     //---------------------------------------------------------------
     
+    SRCERRORS_DATA * compiler_Errors (
+        COMPILER_DATA   *this
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if (!compiler_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pErrors) {
+            this->pErrors = srcErrors_New( );
+            if (OBJ_NIL == this->pErrors) {
+                return OBJ_NIL;
+            }
+            srcErrors_setFatalExit(this->pErrors, NULL, NULL);
+        }
+        
+        // Return to caller.
+        return this->pErrors;
+    }
+    
+        
+        
 #ifdef XYZZY
-    void            compiler_Error(
-        COMPILER_DATA   *cbp,
+    void            compiler_Error (
+        COMPILER_DATA   *this,
         const
         char            *pFileName,
         uint32_t		linnum,
@@ -925,7 +952,15 @@ extern "C" {
         uint32_t		i;
         va_list 		argsp;
         
+#ifdef NDEBUG
+#else
+        if (!compiler_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
         
+
         va_start( argsp, fmt );
         if( OBJ_NIL == cbp->pListing ) {
             fprintf(
@@ -965,8 +1000,8 @@ extern "C" {
     
     
     
-    void            compiler_ErrorArg(
-        COMPILER_DATA   *cbp,
+    void            compiler_ErrorArg (
+        COMPILER_DATA   *this,
         const
         char            *pFileName,
         uint32_t		linnum,
@@ -979,6 +1014,13 @@ extern "C" {
         char			line_out[256];
         uint32_t		i;
         
+#ifdef NDEBUG
+#else
+        if (!compiler_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
         
         if( OBJ_NIL == cbp->pListing ) {
             fprintf(
@@ -1025,7 +1067,7 @@ extern "C" {
     
 #ifdef XYZZY
     void            compiler_ErrorFatal(
-        COMPILER_DATA   *cbp,
+        COMPILER_DATA   *this,
         const
         char			*fmt,
         ...
@@ -1034,6 +1076,14 @@ extern "C" {
         va_list 		argsp;
         
         DEBUG_BREAK();
+        
+#ifdef NDEBUG
+#else
+        if (!compiler_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
         
         va_start( argsp, fmt );
         fprintf( stderr, "Fatal Error:  " );
@@ -1053,6 +1103,14 @@ extern "C" {
     {
         
         DEBUG_BREAK();
+        
+#ifdef NDEBUG
+#else
+        if (!compiler_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
         
         fprintf( stderr, "Fatal Error:  " );
         vfprintf( stderr, fmt, argsp );
@@ -1074,6 +1132,14 @@ extern "C" {
         uint16_t		colnum;
         ASTR_DATA       *pAStr;
 
+#ifdef NDEBUG
+#else
+        if (!compiler_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+        
         if (OBJ_NIL == pToken) {
             DEBUG_BREAK();
             exit(100);
@@ -1157,7 +1223,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&compiler_Vtbl);
         
-        this->pErrors = eResult_New();
+        this->pErrors = srcErrors_New();
         BREAK_NULL(this->pErrors);
         this->pQueue0 = nodeArray_New();
         BREAK_NULL(this->pQueue0);
@@ -1187,7 +1253,6 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->fTrace = true;
 
 #ifdef NDEBUG
 #else

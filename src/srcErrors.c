@@ -160,7 +160,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -177,7 +177,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -206,7 +206,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -223,7 +223,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -248,7 +248,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -265,7 +265,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -294,7 +294,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -321,7 +321,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -348,7 +348,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -366,7 +366,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -389,7 +389,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -412,7 +412,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -458,13 +458,13 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        va_start( arg_ptr, pErrorString );
+        va_start(arg_ptr, pErrorString);
         str[0] = '\0';
         size = vsnprintf( str, sizeof(str), pErrorString, arg_ptr );
         va_end( arg_ptr );
@@ -477,12 +477,12 @@ extern "C" {
             va_start( arg_ptr, pErrorString );
             size = vsnprintf( pStr, size, pErrorString, arg_ptr );
             va_end( arg_ptr );
-            pError = srcError_New(severity, pLocation, pStr);
+            pError = srcError_NewFromData(severity, pLocation, pStr);
             mem_Free( pStr );
             pStr = NULL;
         }
         else {
-            pError = srcError_New(severity, pLocation, pStr);
+            pError = srcError_NewFromData(severity, pLocation, pStr);
         }
         if (OBJ_NIL == pError) {
             return false;
@@ -503,6 +503,44 @@ extern "C" {
         
         // Return to caller.
         return true;
+    }
+    
+    
+    ERESULT         srcErrors_AddFatal(
+        SRCERRORS_DATA  *this,
+        SRCERROR_DATA   *pError
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if (!srcErrors_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pError) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        if (ERESULT_FAILED(eRc)) {
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        
+        srcErrors_setFatal(this, true);
+        if (this->fExitOnFatal) {
+            srcErrors_ExitOnFatal(this);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -528,7 +566,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -536,7 +574,7 @@ extern "C" {
         
         va_start(arg_ptr, pErrorString);
         str[0] = '\0';
-        size = vsnprintf( str, sizeof(str), pErrorString, arg_ptr );
+        size = vsnprintf(str, sizeof(str), pErrorString, arg_ptr);
         va_end( arg_ptr );
         if (size >= sizeof(str)) {
             ++size;
@@ -547,34 +585,83 @@ extern "C" {
             va_start( arg_ptr, pErrorString );
             size = vsnprintf( pStr, size, pErrorString, arg_ptr );
             va_end( arg_ptr );
-            pError = srcError_New(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
+            pError = srcError_NewFromData(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
             mem_Free( pStr );
             pStr = NULL;
         }
         else {
-            pError = srcError_New(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
+            pError = srcError_NewFromData(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
         }
         if (OBJ_NIL == pError) {
             return false;
         }
-        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        
+        eRc = srcErrors_AddFatal(this, pError);
         obj_Release(pError);
         pError = OBJ_NIL;
-        if (ERESULT_FAILED(eRc)) {
-            return false;
-        }
         
-        srcErrors_setFatal(this, true);
-        if (this->fExitOnFatal) {
-            srcErrors_ExitOnFatal(this);
-        }
-
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
-    bool        srcErrors_AddFatalExpectingA(
+    ERESULT         srcErrors_AddFatalArgsA (
+        SRCERRORS_DATA  *this,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    )
+    {
+        ERESULT         eRc;
+        SRCERROR_DATA   *pError = OBJ_NIL;
+        char            str[512];
+        int             size;
+        char            *pStr = str;
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if (!srcErrors_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        str[0] = '\0';
+        size = vsnprintf(str, sizeof(str), pErrorString, arg_ptr);
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            size = vsnprintf( pStr, size, pErrorString, arg_ptr );
+            pError = srcError_NewFromData(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
+            mem_Free( pStr );
+            pStr = NULL;
+        }
+        else {
+            pError = srcError_NewFromData(SRCERROR_SEVERITY_FATAL, pLocation, pStr);
+        }
+        if (OBJ_NIL == pError) {
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        
+        eRc = srcErrors_AddFatal(this, pError);
+        obj_Release(pError);
+        pError = OBJ_NIL;
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         srcErrors_AddFatalExpectingA(
         SRCERRORS_DATA  *this,
         TOKEN_DATA      *pToken,
         const
@@ -592,7 +679,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -614,27 +701,19 @@ extern "C" {
         pError = srcError_NewFatalFromToken(pToken, pWrk);
         obj_Release(pWrk);
         if (OBJ_NIL == pError) {
-            return false;
+            return ERESULT_INSUFFICIENT_MEMORY;
         }
         
-        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
+        eRc = srcErrors_AddFatal(this, pError);
         obj_Release(pError);
         pError = OBJ_NIL;
-        if (ERESULT_FAILED(eRc)) {
-            return false;
-        }
         
-        srcErrors_setFatal(this, true);
-        if (this->fExitOnFatal) {
-            srcErrors_ExitOnFatal(this);
-        }
-
         // Return to caller.
-        return true;
+        return eRc;
     }
     
     
-    bool        srcErrors_AddFatalFromTokenA(
+    ERESULT         srcErrors_AddFatalFromTokenA(
         SRCERRORS_DATA  *this,
         TOKEN_DATA      *pToken,
         const
@@ -655,7 +734,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -682,22 +761,15 @@ extern "C" {
             pError = srcError_NewFatalFromTokenA(pToken, pStr);
         }
         if (OBJ_NIL == pError) {
-            return false;
-        }
-        eRc = objArray_AppendObj(this->pErrors, pError, NULL);
-        obj_Release(pError);
-        pError = OBJ_NIL;
-        if (ERESULT_FAILED(eRc)) {
-            return false;
+            return ERESULT_INSUFFICIENT_MEMORY;
         }
         
-        srcErrors_setFatal(this, true);
-        if (this->fExitOnFatal) {
-            srcErrors_ExitOnFatal(this);
-        }
-
+        eRc = srcErrors_AddFatal(this, pError);
+        obj_Release(pError);
+        pError = OBJ_NIL;
+        
         // Return to caller.
-        return true;
+        return eRc;
     }
     
     
@@ -729,11 +801,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !srcErrors_Validate(pOther) ) {
+        if (!srcErrors_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -799,7 +871,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -878,7 +950,7 @@ extern "C" {
         }
     #ifdef NDEBUG
     #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -912,7 +984,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -974,7 +1046,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1006,7 +1078,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1041,7 +1113,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -1111,7 +1183,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1185,7 +1257,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1250,7 +1322,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !srcErrors_Validate(this) ) {
+        if (!srcErrors_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   hash32_internal.h
- *	Generated 01/12/2019 11:49:55
+ * File:   bpt32idx_internal.h
+ *	Generated 01/12/2019 14:04:35
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <hash32.h>
+#include        <bpt32idx.h>
 #include        <jsonIn.h>
 
 
-#ifndef HASH32_INTERNAL_H
-#define	HASH32_INTERNAL_H
+#ifndef BPT32IDX_INTERNAL_H
+#define	BPT32IDX_INTERNAL_H
 
 
 
@@ -58,32 +58,78 @@ extern "C" {
 
 
 
+    /*      Node Descriptor
+     */
+#pragma pack(push, 1)
+    typedef struct  bpt32idx_node_s {
+        //uint32_t        prev;           // Previous Leaf Node Index
+        //uint32_t        next;           // Next Leaf Node Index
+        uint32_t        key;
+        uint32_t        index;
+    } BPT32IDX_NODE;
+#pragma pack(pop)
+    
+    
+#pragma pack(push, 1)
+    typedef struct  bpt32idx_block_s {
+        uint32_t        prev;           // Previous Leaf Node Index
+        uint32_t        next;           // Next Leaf Node Index
+        uint32_t        parent;         // Parent Node Index
+        uint32_t        used;
+        BPT32IDX_NODE   nodes[0];
+    } BPT32IDX_BLOCK;
+#pragma pack(pop)
+    
+    
+    
 
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct hash32_data_s	{
+struct bpt32idx_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
-
+    uint16_t        dataSize;       // Size of Data in node (NOT USED)
+    uint32_t        blockSize;
+    uint32_t        rcdNum;         // Record Number in Dataset/File
+    uint32_t        maxRcds;        // Maximum Number of Records in a Block
+    BPT32IDX_BLOCK  *pBlock;
+    
+    ERESULT         (*pBlockEmpty)(
+        OBJ_ID          pBlockObject,
+        BPT32IDX_DATA   *pValue
+    );
+    ERESULT         (*pBlockFlush)(
+        OBJ_ID          pBlockObject,
+        BPT32IDX_DATA   *pValue
+    );
+    ERESULT         (*pBlockIndexChanged)(
+        OBJ_ID          pBlockObject,
+        BPT32IDX_DATA   *pValue
+    );
+    ERESULT         (*pBlockSplit)(
+        OBJ_ID          pBlockObject,
+        BPT32IDX_DATA   *pOld,
+        BPT32IDX_DATA   *pNew
+    );
+    OBJ_ID          pBlockObject;
+    
 };
 #pragma pack(pop)
 
     extern
-    struct hash32_class_data_s  hash32_ClassObj;
+    struct bpt32idx_class_data_s  bpt32idx_ClassObj;
 
     extern
     const
-    HASH32_VTBL         hash32_Vtbl;
+    BPT32IDX_VTBL         bpt32idx_Vtbl;
 
 
 
@@ -91,13 +137,13 @@ struct hash32_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  HASH32_SINGLETON
-    HASH32_DATA *     hash32_getSingleton (
+#ifdef  BPT32IDX_SINGLETON
+    BPT32IDX_DATA *     bpt32idx_getSingleton (
         void
     );
 
-    bool            hash32_setSingleton (
-     HASH32_DATA       *pValue
+    bool            bpt32idx_setSingleton (
+     BPT32IDX_DATA       *pValue
 );
 #endif
 
@@ -107,30 +153,37 @@ struct hash32_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  hash32_getSuperVtbl (
-        HASH32_DATA     *this
+    OBJ_IUNKNOWN *  bpt32idx_getSuperVtbl (
+        BPT32IDX_DATA     *this
     );
 
 
-    void            hash32_Dealloc (
+    void            bpt32idx_Dealloc (
         OBJ_ID          objId
     );
 
 
-    HASH32_DATA *       hash32_ParseObject (
+    BPT32IDX_NODE * bpt32idx_FindNode (
+        BPT32IDX_DATA   *this,
+        uint32_t        key,
+        uint32_t        *pIndex
+    );
+    
+    
+    BPT32IDX_DATA * bpt32idx_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          hash32_QueryInfo (
+    void *          bpt32idx_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     hash32_ToJSON (
-        HASH32_DATA      *this
+    ASTR_DATA *     bpt32idx_ToJSON (
+        BPT32IDX_DATA      *this
     );
 
 
@@ -138,8 +191,8 @@ struct hash32_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			hash32_Validate (
-        HASH32_DATA       *this
+    bool			bpt32idx_Validate (
+        BPT32IDX_DATA       *this
     );
 #endif
 
@@ -149,5 +202,5 @@ struct hash32_data_s	{
 }
 #endif
 
-#endif	/* HASH32_INTERNAL_H */
+#endif	/* BPT32IDX_INTERNAL_H */
 

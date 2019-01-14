@@ -279,6 +279,22 @@ test_blkdrcds16: $(TEST_SRC)/test_blkdrcds16.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/blks_object.o
+
+$(OBJDIR)/blks_object.o: $(SRCDIR)/blks_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/blks.o
+
+$(OBJDIR)/blks.o: $(SRCDIR)/blks.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_blks
+
+test_blks: $(TEST_SRC)/test_blks.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/block16_object.o
 
 $(OBJDIR)/block16_object.o: $(SRCDIR)/block16_object.c 
@@ -324,6 +340,54 @@ $(OBJDIR)/blocks.o: $(SRCDIR)/blocks.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(S
 TESTS += test_blocks
 
 test_blocks: $(TEST_SRC)/test_blocks.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/bpt32_object.o
+
+$(OBJDIR)/bpt32_object.o: $(SRCDIR)/bpt32_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/bpt32.o
+
+$(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_bpt32
+
+test_bpt32: $(TEST_SRC)/test_bpt32.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/bpt32idx_object.o
+
+$(OBJDIR)/bpt32idx_object.o: $(SRCDIR)/bpt32idx_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/bpt32idx.o
+
+$(OBJDIR)/bpt32idx.o: $(SRCDIR)/bpt32idx.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_bpt32idx
+
+test_bpt32idx: $(TEST_SRC)/test_bpt32idx.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/bpt32lf_object.o
+
+$(OBJDIR)/bpt32lf_object.o: $(SRCDIR)/bpt32lf_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/bpt32lf.o
+
+$(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_bpt32lf
+
+test_bpt32lf: $(TEST_SRC)/test_bpt32lf.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1038,6 +1102,22 @@ $(OBJDIR)/md5ChkSum.o: $(SRCDIR)/md5ChkSum.c $(SRCDIR)/cmn_defs.h
 TESTS += test_md5ChkSum
 
 test_md5ChkSum: $(TEST_SRC)/test_md5ChkSum.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/memFile_object.o
+
+$(OBJDIR)/memFile_object.o: $(SRCDIR)/memFile_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/memFile.o
+
+$(OBJDIR)/memFile.o: $(SRCDIR)/memFile.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_memFile
+
+test_memFile: $(TEST_SRC)/test_memFile.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

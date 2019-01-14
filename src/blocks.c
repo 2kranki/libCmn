@@ -196,11 +196,11 @@ extern "C" {
     
     
 
-    uint32_t        blocks_Available(
+    int32_t         blocks_Available(
         uint32_t        blockSize       // If 0, use default size.
     )
     {
-        uint32_t        avail = 0;
+        int32_t         avail = 0;
         
         if (blockSize == 0) {
             blockSize = BLKS_BLOCK_SIZE;
@@ -654,38 +654,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          I n d e x
-    //---------------------------------------------------------------
-    
-    void *          blocks_ActiveIndex(
-        BLOCKS_DATA    *this,
-        int32_t        index                    // (relative to 1)
-    )
-    {
-        BLOCKS_NODE     *pNode;
-        void            *pData = NULL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        pNode = listdl_Index(&this->activeList, index);
-        if (pNode) {
-            pData = pNode->data;
-        }
-        
-        // Return to caller.
-        return pData;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -777,6 +745,34 @@ extern "C" {
     }
     
     
+    void *          blocks_RecordGet(
+        BLOCKS_DATA    *this,
+        int32_t        index                    // (relative to 1)
+    )
+    {
+        BLOCKS_NODE     *pNode;
+        void            *pData = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        pNode = listdl_Index(&this->activeList, index);
+        if (pNode) {
+            pData = pNode->data;
+        }
+        
+        // Return to caller.
+        return pData;
+    }
+    
+    
+    
     void *          blocks_RecordNew(
         BLOCKS_DATA     *this
     )
@@ -815,7 +811,7 @@ extern "C" {
     
     
     //----------------------------------------------------------
-    //                  S e t u p  S i z e s
+    //                      S e t u p
     //----------------------------------------------------------
     
     ERESULT         blocks_SetupSizes(
