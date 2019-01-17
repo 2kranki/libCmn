@@ -11,7 +11,8 @@
  *          other containers.
  *
  * Remarks
- *	1.      None
+ *	1.      OBJ_FLAG_USER1 is used internally and should not be
+ *          used by any objects which inherit from this one.
  *
  * History
  *	02/07/2016 Generated

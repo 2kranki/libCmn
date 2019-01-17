@@ -72,6 +72,8 @@ extern "C" {
     
 #pragma pack(push, 1)
     typedef struct  bpt32lf_block_s {
+        uint16_t        blkType;        // BPT32LF_DATA
+        uint16_t        rsvd16;
         uint32_t        prev;           // Previous Leaf Node Index
         uint32_t        next;           // Next Leaf Node Index
         uint32_t        parent;         // Parent Node Index

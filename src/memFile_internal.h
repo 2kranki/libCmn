@@ -40,7 +40,7 @@
 
 
 #include        <memFile.h>
-#include        <blks_internal.h>
+#include        <array.h>
 #include        <jsonIn.h>
 
 
@@ -68,13 +68,14 @@ extern "C" {
 struct memFile_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLKS_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+#define MEMFILE_FILE_OPEN    OBJ_FLAG_USER1
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    PATH_DATA       *pPath;
+    ARRAY_DATA      *pData;
+    off_t           offset;
 
 };
 #pragma pack(pop)

@@ -100,6 +100,7 @@ struct rrds32_data_s	{
     LRU_DATA        *pLRU;
     uint32_t        size;           // Maximum Number of Entries
 	uint32_t        headerSize;     // Header Length
+    uint32_t        blockSize;      // Block Length
     RRDS32_HEADER   *pHeader;
 
 };

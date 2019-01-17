@@ -1121,6 +1121,22 @@ test_memFile: $(TEST_SRC)/test_memFile.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/memrrds_object.o
+
+$(OBJDIR)/memrrds_object.o: $(SRCDIR)/memrrds_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/memrrds.o
+
+$(OBJDIR)/memrrds.o: $(SRCDIR)/memrrds.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_memrrds
+
+test_memrrds: $(TEST_SRC)/test_memrrds.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/misc_object.o
 
 $(OBJDIR)/misc_object.o: $(SRCDIR)/misc_object.c 

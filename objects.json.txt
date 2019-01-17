@@ -97,6 +97,7 @@
         "lru":{"srcDeps":["cmn_defs.h","AStr.h","listdl.h"], "test":null},
         "md5ChkSum":["cmn_defs.h"],
         "memFile":{"srcDeps":["cmn_defs.h"], "test":true},
+        "memrrds":{"srcDeps":["cmn_defs.h"], "test":true},
         "misc":["cmn_defs.h","AStr.h"],
         "msgBus":{"srcDeps":["cmn_defs.h"], "test":{"srcs":[objTest.c, objTest_object.c]}},
         "msgData":["cmn_defs.h"],

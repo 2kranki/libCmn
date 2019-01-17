@@ -202,7 +202,7 @@ extern "C" {
         
         // Seek to the appropriate location within the file.
         fileOffset = rrds_RecordOffset(this, lsn);
-        seekOffset = fileio_Seek(this->pIO, fileOffset);
+        seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
         if (seekOffset == fileOffset)
             ;
         else {
@@ -237,7 +237,7 @@ extern "C" {
         
         // Seek to the appropriate location within the file.
         fileOffset = rrds_RecordOffset(this, lsn);
-        seekOffset = fileio_Seek(this->pIO, fileOffset);
+        seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
         if (seekOffset == fileOffset)
             ;
         else {
@@ -328,15 +328,27 @@ extern "C" {
         uint16_t        cLRU            // Number of LRU Buffers
     )
     {
+        ERESULT         eRc;
         this->pIO = fileio_New( );
         if (OBJ_NIL == this->pIO) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
         
-        this->pLRU = lru_New(this->recordSize, cLRU);
+        this->pLRU = lru_New( );
         if (OBJ_NIL == this->pLRU) {
             DEBUG_BREAK();
+            obj_Release(this->pIO);
+            this->pIO = OBJ_NIL;
+            return ERESULT_OBJECT_CREATION;
+        }
+        eRc = lru_Setup(this->pLRU, this->recordSize, cLRU, 13);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this->pLRU);
+            this->pLRU = OBJ_NIL;
+            obj_Release(this->pIO);
+            this->pIO = OBJ_NIL;
             return ERESULT_OBJECT_CREATION;
         }
         
@@ -1021,14 +1033,16 @@ extern "C" {
         
 #if defined(__MACOSX_ENV__)
         this->rcdtrm = RRDS_RCD_TRM_NL;
+        this->recordSize = 81;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         this->rcdtrm = RRDS_RCD_TRM_CRNL;
+        this->recordSize = 82;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
         this->rcdtrm = RRDS_RCD_TRM_NL;
-#endif
         this->recordSize = 81;
+#endif
         this->reqSize = 80;
         this->fillChar = ' ';
 
@@ -1116,7 +1130,7 @@ extern "C" {
   
         // Records may or may not have \r\n or \n at the end of them. So,
         // record size can be 80-82 bytes.
-        offset = fileio_Seek(this->pIO, this->reqSize);
+        offset = fileio_SeekBegin(this->pIO, this->reqSize);
         if (!(offset == this->reqSize)) {
             DEBUG_BREAK();
             return ERESULT_OPEN_ERROR;

@@ -187,8 +187,11 @@ RRDS32_VTBL     rrds32_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    rrds32_RecordRead,
-    rrds32_RecordWrite
+    (void *)rrds32_Close,
+    (void *)rrds32_Create,
+    (void *)rrds32_Open,
+    (void *)rrds32_RecordRead,
+    (void *)rrds32_RecordWrite
 };
 
 

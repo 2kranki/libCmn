@@ -98,17 +98,29 @@ extern	"C" {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in table_object.c.
-        ERESULT         (*pBlockRead)(
-            RRDS32_DATA 	*this,
+        ERESULT         (*pClose) (
+            OBJ_ID          this,
+            bool            fDelete
+        );
+        ERESULT         (*pCreate) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath,
+            uint16_t        cLRU            // Number of LRU Buffers
+        );
+        ERESULT         (*pOpen) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath,
+            uint16_t        cLRU            // Number of LRU Buffers
+        );
+        ERESULT         (*pRead) (
+            OBJ_ID          this,
             uint32_t        recordNum,
             uint8_t         *pData
         );
-        ERESULT         (*pBlockWrite)(
-            RRDS32_DATA 	*this,
-            uint32_t		recordNum,
-            uint8_t			*pData	/* Data Ptr (if NULL, a FillChar
-                                     * record is written)
-                                     */
+        ERESULT         (*pWrite) (
+            OBJ_ID          this,
+            uint32_t        recordNum,
+            uint8_t         *pData
         );
     } RRDS32_VTBL;
     

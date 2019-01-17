@@ -234,6 +234,42 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                     R e a d  W r i t e
+    //---------------------------------------------------------------
+    
+    bool            bpt32_setReadWrite (
+        BPT32_DATA     *this,
+        ERESULT         (*pBlockRead) (
+            OBJ_ID          pObject,
+            uint32_t        lsn,                // Logical Sector Number
+            uint8_t         *pBuffer            // Buffer of sectorSize bytes
+                        ),
+        ERESULT         (*pBlockWrite) (
+            OBJ_ID          pObject,
+            uint32_t        lsn,                // Logical Sector Number
+            uint8_t         *pBuffer            // Buffer of sectorSize bytes
+                        ),
+        OBJ_ID          pBlockObject
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pBlockRead   = pBlockRead;
+        this->pBlockWrite  = pBlockWrite;
+        this->pBlockObject = pBlockObject;
+
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -333,6 +369,37 @@ extern "C" {
     //===============================================================
 
 
+    //---------------------------------------------------------------
+    //                              A d d
+    //---------------------------------------------------------------
+    
+    ERESULT         bpt32_Add (
+        BPT32_DATA      *this,
+        uint32_t        key,
+        void            *pData
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        obj_Enable(this);
+        
+        // Put code here...
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -852,7 +919,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (blockSize > 0)
+        if ((blockSize > 0) && (blockSize > sizeof(BPT32_HEADER)))
             ;
         else {
             DEBUG_BREAK();
@@ -870,17 +937,9 @@ extern "C" {
         }
 #endif
         
-        this->blockSize = blockSize;
-        this->dataSize = dataSize;
-#ifdef XYZZY
-        this->maxRcds = (blockSize - sizeof(BPT32IDX_BLOCK));
-        this->maxRcds /=  sizeof(BPT32IDX_NODE);
-        
-        this->pBlock = mem_Calloc(1, blockSize);
-        if (NULL == this->pBlock) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-#endif
+        this->hdr.blockSize = blockSize;
+        this->hdr.dataSize = dataSize;
+        this->hdr.cRecords = 1;             // Allow for header data
         
         // Return to caller.
         return ERESULT_SUCCESS;

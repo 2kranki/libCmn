@@ -227,7 +227,7 @@ ERESULT         rrds32_Header_Read (
     uint32_t        amtRead = 0;
     
     // Seek to the appropriate location within the file.
-    seekOffset = fileio_Seek(this->pIO, fileOffset);
+    seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
     if (seekOffset == fileOffset)
         ;
     else {
@@ -257,7 +257,7 @@ ERESULT         rrds32_Header_Write (
     off_t           seekOffset;
     
     // Seek to the appropriate location within the file.
-    seekOffset = fileio_Seek(this->pIO, fileOffset);
+    seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
     if (seekOffset == fileOffset)
         ;
     else {
@@ -291,7 +291,7 @@ ERESULT         rrds32_LSN_Read (
 
     // Seek to the appropriate location within the file.
     fileOffset = rrds32_RecordOffset(this,lsn);
-    seekOffset = fileio_Seek(this->pIO, fileOffset);
+    seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
     if (seekOffset == fileOffset)
         ;
     else {
@@ -324,7 +324,7 @@ ERESULT         rrds32_LSN_Write (
     
     // Seek to the appropriate location within the file.
     fileOffset = rrds32_RecordOffset(this, lsn);
-    seekOffset = fileio_Seek(this->pIO, fileOffset);
+    seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
     if (seekOffset == fileOffset)
         ;
     else {
@@ -381,7 +381,7 @@ ERESULT         rrds32_Setup (
         return ERESULT_OBJECT_CREATION;
     }
     
-    this->pLRU = lru_New(recordSize, cLRU);
+    this->pLRU = lru_NewWithSizes(recordSize, cLRU, 13);
     if (OBJ_NIL == this->pLRU) {
         DEBUG_BREAK();
         return ERESULT_OBJECT_CREATION;

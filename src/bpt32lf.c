@@ -1347,7 +1347,8 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        
+        this->pBlock->blkType = OBJ_IDENT_BPT32LF;
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }

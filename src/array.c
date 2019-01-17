@@ -726,7 +726,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -801,7 +801,7 @@ extern "C" {
         
         pOther = array_NewWithSize(this->elemSize);
         if (OBJ_NIL == pOther) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -809,7 +809,7 @@ extern "C" {
         newSize = array_OffsetOf(this, (this->max + 1));
         pOther->pArray = mem_Malloc(newSize);
         if (pOther->pArray == NULL) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             obj_Release(pOther);
             return OBJ_NIL;
         }
@@ -817,10 +817,9 @@ extern "C" {
         pOther->max = this->max;
         pOther->size = this->size;
         pOther->fZeroNew = this->fZeroNew;
-        obj_setLastError(pOther, ERESULT_SUCCESS);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1183,27 +1182,22 @@ extern "C" {
         }
         // Check parameters.
         if (0 == offset) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if( ((offset-1) > this->size) ) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if (numElems) {
             if ((numElems + this->size) <= UINT32_MAX)
                 ;
             else {
-                obj_setLastError(this, ERESULT_DATA_TOO_BIG);
                 return ERESULT_DATA_TOO_BIG;
             }
         }
         else {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if( (NULL == pData) ) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -1233,7 +1227,6 @@ extern "C" {
         this->size += numElems;
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1256,21 +1249,17 @@ extern "C" {
         }
         // Check parameters.
         if (0 == offset) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if( ((offset-1) > this->size) ) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if (numElems) {
             if ((numElems + this->size) >= UINT32_MAX) {
-                obj_setLastError(this, ERESULT_DATA_TOO_BIG);
                 return ERESULT_DATA_TOO_BIG;
             }
         }
         else {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -1293,7 +1282,6 @@ extern "C" {
         this->size += numElems;
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1325,7 +1313,7 @@ extern "C" {
         
         pData = this->pArray + array_OffsetOf(this, elem);
         
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pData;
     }
     
@@ -1369,7 +1357,6 @@ extern "C" {
         eRc = array_Expand(this, (offset + numElems));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            obj_setLastError(this, eRc);
             return eRc;
         }
         
@@ -1386,7 +1373,6 @@ extern "C" {
             this->size = offset + numElems - 1;
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1585,7 +1571,7 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1643,14 +1629,12 @@ extern "C" {
         }
 #endif
         if (len > this->size) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         
         this->size = len;
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1687,12 +1671,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(ARRAY_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

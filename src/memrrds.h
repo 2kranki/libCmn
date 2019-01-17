@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          B-Plus 32-Bit Tree (bpt32) Header
+//          MEMRRDS Console Transmit Task (memrrds) Header
 //****************************************************************
 /*
  * Program
- *			B-Plus 32-Bit Tree (bpt32)
+ *			Separate memrrds (memrrds)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate bpt32 to run things without complications
- *          of interfering with the main bpt32. A bpt32 may be 
- *          called a bpt32 on other O/S's.
+ *          a separate memrrds to run things without complications
+ *          of interfering with the main memrrds. A memrrds may be 
+ *          called a memrrds on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	01/12/2019 Generated
+ *	01/16/2019 Generated
  */
 
 
@@ -55,11 +55,11 @@
 #include        <AStr.h>
 
 
-#ifndef         BPT32_H
-#define         BPT32_H
+#ifndef         MEMRRDS_H
+#define         MEMRRDS_H
 
 
-//#define   BPT32_SINGLETON    1
+//#define   MEMRRDS_SINGLETON    1
 
 
 
@@ -75,26 +75,49 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct bpt32_data_s	BPT32_DATA;            // Inherits from OBJ
-    typedef struct bpt32_class_data_s BPT32_CLASS_DATA;   // Inherits from OBJ
+    typedef struct memrrds_data_s	MEMRRDS_DATA;            // Inherits from OBJ
+    typedef struct memrrds_class_data_s MEMRRDS_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct bpt32_vtbl_s	{
+    typedef struct memrrds_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in bpt32_object.c.
+        // method names to the vtbl definition in memrrds_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(BPT32_DATA *);
-    } BPT32_VTBL;
+        ERESULT         (*pClose) (
+            OBJ_ID          this,
+            bool            fDelete
+        );
+        ERESULT         (*pCreate) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath,
+            uint16_t        cLRU            // Number of LRU Buffers
+        );
+        ERESULT         (*pOpen) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath,
+            uint16_t        cLRU            // Number of LRU Buffers
+        );
+        ERESULT         (*pRead) (
+            OBJ_ID          this,
+            uint32_t        recordNum,
+            uint8_t         *pData
+        );
+        ERESULT         (*pWrite) (
+            OBJ_ID          this,
+            uint32_t        recordNum,
+            uint8_t         *pData
+        );
+    } MEMRRDS_VTBL;
 
-    typedef struct bpt32_class_vtbl_s	{
+    typedef struct memrrds_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in bpt32_object.c.
+        // method names to the vtbl definition in memrrds_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(BPT32_DATA *);
-    } BPT32_CLASS_VTBL;
+        //bool        (*pIsEnabled)(MEMRRDS_DATA *);
+    } MEMRRDS_CLASS_VTBL;
 
 
 
@@ -108,12 +131,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  BPT32_SINGLETON
-    BPT32_DATA *    bpt32_Shared (
+#ifdef  MEMRRDS_SINGLETON
+    MEMRRDS_DATA *  memrrds_Shared (
         void
     );
 
-    bool            bpt32_SharedReset (
+    bool            memrrds_SharedReset (
         void
     );
 #endif
@@ -123,19 +146,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to bpt32 object if successful, otherwise OBJ_NIL.
+     @return    pointer to memrrds object if successful, otherwise OBJ_NIL.
      */
-    BPT32_DATA *    bpt32_Alloc (
+    MEMRRDS_DATA *  memrrds_Alloc (
         void
     );
     
     
-    OBJ_ID          bpt32_Class (
+    OBJ_ID          memrrds_Class (
         void
     );
     
     
-    BPT32_DATA *    bpt32_New (
+    MEMRRDS_DATA *  memrrds_New (
         void
     );
     
@@ -145,19 +168,13 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            bpt32_setReadWrite (
-        BPT32_DATA     *this,
-        ERESULT         (*pBlockRead) (
-            OBJ_ID          pObject,
-            uint32_t        lsn,                // Logical Sector Number
-            uint8_t         *pBuffer            // Buffer of sectorSize bytes
-        ),
-        ERESULT         (*pBlockWrite) (
-            OBJ_ID          pObject,
-            uint32_t        lsn,                // Logical Sector Number
-            uint8_t         *pBuffer            // Buffer of sectorSize bytes
-        ),
-        OBJ_ID          pBlockObject
+    uint32_t        memrrds_getBlockSize (
+        MEMRRDS_DATA    *this
+    );
+    
+    
+    uint32_t        memrrds_getSize (
+        MEMRRDS_DATA    *this
     );
     
     
@@ -168,42 +185,31 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         bpt32_Add (
-        BPT32_DATA      *this,
-        uint32_t        key,
-        void            *pData
-    );
-    
-    
-    ERESULT         bpt32_Disable (
-        BPT32_DATA		*this
+    ERESULT         memrrds_Disable (
+        MEMRRDS_DATA	*this
     );
 
 
-    ERESULT         bpt32_Find (
-        BPT32_DATA      *this,
-        uint32_t        key,
-        void            *pData
+    ERESULT         memrrds_Enable (
+        MEMRRDS_DATA	*this
     );
-    
-    
-    BPT32_DATA *    bpt32_Init (
-        BPT32_DATA      *this
+
+   
+    MEMRRDS_DATA *  memrrds_Init (
+        MEMRRDS_DATA    *this
     );
 
 
-    /*!
-     Create a string that describes this object and the objects within it.
-     @param     this        object pointer
-     @param     blockSize   size of the file block which must be greater than
-                            128
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         bpt32_SetupSizes(
-        BPT32_DATA      *this,
-        uint32_t        blockSize,
-        uint16_t        dataSize         
+    ERESULT         memrrds_Read(
+        MEMRRDS_DATA    *this,
+        uint32_t        index,                // [in] Block Index
+        uint8_t         *pBuffer              // [out] Buffer of sectorSize bytes
+    );
+    
+    
+    ERESULT         memrrds_SetupSizes(
+        MEMRRDS_DATA    *this,
+        uint32_t        blockSize
     );
     
     
@@ -211,24 +217,24 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = bpt32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = memrrds_ToDebugString(this,4);
      @endcode 
-     @param     this    object pointer
+     @param     this    MEMRRDS object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     bpt32_ToDebugString (
-        BPT32_DATA      *this,
+    ASTR_DATA *    memrrds_ToDebugString (
+        MEMRRDS_DATA    *this,
         int             indent
     );
     
     
-    ERESULT         bpt32_Update (
-        BPT32_DATA      *this,
-        uint32_t        key,
-        void            *pData
+    ERESULT         memrrds_Write(
+        MEMRRDS_DATA    *this,
+        uint32_t        index,                // [in] Block Index
+        uint8_t         *pBuffer              // [out] Buffer of sectorSize bytes
     );
     
     
@@ -238,5 +244,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* BPT32_H */
+#endif	/* MEMRRDS_H */
 

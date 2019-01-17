@@ -51,16 +51,19 @@ extern "C" {
 #endif
 
     
-#define NUM_HASH_LIST   23          /* Should be a prime number */
 
 
 #pragma pack(push, 1)
-    typedef struct lru_sector_s	{
+    typedef struct lru_buffer_s	{
         LISTDL_NODE     lruList;
         LISTDL_NODE     hashList;
-        uint32_t        lsn;                // Logical Sector Number
-        uint8_t         data[0];
-    } LRU_SECTOR;
+        uint32_t        lsn;            // Logical Sector Number
+        uint32_t        hash;
+        uint8_t         flagDirty;
+        uint8_t         flagLocked;
+        uint16_t        rsvd16;
+        uint8_t         *pData;         //
+    } LRU_BUFFER;
 #pragma pack(pop)
     
     
@@ -72,19 +75,21 @@ struct lru_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+#define LRU_FLAG_DELAY_WRITE OBJ_FLAG_USER1  /* Delay write until buffer is needed. */
 
     // Common Data
-    uint32_t        sectorSize;
+    uint32_t        blockSize;
     uint32_t        cacheSize;
+    uint32_t        hashSize;
     
-    ERESULT         (*pLogicalRead)(
+    ERESULT         (*pLogicalRead) (
         OBJ_ID          pObj,
         uint32_t        lsn,                // Logical Sector Number
         uint8_t         *pBuffer            // Buffer of sectorSize bytes
     );
     OBJ_ID          pReadObject;
     
-    ERESULT         (*pLogicalWrite)(
+    ERESULT         (*pLogicalWrite) (
         OBJ_ID          pWriteObject,
         uint32_t        lsn,                // Logical Sector Number
         uint8_t         *pBuffer            // Buffer of sectorSize bytes
@@ -97,8 +102,11 @@ struct lru_data_s	{
     int32_t         numWrites;
 
     LISTDL_DATA     freeList;
+    LISTDL_DATA     lockList;               // Locked Buffer List
     LISTDL_DATA     lruList;
-    LISTDL_DATA     hashLists[NUM_HASH_LIST];
+    LISTDL_DATA     *pHash;
+    LRU_BUFFER      *pCache;
+    uint8_t         *pBuffers;
 };
 #pragma pack(pop)
 
@@ -112,11 +120,17 @@ struct lru_data_s	{
 
 
     // Internal Functions
-    void            lru_Dealloc(
+    void            lru_Dealloc (
         OBJ_ID          objId
     );
 
-    void *          lru_QueryInfo(
+    
+    ERESULT         lru_FlushCache (
+        LRU_DATA        *this
+    );
+    
+    
+    void *          lru_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -125,7 +139,7 @@ struct lru_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			lru_Validate(
+    bool			lru_Validate (
         LRU_DATA       *cbp
     );
 #endif

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   memFile.c
- *	Generated 01/13/2019 15:55:15
+ * File:   memrrds.c
+ *	Generated 01/16/2019 16:27:56
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <memFile_internal.h>
+#include        <memrrds_internal.h>
 #include        <trace.h>
 
 
@@ -62,6 +62,45 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    //---------------------------------------------------------------
+    //                F i l e  E x t e n d
+    //---------------------------------------------------------------
+    
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         memrrds_Extend (
+        MEMRRDS_DATA    *this,
+        uint32_t        index
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!memrrds_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        i = blks_getSize((BLKS_DATA *)this);
+        for (; i<index; ++i) {
+            eRc = blks_Add((BLKS_DATA *)this, NULL, NULL);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return eRc;
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
     
     
     
@@ -77,12 +116,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MEMFILE_DATA *     memFile_Alloc (
+    MEMRRDS_DATA *     memrrds_Alloc (
         void
     )
     {
-        MEMFILE_DATA       *this;
-        uint32_t        cbSize = sizeof(MEMFILE_DATA);
+        MEMRRDS_DATA       *this;
+        uint32_t        cbSize = sizeof(MEMRRDS_DATA);
         
         // Do initialization.
         
@@ -94,15 +133,15 @@ extern "C" {
 
 
 
-    MEMFILE_DATA *     memFile_New (
+    MEMRRDS_DATA *     memrrds_New (
         void
     )
     {
-        MEMFILE_DATA       *this;
+        MEMRRDS_DATA       *this;
         
-        this = memFile_Alloc( );
+        this = memrrds_Alloc( );
         if (this) {
-            this = memFile_Init(this);
+            this = memrrds_Init(this);
         } 
         return this;
     }
@@ -116,18 +155,39 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      B l o c k  S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        memrrds_getBlockSize (
+        MEMRRDS_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!memrrds_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return blks_getBlockSize((BLKS_DATA *)this);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        memFile_getPriority (
-        MEMFILE_DATA     *this
+    uint16_t        memrrds_getPriority (
+        MEMRRDS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -138,14 +198,14 @@ extern "C" {
     }
 
 
-    bool            memFile_setPriority (
-        MEMFILE_DATA     *this,
+    bool            memrrds_setPriority (
+        MEMRRDS_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -162,59 +222,53 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        memFile_getSize (
-        MEMFILE_DATA    *this
+    uint32_t        memrrds_getSize (
+        MEMRRDS_DATA       *this
     )
     {
-        uint32_t        size = -1;
-        
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        if (obj_Flag(this, MEMFILE_FILE_OPEN)) {
-            size = array_getSizeInBytes(this->pData);
-        }
-        
-        return 0;
+        return blks_getSize((BLKS_DATA *)this);
     }
 
 
 
     //---------------------------------------------------------------
-    //                           P a t h
+    //                              S t r
     //---------------------------------------------------------------
     
-    PATH_DATA *     memFile_getPath (
-        MEMFILE_DATA    *this
+    ASTR_DATA * memrrds_getStr (
+        MEMRRDS_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return this->pPath;
+        return this->pStr;
     }
     
     
-    bool        memFile_setPath (
-        MEMFILE_DATA    *this,
-        PATH_DATA       *pValue
+    bool        memrrds_setStr (
+        MEMRRDS_DATA     *this,
+        ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -222,11 +276,11 @@ extern "C" {
 
 #ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
-        if (this->pPath) {
-            obj_Release(this->pPath);
+        if (this->pStr) {
+            obj_Release(this->pStr);
         }
 #endif
-        this->pPath = pValue;
+        this->pStr = pValue;
         
         return true;
     }
@@ -237,15 +291,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  memFile_getSuperVtbl (
-        MEMFILE_DATA     *this
+    OBJ_IUNKNOWN *  memrrds_getSuperVtbl (
+        MEMRRDS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -274,16 +328,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = memFile_Assign(this,pOther);
+        ERESULT eRc = memrrds_Assign(this,pOther);
      @endcode 
-     @param     this    MEMFILE object pointer
-     @param     pOther  a pointer to another MEMFILE object
+     @param     this    MEMRRDS object pointer
+     @param     pOther  a pointer to another MEMRRDS object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         memFile_Assign (
-        MEMFILE_DATA		*this,
-        MEMFILE_DATA     *pOther
+    ERESULT         memrrds_Assign (
+        MEMRRDS_DATA		*this,
+        MEMRRDS_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -291,11 +345,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!memFile_Validate(pOther)) {
+        if (!memrrds_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -338,38 +392,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          C l o s e
-    //---------------------------------------------------------------
-    
-    ERESULT         memFile_Close (
-        MEMFILE_DATA    *this,
-        bool            fDelete
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        this->offset = 0;
-        if (fDelete) {
-            eRc = array_Truncate(this->pData, 0);
-        }
-        obj_FlagOff(this, MEMFILE_FILE_OPEN);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -379,9 +401,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         memFile_Compare (
-        MEMFILE_DATA     *this,
-        MEMFILE_DATA     *pOther
+    ERESULT         memrrds_Compare (
+        MEMRRDS_DATA     *this,
+        MEMRRDS_DATA     *pOther
     )
     {
         int             i = 0;
@@ -395,11 +417,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!memFile_Validate(pOther)) {
+        if (!memrrds_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -436,32 +458,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        memFile      *pCopy = memFile_Copy(this);
+        memrrds      *pCopy = memrrds_Copy(this);
      @endcode 
-     @param     this    MEMFILE object pointer
-     @return    If successful, a MEMFILE object which must be 
+     @param     this    MEMRRDS object pointer
+     @return    If successful, a MEMRRDS object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MEMFILE_DATA *     memFile_Copy (
-        MEMFILE_DATA       *this
+    MEMRRDS_DATA *     memrrds_Copy (
+        MEMRRDS_DATA       *this
     )
     {
-        MEMFILE_DATA       *pOther = OBJ_NIL;
+        MEMRRDS_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = memFile_New( );
+        pOther = memrrds_New( );
         if (pOther) {
-            eRc = memFile_Assign(this, pOther);
+            eRc = memrrds_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -476,60 +498,14 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          C r e a t e
-    //---------------------------------------------------------------
-    
-    ERESULT         memFile_Create (
-        MEMFILE_DATA    *this,
-        PATH_DATA       *pPath
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pPath) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        memFile_setPath(this, OBJ_NIL);
-        this->pPath = path_Copy(pPath);
-        if (this->pPath) {
-            path_Clean(this->pPath);
-        }
-        else {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        eRc = array_Truncate(this->pData, 0);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        this->offset = 0;
-        obj_FlagOn(this, MEMFILE_FILE_OPEN);
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            memFile_Dealloc (
+    void            memrrds_Dealloc (
         OBJ_ID          objId
     )
     {
-        MEMFILE_DATA   *this = objId;
+        MEMRRDS_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -537,7 +513,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -545,15 +521,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((MEMFILE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((MEMRRDS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        memFile_setPath(this, OBJ_NIL);
-        if (this->pData) {
-            obj_Release(this->pData);
-            this->pData = OBJ_NIL;
-        }
+        memrrds_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -576,8 +548,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         memFile_Disable (
-        MEMFILE_DATA		*this
+    ERESULT         memrrds_Disable (
+        MEMRRDS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -585,7 +557,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -611,8 +583,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         memFile_Enable (
-        MEMFILE_DATA	*this
+    ERESULT         memrrds_Enable (
+        MEMRRDS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -620,7 +592,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -637,45 +609,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                         G e t s
-    //---------------------------------------------------------------
-    
-    ERESULT         memFile_Gets (
-        MEMFILE_DATA    *this,
-        uint32_t        cBuffer,
-        uint8_t         *pBuffer
-    )
-    {
-        //ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        //obj_Enable(this);
-        
-        // Put code here...
-        
-        // Return to caller.
-        return ERESULT_NOT_IMPLEMENTED;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    MEMFILE_DATA *   memFile_Init (
-        MEMFILE_DATA       *this
+    MEMRRDS_DATA *   memrrds_Init (
+        MEMRRDS_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(MEMFILE_DATA);
+        uint32_t        cbSize = sizeof(MEMRRDS_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -692,36 +633,32 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)blks_Init((BLKS_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MEMFILE);
+        this = (OBJ_ID)blks_Init((BLKS_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MEMRRDS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                          // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_MEMFILE);      // Needed for Inheritance
+        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_MEMRRDS);  // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&memFile_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&memrrds_Vtbl);
         
-        this->pData = array_NewWithSize(1);
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
+        //this->stackSize = obj_getMisc1(this);
+        //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "memFile::sizeof(MEMFILE_DATA) = %lu\n", sizeof(MEMFILE_DATA));
+        //fprintf(stderr, "memrrds::sizeof(MEMRRDS_DATA) = %lu\n", sizeof(MEMRRDS_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(MEMFILE_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(MEMRRDS_DATA));
     #endif
 
         return this;
@@ -730,12 +667,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                         O p e n
+    //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         memFile_Open (
-        MEMFILE_DATA    *this,
-        PATH_DATA       *pPath
+    ERESULT         memrrds_IsEnabled (
+        MEMRRDS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -743,30 +679,18 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pPath) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
         
-        memFile_setPath(this, OBJ_NIL);
-        this->pPath = path_Copy(pPath);
-        if (this->pPath) {
-            path_Clean(this->pPath);
-        }
-        else {
-            return ERESULT_OUT_OF_MEMORY;
+        if (obj_IsEnabled(this)) {
+            return ERESULT_SUCCESS_TRUE;
         }
         
-        this->offset = 0;
-        obj_FlagOn(this, MEMFILE_FILE_OPEN);
-
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return ERESULT_SUCCESS_FALSE;
     }
     
     
@@ -782,14 +706,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = memFile_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = memrrds_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "memFile", prefix,
+                        the object name, "memrrds", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -797,13 +721,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          memFile_QueryInfo (
+    void *          memrrds_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        MEMFILE_DATA     *this = objId;
+        MEMRRDS_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -812,7 +736,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -821,11 +745,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(MEMFILE_DATA);
+            return (void *)sizeof(MEMRRDS_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)memFile_Class();
+                return (void *)memrrds_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -855,22 +779,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return memFile_Disable;
+                            return memrrds_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return memFile_Enable;
+                            return memrrds_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return memFile_ToDebugString;
+                            return memrrds_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return memFile_ToJSON;
+                            return memrrds_ToJSON;
                         }
                         break;
                         
@@ -880,9 +804,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == memFile_ToDebugString)
+                if (pData == memrrds_ToDebugString)
                     return "ToDebugString";
-                if (pData == memFile_ToJSON)
+                if (pData == memrrds_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -899,25 +823,23 @@ extern "C" {
     //                          R e a d
     //---------------------------------------------------------------
     
-    ERESULT         memFile_Read(
-        MEMFILE_DATA    *this,
-        uint32_t        cBuffer,            // (in)
-        void            *pBuffer,           // (in)
-        uint32_t        *pReadCount         // (out)
+    ERESULT         memrrds_Read(
+        MEMRRDS_DATA    *this,
+        uint32_t        index,                // [in] Block Index
+        uint8_t         *pBuffer              // [out] Buffer of sectorSize bytes
     )
     {
-        ERESULT         eRc = ERESULT_INVALID_PARAMETER;
+        ERESULT         eRc;
         uint8_t         *pData;
-        uint32_t        sizeRead;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (0 == cBuffer) {
+        if (0 == index) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -927,119 +849,19 @@ extern "C" {
         }
 #endif
         
-        // Insure that we have the space for it.
-        sizeRead = array_getSizeInBytes(this->pData);
-        sizeRead -= this->offset;
-        if (sizeRead > cBuffer) {
-            sizeRead = cBuffer;
+        eRc = memrrds_Extend(this, index);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
         }
         
-        if (sizeRead > 0) {
-            pData = array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
-            memmove(pBuffer, pData, sizeRead);
+        eRc = blks_Get((BLKS_DATA *)this, index, &pData);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
         }
-        if (pReadCount) {
-            *pReadCount = sizeRead;
-        }
+        memmove(pBuffer, pData, blks_getBlockSize((BLKS_DATA *)this));
         
         // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //----------------------------------------------------------------
-    //                          S e e k
-    //----------------------------------------------------------------
-    
-    off_t           memFile_SeekBegin (
-        MEMFILE_DATA    *this,
-        off_t           offset
-    )
-    {
-        off_t           fileOffset = -1;
-        uint32_t        sizeFile;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        
-        //  Position within the File.
-        sizeFile = array_getSizeInBytes(this->pData);
-        if (offset <= sizeFile) {
-            this->offset = offset;
-            fileOffset = offset;
-        }
-        
-        // Return to Caller.
-        return fileOffset;
-    }
-    
-    
-    off_t           memFile_SeekCur (
-        MEMFILE_DATA    *this,
-        off_t           offset
-    )
-    {
-        off_t           fileOffset = -1;
-        uint32_t        sizeFile;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        
-        //  Position within the File.
-        sizeFile = array_getSizeInBytes(this->pData);
-        fileOffset = this->offset + offset;
-        if (fileOffset > sizeFile)
-            fileOffset = -1;
-        else {
-            this->offset = fileOffset;
-        }
-        
-        // Return to Caller.
-        return fileOffset;
-    }
-    
-    
-    off_t           memFile_SeekEnd (
-        MEMFILE_DATA    *this,
-        off_t           offset
-    )
-    {
-        off_t           fileOffset = -1;
-        uint32_t        sizeFile;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        
-        //  Position within the File.
-        sizeFile = array_getSizeInBytes(this->pData);
-        fileOffset = sizeFile + offset;
-        if (fileOffset > sizeFile)
-            fileOffset = -1;
-        else {
-            this->offset = fileOffset;
-        }
-
-        // Return to Caller.
-        return fileOffset;
+        return eRc;
     }
     
     
@@ -1048,17 +870,17 @@ extern "C" {
     //                      S e t u p
     //----------------------------------------------------------
     
-    ERESULT         memFile_SetupSizes(
-        MEMFILE_DATA    *this,
+    ERESULT         memrrds_SetupSizes(
+        MEMRRDS_DATA    *this,
         uint32_t        blockSize
     )
     {
-        ERESULT         eRc = ERESULT_INVALID_PARAMETER;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1070,7 +892,7 @@ extern "C" {
         }
 #endif
         
-        //eRc = blks_SetupSizes((BLKS_DATA *)this, blockSize);
+        eRc = blks_SetupSizes((BLKS_DATA *)this, blockSize);
         
         // Return to caller.
         return eRc;
@@ -1079,70 +901,11 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          S i z e
-    //---------------------------------------------------------------
-    
-    size_t          memFile_Size (
-        MEMFILE_DATA    *this
-    )
-    {
-        size_t          fileSize = -1;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return -1;
-        }
-        if (!obj_Flag(this, MEMFILE_FILE_OPEN)) {
-            return -1;
-        }
-#endif
-        
-        fileSize = array_getSizeInBytes(this->pData);
-        
-        // Return to caller.
-        return fileSize;
-    }
-    
-    
-    
-    
-    //----------------------------------------------------------------
-    //                          T e l l
-    //----------------------------------------------------------------
-    
-    off_t           memFile_Tell (
-        MEMFILE_DATA    *this
-    )
-    {
-        off_t           fileOffset = -1;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!memFile_Validate(this)) {
-            DEBUG_BREAK();
-            return -1;
-        }
-#endif
-        
-        //  Position within the File.
-        //fileOffset = lseek(this->fileHandle, 0, SEEK_CUR);
-        
-        // Return to Caller.
-        return fileOffset;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     memFile_ToJSON (
-        MEMFILE_DATA      *this
+     ASTR_DATA *     memrrds_ToJSON (
+        MEMRRDS_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -1153,7 +916,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1184,16 +947,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = memFile_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = memrrds_ToDebugString(this,4);
      @endcode 
-     @param     this    MEMFILE object pointer
+     @param     this    MEMRRDS object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     memFile_ToDebugString (
-        MEMFILE_DATA      *this,
+    ASTR_DATA *     memrrds_ToDebugString (
+        MEMRRDS_DATA      *this,
         int             indent
     )
     {
@@ -1209,7 +972,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1230,7 +993,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    memFile_getSize(this)
+                    memrrds_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -1267,15 +1030,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            memFile_Validate (
-        MEMFILE_DATA      *this
+    bool            memrrds_Validate (
+        MEMRRDS_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_MEMFILE))
+            if (obj_IsKindOf(this, OBJ_IDENT_MEMRRDS))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1291,7 +1054,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(MEMFILE_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(MEMRRDS_DATA))) {
             return false;
         }
 
@@ -1301,30 +1064,27 @@ extern "C" {
     #endif
 
 
-    
     //---------------------------------------------------------------
     //                      W r i t e
     //---------------------------------------------------------------
     
-    ERESULT         memFile_Write(
-        MEMFILE_DATA    *this,
-        uint32_t        cBuffer,
-        const
-        void            *pBuffer
+    ERESULT         memrrds_Write(
+        MEMRRDS_DATA    *this,
+        uint32_t        index,                // [in] Block Index
+        uint8_t         *pBuffer              // [out] Buffer of sectorSize bytes
     )
     {
-        ERESULT         eRc = ERESULT_INVALID_PARAMETER;
+        ERESULT         eRc;
         uint8_t         *pData;
-        int32_t         sizeNeeded;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!memFile_Validate(this)) {
+        if (!memrrds_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (0 == cBuffer) {
+        if (0 == index) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1334,25 +1094,25 @@ extern "C" {
         }
 #endif
         
-        // Insure that we have the space for it.
-        sizeNeeded = array_getSizeInBytes(this->pData);
-        sizeNeeded -= this->offset;
-        sizeNeeded -= cBuffer;
-        if ( sizeNeeded < 0) {
-            sizeNeeded = -sizeNeeded;
-            eRc = array_AppendSpacing(this->pData, sizeNeeded);
+        eRc = memrrds_Extend(this, index);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
         }
         
-        pData = array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
-        memmove(pData, pBuffer, cBuffer);
-
+        eRc = blks_Get((BLKS_DATA *)this, index, &pData);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        memmove(pData, pBuffer, blks_getBlockSize((BLKS_DATA *)this));
+        
         // Return to caller.
         return eRc;
     }
-
     
     
+    
 
+    
     
 #ifdef	__cplusplus
 }

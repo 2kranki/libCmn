@@ -7,9 +7,8 @@
  * Program
  *			Memory Based File (memFile)
  * Purpose
- *			This object provides a memory based relative record
- *          file where records are accessed via integer indices
- *          relative to one.
+ *			This object provides a memory based standard I/O
+ *          file.
  *
  * Remarks
  *	1.      None
@@ -52,6 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <path.h>
 
 
 #ifndef         MEMFILE_H
@@ -83,7 +83,53 @@ extern "C" {
         // method names to the vtbl definition in memFile_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MEMFILE_DATA *);
+        ERESULT         (*pClose) (
+            OBJ_ID          this,
+            bool            fDelete
+        );
+        ERESULT         (*pCreate) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath
+        );
+        ERESULT         (*pGets) (
+            OBJ_ID          this,
+            uint32_t        cBuffer,
+            uint8_t         *pBuffer
+        );
+        ERESULT         (*pOpen) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath
+        );
+        ERESULT         (*pRead) (
+            OBJ_ID          this,
+            uint32_t        cBuffer,
+            void            *pBuffer,
+            uint32_t        *pReadCount
+        );
+        off_t           (*pSeekBegin) (
+            OBJ_ID          this,
+            off_t           offset
+        );
+        off_t           (*pSeekCur) (
+            OBJ_ID          this,
+            off_t           offset
+        );
+        off_t           (*pSeekEnd) (
+            OBJ_ID          this,
+            off_t           offset
+        );
+        size_t          (*pSize) (
+            OBJ_ID          this
+        );
+        off_t           (*pTell) (
+            OBJ_ID          this
+        );
+        ERESULT         (*pWrite) (
+            OBJ_ID          this,
+            uint32_t        cBuffer,
+            const
+            void            *pBuffer
+        );
     } MEMFILE_VTBL;
 
     typedef struct memFile_class_vtbl_s	{
@@ -160,21 +206,127 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Close an open file from reading/writing.
+     @param     this    object pointer
+     @param     fDelete If true, delete the file after closing it.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         memFile_Close (
+        MEMFILE_DATA    *this,
+        bool            fDelete
+    );
+    
+    
+    /*!
+     Create a new file for reading/writing.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         memFile_Create (
+        MEMFILE_DATA    *this,
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Read a line from the file and store it into the buffer. Stop when either
+     (cBuffer - 1) characters are read, the newline character is read, or the
+     end-of-file is reached, whichever comes first.
+     @param     this    object pointer
+     @param     cBuffer size of the buffer which must be greater than 1
+     @param     pBuffer buffer pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         memFile_Gets (
+        MEMFILE_DATA     *this,
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    );
+    
+    
     MEMFILE_DATA *  memFile_Init (
         MEMFILE_DATA    *this
     );
 
 
+    /*!
+     Open an existing file for reading/writing.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         memFile_Open (
+        MEMFILE_DATA    *this,
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Read a block of data from a specific location in a file. If a partial
+     amount of data is read, pReadCount will contain the amount if present
+     and the returned code will be ERESULT_SUCCESS_PARTIAL_DATA.
+     @param     this        object pointer
+     @param     cBuffer     Data block size
+     @param     pBuffer     Data block pointer
+     @param     pReadCount  Optional Amount actually read pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
     ERESULT         memFile_Read(
         MEMFILE_DATA    *this,
-        uint32_t        index,                // [in] Block Index
-        uint8_t         *pBuffer              // [out] Buffer of sectorSize bytes
+        uint32_t        cBuffer,
+        void            *pBuffer,
+        uint32_t        *pReadCount
     );
     
  
+    /*!
+     Seek to a specific location in the file.
+     @param     this    object pointer
+     @param     offset  File Offset where the next data read/write is to occur
+     @return    If successful, offset within file; otherwise -1 and an ERESULT_*
+     error is set in Last Error.
+     */
+    off_t           memFile_SeekBegin (
+        MEMFILE_DATA     *this,
+        off_t           offset
+    );
+    
+    
+    off_t           memFile_SeekCur (
+        MEMFILE_DATA    *this,
+        off_t           offset
+    );
+    
+    
+    off_t           memFile_SeekEnd (
+        MEMFILE_DATA     *this,
+        off_t           offset
+    );
+    
+    
     ERESULT         memFile_SetupSizes(
         MEMFILE_DATA    *this,
         uint32_t        blockSize
+    );
+    
+    
+    /*!
+     Get the size of the file in bytes.
+     @param     this    object pointer
+     @return    If successful, size of the file; otherwise -1.
+     */
+    size_t          memFile_Size (
+        MEMFILE_DATA    *this
+    );
+    
+    
+    /*!
+     Get the current File Offset where the next data read/write is to occur.
+     @param     this    object pointer
+     @return    If successful, offset within file; otherwise -1.
+     */
+    off_t           memFile_Tell (
+        MEMFILE_DATA    *this
     );
     
     
@@ -196,10 +348,18 @@ extern "C" {
     );
     
     
+    /*!
+     Write data to the file at the internal offset.
+     @param     this    object pointer
+     @param     cBuffer Data block size
+     @param     pBuffer Data block pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
     ERESULT         memFile_Write(
         MEMFILE_DATA    *this,
-        uint32_t        index,                // [in] Block Index
-        uint8_t         *pBuffer              // [out] Buffer of sectorSize bytes
+        uint32_t        cBuffer,
+        const
+        void            *pBuffer
     );
     
     

@@ -82,7 +82,53 @@ extern "C" {
         // method names to the vtbl definition in fileio_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(FILEIO_DATA *);
+        ERESULT         (*pClose) (
+            OBJ_ID          this,
+            bool            fDelete
+        );
+        ERESULT         (*pCreate) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath
+        );
+        ERESULT         (*pGets) (
+            OBJ_ID          this,
+            uint32_t        cBuffer,
+            uint8_t         *pBuffer
+        );
+        ERESULT         (*pOpen) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath
+        );
+        ERESULT         (*pRead) (
+            OBJ_ID          this,
+            uint32_t        cBuffer,
+            void            *pBuffer,
+            uint32_t        *pReadCount
+        );
+        off_t           (*pSeekBegin) (
+            OBJ_ID          this,
+            off_t           offset
+        );
+        off_t           (*pSeekCur) (
+            OBJ_ID          this,
+            off_t           offset
+        );
+        off_t           (*pSeekEnd) (
+            OBJ_ID          this,
+            off_t           offset
+        );
+        size_t          (*pSize) (
+            OBJ_ID          this
+        );
+        off_t           (*pTell) (
+            OBJ_ID          this
+        );
+        ERESULT         (*pWrite) (
+            OBJ_ID          this,
+            uint32_t        cBuffer,
+            const
+            void            *pBuffer
+        );
     } FILEIO_VTBL;
 
 
@@ -255,13 +301,13 @@ extern "C" {
     
     
     /*!
-     Read a block of data from a specific location in a file.
+     Seek to a specific location in the file.
      @param     this    object pointer
      @param     offset  File Offset where the next data read/write is to occur
      @return    If successful, offset within file; otherwise -1 and an ERESULT_*
                 error is set in Last Error.
      */
-    off_t           fileio_Seek (
+    off_t           fileio_SeekBegin (
         FILEIO_DATA     *this,
         off_t           offset
     );
@@ -285,6 +331,16 @@ extern "C" {
      @return    If successful, size of the file; otherwise -1.
      */
     size_t          fileio_Size (
+        FILEIO_DATA     *this
+    );
+    
+    
+    /*!
+     Get the current File Offset where the next data read/write is to occur.
+     @param     this    object pointer
+     @return    If successful, offset within file; otherwise -1.
+     */
+    off_t           fileio_Tell (
         FILEIO_DATA     *this
     );
     

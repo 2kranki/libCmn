@@ -59,15 +59,16 @@ extern "C" {
 #endif
 
 
-
+    //                      File Header
+    // This header is saved in the 1st record of the file.
 #pragma pack(push, 1)
-    typedef struct  bpt32idx_header_s {
+    typedef struct  bpt32_header_s {
         uint16_t        dataSize;       // Size of Data in node
         uint32_t        blockSize;
-        uint32_t        numRcds;        // Number of Records in File
-        uint32_t        root;           // Root Record Index
-        uint32_t        dataHead;
-        uint32_t        dataTail;
+        uint32_t        cRecords;       // Number of Records in File
+        uint32_t        root;           // Root Record Index/Leaf
+        uint32_t        dataHead;       // Head of Leaf Chain
+        uint32_t        dataTail;       // End of Leaf Chain
     } BPT32_HEADER;
 #pragma pack(pop)
     
@@ -91,7 +92,22 @@ struct bpt32_data_s	{
     uint16_t        dataSize;       // Size of Data in node
     uint32_t        blockSize;
     ASTR_DATA       *pStr;
+    BPT32_HEADER    hdr;
 
+    ERESULT         (*pBlockRead)(
+        OBJ_ID          this,
+        uint32_t        recordNum,
+        uint8_t         *pData
+    );
+    ERESULT         (*pBlockWrite)(
+        OBJ_ID          this,
+        uint32_t        recordNum,
+        uint8_t            *pData    /* Data Ptr (if NULL, a FillChar
+                                 * record is written)
+                                 */
+    );
+    OBJ_ID          pBlockObject;
+    
 };
 #pragma pack(pop)
 

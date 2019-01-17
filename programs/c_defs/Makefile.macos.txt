@@ -1,0 +1,79 @@
+# Generated file - edits may be discarded!
+
+PGMNAM=c_defs
+SYS=macosx
+TEMP=/tmp
+BASEDIR = $(TEMP)/$(PGMNAM)
+
+CFLAGS_LIBS = 
+CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+LIB_BASE = $(HOME)/Support/lib/$(SYS)
+LIBCMN_BASE = $(LIB_BASE)/libCmn
+CFLAGS += -I$(LIBCMN_BASE)/include
+CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
+CFLAGS += -D__MACOSX_ENV__
+
+TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses
+
+INSTALL_BASE = $(HOME)/Support/bin
+INSTALLDIR = $(INSTALL_BASE)
+LIBDIR = $(BASEDIR)/$(SYS)
+SRCDIR = ./src
+SRCSYSDIR = ./src/$(SYS)
+TEST_SRC = ./tests
+ifdef  NDEBUG
+CFLAGS += -DNDEBUG
+LIB_FILENAME=$(LIBNAM)R.a
+OBJDIR = $(LIBDIR)/o/r
+else   #DEBUG
+CFLAGS += -D_DEBUG 
+LIB_FILENAME=$(LIBNAM)D.a
+OBJDIR = $(LIBDIR)/o/d
+endif  #NDEBUG
+TEST_OBJ = $(OBJDIR)/tests
+LIBPATH = $(LIBDIR)/$(LIB_FILENAME)
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .o
+
+OBJS = 
+
+TESTS = 
+
+
+
+
+
+
+
+
+.PHONY: test
+test: $(TESTS)
+
+
+.PHONY: clean
+clean:
+	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+
+
+.PHONY: install
+install:
+	-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+	cp $(OBJDIR)/$(PGMNAM) $(INSTALLDIR)/$(PGMNAM)
+
+
+.PHONY: link
+link: $(OBJS) src/c_defs.c
+	CC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests
+
+
+.PHONY: all
+all:  clean create_dirs link
+
+
+

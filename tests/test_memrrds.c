@@ -1,5 +1,5 @@
 /*
- *	Generated 01/12/2019 14:04:44
+ *	Generated 01/16/2019 16:27:57
  */
 
 
@@ -23,10 +23,8 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <lru.h>
-#include    <memFile.h>
 #include    <trace.h>
-#include    <bpt32_internal.h>
+#include    <memrrds_internal.h>
 
 
 
@@ -76,19 +74,19 @@ int             tearDown(
 
 
 
-int             test_bpt32_OpenClose(
+int             test_memrrds_OpenClose(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    BPT32_DATA	    *pObj = OBJ_NIL;
+    MEMRRDS_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = bpt32_Alloc( );
+    pObj = memrrds_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = bpt32_Init( pObj );
+    pObj = memrrds_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -107,55 +105,44 @@ int             test_bpt32_OpenClose(
 
 
 
-int             test_bpt32_Write01(
+int             test_memrrds_Insert01(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    BPT32_DATA      *pObj = OBJ_NIL;
-    MEMFILE_DATA    *pFile = OBJ_NIL;
-    uint32_t        data1 = 0;
-    uint32_t        data2 = 0;
-    uint32_t        index1 = 0;
-    uint32_t        index2 = 0;
-    uint32_t        i = 0;
-
+    MEMRRDS_DATA    *pObj = OBJ_NIL;
+    //uint32_t        i;
+    //uint32_t        index;
+    uint8_t         data[8];
+    uint8_t         *pData = data;
+    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pFile = memFile_New( );
+    pObj = memrrds_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    eRc = memFile_SetupSizes(pFile, 64);
-    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-
-    pObj = bpt32_New( );
+    pObj = memrrds_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        bpt32_setReadWrite(
-                           pObj,
-                           (void *)memFile_Read,
-                           (void *)memFile_Write,
-                           pFile
-        );
-        
-        eRc = bpt32_SetupSizes(pObj, 64, 4);
+        //obj_TraceSet(pObj, true);
+        eRc = memrrds_SetupSizes(pObj, 8);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        eRc = bpt32_Add(pObj, 1, &data1);
+        str_Copy((char *)data, sizeof(data), "2222222");
+        eRc = memrrds_Write(pObj, 2, pData);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        for (i=0; i<5; ++i) {
-            eRc = ERESULT_OUT_OF_MEMORY;
-        }
+        str_Copy((char *)data, sizeof(data), "0000000");
+        pData = data;
+        eRc = memrrds_Read(pObj, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE((0 == strcmp((char *)pData, "2222222")));
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
     
-    obj_Release(pFile);
-    pFile = OBJ_NIL;
-
     fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
@@ -163,11 +150,12 @@ int             test_bpt32_Write01(
 
 
 
-TINYTEST_START_SUITE(test_bpt32);
-    TINYTEST_ADD_TEST(test_bpt32_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_memrrds);
+    TINYTEST_ADD_TEST(test_memrrds_Insert01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_memrrds_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_bpt32);
+TINYTEST_MAIN_SINGLE_SUITE(test_memrrds);
 
 
 

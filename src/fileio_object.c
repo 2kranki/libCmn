@@ -192,8 +192,18 @@ FILEIO_VTBL     fileio_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //fileio_IsEnabled,
- 
+    (void *)fileio_Close,
+    (void *)fileio_Create,
+    (void *)fileio_Gets,
+    (void *)fileio_Open,
+    (void *)fileio_Read,
+    (void *)fileio_SeekBegin,
+    (void *)fileio_SeekCur,
+    (void *)fileio_SeekEnd,
+    (void *)fileio_Size,
+    (void *)fileio_Tell,
+    (void *)fileio_Write,
+
 };
 
 

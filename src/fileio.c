@@ -1080,7 +1080,7 @@ extern "C" {
     //                          S e e k
     //----------------------------------------------------------------
     
-    off_t           fileio_Seek (
+    off_t           fileio_SeekBegin (
         FILEIO_DATA     *this,
         off_t           offset
     )
@@ -1195,6 +1195,34 @@ extern "C" {
     
     
     
+    //----------------------------------------------------------------
+    //                          T e l l
+    //----------------------------------------------------------------
+    
+    off_t           fileio_Tell (
+        FILEIO_DATA     *this
+    )
+    {
+        off_t           fileOffset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!fileio_Validate(this)) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+        
+        //  Position within the File.
+        fileOffset = lseek(this->fileHandle, 0, SEEK_CUR);
+        
+        // Return to Caller.
+        return fileOffset;
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

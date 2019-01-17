@@ -99,7 +99,30 @@ extern "C" {
         // method names to the vtbl definition in rrds_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(RRDS_DATA *);
+        ERESULT         (*pClose) (
+            OBJ_ID          this,
+            bool            fDelete
+        );
+        ERESULT         (*pCreate) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath,
+            uint16_t        cLRU            // Number of LRU Buffers
+        );
+        ERESULT         (*pOpen) (
+            OBJ_ID          this,
+            PATH_DATA       *pPath,
+            uint16_t        cLRU            // Number of LRU Buffers
+        );
+        ERESULT         (*pRead) (
+            OBJ_ID          this,
+            uint32_t        recordNum,
+            uint8_t         *pData
+        );
+        ERESULT         (*pWrite) (
+            OBJ_ID          this,
+            uint32_t        recordNum,
+            uint8_t         *pData
+        );
     } RRDS_VTBL;
 
     typedef struct rrds_class_vtbl_s	{

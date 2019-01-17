@@ -1,0 +1,10 @@
+{
+    "program":{
+        "name":"c_defs",
+        "libDeps":["Cmn"],
+        "headers_private":[],
+        "headers_public":[],
+        "headers_test":[],
+        "main":"c_defs.c"
+    },
+}

@@ -90,12 +90,12 @@ extern "C" {
         // method names to the vtbl definition in lru_object.c.
         // Properties:
         // Methods:
-        ERESULT         (*pRead)(
+        ERESULT         (*pRead) (
             LRU_DATA        *this,
             uint32_t        lsn,        // Logical Sector Number
             uint8_t         *pBuffer    // Address of Buffer to read into
         );
-        ERESULT         (*pWrite)(
+        ERESULT         (*pWrite) (
             LRU_DATA        *this,
             uint32_t        lsn,        // Logical Sector Number
             uint8_t         *pBuffer    // Address of Buffer to write from
@@ -119,7 +119,12 @@ extern "C" {
      released.
      @return:   pointer to lru object if successful, otherwise OBJ_NIL.
      */
-    LRU_DATA *     lru_Alloc(
+    LRU_DATA *     lru_Alloc (
+        void
+    );
+    
+    
+    LRU_DATA *      lru_New (
         void
     );
     
@@ -127,14 +132,17 @@ extern "C" {
     /*!
      Create a new LRU object which will need to have sector read and
      write routines added before it can actually be used.
-     @param     sectorSize  Size of Sector to be read/written
-     @param     cacheSize   Number of Sector Buffers to use. Prime
+     @param     blockSize   Size of Block to be read/written
+     @param     cacheSize   Number of Block Buffers to use. Prime
                             numbers work the best for this.
+     @param     hashSize    Size of Hash Table. Prime numbers work best
+                            for this.
      @return    If successful, a new LRU object; otherwise, OBJ_NIL.
      */
-    LRU_DATA *     lru_New(
-        uint32_t        sectorSize,
-        uint32_t        cacheSize
+    LRU_DATA *     lru_NewWithSizes (
+        uint32_t        blockSize,
+        uint32_t        cacheSize,
+        uint16_t        hashSize
     );
     
     
@@ -144,14 +152,29 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     The delay writes property indicates if all writes to the file
+     should be delayed until the buffer is needed by the LRU mechanism,
+     a FlushAll is requested or the LRU system is closed.
+     */
+    bool            lru_getDelayWrites(
+        LRU_DATA        *this
+    );
+    
+    bool            lru_setDelayWrites(
+        LRU_DATA        *this,
+        bool            value
+    );
+
+    
+    /*!
      Set the logical sector read routine. It is assumed that this routine
      will always read sectorSize bytes.
      @return:   If successful, true, otherwise, false and getLastError()
                 will provide the error code.
      */
-    bool            lru_setLogicalSectorRead(
+    bool            lru_setLogicalSectorRead (
         LRU_DATA        *this,
-        ERESULT         (*pLogicalRead)(
+        ERESULT         (*pLogicalRead) (
             OBJ_ID          pReadObject,
             uint32_t        lsn,                // Logical Sector Number
             uint8_t         *pBuffer            // Buffer of sectorSize bytes
@@ -166,9 +189,9 @@ extern "C" {
      @return:   If successful, true, otherwise, false and getLastError() 
                 will provide the error code.
      */
-    bool            lru_setLogicalSectorWrite(
+    bool            lru_setLogicalSectorWrite (
         LRU_DATA        *this,
-        ERESULT         (*pLogicalWrite)(
+        ERESULT         (*pLogicalWrite) (
             OBJ_ID          pWriteObject,
             uint32_t        lsn,                // Logical Sector Number
             uint8_t         *pBuffer            // Buffer of sectorSize bytes
@@ -183,13 +206,47 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    LRU_DATA *      lru_Init(
-        LRU_DATA        *this,
-        uint32_t        sectorSize,
-        uint32_t        cacheSize
+    /*!
+     Flush all dirty buffers on the LRU and Locked chains.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         lru_FlushAll (
+        LRU_DATA        *this
+    );
+    
+    
+    LRU_DATA *      lru_Init (
+        LRU_DATA        *this
     );
 
 
+    /*!
+     Read data into the given buffer for size number of bytes if possible
+     and then lock it from being re-used.  The sector will be taken from
+     the LRU cache if present. Otherwise, it will be added to the lockded
+     cache and removed from the LRU cache.
+     Example:
+     @code
+     ERESULT    eRc = lru_Lock(this, 4, &buffer[0]);
+                if (!ERESULT_FAILED(eRc)) {
+                    // Process data here...
+                }
+     @endcode
+     @param     this    object pointer
+     @param     lsn     logical sector number
+     @param     pBuffer pointer to the buffer of sector size bytes or larger
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         lru_Lock (
+        LRU_DATA        *this,
+        uint32_t        lsn,
+        uint8_t         *pBuffer
+    );
+    
+    
     /*!
      Read data into the given buffer for size number of bytes if possible.
      The sector will be taken from the LRU cache if present. Otherwise, it
@@ -197,21 +254,29 @@ extern "C" {
      if the LRU cache was full.
      Example:
      @code
-        ERESULT  eRc = lru_Read(this, 4, &buffer[0]);
-        if (!ERESULT_FAILED(eRc)) {
-            // Process data here...
-        }
+        ERESULT     eRc = lru_Read(this, 4, &buffer[0]);
+                    if (!ERESULT_FAILED(eRc)) {
+                        // Process data here...
+                    }
      @endcode
-     @param     this    LRU object pointer
+     @param     this    object pointer
      @param     lsn     logical sector number
      @param     pBuffer pointer to the buffer of sector size bytes or larger
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         lru_Read(
+    ERESULT         lru_Read (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint8_t         *pBuffer
+    );
+    
+    
+    ERESULT         lru_Setup (
+        LRU_DATA        *this,
+        uint32_t        blockSize,
+        uint16_t        cacheSize,          // Number of Blocks in Cache
+        uint16_t        hashSize
     );
     
     
@@ -221,13 +286,13 @@ extern "C" {
      @code
         ASTR_DATA      *pDesc = lru_ToDebugString(this,4);
      @endcode
-     @param     this    LRU object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    lru_ToDebugString(
+    ASTR_DATA *    lru_ToDebugString (
         LRU_DATA        *this,
         int             indent
     );
@@ -239,18 +304,18 @@ extern "C" {
      the oldest sector if the LRU cache was full.
      Example:
      @code
-         ERESULT  eRc = lru_Write(this, 4, &buffer[0]);
-         if (ERESULT_FAILED(eRc)) {
-            // Process error here...
-         }
+         ERESULT    eRc = lru_Write(this, 4, &buffer[0]);
+                    if (ERESULT_FAILED(eRc)) {
+                        // Process error here...
+                    }
      @endcode
-     @param     this    LRU object pointer
+     @param     this    object pointer
      @param     lsn     logical sector number
      @param     pBuffer pointer to the buffer of sector size bytes or larger
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         lru_Write(
+    ERESULT         lru_Write (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint8_t         *pBuffer

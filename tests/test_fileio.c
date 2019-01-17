@@ -148,7 +148,7 @@ int         test_fileio_Read01(
             pBuffer = NULL;
         }
         
-        fileOffset = fileio_Seek(pObj, 0);
+        fileOffset = fileio_SeekBegin(pObj, 0);
         TINYTEST_TRUE( (0 == fileOffset) );
         
         eRc = fileio_Gets(pObj, 256, buffer);

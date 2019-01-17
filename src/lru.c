@@ -3,6 +3,21 @@
  * File:   lru.c
  *	Generated 10/21/2016 23:23:20
  *
+ * Notes:
+ *
+ *  We use multiple chains to keep track of the buffers allocated. The
+ *  free chain contains all buffers that are not in-use.  Initially,
+ *  this will be all of them.  As they are put inuse, they are moved
+ *  from the free chain to the LRU chain.  They will remain there until
+ *  more space is needed.  If a buffer becomes locked, it will be moved
+ *  from either the free chain or the LRU chain to the locked chain and
+ *  will remain there until it is unlocked or the program is terminated.
+ *
+ *  The buffers are also on a second chaining system that allows fast
+ *  access by logical sector number using a hashing system.  All active
+ *  buffers are on this secondary chain.
+ 
+ *
  */
 
  
@@ -68,9 +83,7 @@ extern "C" {
     // any of mine on my Core 2 duo using gcc -O3, and it passes my favorite sanity
     // tests well. I've had reports it doesn't do well with integer sequences with
     // a multiple of 34.
-#ifdef NOT_NEEDED_YET
-    static
-    uint32_t        uint32_hash(
+    uint32_t        lru_HashInteger(
         uint32_t        a
     )
     {
@@ -83,7 +96,6 @@ extern "C" {
         
         return a;
     }
-#endif
     
     
     
@@ -93,25 +105,156 @@ extern "C" {
      *              and return it.  Otherwise, return NULL.
      */
     static
-    LRU_SECTOR *    lru_FindLSN(
+    LRU_BUFFER *    lru_FindLSN(
         LRU_DATA        *this,
-        uint32_t        lsn
+        uint32_t        lsn,
+        uint32_t        hash
     )
     {
-        uint32_t        hash = lsn % NUM_HASH_LIST;
-        LRU_SECTOR      *pSector = NULL;
+        LRU_BUFFER      *pBuffer = NULL;
         
-        while ((pSector = listdl_Next(&this->hashLists[hash], pSector))) {
-            if (pSector->lsn == lsn) {
+        while ((pBuffer = listdl_Next(&this->pHash[hash % this->hashSize], pBuffer))) {
+            if (pBuffer->lsn == lsn) {
                 break;
             }
         }
-        if (pSector) {
-            listdl_Move2Head(&this->lruList, pSector);
+        if (pBuffer) {
+            if (pBuffer->flagLocked)
+                ;
+            else
+                listdl_Move2Head(&this->lruList, pBuffer);
         }
         
-        return pSector;
+        return pBuffer;
     }
+
+
+
+    /*!
+        Search the LRU and Locked chains flushing all the dirty
+        buffers.
+     @return        If found, move it to the head of the LRU list
+                    and return it.  Otherwise, return NULL.
+     */
+    ERESULT         lru_FlushCache(
+        LRU_DATA        *this
+    )
+    {
+        LRU_BUFFER      *pBuffer = NULL;
+        ERESULT         eRc;
+
+        if (NULL == this->pLogicalWrite) {
+            return ERESULT_SUCCESS;
+        }
+
+        while ((pBuffer = listdl_Next(&this->lruList, pBuffer))) {
+            if (pBuffer->flagDirty) {
+                eRc =   this->pLogicalWrite(
+                                        this->pWriteObject,
+                                        pBuffer->lsn,
+                                        pBuffer->pData
+                        );
+                pBuffer->flagDirty = 0;
+                ++this->numWrites;
+            }
+        }
+
+        while ((pBuffer = listdl_Next(&this->lockList, pBuffer))) {
+            if (pBuffer->flagDirty) {
+                eRc =   this->pLogicalWrite(
+                                        this->pWriteObject,
+                                        pBuffer->lsn,
+                                        pBuffer->pData
+                        );
+                pBuffer->flagDirty = 0;
+                ++this->numWrites;
+            }
+        }
+
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    /*!
+     *  Search the lsn hash table for the sector.
+     *  @return     If found, move it to the head of the LRU list
+     *              and return it.  Otherwise, return NULL.
+     */
+    ERESULT         lru_FreeCache(
+        LRU_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        
+        eRc = lru_FlushCache(this);
+        
+        // Free the cache block.
+        mem_Free(this->pCache);
+        this->pCache = NULL;
+
+        // Free the buffers.
+        mem_Free(this->pBuffers);
+        this->pBuffers = NULL;
+        
+        // Free the Hash Table.
+        mem_Free(this->pHash);
+        this->pHash = NULL;
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    /*!
+     Get a buffer from the free chain for the end of the LRU chain to
+     be used next, flush it if it was dirty and rechain it to the top
+     of the LRU chain.
+     @return        If found, the buffer control entry. Otherwise,
+                    return NULL.
+     */
+    LRU_BUFFER *    lru_GetBuffer(
+        LRU_DATA        *this,
+        uint32_t        lsn,
+        uint32_t        hash
+    )
+    {
+        LRU_BUFFER      *pBufCtl = NULL;
+        ERESULT         eRc;
+        
+        // Get a sector to use.
+        if (listdl_Count(&this->freeList)) {
+            pBufCtl = listdl_DeleteHead(&this->freeList);
+            pBufCtl->flagDirty = 0;
+        }
+        else {
+            pBufCtl = listdl_DeleteTail(&this->lruList);
+            listdl_Delete(&this->pHash[pBufCtl->hash % this->hashSize], pBufCtl);
+        }
+        
+        // Flush buffer if it was dirty.
+        if (pBufCtl->flagDirty && this->pLogicalWrite) {
+            eRc =   this->pLogicalWrite(
+                                        this->pWriteObject,
+                                        pBufCtl->lsn,
+                                        pBufCtl->pData
+                    );
+            pBufCtl->flagDirty = 0;
+            ++this->numWrites;
+        }
+        
+        // Chain it to the lru and hash lists.
+        pBufCtl->flagLocked = 0;
+        pBufCtl->lsn = lsn;
+        pBufCtl->hash = hash;
+        listdl_Add2Head(&this->lruList, pBufCtl);
+        listdl_Add2Head(&this->pHash[hash % this->hashSize], pBufCtl);
+        
+        return pBufCtl;
+    }
+    
+    
+    
 
 
 
@@ -141,15 +284,34 @@ extern "C" {
 
 
     LRU_DATA *      lru_New(
-        uint32_t        sectorSize,
-        uint32_t        cacheSize
+        void
     )
     {
-        LRU_DATA       *this;
+        LRU_DATA        *this;
         
         this = lru_Alloc( );
         if (this) {
-            this = lru_Init(this, sectorSize, cacheSize);
+            this = lru_Init(this);
+        }
+        return this;
+    }
+    
+    
+    LRU_DATA *      lru_NewWithSizes(
+        uint32_t        blockSize,
+        uint32_t        cacheSize,
+        uint16_t        hashSize
+    )
+    {
+        LRU_DATA        *this;
+        ERESULT         eRc;
+        
+        this = lru_Alloc( );
+        if (this) {
+            this = lru_Init(this);
+            if (this) {
+                eRc = lru_Setup(this, blockSize, cacheSize, hashSize);
+            }
         } 
         return this;
     }
@@ -162,6 +324,50 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //----------------------------------------------------------------
+    //                  D e l a y  W r i t e s
+    //----------------------------------------------------------------
+    
+    bool            lru_getDelayWrites(
+        LRU_DATA        *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        return obj_Flag(this, LRU_FLAG_DELAY_WRITE) ? true : false;
+    }
+
+    
+    bool            lru_setDelayWrites(
+        LRU_DATA        *this,
+        bool            value
+    )
+    {
+        bool            fRc;
+        
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = obj_FlagSet(this, LRU_FLAG_DELAY_WRITE, value);
+        
+        return fRc;
+    }
+    
+    
+    
     //----------------------------------------------------------------
     //                          P r i o r i t y
     //----------------------------------------------------------------
@@ -386,7 +592,7 @@ extern "C" {
         }
 #endif
         
-        pOther = lru_New( this->sectorSize, this->cacheSize );
+        pOther = lru_New( );
         if (pOther) {
             eRc = lru_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -411,7 +617,7 @@ extern "C" {
     )
     {
         LRU_DATA        *this = objId;
-        LRU_SECTOR      *pSector = NULL;
+        ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -431,13 +637,7 @@ extern "C" {
         }
 #endif
         
-        // Free the sectors.
-        while ((pSector = (LRU_SECTOR *)listdl_DeleteHead(&this->freeList))) {
-            mem_Free(pSector);
-        }
-        while ((pSector = (LRU_SECTOR *)listdl_DeleteHead(&this->lruList))) {
-            mem_Free(pSector);
-        }
+        eRc = lru_FreeCache(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -510,17 +710,42 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                     F l u s h  A l l
+    //---------------------------------------------------------------
+    
+    ERESULT         lru_FlushAll(
+        LRU_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = lru_FlushCache(this);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
     LRU_DATA *      lru_Init(
-        LRU_DATA        *this,
-        uint32_t        sectorSize,
-        uint32_t        cacheSize
+        LRU_DATA        *this
     )
     {
         uint32_t        cbSize = sizeof(LRU_DATA);
-        uint32_t        i;
+        //uint32_t        i;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -547,7 +772,8 @@ extern "C" {
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_LRU);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&lru_Vtbl);
-        
+      
+#ifdef XYZZY
         listdl_Init(&this->freeList, offsetof(LRU_SECTOR, lruList));
         listdl_Init(&this->lruList, offsetof(LRU_SECTOR, lruList));
         for (i=0; i<NUM_HASH_LIST; ++i) {
@@ -555,6 +781,7 @@ extern "C" {
         }
         this->sectorSize = sectorSize;
         this->cacheSize = cacheSize;
+        this->hashSize = NUM_HASH_LIST;
         for (i=0; i<cacheSize; ++i) {
             LRU_SECTOR          *pSector;
             pSector = mem_Calloc(1, (sizeof(LRU_SECTOR) + sectorSize));
@@ -567,6 +794,7 @@ extern "C" {
                 return OBJ_NIL;
             }
         }
+#endif
 
     #ifdef NDEBUG
     #else
@@ -583,6 +811,59 @@ extern "C" {
 
      
 
+    //---------------------------------------------------------------
+    //                          L o c k
+    //---------------------------------------------------------------
+    
+    ERESULT         lru_Lock(
+        LRU_DATA        *this,
+        uint32_t        lsn,
+        uint8_t         *pBuffer
+    )
+    {
+        ERESULT         eRc;
+        LRU_BUFFER      *pBufCtl;
+        uint32_t        hash;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (listdl_Count(&this->lockList) > 3) {
+            DEBUG_BREAK();
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+#endif
+        
+        eRc = lru_Read(this, lsn, pBuffer);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+        
+        hash = lru_HashInteger(lsn);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            if (pBufCtl->flagLocked) {
+                return ERESULT_SUCCESS;
+            }
+            pBufCtl->flagLocked = 1;
+            listdl_Delete(&this->lruList, pBufCtl);
+            listdl_Add2Head(&this->lockList, pBufCtl);
+            if (pBufCtl->flagLocked) {
+                return ERESULT_SUCCESS;
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -647,9 +928,10 @@ extern "C" {
         uint8_t         *pBuffer
     )
     {
-        LRU_SECTOR      *pSector = NULL;
+        LRU_BUFFER      *pBufCtl = NULL;
         ERESULT         eRc;
-        
+        uint32_t        hash;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -662,35 +944,109 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+        hash = lru_HashInteger(lsn);
+
         // Use sector if already in LRU Cache.
-        pSector = lru_FindLSN(this, lsn);
-        if (pSector) {
-            memmove(pBuffer, pSector->data, this->sectorSize);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            memmove(pBuffer, pBufCtl->pData, this->blockSize);
             return ERESULT_SUCCESS;
         }
         
         // Get a sector to use.
-        if (listdl_Count(&this->freeList)) {
-            pSector = listdl_DeleteHead(&this->freeList);
-        }
-        else {
-            pSector = listdl_DeleteTail(&this->lruList);
-            listdl_Delete(&this->hashLists[pSector->lsn % NUM_HASH_LIST], pSector);
-        }
+        pBufCtl = lru_GetBuffer(this, lsn, hash);
         
         // Set up the sector.
-        eRc = this->pLogicalRead(this->pReadObject, lsn, pSector->data);
+        eRc = this->pLogicalRead(this->pReadObject, lsn, pBufCtl->pData);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            listdl_Add2Head(&this->freeList, pSector);
             return eRc;
         }
-        pSector->lsn = lsn;
-        memmove(pBuffer, pSector->data, this->sectorSize);
+        memmove(pBuffer, pBufCtl->pData, this->blockSize);
         
-        listdl_Add2Head(&this->lruList, pSector);
-        listdl_Add2Head(&this->hashLists[lsn % NUM_HASH_LIST], pSector);
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //----------------------------------------------------------
+    //                      S e t u p
+    //----------------------------------------------------------
+    
+    ERESULT         lru_Setup(
+        LRU_DATA        *this,
+        uint32_t        blockSize,
+        uint16_t        cacheSize,          // Number of Blocks in Cache
+        uint16_t        hashSize
+    )
+    {
+        ERESULT         eRc;
+        LRU_BUFFER      *pBufCntl;
+        uint8_t         *pBuffer;
+        uint32_t        i;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (blockSize > 0)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (cacheSize > 0)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = lru_FreeCache(this);
+        
+        this->blockSize = blockSize;
+        this->cacheSize = cacheSize;
+        this->hashSize  = hashSize;
+        
+        // Setup the hash.
+        listdl_Init(&this->freeList, offsetof(LRU_BUFFER, lruList));
+        listdl_Init(&this->lockList, offsetof(LRU_BUFFER, lruList));
+        listdl_Init(&this->lruList, offsetof(LRU_BUFFER, lruList));
+        this->pHash = mem_Calloc(hashSize, sizeof(LISTDL_DATA));
+        if (NULL == this->pHash) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        for (i=0; i<hashSize; ++i) {
+            listdl_Init(&this->pHash[i], offsetof(LRU_BUFFER, hashList));
+        }
+        
+        // Setup the buffers.
+        this->pBuffers = mem_Calloc(cacheSize, blockSize);
+        if (NULL == this->pBuffers) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        // Setup the buffer control blocks.
+        this->pCache = mem_Calloc(cacheSize, sizeof(LRU_BUFFER));
+        if (NULL == this->pCache) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pBuffer = this->pBuffers;
+        pBufCntl = this->pCache;
+        for (i=0; i<cacheSize; ++i) {
+            pBufCntl->pData = pBuffer;
+            listdl_Add2Head(&this->freeList, pBufCntl);
+            pBuffer += blockSize;
+            ++pBufCntl;
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -797,6 +1153,52 @@ extern "C" {
 
     
     //---------------------------------------------------------------
+    //                          U n l o c k
+    //---------------------------------------------------------------
+    
+    ERESULT         lru_Unlock(
+        LRU_DATA        *this,
+        uint32_t        lsn
+    )
+    {
+        LRU_BUFFER      *pBufCtl;
+        uint32_t        hash;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        hash = lru_HashInteger(lsn);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            if (pBufCtl->flagLocked)
+                ;
+            else {
+                return ERESULT_DATA_NOT_FOUND;
+            }
+            pBufCtl->flagLocked = 1;
+            listdl_Delete(&this->lockList, pBufCtl);
+            listdl_Add2Head(&this->lruList, pBufCtl);
+            if (pBufCtl->flagLocked) {
+                return ERESULT_SUCCESS;
+            }
+        }
+        else {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          W r i t e
     //---------------------------------------------------------------
     
@@ -807,8 +1209,9 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        LRU_SECTOR      *pSector = NULL;
-        
+        LRU_BUFFER      *pBufCtl = NULL;
+        uint32_t        hash;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -821,37 +1224,35 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+        hash = lru_HashInteger(lsn);
+
         // Use sector if already in LRU Cache.
-        pSector = lru_FindLSN(this, lsn);
-        if (pSector) {
-            memmove(pSector->data, pBuffer, this->sectorSize);
-            return ERESULT_SUCCESS;
-        }
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl)
+            ;
         else {
-            // Get a sector to use.
-            if (listdl_Count(&this->freeList)) {
-                pSector = listdl_DeleteHead(&this->freeList);
-            }
+            pBufCtl = lru_GetBuffer(this, lsn, hash);
+            if (pBufCtl)
+                ;
             else {
-                pSector = listdl_DeleteTail(&this->lruList);
-                listdl_Delete(&this->hashLists[pSector->lsn % NUM_HASH_LIST], pSector);
+                return ERESULT_INDEX_FULL;
             }
-            // Chain it to the lru and hash lists.
-            listdl_Add2Head(&this->lruList, pSector);
-            listdl_Add2Head(&this->hashLists[lsn % NUM_HASH_LIST], pSector);
         }
         
         // Set up the sector and write it out.
-        pSector->lsn = lsn;
-        memmove(pSector->data, pBuffer, this->sectorSize);
-        eRc = this->pLogicalWrite(this->pReadObject, lsn, pBuffer);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            listdl_Add2Head(&this->freeList, pSector);
-            return eRc;
+        memmove(pBufCtl->pData, pBuffer, this->blockSize);
+        pBufCtl->flagDirty = 1;
+        if (this->pLogicalWrite && !lru_getDelayWrites(this)) {
+            eRc = this->pLogicalWrite(this->pReadObject, lsn, pBuffer);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                listdl_Add2Head(&this->freeList, pBufCtl);
+                return eRc;
+            }
+            pBufCtl->flagDirty = 0;
+            ++this->numWrites;
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }

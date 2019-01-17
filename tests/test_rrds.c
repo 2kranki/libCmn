@@ -137,14 +137,39 @@ int         test_rrds_Read01(
     
     pDS80 = rrds_New();
     XCTAssertFalse( (NULL == pDS80));
+    XCTAssertTrue( (80 == rrds_getRecordSize(pDS80)));
+#if defined(__MACOSX_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    XCTAssertTrue( (82 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->rcdtrm));
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+#endif
     
-    eRc = rrds_Open(pDS80, pPath, 0);
+    eRc = rrds_Open(pDS80, pPath, 1);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+    }
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
     fprintf(stderr, "\trecordSize = %d\n", rrds_getRecordSize(pDS80));
     fprintf(stderr, "\tnumRecords = %d\n", rrds_getSize(pDS80));
     XCTAssertTrue( (80 == rrds_getRecordSize(pDS80)));
+#if defined(__MACOSX_ENV__)
     XCTAssertTrue( (81 == pDS80->recordSize));
     XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    XCTAssertTrue( (82 == pDS80->recordSize));
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+#endif
     XCTAssertTrue( (19 == rrds_getSize(pDS80)));
 
     for (i=0; i<numRcds; ++i) {

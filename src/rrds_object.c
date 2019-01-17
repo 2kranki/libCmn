@@ -388,8 +388,12 @@ RRDS_VTBL     rrds_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //rrds_IsEnabled,
- 
+    (void *)rrds_Close,
+    (void *)rrds_Create,
+    (void *)rrds_Open,
+    (void *)rrds_RecordRead,
+    (void *)rrds_RecordWrite,
+
 };
 
 

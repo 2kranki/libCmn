@@ -527,17 +527,14 @@ int         test_array_Ptr01(
         
         pData = (uint8_t *)array_Ptr(pObj, 2);
         XCTAssertFalse( (pData == NULL) );
-        XCTAssertFalse( (ERESULT_HAS_FAILED(obj_getLastError(pObj))) );
         XCTAssertTrue( (pData == (pObj->pArray + 2-1)) );
         
         pData = (uint8_t *)array_Ptr(pObj, 4);
         XCTAssertFalse( (pData == NULL) );
-        XCTAssertFalse( (ERESULT_HAS_FAILED(obj_getLastError(pObj))) );
         XCTAssertTrue( (pData == (pObj->pArray + 4-1)) );
         
         pData = (uint8_t *)array_Ptr(pObj, 2);
         XCTAssertFalse( (pData == NULL) );
-        XCTAssertFalse( (ERESULT_HAS_FAILED(obj_getLastError(pObj))) );
         XCTAssertTrue( (pData == (pObj->pArray + 2-1)) );
         
         obj_Release(pObj);

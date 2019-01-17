@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'memFile'
-//	Generated 01/13/2019 15:55:16
+//	Class Object Metods and Tables for 'memrrds'
+//	Generated 01/16/2019 16:27:57
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			MEMFILE_OBJECT_C	    1
-#include        <memFile_internal.h>
-#ifdef  MEMFILE_SINGLETON
+#define			MEMRRDS_OBJECT_C	    1
+#include        <memrrds_internal.h>
+#ifdef  MEMRRDS_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct memFile_class_data_s	{
+struct memrrds_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  MEMFILE_SINGLETON
+#ifdef  MEMRRDS_SINGLETON
     volatile
-    MEMFILE_DATA       *pSingleton;
+    MEMRRDS_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct memFile_class_data_s	{
 
 
 static
-void *          memFileClass_QueryInfo (
+void *          memrrdsClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          memFileClass_QueryInfo (
 
 static
 const
-OBJ_INFO        memFile_Info;            // Forward Reference
+OBJ_INFO        memrrds_Info;            // Forward Reference
 
 
 
 
 static
-bool            memFileClass_IsKindOf (
+bool            memrrdsClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_MEMFILE_CLASS == classID) {
+    if (OBJ_IDENT_MEMRRDS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_BLKS_CLASS == classID) {
@@ -102,11 +102,11 @@ bool            memFileClass_IsKindOf (
 
 
 static
-uint16_t		memFileClass_WhoAmI (
+uint16_t		memrrdsClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_MEMFILE_CLASS;
+    return OBJ_IDENT_MEMRRDS_CLASS;
 }
 
 
@@ -118,17 +118,17 @@ uint16_t		memFileClass_WhoAmI (
 
 static
 const
-MEMFILE_CLASS_VTBL    class_Vtbl = {
+MEMRRDS_CLASS_VTBL    class_Vtbl = {
     {
-        &memFile_Info,
-        memFileClass_IsKindOf,
+        &memrrds_Info,
+        memrrdsClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        memFile_Class,
-        memFileClass_WhoAmI,
-        (P_OBJ_QUERYINFO)memFileClass_QueryInfo,
-        NULL                        // memFileClass_ToDebugString
+        memrrds_Class,
+        memrrdsClass_WhoAmI,
+        (P_OBJ_QUERYINFO)memrrdsClass_QueryInfo,
+        NULL                        // memrrdsClass_ToDebugString
     },
 };
 
@@ -138,11 +138,11 @@ MEMFILE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-MEMFILE_CLASS_DATA  memFile_ClassObj = {
+MEMRRDS_CLASS_DATA  memrrds_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(MEMFILE_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_MEMFILE_CLASS,                     // cbIdent
+        sizeof(MEMRRDS_CLASS_DATA),                  // cbSize
+        OBJ_IDENT_MEMRRDS_CLASS,                     // cbIdent
         0,                                      // cbFlags
         0,                                      // eRc
         1,                                      // cbRetainCount
@@ -157,17 +157,17 @@ MEMFILE_CLASS_DATA  memFile_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  MEMFILE_SINGLETON
-MEMFILE_DATA *     memFile_getSingleton (
+#ifdef  MEMRRDS_SINGLETON
+MEMRRDS_DATA *     memrrds_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(memFile_ClassObj.pSingleton);
+    return (OBJ_ID)(memrrds_ClassObj.pSingleton);
 }
 
 
-bool            memFile_setSingleton (
-    MEMFILE_DATA       *pValue
+bool            memrrds_setSingleton (
+    MEMRRDS_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -187,10 +187,10 @@ bool            memFile_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (memFile_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(memFile_ClassObj.pSingleton));
+    if (memrrds_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(memrrds_ClassObj.pSingleton));
     }
-    memFile_ClassObj.pSingleton = pValue;
+    memrrds_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -200,17 +200,17 @@ bool            memFile_setSingleton (
 
 
 
-MEMFILE_DATA *     memFile_Shared (
+MEMRRDS_DATA *     memrrds_Shared (
     void
 )
 {
-    MEMFILE_DATA       *this = (OBJ_ID)(memFile_ClassObj.pSingleton);
+    MEMRRDS_DATA       *this = (OBJ_ID)(memrrds_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = memFile_New( );
-        memFile_setSingleton(this);
+        this = memrrds_New( );
+        memrrds_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // memFile_ClassObj.pSingleton = OBJ_NIL;
+        // memrrds_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -218,15 +218,15 @@ MEMFILE_DATA *     memFile_Shared (
 
 
 
-void            memFile_SharedReset (
+void            memrrds_SharedReset (
     void
 )
 {
-    MEMFILE_DATA       *this = (OBJ_ID)(memFile_ClassObj.pSingleton);
+    MEMRRDS_DATA       *this = (OBJ_ID)(memrrds_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        memFile_ClassObj.pSingleton = OBJ_NIL;
+        memrrds_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -242,13 +242,13 @@ void            memFile_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          memFileClass_QueryInfo (
+void *          memrrdsClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    MEMFILE_CLASS_DATA *this = objId;
+    MEMRRDS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -259,7 +259,7 @@ void *          memFileClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(MEMFILE_DATA);
+            return (void *)sizeof(MEMRRDS_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -274,7 +274,7 @@ void *          memFileClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&memFile_Info;
+                        return (void *)&memrrds_Info;
                     }
                     break;
                     
@@ -292,13 +292,13 @@ void *          memFileClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return memFile_New;
+                        return memrrds_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return memFileClass_WhoAmI;
+                        return memrrdsClass_WhoAmI;
                     }
                     break;
                     
@@ -318,11 +318,11 @@ void *          memFileClass_QueryInfo (
 
 
 static
-bool            memFile_IsKindOf (
+bool            memrrds_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_MEMFILE == classID) {
+    if (OBJ_IDENT_MEMRRDS == classID) {
        return true;
     }
     if (OBJ_IDENT_BLKS == classID) {
@@ -337,25 +337,25 @@ bool            memFile_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            memFile_Dealloc (
+void            memrrds_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          memFile_Class (
+OBJ_ID          memrrds_Class (
     void
 )
 {
-    return (OBJ_ID)&memFile_ClassObj;
+    return (OBJ_ID)&memrrds_ClassObj;
 }
 
 
 static
-uint16_t		memFile_WhoAmI (
+uint16_t		memrrds_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_MEMFILE;
+    return OBJ_IDENT_MEMRRDS;
 }
 
 
@@ -367,57 +367,48 @@ uint16_t		memFile_WhoAmI (
 //===========================================================
 
 const
-MEMFILE_VTBL     memFile_Vtbl = {
+MEMRRDS_VTBL     memrrds_Vtbl = {
     {
-        &memFile_Info,
-        memFile_IsKindOf,
-#ifdef  MEMFILE_IS_SINGLETON
+        &memrrds_Info,
+        memrrds_IsKindOf,
+#ifdef  MEMRRDS_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        memFile_Dealloc,
-        memFile_Class,
-        memFile_WhoAmI,
-        (P_OBJ_QUERYINFO)memFile_QueryInfo,
-        (P_OBJ_TOSTRING)memFile_ToDebugString,
-        NULL,			// memFile_Enable,
-        NULL,			// memFile_Disable,
-        NULL,			// (P_OBJ_ASSIGN)memFile_Assign,
-        NULL,			// (P_OBJ_COMPARE)memFile_Compare,
-        NULL, 			// (P_OBJ_PTR)memFile_Copy,
-        NULL, 			// (P_OBJ_PTR)memFile_DeepCopy,
-        NULL 			// (P_OBJ_HASH)memFile_Hash,
+        memrrds_Dealloc,
+        memrrds_Class,
+        memrrds_WhoAmI,
+        (P_OBJ_QUERYINFO)memrrds_QueryInfo,
+        (P_OBJ_TOSTRING)memrrds_ToDebugString,
+        NULL,			// memrrds_Enable,
+        NULL,			// memrrds_Disable,
+        NULL,			// (P_OBJ_ASSIGN)memrrds_Assign,
+        NULL,			// (P_OBJ_COMPARE)memrrds_Compare,
+        NULL, 			// (P_OBJ_PTR)memrrds_Copy,
+        NULL, 			// (P_OBJ_PTR)memrrds_DeepCopy,
+        NULL 			// (P_OBJ_HASH)memrrds_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    (void *)memFile_Close,
-    (void *)memFile_Create,
-    (void *)memFile_Gets,
-    (void *)memFile_Open,
-    (void *)memFile_Read,
-    (void *)memFile_SeekBegin,
-    (void *)memFile_SeekCur,
-    (void *)memFile_SeekEnd,
-    (void *)memFile_Size,
-    (void *)memFile_Tell,
-    (void *)memFile_Write,
+    //memrrds_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        memFile_Info = {
-    "memFile",
-    "Memory Based File",
-    (OBJ_DATA *)&memFile_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&memFile_Vtbl,
-    sizeof(MEMFILE_DATA)
+OBJ_INFO        memrrds_Info = {
+    "memrrds",
+    "Memory-Based Relative Record Dataset/File",
+    (OBJ_DATA *)&memrrds_ClassObj,
+    (OBJ_DATA *)&blks_ClassObj,
+    (OBJ_IUNKNOWN *)&memrrds_Vtbl,
+    sizeof(MEMRRDS_DATA)
 };
 
 

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   hashtbl_internal.h
- *	Generated 01/12/2019 11:49:43
+ * File:   memrrds_internal.h
+ *	Generated 01/16/2019 16:27:57
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <hashtbl.h>
-#include        <blocks_internal.h>
+#include        <memrrds.h>
+#include        <blks_internal.h>
 #include        <jsonIn.h>
 
 
-#ifndef HASHTBL_INTERNAL_H
-#define	HASHTBL_INTERNAL_H
+#ifndef MEMRRDS_INTERNAL_H
+#define	MEMRRDS_INTERNAL_H
 
 
 
@@ -59,45 +59,32 @@ extern "C" {
 
 
 
-#pragma pack(push, 1)
-    typedef struct hashTbl_entry_s    {
-        LISTDL_NODE     hashList;
-        uint32_t        hash;               // Logical Sector Number
-        void            *pKey;
-        void            *pData;
-    } HASHTBL_ENTRY;
-#pragma pack(pop)
-    
-    
-    
 
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct hashtbl_data_s	{
+struct memrrds_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLOCKS_DATA     super;
+    BLKS_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        hashSize;           // maximum number of elements
+    uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    uint32_t        size;		        // number of records in hash
     ASTR_DATA       *pStr;
-    
 
 };
 #pragma pack(pop)
 
     extern
-    struct hashtbl_class_data_s  hashtbl_ClassObj;
+    struct memrrds_class_data_s  memrrds_ClassObj;
 
     extern
     const
-    HASHTBL_VTBL         hashtbl_Vtbl;
+    MEMRRDS_VTBL         memrrds_Vtbl;
 
 
 
@@ -105,13 +92,13 @@ struct hashtbl_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  HASHTBL_SINGLETON
-    HASHTBL_DATA *     hashtbl_getSingleton (
+#ifdef  MEMRRDS_SINGLETON
+    MEMRRDS_DATA *     memrrds_getSingleton (
         void
     );
 
-    bool            hashtbl_setSingleton (
-     HASHTBL_DATA       *pValue
+    bool            memrrds_setSingleton (
+     MEMRRDS_DATA       *pValue
 );
 #endif
 
@@ -121,30 +108,30 @@ struct hashtbl_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  hashtbl_getSuperVtbl (
-        HASHTBL_DATA     *this
+    OBJ_IUNKNOWN *  memrrds_getSuperVtbl (
+        MEMRRDS_DATA     *this
     );
 
 
-    void            hashtbl_Dealloc (
+    void            memrrds_Dealloc (
         OBJ_ID          objId
     );
 
 
-    HASHTBL_DATA *       hashtbl_ParseObject (
+    MEMRRDS_DATA *       memrrds_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          hashtbl_QueryInfo (
+    void *          memrrds_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     hashtbl_ToJSON (
-        HASHTBL_DATA      *this
+    ASTR_DATA *     memrrds_ToJSON (
+        MEMRRDS_DATA      *this
     );
 
 
@@ -152,8 +139,8 @@ struct hashtbl_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			hashtbl_Validate (
-        HASHTBL_DATA       *this
+    bool			memrrds_Validate (
+        MEMRRDS_DATA       *this
     );
 #endif
 
@@ -163,5 +150,5 @@ struct hashtbl_data_s	{
 }
 #endif
 
-#endif	/* HASHTBL_INTERNAL_H */
+#endif	/* MEMRRDS_INTERNAL_H */
 

@@ -72,10 +72,12 @@ extern "C" {
     
 #pragma pack(push, 1)
     typedef struct  bpt32idx_block_s {
+        uint16_t        blkType;        // BPT32IDX_DATA
+        uint16_t        rsvd16;
         uint32_t        prev;           // Previous Leaf Node Index
         uint32_t        next;           // Next Leaf Node Index
         uint32_t        parent;         // Parent Node Index
-        uint32_t        used;
+        uint32_t        used;           // Number of nodes in use
         BPT32IDX_NODE   nodes[0];
     } BPT32IDX_BLOCK;
 #pragma pack(pop)

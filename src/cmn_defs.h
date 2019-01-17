@@ -296,6 +296,8 @@ extern "C" {
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMOSX,               // Memory Debug for OSX
         OBJ_IDENT_MEMOSX_CLASS,
+        OBJ_IDENT_MEMRRDS,              // Memory-Based Relative Record Dataset/File
+        OBJ_IDENT_MEMRRDS_CLASS,
         OBJ_IDENT_MISC,                 // Miscellaneous Functions
         OBJ_IDENT_MISC_CLASS,
         OBJ_IDENT_MSGBUS,               // Message Broadcast
