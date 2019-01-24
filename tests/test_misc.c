@@ -232,13 +232,65 @@ int         test_misc_Match01(
 
 
 
+int         test_misc_Prime01(
+    const
+    char        *pTestName
+)
+{
+    bool        fRc;
+    uint64_t    amt;
+    uint64_t    amt2;
+
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    fRc = misc_IsPrime(2049);
+    XCTAssertTrue( (!fRc) );
+    fRc = misc_IsPrime(2051);
+    XCTAssertTrue( (!fRc) );
+    fRc = misc_IsPrime(2053);
+    XCTAssertTrue( (fRc) );
+    fRc = misc_IsPrime(2057);
+    XCTAssertTrue( (!fRc) );
+
+    fRc = misc_IsPrime(4097);
+    XCTAssertTrue( (!fRc) );
+    fRc = misc_IsPrime(4099);
+    XCTAssertTrue( (fRc) );
+    fRc = misc_IsPrime(4101);
+    XCTAssertTrue( (!fRc) );
+    fRc = misc_IsPrime(4103);
+    XCTAssertTrue( (!fRc) );
+
+    fRc = misc_IsPrime(8209);
+    XCTAssertTrue( (fRc) );
+
+    fRc = misc_IsPrime(16411);
+    XCTAssertTrue( (fRc) );
+    
+    amt = 2147483648;
+    amt2 = amt - 1;
+    fRc = false;
+    while (!fRc) {
+        amt2 += 2;
+        fRc = misc_IsPrime(amt2);
+    }
+    fprintf(stderr, "\tPrime for %lld is %lld\n", amt, amt2);
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_misc);
-  TINYTEST_ADD_TEST(test_misc_Match01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_Parity01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_BitReversal01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_Abbrev01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_misc_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_misc_Prime01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_misc_Match01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_misc_Parity01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_misc_BitReversal01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_misc_Abbrev01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_misc_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_misc);

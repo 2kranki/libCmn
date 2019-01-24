@@ -139,7 +139,13 @@ extern "C" {
         void
     );
     
+    BPT32LF_DATA *  bpt32lf_NewWithSizes (
+        uint32_t        blockSize,
+        uint16_t        dataSize
+    );
     
+    
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -170,6 +176,16 @@ extern "C" {
                             BPT32LF_DATA    *pNew
         ),
         OBJ_ID          pBlockObject
+    );
+    
+    
+    uint32_t        bpt32lf_getIndex (
+        BPT32LF_DATA    *this
+    );
+    
+    bool            bpt32lf_setIndex (
+        BPT32LF_DATA    *this,
+        uint32_t        value
     );
     
     

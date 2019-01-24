@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <macosx/memOSX_internal.h>
+#include    <memOSX_internal.h>
 #include    <trace.h>
 #include    <pthread.h>
 #include    <stdio.h>
@@ -677,7 +677,7 @@ extern "C" {
 
     bool            memOSX_setLeakExit(
         MEMOSX_DATA     *this,
-        P_VOIDEXIT1     rtn,
+        P_VOID_EXIT1    rtn,
         void            *pObject
     )
     {

@@ -91,6 +91,9 @@ bool            rrdsClass_IsKindOf (
     if (OBJ_IDENT_RRDS_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_LRU_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -322,6 +325,9 @@ bool            rrds_IsKindOf (
     if (OBJ_IDENT_RRDS == classID) {
        return true;
     }
+    if (OBJ_IDENT_LRU == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
@@ -404,7 +410,7 @@ OBJ_INFO        rrds_Info = {
     "rrds",
     "Relative Record Dataset/File",
     (OBJ_DATA *)&rrds_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&lru_ClassObj,
     (OBJ_IUNKNOWN *)&rrds_Vtbl,
     sizeof(RRDS_DATA)
 };

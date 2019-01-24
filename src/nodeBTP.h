@@ -280,7 +280,7 @@ extern "C" {
      */
     ERESULT         nodeBTP_ForEach(
         NODEBTP_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,               // Used as first parameter of scan method
         void            *pArg3              // Used as third parameter of scan method
     );
@@ -322,8 +322,8 @@ extern "C" {
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
     ERESULT         nodeBTP_VisitNodesPostRecurse(
-        NODEBTP_DATA     *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEBTP_DATA    *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );
@@ -332,15 +332,15 @@ extern "C" {
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
     ERESULT         nodeBTP_VisitNodesInParent(   // Use Parent link (not recursive).
-        NODEBTP_DATA     *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEBTP_DATA    *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,
         void            *pArg3
     );
     
     ERESULT         nodeBTP_VisitNodesInRecurse(
-        NODEBTP_DATA     *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEBTP_DATA    *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );
@@ -349,15 +349,15 @@ extern "C" {
     /*! Visit all the nodes in the Tree using a Post-order traversal.
      */
     ERESULT         nodeBTP_VisitNodesPreParent(
-        NODEBTP_DATA     *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEBTP_DATA    *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,
         void            *pArg3
     );
     
     ERESULT         nodeBTP_VisitNodesPreRecurse(
-        NODEBTP_DATA     *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEBTP_DATA    *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );

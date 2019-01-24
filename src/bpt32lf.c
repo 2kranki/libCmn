@@ -186,7 +186,7 @@ extern "C" {
 
 
 
-    BPT32LF_DATA *     bpt32lf_New (
+    BPT32LF_DATA *  bpt32lf_New (
         void
     )
     {
@@ -200,6 +200,28 @@ extern "C" {
     }
 
 
+    BPT32LF_DATA *  bpt32lf_NewWithSizes (
+        uint32_t        blockSize,
+        uint16_t        dataSize
+    )
+    {
+        BPT32LF_DATA    *this;
+        ERESULT         eRc;
+        
+        this = bpt32lf_New( );
+        if (this) {
+            eRc = bpt32lf_SetupSizes(this, blockSize, dataSize);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+        }
+        return this;
+    }
+    
+    
+    
 
     
 
@@ -230,7 +252,32 @@ extern "C" {
     }
     
     
+    bool            bpt32lf_setBlock (
+        BPT32LF_DATA    *this,
+        uint8_t         *pValue
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if (obj_Flag(this, BPT32LF_BLOCK_ALLOC) && this->pBlock) {
+            mem_Free(this->pBlock);
+            this->pBlock = NULL;
+            obj_FlagOff(this, BPT32LF_BLOCK_ALLOC);
+        }
+        
+        return (uint8_t *)this->pBlock;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                    B l o c k  E x i t s
     //---------------------------------------------------------------
@@ -312,48 +359,6 @@ extern "C" {
 #endif
         
         this->pBlock->next = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          P a r e n t
-    //---------------------------------------------------------------
-    
-    uint32_t        bpt32lf_getParent (
-        BPT32LF_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!bpt32lf_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->pBlock->parent;
-    }
-    
-    
-    bool            bpt32lf_setParent (
-        BPT32LF_DATA    *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32lf_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pBlock->parent = value;
         
         return true;
     }
@@ -746,10 +751,7 @@ extern "C" {
         }
 #endif
 
-        if (this->pBlock) {
-            mem_Free(this->pBlock);
-            this->pBlock = NULL;
-        }
+        bpt32lf_setBlock(this, NULL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1178,6 +1180,59 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          L R U
+    //---------------------------------------------------------------
+    
+    void            bpt32lf_lruAttach (
+        BPT32LF_DATA    *this,
+        void            *pData,
+        uint32_t        lsn
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+        
+        this->pBlock = pData;
+        this->rcdNum = lsn;
+        
+        // Return to caller.
+    }
+    
+    
+    void            bpt32lf_lruDetach (
+        BPT32LF_DATA    *this
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+        
+        this->pBlock = NULL;
+        this->rcdNum = 0;
+        
+        // Return to caller.
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -1271,6 +1326,15 @@ extern "C" {
                         }
                         break;
 
+                    case 'l':
+                        if (str_Compare("lruAttach", (char *)pStr) == 0) {
+                            return bpt32lf_lruAttach;
+                        }
+                        if (str_Compare("lruDetach", (char *)pStr) == 0) {
+                            return bpt32lf_lruDetach;
+                        }
+                        break;
+                        
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return bpt32lf_ToDebugString;
@@ -1347,7 +1411,10 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pBlock->blkType = OBJ_IDENT_BPT32LF;
+        obj_FlagOn(this, BPT32LF_BLOCK_ALLOC);
+        this->pBlock->blockType = OBJ_IDENT_BPT32LF;
+        this->pBlock->actualSize = ROUNDUP4(dataSize);
+        this->pBlock->max = this->maxRcds;
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1534,10 +1601,9 @@ extern "C" {
             }
             eRc = AStr_AppendPrint(
                                    pStr,
-                                   "\tprev=%d next=%d parent=%d\n",
+                                   "\tprev=%d next=%d\n",
                                    this->pBlock->prev,
-                                   this->pBlock->next,
-                                   this->pBlock->parent
+                                   this->pBlock->next
                                    );
             for (i=0; i<this->pBlock->used; ++i) {
                 pNode = bpt32lf_Index2Node(this, i);

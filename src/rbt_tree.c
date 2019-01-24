@@ -709,7 +709,7 @@ int                 rbt_VerifyTree (
 ERESULT         rbt_VisitNodeInRecurse (
     RBT_TREE        *this,
     RBT_NODE        *pRecord,
-    P_VOIDEXIT3_BE  pScan,
+    P_ERESULT_EXIT3 pScan,
     OBJ_ID          pObj,            // Used as first parameter of scan method
     void            *pArg3
 )
@@ -745,7 +745,7 @@ ERESULT         rbt_VisitNodeInRecurse (
 ERESULT         rbt_VisitNodePostRecurse (
     RBT_TREE        *this,
     RBT_NODE        *pRecord,
-    P_VOIDEXIT3_BE  pScan,
+    P_ERESULT_EXIT3 pScan,
     OBJ_ID          pObj,            // Used as first parameter of scan method
     void            *pArg3
 )
@@ -781,7 +781,7 @@ ERESULT         rbt_VisitNodePostRecurse (
 ERESULT         rbt_VisitNodePreRecurse (
     RBT_TREE        *this,
     RBT_NODE        *pRecord,
-    P_VOIDEXIT3_BE  pScan,
+    P_ERESULT_EXIT3 pScan,
     OBJ_ID          pObj,            // Used as first parameter of scan method
     void            *pArg3
 )

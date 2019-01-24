@@ -62,6 +62,7 @@ extern "C" {
         uint8_t         flagDirty;
         uint8_t         flagLocked;
         uint16_t        rsvd16;
+        OBJ_ID          pObj;
         uint8_t         *pData;         //
     } LRU_BUFFER;
 #pragma pack(pop)

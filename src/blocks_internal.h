@@ -96,7 +96,7 @@ struct blocks_data_s	{
     uint32_t        unique;
 
     // Record Deletion Exit
-    P_VOIDEXIT3_BE  pDelete;
+    P_ERESULT_EXIT3 pDelete;
     OBJ_ID          pObj;           // Used as first parameter of pDelete
     void            *pArg3;         // Used as third paarameter of pDelete
 };

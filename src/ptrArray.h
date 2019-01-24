@@ -215,7 +215,7 @@ extern "C" {
     //	FALSE        	=	Unsuccessful Completion
     ERESULT 		ptrArray_Visit(
         PTRARRAY_DATA   *this,
-        P_VOIDEXIT2_BE  pVisitor,
+        P_ERESULT_EXIT2 pVisitor,
         void            *pObj       // 1st parm to pVisitor
     );
     

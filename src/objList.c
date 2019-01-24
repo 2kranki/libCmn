@@ -711,7 +711,7 @@ extern "C" {
     
     ERESULT         objList_ForEach(
         OBJLIST_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObject,        // Used as first parameter of scan method
         void            *pArg3
     )

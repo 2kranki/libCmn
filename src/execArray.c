@@ -209,9 +209,9 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
 
-    ERESULT         execArray_AddObjectMethod(
+    ERESULT         execArray_AddMethod(
         EXECARRAY_DATA	*this,
-        P_VOIDEXIT1_PTR pMethod,
+        P_VOID_PTR_EXIT1 pMethod,
         OBJ_ID          pObject         // May be OBJ_NIL
     )
     {
@@ -300,7 +300,7 @@ extern "C" {
         uint16_t        i;
         uint16_t        iMax;
         void            *pPtr;
-        P_VOIDEXIT1_PTR pMethod;
+        P_VOID_PTR_EXIT1 pMethod;
         OBJ_ID          pObject;
         
 

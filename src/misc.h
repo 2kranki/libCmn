@@ -179,6 +179,12 @@ extern "C" {
     );
     
     
+    // Simple but slow routine to check if a number is prime.
+    bool            misc_IsPrime(
+        uint64_t        amt
+    );
+    
+    
     /*!
      * PatternMatch() is a generalized procedure for working with "wild card"
      * names using the '*' and '?' conventions.  It is superior to the wild
@@ -218,6 +224,11 @@ extern "C" {
         char            *pNewname           // Optional UTF-8 Output String
     );
     
+    
+    
+    uint32_t        misc_Pwr2_Prime(
+        uint32_t        amt
+    );
     
     
     uint32_t        misc_Pwr2_Shift(

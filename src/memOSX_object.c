@@ -32,7 +32,7 @@
 
 
 #include        <obj.h>
-#include        <macosx/memOSX_internal.h>
+#include        <memOSX_internal.h>
 
 
 

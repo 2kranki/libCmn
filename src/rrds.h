@@ -68,6 +68,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <lru.h>
 
 
 #ifndef         RRDS_H
@@ -90,8 +91,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct rrds_data_s	RRDS_DATA;            // Inherits from OBJ
-    typedef struct rrds_class_data_s RRDS_CLASS_DATA;   // Inherits from OBJ
+    typedef struct rrds_data_s	RRDS_DATA;            // Inherits from LRU
+    typedef struct rrds_class_data_s RRDS_CLASS_DATA; // Inherits from OBJ
 
     typedef struct rrds_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -193,6 +194,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    LRU_DATA *  rrds_getLRU (
+        RRDS_DATA   *this
+    );
+    
+    
     PATH_DATA *     rrds_getPath (
         RRDS_DATA       *this
     );
@@ -247,8 +253,7 @@ extern "C" {
      */
     ERESULT         rrds_Create (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath,
-        uint16_t        cLRU            // Number of LRU Buffers
+        PATH_DATA       *pPath
     );
     
     
@@ -265,14 +270,12 @@ extern "C" {
      this routine.
      @param     this    object pointer
      @param     pPath   dataset path pointer
-     @param     cLRU    number of LRU buffers to use (relative to zero)
      @Return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*
                 error.
      */
     ERESULT         rrds_Open (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath,
-        uint16_t        cLRU            // Number of LRU Buffers
+        PATH_DATA       *pPath
     );
     
     
@@ -307,6 +310,28 @@ extern "C" {
         RRDS_DATA       *this,
         uint32_t        recordNum,
         uint8_t         *pData    // Data Ptr (if NULL, a FillChar record is written)
+    );
+    
+    
+    /*!
+     Initialize the RRDS and LRU mechanisms for this rrds and the basic
+     constants.  This overrides the defaults of record size of 80, record
+     terminator dependent on O/S, LRU buffers of 1 and LRU Hash of 13. This
+     should be called before a Create() or an Open().
+     @param     this    object pointer
+     @param     cLRU    number of LRU buffers to use (relative to one and default is 1)
+     @param     cHash   Number of Hash chains for LRU mechanism
+                        (You should use a prime number for this and default is 13).
+     @Return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         rrds_SetupSizes (
+        RRDS_DATA       *this,
+        uint16_t        recordSize,     // Record Size without optional terminator
+        uint16_t        recordTerm,     // Record Terminator Type
+        //                              // (See rrds_rcd_trm_e above)
+        uint16_t        cLRU,           // Number of LRU Buffers
+        uint16_t        cHash           // Number of LRU Hash Chains
     );
     
     

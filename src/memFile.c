@@ -906,7 +906,7 @@ extern "C" {
         uint32_t        *pReadCount         // (out)
     )
     {
-        ERESULT         eRc = ERESULT_INVALID_PARAMETER;
+        //ERESULT         eRc = ERESULT_INVALID_PARAMETER;
         uint8_t         *pData;
         uint32_t        sizeRead;
 

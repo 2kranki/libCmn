@@ -1,12 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 /*****************************************************************/
-/*				File Record I/O System (RRDS) Header File		 */
+/*				File Record I/O System (RRDS32) Header File		 */
 /*****************************************************************/
 /*
  * Purpose
- *			The RRDS routines provide Record I/O functions for a
- *			dataset/file.  An RRDS dataset/file consists of an
+ *			The RRDS32 routines provide Record I/O functions for a
+ *			dataset/file.  An RRDS32 dataset/file consists of an
  *			optional fixed-length Header followed by zero or more
  *			fixed length records. The header size is internally
  *          calculated based on compile time constants.

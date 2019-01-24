@@ -150,7 +150,7 @@ extern "C" {
      */
     bool            blocks_setDeleteExit(
         BLOCKS_DATA     *this,
-        P_VOIDEXIT3_BE  pDelete,
+        P_ERESULT_EXIT3 pDelete,
         OBJ_ID          pObj,           // Used as first parameter of scan method
         void            *pArg3          // Used as third parameter of scan method
     );
@@ -232,7 +232,7 @@ extern "C" {
      */
     ERESULT         blocks_ForEach(
         BLOCKS_DATA     *this,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,           // Used as first parameter of scan method
         void            *pArg3          // Used as third parameter of scan method
     );

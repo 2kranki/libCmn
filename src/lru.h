@@ -21,10 +21,17 @@
  *          the buffers by hashing it and otherwise is simply passed
  *          on as is to the physical read/write routines.
  *
+ *          Optionally, you can load the buffers with reads or locks
+ *          without buffer pointers and then get the buffer address
+ *          using FindBuffer().  Be aware that if you did not lock
+ *          the buffer, it might be re-used while you have access to
+ *          it.  Lock()/Unlock() pairs are the safest way to go.
+ *
  * Remarks
- *	1.      Writing to the file is a write-through and written sectors
- *          are added to the LRU.  Therefore, the LRU mechanism doesn't
- *          need to be flushed at file close.
+ *	1.      If the delayed-writes property is set, writing to the file
+ *          is only done when a buffer is needed for re-use or the \
+ *          system is being shutdown.  Writes are accumulated in memory
+ *          until then minimizing I/O.
  *
  * History
  *	10/21/2016 Generated
@@ -207,6 +214,26 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Attach an Object to an active Buffer.  The object must support
+     lruAttach() and lruDetach() methods.  The lruAttach() is called
+     when object is attached to the buffer.  The lruDetach() is called
+     when the buffer is being reused for a different record on the
+     lru list.  Both routines are found via the QueryInfo() method of
+     the object.
+     @param     this    object pointer
+     @param     lsn     logical sector number
+     @param     pObject object pointer to be attached to the buffer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         lru_AttachObjectToBuffer (
+        LRU_DATA        *this,
+        uint32_t        lsn,
+        OBJ_ID          pObject
+    );
+    
+    
+    /*!
      Flush all dirty buffers on the LRU and Locked chains.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
@@ -214,6 +241,19 @@ extern "C" {
      */
     ERESULT         lru_FlushAll (
         LRU_DATA        *this
+    );
+    
+    
+    /*!
+     Search the LRU buffers for the buffer given.  If found, return
+     the buffer address.
+     @param     this    object pointer
+     @param     lsn     logical sector number
+     @return    If successful, the buffer address. Otherwise, NULL.
+     */
+    uint8_t *       lru_FindBuffer (
+        LRU_DATA        *this,
+        uint32_t        lsn
     );
     
     
@@ -236,7 +276,7 @@ extern "C" {
      @endcode
      @param     this    object pointer
      @param     lsn     logical sector number
-     @param     pBuffer pointer to the buffer of sector size bytes or larger
+     @param     pBuffer optional pointer to the buffer of sector size bytes or larger
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
      error code.
      */
@@ -244,6 +284,21 @@ extern "C" {
         LRU_DATA        *this,
         uint32_t        lsn,
         uint8_t         *pBuffer
+    );
+    
+    
+    /*!
+     Search the LRU buffers for the buffer given.  If found, set the
+     buffer as dirty so that it will be flushed out the next time
+     that flusing is triggered.
+     @param     this    object pointer
+     @param     lsn     logical sector number
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         lru_MakeDirty (
+        LRU_DATA        *this,
+        uint32_t        lsn
     );
     
     
@@ -261,7 +316,7 @@ extern "C" {
      @endcode
      @param     this    object pointer
      @param     lsn     logical sector number
-     @param     pBuffer pointer to the buffer of sector size bytes or larger
+     @param     pBuffer optional pointer to the buffer of sector size bytes or larger
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
@@ -295,6 +350,22 @@ extern "C" {
     ASTR_DATA *    lru_ToDebugString (
         LRU_DATA        *this,
         int             indent
+    );
+    
+    
+    /*!
+     Unlock a previously locked buffer and optionally mark it as dirty
+     (ie needing to be flushed).
+     @param     this    object pointer
+     @param     lsn     logical sector number
+     @param     fDirty  true == make buffer as dirty
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         lru_Unlock (
+        LRU_DATA        *this,
+        uint32_t        lsn,
+        bool            fDirty
     );
     
     

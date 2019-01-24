@@ -694,7 +694,7 @@ extern "C" {
     
     ERESULT 		ptrArray_Visit(
         PTRARRAY_DATA   *cbp,
-        P_VOIDEXIT2_BE  pVisitor,
+        P_ERESULT_EXIT2 pVisitor,
         void            *pObj       // 1st parm to pVisitor
     )
     {
@@ -711,7 +711,7 @@ extern "C" {
 #endif
         
         for (i=0; i<cbp->max; ++i) {
-            eRc = pVisitor(pObj,cbp->ppArray[i]);
+            eRc = pVisitor(pObj, cbp->ppArray[i]);
             if (ERESULT_HAS_FAILED(eRc)) {
                 return eRc;
             }

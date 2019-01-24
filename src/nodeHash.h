@@ -406,8 +406,8 @@ extern "C" {
      @note      See Remark #1 above.
      */
     ERESULT         nodeHash_ForEach (
-        NODEHASH_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEHASH_DATA   *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,           // First parameter of scan method
         //                              // Second parameter of scan method,
         //                              // the node pointer (NODE_DATA *)

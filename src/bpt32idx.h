@@ -140,6 +140,13 @@ extern "C" {
     );
     
     
+    BPT32IDX_DATA * bpt32idx_NewWithSizes (
+        uint32_t        blockSize,
+        uint16_t        dataSize
+    );
+    
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -171,6 +178,16 @@ extern "C" {
                             BPT32IDX_DATA    *pNew
                         ),
         OBJ_ID          pBlockObject
+    );
+    
+    
+    uint32_t        bpt32idx_getIndex (
+        BPT32IDX_DATA    *this
+    );
+    
+    bool            bpt32idx_setIndex (
+        BPT32IDX_DATA    *this,
+        uint32_t        value
     );
     
     

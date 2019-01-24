@@ -82,7 +82,7 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct  nodeBTP_visit_s {
         NODEBTP_RECORD  *pRecord;       // Current Record
-        P_VOIDEXIT3_BE  pScan;
+        P_ERESULT_EXIT3 pScan;
         OBJ_ID          pObj;           // Used as first parameter of scan method
         void            *pArg3;
     } NODEBTP_VISIT;
@@ -197,7 +197,7 @@ struct nodeBTP_data_s	{
     ERESULT         nodeBTP_VisitNodeInRecurse (
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );
@@ -206,7 +206,7 @@ struct nodeBTP_data_s	{
     ERESULT         nodeBTP_VisitNodePostRecurse (
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );
@@ -215,7 +215,7 @@ struct nodeBTP_data_s	{
     ERESULT         nodeBTP_VisitNodePreRecurse(
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pNode,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );

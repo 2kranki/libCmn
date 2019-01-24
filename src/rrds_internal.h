@@ -42,7 +42,7 @@
 #include        <rrds.h>
 #include        <fileio.h>
 #include        <jsonIn.h>
-#include        <lru.h>
+#include        <lru_internal.h>
 
 
 #ifndef RRDS_INTERNAL_H
@@ -50,7 +50,8 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_IO_OWNED   1
+#define     PROPERTY_STR_OWNED  1
 
 
 
@@ -69,15 +70,18 @@ extern "C" {
 struct rrds_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    LRU_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    // OBJ_FLAG_USER1 is used in LRU
 
     // Common Data
     FILEIO_DATA     *pIO;
-    LRU_DATA        *pLRU;
     uint16_t        recordSize;     // Real Record Size including Record Terminators
-    uint16_t        reqSize;        // Required Record Size
-    uint8_t         rcdtrm;         // Record Terminator (see rcd_trm_e)
+    uint16_t        reqSize;        // Requested Record Size without optional
+    //                              // terminators included
+    uint16_t        cLRU;
+    uint16_t        cHash;
+    uint8_t         recordTerm;     // Record Terminator (see rcd_trm_e)
     uint8_t         fillChar;
     uint8_t         rsvd8[2];
     uint32_t        cRecords;
@@ -114,8 +118,14 @@ struct rrds_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            rrds_setIO (
+        RRDS_DATA       *this,
+        OBJ_ID          pValue
+    );
+    
+    
     OBJ_IUNKNOWN *  rrds_getSuperVtbl (
-        RRDS_DATA     *this
+        RRDS_DATA       *this
     );
 
 
@@ -124,7 +134,7 @@ struct rrds_data_s	{
     );
 
 
-    RRDS_DATA *   rrds_ParseObject (
+    RRDS_DATA *     rrds_ParseObject (
         JSONIN_DATA     *pParser
     );
 
@@ -137,9 +147,7 @@ struct rrds_data_s	{
 
 
     ERESULT         rrds_Setup (
-        RRDS_DATA     *this,
-        PATH_DATA       *pPath,
-        uint16_t        cLRU            // Number of LRU Buffers
+        RRDS_DATA       *this
     );
     
     

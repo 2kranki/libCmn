@@ -177,6 +177,9 @@ extern "C" {
         ERESULT_DISK_FULL                   = -97,
         ERESULT_DIRECTORY_FULL              = -98,
         ERESULT_FILE_OPERATION_FAILED       = -99,
+        ERESULT_OUT_OF_BUFFERS              = -100,
+        ERESULT_BUFFER_FULL                 = -101,
+        ERESULT_BUFFER_TOO_SMALL            = -102,
 
         ERESULT_INVALID_PASSWORD            = -128,
         

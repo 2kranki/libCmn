@@ -83,7 +83,7 @@ extern "C" {
     // any of mine on my Core 2 duo using gcc -O3, and it passes my favorite sanity
     // tests well. I've had reports it doesn't do well with integer sequences with
     // a multiple of 34.
-    uint32_t        lru_HashInteger(
+    uint32_t        lru_HashInteger (
         uint32_t        a
     )
     {
@@ -105,7 +105,7 @@ extern "C" {
      *              and return it.  Otherwise, return NULL.
      */
     static
-    LRU_BUFFER *    lru_FindLSN(
+    LRU_BUFFER *    lru_FindLSN (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint32_t        hash
@@ -136,7 +136,7 @@ extern "C" {
      @return        If found, move it to the head of the LRU list
                     and return it.  Otherwise, return NULL.
      */
-    ERESULT         lru_FlushCache(
+    ERESULT         lru_FlushCache (
         LRU_DATA        *this
     )
     {
@@ -181,7 +181,7 @@ extern "C" {
      *  @return     If found, move it to the head of the LRU list
      *              and return it.  Otherwise, return NULL.
      */
-    ERESULT         lru_FreeCache(
+    ERESULT         lru_FreeCache (
         LRU_DATA        *this
     )
     {
@@ -213,7 +213,7 @@ extern "C" {
      @return        If found, the buffer control entry. Otherwise,
                     return NULL.
      */
-    LRU_BUFFER *    lru_GetBuffer(
+    LRU_BUFFER *    lru_GetBuffer (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint32_t        hash
@@ -221,7 +221,9 @@ extern "C" {
     {
         LRU_BUFFER      *pBufCtl = NULL;
         ERESULT         eRc;
-        
+        P_VOID_EXIT1    pDetach;
+        OBJ_IUNKNOWN    *pVtbl;
+
         // Get a sector to use.
         if (listdl_Count(&this->freeList)) {
             pBufCtl = listdl_DeleteHead(&this->freeList);
@@ -241,6 +243,20 @@ extern "C" {
                     );
             pBufCtl->flagDirty = 0;
             ++this->numWrites;
+        }
+        
+        if (pBufCtl->pObj) {
+            pVtbl = obj_getVtbl(pBufCtl->pObj);
+            if (pVtbl) {
+                pDetach = pVtbl->pQueryInfo(
+                                            pBufCtl->pObj,
+                                            OBJ_QUERYINFO_TYPE_METHOD,
+                                            "lruDetach"
+                );
+                pDetach(pBufCtl->pObj);
+                obj_Release(pBufCtl->pObj);
+                pBufCtl->pObj = OBJ_NIL;
+            }
         }
         
         // Chain it to the lru and hash lists.
@@ -267,7 +283,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    LRU_DATA *      lru_Alloc(
+    LRU_DATA *      lru_Alloc (
     )
     {
         LRU_DATA       *this;
@@ -283,7 +299,7 @@ extern "C" {
 
 
 
-    LRU_DATA *      lru_New(
+    LRU_DATA *      lru_New (
         void
     )
     {
@@ -297,7 +313,7 @@ extern "C" {
     }
     
     
-    LRU_DATA *      lru_NewWithSizes(
+    LRU_DATA *      lru_NewWithSizes (
         uint32_t        blockSize,
         uint32_t        cacheSize,
         uint16_t        hashSize
@@ -328,7 +344,7 @@ extern "C" {
     //                  D e l a y  W r i t e s
     //----------------------------------------------------------------
     
-    bool            lru_getDelayWrites(
+    bool            lru_getDelayWrites (
         LRU_DATA        *this
     )
     {
@@ -346,7 +362,7 @@ extern "C" {
     }
 
     
-    bool            lru_setDelayWrites(
+    bool            lru_setDelayWrites (
         LRU_DATA        *this,
         bool            value
     )
@@ -372,7 +388,7 @@ extern "C" {
     //                          P r i o r i t y
     //----------------------------------------------------------------
     
-    uint16_t        lru_getPriority(
+    uint16_t        lru_getPriority (
         LRU_DATA        *this
     )
     {
@@ -390,7 +406,7 @@ extern "C" {
         return 0;
     }
 
-    bool            lru_setPriority(
+    bool            lru_setPriority (
         LRU_DATA        *this,
         uint16_t        value
     )
@@ -410,9 +426,9 @@ extern "C" {
 
 
 
-    bool            lru_setLogicalSectorRead(
+    bool            lru_setLogicalSectorRead (
         LRU_DATA        *this,
-        ERESULT         (*pLogicalRead)(
+        ERESULT         (*pLogicalRead) (
             OBJ_ID          pReadObject,
             uint32_t        lsn,                // Logical Sector Number
             uint8_t         *pBuffer            // Buffer of sectorSize bytes
@@ -436,7 +452,7 @@ extern "C" {
     
     
     
-    uint32_t        lru_getSize(
+    uint32_t        lru_getSize (
         LRU_DATA       *this
     )
     {
@@ -453,9 +469,9 @@ extern "C" {
 
 
 
-    bool            lru_setLogicalSectorWrite(
+    bool            lru_setLogicalSectorWrite (
         LRU_DATA        *this,
-        ERESULT         (*pLogicalWrite)(
+        ERESULT         (*pLogicalWrite) (
             OBJ_ID          pWriteObject,
             uint32_t        lsn,                // Logical Sector Number
             uint8_t         *pBuffer            // Buffer of sectorSize bytes
@@ -504,7 +520,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
-    ERESULT         lru_Assign(
+    ERESULT         lru_Assign (
         LRU_DATA		*this,
         LRU_DATA      *pOther
     )
@@ -562,6 +578,70 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //          A t t a c h  O b j e c t  T o  B u f f e r
+    //---------------------------------------------------------------
+    
+    ERESULT         lru_AttachObjectToBuffer (
+        LRU_DATA        *this,
+        uint32_t        lsn,
+        OBJ_ID          pObject
+    )
+    {
+        //ERESULT         eRc;
+        LRU_BUFFER      *pBufCtl;
+        uint32_t        hash;
+        P_VOID_EXIT11   pAttach;
+        OBJ_IUNKNOWN    *pVtbl;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+        }
+        if (OBJ_NIL == pObject) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        {
+            pVtbl = obj_getVtbl(pObject);
+            if (NULL == pVtbl->pQueryInfo) {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_PARAMETER;
+            }
+            if (pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "lruAttach"))
+                ;
+            else {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_PARAMETER;
+            }
+            if (pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "lruDetach"))
+                ;
+            else {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_PARAMETER;
+            }
+        }
+#endif
+        pVtbl = obj_getVtbl(pObject);
+        pAttach = pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "lruAttach");
+        
+        hash = lru_HashInteger(lsn);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            obj_Retain(pObject);
+            obj_Release(pBufCtl->pObj);
+            pBufCtl->pObj = pObject;
+            pAttach(pObject, pBufCtl->pData, lsn);
+            return ERESULT_SUCCESS;
+        }
+        
+        // Return to caller.
+        return ERESULT_DATA_NOT_FOUND;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -576,7 +656,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned the LRU object.
      */
-    LRU_DATA *     lru_Copy(
+    LRU_DATA *     lru_Copy (
         LRU_DATA       *this
     )
     {
@@ -612,7 +692,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            lru_Dealloc(
+    void            lru_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -651,69 +731,50 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      D i s a b l e
+    //                    F i n d  B u f f e r
     //---------------------------------------------------------------
-
-    ERESULT         lru_Disable(
-        LRU_DATA		*this
+    
+    uint8_t *       lru_FindBuffer (
+        LRU_DATA        *this,
+        uint32_t        lsn
     )
     {
-
+        //ERESULT         eRc;
+        LRU_BUFFER      *pBufCtl;
+        uint32_t        hash;
+        
         // Do initialization.
-        if (NULL == this) {
-            return ERESULT_INVALID_OBJECT;
-        }
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!lru_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return NULL;
         }
-    #endif
-
-        // Put code here...
-
-        obj_Disable(this);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          E n a b l e
-    //---------------------------------------------------------------
-
-    ERESULT         lru_Enable(
-        LRU_DATA		*this
-    )
-    {
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!lru_Validate(this)) {
+        if (listdl_Count(&this->lockList) > 3) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INSUFFICIENT_MEMORY;
+            return NULL;
         }
-    #endif
+#endif
         
-        obj_Enable(this);
-
-        // Put code here...
+        hash = lru_HashInteger(lsn);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            return pBufCtl->pData;
+        }
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return NULL;
     }
-
-
-
+    
+    
+    
     //---------------------------------------------------------------
     //                     F l u s h  A l l
     //---------------------------------------------------------------
     
-    ERESULT         lru_FlushAll(
+    ERESULT         lru_FlushAll (
         LRU_DATA        *this
     )
     {
@@ -740,7 +801,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    LRU_DATA *      lru_Init(
+    LRU_DATA *      lru_Init (
         LRU_DATA        *this
     )
     {
@@ -815,7 +876,7 @@ extern "C" {
     //                          L o c k
     //---------------------------------------------------------------
     
-    ERESULT         lru_Lock(
+    ERESULT         lru_Lock (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint8_t         *pBuffer
@@ -865,10 +926,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    M a k e  D i r t y
+    //---------------------------------------------------------------
+    
+    ERESULT         lru_MakeDirty (
+        LRU_DATA        *this,
+        uint32_t        lsn
+    )
+    {
+        //ERESULT         eRc;
+        LRU_BUFFER      *pBufCtl;
+        uint32_t        hash;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (listdl_Count(&this->lockList) > 3) {
+            DEBUG_BREAK();
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+#endif
+        
+        hash = lru_HashInteger(lsn);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            pBufCtl->flagDirty = 1;
+            return ERESULT_SUCCESS;
+        }
+        
+        // Return to caller.
+        return ERESULT_DATA_NOT_FOUND;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          lru_QueryInfo(
+    void *          lru_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -922,7 +1022,7 @@ extern "C" {
     //                          R e a d
     //---------------------------------------------------------------
     
-    ERESULT         lru_Read(
+    ERESULT         lru_Read (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint8_t         *pBuffer
@@ -939,9 +1039,9 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (pBuffer == NULL) {
+        if ((listdl_Count(&this->lruList) == 0) && (listdl_Count(&this->freeList) == 0)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            return ERESULT_OUT_OF_BUFFERS;
         }
 #endif
         hash = lru_HashInteger(lsn);
@@ -962,7 +1062,9 @@ extern "C" {
             DEBUG_BREAK();
             return eRc;
         }
-        memmove(pBuffer, pBufCtl->pData, this->blockSize);
+        if (pBuffer) {
+            memmove(pBuffer, pBufCtl->pData, this->blockSize);
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -974,7 +1076,7 @@ extern "C" {
     //                      S e t u p
     //----------------------------------------------------------
     
-    ERESULT         lru_Setup(
+    ERESULT         lru_Setup (
         LRU_DATA        *this,
         uint32_t        blockSize,
         uint16_t        cacheSize,          // Number of Blocks in Cache
@@ -1070,7 +1172,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     lru_ToDebugString(
+    ASTR_DATA *     lru_ToDebugString (
         LRU_DATA        *this,
         int             indent
     )
@@ -1130,7 +1232,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            lru_Validate(
+    bool            lru_Validate (
         LRU_DATA      *this
     )
     {
@@ -1156,11 +1258,13 @@ extern "C" {
     //                          U n l o c k
     //---------------------------------------------------------------
     
-    ERESULT         lru_Unlock(
+    ERESULT         lru_Unlock (
         LRU_DATA        *this,
-        uint32_t        lsn
+        uint32_t        lsn,
+        bool            fDirty
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         LRU_BUFFER      *pBufCtl;
         uint32_t        hash;
 
@@ -1181,19 +1285,20 @@ extern "C" {
             else {
                 return ERESULT_DATA_NOT_FOUND;
             }
-            pBufCtl->flagLocked = 1;
+            pBufCtl->flagLocked = 0;
             listdl_Delete(&this->lockList, pBufCtl);
             listdl_Add2Head(&this->lruList, pBufCtl);
-            if (pBufCtl->flagLocked) {
-                return ERESULT_SUCCESS;
+            if (fDirty) {
+                pBufCtl->flagDirty = 1;
             }
+            eRc = lru_Write(this, lsn, NULL);
         }
         else {
             return ERESULT_DATA_NOT_FOUND;
         }
 
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
@@ -1202,7 +1307,7 @@ extern "C" {
     //                          W r i t e
     //---------------------------------------------------------------
     
-    ERESULT         lru_Write(
+    ERESULT         lru_Write (
         LRU_DATA        *this,
         uint32_t        lsn,
         uint8_t         *pBuffer
@@ -1218,10 +1323,6 @@ extern "C" {
         if (!lru_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
-        }
-        if (pBuffer == NULL) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         hash = lru_HashInteger(lsn);
@@ -1240,7 +1341,9 @@ extern "C" {
         }
         
         // Set up the sector and write it out.
-        memmove(pBufCtl->pData, pBuffer, this->blockSize);
+        if (pBuffer) {
+            memmove(pBufCtl->pData, pBuffer, this->blockSize);
+        }
         pBufCtl->flagDirty = 1;
         if (this->pLogicalWrite && !lru_getDelayWrites(this)) {
             eRc = this->pLogicalWrite(this->pReadObject, lsn, pBuffer);

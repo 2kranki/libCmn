@@ -1371,8 +1371,8 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         nodeHash_ForEach(
-        NODEHASH_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEHASH_DATA   *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,               // Used as first parameter of scan method
         void            *pArg3              // Used as third parameter of scan method
     )

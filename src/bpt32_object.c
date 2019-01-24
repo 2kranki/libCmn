@@ -91,6 +91,12 @@ bool            bpt32Class_IsKindOf (
     if (OBJ_IDENT_BPT32_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_RRDS_CLASS == classID) {
+        return true;
+    }
+   if (OBJ_IDENT_LRU_CLASS == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -322,6 +328,12 @@ bool            bpt32_IsKindOf (
     if (OBJ_IDENT_BPT32 == classID) {
        return true;
     }
+    if (OBJ_IDENT_RRDS == classID) {
+        return true;
+    }
+    if (OBJ_IDENT_LRU == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
@@ -400,7 +412,7 @@ OBJ_INFO        bpt32_Info = {
     "bpt32",
     "B-Plus 32-Bit Tree",
     (OBJ_DATA *)&bpt32_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&lru_ClassObj,
     (OBJ_IUNKNOWN *)&bpt32_Vtbl,
     sizeof(BPT32_DATA)
 };

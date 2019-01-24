@@ -123,7 +123,7 @@ extern "C" {
      */
     ERESULT         execArray_AddMethod(
         EXECARRAY_DATA	*this,
-        P_VOIDEXIT1_PTR pMethod,
+        P_VOID_PTR_EXIT1 pMethod,
         OBJ_ID          pObject         // May be OBJ_NIL
     );
 

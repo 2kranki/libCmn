@@ -142,7 +142,7 @@ void           *rbt_iter_prev           (RBT_ITER *this);
 ERESULT         rbt_VisitNodeInRecurse (
     RBT_TREE        *this,
     RBT_NODE        *pRecord,
-    P_VOIDEXIT3_BE  pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
+    P_ERESULT_EXIT3 pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
     //                              // error to terminate scan.
     OBJ_ID          pObj,           // Used as first parameter of scan method
     void            *pArg3          // Used as third parameter of scan method
@@ -152,7 +152,7 @@ ERESULT         rbt_VisitNodeInRecurse (
 ERESULT         rbt_VisitNodePostRecurse (
     RBT_TREE        *this,
     RBT_NODE        *pRecord,
-    P_VOIDEXIT3_BE  pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
+    P_ERESULT_EXIT3 pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
     //                              // error to terminate scan.
     OBJ_ID          pObj,           // Used as first parameter of scan method
     void            *pArg3          // Used as third parameter of scan method
@@ -162,7 +162,7 @@ ERESULT         rbt_VisitNodePostRecurse (
 ERESULT         rbt_VisitNodePreRecurse (
     RBT_TREE        *this,
     RBT_NODE        *pRecord,
-    P_VOIDEXIT3_BE  pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
+    P_ERESULT_EXIT3 pScan,          // Second parameter is RBT_NODE. Return ERESULT_*
     //                              // error to terminate scan.
     OBJ_ID          pObj,           // Used as first parameter of scan method
     void            *pArg3          // Used as third parameter of scan method

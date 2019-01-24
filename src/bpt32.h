@@ -53,6 +53,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <lru.h>
+#include        <rrds.h>
 
 
 #ifndef         BPT32_H
@@ -145,6 +147,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    LRU_DATA *  bpt32_getLRU (
+        BPT32_DATA  *this
+    );
+    
+    
     bool            bpt32_setReadWrite (
         BPT32_DATA     *this,
         ERESULT         (*pBlockRead) (
@@ -161,6 +168,10 @@ extern "C" {
     );
     
     
+    RRDS_DATA * bpt32_getRRDS (
+        BPT32_DATA  *this
+    );
+    
 
 
     
@@ -175,11 +186,38 @@ extern "C" {
     );
     
     
-    ERESULT         bpt32_Disable (
-        BPT32_DATA		*this
+    /*!
+     Close an open file from reading/writing.
+     @param     this    object pointer
+     @param     fDelete If true, delete the file after closing it.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         bpt32_Close (
+        BPT32_DATA      *this,
+        bool            fDelete
     );
-
-
+    
+    
+    /*!
+     Create a new file for reading/writing.
+     @param     this    object pointer
+     @param     pPath   path object pointer for dataset/file
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         bpt32_Create (
+        BPT32_DATA      *this,
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Search the index for the specified key.  If found, return the data
+     component of the index associated with the key.
+     @param     this    object pointer
+     @param     key     integer data key
+     @param     pData   optional pointer to data area of data size.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
     ERESULT         bpt32_Find (
         BPT32_DATA      *this,
         uint32_t        key,
@@ -193,17 +231,37 @@ extern "C" {
 
 
     /*!
-     Create a string that describes this object and the objects within it.
+     Open an existing file for reading/writing.
+     @param     this    object pointer
+     @param     pPath   path object pointer for dataset/file
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         bpt32_Open (
+        BPT32_DATA      *this,
+        PATH_DATA       *pPath
+    );
+    
+    
+    /*!
+     Set up the sizes needed to properly build the index dataset/file.  This
+     method should be called before a Create() or an Open().  For the Open(),
+     the blockSize and dataSize will be gotten from the file path given.  So,
+     use 64 and 4 respectively for that call.
      @param     this        object pointer
      @param     blockSize   size of the file block which must be greater than
                             128
+     @param     dataSize    size of the data to be associated with an integer key
+     @param     cLRU        number of LRU Buffers
+     @param     cHash       LRU Hash Size (Use prime number for this if possible.)
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         bpt32_SetupSizes(
         BPT32_DATA      *this,
         uint32_t        blockSize,
-        uint16_t        dataSize         
+        uint16_t        dataSize,
+        uint16_t        cLRU,
+        uint16_t        cHash
     );
     
     

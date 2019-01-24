@@ -178,7 +178,7 @@ extern "C" {
     
     ERESULT         tokenList_ForEach(
         TOKENLIST_DATA	*this,
-        P_VOIDEXIT2_BE  pScan,
+        P_ERESULT_EXIT2 pScan,
         OBJ_ID          pObj            // Used as first parameter of scan method
     );
     

@@ -38,7 +38,7 @@
 
 
 
-#include        <macosx/memOSX.h>
+#include        <memOSX.h>
 #include        <AStr.h>
 #include        <listdl.h>
 #include        <objArray.h>
@@ -106,7 +106,7 @@ struct memOSX_data_s	{
     LISTDL_DATA		blockList;
     bool			fDebugMemory;
     void            *pLeakExitObject;
-    P_VOIDEXIT1     pLeakExit;          // Only called in memOSX_Dealloc if leaks are
+    P_VOID_EXIT1    pLeakExit;          // Only called in memOSX_Dealloc if leaks are
     //                                  // present.
     const
     char            *pTitle;

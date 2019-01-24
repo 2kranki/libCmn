@@ -279,7 +279,7 @@ extern "C" {
     ERESULT         nodeBTP_VisitNodeInRecurse(
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pRecord,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
@@ -315,7 +315,7 @@ extern "C" {
     ERESULT         nodeBTP_VisitNodePostRecurse(
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pRecord,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
@@ -351,7 +351,7 @@ extern "C" {
     ERESULT         nodeBTP_VisitNodePreRecurse(
         NODEBTP_DATA    *this,
         NODEBTP_RECORD  *pRecord,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
@@ -1342,7 +1342,7 @@ extern "C" {
     
     ERESULT         nodeBTP_ForEach(
         NODEBTP_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,               // Used as first parameter of scan method
         void            *pArg3              // Used as third parameter of scan method
     )
@@ -1837,7 +1837,7 @@ extern "C" {
     
     ERESULT         nodeBTP_VisitNodesInRecurse(
         NODEBTP_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
@@ -1878,7 +1878,7 @@ extern "C" {
     
     ERESULT         nodeBTP_VisitNodesPostRecurse(
         NODEBTP_DATA    *this,
-        P_VOIDEXIT3_BE  pScan,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )
@@ -1918,8 +1918,8 @@ extern "C" {
      */
     
     ERESULT         nodeBTP_VisitNodesPreRecurse(
-        NODEBTP_DATA  *this,
-        P_VOIDEXIT3_BE  pScan,
+        NODEBTP_DATA    *this,
+        P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     )

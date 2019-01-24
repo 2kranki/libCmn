@@ -237,7 +237,7 @@ memOSX_SharedReset()
     
     bool            memOSX_setLeakExit(
         MEMOSX_DATA     *this,
-        P_VOIDEXIT1     rtn,
+        P_VOID_EXIT1    rtn,
         void            *pObject
     );
     

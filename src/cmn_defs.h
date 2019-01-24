@@ -579,20 +579,22 @@ extern "C" {
     // -n if *p0 < *p1 or +n if *p0 > *p1.
     typedef int         (*P_COMPARE)(void *p0, void *p1);
 
-    typedef void        (*P_VOIDEXIT0)(void);
-    typedef void        (*P_VOIDEXIT1)(void *);
-    typedef void        (*P_VOIDEXIT2)(void *, void *);
-    typedef void        (*P_VOIDEXIT3)(void *, void *, void *);
-    typedef void        (*P_VOIDEXIT12)(void *, bool);
-    typedef bool        (*P_VOIDEXIT1_B)(void *);
-    typedef bool        (*P_VOIDEXIT2_B)(void *, void *);
-    typedef bool        (*P_VOIDEXIT3_B)(void *, void *, void *);
-    typedef ERESULT     (*P_VOIDEXIT1_BE)(void *);
-    typedef ERESULT     (*P_VOIDEXIT2_BE)(void *, void *);
-    typedef ERESULT     (*P_VOIDEXIT3_BE)(void *, void *, void *);
-    typedef uint32_t    (*P_VOIDEXIT1_U32)(void *);
-    typedef void *      (*P_VOIDEXIT1_PTR)(void *);
-    typedef uint32_t    (*P_VOIDEXIT2_U32_U32)(void *,uint32_t);
+    typedef void        (*P_VOID_EXIT0)(void);
+    typedef void        (*P_VOID_EXIT1)(void *);
+    typedef void        (*P_VOID_EXIT2)(void *, void *);
+    typedef void        (*P_VOID_EXIT3)(void *, void *, void *);
+    typedef void        (*P_VOID_EXIT11)(void *, void *, uint32_t);
+    typedef void        (*P_VOID_EXIT12)(void *, bool);
+    typedef bool        (*P_BOOL_EXIT1)(void *);
+    typedef bool        (*P_BOOL_EXIT2)(void *, void *);
+    typedef bool        (*P_BOOL_EXIT3)(void *, void *, void *);
+    typedef ERESULT     (*P_ERESULT_EXIT1)(void *);
+    typedef ERESULT     (*P_ERESULT_EXIT2)(void *, void *);
+    typedef ERESULT     (*P_ERESULT_EXIT3)(void *, void *, void *);
+    typedef ERESULT     (*P_ERESULT_EXIT10)(void *, uint32_t, void *);
+    typedef uint32_t    (*P_U32_EXIT1)(void *);
+    typedef void *      (*P_VOID_PTR_EXIT1)(void *);
+    typedef uint32_t    (*P_U32_EXIT2_U32)(void *,uint32_t);
     typedef void        (*P_MSGRCV)(void *, uint16_t, uint8_t *);
 
 
@@ -785,8 +787,8 @@ typedef struct W32StrC_vtbl_s	{
 
 
 #if defined(__MACOSX_ENV__)
-#	include     <macosx/cmn_osx.h>
-#   include     <macosx/memOSX.h>
+#	include     <cmn_osx.h>
+#   include     <memOSX.h>
 #endif
 #if defined(__WIN32_ENV__)
 #	include     <win32/cmn_win32.h>

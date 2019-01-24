@@ -124,7 +124,7 @@ int         test_rrds_Read01(
     ERESULT         eRc;
     PATH_DATA       *pPath = OBJ_NIL;
     DATETIME_DATA   *pTime = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -139,19 +139,23 @@ int         test_rrds_Read01(
     XCTAssertFalse( (NULL == pDS80));
     XCTAssertTrue( (80 == rrds_getRecordSize(pDS80)));
 #if defined(__MACOSX_ENV__)
+    fprintf(stderr, "\tRecordSize = %d\n",  pDS80->recordSize);
     XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     XCTAssertTrue( (82 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->rcdtrm));
+    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->recordTerm));
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
     XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
 #endif
     
-    eRc = rrds_Open(pDS80, pPath, 1);
+    eRc = rrds_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    
+    eRc = rrds_Open(pDS80, pPath);
     if (ERESULT_FAILED(eRc)) {
         fprintf(stderr, "\tFailed eRc = %d\n", eRc);
     }
@@ -161,14 +165,14 @@ int         test_rrds_Read01(
     XCTAssertTrue( (80 == rrds_getRecordSize(pDS80)));
 #if defined(__MACOSX_ENV__)
     XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     XCTAssertTrue( (82 == pDS80->recordSize));
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
     XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->rcdtrm));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
 #endif
     XCTAssertTrue( (19 == rrds_getSize(pDS80)));
 
@@ -239,7 +243,10 @@ int         test_rrds_3Buffers(
     pObj = rrds_New();
     XCTAssertFalse( (NULL == pObj));
     
-    eRc = rrds_Create(pObj, pPath, 3);
+    eRc = rrds_SetupSizes(pObj, 80, RRDS_RCD_TRM_NL, 3, 11);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    
+    eRc = rrds_Create(pObj, pPath);
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
     XCTAssertTrue( (12 == rrds_getRecordSize(pObj)));
     
@@ -260,7 +267,10 @@ int         test_rrds_3Buffers(
         
     }
     
-    eRc = rrds_Open(pObj, pPath, 3);
+    eRc = rrds_SetupSizes(pObj, 80, RRDS_RCD_TRM_NL, 3, 11);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+    eRc = rrds_Open(pObj, pPath);
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
     XCTAssertTrue( (12 == rrds_getRecordSize(pObj)) );
     //XCTAssertTrue( ('\0' == rrds_getFillChar(pObj)) );

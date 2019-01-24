@@ -144,7 +144,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BPT32IDX_DATA *     bpt32idx_Alloc (
+    BPT32IDX_DATA * bpt32idx_Alloc (
         void
     )
     {
@@ -161,7 +161,7 @@ extern "C" {
 
 
 
-    BPT32IDX_DATA *     bpt32idx_New (
+    BPT32IDX_DATA * bpt32idx_New (
         void
     )
     {
@@ -175,6 +175,26 @@ extern "C" {
     }
 
 
+    BPT32IDX_DATA * bpt32idx_NewWithSizes (
+        uint32_t        blockSize,
+        uint16_t        dataSize
+    )
+    {
+        BPT32IDX_DATA   *this;
+        ERESULT         eRc;
+        
+        this = bpt32idx_New( );
+        if (this) {
+            eRc = bpt32idx_SetupSizes(this, blockSize, dataSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+        }
+        return this;
+    }
+    
+    
 
     
 
@@ -204,6 +224,31 @@ extern "C" {
         return (uint8_t *)this->pBlock;
     }
     
+    
+    bool            bpt32idx_setBlock (
+        BPT32IDX_DATA   *this,
+        uint8_t         *pValue
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!bpt32idx_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if (obj_Flag(this, BPT32IDX_BLOCK_ALLOC) && this->pBlock) {
+            mem_Free(this->pBlock);
+            this->pBlock = NULL;
+            obj_FlagOff(this, BPT32IDX_BLOCK_ALLOC);
+        }
+        
+        return (uint8_t *)this->pBlock;
+    }
+
     
     
     //---------------------------------------------------------------
@@ -252,10 +297,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          N e x t
+    //                         P 0
     //---------------------------------------------------------------
     
-    uint32_t        bpt32idx_getNext (
+    uint32_t        bpt32idx_getP0 (
         BPT32IDX_DATA   *this
     )
     {
@@ -269,11 +314,11 @@ extern "C" {
         }
 #endif
         
-        return this->pBlock->next;
+        return this->pBlock->p0;
     }
     
     
-    bool            bpt32idx_setNext (
+    bool            bpt32idx_setP0 (
         BPT32IDX_DATA   *this,
         uint32_t        value
     )
@@ -286,91 +331,7 @@ extern "C" {
         }
 #endif
         
-        this->pBlock->next = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          P a r e n t
-    //---------------------------------------------------------------
-    
-    uint32_t        bpt32idx_getParent (
-        BPT32IDX_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!bpt32idx_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->pBlock->parent;
-    }
-    
-    
-    bool            bpt32idx_setParent (
-        BPT32IDX_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32idx_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pBlock->parent = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          P r e v
-    //---------------------------------------------------------------
-    
-    uint32_t        bpt32idx_getPrev (
-        BPT32IDX_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!bpt32idx_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->pBlock->prev;
-    }
-    
-    
-    bool            bpt32idx_setPrev (
-        BPT32IDX_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32idx_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pBlock->prev = value;
+        this->pBlock->p0 = value;
         
         return true;
     }
@@ -721,10 +682,7 @@ extern "C" {
         }
 #endif
 
-        if (this->pBlock) {
-            mem_Free(this->pBlock);
-            this->pBlock = NULL;
-        }
+        bpt32idx_setBlock(this, NULL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1151,6 +1109,59 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          L R U
+    //---------------------------------------------------------------
+    
+    void            bpt32idx_lruAttach (
+        BPT32IDX_DATA   *this,
+        void            *pData,
+        uint32_t        lsn
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32idx_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+        
+        this->pBlock = pData;
+        this->rcdNum = lsn;
+        
+        // Return to caller.
+    }
+    
+    
+    void            bpt32idx_lruDetach (
+        BPT32IDX_DATA   *this
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32idx_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+        
+        this->pBlock = NULL;
+        this->rcdNum = 0;
+        
+        // Return to caller.
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -1244,6 +1255,15 @@ extern "C" {
                         }
                         break;
 
+                    case 'l':
+                        if (str_Compare("lruAttach", (char *)pStr) == 0) {
+                            return bpt32idx_lruAttach;
+                        }
+                        if (str_Compare("lruDetach", (char *)pStr) == 0) {
+                            return bpt32idx_lruDetach;
+                        }
+                        break;
+                        
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return bpt32idx_ToDebugString;
@@ -1319,8 +1339,11 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pBlock->blkType = OBJ_IDENT_BPT32IDX;
-        
+        obj_FlagOn(this, BPT32IDX_BLOCK_ALLOC);
+        this->pBlock->blockType = OBJ_IDENT_BPT32IDX;
+        this->pBlock->actualSize = ROUNDUP4(dataSize);
+        this->pBlock->max = this->maxRcds;
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
@@ -1506,11 +1529,9 @@ extern "C" {
             }
             eRc = AStr_AppendPrint(
                                    pStr,
-                                   "\tprev=%d next=%d parent=%d\n",
-                                   this->pBlock->prev,
-                                   this->pBlock->next,
-                                   this->pBlock->parent
-                                   );
+                                   "\tp0=%d\n",
+                                   this->pBlock->p0
+                    );
             for (i=0; i<this->pBlock->used; ++i) {
                 pNode = &this->pBlock->nodes[i];
                 if (indent) {

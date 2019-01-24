@@ -112,15 +112,7 @@ extern "C" {
             }
         }
         
-        if (this->pLRU) {
-            obj_Release(this->pLRU);
-            this->pLRU = OBJ_NIL;
-        }
-        
-        if (this->pIO) {
-            obj_Release(this->pIO);
-            this->pIO = OBJ_NIL;
-        }
+        eRc = rrds_setIO(this, OBJ_NIL);
         
         // Return to Caller.
         return ERESULT_SUCCESS;
@@ -150,7 +142,8 @@ extern "C" {
         size_t          fileOffset;
         uint8_t         *pFillData;
         
-        // Fill the File until Block number of records exist.
+        // Fill the File until Block number of records exist
+        // bypassing the LRU mechanism.
         if( recordNum > this->cRecords ) {
             
             pFillData = (uint8_t *)mem_Malloc(this->recordSize);
@@ -254,7 +247,7 @@ extern "C" {
         }
         
         // Write the record terminator.
-        switch (this->rcdtrm) {
+        switch (this->recordTerm) {
             case RRDS_RCD_TRM_NONE:
                 cRcdtrm = 0;
                 break;
@@ -323,38 +316,29 @@ extern "C" {
     //              Set up the FileIO and LRU objects
     //----------------------------------------------------------------
     ERESULT         rrds_Setup (
-        RRDS_DATA       *this,
-        PATH_DATA       *pPath,
-        uint16_t        cLRU            // Number of LRU Buffers
+        RRDS_DATA       *this
     )
     {
         ERESULT         eRc;
+        
+        eRc = rrds_setIO(this, OBJ_NIL);
         this->pIO = fileio_New( );
         if (OBJ_NIL == this->pIO) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
         
-        this->pLRU = lru_New( );
-        if (OBJ_NIL == this->pLRU) {
-            DEBUG_BREAK();
-            obj_Release(this->pIO);
-            this->pIO = OBJ_NIL;
-            return ERESULT_OBJECT_CREATION;
-        }
-        eRc = lru_Setup(this->pLRU, this->recordSize, cLRU, 13);
+        eRc = lru_Setup((LRU_DATA *)this, this->recordSize, this->cLRU, this->cHash);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            obj_Release(this->pLRU);
-            this->pLRU = OBJ_NIL;
             obj_Release(this->pIO);
             this->pIO = OBJ_NIL;
             return ERESULT_OBJECT_CREATION;
         }
         
         // Now tie the LRU object to the fileio object.
-        lru_setLogicalSectorRead(this->pLRU, (void *)rrds_LSN_Read, this);
-        lru_setLogicalSectorWrite(this->pLRU, (void *)rrds_LSN_Write, this);
+        lru_setLogicalSectorRead((LRU_DATA *)this, (void *)rrds_LSN_Read, this);
+        lru_setLogicalSectorWrite((LRU_DATA *)this, (void *)rrds_LSN_Write, this);
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -413,6 +397,54 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                        F i l e  I / O
+    //---------------------------------------------------------------
+    
+    OBJ_ID      rrds_getIO (
+        RRDS_DATA   *this
+                               )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!rrds_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pIO;
+    }
+    
+    
+    bool        rrds_setIO (
+        RRDS_DATA   *this,
+        OBJ_ID      pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!rrds_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#ifdef  PROPERTY_IO_OWNED
+        obj_Retain(pValue);
+        if (this->pIO) {
+            obj_Release(this->pIO);
+        }
+#endif
+        this->pIO = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //               F i l l  C h a r a c t e r
     //---------------------------------------------------------------
     
@@ -450,6 +482,29 @@ extern "C" {
         this->fillChar = value;
         
         return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          L R U
+    //---------------------------------------------------------------
+    
+    LRU_DATA *  rrds_getLRU (
+        RRDS_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!rrds_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (LRU_DATA *)this;
     }
     
     
@@ -842,8 +897,7 @@ extern "C" {
     
     ERESULT         rrds_Create (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath,
-        uint16_t        cLRU            // Number of LRU Buffers
+        PATH_DATA       *pPath
     )
     {
         ERESULT         eRc;
@@ -857,14 +911,9 @@ extern "C" {
         if (OBJ_NIL == pPath) {
             return ERESULT_INVALID_PARAMETER;
         }
-        if (((cLRU == 0) || (cLRU > 1)) && !(cLRU == 34))
-            ;
-        else {
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
         
-        eRc = rrds_Setup(this, pPath, cLRU);
+        eRc = rrds_Setup(this);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1019,20 +1068,20 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RRDS);
+        this = (OBJ_ID)lru_Init((LRU_DATA *)this);      // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RRDS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_RRDS);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setIdent((OBJ_ID)this, OBJ_IDENT_RRDS);     // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&rrds_Vtbl);
         
 #if defined(__MACOSX_ENV__)
-        this->rcdtrm = RRDS_RCD_TRM_NL;
+        this->recordTerm = RRDS_RCD_TRM_NL;
         this->recordSize = 81;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -1045,6 +1094,8 @@ extern "C" {
 #endif
         this->reqSize = 80;
         this->fillChar = ' ';
+        this->cLRU = 1;
+        this->cHash = 13;
 
     #ifdef NDEBUG
     #else
@@ -1098,8 +1149,7 @@ extern "C" {
     
     ERESULT         rrds_Open (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath,
-        uint16_t        cLRU            // Number of LRU Buffers
+        PATH_DATA       *pPath
     )
     {
         ERESULT         eRc;
@@ -1118,7 +1168,7 @@ extern "C" {
 #endif
         
         // Set up the FileIO and LRU objects.
-        eRc = rrds_Setup(this, pPath, cLRU);
+        eRc = rrds_Setup(this);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1142,23 +1192,23 @@ extern "C" {
         }
         if (terms[0] == '\r') {
             this->recordSize = 81;
-            this->rcdtrm = RRDS_RCD_TRM_CR;
+            this->recordTerm = RRDS_RCD_TRM_CR;
             if (terms[1] == '\n') {
                 this->recordSize = 82;
-                this->rcdtrm = RRDS_RCD_TRM_CRNL;
+                this->recordTerm = RRDS_RCD_TRM_CRNL;
             }
         }
         else if (terms[0] == '\n') {
             this->recordSize = 81;
-            this->rcdtrm = RRDS_RCD_TRM_NL;
+            this->recordTerm = RRDS_RCD_TRM_NL;
             if (terms[1] == '\r') {
                 this->recordSize = 82;
-                this->rcdtrm = RRDS_RCD_TRM_NLCR;
+                this->recordTerm = RRDS_RCD_TRM_NLCR;
             }
         }
         else {
             this->recordSize = 80;
-            this->rcdtrm = RRDS_RCD_TRM_NONE;
+            this->recordTerm = RRDS_RCD_TRM_NONE;
         }
         
         fileSize = fileio_Size(this->pIO);
@@ -1327,9 +1377,17 @@ extern "C" {
         }
         
         // Read the Block into Memory.
-        eRc = rrds_LSN_Read(this, recordNum, pData);
-        if (ERESULT_FAILED(eRc)) {
-            return ERESULT_IO_ERROR;
+        if (this->cLRU > 1) {
+            eRc = lru_Read((LRU_DATA *)this, recordNum, pData);
+            if (ERESULT_FAILED(eRc)) {
+                return ERESULT_IO_ERROR;
+            }
+        }
+        else {
+            eRc = rrds_LSN_Read(this, recordNum, pData);
+            if (ERESULT_FAILED(eRc)) {
+                return ERESULT_IO_ERROR;
+            }
         }
         
         // Return to caller.
@@ -1379,15 +1437,96 @@ extern "C" {
         }
         
         // Write the Block to the File.
-        eRc = rrds_LSN_Write(this, recordNum, pData);
-        if (ERESULT_FAILED(eRc)) {
-            return ERESULT_IO_ERROR;
+        if (this->cLRU > 1) {
+            eRc = lru_Read((LRU_DATA *)this, recordNum, pData);
+            if (ERESULT_FAILED(eRc)) {
+                return ERESULT_IO_ERROR;
+            }
+        }
+        else {
+            eRc = rrds_LSN_Write(this, recordNum, pData);
+            if (ERESULT_FAILED(eRc)) {
+                return ERESULT_IO_ERROR;
+            }
         }
         
         // Return to caller.
         return ERESULT_SUCCESS;
     }
     
+    
+    
+    
+    //----------------------------------------------------------------
+    //              Set up the FileIO and LRU objects
+    //----------------------------------------------------------------
+    ERESULT         rrds_SetupSizes (
+        RRDS_DATA       *this,
+        uint16_t        recordSize,     // Requested Record Size
+        uint16_t        recordTerm,     // Record Terminator Type
+        //                              // (See rrds_rcd_trm_e above)
+        uint16_t        cLRU,           // Number of LRU Buffers
+        uint16_t        cHash           // Number of LRU Hash Chains
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !rrds_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (0 == cLRU) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        this->reqSize = recordSize;
+        this->recordTerm = recordTerm;
+        switch (recordTerm) {
+            case RRDS_RCD_TRM_NONE:
+                this->recordSize = recordSize;
+                break;
+                
+            case RRDS_RCD_TRM_CR:
+                this->recordSize = recordSize + 1;
+                break;
+                
+            case RRDS_RCD_TRM_NL:
+                this->recordSize = recordSize + 1;
+                break;
+                
+            case RRDS_RCD_TRM_CRNL:
+                this->recordSize = recordSize + 2;
+                break;
+                
+            case RRDS_RCD_TRM_NLCR:
+                this->recordSize = recordSize + 2;
+                break;
+                
+            default:
+                this->recordSize = recordSize;
+                break;
+        }
+        
+        eRc = lru_Setup((LRU_DATA *)this, this->recordSize, this->cLRU, this->cHash);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(this->pIO);
+            this->pIO = OBJ_NIL;
+            return ERESULT_OBJECT_CREATION;
+        }
+        
+        // Now tie the LRU object to the fileio object.
+        lru_setLogicalSectorRead((LRU_DATA *)this, (void *)rrds_LSN_Read, this);
+        lru_setLogicalSectorWrite((LRU_DATA *)this, (void *)rrds_LSN_Write, this);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
     
     
     
