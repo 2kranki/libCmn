@@ -1326,11 +1326,11 @@ extern "C" {
                         }
                         break;
 
-                    case 'l':
-                        if (str_Compare("lruAttach", (char *)pStr) == 0) {
+                    case 'L':
+                        if (str_Compare("LRU_Attach", (char *)pStr) == 0) {
                             return bpt32lf_lruAttach;
                         }
-                        if (str_Compare("lruDetach", (char *)pStr) == 0) {
+                        if (str_Compare("LRU_Detach", (char *)pStr) == 0) {
                             return bpt32lf_lruDetach;
                         }
                         break;

@@ -100,28 +100,12 @@ struct bpt32idx_data_s	{
     uint16_t        rsvd16;
     uint16_t        dataSize;       // Size of Data in node (NOT USED)
     uint32_t        blockSize;
-    uint32_t        rcdNum;         // Record Number in Dataset/File
+    uint32_t        index;          // Block Index Number in Dataset/File
     uint32_t        maxRcds;        // Maximum Number of Records in a Block
     BPT32IDX_BLOCK  *pBlock;
     
-    ERESULT         (*pBlockEmpty)(
-        OBJ_ID          pBlockObject,
-        BPT32IDX_DATA   *pValue
-    );
-    ERESULT         (*pBlockFlush)(
-        OBJ_ID          pBlockObject,
-        BPT32IDX_DATA   *pValue
-    );
-    ERESULT         (*pBlockIndexChanged)(
-        OBJ_ID          pBlockObject,
-        BPT32IDX_DATA   *pValue
-    );
-    ERESULT         (*pBlockSplit)(
-        OBJ_ID          pBlockObject,
-        BPT32IDX_DATA   *pOld,
-        BPT32IDX_DATA   *pNew
-    );
-    OBJ_ID          pBlockObject;
+    OBJ_ID          *pMgr;          // Block Manager
+    P_ERESULT_EXIT4 pReq;          // Block Manager Request Method
     
 };
 #pragma pack(pop)
@@ -140,7 +124,7 @@ struct bpt32idx_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  BPT32IDX_SINGLETON
-    BPT32IDX_DATA *     bpt32idx_getSingleton (
+    BPT32IDX_DATA * bpt32idx_getSingleton (
         void
     );
 
@@ -184,6 +168,15 @@ struct bpt32idx_data_s	{
     );
 
 
+    ERESULT         bpt32idx_Split (
+        BPT32IDX_DATA   *this,
+        uint32_t        key,
+        uint32_t        data,
+        uint32_t        nodeIndex,
+        BPT32IDX_DATA   **ppNew
+    );
+    
+    
     ASTR_DATA *     bpt32idx_ToJSON (
         BPT32IDX_DATA      *this
     );

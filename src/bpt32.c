@@ -62,11 +62,66 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    ERESULT         bpt32_BlockEmptyIdx(
+    /*!
+     @warning   This method must always conform to P_ERESULT_EXIT4.
+     */
+    ERESULT         bpt32_BlockRequestIndex(
         BPT32_DATA      *this,
-        BPT32IDX_DATA   *pValue
+        BPT32IDX_DATA   *pObj,
+        uint32_t        request,
+        void            *pRet
     )
     {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        index;
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (sizeof(void *) < sizeof(uint32_t)) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        switch (request) {
+                
+            case BPT32_INDEX_REQUEST_BLOCK_NEW:
+                index = ++this->pHdr->cRecords;
+                *((uint32_t *)pRet) = index;
+                break;
+                
+            case BPT32_INDEX_REQUEST_WRITE:
+                eRc =   rrds_RecordWrite(
+                                (RRDS_DATA *)this,
+                                bpt32idx_getIndex(pObj),
+                                bpt32idx_getBlock(pObj)
+                        );
+                break;
+                
+            default:
+                return ERESULT_INVALID_REQUEST;
+                break;
+        }
+        
+        return eRc;
+    }
+
+    
+    
+    /*!
+     @warning   This method must always conform to P_ERESULT_EXIT4.
+     */
+    ERESULT         bpt32_BlockRequestLeaf(
+        BPT32_DATA      *this,
+        BPT32IDX_DATA   *pObj,
+        uint32_t        request,
+        void            *pRet
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
 #ifdef NDEBUG
 #else
         if (!bpt32_Validate(this)) {
@@ -75,11 +130,24 @@ extern "C" {
         }
 #endif
         
-        //this->priority = value;
+        switch (request) {
+                
+            case BPT32_LEAF_REQUEST_WRITE:
+                eRc =   rrds_RecordWrite(
+                                         (RRDS_DATA *)this,
+                                         bpt32idx_getIndex(pObj),
+                                         bpt32idx_getBlock(pObj)
+                        );
+                break;
+                
+            default:
+                return ERESULT_INVALID_REQUEST;
+                break;
+        }
         
-        return ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
-
+    
     
     
     ERESULT         bpt32_BlockFlushIdx(
@@ -1327,6 +1395,7 @@ extern "C" {
     }
     
     
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -1879,6 +1948,18 @@ extern "C" {
                         }
                         break;
 
+                    case 'I':
+                        if (str_Compare("IndexBlockRequest", (char *)pStr) == 0) {
+                            return bpt32_BlockRequestIndex;
+                        }
+                        break;
+                        
+                    case 'L':
+                        if (str_Compare("LeafBlockRequest", (char *)pStr) == 0) {
+                            return bpt32_BlockRequestLeaf;
+                        }
+                        break;
+                        
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return bpt32_ToDebugString;

@@ -251,7 +251,7 @@ extern "C" {
                 pDetach = pVtbl->pQueryInfo(
                                             pBufCtl->pObj,
                                             OBJ_QUERYINFO_TYPE_METHOD,
-                                            "lruDetach"
+                                            "LRU_Detach"
                 );
                 pDetach(pBufCtl->pObj);
                 obj_Release(pBufCtl->pObj);
@@ -608,13 +608,13 @@ extern "C" {
                 DEBUG_BREAK();
                 return ERESULT_INVALID_PARAMETER;
             }
-            if (pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "lruAttach"))
+            if (pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "LRU_Attach"))
                 ;
             else {
                 DEBUG_BREAK();
                 return ERESULT_INVALID_PARAMETER;
             }
-            if (pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "lruDetach"))
+            if (pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "LRU_Detach"))
                 ;
             else {
                 DEBUG_BREAK();
@@ -623,7 +623,7 @@ extern "C" {
         }
 #endif
         pVtbl = obj_getVtbl(pObject);
-        pAttach = pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "lruAttach");
+        pAttach = pVtbl->pQueryInfo(pObject, OBJ_QUERYINFO_TYPE_METHOD, "LRU_Attach");
         
         hash = lru_HashInteger(lsn);
         pBufCtl = lru_FindLSN(this, lsn, hash);

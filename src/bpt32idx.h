@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <bpt32.h>
 
 
 #ifndef         BPT32IDX_H
@@ -140,9 +141,10 @@ extern "C" {
     );
     
     
-    BPT32IDX_DATA * bpt32idx_NewWithSizes (
+    BPT32IDX_DATA * bpt32idx_NewWithSize (
         uint32_t        blockSize,
-        uint16_t        dataSize
+        uint32_t        index,                  // Block Index Number
+        bool            fAllocate               // true == allocate a buffer
     );
     
     
@@ -158,29 +160,6 @@ extern "C" {
     );
     
     
-    bool            bpt32idx_setBlockExits(
-        BPT32IDX_DATA    *this,
-        ERESULT         (*pBlockEmpty)(
-                            OBJ_ID          pBlockObject,
-                            BPT32IDX_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockFlush)(
-                            OBJ_ID          pBlockObject,
-                            BPT32IDX_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockIndexChanged)(
-                            OBJ_ID          pBlockObject,
-                            BPT32IDX_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockSplit)(
-                            OBJ_ID          pBlockObject,
-                            BPT32IDX_DATA    *pOld,
-                            BPT32IDX_DATA    *pNew
-                        ),
-        OBJ_ID          pBlockObject
-    );
-    
-    
     uint32_t        bpt32idx_getIndex (
         BPT32IDX_DATA    *this
     );
@@ -191,45 +170,21 @@ extern "C" {
     );
     
     
-    uint32_t        bpt32idx_getNext (
-        BPT32IDX_DATA    *this
+    bool            bpt32idx_setManger(
+        BPT32IDX_DATA    *this,
+        OBJ_ID           *pMgr          // Block Manager
     );
     
-    bool            bpt32idx_setNext (
-        BPT32IDX_DATA    *this,
+    
+    uint32_t        bpt32idx_getP0 (
+        BPT32IDX_DATA   *this
+    );
+    
+    bool            bpt32idx_setP0 (
+        BPT32IDX_DATA   *this,
         uint32_t        value
     );
-    
-    
-    uint32_t        bpt32idx_getParent (
-        BPT32IDX_DATA    *this
-    );
-    
-    bool            bpt32idx_setParent (
-        BPT32IDX_DATA    *this,
-        uint32_t        value
-    );
-    
-    
-    uint32_t        bpt32idx_getPrev (
-        BPT32IDX_DATA    *this
-    );
-    
-    bool            bpt32idx_setPrev (
-        BPT32IDX_DATA    *this,
-        uint32_t        value
-    );
-    
-    
-    uint32_t        bpt32idx_getRecordNumber (
-        BPT32IDX_DATA    *this
-    );
-    
-    bool            bpt32idx_setRecordNumber (
-        BPT32IDX_DATA    *this,
-        uint32_t        value
-    );
-    
+
     
 
     
@@ -250,6 +205,13 @@ extern "C" {
     );
     
    
+    ERESULT         bpt32idx_FindIndex (
+        BPT32IDX_DATA   *this,
+        uint32_t        index,
+        uint32_t        *pKey
+    );
+    
+    
     /*!
      Find an entry in the node.  If found, optionally return the data to the are given.
      @param     this    object pointer
@@ -260,7 +222,7 @@ extern "C" {
      @warning   The data area provided must be at least dataSize bytes as given in
                 the SetupSizes() method.
      */
-    ERESULT         bpt32idx_Find (
+    ERESULT         bpt32idx_FindKey (
         BPT32IDX_DATA   *this,
         uint32_t        key,
         uint32_t        *pIndex
@@ -283,23 +245,30 @@ extern "C" {
     );
 
 
+    /*!
+     Insert the given key and data into the current block.  If the current
+     block is full, split this block and add the given key and data into
+     the appropriate block.
+     @param     this    object pointer
+     @param     key     key to be inserted
+     @param     data    data to be associated with the key
+     @param     ppNew   object pointer to new block if split occurs
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
     ERESULT         bpt32idx_Insert (
         BPT32IDX_DATA   *this,
         uint32_t        key,
-        uint32_t        index
+        uint32_t        data,
+        BPT32IDX_DATA   **ppNew
     );
 
  
-    ERESULT         bpt32idx_SetupSizes(
+    ERESULT         bpt32idx_Setup(
         BPT32IDX_DATA   *this,
         uint32_t        blockSize,
-        uint16_t        dataSize            // NOT USED
-    );
-    
-    
-    ERESULT         bpt32idx_Split (
-        BPT32IDX_DATA   *this,
-        BPT32IDX_DATA   **ppNew
+        uint32_t        index,                  // Block Index Number
+        bool            fAllocate               // true == allocate a buffer
     );
     
     

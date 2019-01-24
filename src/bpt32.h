@@ -99,8 +99,22 @@ extern "C" {
     } BPT32_CLASS_VTBL;
 
 
+    typedef enum bpt32_index_request_e {
+        BPT32_INDEX_REQUEST_UNKNOWN=0,
+        BPT32_INDEX_REQUEST_BLOCK_NEW,          // New Block has been added.
+        BPT32_INDEX_REQUEST_BLOCK_UPDATE,       // Block has been updated.
+        BPT32_INDEX_REQUEST_NEW_INDEX,          // Provide New Block Index Number
+        BPT32_INDEX_REQUEST_WRITE,
+    } BPT32_INDEX_REQUEST;
 
+    typedef enum bpt32_leaf_request_e {
+        BPT32_LEAF_REQUEST_UNKNOWN=0,
+        BPT32_LEAF_REQUEST_WRITE,
+    } BPT32_LEAF_REQUEST;
+    
 
+    
+    
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
     ****************************************************************/
