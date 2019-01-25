@@ -1179,6 +1179,10 @@ extern "C" {
         }
 #endif
         
+        if (obj_Flag(this, BPT32IDX_BLOCK_ALLOC)) {
+            mem_Free(this->pBlock);
+            obj_FlagOff(this, BPT32IDX_BLOCK_ALLOC);
+        }
         this->pBlock = pData;
         this->index = lsn;
         
@@ -1414,7 +1418,6 @@ extern "C" {
         uint32_t        half;
         uint32_t        cNew;
         uint32_t        indexNew = 0;
-        bool            fLast = false;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1456,7 +1459,7 @@ extern "C" {
         this->pBlock->used = half;
         
         // Insert new node which should work because of the split.
-        if (indexNew > half) {
+        if (nodeIndex > half) {
             eRc = bpt32idx_Insert(pNew, key, data, NULL);
         }
         else {

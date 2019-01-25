@@ -73,6 +73,8 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct  bpt32lf_block_s {
         uint16_t        blockType;      // BPT32IDX_DATA or BPT32LF_DATA
+        uint16_t        rsvd16;
+        uint16_t        dataSize;
         uint16_t        actualSize;     // Actual Data Size rounded up
         uint16_t        max;            // Maximum Number of nodes
         uint16_t        used;           // Number of nodes in use
@@ -101,7 +103,7 @@ struct bpt32lf_data_s	{
     uint16_t        dataSize;       // Size of Data in node
     uint16_t        actualSize;     // Actual Data Size rounded up
     uint32_t        blockSize;
-    uint32_t        rcdNum;         // Record Number in Dataset/File
+    uint32_t        index;          // Block Index Number in Dataset/File
     uint32_t        maxRcds;        // Maximum Number of Records in a Block
     BPT32LF_BLOCK   *pBlock;
 

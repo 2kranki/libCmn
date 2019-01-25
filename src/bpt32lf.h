@@ -141,7 +141,9 @@ extern "C" {
     
     BPT32LF_DATA *  bpt32lf_NewWithSizes (
         uint32_t        blockSize,
-        uint16_t        dataSize
+        uint16_t        dataSize,
+        uint32_t        index,
+        bool            fAllocate
     );
     
     
@@ -219,16 +221,6 @@ extern "C" {
     );
     
     
-    uint32_t        bpt32lf_getRecordNumber (
-        BPT32LF_DATA    *this
-    );
-    
-    bool            bpt32lf_setRecordNumber (
-        BPT32LF_DATA    *this,
-        uint32_t        value
-    );
-
-    
 
 
     
@@ -285,19 +277,25 @@ extern "C" {
     ERESULT         bpt32lf_Insert (
         BPT32LF_DATA	*this,
         uint32_t        key,
-        void            *pData
+        void            *pData,
+        BPT32LF_DATA    **ppNew
     );
     
  
-    ERESULT         bpt32lf_SetupSizes(
+    ERESULT         bpt32lf_Setup(
         BPT32LF_DATA    *this,
         uint32_t        blockSize,
-        uint16_t        dataSize
+        uint16_t        dataSize,
+        uint32_t        index,
+        bool            fAllocate
     );
     
     
     ERESULT         bpt32lf_Split (
         BPT32LF_DATA    *this,
+        uint32_t        key,
+        void            *pData,
+        uint32_t        nodeIndex,
         BPT32LF_DATA    **ppNew
     );
     

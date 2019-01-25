@@ -66,6 +66,20 @@ extern "C" {
     //                      F i n d  N o d e
     //---------------------------------------------------------------
     
+    /*!
+     This method is responsible for locating the smallest key in the
+     block greater than or equal to the search key.  So, the index
+     returned points to the node where the key was found or where the
+     key should be inserted.
+     @param this        Object Pointer
+     @param key         search key
+     @param pIndex      Optional pointer to index of found key or
+     insertion point returned
+     @warning   Since this method returns the place to insert the key
+     if it is not found, you must always check whether the
+     returned node is equal to the search key or not after
+     receiving the results of this method.
+     */
     BPT32LF_NODE *  bpt32lf_FindNode (
         BPT32LF_DATA    *this,
         uint32_t        key,
@@ -90,10 +104,8 @@ extern "C" {
                     break;
                 }
                 if (key < pNode->key) {
-                    pNode = NULL;
                     break;
                 }
-                pNode = NULL;
             }
         }
         else {
@@ -111,16 +123,11 @@ extern "C" {
                 }
                 else
                     Low = Mid + 1;
-                pNode = NULL;
             }
             if( High == Low ) {
                 pNode = bpt32lf_Index2Node(this, Low);
                 i = Low;
                 rc = key - pNode->key;
-                if(rc == 0)
-                    ;
-                else
-                    pNode = NULL;
             }
         }
         
@@ -202,7 +209,9 @@ extern "C" {
 
     BPT32LF_DATA *  bpt32lf_NewWithSizes (
         uint32_t        blockSize,
-        uint16_t        dataSize
+        uint16_t        dataSize,
+        uint32_t        index,
+        bool            fAllocate
     )
     {
         BPT32LF_DATA    *this;
@@ -210,7 +219,7 @@ extern "C" {
         
         this = bpt32lf_New( );
         if (this) {
-            eRc = bpt32lf_SetupSizes(this, blockSize, dataSize);
+            eRc = bpt32lf_Setup(this, blockSize, dataSize, index, fAllocate);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -317,6 +326,48 @@ extern "C" {
         this->pBlockIndexChanged = pBlockIndexChanged;
         this->pBlockSplit = pBlockSplit;
         this->pBlockObject = pBlockObject;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        bpt32lf_getIndex (
+        BPT32LF_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->index;
+    }
+    
+    
+    bool            bpt32lf_setIndex (
+        BPT32LF_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->index = value;
         
         return true;
     }
@@ -450,48 +501,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //               R e c o r d  N u m b e r
-    //---------------------------------------------------------------
-    
-    uint32_t        bpt32lf_getRecordNumber (
-        BPT32LF_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!bpt32lf_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->rcdNum;
-    }
-    
-    
-    bool            bpt32lf_setRecordNumber (
-        BPT32LF_DATA    *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32lf_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->rcdNum = value;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -927,7 +936,7 @@ extern "C" {
         
         pNode = bpt32lf_FindNode(this, key, NULL);
         
-        if (pNode) {
+        if (pNode  && (pNode->key == key)) {
             if (pData) {
                 memmove(pData, pNode->data, this->dataSize);
             }
@@ -963,7 +972,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->rcdNum && this->pBlockFlush)
+        if (this->index && this->pBlockFlush)
             ;
         else {
             DEBUG_BREAK();
@@ -1086,13 +1095,15 @@ extern "C" {
     ERESULT         bpt32lf_Insert (
         BPT32LF_DATA    *this,
         uint32_t        key,
-        void            *pData
+        void            *pData,
+        BPT32LF_DATA    **ppNew
     )
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         BPT32LF_NODE    *pNode = NULL;
         uint32_t        i;
-        
+        BPT32LF_DATA    *pNew = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1104,47 +1115,44 @@ extern "C" {
         
         pNode = bpt32lf_FindNode(this, key, &i);
         
-        if (pNode) {
+        if (pNode && (pNode->key == key)) {
             return eRc;
         }
         else {
-            for (; i<this->pBlock->used; ++i) {
-                pNode = bpt32lf_Index2Node(this, i);
-                if (key < pNode->key) {
-                    pNode = NULL;
-                    break;
+            if (this->pBlock->used < this->pBlock->max) {
+                if (i == this->pBlock->used)
+                    ;
+                else {
+                    // Shift records right to make room for new node.
+                    memmove(
+                            bpt32lf_Index2Node(this, i+1),
+                            bpt32lf_Index2Node(this, i),
+                            ((this->pBlock->used - i)
+                             * (sizeof(BPT32LF_NODE) + this->actualSize))
+                    );
                 }
-                pNode = NULL;
-            }
-            if (i == this->pBlock->used)
-                ;
-            else {
-                // Shift records right to make room for new node.
-                memmove(
-                        bpt32lf_Index2Node(this, i+1),
-                        bpt32lf_Index2Node(this, i),
-                        ((this->pBlock->used - i)
-                            * (sizeof(BPT32LF_NODE) + this->actualSize))
-                );
-            }
-            pNode = bpt32lf_Index2Node(this, i);
-            if (pNode) {
-                pNode->key = key;
-                memmove(pNode->data, pData, this->dataSize);
-                ++this->pBlock->used;
+                pNode = bpt32lf_Index2Node(this, i);
+                if (pNode) {
+                    pNode->key = key;
+                    memmove(pNode->data, pData, this->pBlock->dataSize);
+                    ++this->pBlock->used;
+                }
+                else {
+                    DEBUG_BREAK();
+                    return ERESULT_GENERAL_FAILURE;
+                }
+                eRc = ERESULT_SUCCESS;
             }
             else {
-                DEBUG_BREAK();
-                return ERESULT_GENERAL_FAILURE;
-            }
-            eRc = ERESULT_SUCCESS;
-            if ((0 == i) && this->pBlockIndexChanged) {
-                // Inserting data in 0th position (ie block key)
-                eRc = this->pBlockIndexChanged(this->pBlockObject, this);
+                eRc = bpt32lf_Split(this, key, pData, i, &pNew);
             }
         }
         
         // Return to caller.
+        if (ppNew)
+            *ppNew = pNew;
+        else
+            obj_Release(pNew);
         return eRc;
     }
     
@@ -1201,8 +1209,12 @@ extern "C" {
         }
 #endif
         
+        if (obj_Flag(this, BPT32LF_BLOCK_ALLOC)) {
+            mem_Free(this->pBlock);
+            obj_FlagOff(this, BPT32LF_BLOCK_ALLOC);
+        }
         this->pBlock = pData;
-        this->rcdNum = lsn;
+        this->index = lsn;
         
         // Return to caller.
     }
@@ -1225,7 +1237,7 @@ extern "C" {
 #endif
         
         this->pBlock = NULL;
-        this->rcdNum = 0;
+        this->index = 0;
         
         // Return to caller.
     }
@@ -1369,10 +1381,12 @@ extern "C" {
     //                      S e t u p
     //----------------------------------------------------------
     
-    ERESULT         bpt32lf_SetupSizes(
+    ERESULT         bpt32lf_Setup(
         BPT32LF_DATA    *this,
         uint32_t        blockSize,
-        uint16_t        dataSize
+        uint16_t        dataSize,
+        uint32_t        index,
+        bool            fAllocate
     )
     {
         
@@ -1406,15 +1420,19 @@ extern "C" {
         this->actualSize = ROUNDUP4(dataSize);
         this->maxRcds = (blockSize - sizeof(BPT32LF_BLOCK));
         this->maxRcds /=  (sizeof(BPT32LF_NODE) + this->actualSize);
+        this->index = index;
         
-        this->pBlock = mem_Calloc(1, blockSize);
-        if (NULL == this->pBlock) {
-            return ERESULT_OUT_OF_MEMORY;
+        if (fAllocate) {
+            this->pBlock = mem_Calloc(1, blockSize);
+            if (NULL == this->pBlock) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            obj_FlagOn(this, BPT32LF_BLOCK_ALLOC);
+            this->pBlock->blockType = OBJ_IDENT_BPT32LF;
+            this->pBlock->dataSize = dataSize;
+            this->pBlock->actualSize = ROUNDUP4(dataSize);
+            this->pBlock->max = this->maxRcds;
         }
-        obj_FlagOn(this, BPT32LF_BLOCK_ALLOC);
-        this->pBlock->blockType = OBJ_IDENT_BPT32LF;
-        this->pBlock->actualSize = ROUNDUP4(dataSize);
-        this->pBlock->max = this->maxRcds;
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1428,6 +1446,9 @@ extern "C" {
     
     ERESULT         bpt32lf_Split (
         BPT32LF_DATA    *this,
+        uint32_t        key,
+        void            *pData,
+        uint32_t        nodeIndex,
         BPT32LF_DATA    **ppNew
     )
     {
@@ -1435,7 +1456,8 @@ extern "C" {
         BPT32LF_DATA    *pNew = OBJ_NIL;
         uint32_t        half;
         uint32_t        cNew;
-        
+        uint32_t        indexNew = 0;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1449,14 +1471,14 @@ extern "C" {
         }
 #endif
         
-        half = this->pBlock->used >> 1;
+        half = (this->pBlock->used + 1) >> 1;
         cNew = this->pBlock->used - half;
-        
+
         pNew = bpt32lf_New( );
         if (OBJ_NIL == pNew) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        eRc = bpt32lf_SetupSizes(pNew, this->blockSize, this->dataSize);
+        eRc = bpt32lf_Setup(pNew, this->blockSize, this->dataSize, indexNew, true);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pNew);
             return eRc;
@@ -1465,14 +1487,18 @@ extern "C" {
         // Copy second half of data to new object.
         memmove(
                 pNew->pBlock->nodes,
-                &this->pBlock->nodes[half],
+                bpt32lf_Index2Node(this, half),
                 (cNew * (sizeof(BPT32LF_NODE) + this->actualSize))
         );
         pNew->pBlock->used = cNew;
         this->pBlock->used = half;
         
-        if (this->pBlockSplit) {
-            eRc = this->pBlockSplit(this->pBlockObject, this, pNew);
+        // Insert new node which should work because of the split.
+        if (nodeIndex > half) {
+            eRc = bpt32lf_Insert(pNew, key, pData, NULL);
+        }
+        else {
+            eRc = bpt32lf_Insert(this, key, pData, NULL);
         }
         
         // Return to caller.
@@ -1575,25 +1601,50 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        eRc = AStr_AppendPrint(
-                    pStr,
-                               "{%p(%s) dataSize=%d actualSize=%d nodeSize=%d\n",
-                    this,
-                    pInfo->pClassName,
-                    this->dataSize,
-                    this->actualSize,
-                    (this->actualSize + sizeof(BPT32LF_NODE))
-            );
+        if (this->pBlock) {
+            eRc = AStr_AppendPrint(
+                                   pStr,
+                                   "{%p(%s) dataSize=%d actualSize=%d nodeSize=%d\n",
+                                   this,
+                                   pInfo->pClassName,
+                                   this->pBlock->dataSize,
+                                   this->pBlock->actualSize,
+                                   (this->pBlock->actualSize + sizeof(BPT32LF_NODE))
+                                   );
+        }
+        else {
+            eRc = AStr_AppendPrint(
+                                   pStr,
+                                   "{%p(%s) dataSize=%d actualSize=%d nodeSize=%d\n",
+                                   this,
+                                   pInfo->pClassName,
+                                   this->dataSize,
+                                   this->actualSize,
+                                   (this->actualSize + sizeof(BPT32LF_NODE))
+                                   );
+        }
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        eRc = AStr_AppendPrint(
-                               pStr,
-                               "\tblockSize=%d maxRcds=%d rcdNum=%d\n",
-                               this->blockSize,
-                               this->maxRcds,
-                               this->rcdNum
-                               );
+        if (this->pBlock) {
+            eRc = AStr_AppendPrint(
+                                   pStr,
+                                   "\tblockSize=%d  max=%d  used=%d  index=%d\n",
+                                   this->blockSize,
+                                   this->pBlock->max,
+                                   this->pBlock->used,
+                                   this->index
+                                   );
+        }
+        else {
+            eRc = AStr_AppendPrint(
+                                   pStr,
+                                   "\tblockSize=%d  max=%d  index=%d\n",
+                                   this->blockSize,
+                                   this->maxRcds,
+                                   this->index
+                                   );
+        }
 
         if (this->pBlock) {
             if (indent) {
@@ -1612,10 +1663,9 @@ extern "C" {
                 }
                 eRc = AStr_AppendPrint(
                                        pStr,
-                                       "\tkey=%d data=%d\n",
-                                       pNode->key,
-                                       *((uint32_t *)pNode->data)
-                                       );
+                                       "\tkey=%d\n",
+                                       pNode->key
+                        );
             }
         }
         
