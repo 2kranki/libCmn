@@ -1141,6 +1141,10 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         BREAK_NULL(this->pHdr);
+        if (0 == key) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
         TRC_OBJ(this, "bpt32_Add  key=%d\n", key);
         eRc = objArray_DeleteAll(this->pSrchStk);

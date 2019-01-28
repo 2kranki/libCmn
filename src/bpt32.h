@@ -191,6 +191,14 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Add the given key/data pair in the index if it does not already
+     exist.
+     @param     this    object pointer
+     @param     key     key to be added (must be > 0)
+     @param     pData   optional pointer to data area of data size.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
     ERESULT         bpt32_Add (
         BPT32_DATA      *this,
         uint32_t        key,

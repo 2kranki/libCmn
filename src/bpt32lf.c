@@ -1197,7 +1197,10 @@ extern "C" {
                 pNode = bpt32lf_Index2Node(this, i);
                 if (pNode) {
                     pNode->key = key;
-                    memmove(pNode->data, pData, this->pBlock->dataSize);
+                    if (pData)
+                        memmove(pNode->data, pData, this->pBlock->dataSize);
+                    else
+                        memset(pNode->data, 0, this->pBlock->dataSize);
                     ++this->pBlock->used;
                     TRC_OBJ(this, "\tKey inserted at %d, used: %d  max: %d\n",
                             i, this->pBlock->used, this->pBlock->max);
