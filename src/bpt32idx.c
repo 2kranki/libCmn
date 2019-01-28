@@ -95,15 +95,23 @@ extern "C" {
         int             rc;
         
         // Do initialization.
-        
+        if (0 == this->pBlock->used) {
+            if (pIndex)
+                *pIndex = 0;
+            return NULL;
+        }
+        pNode = &this->pBlock->nodes[0];
+        if (key < pNode->key) {
+            if (pIndex)
+                *pIndex = 0;
+            return NULL;
+        }
+
         if (this->pBlock->used < 10) {
             // Do a sequential search.
             for (i=0; i<this->pBlock->used; ++i) {
                 pNode = &this->pBlock->nodes[i];
-                if (key == pNode->key) {
-                    break;
-                }
-                if (key < pNode->key) {
+                if (key <= pNode->key) {
                     break;
                 }
             }
@@ -182,10 +190,12 @@ extern "C" {
     }
 
 
-    BPT32IDX_DATA * bpt32idx_NewWithSize (
+    BPT32IDX_DATA * bpt32idx_NewWithSizes (
         uint32_t        blockSize,
+        uint32_t        dataSize,
         uint32_t        index,                  // Block Index Number
-        bool            fAllocate               // true == allocate a buffer
+        bool            fAllocate,              // true == allocate a buffer
+        OBJ_ID          pMgr
     )
     {
         BPT32IDX_DATA   *this;
@@ -193,10 +203,13 @@ extern "C" {
         
         this = bpt32idx_New( );
         if (this) {
-            eRc = bpt32idx_Setup(this, blockSize, index, fAllocate);
+            eRc = bpt32idx_Setup(this, blockSize, dataSize, index, fAllocate);
             if (ERESULT_FAILED(eRc)) {
                 obj_Release(this);
                 return OBJ_NIL;
+            }
+            if (pMgr) {
+                bpt32idx_setManager(this, pMgr);
             }
         }
         return this;
@@ -305,7 +318,7 @@ extern "C" {
     //                      M a n a g e r
     //---------------------------------------------------------------
     
-    bool            bpt32idx_setManger(
+    bool            bpt32idx_setManager(
         BPT32IDX_DATA    *this,
         OBJ_ID           *pMgr          // Block Manager
     )
@@ -326,7 +339,7 @@ extern "C" {
             this->pReq =    pVtbl->pQueryInfo(
                                             pMgr,
                                             OBJ_QUERYINFO_TYPE_METHOD,
-                                            "IndexBlockRequest"
+                                            "BlockRequest"
                             );
             if (NULL == this->pReq) {
                 this->pMgr = OBJ_NIL;
@@ -658,6 +671,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      C o p y  F r o m
+    //---------------------------------------------------------------
+    
+    /*!
+     Overlay the block data with the given data.
+     @param     this    object pointer
+     @param     pData   pointer to new data
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         bpt32idx_CopyFrom (
+        BPT32IDX_DATA   *this,
+        void            *pData
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32idx_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if ((NULL == this->pBlock) || (0 == this->blockSize)) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        memmove(this->pBlock, pData, this->blockSize);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -781,7 +837,7 @@ extern "C" {
                 error code.
      */
     ERESULT         bpt32idx_Disable (
-        BPT32IDX_DATA		*this
+        BPT32IDX_DATA	*this
     )
     {
         //ERESULT         eRc;
@@ -816,7 +872,7 @@ extern "C" {
                 error code.
      */
     ERESULT         bpt32idx_Enable (
-        BPT32IDX_DATA		*this
+        BPT32IDX_DATA	*this
     )
     {
         //ERESULT         eRc;
@@ -891,7 +947,10 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         BPT32IDX_NODE   *pNode = NULL;
-        
+        uint32_t        index = 0;
+        uint32_t        iMax;
+        uint32_t        i;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -901,17 +960,29 @@ extern "C" {
         }
 #endif
         
-        pNode = bpt32idx_FindNode(this, key, NULL);
-        
-        if (pNode && (pNode->key == key)) {
+        if (key < this->pBlock->nodes[0].key) {
             if (pData) {
-                *pData = pNode->index;
+                *pData = this->pBlock->p0;
             }
-            eRc = ERESULT_SUCCESS;
+            return ERESULT_SUCCESS;
+        }
+        
+        iMax = this->pBlock->used;
+        for (i=0; (i<iMax - 1); ++i) {
+            if ((key >= this->pBlock->nodes[i].key)
+                && (key < this->pBlock->nodes[i+1].key)) {
+                if (pData) {
+                    *pData = this->pBlock->nodes[i].index;
+                }
+                return ERESULT_SUCCESS;
+            }
         }
         
         // Return to caller.
-        return eRc;
+        if (pData) {
+            *pData = this->pBlock->nodes[this->pBlock->used-1].index;
+        }
+        return ERESULT_SUCCESS;
     }
     
     
@@ -920,12 +991,6 @@ extern "C" {
     //                          F l u s h
     //---------------------------------------------------------------
     
-    /*!
-     Disable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
     ERESULT         bpt32idx_Flush (
         BPT32IDX_DATA   *this
     )
@@ -1066,7 +1131,7 @@ extern "C" {
     ERESULT         bpt32idx_Insert (
         BPT32IDX_DATA   *this,
         uint32_t        key,
-        uint32_t        data,
+        uint32_t        *pData,
         BPT32IDX_DATA   **ppNew
     )
     {
@@ -1104,8 +1169,9 @@ extern "C" {
                 pNode = &this->pBlock->nodes[i];
                 if (pNode) {
                     pNode->key = key;
-                    pNode->index = data;
+                    pNode->index = *pData;
                     ++this->pBlock->used;
+                    eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
                 }
                 else {
                     DEBUG_BREAK();
@@ -1114,7 +1180,7 @@ extern "C" {
                 eRc = ERESULT_SUCCESS;
             }
             else {
-                eRc = bpt32idx_Split(this, key, data, i, &pNew);
+                eRc = bpt32idx_Split(this, key, *pData, i, &pNew);
             }
         }
         
@@ -1347,6 +1413,51 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          R e a d
+    //---------------------------------------------------------------
+    
+    ERESULT         bpt32idx_Read (
+        BPT32IDX_DATA   *this
+    )
+    {
+        ERESULT         eRc = ERESULT_INVALID_REQUEST;
+        OBJ_IUNKNOWN    *pVtbl;
+        ERESULT         (*pRead)(OBJ_ID, OBJ_ID, uint32_t, void *);
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32idx_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->index && this->pMgr)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_REQUEST;
+        }
+#endif
+        
+        if (this->pMgr && obj_Flag(this, BPT32IDX_BLOCK_ALLOC)) {
+            pVtbl = obj_getVtbl(this->pMgr);
+            pRead = pVtbl->pQueryInfo(
+                                      this->pMgr,
+                                      OBJ_QUERYINFO_TYPE_METHOD,
+                                      "IndexBlockRequest"
+                    );
+            if (pRead) {
+                eRc = pRead(this->pMgr, this, BPT32_REQUEST_READ, NULL);
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //----------------------------------------------------------
     //                      S e t u p
     //----------------------------------------------------------
@@ -1354,6 +1465,7 @@ extern "C" {
     ERESULT         bpt32idx_Setup(
         BPT32IDX_DATA   *this,
         uint32_t        blockSize,
+        uint32_t        dataSize,
         uint32_t        index,
         bool            fAllocate
     )
@@ -1417,7 +1529,6 @@ extern "C" {
         BPT32IDX_DATA   *pNew = OBJ_NIL;
         uint32_t        half;
         uint32_t        cNew;
-        uint32_t        indexNew = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1431,22 +1542,22 @@ extern "C" {
         half = (this->pBlock->used + 1) >> 1;
         cNew = this->pBlock->used - half;
         
-        pNew = bpt32idx_New( );
-        if (OBJ_NIL == pNew) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
         if (this->pMgr) {
             eRc = this->pReq(
                              this->pMgr,
                              this,
-                             (void *)BPT32_INDEX_REQUEST_NEW_INDEX,
-                             &index
+                             (void *)BPT32_REQUEST_NEW_INDEX,
+                             &pNew
                     );
-        }
-        eRc = bpt32idx_Setup(pNew, this->blockSize, indexNew, true);
-        if (ERESULT_FAILED(eRc)) {
-            obj_Release(pNew);
-            return eRc;
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pNew);
+                return eRc;
+            }
+            if (OBJ_NIL == pNew) {
+                DEBUG_BREAK();
+                return ERESULT_GENERAL_FAILURE;
+            }
+            // Now pNew should have a new index block which is already assigned an index.
         }
         
         // Copy second half of data to new object.
@@ -1460,25 +1571,27 @@ extern "C" {
         
         // Insert new node which should work because of the split.
         if (nodeIndex > half) {
-            eRc = bpt32idx_Insert(pNew, key, data, NULL);
+            eRc = bpt32idx_Insert(pNew, key, &data, NULL);
         }
         else {
-            eRc = bpt32idx_Insert(this, key, data, NULL);
+            eRc = bpt32idx_Insert(this, key, &data, NULL);
         }
 
         if (this->pMgr) {
-            eRc = this->pReq(this->pMgr, this, (void *)BPT32_INDEX_REQUEST_WRITE, NULL);
-            eRc = this->pReq(this->pMgr, pNew, (void *)BPT32_INDEX_REQUEST_WRITE, NULL);
-            if (this->pMgr) {
-                eRc =   this->pReq(
-                                 this->pMgr,
-                                 this,
-                                 (void *)BPT32_INDEX_REQUEST_BLOCK_NEW,
-                                 NULL
-                        );
-            }
+            eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
+            eRc = this->pReq(this->pMgr, pNew, (void *)BPT32_REQUEST_WRITE, NULL);
         }
 
+        // Notify manager that a split occurred.
+        if (this->pMgr) {
+            eRc =   this->pReq(
+                               this->pMgr,
+                               this,                      // Lefthand Block
+                               (void *)BPT32_REQUEST_SPLIT,
+                               pNew                       // Righthand Block
+                    );
+        }
+        
         // Return to caller.
         if (ppNew) {
             *ppNew = pNew;

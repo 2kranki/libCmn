@@ -100,10 +100,7 @@ extern "C" {
             // Do a sequential search.
             for (i=0; i<this->pBlock->used; ++i) {
                 pNode = bpt32lf_Index2Node(this, i);
-                if (key == pNode->key) {
-                    break;
-                }
-                if (key < pNode->key) {
+                if (key <= pNode->key) {
                     break;
                 }
             }
@@ -211,7 +208,8 @@ extern "C" {
         uint32_t        blockSize,
         uint16_t        dataSize,
         uint32_t        index,
-        bool            fAllocate
+        bool            fAllocate,
+        OBJ_ID          pMgr
     )
     {
         BPT32LF_DATA    *this;
@@ -224,6 +222,9 @@ extern "C" {
                 DEBUG_BREAK();
                 obj_Release(this);
                 return OBJ_NIL;
+            }
+            if (pMgr) {
+                bpt32lf_setManager(this, pMgr);
             }
         }
         return this;
@@ -288,51 +289,6 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //                    B l o c k  E x i t s
-    //---------------------------------------------------------------
-    
-    bool            bpt32lf_setBlockExits(
-        BPT32LF_DATA    *this,
-        ERESULT         (*pBlockEmpty)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockFlush)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockIndexChanged)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockSplit)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pOld,
-                            BPT32LF_DATA    *pNew
-                        ),
-        OBJ_ID          pBlockObject
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !bpt32lf_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pBlockEmpty = pBlockEmpty;
-        this->pBlockFlush = pBlockFlush;
-        this->pBlockIndexChanged = pBlockIndexChanged;
-        this->pBlockSplit = pBlockSplit;
-        this->pBlockObject = pBlockObject;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n d e x
     //---------------------------------------------------------------
     
@@ -368,6 +324,46 @@ extern "C" {
 #endif
         
         this->index = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      M a n a g e r
+    //---------------------------------------------------------------
+    
+    bool            bpt32lf_setManager(
+        BPT32LF_DATA    *this,
+        OBJ_ID          *pMgr          // Block Manager
+    )
+    {
+        OBJ_IUNKNOWN    *pVtbl;
+        
+#ifdef NDEBUG
+#else
+        if( !bpt32lf_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->pMgr = pMgr;
+        if (pMgr) {
+            pVtbl = obj_getVtbl(pMgr);
+            this->pReq =    pVtbl->pQueryInfo(
+                                              pMgr,
+                                              OBJ_QUERYINFO_TYPE_METHOD,
+                                              "BlockRequest"
+                                              );
+            if (NULL == this->pReq) {
+                this->pMgr = OBJ_NIL;
+                return false;
+            }
+        }
+        else
+            this->pReq = NULL;
         
         return true;
     }
@@ -733,6 +729,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      C o p y  F r o m
+    //---------------------------------------------------------------
+    
+    /*!
+     Overlay the block data with the given data.
+     @param     this    object pointer
+     @param     pData   pointer to new data
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         bpt32lf_CopyFrom (
+        BPT32LF_DATA   *this,
+        void           *pData
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if ((NULL == this->pBlock) || (0 == this->blockSize)) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        memmove(this->pBlock, pData, this->blockSize);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -824,16 +863,6 @@ extern "C" {
             }
             eRc = ERESULT_SUCCESS;
             --this->pBlock->used;
-            if ((0 == this->pBlock->used) && this->pBlockEmpty) {
-                // Inserting data in 0th position (ie block key)
-                eRc = this->pBlockIndexChanged(this->pBlockObject, this);
-            }
-            else {
-                if ((0 == i) && this->pBlockIndexChanged) {
-                    // Inserting data in 0th position (ie block key)
-                    eRc = this->pBlockIndexChanged(this->pBlockObject, this);
-                }
-            }
         }
         
         // Return to caller.
@@ -916,7 +945,7 @@ extern "C" {
     //                      F i n d
     //---------------------------------------------------------------
     
-    ERESULT         bpt32lf_Find (
+    ERESULT         bpt32lf_FindKey (
         BPT32LF_DATA    *this,
         uint32_t        key,
         void            *pData
@@ -972,7 +1001,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->index && this->pBlockFlush)
+        if (this->index && this->pMgr)
             ;
         else {
             DEBUG_BREAK();
@@ -980,10 +1009,10 @@ extern "C" {
         }
 #endif
         
-        if (this->pBlockFlush) {
-            eRc =   this->pBlockFlush(this->pBlockObject, this);
+        if (this->pMgr && this->pReq && obj_Flag(this, BPT32LF_BLOCK_ALLOC)) {
+            eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
         }
-
+        
         // Return to caller.
         return eRc;
     }
@@ -1018,7 +1047,8 @@ extern "C" {
         
         pNode = bpt32lf_Index2Node(this, (index - 1));
         if (pNode) {
-            *pKey = pNode->key;
+            if (pKey)
+                *pKey = pNode->key;
             if (pData) {
                 memmove(pData, pNode->data, this->dataSize);
             }
@@ -1095,14 +1125,13 @@ extern "C" {
     ERESULT         bpt32lf_Insert (
         BPT32LF_DATA    *this,
         uint32_t        key,
-        void            *pData,
-        BPT32LF_DATA    **ppNew
+        void            *pData
     )
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         BPT32LF_NODE    *pNode = NULL;
         uint32_t        i;
-        BPT32LF_DATA    *pNew = OBJ_NIL;
+        //BPT32LF_DATA    *pNew = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1111,15 +1140,18 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        TRC_OBJ(this, "bpt32lf_Insert  index=%d  key=%d\n", this->index, key);
 #endif
         
         pNode = bpt32lf_FindNode(this, key, &i);
         
         if (pNode && (pNode->key == key)) {
+            TRC_OBJ(this, "\tkey already exists\n");
             return eRc;
         }
         else {
             if (this->pBlock->used < this->pBlock->max) {
+                TRC_OBJ(this, "\tLeaf has empty space, inserting at %d\n", i);
                 if (i == this->pBlock->used)
                     ;
                 else {
@@ -1136,6 +1168,9 @@ extern "C" {
                     pNode->key = key;
                     memmove(pNode->data, pData, this->pBlock->dataSize);
                     ++this->pBlock->used;
+                    TRC_OBJ(this, "\tKey inserted at %d, used: %d  max: %d\n",
+                            i, this->pBlock->used, this->pBlock->max);
+                    eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
                 }
                 else {
                     DEBUG_BREAK();
@@ -1144,15 +1179,12 @@ extern "C" {
                 eRc = ERESULT_SUCCESS;
             }
             else {
-                eRc = bpt32lf_Split(this, key, pData, i, &pNew);
+                TRC_OBJ(this, "\tLeaf is full!\n");
+                eRc = bpt32lf_Split(this, key, pData, i);
             }
         }
         
         // Return to caller.
-        if (ppNew)
-            *ppNew = pNew;
-        else
-            obj_Release(pNew);
         return eRc;
     }
     
@@ -1377,6 +1409,41 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          R e a d
+    //---------------------------------------------------------------
+    
+    ERESULT         bpt32lf_Read (
+        BPT32LF_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_INVALID_REQUEST;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->index && this->pMgr)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_REQUEST;
+        }
+#endif
+        
+        if (this->pMgr && this->pReq && obj_Flag(this, BPT32LF_BLOCK_ALLOC)) {
+            eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_READ, NULL);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
     //----------------------------------------------------------
     //                      S e t u p
     //----------------------------------------------------------
@@ -1448,15 +1515,14 @@ extern "C" {
         BPT32LF_DATA    *this,
         uint32_t        key,
         void            *pData,
-        uint32_t        nodeIndex,
-        BPT32LF_DATA    **ppNew
+        uint32_t        nodeIndex
     )
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         BPT32LF_DATA    *pNew = OBJ_NIL;
+        BPT32LF_DATA    *pNext = OBJ_NIL;
         uint32_t        half;
         uint32_t        cNew;
-        uint32_t        indexNew = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1469,19 +1535,23 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_DATA_TOO_SMALL;
         }
+        TRC_OBJ(this, "bpt32lf_Split  index=%d  key=%d\n", this->index, key);
 #endif
         
         half = (this->pBlock->used + 1) >> 1;
         cNew = this->pBlock->used - half;
 
-        pNew = bpt32lf_New( );
-        if (OBJ_NIL == pNew) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        eRc = bpt32lf_Setup(pNew, this->blockSize, this->dataSize, indexNew, true);
-        if (ERESULT_FAILED(eRc)) {
-            obj_Release(pNew);
-            return eRc;
+        if (this->pMgr) {
+            eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_NEW_LEAF, &pNew);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pNew);
+                return eRc;
+            }
+            if (OBJ_NIL == pNew) {
+                DEBUG_BREAK();
+                return ERESULT_GENERAL_FAILURE;
+            }
+            // Now pNew should have a new leaf which is already assigned an index.
         }
         
         // Copy second half of data to new object.
@@ -1493,20 +1563,57 @@ extern "C" {
         pNew->pBlock->used = cNew;
         this->pBlock->used = half;
         
-        // Insert new node which should work because of the split.
+        // Insert new node which should work because of this split.
         if (nodeIndex > half) {
-            eRc = bpt32lf_Insert(pNew, key, pData, NULL);
+            eRc = bpt32lf_Insert(pNew, key, pData);
         }
         else {
-            eRc = bpt32lf_Insert(this, key, pData, NULL);
+            eRc = bpt32lf_Insert(this, key, pData);
+        }
+        
+        // Now Adjust the leaf chain pointers.
+        pNew->pBlock->prev = this->index;
+        pNew->pBlock->next = this->pBlock->next;
+        this->pBlock->next = pNew->index;
+        
+        // Write the both leaves back out.
+        if (this->pMgr) {
+            eRc = this->pReq(this->pMgr, pNew, (void *)BPT32_REQUEST_WRITE, NULL);
+            eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
+        }
+        
+        // Adjust the chained block after the new block to point back to it
+        // or the data tail index.
+        if (this->pMgr) {
+            if (pNew->pBlock->next) {
+                pNext = bpt32lf_New();
+                if (pNext) {
+                    bpt32lf_setIndex(pNext, pNew->pBlock->next);
+                    eRc = this->pReq(this->pMgr, pNew, (void *)BPT32_REQUEST_READ, NULL);
+                    if (!ERESULT_FAILED(eRc)) {
+                        pNext->pBlock->prev = pNew->index;
+                        eRc = this->pReq(this->pMgr, pNext, (void *)BPT32_REQUEST_WRITE, NULL);
+                    }
+                    obj_Release(pNext);
+                }
+            }
+            else {
+                eRc = this->pReq(this->pMgr, pNew, (void *)BPT32_REQUEST_TAIL, NULL);
+            }
+        }
+
+        // Notify manager that a split occurred.
+        if (this->pMgr) {
+            eRc =   this->pReq(
+                             this->pMgr,
+                             this,                      // Lefthand Block
+                             (void *)BPT32_REQUEST_SPLIT,
+                             pNew                       // Righthand Block
+                    );
         }
         
         // Return to caller.
-        if (ppNew) {
-            *ppNew = pNew;
-        }
-        else
-            obj_Release(pNew);
+        obj_Release(pNew);
         return ERESULT_SUCCESS;
     }
     
@@ -1629,11 +1736,14 @@ extern "C" {
         if (this->pBlock) {
             eRc = AStr_AppendPrint(
                                    pStr,
-                                   "\tblockSize=%d  max=%d  used=%d  index=%d\n",
+                                   "\tblockSize=%d  max=%d  used=%d  index=%d  "
+                                   "prev=%d next=%d\n",
                                    this->blockSize,
                                    this->pBlock->max,
                                    this->pBlock->used,
-                                   this->index
+                                   this->index,
+                                   this->pBlock->prev,
+                                   this->pBlock->next
                                    );
         }
         else {
@@ -1647,15 +1757,6 @@ extern "C" {
         }
 
         if (this->pBlock) {
-            if (indent) {
-                AStr_AppendCharRepeatA(pStr, indent, ' ');
-            }
-            eRc = AStr_AppendPrint(
-                                   pStr,
-                                   "\tprev=%d next=%d\n",
-                                   this->pBlock->prev,
-                                   this->pBlock->next
-                                   );
             for (i=0; i<this->pBlock->used; ++i) {
                 pNode = bpt32lf_Index2Node(this, i);
                 if (indent) {

@@ -1,16 +1,23 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          B-Plus 32-Bit Tree Leaf Node (bpt32lf) Header
+//          B-Plus 32-Bit Tree Leaf Block (bpt32lf) Header
 //****************************************************************
 /*
  * Program
- *			B-Plus 32-Bit Tree Leaf Node
+ *			B-Plus 32-Bit Tree Leaf Block
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate bpt32lf to run things without complications
- *          of interfering with the main bpt32lf. A bpt32lf may be 
- *          called a bpt32lf on other O/S's.
+ *			This object provides support for a 32-bit B+ Tree Leaf
+ *          block.  A Leaf block consists of an array of nodee where
+ *          each node consists of a uint32_t key and fixed sized
+ *          data. The size of the data is specified at block creation
+ *          time.  The block is normally part of a doubly-linked
+ *          list of leaf blocks for fast sequential access.
+ *
+ *          Note that the data size can vary according to require-
+ *          ments, but is the same for all node entries once the
+ *          block is created.  Whereas, an index block has fixed
+ *          sized nodes.
  *
  * Remarks
  *	1.      None
@@ -53,6 +60,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <bpt32.h>
 
 
 #ifndef         BPT32LF_H
@@ -83,8 +91,13 @@ extern "C" {
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in bpt32lf_object.c.
         // Properties:
+        uint8_t *       (*pGetBlock) (OBJ_ID);
+        uint32_t        (*pGetIndex) (OBJ_ID);
+        bool            (*pSetManager) (OBJ_ID, OBJ_ID);
         // Methods:
-        //bool        (*pIsEnabled)(BPT32LF_DATA *);
+        ERESULT         (*pGet) (OBJ_ID, uint32_t, uint32_t *, void *);
+        ERESULT         (*pInsert) (OBJ_ID, uint32_t, void *);
+        ERESULT         (*pSetup) (OBJ_ID, uint32_t, uint32_t, uint32_t, bool);
     } BPT32LF_VTBL;
 
     typedef struct bpt32lf_class_vtbl_s	{
@@ -143,7 +156,8 @@ extern "C" {
         uint32_t        blockSize,
         uint16_t        dataSize,
         uint32_t        index,
-        bool            fAllocate
+        bool            fAllocate,
+        OBJ_ID          pMgr
     );
     
     
@@ -158,29 +172,6 @@ extern "C" {
     );
     
     
-    bool            bpt32lf_setBlockExits(
-        BPT32LF_DATA    *this,
-        ERESULT         (*pBlockEmpty)(
-                             OBJ_ID          pBlockObject,
-                             BPT32LF_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockFlush)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockIndexChanged)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pValue
-                        ),
-        ERESULT         (*pBlockSplit)(
-                            OBJ_ID          pBlockObject,
-                            BPT32LF_DATA    *pOld,
-                            BPT32LF_DATA    *pNew
-        ),
-        OBJ_ID          pBlockObject
-    );
-    
-    
     uint32_t        bpt32lf_getIndex (
         BPT32LF_DATA    *this
     );
@@ -188,6 +179,12 @@ extern "C" {
     bool            bpt32lf_setIndex (
         BPT32LF_DATA    *this,
         uint32_t        value
+    );
+    
+    
+    bool            bpt32lf_setManager(
+        BPT32LF_DATA    *this,
+        OBJ_ID          *pMgr          // Block Manager
     );
     
     
@@ -229,6 +226,19 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Overlay the block data with the given data.
+     @param     this    object pointer
+     @param     pData   pointer to new data
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         bpt32lf_CopyFrom (
+        BPT32LF_DATA   *this,
+        void           *pData
+    );
+    
+    
+    /*!
      Delete the entry if found.
      @param     this    object pointer
      @param     key     key of entry to be deleted
@@ -251,7 +261,7 @@ extern "C" {
      @warning   The data area provided must be at least dataSize bytes as given in
      the SetupSizes() method.
      */
-    ERESULT         bpt32lf_Find (
+    ERESULT         bpt32lf_FindKey (
         BPT32LF_DATA    *this,
         uint32_t        key,
         void            *pData
@@ -269,6 +279,14 @@ extern "C" {
     );
     
     
+    ERESULT         bpt32lf_Get (
+        BPT32LF_DATA    *this,
+        uint32_t        index,          // Relative to 1
+        uint32_t        *pKey,
+        void            *pData
+    );
+    
+    
     BPT32LF_DATA *  bpt32lf_Init (
         BPT32LF_DATA    *this
     );
@@ -277,8 +295,7 @@ extern "C" {
     ERESULT         bpt32lf_Insert (
         BPT32LF_DATA	*this,
         uint32_t        key,
-        void            *pData,
-        BPT32LF_DATA    **ppNew
+        void            *pData
     );
     
  
@@ -295,8 +312,7 @@ extern "C" {
         BPT32LF_DATA    *this,
         uint32_t        key,
         void            *pData,
-        uint32_t        nodeIndex,
-        BPT32LF_DATA    **ppNew
+        uint32_t        nodeIndex
     );
     
     

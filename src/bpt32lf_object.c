@@ -387,9 +387,14 @@ BPT32LF_VTBL     bpt32lf_Vtbl = {
     },
     // Put other object method names below this.
     // Properties:
+    (void *)bpt32lf_getBlock,
+    (void *)bpt32lf_getIndex,
+    (void *)bpt32lf_setManager,
     // Methods:
-    //bpt32lf_IsEnabled,
- 
+    (void *)bpt32lf_Get,
+    (void *)bpt32lf_Insert,
+    (void *)bpt32lf_Setup
+
 };
 
 

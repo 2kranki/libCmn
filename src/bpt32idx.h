@@ -1,16 +1,25 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          B-Plus 32-Bit Tree Index Node (bpt32idx) Header
+//          B-Plus 32-Bit Tree Index Block (bpt32idx) Header
 //****************************************************************
 /*
  * Program
- *			B-Plus 32-Bit Tree Index Node (bpt32idx)
+ *			B-Plus 32-Bit Tree Index Block (bpt32idx)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate bpt32idx to run things without complications
- *          of interfering with the main bpt32idx. A bpt32idx may be 
- *          called a bpt32idx on other O/S's.
+ *			This object provides support for a 32-bit B+ Tree index
+ *          block.  This block contains an array of nodes where the
+ *          node consists of a uint32_t key and a uint32_t index to
+ *          a child block.  So, an index block does not contain any
+ *          key's data just indices to child blocks.  There is also
+ *          a special index, P0, which points to the child block of
+ *          keys less than the key in the first node entry.  The
+ *          rest of the fields in the block are for management of
+ *          the nodes and block identification purposes.
+ *
+ *          Note that the nodes in this block are of fixed size
+ *          whereas the nodes in a leaf block vary in size according
+ *          to the data size.
  *
  * Remarks
  *	1.      None
@@ -84,8 +93,13 @@ extern "C" {
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in bpt32idx_object.c.
         // Properties:
+        uint8_t *       (*pGetBlock) (OBJ_ID);
+        uint32_t        (*pGetIndex) (OBJ_ID);
+        bool            (*pSetManager) (OBJ_ID, OBJ_ID);
         // Methods:
-        //bool        (*pIsEnabled)(BPT32IDX_DATA *);
+        ERESULT         (*pGet) (OBJ_ID, uint32_t, uint32_t *, void *);
+        ERESULT         (*pInsert) (OBJ_ID, uint32_t, void *);
+        ERESULT         (*pSetup) (OBJ_ID, uint32_t, uint32_t, uint32_t, bool);
     } BPT32IDX_VTBL;
 
     typedef struct bpt32idx_class_vtbl_s	{
@@ -141,10 +155,12 @@ extern "C" {
     );
     
     
-    BPT32IDX_DATA * bpt32idx_NewWithSize (
+    BPT32IDX_DATA * bpt32idx_NewWithSizes (
         uint32_t        blockSize,
+        uint32_t        dataSize,
         uint32_t        index,                  // Block Index Number
-        bool            fAllocate               // true == allocate a buffer
+        bool            fAllocate,              // true == allocate a buffer
+        OBJ_ID          pMgr
     );
     
     
@@ -170,7 +186,7 @@ extern "C" {
     );
     
     
-    bool            bpt32idx_setManger(
+    bool            bpt32idx_setManager(
         BPT32IDX_DATA    *this,
         OBJ_ID           *pMgr          // Block Manager
     );
@@ -193,6 +209,19 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Overlay the block data with the given data.
+     @param     this    object pointer
+     @param     pData   pointer to new data
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         bpt32idx_CopyFrom (
+        BPT32IDX_DATA   *this,
+        void            *pData
+    );
+    
+    
+    /*!
      Delete the entry if found.
      @param     this    object pointer
      @param     key     key of entry to be deleted
@@ -213,7 +242,9 @@ extern "C" {
     
     
     /*!
-     Find an entry in the node.  If found, optionally return the data to the are given.
+     Find an index in the block given a key.  If key < node key of first entry, return
+     P0.  If node key(i) < key >= node key(i+1), return node index(i).  Otherwise,
+     return node index (last entry).
      @param     this    object pointer
      @param     key     [input] numeric key
      @param     pIndex  [output] pointer to returned index if found
@@ -240,6 +271,14 @@ extern "C" {
     );
     
     
+    ERESULT         bpt32idx_Get (
+        BPT32IDX_DATA    *this,
+        uint32_t        index,          // Relative to 1
+        uint32_t        *pKey,
+        uint32_t        *pData
+    );
+    
+    
     BPT32IDX_DATA * bpt32idx_Init (
         BPT32IDX_DATA   *this
     );
@@ -251,7 +290,7 @@ extern "C" {
      the appropriate block.
      @param     this    object pointer
      @param     key     key to be inserted
-     @param     data    data to be associated with the key
+     @param     pData   pointer to data to be associated with the key
      @param     ppNew   object pointer to new block if split occurs
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
@@ -259,14 +298,26 @@ extern "C" {
     ERESULT         bpt32idx_Insert (
         BPT32IDX_DATA   *this,
         uint32_t        key,
-        uint32_t        data,
+        uint32_t        *pData,
         BPT32IDX_DATA   **ppNew
     );
 
  
+    /*!
+     Read the block to its backing dataset/file.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         bpt32idx_Read (
+        BPT32IDX_DATA   *this
+    );
+    
+    
     ERESULT         bpt32idx_Setup(
         BPT32IDX_DATA   *this,
         uint32_t        blockSize,
+        uint32_t        dataSize,
         uint32_t        index,                  // Block Index Number
         bool            fAllocate               // true == allocate a buffer
     );

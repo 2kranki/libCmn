@@ -1023,6 +1023,60 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                   A p p e n d  H e x  D a t a
+    //---------------------------------------------------------------
+    
+    ERESULT        AStr_AppendHexData(
+        ASTR_DATA       *this,
+        void            *pData,
+        int32_t         cData,
+        uint16_t        indent
+    )
+    {
+        uint64_t        offset = 0;
+        uint32_t        j;
+        HEX_DATA        *pHex = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        j = 1;
+        while (cData > 0) {
+            if (indent) {
+                AStr_AppendCharRepeatW32(this, indent, ' ');
+            }
+            AStr_AppendCharRepeatW32(this, 3, ' ');
+            j = hex_put16BytesObj_64(
+                                     pHex,
+                                     (uint64_t)offset,
+                                     cData,
+                                     (void *)pData,
+                                     this,
+                                     (void *)AStr_AppendCharA
+                                     );
+            AStr_AppendA(this, "\n");
+            if (cData > 16) {
+                cData -= 16;
+                pData += 16;
+                offset += 16;
+            }
+            else
+                break;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                    A p p e n d  F i l e
     //---------------------------------------------------------------
     

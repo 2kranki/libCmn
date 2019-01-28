@@ -99,18 +99,32 @@ extern "C" {
     } BPT32_CLASS_VTBL;
 
 
-    typedef enum bpt32_index_request_e {
-        BPT32_INDEX_REQUEST_UNKNOWN=0,
-        BPT32_INDEX_REQUEST_BLOCK_NEW,          // New Block has been added.
-        BPT32_INDEX_REQUEST_BLOCK_UPDATE,       // Block has been updated.
-        BPT32_INDEX_REQUEST_NEW_INDEX,          // Provide New Block Index Number
-        BPT32_INDEX_REQUEST_WRITE,
-    } BPT32_INDEX_REQUEST;
-
-    typedef enum bpt32_leaf_request_e {
-        BPT32_LEAF_REQUEST_UNKNOWN=0,
-        BPT32_LEAF_REQUEST_WRITE,
-    } BPT32_LEAF_REQUEST;
+    typedef struct bpt32_blk_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in bpt32_object.c.
+        // Properties:
+        uint8_t *       (*pGetBlock) (OBJ_ID);
+        uint32_t        (*pGetIndex) (OBJ_ID);
+        bool            (*pSetManager) (OBJ_ID, OBJ_ID);
+        // Methods:
+        ERESULT         (*pGet) (OBJ_ID, uint32_t, uint32_t *, void *);
+        ERESULT         (*pInsert) (OBJ_ID, uint32_t, void *);
+        ERESULT         (*pSetup) (OBJ_ID, uint32_t, uint32_t, uint32_t, bool);
+    } BPT32_BLK_VTBL;
+    
+    typedef enum bpt32_request_e {
+        BPT32_REQUEST_UNKNOWN=0,
+        BPT32_REQUEST_NEW_INDEX,            // Return a new empty index block.
+        BPT32_REQUEST_NEW_LEAF,             // Return a new empty leaf block.
+        BPT32_REQUEST_PARENT,               // Get Parent after a search
+        BPT32_REQUEST_READ,
+        BPT32_REQUEST_SPLIT,                // A Block Split occurred so
+        //                                  // handle the index block update(s)
+        BPT32_REQUEST_TAIL,                 // Change Data Tail to given block.
+        BPT32_REQUEST_WRITE,
+    } BPT32_REQUEST;
+    
     
 
     
@@ -163,22 +177,6 @@ extern "C" {
 
     LRU_DATA *  bpt32_getLRU (
         BPT32_DATA  *this
-    );
-    
-    
-    bool            bpt32_setReadWrite (
-        BPT32_DATA     *this,
-        ERESULT         (*pBlockRead) (
-            OBJ_ID          pObject,
-            uint32_t        lsn,                // Logical Sector Number
-            uint8_t         *pBuffer            // Buffer of sectorSize bytes
-        ),
-        ERESULT         (*pBlockWrite) (
-            OBJ_ID          pObject,
-            uint32_t        lsn,                // Logical Sector Number
-            uint8_t         *pBuffer            // Buffer of sectorSize bytes
-        ),
-        OBJ_ID          pBlockObject
     );
     
     

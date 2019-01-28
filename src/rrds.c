@@ -1079,7 +1079,17 @@ extern "C" {
         obj_setIdent((OBJ_ID)this, OBJ_IDENT_RRDS);     // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&rrds_Vtbl);
-        
+        lru_setLogicalSectorRead(
+                                 (LRU_DATA *)this,
+                                 (void *)rrds_LSN_Read,
+                                 this
+        );
+        lru_setLogicalSectorWrite(
+                                 (LRU_DATA *)this,
+                                 (void *)rrds_LSN_Write,
+                                 this
+        );
+
 #if defined(__MACOSX_ENV__)
         this->recordTerm = RRDS_RCD_TRM_NL;
         this->recordSize = 81;
@@ -1424,11 +1434,18 @@ extern "C" {
         if( recordNum == 0 ) {
             return ERESULT_INVALID_PARAMETER;
         }
-        
+        TRC_OBJ(this, "rrds_RecordWrite recordNum=%d\n", recordNum);
+
         /* Fill the File if a block is accessed beyond the end of the
          * File.
          */
         if( recordNum > this->cRecords+1 ) {
+            TRC_OBJ(
+                    this,
+                    "\tfile too short, extending from %d to %d\n",
+                    this->cRecords,
+                    recordNum
+            );
             if( rrds_FileExtend( this, recordNum-1 ) )
                 ;
             else {
@@ -1438,16 +1455,22 @@ extern "C" {
         
         // Write the Block to the File.
         if (this->cLRU > 1) {
-            eRc = lru_Read((LRU_DATA *)this, recordNum, pData);
+            TRC_OBJ(this, "\tLRU write...\n");
+            eRc = lru_Write((LRU_DATA *)this, recordNum, pData);
             if (ERESULT_FAILED(eRc)) {
+                TRC_OBJ(this, "\tLRU write error!\n");
                 return ERESULT_IO_ERROR;
             }
+            TRC_OBJ(this, "\tLRU write completed\n");
         }
         else {
+            TRC_OBJ(this, "\tRRDS write...\n");
             eRc = rrds_LSN_Write(this, recordNum, pData);
             if (ERESULT_FAILED(eRc)) {
+                TRC_OBJ(this, "\tRRDS write error!\n");
                 return ERESULT_IO_ERROR;
             }
+            TRC_OBJ(this, "\tRRDS write completed\n");
         }
         
         // Return to caller.
@@ -1486,6 +1509,8 @@ extern "C" {
         
         this->reqSize = recordSize;
         this->recordTerm = recordTerm;
+        this->cLRU = cLRU;
+        this->cHash = cHash;
         switch (recordTerm) {
             case RRDS_RCD_TRM_NONE:
                 this->recordSize = recordSize;
@@ -1512,7 +1537,7 @@ extern "C" {
                 break;
         }
         
-        eRc = lru_Setup((LRU_DATA *)this, this->recordSize, this->cLRU, this->cHash);
+        eRc = lru_Setup((LRU_DATA *)this, this->recordSize, cLRU, cHash);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this->pIO);

@@ -403,10 +403,6 @@ extern "C" {
         RBT_TREE        *pTree;
         NODEHASH_RECORD *pRecord = NULL;
         int             iRc;
-        NODEHASH_RECORD *pEntryNew;
-        NAME_DATA       *pName;
-        uint32_t        hash;
-        int32_t         cls;
         ERESULT         eRc = ERESULT_FAILURE;
         
         // Do initialization.
@@ -1379,8 +1375,8 @@ extern "C" {
     {
         LISTDL_DATA     *pList = NULL;
         BLOCKS_NODE     *pEntry = NULL;
-        NODEHASH_RECORD *pRecord;
-        uint32_t        i;
+        //NODEHASH_RECORD *pRecord;
+        //uint32_t        i;
         ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
@@ -1732,7 +1728,7 @@ extern "C" {
         OBJ_INFO        *pInfo;
         LISTDL_DATA     *pList = NULL;
         BLOCKS_NODE     *pEntry = NULL;
-        NODEHASH_RECORD *pRecord;
+        //NODEHASH_RECORD *pRecord;
 
         // Do initialization.
 #ifdef NDEBUG

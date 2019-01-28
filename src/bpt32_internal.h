@@ -44,6 +44,7 @@
 #include        <bpt32lf_internal.h>
 #include        <jsonIn.h>
 #include        <lru_internal.h>
+#include        <objArray.h>
 #include        <rrds_internal.h>
 
 
@@ -63,49 +64,13 @@ extern "C" {
 #endif
 
 
-    //          Node Descriptor
+    //          Block Descriptor
 #pragma pack(push, 1)
-    typedef struct  bpt32_node_s {
-        //uint32_t        prev;           // Previous Leaf Node Index
-        //uint32_t        next;           // Next Leaf Node Index
-        uint32_t        key;
-        union {
-            uint32_t        index[0];       // Index Block
-            uint8_t         data[0];        // Leaf Block
-        };
-    } BPT32_NODE;
+    typedef struct  bpt32_blkidx_s {
+        OBJ_ID          pBlock;
+        uint32_t        blockLsn;       // Current Node Number in Work Block
+    } BPT32_BLKIDX;
 #pragma pack(pop)
-    
-    
-#pragma pack(push, 1)
-    typedef struct  bpt32_block_index_s {
-        uint16_t        blockType;      // OBJ_IDENT_BPT32IDX or OBJ_IDENT_BPT32LF
-        uint16_t        rsvd16;
-        uint16_t        max;            // Maximum Number of nodes
-        uint16_t        used;           // Number of nodes in use
-        uint32_t        index;          // Block Index
-        uint32_t        p0;             // Pointer 0
-        BPT32_NODE      nodes[0];
-    } BPT32_BLOCK_INDEX;
-#pragma pack(pop)
-    
-    
-    
-#pragma pack(push, 1)
-    typedef struct  bpt32_block_s {
-        uint16_t        blockType;      // OBJ_IDENT_BPT32IDX or OBJ_IDENT_BPT32LF
-        uint16_t        rsvd16;
-        uint16_t        dataSize;       // Requested Data Size
-        uint16_t        actualSize;     // Actual Data Size rounded up
-        uint16_t        max;            // Maximum Number of nodes
-        uint16_t        used;           // Number of nodes in use
-        uint32_t        prev;           // Previous Leaf Node Index
-        uint32_t        next;           // Next Leaf Node Index
-        uint32_t        index;          // Block Index
-        BPT32_NODE      nodes[0];
-    } BPT32_BLOCK;
-#pragma pack(pop)
-    
     
     
     //                      File Header
@@ -149,17 +114,7 @@ struct bpt32_data_s	{
     PATH_DATA       *pPath;
     OBJ_ID          pRoot;          // Root Record
     BPT32_HEADER    *pHdr;
-    
-    //          Search Index List
-    uint16_t        srchMax;
-    uint16_t        srchCur;
-    uint32_t        *pSrchStk;
-
-    // Work Block and associated variables
-    BPT32_BLOCK     *pBlock;        // Work Block, blockSize in length
-    uint32_t        blockLsn;       // Current Node Number in Work Block
-    uint32_t        blockIndex;     // Current Index within Work Block
-    BPT32_NODE      *pBlockNode;     // Current Node from blockIndex
+    OBJARRAY_DATA   *pSrchStk;      // Search Block List
 
     ERESULT         (*pBlockRead)(
         OBJ_ID          this,
@@ -207,6 +162,22 @@ struct bpt32_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            bpt32_setReadWrite (
+        BPT32_DATA     *this,
+        ERESULT         (*pBlockRead) (
+                           OBJ_ID          pObject,
+                           uint32_t        lsn,                // Logical Sector Number
+                           uint8_t         *pBuffer            // Buffer of sectorSize bytes
+                           ),
+        ERESULT         (*pBlockWrite) (
+                            OBJ_ID          pObject,
+                            uint32_t        lsn,                // Logical Sector Number
+                            uint8_t         *pBuffer            // Buffer of sectorSize bytes
+                            ),
+        OBJ_ID          pBlockObject
+    );
+
+    
     OBJ_IUNKNOWN *  bpt32_getSuperVtbl (
         BPT32_DATA     *this
     );
@@ -217,22 +188,14 @@ struct bpt32_data_s	{
     );
 
 
-    ERESULT         bpt32_BlockInit(
-        BPT32_BLOCK     *pBlock,
-        uint16_t        blockType,      // OBJ_IDENT_BPT32IDX or OBJ_IDENT_BPT32LF
-        uint32_t        blockSize,
-        uint16_t        dataSize,       // If Index, use sizeof(uint32_t) for this.
-        uint32_t        blockIndex
-    );
-    
-    
     ERESULT         bpt32_BlockRead(
         BPT32_DATA      *this,
-        uint32_t        lsn
+        uint32_t        lsn,
+        OBJ_ID          *ppObj
     );
     
     
-    ERESULT         bpt32_BlockSearch (
+    ERESULT         bpt32_BlockSearchKey (
         BPT32_DATA      *this,
         uint32_t        lsn,
         uint32_t        key,
@@ -242,35 +205,8 @@ struct bpt32_data_s	{
     
     ERESULT         bpt32_BlockSplit(
         BPT32_DATA      *this,
-        uint32_t        *pIndex
-    );
-    
-    
-    BPT32_NODE *    bpt32_Index2Node (
-        BPT32_BLOCK     *pBlock,
-        uint32_t        index                // Relative to 0
-    );
-    
-    
-    ERESULT         bpt32_NodeDelete (
-        BPT32_DATA      *this,
-        BPT32_BLOCK     *pBlock,
-        uint32_t        key
-    );
-    
-    
-    BPT32_NODE *    bpt32_NodeFind (
-        BPT32_BLOCK     *pBlock,
-        uint32_t        key,
-        uint32_t        *pIndex
-    );
-    
-    
-    ERESULT         bpt32_NodeInsert (
-        BPT32_DATA      *this,
-        BPT32_BLOCK     *pBlock,
-        uint32_t        key,
-        void            *pData
+        OBJ_ID          *pLeft,
+        OBJ_ID          *pRight
     );
     
     

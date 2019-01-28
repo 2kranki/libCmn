@@ -637,8 +637,8 @@ extern "C" {
         SYMTABLE_DATA   *this
     )
     {
-        NODEHASH_DATA   *pHash;
-        SYMENTRY_DATA   *pEntry = OBJ_NIL;
+        //NODEHASH_DATA   *pHash;
+        //SYMENTRY_DATA   *pEntry = OBJ_NIL;
         OBJARRAY_DATA   *pEnum = OBJ_NIL;
         
         // Do initialization.

@@ -262,6 +262,12 @@ extern "C" {
     );
 
 
+    ERESULT         lru_IsLocked (
+        LRU_DATA        *this,
+        uint32_t        lsn
+    );
+    
+    
     /*!
      Read data into the given buffer for size number of bytes if possible
      and then lock it from being re-used.  The sector will be taken from

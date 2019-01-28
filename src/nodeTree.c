@@ -1424,10 +1424,10 @@ extern "C" {
         OBJ_ID          pData
     )
     {
+        //ERESULT         eRc;
         //NODEENTRY_DATA  *pEntry;
         uint32_t        index = 0;
         NODELINK_DATA   *pNode;
-        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG

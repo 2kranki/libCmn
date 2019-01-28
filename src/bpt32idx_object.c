@@ -387,9 +387,14 @@ BPT32IDX_VTBL     bpt32idx_Vtbl = {
     },
     // Put other object method names below this.
     // Properties:
+    (void *)bpt32idx_getBlock,
+    (void *)bpt32idx_getIndex,
+    (void *)bpt32idx_setManager,
     // Methods:
-    //bpt32idx_IsEnabled,
- 
+    (void *)bpt32idx_Get,
+    (void *)bpt32idx_Insert,
+    (void *)bpt32idx_Setup
+
 };
 
 

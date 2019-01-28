@@ -1007,7 +1007,6 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        bool            fRc;
         ERESULT         eRc = ERESULT_SUCCESS;
 
         
@@ -1053,7 +1052,6 @@ extern "C" {
         PATH_DATA       *pPath
     )
     {
-        bool            fRc;
         ERESULT         eRc = ERESULT_SUCCESS;
         
         

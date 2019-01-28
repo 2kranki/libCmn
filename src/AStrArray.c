@@ -789,8 +789,8 @@ extern "C" {
         ERESULT         eRc;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pWrkStr;
-        uint32_t        i;
-        uint32_t        iMax;
+        //uint32_t        i;
+        //uint32_t        iMax;
         const
         OBJ_INFO        *pInfo;
 

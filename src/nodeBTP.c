@@ -982,7 +982,6 @@ extern "C" {
         NODE_DATA       *pNode
     )
     {
-        NODEBTP_RECORD  record = {0};
         ERESULT         eRc = ERESULT_SUCCESS;
         int             iRc;
         

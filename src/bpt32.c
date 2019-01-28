@@ -62,188 +62,340 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    /*!
-     @warning   This method must always conform to P_ERESULT_EXIT4.
-     */
-    ERESULT         bpt32_BlockRequestIndex(
+    ERESULT         bpt32_BlockFindParent(
         BPT32_DATA      *this,
-        BPT32IDX_DATA   *pObj,
-        uint32_t        request,
-        void            *pRet
+        uint32_t        lsn,
+        OBJ_ID          *ppObj
     )
     {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        OBJ_ID          *pObj;
+        uint32_t        iMax;
+        uint32_t        i;
         uint32_t        index;
+        BPT32_BLK_VTBL  *pVtbl = NULL;
+
+        TRC_OBJ(this, "bpt32_BlockFindParent lsn=%d\n", lsn);
+        
+        if (ppObj)
+            *ppObj = OBJ_NIL;
+        iMax = objArray_getSize(this->pSrchStk);
+        for (i=iMax; i>0; --i) {
+            pObj = objArray_Get(this->pSrchStk, i);
+            pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
+            index = pVtbl->pGetIndex(pObj);
+            if (lsn == index) {
+                if (i > 1) {
+                    pObj = objArray_Get(this->pSrchStk, (i - 1));
+                    if (ppObj)
+                        *ppObj = pObj;
 #ifdef NDEBUG
 #else
-        if (!bpt32_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (sizeof(void *) < sizeof(uint32_t)) {
-            DEBUG_BREAK();
-            return ERESULT_GENERAL_FAILURE;
-        }
+                    if (obj_Trace(this)) {
+                        OBJ_IUNKNOWN    *pVtbl = obj_getVtbl(pObj);
+                        ASTR_DATA       *pStr = pVtbl->pToDebugString(pObj, 4);
+                        TRC_OBJ(this, "\tFound:\n%s\n", AStr_getData(pStr));
+                        obj_Release(pStr);
+                    }
 #endif
-        
-        switch (request) {
-                
-            case BPT32_INDEX_REQUEST_BLOCK_NEW:
-                index = ++this->pHdr->cRecords;
-                *((uint32_t *)pRet) = index;
+                    eRc = ERESULT_SUCCESS;
+                }
                 break;
-                
-            case BPT32_INDEX_REQUEST_WRITE:
-                eRc =   rrds_RecordWrite(
-                                (RRDS_DATA *)this,
-                                bpt32idx_getIndex(pObj),
-                                bpt32idx_getBlock(pObj)
-                        );
-                break;
-                
-            default:
-                return ERESULT_INVALID_REQUEST;
-                break;
+            }
         }
         
+        TRC_OBJ(this, "\tNot Found\n");
         return eRc;
     }
-
+    
     
     
     /*!
      @warning   This method must always conform to P_ERESULT_EXIT4.
      */
-    ERESULT         bpt32_BlockRequestLeaf(
+    ERESULT         bpt32_BlockRequest(
         BPT32_DATA      *this,
-        BPT32IDX_DATA   *pObj,
+        OBJ_ID          pObj,
         uint32_t        request,
         void            *pRet
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        BPT32IDX_DATA   *pIndex = OBJ_NIL;
+        BPT32LF_DATA    *pLeaf = OBJ_NIL;
+        uint32_t        lsn = 0;
+        void            *pBlock = NULL;
+        BPT32_BLK_VTBL  *pVtbl = NULL;
+        
 #ifdef NDEBUG
 #else
         if (!bpt32_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
+        TRC_OBJ(this, "bpt32_BlockRequest req=%d\n", request);
 #endif
         
         switch (request) {
                 
-            case BPT32_LEAF_REQUEST_WRITE:
+            case BPT32_REQUEST_NEW_INDEX:
+                if (NULL == pRet) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_PARAMETER;
+                }
+                lsn = ++this->pHdr->cRecords;
+                TRC_OBJ(this, "\tNew Index Block %d\n", lsn);
+                pIndex =    bpt32idx_NewWithSizes(
+                                             this->blockSize,
+                                             this->dataSize,
+                                             lsn,
+                                             true,
+                                             this
+                            );
+                if (OBJ_NIL == pIndex) {
+                    DEBUG_BREAK();
+                    --this->pHdr->cRecords;
+                    return ERESULT_OUT_OF_MEMORY;
+                }
+#ifdef NDEBUG
+#else
+                if (obj_Trace(this))
+                    obj_TraceSet(pIndex, true);
+#endif
                 eRc =   rrds_RecordWrite(
                                          (RRDS_DATA *)this,
-                                         bpt32idx_getIndex(pObj),
-                                         bpt32idx_getBlock(pObj)
+                                         bpt32idx_getIndex(pIndex),
+                                         bpt32idx_getBlock(pIndex)
+                                         );
+                if (pRet)
+                    *((void **)pRet) = pIndex;
+                else
+                    obj_Release(pIndex);
+                pIndex = NULL;
+                break;
+                
+            case BPT32_REQUEST_NEW_LEAF:
+                if (NULL == pRet) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_PARAMETER;
+                }
+                lsn = ++this->pHdr->cRecords;
+                TRC_OBJ(this, "\tNew Leaf Block %d\n", lsn);
+                pLeaf = bpt32lf_NewWithSizes(
+                                             this->blockSize,
+                                             this->dataSize,
+                                             lsn,
+                                             true,
+                                             this
                         );
+                if (OBJ_NIL == pLeaf) {
+                    DEBUG_BREAK();
+                    --this->pHdr->cRecords;
+                    return ERESULT_OUT_OF_MEMORY;
+                }
+#ifdef NDEBUG
+#else
+                if (obj_Trace(this))
+                    obj_TraceSet(pLeaf, true);
+#endif
+                eRc =   rrds_RecordWrite(
+                                         (RRDS_DATA *)this,
+                                         bpt32lf_getIndex(pLeaf),
+                                         bpt32lf_getBlock(pLeaf)
+                        );
+                if (pRet)
+                    *((void **)pRet) = pLeaf;
+                else
+                    obj_Release(pLeaf);
+                pLeaf = NULL;
+                break;
+                
+            case BPT32_REQUEST_PARENT:
+                if (NULL == pObj) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_PARAMETER;
+                }
+                pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
+                lsn = pVtbl->pGetIndex(pObj);
+                TRC_OBJ(this, "\tFind Parent for %d...\n", lsn);
+                eRc = bpt32_BlockFindParent(this, lsn, pRet);
+                break;
+                
+            case BPT32_REQUEST_READ:
+                if (OBJ_IDENT_BPT32IDX == obj_getType(pObj)) {
+                    lsn = bpt32idx_getIndex((BPT32IDX_DATA *)pObj);
+                    TRC_OBJ(this, "\tRead data for index block %d...\n", lsn);
+                    if (NULL == bpt32idx_getBlock((BPT32IDX_DATA *)pObj)) {
+                        eRc =   bpt32idx_Setup(
+                                              (BPT32IDX_DATA *)pObj,
+                                              this->blockSize,
+                                               this->dataSize,
+                                              lsn,
+                                              true
+                                              );
+                        bpt32idx_setManager((BPT32IDX_DATA *)pObj, (OBJ_ID)this);
+                    }
+                    pBlock = bpt32idx_getBlock(pObj);
+                }
+                if (OBJ_IDENT_BPT32LF == obj_getType(pObj)) {
+                    if (NULL == pObj) {
+                        DEBUG_BREAK();
+                        return ERESULT_INVALID_PARAMETER;
+                    }
+                    pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
+                    lsn = pVtbl->pGetIndex(pObj);
+                    TRC_OBJ(this, "\tRead data for leaf block %d...\n", lsn);
+                    pBlock = pVtbl->pGetBlock(pObj);
+                    if (NULL == pBlock) {
+                        eRc = pVtbl->pSetup(
+                                            pObj,
+                                            this->blockSize,
+                                            this->dataSize,
+                                            lsn,
+                                            true
+                                );
+                        pVtbl->pSetManager(pObj, this);
+                    }
+                    pBlock = bpt32lf_getBlock((BPT32LF_DATA *)pObj);
+                }
+                if (lsn && pBlock) {
+                    eRc =   rrds_RecordRead(
+                                            (RRDS_DATA *)this,
+                                            lsn,
+                                            pBlock
+                            );
+                }
+                else
+                    eRc = ERESULT_GENERAL_FAILURE;
+                break;
+                
+            case BPT32_REQUEST_SPLIT:
+                TRC_OBJ(this, "\tSplit Block...\n");
+                eRc = bpt32_BlockSplit(this, (OBJ_ID)pObj, pRet);
+                break;
+                
+            case BPT32_REQUEST_TAIL:
+                TRC_OBJ(this, "\tSet new data tail...\n");
+                if (OBJ_IDENT_BPT32LF == obj_getType(pObj)) {
+                    this->pHdr->dataTail = bpt32lf_getIndex((BPT32LF_DATA *)pObj);
+                    eRc = ERESULT_SUCCESS;
+                }
+                else
+                    eRc = ERESULT_GENERAL_FAILURE;
+                break;
+                
+            case BPT32_REQUEST_WRITE:
+                if (NULL == pObj) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_PARAMETER;
+                }
+                pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
+                lsn = pVtbl->pGetIndex(pObj);
+                TRC_OBJ(this, "\tWrite data for block %d...\n", lsn);
+                pBlock = pVtbl->pGetBlock(pObj);
+                if (lsn && pBlock) {
+                    eRc =   rrds_RecordWrite(
+                                             (RRDS_DATA *)this,
+                                             lsn,
+                                             pBlock
+                                             );
+                }
+                else
+                    eRc = ERESULT_GENERAL_FAILURE;
                 break;
                 
             default:
+                DEBUG_BREAK();
                 return ERESULT_INVALID_REQUEST;
                 break;
         }
         
         return eRc;
-    }
-    
-    
-    
-    ERESULT         bpt32_BlockFlushIdx(
-        BPT32_DATA      *this,
-        BPT32IDX_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        //this->priority = value;
-        
-        return ERESULT_NOT_IMPLEMENTED;
-    }
-
-    
-    
-    ERESULT         bpt32_BlockIndexChangedIdx(
-        BPT32_DATA      *this,
-        BPT32IDX_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        //this->priority = value;
-        
-        return ERESULT_NOT_IMPLEMENTED;
-    }
-
-    
-    
-    ERESULT         bpt32_BlockInit(
-        BPT32_BLOCK     *pBlock,
-        uint16_t        blockType,      // OBJ_IDENT_BPT32IDX or OBJ_IDENT_BPT32LF
-        uint32_t        blockSize,
-        uint16_t        dataSize,       // If Index, use sizeof(uint32_t) for this.
-        uint32_t        blockIndex
-    )
-    {
-        //ERESULT         eRc;
-
-#ifdef NDEBUG
-#else
-        if (NULL == pBlock) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if ((blockType == OBJ_IDENT_BPT32IDX) || (blockType == OBJ_IDENT_BPT32LF))
-            ;
-        else {
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        if (blockType == OBJ_IDENT_BPT32IDX) {
-            dataSize = sizeof(uint32_t);
-        }
-        
-        memset(pBlock, 0, sizeof(BPT32_BLOCK));
-        pBlock->blockType = blockType;
-        pBlock->dataSize = dataSize;
-        pBlock->actualSize = ROUNDUP4(dataSize);
-        pBlock->max = (blockSize - sizeof(BPT32_BLOCK));
-        pBlock->max /=  (sizeof(BPT32_NODE) + pBlock->actualSize);
-        pBlock->index = blockIndex;
-
-        return ERESULT_SUCCESS;
     }
     
     
     
     ERESULT         bpt32_BlockRead(
         BPT32_DATA      *this,
-        uint32_t        lsn
+        uint32_t        lsn,
+        OBJ_ID          *ppObj
     )
     {
         ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
+        BPT32IDX_DATA   *pIndex = OBJ_NIL;
+        BPT32LF_DATA    *pLeaf = OBJ_NIL;
+        uint16_t        *pData;
         
-        eRc =   rrds_RecordRead(bpt32_getRRDS(this), lsn, (void *)this->pBlock);
+        TRC_OBJ(this, "bpt32_BlockRead lsn=%d\n", lsn);
+        
+        // Load the block into the LRU.
+        eRc =   rrds_RecordRead((RRDS_DATA *)this, lsn, NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
+            TRC_OBJ(this, "\tRead Error!\n");
             return eRc;
         }
-        this->blockLsn = lsn;
-        this->blockIndex = -1;
-
+        
+        pData = (uint16_t *)lru_FindBuffer((LRU_DATA *)this, lsn);
+        if (*pData == OBJ_IDENT_BPT32IDX) {
+            pIndex = bpt32idx_New();
+            if (OBJ_NIL == pIndex) {
+                DEBUG_BREAK();
+                TRC_OBJ(this, "\tCould not create Index Block Error!\n");
+                return ERESULT_OUT_OF_MEMORY;
+            }
+#ifdef NDEBUG
+#else
+            if (obj_Trace(this))
+                obj_TraceSet(pIndex, true);
+#endif
+            eRc = bpt32idx_Setup(pIndex, this->blockSize, this->dataSize, lsn, true);
+            if (ERESULT_FAILED(eRc)) {
+                TRC_OBJ(this, "\tIndex Block Setup Error!\n");
+                obj_Release(pIndex);
+                return eRc;
+            }
+            bpt32idx_setManager(pIndex, (void *)this);
+            bpt32idx_CopyFrom(pIndex, (void *)pData);
+            if (ppObj)
+                *ppObj = pIndex;
+            else
+                obj_Release(pIndex);
+            pIndex = OBJ_NIL;
+            TRC_OBJ(this, "\tFound index Block\n");
+        }
+        else if (*pData == OBJ_IDENT_BPT32LF) {
+            pLeaf = bpt32lf_New();
+            if (OBJ_NIL == pLeaf) {
+                DEBUG_BREAK();
+                TRC_OBJ(this, "\tCould not create Leaf Block Error!\n");
+                return ERESULT_OUT_OF_MEMORY;
+            }
+#ifdef NDEBUG
+#else
+            if (obj_Trace(this))
+                obj_TraceSet(pLeaf, true);
+#endif
+            eRc = bpt32lf_Setup(pLeaf, this->blockSize, this->dataSize, lsn, true);
+            if (ERESULT_FAILED(eRc)) {
+                TRC_OBJ(this, "\tLeaf Block Setup Error!\n");
+                obj_Release(pLeaf);
+                return eRc;
+            }
+            bpt32lf_setManager(pLeaf, (void *)this);
+            bpt32lf_CopyFrom(pLeaf, (void *)pData);
+            if (ppObj)
+                *ppObj = pLeaf;
+            else
+                obj_Release(pLeaf);
+            pLeaf = OBJ_NIL;
+            TRC_OBJ(this, "\tFound Leaf Block\n");
+        }
+        else {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+        
         return eRc;
     }
     
@@ -268,7 +420,7 @@ extern "C" {
                 error code.
      @warning   this->srchCur should be zeroed before a search begins.
      */
-    ERESULT         bpt32_BlockSearch (
+    ERESULT         bpt32_BlockSearchKey (
         BPT32_DATA      *this,
         uint32_t        lsn,
         uint32_t        key,
@@ -276,146 +428,194 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        BPT32_NODE      *pNode = NULL;
+        uint32_t        nodeIndex = 0;
+        OBJ_ID          pObject = OBJ_NIL;
+        bool            fMore = true;
+        bool            fRead = false;
         
         // Do initialization.
+        TRC_OBJ(this, "bpt32_BlockSearchKey lsn=%d, key=%d\n", lsn, key);
         
-        // Read the root block into the common buffer.
-    nextRecord:
-        eRc = bpt32_BlockRead(this, lsn);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
+        if (0 == lsn) {         // Use the root.
+            pObject = this->pRoot;
+            TRC_OBJ(this, "\tUsing Root for first block\n");
         }
-        if (this->srchCur < this->srchMax)
-            this->pSrchStk[this->srchCur++] = lsn;
-        else {
-            DEBUG_BREAK();
-            return ERESULT_GENERAL_FAILURE;
-        }
-
-        this->blockIndex = -1;
-        pNode = bpt32_NodeFind(this->pBlock, key, &this->blockIndex);
-        if (this->pBlock->blockType == OBJ_IDENT_BPT32LF) {
-            if (key == pNode->key) {
-                if (pData) {
-                    this->pBlockNode = pNode;
-                    memmove(pData, pNode->data, this->dataSize);
+        
+        while (fMore) {
+            fRead = false;
+            if (pObject)
+                ;
+            else {
+                // Read the root block into the common buffer.
+                TRC_OBJ(this, "\tReading %d\n", lsn);
+                eRc = bpt32_BlockRead(this, lsn, &pObject);
+                if (ERESULT_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    return eRc;
                 }
-                return ERESULT_SUCCESS;
+                fRead = true;
             }
-            // Work Block will be set up for insert if needed.
-            return ERESULT_DATA_NOT_FOUND;
+            
+            if (pObject) {
+                objArray_Push(this->pSrchStk, pObject);
+            }
+            else {
+                return ERESULT_GENERAL_FAILURE;
+            }
+            if (fRead)
+                obj_Release(pObject);       // objArray has retained it.
+
+            if ( pObject) {
+                if (obj_getType(pObject) == OBJ_IDENT_BPT32LF) {
+                    eRc = bpt32lf_FindKey(pObject, key, pData);
+                    if (ERESULT_FAILED(eRc)) {
+                        TRC_OBJ(this, "\tLeaf block, key %d not found\n", key);
+                    }
+                    else {
+                        TRC_OBJ(this, "\tLeaf block, key %d found\n", key);
+                    }
+                    return eRc;
+                }
+                else if (obj_getType(pObject) == OBJ_IDENT_BPT32IDX) {
+                    eRc = bpt32idx_FindKey(pObject, key, &nodeIndex);
+                    if (ERESULT_FAILED(eRc)) {
+                        TRC_OBJ(this, "\tIndex block, key %d not found\n", key);
+                       return eRc;
+                    }
+                    TRC_OBJ(
+                            this,
+                            "\tIndex block, key %d found, index=%d\n",
+                            key,
+                            nodeIndex
+                    );
+                }
+                else {
+                    DEBUG_BREAK();
+                    return ERESULT_GENERAL_FAILURE;
+                }
+            }
+            
+            lsn = nodeIndex;
+            pObject = OBJ_NIL;
         }
-        
-        lsn = *((uint32_t *)pNode->data);
-        goto nextRecord;
 
         // Return to caller.
+        TRC_OBJ(this, "\tkey %d not found, returning\n", key);
         return ERESULT_DATA_NOT_FOUND;
     }
     
     
     
     /*!
-     Split the work block in half.  Moving the second half of the block to the new
-     block.  After the block is split, the previous index of the next index
-     from the current block will have to be updated to the new block.  This
-     assumes that the new block has its own record index set before this method
-     is called.
+     This method is called after a block split occurs.  It's job is to further
+     propogate the split up the Tree as high as it needs to go.  If a new index
+     block is needed, that shows a split of the root and this method handles
+     that as well.
+     
+     The first split should always be in a leaf block.  All splits after that will
+     be index block(s).  When a split occurs, the index block which is parent will
+     only be new if the root needs to be split.  When the root is split whether it
+     is a leaf or index block, a new block will be needed.  The new block's p0
+     should be set to the index of the left block and the first node entry should
+     be to the lowest key of the right block.
+     
      @param     this        Object Pointer
-     @param     pIndex      Optional pointer to the returned new block's index
+     @param     pLeft       Object Pointer for the lefthand block of the split
+     @param     pRight      Object Pointer for the righthand block of the split
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         bpt32_BlockSplit(
         BPT32_DATA      *this,
-        uint32_t        *pIndex         // New Block Index
+        OBJ_ID          *pLeft,
+        OBJ_ID          *pRight
     )
     {
-        ERESULT         eRc;
-        uint32_t        half;
-        uint32_t        cNew;
-        uint32_t        indexNew;
-        uint32_t        indexNext = 0;
-        BPT32_BLOCK     *pNew = NULL;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        BPT32IDX_DATA   *pIndex = OBJ_NIL;
+        OBJ_ID          pObj;
+        uint32_t        key = 0;
+        uint32_t        index = 0;
+        uint32_t        lsn = 0;
+        BPT32_BLK_VTBL  *pVtblL = NULL;
+        BPT32_BLK_VTBL  *pVtblR = NULL;
 
 #ifdef NDEBUG
 #else
-        if (this->pBlock->used < 2) {
+        if (OBJ_NIL == pLeft) {
             DEBUG_BREAK();
-            return ERESULT_DATA_TOO_SMALL;
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == pRight) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        if (pIndex)
-            *pIndex = 0;
-
-        half = this->pBlock->used >> 1;
-        cNew = this->pBlock->used - half;
-        
-        pNew = mem_Malloc(this->blockSize);
-        if (NULL == pNew) {
-            DEBUG_BREAK();
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        // Copy second half of data to new object.
-        memmove(
-                pNew->nodes,
-                &this->pBlock->nodes[half],
-                (cNew * (sizeof(BPT32_NODE) + this->pBlock->actualSize))
+        pVtblL = (BPT32_BLK_VTBL *)obj_getVtbl(pLeft);
+        pVtblR = (BPT32_BLK_VTBL *)obj_getVtbl(pRight);
+        TRC_OBJ(
+                this,
+                "bpt32_BlockSplit Left: type=%d lsn=%d, Right: type=%d lsn=%d\n",
+                obj_getType(pLeft),
+                pVtblR->pGetIndex(pLeft),
+                obj_getType(pRight),
+                pVtblR->pGetIndex(pRight)
         );
-        pNew->max = this->pBlock->max;
-        pNew->used = cNew;
-        this->pBlock->used = half;
-        pNew->blockType = this->pBlock->blockType;
-        pNew->actualSize = this->pBlock->actualSize;
-        
-        // Update the indices inserting the new block after the block being split.
-        indexNew = ++this->pHdr->cRecords;
-        pNew->index = indexNew;
-        if (this->pBlock->blockType == OBJ_IDENT_BPT32LF) {
-            pNew->next = this->pBlock->next;
-            if (pNew->next == 0)
-                this->pHdr->dataTail = indexNew;
-            this->pBlock->next = indexNew;
-            pNew->prev = this->pBlock->index;
-            indexNext = pNew->next;
-        }
-        
-        eRc = rrds_RecordWrite((RRDS_DATA *)this, indexNew, (void *)pNew);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            mem_Free(pNew);
-            return eRc;
-        }
-        
-        if (indexNext && (this->pBlock->blockType == OBJ_IDENT_BPT32LF)) {
-            eRc = rrds_RecordRead((RRDS_DATA *)this, indexNew, (void *)pNew);
-            if (ERESULT_FAILED(eRc)) {
-                DEBUG_BREAK();
-                mem_Free(pNew);
-                return eRc;
-            }
-            pNew->prev = indexNew;
-            eRc = rrds_RecordWrite((RRDS_DATA *)this, indexNew, (void *)pNew);
-            if (ERESULT_FAILED(eRc)) {
-                DEBUG_BREAK();
-                mem_Free(pNew);
-                return eRc;
-            }
-        }
-        
-        mem_Free(pNew);
-        pNew = NULL;
 
-        eRc = rrds_RecordWrite((RRDS_DATA *)this, this->blockIndex, (void *)this->pBlock);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            return eRc;
+        // We are splitting the Root!
+        if (this->pRoot == pLeft) {
+            TRC_OBJ(this, "\tSplitting the root...\n");
+            eRc = bpt32_BlockRequest(this, OBJ_NIL, BPT32_REQUEST_NEW_INDEX, &pIndex);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return eRc;
+            }
+            bpt32idx_setP0(pIndex, pVtblL->pGetIndex(pLeft));
+            eRc = pVtblR->pGet(pRight, 1, &key, NULL);
+            index = pVtblR->pGetIndex(pRight);
+            bpt32idx_Insert(pIndex, key, &index, NULL);
+            // Note - No split should occur here.
+            
+            // Write the new block to the file.
+            eRc =   rrds_RecordWrite(
+                                     (RRDS_DATA *)this,
+                                     bpt32idx_getIndex(pIndex),
+                                     bpt32idx_getBlock(pIndex)
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return eRc;
+            }
+            
+            // Make the new index block the root.
+            obj_Release(this->pRoot);
+            this->pRoot = pIndex;
+            this->pHdr->root = bpt32idx_getIndex(pIndex);
+            fprintf(stderr, "\tAdded new Root Index Block, %d\n", bpt32idx_getIndex(pIndex));
+        }
+        // We need to adjust index in parent index block for new block added
+        else {
+            TRC_OBJ(this, "\tAdding key to the parent index...\n");
+            lsn = pVtblL->pGetIndex(pLeft);
+            eRc = bpt32_BlockFindParent(this, lsn, &pObj);
+            if (pObj && (OBJ_IDENT_BPT32IDX == obj_getType(pObj)))
+                ;
+            else {
+                DEBUG_BREAK();
+                return ERESULT_GENERAL_FAILURE;
+            }
+            eRc = pVtblR->pGet(pRight, 1, &key, NULL);
+            index = pVtblR->pGetIndex(pRight);
+            eRc = bpt32idx_Insert(pObj, key, &index, NULL);
+            TRC_OBJ(
+                    this,
+                    "\tAdded key %d index %d to the index %d\n",
+                    key,
+                    index,
+                    bpt32idx_getIndex(pObj)
+            );
         }
         
-        if (pIndex)
-            *pIndex = indexNew;
         return eRc;
     }
 
@@ -534,244 +734,6 @@ extern "C" {
     
     
 
-    //---------------------------------------------------------------
-    //                      N o d e  F i n d
-    //---------------------------------------------------------------
-    /*!
-     This method is responsible for locating the smallest key in the
-     block greater than or equal to the search key.  So, the index
-     returned points to the node where the key was found or where the
-     key should be inserted.
-     @param pBlock      Pointer to Block
-     @param key         search key
-     @param pIndex      Optional pointer to index of found key or
-                        insertion point returned
-     */
-    BPT32_NODE *    bpt32_NodeFind (
-        BPT32_BLOCK     *pBlock,        // Block
-        uint32_t        key,            // Search Key
-        uint32_t        *pIndex
-    )
-    {
-        //ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
-        BPT32_NODE      *pNode = NULL;
-        uint32_t        i = 0;
-        uint32_t        High = 0;
-        uint32_t        Low = 0;
-        uint32_t        Mid;
-        int             rc;
-        
-        // Do initialization.
-        
-        if (pBlock->used < 10) {
-            // Do a sequential search.
-            for (i=0; i<pBlock->used; ++i) {
-                pNode = bpt32_Index2Node(pBlock, i);
-                if (key > pNode->key)
-                    ;
-                else {
-                    break;
-                }
-            }
-        }
-        else {
-            // Do a binary search.
-            High = pBlock->used - 1;
-            while( Low < High ) {
-                Mid = (High + Low) / 2;
-                i = Mid;
-                pNode = bpt32_Index2Node(pBlock, Mid);
-                rc = key - pNode->key;
-                if( rc < 0 )
-                    High = Mid;
-                else if( rc == 0 ) {
-                    break;
-                }
-                else
-                    Low = Mid + 1;
-            }
-            if( High == Low ) {
-                pNode = bpt32_Index2Node(pBlock, Low);
-                i = Low;
-                rc = key - pNode->key;
-            }
-        }
-        
-        // Return to caller.
-        if (pIndex)
-            *pIndex = i;
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                N o d e  F r o m  I n d e x
-    //---------------------------------------------------------------
-    
-    BPT32_NODE *    bpt32_Index2Node (
-        BPT32_BLOCK     *pBlock,
-        uint32_t        index                // Relative to 0
-    )
-    {
-        BPT32_NODE      *pNode = NULL;
-        uint32_t        i = 0;
-        
-        if (index == 0) {
-            return pBlock->nodes;
-        }
-        
-        i = index * (sizeof(BPT32_NODE) + pBlock->actualSize);
-        pNode = (BPT32_NODE *)(((uint8_t *)pBlock->nodes) + i);
-        
-        // Return to caller.
-        return pNode;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      D e l e t e  N o d e
-    //---------------------------------------------------------------
-    
-    /*!
-     Delete the entry if found.
-     @param     this    object pointer
-     @param     key     key of entry to be deleted
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         bpt32_NodeDelete (
-        BPT32_DATA      *this,
-        BPT32_BLOCK     *pBlock,
-        uint32_t        key
-    )
-    {
-        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
-        BPT32_NODE      *pNode = NULL;
-        uint32_t        i;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (0 == pBlock->used) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-#endif
-        
-        pNode = bpt32_NodeFind(pBlock, key, &i);
-        
-        if (pNode) {
-            // Shift the entries beyond this one left if needed.
-            if (i == (pBlock->used - 1))
-                ;
-            else {
-                if (pBlock->used > 1) {
-                    memmove(
-                            bpt32_Index2Node(pBlock, i),
-                            bpt32_Index2Node(pBlock, i+1),
-                            ((pBlock->used - i)
-                             * (sizeof(BPT32_NODE) + pBlock->actualSize))
-                            );
-                }
-            }
-            eRc = ERESULT_SUCCESS;
-            --pBlock->used;
-#ifdef XYZZY
-            if ((0 == pBlock->used) && this->pBlockEmpty) {
-                // Inserting data in 0th position (ie block key)
-                eRc = this->pBlockIndexChanged(this->pBlockObject, this);
-            }
-            else {
-                if ((0 == i) && this->pBlockIndexChanged) {
-                    // Inserting data in 0th position (ie block key)
-                    eRc = this->pBlockIndexChanged(this->pBlockObject, this);
-                }
-            }
-#endif
-        }
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                 I n s e r t  N o d e
-    //---------------------------------------------------------------
-    
-    ERESULT         bpt32_NodeInsert (
-        BPT32_DATA      *this,
-        BPT32_BLOCK     *pBlock,            // Block must contain max+1 nodes
-        uint32_t        key,
-        void            *pData
-    )
-    {
-        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
-        BPT32_NODE      *pNode = NULL;
-        uint32_t        i;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (NULL == pBlock) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (pBlock->used < (pBlock->max + 1))
-            ;
-        else {
-            DEBUG_BREAK();
-            return ERESULT_BUFFER_FULL;
-        }
-#endif
-        
-        pNode = bpt32_NodeFind(pBlock, key, &i);
-        
-        if (pNode && (pNode->key == key)) {
-            return ERESULT_DATA_ALREADY_EXISTS;
-        }
-        else {
-            for (; i<pBlock->used; ++i) {
-                pNode = bpt32_Index2Node(pBlock, i);
-                if (key < pNode->key) {
-                    pNode = NULL;
-                    break;
-                }
-                pNode = NULL;
-            }
-            if (i == pBlock->used)
-                ;
-            else {
-                // Shift records right to make room for new node.
-                memmove(
-                        bpt32_Index2Node(pBlock, i+1),
-                        bpt32_Index2Node(pBlock, i),
-                        ((pBlock->used - i)
-                         * (sizeof(BPT32_NODE) + pBlock->actualSize))
-                        );
-            }
-            pNode = bpt32_Index2Node(pBlock, i);
-            if (pNode) {
-                pNode->key = key;
-                memmove(pNode->data, pData, this->dataSize);
-                ++pBlock->used;
-            }
-            else {
-                DEBUG_BREAK();
-                return ERESULT_GENERAL_FAILURE;
-            }
-            eRc = ERESULT_SUCCESS;
-        }
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
 
 
 
@@ -1158,7 +1120,9 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
-        uint32_t        curNode;
+        //uint32_t        curNode;
+        OBJ_ID          pObject = OBJ_NIL;
+
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1169,50 +1133,22 @@ extern "C" {
         }
         BREAK_NULL(this->pHdr);
 #endif
-        
-        eRc = bpt32_BlockSearch(this, this->pHdr->root, key, pData);
+        TRC_OBJ(this, "bpt32_Add  key=%d\n", key);
+        eRc = objArray_DeleteAll(this->pSrchStk);
+        eRc = bpt32_BlockSearchKey(this, 0, key, pData);
         if (!ERESULT_FAILED(eRc)) {
             return ERESULT_DATA_ALREADY_EXISTS;
         }
-        // Work Block should be pointed to the insertion point and
-        // srchStk should contain a list of the blocks that had to
-        // be read to get there.
+        // Top of Search Stack should contain a Leaf block
+        // that the key should be inserted into.
         
-        
-        eRc = bpt32_NodeInsert(this, this->pBlock, key, pData);
-        if (!ERESULT_FAILED(eRc)) {
-            return ERESULT_SUCCESS;
+        pObject = objArray_Top(this->pSrchStk);
+        if (OBJ_IDENT_BPT32LF == obj_getType(pObject)){
+            eRc = bpt32lf_Insert(pObject, key, pData);
         }
-        
-        // Is block full?
-        if (this->pBlock->max == this->pBlock->used) {
-            
-        }
-        
-        // Empty Index - so add leaf root block.
-        if (0 == this->pHdr->cRecords) {
-            curNode = 2;
-            bpt32_BlockInit(
-                            this->pBlock,
-                            OBJ_IDENT_BPT32LF,
-                            this->pHdr->blockSize,
-                            this->pHdr->dataSize,
-                            curNode
-            );
-            
-            eRc = rrds_RecordWrite((RRDS_DATA *)this, curNode, (void *)this->pBlock);
-            if (ERESULT_FAILED(eRc)) {
-                DEBUG_BREAK();
-            }
-            this->pHdr->root = curNode;
-            this->pHdr->dataHead = curNode;
-            this->pHdr->dataTail = curNode;
-            this->pHdr->cRecords = curNode;
-        }
-        // Search for key and add to block if possible
         else {
-            curNode = this->pHdr->root;
-            //eRc = bpt32_BlockSearchKey(this, curNode, key);
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
         }
         
         // Return to caller.
@@ -1454,6 +1390,7 @@ extern "C" {
     {
         ERESULT         eRc;
         uint32_t        index;
+        BPT32LF_DATA    *pLeaf = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1493,37 +1430,18 @@ extern "C" {
         this->pHdr->blockSize = this->blockSize;
         this->pHdr->dataSize = this->dataSize;
         this->pHdr->actualSize = ROUNDUP4(this->dataSize);
+        this->pHdr->cRecords = 1;                   // Allow for Header
 
         eRc = rrds_Create((RRDS_DATA *)this, pPath);
         
-        // Create a work buffer with one extra node.
-        if (this->pBlock) {
-            mem_Free(this->pBlock);
-            //this->pBlock = NULL;
-        }
-        this->pBlock =  mem_Calloc(
-                                  1,
-                                   this->blockSize
-                                   + sizeof(BPT32_NODE)
-                                   + this->pHdr->actualSize
-                        );
-        if (NULL == this->pBlock) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        // Create an empty Leaf Block to be Root.
-        index = 2;                  // Header is First Block.
-        eRc =   bpt32_BlockInit(
-                              this->pBlock,
-                              OBJ_IDENT_BPT32LF,
-                              this->pHdr->blockSize,
-                              this->pHdr->dataSize,
-                              index
-                );
-        eRc = rrds_RecordWrite((RRDS_DATA *)this, index, (void *)this->pBlock);
+        eRc = bpt32_BlockRequest(this, OBJ_NIL, BPT32_REQUEST_NEW_LEAF, &pLeaf);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
         }
+        this->pRoot = pLeaf;
+        index = bpt32lf_getIndex(pLeaf);
+
         this->pHdr->root = index;
         this->pHdr->dataHead = index;
         this->pHdr->dataTail = index;
@@ -1566,15 +1484,9 @@ extern "C" {
         bpt32_setPath(this, OBJ_NIL);
         bpt32_setRoot(this, OBJ_NIL);
         bpt32_setStr(this, OBJ_NIL);
-        if (this->pBlock) {
-            mem_Free(this->pBlock);
-            this->pBlock = NULL;
-        }
         if (this->pSrchStk) {
-            mem_Free(this->pSrchStk);
-            this->pSrchStk = NULL;
-            this->srchMax = 0;
-            this->srchCur = 0;
+            obj_Release(this->pSrchStk);
+            this->pSrchStk = OBJ_NIL;
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1688,8 +1600,8 @@ extern "C" {
 #endif
         
         // Search for the key.
-        this->srchCur = 0;
-        eRc = bpt32_BlockSearch(this, this->pHdr->root, key, pData);
+        objArray_DeleteAll(this->pSrchStk);
+        eRc = bpt32_BlockSearchKey(this, this->pHdr->root, key, pData);
 
         // Return to caller.
         return eRc;
@@ -1741,13 +1653,14 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->srchMax = 32;
-        this->pSrchStk = mem_Calloc(this->srchMax, sizeof(uint32_t));
-        if (NULL == this->pSrchStk) {
+        this->pSrchStk = objArray_New();
+        if (OBJ_NIL == this->pSrchStk) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        
+        rrds_setFillChar((RRDS_DATA *)this, '\0');
 
 #ifdef NDEBUG
     #else
@@ -1758,7 +1671,6 @@ extern "C" {
         }
 #ifdef __APPLE__
         //fprintf(stderr, "bpt32::sizeof(BPT32_DATA) = %lu\n", sizeof(BPT32_DATA));
-        fprintf(stderr, "bpt32::sizeof(BPT32_NODE) = %lu\n", sizeof(BPT32_NODE));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(BPT32_DATA));
     #endif
@@ -1843,10 +1755,12 @@ extern "C" {
 
         eRc = rrds_Open((RRDS_DATA *)this, pPath);
         
+#ifdef XYZZY
         this->pBlock = mem_Calloc(1, this->blockSize);
         if (NULL == this->pBlock) {
             return ERESULT_OUT_OF_MEMORY;
         }
+#endif
         
         // Return to caller.
         return eRc;
@@ -1936,6 +1850,12 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
+                    case 'B':
+                        if (str_Compare("BlockRequest", (char *)pStr) == 0) {
+                            return bpt32_BlockRequest;
+                        }
+                        break;
+                        
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
                             return bpt32_Disable;
@@ -1948,18 +1868,6 @@ extern "C" {
                         }
                         break;
 
-                    case 'I':
-                        if (str_Compare("IndexBlockRequest", (char *)pStr) == 0) {
-                            return bpt32_BlockRequestIndex;
-                        }
-                        break;
-                        
-                    case 'L':
-                        if (str_Compare("LeafBlockRequest", (char *)pStr) == 0) {
-                            return bpt32_BlockRequestLeaf;
-                        }
-                        break;
-                        
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return bpt32_ToDebugString;
@@ -2024,6 +1932,12 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         if (dataSize > (blockSize - sizeof(BPT32IDX_BLOCK))) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (cLRU > 2)
+            ;
+        else {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -2112,6 +2026,8 @@ extern "C" {
 #endif
         const
         OBJ_INFO        *pInfo;
+        uint32_t        i;
+        uint32_t        iMax;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2141,9 +2057,9 @@ extern "C" {
 
         if (this->pHdr) {
             if (indent) {
-                AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+                AStr_AppendCharRepeatA(pStr, indent+2, ' ');
                 AStr_AppendA(pStr, "* * *  Header Record  * * *\n");
-                AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+                AStr_AppendCharRepeatA(pStr, indent+2, ' ');
                 eRc = AStr_AppendPrint(
                                        pStr,
                                        "blockSize = %d  dataSize = %d  actualSize = %d  "
@@ -2153,7 +2069,7 @@ extern "C" {
                                        this->pHdr->actualSize,
                                        this->pHdr->cRecords
                         );
-                AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+                AStr_AppendCharRepeatA(pStr, indent+2, ' ');
                 eRc = AStr_AppendPrint(
                                        pStr,
                                        "root = %d  dataHead = %d  dataTail = %d  "
@@ -2165,20 +2081,26 @@ extern "C" {
                     );
             }
 
-        }
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
+            AStr_AppendA(pStr, "* * *  Blocks  * * *\n");
+            iMax = this->pHdr->cRecords;
+            for (i=2; i<=iMax; ++i) {
+                ASTR_DATA           *pWrk;
+                OBJ_ID              pObj;
+                OBJ_IUNKNOWN        *pVtbl;
+                eRc = bpt32_BlockRead(this, i, &pObj);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+                pVtbl = obj_getVtbl(pObj);
+                pWrk = pVtbl->pToDebugString(pObj, indent+4);
+                AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                obj_Release(pObj);
             }
         }
-#endif
         
+    
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

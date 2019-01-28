@@ -314,6 +314,21 @@ extern "C" {
     );
     
     
+    /*!
+     Append a hexadecimal dump of the provided area.
+     @param this    Object Pointer
+     @param pData   pointer to Data to be dumped
+     @param cData   data length
+     @param indent  number of spaces to indent each line of the dump with
+     */
+    ERESULT        AStr_AppendHexData(
+        ASTR_DATA       *this,
+        void            *pData,
+        int32_t         cData,
+        uint16_t        indent
+    );
+    
+    
     ERESULT         AStr_AppendPrint(
         ASTR_DATA		*this,
         const

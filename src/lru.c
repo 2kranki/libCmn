@@ -873,6 +873,42 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                       I s L o c k e d
+    //---------------------------------------------------------------
+    
+    ERESULT         lru_IsLocked (
+        LRU_DATA        *this,
+        uint32_t        lsn
+    )
+    {
+        //ERESULT         eRc;
+        LRU_BUFFER      *pBufCtl;
+        uint32_t        hash;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!lru_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        hash = lru_HashInteger(lsn);
+        pBufCtl = lru_FindLSN(this, lsn, hash);
+        if (pBufCtl) {
+            if (pBufCtl->flagLocked) {
+                return ERESULT_SUCCESS;
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_DATA_NOT_FOUND;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          L o c k
     //---------------------------------------------------------------
     
@@ -1049,7 +1085,9 @@ extern "C" {
         // Use sector if already in LRU Cache.
         pBufCtl = lru_FindLSN(this, lsn, hash);
         if (pBufCtl) {
-            memmove(pBuffer, pBufCtl->pData, this->blockSize);
+            if (pBuffer) {
+                memmove(pBuffer, pBufCtl->pData, this->blockSize);
+            }
             return ERESULT_SUCCESS;
         }
         

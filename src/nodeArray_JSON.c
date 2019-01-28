@@ -505,7 +505,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA       *pData;
+        //ASTR_DATA       *pData;
         //LISTDL_DATA     *pNodeList;
         //NODEHASH_NODE   *pEntry;
         //NODE_DATA       *pNode;

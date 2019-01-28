@@ -155,7 +155,7 @@ extern "C" {
      contents of the other array are released. Then we simply
      retain them so that they are in both arrays.
      @param     this    object pointer
-     @return    If successful, return ERESULT_SUCCESSFUL_COMPLETION
+     @return    If successful, return ERESULT_SUCCESS
                 otherwise an eResult error code.
      */
     ERESULT         objArray_Assign(
@@ -198,6 +198,17 @@ extern "C" {
     OBJ_ID          objArray_Delete(
         OBJARRAY_DATA	*this,
         uint32_t        index
+    );
+    
+    
+    /*!
+     Delete all objects in this array.
+     @param     this    object pointer
+     @return    If successful, return ERESULT_SUCCESS
+                otherwise an eResult error code.
+     */
+    ERESULT         objArray_DeleteAll(
+        OBJARRAY_DATA    *this
     );
     
     
@@ -309,6 +320,29 @@ extern "C" {
     
     
     /*!
+     Delete the last object from the array and return it.
+     @param     this    object pointer
+     @return    If successful, last object of the array, otherwise OBJ_NIL.
+     */
+    OBJ_ID          objArray_Pop(
+        OBJARRAY_DATA   *this
+    );
+    
+    
+    /*!
+     Add the given object to the end of the array.
+     @param     this    object pointer
+     @param     pObject object pointer to be pushed
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         objArray_Push(
+        OBJARRAY_DATA   *this,
+        OBJ_ID          pObject
+    );
+    
+    
+    /*!
      Replace index'th element with the given element expanding the array if
      necessary. after the index'th element of the array.
      @param     this    object pointer
@@ -342,8 +376,16 @@ extern "C" {
     );
     
     
+    /*!
+     Return the top of the stack (last object in the array).
+     @param     this    object pointer
+     @return    If successful, last object of the array, otherwise OBJ_NIL.
+     */
+    OBJ_ID          objArray_Top(
+        OBJARRAY_DATA   *this
+    );
     
- 
+    
     /*!
      Create a string that describes this object and the
      objects within it.

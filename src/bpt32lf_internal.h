@@ -107,25 +107,9 @@ struct bpt32lf_data_s	{
     uint32_t        maxRcds;        // Maximum Number of Records in a Block
     BPT32LF_BLOCK   *pBlock;
 
-    ERESULT         (*pBlockEmpty)(
-        OBJ_ID          pBlockObject,
-        BPT32LF_DATA    *pValue
-    );
-    ERESULT         (*pBlockFlush)(
-        OBJ_ID          pBlockObject,
-        BPT32LF_DATA    *pValue
-    );
-    ERESULT         (*pBlockIndexChanged)(
-        OBJ_ID          pBlockObject,
-        BPT32LF_DATA    *pValue
-    );
-    ERESULT         (*pBlockSplit)(
-        OBJ_ID          pBlockObject,
-        BPT32LF_DATA    *pOld,
-        BPT32LF_DATA    *pNew
-    );
-    OBJ_ID          pBlockObject;
-    
+    OBJ_ID          *pMgr;          // Block Manager
+    P_ERESULT_EXIT4 pReq;           // Block Manager Request Method
+
 };
 #pragma pack(pop)
 

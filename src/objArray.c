@@ -240,7 +240,6 @@ extern "C" {
     
     
     
-    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -514,6 +513,45 @@ extern "C" {
         
         this->eRc = ERESULT_SUCCESS;
         return pObj;
+    }
+    
+    
+    ERESULT         objArray_DeleteAll(
+        OBJARRAY_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        BREAK_NULL(this->pArray);
+#endif
+        
+        if (this->pArray) {
+            iMax = array_getSize(this->pArray);
+            for (i=iMax; i>0; --i) {
+                eRc = array_Get(this->pArray, i, 1, &pObj);
+                if (ERESULT_FAILED(eRc)) {
+                    return ERESULT_GENERAL_FAILURE;
+                }
+                eRc = array_Delete(this->pArray, i, 1);
+                if (ERESULT_FAILED(eRc)) {
+                    return ERESULT_GENERAL_FAILURE;
+                }
+                obj_Release(pObj);
+                pObj = OBJ_NIL;
+            }
+        }
+        
+        return ERESULT_SUCCESS;
     }
     
     
@@ -866,6 +904,83 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                            P o p
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objArray_Pop(
+        OBJARRAY_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        ARRAY_ENTRY     *pEntry = NULL;
+        OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        size;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        BREAK_NULL(this->pArray);
+#endif
+        
+        if (this->pArray) {
+            size = array_getSize(this->pArray);
+            if (size) {
+                pEntry = array_Ptr(this->pArray, size);
+                if (pEntry && pEntry->pObj) {
+                    pObj = pEntry->pObj;
+                    eRc = array_Delete(this->pArray, size, 1);
+                }
+            }
+        }
+        
+        return pObj;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                            P u s h
+    //---------------------------------------------------------------
+    
+    ERESULT         objArray_Push(
+        OBJARRAY_DATA   *this,
+        OBJ_ID          pObject
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pObject) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        obj_Retain(pObject);
+        eRc = array_AppendData(this->pArray, 1, &pObject);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pObject);
+            return eRc;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                            P u t
     //---------------------------------------------------------------
     
@@ -1080,6 +1195,44 @@ extern "C" {
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
         return ERESULT_SUCCESS;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                            T o p
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objArray_Top(
+        OBJARRAY_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        ARRAY_ENTRY     *pEntry = NULL;
+        OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        size;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        BREAK_NULL(this->pArray);
+#endif
+        
+        if (this->pArray) {
+            size = array_getSize(this->pArray);
+            if (size) {
+                pEntry = array_Ptr(this->pArray, size);
+                if (pEntry && pEntry->pObj) {
+                    pObj = pEntry->pObj;
+                }
+            }
+        }
+        
+        return pObj;
     }
     
     

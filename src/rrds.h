@@ -199,6 +199,16 @@ extern "C" {
     );
     
     
+    uint8_t         rrds_getFillChar (
+        RRDS_DATA       *this
+    );
+    
+    bool            rrds_setFillChar (
+        RRDS_DATA       *this,
+        uint8_t         value
+    );
+    
+    
     PATH_DATA *     rrds_getPath (
         RRDS_DATA       *this
     );
