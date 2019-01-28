@@ -473,6 +473,7 @@ extern "C" {
         OBJ_ID          pObject = OBJ_NIL;
         bool            fMore = true;
         bool            fRead = false;
+        BPT32_BLK_VTBL  *pVtbl;
         
         // Do initialization.
         TRC_OBJ(this, "bpt32_BlockSearchKey lsn=%d, key=%d\n", lsn, key);
@@ -513,6 +514,9 @@ extern "C" {
                         TRC_OBJ(this, "\tLeaf block, key %d not found\n", key);
                     }
                     else {
+                        pVtbl = (void *)obj_getVtbl((OBJ_ID)pObject);
+                        this->lastLSN = pVtbl->pGetIndex(pObject);
+                        this->lastKey = key;
                         TRC_OBJ(this, "\tLeaf block, key %d found\n", key);
                     }
                     return eRc;
@@ -939,42 +943,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                     R e a d  W r i t e
-    //---------------------------------------------------------------
-    
-    bool            bpt32_setReadWrite (
-        BPT32_DATA     *this,
-        ERESULT         (*pBlockRead) (
-            OBJ_ID          pObject,
-            uint32_t        lsn,                // Logical Sector Number
-            uint8_t         *pBuffer            // Buffer of sectorSize bytes
-                        ),
-        ERESULT         (*pBlockWrite) (
-            OBJ_ID          pObject,
-            uint32_t        lsn,                // Logical Sector Number
-            uint8_t         *pBuffer            // Buffer of sectorSize bytes
-                        ),
-        OBJ_ID          pBlockObject
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!bpt32_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->pBlockRead   = pBlockRead;
-        this->pBlockWrite  = pBlockWrite;
-        this->pBlockObject = pBlockObject;
-
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                        R o o t
     //---------------------------------------------------------------
@@ -1622,7 +1590,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1646,6 +1614,59 @@ extern "C" {
 
         // Return to caller.
         return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          F i r s t
+    //---------------------------------------------------------------
+    
+    ERESULT         bpt32_First (
+        BPT32_DATA      *this,
+        uint32_t        *pKey,
+        void            *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        key;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pHdr) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+        if (0 == this->pHdr->root) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        this->lastLSN = this->pHdr->dataHead;
+        
+        if (this->lastLSN) {
+            eRc = bpt32_BlockRead(this, this->lastLSN, &pObj);
+            if (ERESULT_FAILED(eRc) || (OBJ_NIL == pObj)) {
+                return ERESULT_READ_ERROR;
+            }
+            eRc = bpt32lf_Get(pObj, 1, &key, pData);
+            obj_Release(pObj);
+            if (!ERESULT_FAILED(eRc)) {
+                this->lastKey = key;
+                if (pKey)
+                    *pKey = key;
+                return ERESULT_SUCCESS;
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_EOF_ERROR;
     }
     
     
@@ -1746,6 +1767,89 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          N e x t
+    //---------------------------------------------------------------
+    
+    ERESULT         bpt32_Next (
+        BPT32_DATA      *this,
+        uint32_t        *pKey,
+        void            *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        OBJ_ID          pObj = OBJ_NIL;
+        uint32_t        key;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pHdr) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+        if (0 == this->pHdr->root) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+        if (0 == this->lastLSN) {
+            DEBUG_BREAK();
+            return ERESULT_EOF_ERROR;
+        }
+#endif
+        
+        //TODO: A leaf block split in the middle of this might mess
+        //      up our tracking.  We might need to do a BlockSearchKey()
+        //      on key to reset.  Deletion needs to check the saved key
+        //      and update it as well.
+
+        // Search for the key in the last block.
+        eRc = bpt32_BlockRead(this, this->lastLSN, &pObj);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pObj)) {
+            return ERESULT_READ_ERROR;
+        }
+        eRc = bpt32lf_FindKey(pObj, this->lastKey, NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pObj);
+            return ERESULT_GENERAL_FAILURE;
+        }
+        eRc = bpt32lf_NextKey(pObj, &key, pData);
+        if (!ERESULT_FAILED(eRc)) {
+            this->lastKey = key;
+            if (pKey)
+                *pKey = key;
+            obj_Release(pObj);
+            return ERESULT_SUCCESS;
+        }
+        this->lastLSN = bpt32lf_getNext(pObj);
+        obj_Release(pObj);
+
+        if (this->lastLSN) {
+            eRc = bpt32_BlockRead(this, this->lastLSN, &pObj);
+            if (ERESULT_FAILED(eRc) || (OBJ_NIL == pObj)) {
+                return ERESULT_READ_ERROR;
+            }
+            eRc = bpt32lf_Get(pObj, 1, &key, pData);
+            obj_Release(pObj);
+            if (!ERESULT_FAILED(eRc)) {
+                this->lastKey = key;
+                if (pKey)
+                    *pKey = key;
+                return ERESULT_SUCCESS;
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_EOF_ERROR;
     }
     
     

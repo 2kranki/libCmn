@@ -237,11 +237,39 @@ extern "C" {
     );
     
     
+    /*!
+     Retrieve the first key/data pair in the index.
+     @param     this    object pointer
+     @param     pKey    optional pointer to key
+     @param     pData   optional pointer to data area of data size.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         bpt32_First (
+        BPT32_DATA      *this,
+        uint32_t        *pKey,
+        void            *pData
+    );
+    
+    
     BPT32_DATA *    bpt32_Init (
         BPT32_DATA      *this
     );
 
 
+    /*!
+     Retrieve the next key/data pair in the index from the last one accessed.
+     @param     this    object pointer
+     @param     pKey    optional pointer to key
+     @param     pData   optional pointer to data area of data size.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         bpt32_Next (
+        BPT32_DATA      *this,
+        uint32_t        *pKey,
+        void            *pData
+    );
+    
+    
     /*!
      Open an existing file for reading/writing.
      @param     this    object pointer

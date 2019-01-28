@@ -379,6 +379,12 @@ OBJS += $(OBJDIR)/bpt32lf.o
 $(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
+TESTS += test_bpt32lf
+
+test_bpt32lf: $(TEST_SRC)/test_bpt32lf.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/bptIndex_object.o
 
 $(OBJDIR)/bptIndex_object.o: $(SRCDIR)/bptIndex_object.c 

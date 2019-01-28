@@ -333,6 +333,29 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    L a s t  I n d e x
+    //---------------------------------------------------------------
+    
+    uint32_t        bpt32lf_getLastIndex (
+        BPT32LF_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->lastIndex + 1;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                      M a n a g e r
     //---------------------------------------------------------------
     
@@ -955,6 +978,7 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         BPT32LF_NODE    *pNode = NULL;
+        uint32_t        index;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -965,12 +989,14 @@ extern "C" {
         }
 #endif
         
-        pNode = bpt32lf_FindNode(this, key, NULL);
+        pNode = bpt32lf_FindNode(this, key, &index);
         
         if (pNode  && (pNode->key == key)) {
             if (pData) {
                 memmove(pData, pNode->data, this->dataSize);
             }
+            this->lastKey = key;
+            this->lastIndex = index;
             eRc = ERESULT_SUCCESS;
         }
         
@@ -1049,6 +1075,8 @@ extern "C" {
         
         pNode = bpt32lf_Index2Node(this, (index - 1));
         if (pNode) {
+            this->lastKey = pNode->key;
+            this->lastIndex = index - 1;
             if (pKey)
                 *pKey = pNode->key;
             if (pData) {
@@ -1173,12 +1201,16 @@ extern "C" {
                     ++this->pBlock->used;
                     TRC_OBJ(this, "\tKey inserted at %d, used: %d  max: %d\n",
                             i, this->pBlock->used, this->pBlock->max);
-                    eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
+                    if (this->pMgr && this->pReq) {
+                        eRc = this->pReq(this->pMgr, this, (void *)BPT32_REQUEST_WRITE, NULL);
+                    }
                 }
                 else {
                     DEBUG_BREAK();
                     return ERESULT_GENERAL_FAILURE;
                 }
+                this->lastKey = key;
+                this->lastIndex = i;
                 eRc = ERESULT_SUCCESS;
             }
             else {
@@ -1275,6 +1307,56 @@ extern "C" {
         this->index = 0;
         
         // Return to caller.
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          N e x t
+    //---------------------------------------------------------------
+    
+    ERESULT         bpt32lf_NextKey (
+        BPT32LF_DATA    *this,
+        uint32_t        *pKey,
+        void            *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        BPT32LF_NODE    *pNode = NULL;
+        //uint32_t        index;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pNode = bpt32lf_Index2Node(this, this->lastIndex);
+        
+        if (pNode  && (pNode->key == this->lastKey)) {
+            ++this->lastIndex;
+            if (this->lastIndex < this->pBlock->used) {
+                pNode = bpt32lf_Index2Node(this, this->lastIndex);
+                if (pNode) {
+                    this->lastKey = pNode->key;
+                    if (pKey) {
+                        *pKey = pNode->key;
+                    }
+                    if (pData) {
+                        memmove(pData, pNode->data, this->dataSize);
+                    }
+                    eRc = ERESULT_SUCCESS;
+                }
+            }
+            else
+                return ERESULT_EOF_ERROR;
+        }
+        
+        // Return to caller.
+        return eRc;
     }
     
     
@@ -1546,6 +1628,10 @@ extern "C" {
         }
         TRC_OBJ(this, "bpt32lf_Split  index=%d  key=%d\n", this->index, key);
 #endif
+        if (this->pMgr && this->pReq)
+            ;
+        else
+            return ERESULT_INVALID_REQUEST;
         
         half = (this->pBlock->used + 1) >> 1;
         cNew = this->pBlock->used - half;

@@ -120,8 +120,18 @@ int             test_bpt32_Write01(
     ASTR_DATA       *pStr = OBJ_NIL;
     const
     char            *pPathA = "/tmp/testBPT32.temp.data";
+    uint32_t        i = 0;
+    uint32_t        key = 0;
     uint32_t        data = 0;
+    uint32_t        dataRet = 0;
     uint32_t        blockSize = 64;
+    static
+    uint32_t        keysAdded[31] = {
+        8,17,36,42,53,56,65,72,73,75,
+        77,81,83,96,98,102,104,107,112,117,
+        119,121,123,125,127,131,133,135,137,139,
+        141
+    };
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -296,9 +306,45 @@ int             test_bpt32_Write01(
         eRc = bpt32_Add(pObj, data, &data);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        data = 123;                                // 30
+        data = 123;                                // 31
         eRc = bpt32_Add(pObj, data, &data);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        data = 81;
+        dataRet = 0;
+        eRc = bpt32_Find(pObj, data, &dataRet);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (data == dataRet) );
+
+        data = 119;
+        dataRet = 0;
+        eRc = bpt32_Find(pObj, data, &dataRet);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (data == dataRet) );
+        
+        data = 83;
+        dataRet = 0;
+        eRc = bpt32_Find(pObj, data, &dataRet);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (data == dataRet) );
+        
+        data = 42;
+        dataRet = 0;
+        eRc = bpt32_Find(pObj, data, &dataRet);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (data == dataRet) );
+        
+        data = 65;
+        dataRet = 0;
+        eRc = bpt32_Find(pObj, data, &dataRet);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (data == dataRet) );
+        
+        data = 36;
+        dataRet = 0;
+        eRc = bpt32_Find(pObj, data, &dataRet);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (data == dataRet) );
         
         {
             pStr = bpt32_ToDebugString(pObj, 4);
@@ -307,6 +353,21 @@ int             test_bpt32_Write01(
             pStr = OBJ_NIL;
         }
         
+        i = 0;
+        eRc = bpt32_First(pObj, &key, NULL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (key == keysAdded[i]) );
+
+        for (i=1; i<31; ++i) {
+            eRc = bpt32_Next(pObj, &key, NULL);
+            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+            TINYTEST_TRUE( (key == keysAdded[i]) );
+        }
+        
+        eRc = bpt32_Next(pObj, &key, NULL);
+        TINYTEST_TRUE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (eRc == ERESULT_EOF_ERROR) );
+
         eRc = bpt32_Close(pObj, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 

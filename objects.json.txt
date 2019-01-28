@@ -52,7 +52,7 @@
         "btp":["cmn_defs.h"],
         "bpt32":{"srcDeps":["cmn_defs.h"]},
         "bpt32idx":{"srcDeps":["cmn_defs.h"], test:false}, 
-        "bpt32lf":{"srcDeps":["cmn_defs.h"], test:false},
+        "bpt32lf":{"srcDeps":["cmn_defs.h"], test:true},
         "bptIndex":{"srcDeps":["cmn_defs.h"]},
         "bptLeaf":{"srcDeps":["cmn_defs.h"]},
         "bptree":{"srcDeps":["cmn_defs.h"]},

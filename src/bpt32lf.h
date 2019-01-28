@@ -182,6 +182,17 @@ extern "C" {
     );
     
     
+    /*!
+     The last index property provides access to the last node
+     index within this leaf when a key was inserted or accessed.
+     Generally, this is used with Get() for accessing all the
+     keys in the Leaf block.
+     */
+    uint32_t        bpt32lf_getLastIndex (
+        BPT32LF_DATA    *this
+    );
+    
+    
     bool            bpt32lf_setManager(
         BPT32LF_DATA    *this,
         OBJ_ID          *pMgr          // Block Manager
@@ -299,6 +310,21 @@ extern "C" {
     );
     
  
+    /*!
+     Every method which accesses keys within leaf retains the memory
+     of successful access.  This utilizes that saved value to provide
+     back the next key/data pair from the leaf until EOF occurs.
+     @param this    Object Pointer
+     @param pKey    Optional pointer to a key field to be returned
+     @param pData   Optional pointer to a data field to be returned.
+     */
+    ERESULT         bpt32lf_NextKey (
+        BPT32LF_DATA    *this,
+        uint32_t        *pKey,
+        void            *pData
+    );
+    
+    
     ERESULT         bpt32lf_Setup(
         BPT32LF_DATA    *this,
         uint32_t        blockSize,

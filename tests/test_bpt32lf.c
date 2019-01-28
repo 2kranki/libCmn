@@ -403,6 +403,9 @@ int             test_bpt32lf_Insert03(
         pStr = OBJ_NIL;
         TINYTEST_TRUE( (OBJ_NIL == pNew) );
 
+        // We have to simulate the manager to have split()
+        // work properly since it relies on it heavily.
+#ifdef SIMULATED_MGR
         k = 2;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
@@ -431,6 +434,7 @@ int             test_bpt32lf_Insert03(
         TINYTEST_TRUE( (pNode->key == 5) );
         obj_Release(pNew);
         pNew = OBJ_NIL;
+#endif
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

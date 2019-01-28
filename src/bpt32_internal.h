@@ -116,20 +116,9 @@ struct bpt32_data_s	{
     BPT32_HEADER    *pHdr;
     OBJARRAY_DATA   *pSrchStk;      // Search Block List
 
-    ERESULT         (*pBlockRead)(
-        OBJ_ID          this,
-        uint32_t        recordNum,
-        uint8_t         *pData
-    );
-    ERESULT         (*pBlockWrite)(
-        OBJ_ID          this,
-        uint32_t        recordNum,
-        uint8_t            *pData    /* Data Ptr (if NULL, a FillChar
-                                 * record is written)
-                                 */
-    );
-    OBJ_ID          pBlockObject;
-    
+    uint32_t        lastLSN;
+    uint32_t        lastKey;
+
 };
 #pragma pack(pop)
 

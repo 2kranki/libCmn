@@ -106,6 +106,8 @@ struct bpt32lf_data_s	{
     uint32_t        index;          // Block Index Number in Dataset/File
     uint32_t        maxRcds;        // Maximum Number of Records in a Block
     BPT32LF_BLOCK   *pBlock;
+    uint32_t        lastKey;
+    uint32_t        lastIndex;
 
     OBJ_ID          *pMgr;          // Block Manager
     P_ERESULT_EXIT4 pReq;           // Block Manager Request Method
