@@ -945,9 +945,9 @@ extern "C" {
         uint32_t        *pData
     )
     {
-        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
-        BPT32IDX_NODE   *pNode = NULL;
-        uint32_t        index = 0;
+        //ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        //BPT32IDX_NODE   *pNode = NULL;
+        //uint32_t        index = 0;
         uint32_t        iMax;
         uint32_t        i;
 

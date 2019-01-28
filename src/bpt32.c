@@ -126,10 +126,6 @@ extern "C" {
         uint32_t        lsn = 0;
         void            *pBlock = NULL;
         BPT32_BLK_VTBL  *pVtbl = NULL;
-#ifdef NDEBUG
-#else
-        ERESULT         (*pVerify)(OBJ_ID);
-#endif
 
 #ifdef NDEBUG
 #else
@@ -340,10 +336,6 @@ extern "C" {
         BPT32IDX_DATA   *pIndex = OBJ_NIL;
         BPT32LF_DATA    *pLeaf = OBJ_NIL;
         uint16_t        *pData;
-#ifdef NDEBUG
-#else
-        ERESULT         (*pVerify)(OBJ_ID);
-#endif
 
         TRC_OBJ(this, "bpt32_BlockRead lsn=%d\n", lsn);
         

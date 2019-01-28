@@ -144,7 +144,7 @@ int             test_bpt32lf_Insert01(
             k = i + 1;
             d = k;
             fprintf(stderr, "\tInserting: %d\n", k);
-            eRc = bpt32lf_Insert(pObj, k, &d, NULL);
+            eRc = bpt32lf_Insert(pObj, k, &d);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             pStr = bpt32lf_ToDebugString(pObj, 3);
             fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -237,7 +237,7 @@ int             test_bpt32lf_Insert02(
         k = 3;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, NULL);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -247,7 +247,7 @@ int             test_bpt32lf_Insert02(
         k = 1;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, NULL);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -257,7 +257,7 @@ int             test_bpt32lf_Insert02(
         k = 4;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, NULL);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -267,7 +267,7 @@ int             test_bpt32lf_Insert02(
         k = 2;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, NULL);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -330,7 +330,7 @@ int             test_bpt32lf_Insert03(
     BPT32LF_DATA    *pObj = OBJ_NIL;
     uint32_t        d;
     uint32_t        k;
-    uint32_t        i;
+    //uint32_t        i;
     uint32_t        max;
     ASTR_DATA       *pStr;
     BPT32LF_NODE    *pNode;
@@ -343,6 +343,8 @@ int             test_bpt32lf_Insert03(
     pObj = bpt32lf_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
+        
+        obj_TraceSet(pObj, true);
         
         eRc = bpt32lf_Setup(pObj, 52, 3, 0, true);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
@@ -360,7 +362,7 @@ int             test_bpt32lf_Insert03(
         k = 3;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, &pNew);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -371,7 +373,7 @@ int             test_bpt32lf_Insert03(
         k = 1;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, &pNew);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -382,7 +384,7 @@ int             test_bpt32lf_Insert03(
         k = 4;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, &pNew);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -393,7 +395,7 @@ int             test_bpt32lf_Insert03(
         k = 5;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, &pNew);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStr = bpt32lf_ToDebugString(pObj, 3);
         fprintf(stderr, "\n%s\n\n", AStr_getData(pStr));
@@ -404,7 +406,7 @@ int             test_bpt32lf_Insert03(
         k = 2;
         d = k;
         fprintf(stderr, "\tInserting: %d\n", k);
-        eRc = bpt32lf_Insert(pObj, k, &d, &pNew);
+        eRc = bpt32lf_Insert(pObj, k, &d);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (pObj->pBlock->used == 3) );
         pStr = bpt32lf_ToDebugString(pObj, 3);

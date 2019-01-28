@@ -369,12 +369,6 @@ OBJS += $(OBJDIR)/bpt32idx.o
 $(OBJDIR)/bpt32idx.o: $(SRCDIR)/bpt32idx.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bpt32idx
-
-test_bpt32idx: $(TEST_SRC)/test_bpt32idx.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
 OBJS += $(OBJDIR)/bpt32lf_object.o
 
 $(OBJDIR)/bpt32lf_object.o: $(SRCDIR)/bpt32lf_object.c 
@@ -384,12 +378,6 @@ OBJS += $(OBJDIR)/bpt32lf.o
 
 $(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += test_bpt32lf
-
-test_bpt32lf: $(TEST_SRC)/test_bpt32lf.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
 
 OBJS += $(OBJDIR)/bptIndex_object.o
 
