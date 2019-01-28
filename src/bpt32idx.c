@@ -1392,6 +1392,12 @@ extern "C" {
                         }
                         break;
                         
+                    case 'V':
+                        if (str_Compare("Verify", (char *)pStr) == 0) {
+                            return bpt32idx_Verify;
+                        }
+                        break;
+                        
                     default:
                         break;
                 }
@@ -1829,7 +1835,55 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                       V e r i f y
+    //---------------------------------------------------------------
     
+    /*!
+     Verify as much of this object as we can.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         bpt32idx_Verify (
+        BPT32IDX_DATA   *this
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        key = 0;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32idx_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pBlock->used <= this->pBlock->max)
+            ;
+        else
+            return ERESULT_GENERAL_FAILURE;
+        
+        iMax = this->pBlock->used;
+        for (i=0; i<iMax; ++i) {
+            if (key < this->pBlock->nodes[i].key)
+                ;
+            else
+                return ERESULT_GENERAL_FAILURE;
+            key = this->pBlock->nodes[i].key;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+
     
 #ifdef	__cplusplus
 }

@@ -178,20 +178,24 @@ struct bpt32lf_data_s	{
 
 
     ASTR_DATA *     bpt32lf_ToJSON (
-        BPT32LF_DATA      *this
+        BPT32LF_DATA    *this
     );
-
-
 
 
 #ifdef NDEBUG
 #else
     bool			bpt32lf_Validate (
-        BPT32LF_DATA       *this
+        BPT32LF_DATA    *this
     );
 #endif
 
 
+    ERESULT         bpt32lf_Verify (
+        BPT32LF_DATA    *this
+    );
+    
+    
+    
 
 #ifdef	__cplusplus
 }

@@ -126,7 +126,11 @@ extern "C" {
         uint32_t        lsn = 0;
         void            *pBlock = NULL;
         BPT32_BLK_VTBL  *pVtbl = NULL;
-        
+#ifdef NDEBUG
+#else
+        ERESULT         (*pVerify)(OBJ_ID);
+#endif
+
 #ifdef NDEBUG
 #else
         if (!bpt32_Validate(this)) {
@@ -222,41 +226,24 @@ extern "C" {
                 break;
                 
             case BPT32_REQUEST_READ:
-                if (OBJ_IDENT_BPT32IDX == obj_getType(pObj)) {
-                    lsn = bpt32idx_getIndex((BPT32IDX_DATA *)pObj);
-                    TRC_OBJ(this, "\tRead data for index block %d...\n", lsn);
-                    if (NULL == bpt32idx_getBlock((BPT32IDX_DATA *)pObj)) {
-                        eRc =   bpt32idx_Setup(
-                                              (BPT32IDX_DATA *)pObj,
-                                              this->blockSize,
-                                               this->dataSize,
-                                              lsn,
-                                              true
-                                              );
-                        bpt32idx_setManager((BPT32IDX_DATA *)pObj, (OBJ_ID)this);
-                    }
-                    pBlock = bpt32idx_getBlock(pObj);
+                if (NULL == pObj) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_PARAMETER;
                 }
-                if (OBJ_IDENT_BPT32LF == obj_getType(pObj)) {
-                    if (NULL == pObj) {
-                        DEBUG_BREAK();
-                        return ERESULT_INVALID_PARAMETER;
-                    }
-                    pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
-                    lsn = pVtbl->pGetIndex(pObj);
-                    TRC_OBJ(this, "\tRead data for leaf block %d...\n", lsn);
+                pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
+                lsn = pVtbl->pGetIndex(pObj);
+                TRC_OBJ(this, "\tRead data for block %d...\n", lsn);
+                pBlock = pVtbl->pGetBlock(pObj);
+                if (NULL == pBlock) {
+                    eRc = pVtbl->pSetup(
+                                        pObj,
+                                        this->blockSize,
+                                        this->dataSize,
+                                        lsn,
+                                        true
+                            );
+                    pVtbl->pSetManager(pObj, this);
                     pBlock = pVtbl->pGetBlock(pObj);
-                    if (NULL == pBlock) {
-                        eRc = pVtbl->pSetup(
-                                            pObj,
-                                            this->blockSize,
-                                            this->dataSize,
-                                            lsn,
-                                            true
-                                );
-                        pVtbl->pSetManager(pObj, this);
-                    }
-                    pBlock = bpt32lf_getBlock((BPT32LF_DATA *)pObj);
                 }
                 if (lsn && pBlock) {
                     eRc =   rrds_RecordRead(
@@ -267,6 +254,34 @@ extern "C" {
                 }
                 else
                     eRc = ERESULT_GENERAL_FAILURE;
+#ifdef NDEBUG
+#else
+                if (obj_Trace(this) && !ERESULT_FAILED(eRc)) {
+                    ASTR_DATA       *pStr = OBJ_NIL;
+                    if (OBJ_IDENT_BPT32IDX == obj_getType(pObj)) {
+                        eRc = bpt32idx_Verify(pObj);
+                        if (ERESULT_FAILED(eRc)) {
+                            pStr = bpt32idx_ToDebugString(pObj, 4);
+                        }
+                    }
+                    if (OBJ_IDENT_BPT32LF == obj_getType(pObj)) {
+                        eRc = bpt32lf_Verify(pObj);
+                        if (ERESULT_FAILED(eRc)) {
+                            pStr = bpt32lf_ToDebugString(pObj, 4);
+                        }
+                    }
+                   if (ERESULT_FAILED(eRc)) {
+                       TRC_OBJ(this, "\tBlock Verify Error!\n");
+                       if (pStr) {
+                           fprintf(stderr, "%s\n", AStr_getData(pStr));
+                           obj_Release(pStr);
+                       }
+                        DEBUG_BREAK();
+                        obj_Release(pObj);
+                        return eRc;
+                    }
+                }
+#endif
                 break;
                 
             case BPT32_REQUEST_SPLIT:
@@ -325,7 +340,11 @@ extern "C" {
         BPT32IDX_DATA   *pIndex = OBJ_NIL;
         BPT32LF_DATA    *pLeaf = OBJ_NIL;
         uint16_t        *pData;
-        
+#ifdef NDEBUG
+#else
+        ERESULT         (*pVerify)(OBJ_ID);
+#endif
+
         TRC_OBJ(this, "bpt32_BlockRead lsn=%d\n", lsn);
         
         // Load the block into the LRU.
@@ -357,6 +376,21 @@ extern "C" {
             }
             bpt32idx_setManager(pIndex, (void *)this);
             bpt32idx_CopyFrom(pIndex, (void *)pData);
+#ifdef NDEBUG
+#else
+            if (obj_Trace(this)) {
+                eRc = bpt32idx_Verify(pIndex);
+                if (ERESULT_FAILED(eRc)) {
+                    TRC_OBJ(this, "\tIndex Block Verify Error!\n");
+                    ASTR_DATA       *pStr = bpt32lf_ToDebugString(pLeaf, 4);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                    DEBUG_BREAK();
+                    obj_Release(pIndex);
+                    return eRc;
+                }
+            }
+#endif
             if (ppObj)
                 *ppObj = pIndex;
             else
@@ -367,8 +401,8 @@ extern "C" {
         else if (*pData == OBJ_IDENT_BPT32LF) {
             pLeaf = bpt32lf_New();
             if (OBJ_NIL == pLeaf) {
-                DEBUG_BREAK();
                 TRC_OBJ(this, "\tCould not create Leaf Block Error!\n");
+                DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
 #ifdef NDEBUG
@@ -384,6 +418,21 @@ extern "C" {
             }
             bpt32lf_setManager(pLeaf, (void *)this);
             bpt32lf_CopyFrom(pLeaf, (void *)pData);
+#ifdef NDEBUG
+#else
+            if (obj_Trace(this)) {
+                eRc = bpt32lf_Verify(pLeaf);
+                if (ERESULT_FAILED(eRc)) {
+                    TRC_OBJ(this, "\tLeaf Block Verify Error!\n");
+                    ASTR_DATA       *pStr = bpt32lf_ToDebugString(pLeaf, 4);
+                    fprintf(stderr, "%s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                    DEBUG_BREAK();
+                    obj_Release(pLeaf);
+                    return eRc;
+                }
+            }
+#endif
             if (ppObj)
                 *ppObj = pLeaf;
             else

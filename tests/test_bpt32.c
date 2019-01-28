@@ -276,6 +276,30 @@ int             test_bpt32_Write01(
         eRc = bpt32_Add(pObj, data, &data);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
+        data = 77;                                 // 26
+        eRc = bpt32_Add(pObj, data, &data);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        data = 73;                                 // 27
+        eRc = bpt32_Add(pObj, data, &data);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        data = 75;                                 // 28
+        eRc = bpt32_Add(pObj, data, &data);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        data = 121;                                // 29
+        eRc = bpt32_Add(pObj, data, &data);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        data = 117;                                // 30
+        eRc = bpt32_Add(pObj, data, &data);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        data = 123;                                // 30
+        eRc = bpt32_Add(pObj, data, &data);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
         {
             pStr = bpt32_ToDebugString(pObj, 4);
             fprintf(stderr, "\n\n%s\n\n\n", AStr_getData(pStr));

@@ -125,6 +125,8 @@ extern "C" {
                 pNode = bpt32lf_Index2Node(this, Low);
                 i = Low;
                 rc = key - pNode->key;
+                if (rc > 0)
+                    ++i;
             }
         }
         
@@ -1141,6 +1143,7 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
         TRC_OBJ(this, "bpt32lf_Insert  index=%d  key=%d\n", this->index, key);
+        TRC_OBJ(this, "\tmax: %d  used: %d\n", this->pBlock->max, this->pBlock->used);
 #endif
         
         pNode = bpt32lf_FindNode(this, key, &i);
@@ -1388,6 +1391,12 @@ extern "C" {
                         }
                         break;
                         
+                    case 'V':
+                        if (str_Compare("Verify", (char *)pStr) == 0) {
+                            return bpt32lf_Verify;
+                        }
+                        break;
+                        
                     default:
                         break;
                 }
@@ -1589,7 +1598,7 @@ extern "C" {
                 pNext = bpt32lf_New();
                 if (pNext) {
                     bpt32lf_setIndex(pNext, pNew->pBlock->next);
-                    eRc = this->pReq(this->pMgr, pNew, (void *)BPT32_REQUEST_READ, NULL);
+                    eRc = this->pReq(this->pMgr, pNext, (void *)BPT32_REQUEST_READ, NULL);
                     if (!ERESULT_FAILED(eRc)) {
                         pNext->pBlock->prev = pNew->index;
                         eRc = this->pReq(this->pMgr, pNext, (void *)BPT32_REQUEST_WRITE, NULL);
@@ -1863,7 +1872,57 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                       V e r i f y
+    //---------------------------------------------------------------
     
+    /*!
+     Verify as much of this object as we can.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         bpt32lf_Verify (
+        BPT32LF_DATA    *this
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        key = 0;
+        uint32_t        i;
+        uint32_t        iMax;
+        BPT32LF_NODE    *pNode = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32lf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pBlock->used <= this->pBlock->max)
+            ;
+        else
+            return ERESULT_GENERAL_FAILURE;
+        
+        iMax = this->pBlock->used;
+        for (i=0; i<iMax; ++i) {
+            pNode = bpt32lf_Index2Node(this, i);
+            if (key < pNode->key)
+                ;
+            else
+                return ERESULT_GENERAL_FAILURE;
+            key = pNode->key;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
+
     
 #ifdef	__cplusplus
 }

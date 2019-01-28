@@ -182,8 +182,6 @@ struct bpt32idx_data_s	{
     );
 
 
-
-
 #ifdef NDEBUG
 #else
     bool			bpt32idx_Validate (
@@ -193,6 +191,13 @@ struct bpt32idx_data_s	{
 
 
 
+    ERESULT         bpt32idx_Verify (
+        BPT32IDX_DATA    *this
+    );
+    
+    
+    
+    
 #ifdef	__cplusplus
 }
 #endif
