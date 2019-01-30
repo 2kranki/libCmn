@@ -13,9 +13,10 @@
  *              stored in UTF8 format.
  *
  *              Internal nodes are blocked to limit memory 
- *              fragmentation. The maximum hash table size is
- *              65535. The overall size can grow bigger since 
- *              the nodes are chained from the hash table.
+ *              fragmentation. The maximum number of hash
+ *              chains is 65535. The overall size can grow
+ *              bigger since the nodes are chained from the
+ *              hash table.
  *
  * Remarks
  *	1.			All keys must be unique within the table.
@@ -114,14 +115,14 @@ extern "C" {
     // (Maximum size is 65535)
     typedef enum szHash_table_size_e {
         SZHASH_TABLE_SIZE_XXXXXSMALL = 5,
-        SZHASH_TABLE_SIZE_XXXXSMALL = 17,
-        SZHASH_TABLE_SIZE_XXXSMALL = 31,
-        SZHASH_TABLE_SIZE_XXSMALL = 61,
-        SZHASH_TABLE_SIZE_XSMALL = 127,
-        SZHASH_TABLE_SIZE_SMALL = 257,
-        SZHASH_TABLE_SIZE_MEDIUM = 2053,
-        SZHASH_TABLE_SIZE_LARGE  = 4099,
-        SZHASH_TABLE_SIZE_XLARGE = 16411
+        SZHASH_TABLE_SIZE_XXXXSMALL = 11,
+        SZHASH_TABLE_SIZE_XXXSMALL = 17,
+        SZHASH_TABLE_SIZE_XXSMALL = 37,
+        SZHASH_TABLE_SIZE_XSMALL = 67,
+        SZHASH_TABLE_SIZE_SMALL = 131,
+        SZHASH_TABLE_SIZE_MEDIUM = 257,
+        SZHASH_TABLE_SIZE_LARGE  = 521,
+        SZHASH_TABLE_SIZE_XLARGE = 1031
     } SZHASH_TABLE_SIZE;
     
 

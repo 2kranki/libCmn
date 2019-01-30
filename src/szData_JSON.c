@@ -260,7 +260,6 @@ extern "C" {
                     }
                 }
             }
-            this->eRc = ERESULT_DATA_ERROR;
             obj_Release(pStr);
             pStr = OBJ_NIL;
             return pStr;

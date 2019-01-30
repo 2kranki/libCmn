@@ -61,7 +61,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            szData_task_body(
+    void            szData_task_body (
         void            *pData
     )
     {
@@ -81,7 +81,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SZDATA_DATA *   szData_Alloc(
+    SZDATA_DATA *   szData_Alloc (
     )
     {
         SZDATA_DATA     *this;
@@ -97,7 +97,7 @@ extern "C" {
 
 
 
-    SZDATA_DATA *   szData_New(
+    SZDATA_DATA *   szData_New (
     )
     {
         SZDATA_DATA       *this;
@@ -110,7 +110,7 @@ extern "C" {
     }
 
 
-    SZDATA_DATA *   szData_NewA(
+    SZDATA_DATA *   szData_NewA (
         const
         char            *pName
     )
@@ -123,7 +123,7 @@ extern "C" {
     }
     
     
-    SZDATA_DATA *   szData_NewA_AStr(
+    SZDATA_DATA *   szData_NewA_AStr (
         const
         char            *pName,
         ASTR_DATA       *pStr
@@ -152,7 +152,7 @@ extern "C" {
     }
     
     
-    SZDATA_DATA *   szData_NewFromToken(
+    SZDATA_DATA *   szData_NewFromToken (
         uint32_t        token
     )
     {
@@ -191,7 +191,7 @@ extern "C" {
     //                          C l a s s
     //---------------------------------------------------------------
     
-    int32_t         szData_getClass(
+    int32_t         szData_getClass (
         SZDATA_DATA     *this
     )
     {
@@ -208,7 +208,7 @@ extern "C" {
     }
     
     
-    bool            szData_setClass(
+    bool            szData_setClass (
         SZDATA_DATA     *this,
         int32_t         value
     )
@@ -229,7 +229,7 @@ extern "C" {
     //                          D a t a
     //---------------------------------------------------------------
     
-    OBJ_ID          szData_getData(
+    OBJ_ID          szData_getData (
         SZDATA_DATA     *this
     )
     {
@@ -246,7 +246,7 @@ extern "C" {
     }
     
     
-    bool            szData_setData(
+    bool            szData_setData (
         SZDATA_DATA     *this,
         OBJ_ID          pValue
     )
@@ -271,54 +271,11 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         szData_getLastError(
-        SZDATA_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !szData_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            szData_setLastError(
-        SZDATA_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !szData_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------
     
     const
-    char *          szData_getName(
+    char *          szData_getName (
         SZDATA_DATA     *this
     )
     {
@@ -359,7 +316,6 @@ extern "C" {
 #endif
 
         
-        szData_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -389,11 +345,12 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         szData_Assign(
+    ERESULT         szData_Assign (
         SZDATA_DATA     *this,
         SZDATA_DATA     *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -433,9 +390,9 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        szData_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
-        return szData_getLastError(this);
+        return eRc;
     }
     
     
@@ -444,7 +401,7 @@ extern "C" {
     //                      C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         szData_Compare(
+    ERESULT         szData_Compare (
         SZDATA_DATA     *this,
         SZDATA_DATA     *pOther
     )
@@ -469,7 +426,6 @@ extern "C" {
 #endif
         
         if (this->token == pOther->token) {
-            this->eRc = eRc;
             return eRc;
         }
         
@@ -485,7 +441,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        this->eRc = eRc;
         return eRc;
     }
     
@@ -523,7 +478,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        this->eRc = eRc;
         return eRc;
     }
     
@@ -571,7 +525,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        szData_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -641,7 +594,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        szData_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -670,7 +622,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return ERESULT_SUCCESS;
     }
 
@@ -737,8 +688,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&szData_Vtbl);
         
-        szData_setLastError(this, ERESULT_GENERAL_FAILURE);
-
     #ifdef NDEBUG
     #else
         if( !szData_Validate(this) ) {
@@ -750,7 +699,6 @@ extern "C" {
         //fprintf(stderr, "szData::offsetof(eRc) = %lu\n", offsetof(SZDATA_DATA,eRc));
         //fprintf(stderr, "szData::sizeof(SZDATA_DATA) = %lu\n", sizeof(SZDATA_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(SZDATA_DATA));
     #endif
 
@@ -778,12 +726,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            szData_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        szData_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -992,7 +938,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        szData_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1029,12 +974,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SZDATA_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

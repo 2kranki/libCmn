@@ -67,7 +67,6 @@ struct szData_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint32_t        token;          // szTbl token
 
     int32_t         cls;

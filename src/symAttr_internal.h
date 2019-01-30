@@ -128,7 +128,7 @@ extern "C" {
         uint32_t        nameHash;
         char            name[64];           // Name with trailing NUL
         char            genName[64];        // Generated External Name with trailing NUL
-        uint32_t        nameToken;          // szTbl Token for name
+        uint32_t        nameToken;          // szTbl Token for name / unique number
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;

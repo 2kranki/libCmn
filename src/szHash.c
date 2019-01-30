@@ -221,7 +221,7 @@ extern "C" {
     {
         LISTDL_DATA     *pNodeList;
         
-        pNodeList = &this->pHash[szHash_IndexFromHash(this,hash)];
+        pNodeList = &this->pHash[szHash_IndexFromHash(this, hash)];
         return( pNodeList );
     }
     

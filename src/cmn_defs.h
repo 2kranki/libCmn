@@ -224,9 +224,9 @@ extern "C" {
         OBJ_IDENT_DATETIME_CLASS,
         OBJ_IDENT_DBCSV,                // Comma-Delimited Database
         OBJ_IDENT_DBCSV_CLASS,
-        OBJ_IDENT_DBF,                  // DBase III/IV Field
+        OBJ_IDENT_DBF,                  // DBase III/IV
         OBJ_IDENT_DBF_CLASS,
-        OBJ_IDENT_DBFIELD,
+        OBJ_IDENT_DBFIELD,              // DBase III/IV Field
         OBJ_IDENT_DBFIELD_CLASS,
         OBJ_IDENT_DEC,                  // Decimal (Base 10)
         OBJ_IDENT_DEC_CLASS,
@@ -388,6 +388,8 @@ extern "C" {
         OBJ_IDENT_PROTOCOL_CLASS,
         OBJ_IDENT_PRT,
         OBJ_IDENT_PRT_CLASS,
+        // The Posix Classes are an attempt to create class that can be used in
+        // various O/S's without problems.
         OBJ_IDENT_PSXCOND,              // Posix Condition
         OBJ_IDENT_PSXCOND_CLASS,
         OBJ_IDENT_PSXLOCK,              // Posix Lock
@@ -406,6 +408,8 @@ extern "C" {
         OBJ_IDENT_PTRCB_CLASS,
         OBJ_IDENT_PTRTBL,
         OBJ_IDENT_PTRTBL_CLASS,
+        OBJ_IDENT_RBTREE,               // Generic Red-Black Tree (see rbt_tree.h)
+        OBJ_IDENT_RBTREE_CLASS,
         OBJ_IDENT_RECEIVE,              // Protocol Receive Handler
         OBJ_IDENT_RECEIVE_CLASS,
         OBJ_IDENT_RESPONDER,

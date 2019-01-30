@@ -61,7 +61,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            symEntry_task_body(
+    void            symEntry_task_body (
         void            *pData
     )
     {
@@ -81,7 +81,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SYMENTRY_DATA *     symEntry_Alloc(
+    SYMENTRY_DATA *     symEntry_Alloc (
         void
     )
     {
@@ -98,7 +98,7 @@ extern "C" {
 
 
 
-    SYMENTRY_DATA *     symEntry_New(
+    SYMENTRY_DATA *     symEntry_New (
         void
     )
     {
@@ -112,7 +112,7 @@ extern "C" {
     }
 
 
-    SYMENTRY_DATA *    gmrNode_NewWithUTF8AndClass(
+    SYMENTRY_DATA *    gmrNode_NewWithUTF8AndClass (
         int32_t         cls,
         const
         char            *pNameA,
@@ -140,7 +140,7 @@ extern "C" {
     }
     
     
-    SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass(
+    SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass (
         int32_t         cls,
         const
         char            *pNameA,
@@ -606,6 +606,90 @@ extern "C" {
   
 
     //---------------------------------------------------------------
+    //                       S e c t i o n
+    //---------------------------------------------------------------
+    
+    uint32_t        symEntry_getSection (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->section;
+    }
+    
+    
+    bool            symEntry_setSection (
+        SYMENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->token = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       T o k e n
+    //---------------------------------------------------------------
+    
+    uint32_t        symEntry_getToken (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->token;
+    }
+    
+    
+    bool            symEntry_setToken (
+        SYMENTRY_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->token = value;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          T y p e
     //---------------------------------------------------------------
     
@@ -672,7 +756,7 @@ extern "C" {
     
     bool            symEntry_setValue (
         SYMENTRY_DATA   *this,
-        uint16_t        value
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -1084,7 +1168,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          symEntry_QueryInfo(
+    void *          symEntry_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData

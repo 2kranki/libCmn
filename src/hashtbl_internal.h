@@ -49,7 +49,7 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
+//#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -63,6 +63,8 @@ extern "C" {
     typedef struct hashTbl_entry_s    {
         LISTDL_NODE     hashList;
         uint32_t        hash;               // Logical Sector Number
+        uint16_t        keyLen;
+        uint16_t        dataLen;
         void            *pKey;
         void            *pData;
     } HASHTBL_ENTRY;
@@ -83,11 +85,16 @@ struct hashtbl_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        hashSize;           // maximum number of elements
+    uint32_t        unique;         // Unique number given to entries as they are
+    //                              // added to the hash table
+    uint16_t        cHash;          // number of Hash Chains
     uint16_t        rsvd16;
-    uint32_t        size;		        // number of records in hash
-    ASTR_DATA       *pStr;
-    
+    uint32_t        size;		    // number of records in hash
+    LISTDL_DATA     *pHash;         // Hash Table Chains
+
+    // Hash Entry Variables
+    P_COMPARE       *pCompare;
+    P_U32_EXIT1     *pCalcHash;
 
 };
 #pragma pack(pop)

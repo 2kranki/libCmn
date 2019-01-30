@@ -236,8 +236,8 @@ extern "C" {
     );
     
     
-    // Return the number of actual characters in the string
-    // excluding the NUL-terminator.
+    // Return the number of characters in the string
+    // excluding the NUL-terminator (ie physical length).
     int             utf8_StrLenChars(
         const
         char            *pSrc

@@ -352,10 +352,10 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        uint32_t        i;
-        uint32_t        iMax;
+        //uint32_t        i;
+        //uint32_t        iMax;
         //uint32_t        j;
-        SRCLOC          *pEntry = NULL;
+        //SRCLOC          *pEntry = NULL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -693,7 +693,7 @@ extern "C" {
         SRCLOC          *pLoc
     )
     {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        //ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         uint32_t        i;
         uint32_t        iMax;
         //uint32_t        j;
@@ -984,7 +984,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
@@ -1044,7 +1044,7 @@ extern "C" {
 #endif
         const
         OBJ_INFO        *pInfo;
-        SRCLOC          *pEntry;
+        //SRCLOC          *pEntry;
         
         // Do initialization.
 #ifdef NDEBUG

@@ -94,6 +94,19 @@ extern "C" {
     } SYMENTRY_CLASS_VTBL;
 
 
+    typedef enum sym_type_e {
+        SYM_TYPE_UNDEFINED=0,
+        SYM_TYPE_ARRAY,
+        SYM_TYPE_CONSTANT,
+        SYM_TYPE_FUNCTION,
+        SYM_TYPE_LABEL,
+        SYM_TYPE_MACRO,
+        SYM_TYPE_STRUCT,
+        SYM_TYPE_UNION,
+        SYM_TYPE_VARIABLE,
+    } SYM_TYPE;
+    
+    
 
 
     /****************************************************************
@@ -106,11 +119,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SYMENTRY_SINGLETON
-    SYMENTRY_DATA * symEntry_Shared(
+    SYMENTRY_DATA * symEntry_Shared (
         void
     );
 
-    bool            symEntry_SharedReset(
+    bool            symEntry_SharedReset (
         void
     );
 #endif
@@ -122,17 +135,17 @@ extern "C" {
      released.
      @return    pointer to symEntry object if successful, otherwise OBJ_NIL.
      */
-    SYMENTRY_DATA * symEntry_Alloc(
+    SYMENTRY_DATA * symEntry_Alloc (
         void
     );
     
     
-    OBJ_ID          symEntry_Class(
+    OBJ_ID          symEntry_Class (
         void
     );
     
     
-    SYMENTRY_DATA * symEntry_New(
+    SYMENTRY_DATA * symEntry_New (
         void
     );
     
@@ -145,7 +158,7 @@ extern "C" {
     );
     
     
-    SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass(
+    SYMENTRY_DATA * gmrNode_NewWithUTF8ConAndClass (
         int32_t         cls,
         const
         char            *pNameA,
@@ -169,7 +182,7 @@ extern "C" {
     );
 
     
-    int32_t         symEntry_getClass(
+    int32_t         symEntry_getClass (
         SYMENTRY_DATA   *this
     );
     
@@ -184,11 +197,11 @@ extern "C" {
     );
     
     
-    uint32_t        symEntry_getIndex(
+    uint32_t        symEntry_getIndex (
         SYMENTRY_DATA   *this
     );
     
-    bool            symEntry_setIndex(
+    bool            symEntry_setIndex (
         SYMENTRY_DATA   *this,
         uint32_t        value
     );
@@ -204,26 +217,42 @@ extern "C" {
     );
 
     
-    int16_t         symEntry_getLevel(
+    int16_t         symEntry_getLevel (
         SYMENTRY_DATA   *this
     );
     
     
-    NODE_DATA *     symEntry_getNode(
+    NODE_DATA *     symEntry_getNode (
         SYMENTRY_DATA   *this
     );
     
     
-    NODELINK_DATA * symEntry_getNodeLink(
+    NODELINK_DATA * symEntry_getNodeLink (
         SYMENTRY_DATA   *this
     );
     
     
-    int32_t         symEntry_getType(
+    uint32_t        symEntry_getSection (
         SYMENTRY_DATA   *this
     );
     
-    bool            symEntry_setType(
+    bool            symEntry_setSection (
+        SYMENTRY_DATA   *this,
+        uint32_t        value
+    );
+    
+    
+    uint32_t        symEntry_getToken (
+        SYMENTRY_DATA   *this
+    );
+    
+    
+    
+    int32_t         symEntry_getType (
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setType (
         SYMENTRY_DATA   *this,
         int32_t         value
     );
@@ -235,7 +264,7 @@ extern "C" {
     
     bool            symEntry_setValue (
         SYMENTRY_DATA   *this,
-        uint16_t        value
+        uint32_t        value
     );
 
 
@@ -245,22 +274,22 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     symEntry_Disable(
+    ERESULT     symEntry_Disable (
         SYMENTRY_DATA		*this
     );
 
 
-    ERESULT     symEntry_Enable(
+    ERESULT     symEntry_Enable (
         SYMENTRY_DATA		*this
     );
 
    
-    SYMENTRY_DATA *   symEntry_Init(
+    SYMENTRY_DATA *   symEntry_Init (
         SYMENTRY_DATA     *this
     );
 
 
-    ERESULT     symEntry_IsEnabled(
+    ERESULT     symEntry_IsEnabled (
         SYMENTRY_DATA		*this
     );
     
@@ -277,7 +306,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    symEntry_ToDebugString(
+    ASTR_DATA *    symEntry_ToDebugString (
         SYMENTRY_DATA     *this,
         int             indent
     );

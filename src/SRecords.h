@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              S-Record Reader/Writer (SRecords) Header
+//        Motorola S-Record Reader/Writer (SRecords) Header
 //****************************************************************
 /*
  * Program
- *			S-Record Reader/Writer (SRecords)
+ *			Motorola S-Record Reader/Writer (SRecords)
  * Purpose
  *			This object provides a standardized way of reading or
  *          writing an S-Record text file. S-Records are one way

@@ -110,18 +110,6 @@ extern "C" {
     } SYM_STORAGE;
     
     
-    typedef enum sym_type_e {
-        SYM_TYPE_UNDEFINED=0,
-        SYM_TYPE_ARRAY,
-        SYM_TYPE_CONSTANT,
-        SYM_TYPE_FUNCTION,
-        SYM_TYPE_MACRO,
-        SYM_TYPE_STRUCT,
-        SYM_TYPE_UNION,
-        SYM_TYPE_VARIABLE,
-    } SYM_TYPE;
-    
-    
     typedef enum sym_reloc_e {
         SYM_RELOC_UNDEFINED=0,
         SYM_RELOC_ABSOLUTE,
@@ -134,7 +122,7 @@ extern "C" {
         uint16_t        flags;
         uint32_t        nameHash;
         char            name[128];
-        uint32_t        nameToken;          // szTbl Token for name
+        uint32_t        token;              // unique token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;
@@ -175,6 +163,8 @@ struct symEntry_data_s	{
     uint16_t        len;
     uint16_t        dup;            // Duplication Factor
     uint16_t        rsvd16;
+    uint32_t        section;
+    uint32_t        token;
     uint32_t        value;
     ASTR_DATA       *pStr;
 

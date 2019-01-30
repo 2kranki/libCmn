@@ -658,7 +658,7 @@ extern "C" {
         uint8_t         **ppData            // [out] Optional returned data pointer.
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         uint8_t         *pData = NULL;
         
         // Do initialization.

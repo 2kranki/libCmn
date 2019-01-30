@@ -62,16 +62,19 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            hashtbl_task_body (
-        void            *pData
+    LISTDL_DATA *   hashtbl_ChainFromHash(
+        HASHTBL_DATA    *this,
+        uint32_t        hash
     )
     {
-        //HASHTBL_DATA  *this = pData;
+        LISTDL_DATA     *pList;
         
+        pList = &this->pHash[hash % this->cHash];
+        return( pList );
     }
-#endif
+    
+    
+    
 
 
 
@@ -204,7 +207,8 @@ extern "C" {
         }
 #endif
         
-        return this->pStr;
+        //return this->pStr;
+        return 0;
     }
     
     
@@ -227,7 +231,7 @@ extern "C" {
             obj_Release(this->pStr);
         }
 #endif
-        this->pStr = pValue;
+        //this->pStr = pValue;
         
         return true;
     }
