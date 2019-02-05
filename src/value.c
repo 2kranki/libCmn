@@ -339,11 +339,9 @@ extern "C" {
 #endif
         
         if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)){
-            value_setLastError(this, ERESULT_SUCCESS);
             return this->value.data.pData;
         }
         else {
-            value_setLastError(this, ERESULT_DATA_MISSING);
             return NULL;
         }
     }
@@ -364,11 +362,9 @@ extern "C" {
 #endif
         
         if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)){
-            value_setLastError(this, ERESULT_SUCCESS);
             return this->value.data.length;
         }
         else {
-            value_setLastError(this, ERESULT_DATA_MISSING);
             return 0;
         }
     }

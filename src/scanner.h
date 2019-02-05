@@ -99,17 +99,17 @@ extern "C" {
      released.
      @return    pointer to scanner object if successful, otherwise OBJ_NIL.
      */
-    SCANNER_DATA *  scanner_Alloc(
+    SCANNER_DATA *  scanner_Alloc (
         void
     );
     
     
-    OBJ_ID          scanner_Class(
+    OBJ_ID          scanner_Class (
         void
     );
     
     
-    SCANNER_DATA *  scanner_New(
+    SCANNER_DATA *  scanner_New (
         void
     );
     
@@ -130,7 +130,7 @@ extern "C" {
      @return    If successful, true and *pValue contains the amount converted,
                 otherwise false.
      */
-    bool            scanner_ScanDec32(
+    bool            scanner_ScanDec32 (
         char            **ppCmdStr,         // NUL terminated string pointer
         uint32_t        *pScannedLen,       // (returned) Scanned Length
         uint32_t        *pValue             // (returned) Scanned Number
@@ -150,7 +150,7 @@ extern "C" {
                 scanned string, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     scanner_ScanStringToAStr(
+    ASTR_DATA *     scanner_ScanStringToAStr (
         char            **ppCmdStr,         // NUL terminated string pointer
         uint32_t        *pScannedLen        // [out] Scanned Length
         //                                  // (not including leading whitespace)
@@ -166,7 +166,7 @@ extern "C" {
                 OBJ_NIL if an error occurred.
      @warning   Remember to release the returned AStrArray object.
      */
-    ASTRARRAY_DATA * scanner_ScanStringToAstrArray(
+    ASTRARRAY_DATA * scanner_ScanStringToAstrArray (
         const
         char            *pCmdStrA
     );
@@ -181,7 +181,7 @@ extern "C" {
                             the returned string
      @return    If successful, true, otherwise false.
      */
-    bool            scanner_ScanWhite(
+    bool            scanner_ScanWhite (
         char            **ppCmdStr,         // NUL terminated string pointer
         uint32_t        *pScannedLen        // (returned) Scanned Length
     );
@@ -200,26 +200,18 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     scanner_Disable(
-        SCANNER_DATA		*this
-    );
-
-
-    ERESULT     scanner_Enable(
-        SCANNER_DATA		*this
-    );
-
-   
-    SCANNER_DATA *   scanner_Init(
+    SCANNER_DATA *   scanner_Init (
         SCANNER_DATA     *this
     );
 
 
-    ERESULT     scanner_IsEnabled(
-        SCANNER_DATA		*this
+    ERESULT         scanner_Setup (
+        SCANNER_DATA    *this,
+        const
+        char            *pStrA
     );
     
- 
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -232,7 +224,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    scanner_ToDebugString(
+    ASTR_DATA *    scanner_ToDebugString (
         SCANNER_DATA     *this,
         int             indent
     );

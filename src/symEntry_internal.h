@@ -120,9 +120,9 @@ extern "C" {
     typedef struct sym_entry_s {
         uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        flags;
-        uint32_t        nameHash;
-        char            name[128];
+        uint32_t        hash;
         uint32_t        token;              // unique token for name
+        char            name[128];
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;
@@ -131,7 +131,12 @@ extern "C" {
         uint16_t        align;              // Required Storage Alignment
         //                                  // (0 == None)
         uint16_t        reloc;
-        uint16_t        rsvd16;
+        int16_t         level;
+        uint16_t        dup;                // Duplication Factor
+        uint16_t        len;
+        //uint16_t        rsvd16;
+        uint32_t        section;
+        uint32_t        value;
         uint32_t        idxHashNext;        // Hash Index Chain
         uint32_t        idxHashPrev;
         uint32_t        idxScopeNext;
@@ -157,16 +162,7 @@ struct symEntry_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    int16_t         level;
-    uint16_t        align;
-    uint16_t        len;
-    uint16_t        dup;            // Duplication Factor
-    uint16_t        rsvd16;
-    uint32_t        section;
-    uint32_t        token;
-    uint32_t        value;
-    ASTR_DATA       *pStr;
+    SYM_ENTRY       entry;
 
 };
 #pragma pack(pop)
@@ -200,41 +196,48 @@ struct symEntry_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            symEntry_setClass(
+    bool            symEntry_setClass (
         SYMENTRY_DATA   *this,
         int32_t         value
     );
     
     
-    bool            symEntry_setLevel(
+    bool            symEntry_setLevel (
         SYMENTRY_DATA   *this,
         int16_t         value
     );
     
     
-    OBJ_IUNKNOWN *  symEntry_getSuperVtbl(
+    bool            symEntry_setNameA (
+        SYMENTRY_DATA   *this,
+        const
+        char            *pValue
+    );
+    
+    
+    OBJ_IUNKNOWN *  symEntry_getSuperVtbl (
         SYMENTRY_DATA   *this
     );
 
 
-    void            symEntry_Dealloc(
+    void            symEntry_Dealloc (
         OBJ_ID          objId
     );
 
 
-    SYMENTRY_DATA *       symEntry_ParseObject(
+    SYMENTRY_DATA *       symEntry_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          symEntry_QueryInfo(
+    void *          symEntry_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     symEntry_ToJSON(
+    ASTR_DATA *     symEntry_ToJSON (
         SYMENTRY_DATA      *this
     );
 
@@ -243,7 +246,7 @@ struct symEntry_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			symEntry_Validate(
+    bool			symEntry_Validate (
         SYMENTRY_DATA       *this
     );
 #endif

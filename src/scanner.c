@@ -1250,8 +1250,8 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         scanner_Enable(
-        SCANNER_DATA		*this
+    ERESULT         scanner_Enable (
+        SCANNER_DATA	*this
     )
     {
 

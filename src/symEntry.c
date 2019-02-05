@@ -42,7 +42,9 @@
 
 /* Header File Inclusion */
 #include        <symEntry_internal.h>
+#include        <str.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -127,12 +129,14 @@ extern "C" {
             this = symEntry_Init(this);
             if (this) {
                 if (pNameA) {
+                    symEntry_setNameA(this, pNameA);
                     pName = name_NewUTF8(pNameA);
                     node_setName((NODE_DATA *)this, pName);
                     obj_Release(pName);
                     pName = OBJ_NIL;
                 }
                 node_setClass((NODE_DATA *)this, cls);
+                this->entry.cls = cls;
                 node_setData((NODE_DATA *)this, pData);
             }
         }
@@ -155,12 +159,14 @@ extern "C" {
             this = symEntry_Init(this);
             if (this) {
                 if (pNameA) {
+                    symEntry_setNameA(this, pNameA);
                     pName = name_NewUTF8Con(pNameA);
                     node_setName((NODE_DATA *)this, pName);
                     obj_Release(pName);
                     pName = OBJ_NIL;
                 }
                 node_setClass((NODE_DATA *)this, cls);
+                this->entry.cls = cls;
                 node_setData((NODE_DATA *)this, pData);
             }
         }
@@ -194,7 +200,7 @@ extern "C" {
         }
 #endif
         
-        return this->align;
+        return this->entry.align;
     }
     
     
@@ -211,7 +217,7 @@ extern "C" {
         }
 #endif
         
-        this->align = value;
+        this->entry.align = value;
         
         return true;
     }
@@ -279,7 +285,7 @@ extern "C" {
         }
 #endif
         
-        return this->dup;
+        return this->entry.dup;
     }
     
     
@@ -296,7 +302,7 @@ extern "C" {
         }
 #endif
         
-        this->dup = value;
+        this->entry.dup = value;
         
         return true;
     }
@@ -364,7 +370,7 @@ extern "C" {
         }
 #endif
         
-        return this->len;
+        return this->entry.len;
     }
     
     
@@ -381,7 +387,7 @@ extern "C" {
         }
 #endif
         
-        this->level = value;
+        this->entry.len = value;
         
         return true;
     }
@@ -406,7 +412,7 @@ extern "C" {
         }
 #endif
         
-        return this->level;
+        return this->entry.level;
     }
     
     
@@ -423,9 +429,63 @@ extern "C" {
         }
 #endif
         
-        this->level = value;
+        this->entry.level = value;
         
         return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
+    
+    const
+    char *          symEntry_getNameA (
+        SYMENTRY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->entry.name;
+    }
+    
+    
+    bool            symEntry_setNameA (
+        SYMENTRY_DATA   *this,
+        const
+        char            *pValue
+    )
+    {
+        bool            fRc = true;
+        uint32_t        len = 0;
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (pValue) {
+            len = utf8_StrLenChars(pValue);
+            if (len) {
+                if (len > (sizeof(this->entry.name) - 1))
+                len = sizeof(this->entry.name) - 1;
+                memmove(this->entry.name, pValue, (len + 1));
+            }
+        }
+        memset((this->entry.name + len), 0,  (sizeof(this->entry.name) - len));
+        
+        return fRc;
     }
     
     
@@ -515,6 +575,49 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          R e l o c
+    //---------------------------------------------------------------
+    
+    uint16_t        symEntry_getReloc (
+        SYMENTRY_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->entry.reloc;
+    }
+    
+    
+    bool            symEntry_setReloc (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
+    )
+    {
+        bool            fRc = true;
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->entry.reloc = value;
+        
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -535,52 +638,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * symEntry_getStr (
-        SYMENTRY_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!symEntry_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        symEntry_setStr (
-        SYMENTRY_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!symEntry_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -623,7 +680,7 @@ extern "C" {
         }
 #endif
         
-        return this->section;
+        return this->entry.section;
     }
     
     
@@ -640,7 +697,7 @@ extern "C" {
         }
 #endif
         
-        this->token = value;
+        this->entry.section = value;
         
         return true;
     }
@@ -665,7 +722,7 @@ extern "C" {
         }
 #endif
         
-        return this->token;
+        return this->entry.token;
     }
     
     
@@ -682,7 +739,7 @@ extern "C" {
         }
 #endif
         
-        this->token = value;
+        this->entry.token = value;
         
         return true;
     }
@@ -726,7 +783,8 @@ extern "C" {
 #endif
         
         fRc = node_setType((NODE_DATA *)this, value);
-        
+        this->entry.type = value;
+
         return fRc;
     }
     
@@ -750,7 +808,7 @@ extern "C" {
         }
 #endif
         
-        return this->value;
+        return this->entry.value;
     }
     
     
@@ -767,7 +825,7 @@ extern "C" {
         }
 #endif
         
-        this->value = value;
+        this->entry.value = value;
         
         return true;
     }
@@ -987,8 +1045,6 @@ extern "C" {
             ((SYMENTRY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        symEntry_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

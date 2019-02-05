@@ -71,11 +71,6 @@ struct scanner_data_s	{
     uint16_t        reserved;
     ASTR_DATA       *pStr;
 
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
-
 };
 #pragma pack(pop)
 

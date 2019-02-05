@@ -139,7 +139,8 @@ extern "C" {
         ERESULT_INVALID_OPCODE              = -43,
         ERESULT_OUT_OF_RANGE                = -44,
         ERESULT_UNSUPPORTED_PARAMETER       = -45,
-        
+        ERESULT_INVALID_SYNTAX              = -46,
+
         // File Related Errors
         ERESULT_CLOSE_ERROR                 = -64,
         ERESULT_OPEN_ERROR                  = -65,

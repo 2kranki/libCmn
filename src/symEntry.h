@@ -94,17 +94,21 @@ extern "C" {
     } SYMENTRY_CLASS_VTBL;
 
 
-    typedef enum sym_type_e {
-        SYM_TYPE_UNDEFINED=0,
-        SYM_TYPE_ARRAY,
-        SYM_TYPE_CONSTANT,
-        SYM_TYPE_FUNCTION,
-        SYM_TYPE_LABEL,
-        SYM_TYPE_MACRO,
-        SYM_TYPE_STRUCT,
-        SYM_TYPE_UNION,
-        SYM_TYPE_VARIABLE,
-    } SYM_TYPE;
+    typedef enum sym_class_e {
+        SYM_CLASS_UNKNOWN=0,
+        SYM_CLASS_ARRAY,
+        SYM_CLASS_CODE,                 // Code Section
+        SYM_CLASS_CONSTANT,
+        SYM_CLASS_DATA,                 // Data Section
+        SYM_CLASS_FUNCTION,
+        SYM_CLASS_LABEL,
+        SYM_CLASS_LITERAL,
+        SYM_CLASS_MACRO,
+        SYM_CLASS_STRUCT,
+        SYM_CLASS_UNION,
+        SYM_CLASS_VARIABLE,
+    } SYM_CLASS;
+    
     
     
 
@@ -222,6 +226,12 @@ extern "C" {
     );
     
     
+    const
+    char *          symEntry_getNameA (
+        SYMENTRY_DATA   *this
+    );
+    
+    
     NODE_DATA *     symEntry_getNode (
         SYMENTRY_DATA   *this
     );
@@ -229,6 +239,16 @@ extern "C" {
     
     NODELINK_DATA * symEntry_getNodeLink (
         SYMENTRY_DATA   *this
+    );
+    
+    
+    uint16_t        symEntry_getReloc (
+        SYMENTRY_DATA   *this
+    );
+    
+    bool            symEntry_setReloc (
+        SYMENTRY_DATA   *this,
+        uint16_t        value
     );
     
     

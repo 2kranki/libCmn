@@ -36,19 +36,18 @@
 
 
 
-//-----------------------------------------------------------
-//                  Class Object Definition
-//-----------------------------------------------------------
-
-struct objArray_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct objArray_class_data_s    {
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  SYMENTRY_SINGLETON
+    volatile
+    OBJARRAY_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct objArray_class_data_s OBJARRAY_CLASS_DATA;
 
 
 
@@ -157,7 +156,6 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
 OBJARRAY_CLASS_DATA  objArray_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
@@ -212,7 +210,6 @@ uint16_t		objArray_WhoAmI(
 }
 
 
-const
 OBJARRAY_VTBL     objArray_Vtbl = {
     {
         &objArray_Info,
@@ -246,7 +243,9 @@ OBJ_INFO        objArray_Info = {
     "objArray",
     "Array of Objects",
     (OBJ_DATA *)&objArray_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&objArray_Vtbl,
+    sizeof(OBJARRAY_DATA)
 };
 
 

@@ -599,9 +599,10 @@ extern "C" {
     typedef ERESULT     (*P_ERESULT_EXIT10)(void *, uint32_t, void *);
     typedef ERESULT     (*P_ERESULT_EXIT11)(void *, void *, uint32_t);
     typedef uint32_t    (*P_U32_EXIT1)(void *);
-    typedef void *      (*P_VOID_PTR_EXIT1)(void *);
     typedef uint32_t    (*P_U32_EXIT2_U32)(void *,uint32_t);
     typedef void        (*P_MSGRCV)(void *, uint16_t, uint8_t *);
+    typedef void *      (*P_PTR_EXIT1)(void *);
+    typedef void *      (*P_VOID_PTR_EXIT1)(void *);
 
 
 

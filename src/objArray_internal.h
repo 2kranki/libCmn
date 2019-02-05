@@ -72,11 +72,9 @@ struct objArray_data_s	{
 #pragma pack(pop)
 
     extern
-    const
     struct objArray_class_data_s	objArray_ClassObj;
 
     extern
-    const
     OBJARRAY_VTBL         objArray_Vtbl;
 
 

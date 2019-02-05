@@ -71,7 +71,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct objArray_data_s	OBJARRAY_DATA;    // Inherits from OBJ.
+    typedef struct objArray_data_s	OBJARRAY_DATA;              // Inherits from OBJ.
+    typedef struct objArray_class_data_s OBJARRAY_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct objArray_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -81,7 +82,16 @@ extern "C" {
         // Methods:
     } OBJARRAY_VTBL;
 
+    typedef struct objArray_class_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in symEntry_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SYMENTRY_DATA *);
+    } OBJARRAY_CLASS_VTBL;
     
+
     typedef ERESULT         (*OBJ_COMPARE)(OBJ_ID p0, OBJ_ID p1);
 
 
@@ -94,12 +104,17 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA *     objArray_Alloc(
+    OBJARRAY_DATA * objArray_Alloc(
         void
     );
     
     
-    OBJARRAY_DATA *     objArray_New(
+    OBJ_ID          objArray_Class (
+        void
+    );
+    
+    
+    OBJARRAY_DATA * objArray_New(
         void
     );
     
