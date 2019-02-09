@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <bpt32_internal.h>
+#include        <fileio.h>
 #include        <trace.h>
 
 
@@ -162,11 +163,11 @@ extern "C" {
                 if (obj_Trace(this))
                     obj_TraceSet(pIndex, true);
 #endif
-                eRc =   rrds_RecordWrite(
-                                         (RRDS_DATA *)this,
+                eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                                         this->pIO,
                                          bpt32idx_getIndex(pIndex),
                                          bpt32idx_getBlock(pIndex)
-                                         );
+                        );
                 if (pRet)
                     *((void **)pRet) = pIndex;
                 else
@@ -198,8 +199,8 @@ extern "C" {
                 if (obj_Trace(this))
                     obj_TraceSet(pLeaf, true);
 #endif
-                eRc =   rrds_RecordWrite(
-                                         (RRDS_DATA *)this,
+                eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                                         this->pIO,
                                          bpt32lf_getIndex(pLeaf),
                                          bpt32lf_getBlock(pLeaf)
                         );
@@ -242,8 +243,8 @@ extern "C" {
                     pBlock = pVtbl->pGetBlock(pObj);
                 }
                 if (lsn && pBlock) {
-                    eRc =   rrds_RecordRead(
-                                            (RRDS_DATA *)this,
+                    eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pRead(
+                                            this->pIO,
                                             lsn,
                                             pBlock
                             );
@@ -305,11 +306,11 @@ extern "C" {
                 TRC_OBJ(this, "\tWrite data for block %d...\n", lsn);
                 pBlock = pVtbl->pGetBlock(pObj);
                 if (lsn && pBlock) {
-                    eRc =   rrds_RecordWrite(
-                                             (RRDS_DATA *)this,
+                    eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                                             this->pIO,
                                              lsn,
                                              pBlock
-                                             );
+                            );
                 }
                 else
                     eRc = ERESULT_GENERAL_FAILURE;
@@ -340,14 +341,18 @@ extern "C" {
         TRC_OBJ(this, "bpt32_BlockRead lsn=%d\n", lsn);
         
         // Load the block into the LRU.
-        eRc =   rrds_RecordRead((RRDS_DATA *)this, lsn, NULL);
+        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pRead(
+                                    this->pIO,
+                                    lsn,
+                                    NULL
+                );
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             TRC_OBJ(this, "\tRead Error!\n");
             return eRc;
         }
         
-        pData = (uint16_t *)lru_FindBuffer((LRU_DATA *)this, lsn);
+        pData = (uint16_t *)lru_FindBuffer((LRU_DATA *)this->pIO, lsn);
         if (*pData == OBJ_IDENT_BPT32IDX) {
             pIndex = bpt32idx_New();
             if (OBJ_NIL == pIndex) {
@@ -622,8 +627,8 @@ extern "C" {
             // Note - No split should occur here.
             
             // Write the new block to the file.
-            eRc =   rrds_RecordWrite(
-                                     (RRDS_DATA *)this,
+            eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                                     this->pIO,
                                      bpt32idx_getIndex(pIndex),
                                      bpt32idx_getBlock(pIndex)
                     );
@@ -830,10 +835,10 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          L R U
+    //                          I/O
     //---------------------------------------------------------------
     
-    LRU_DATA *  bpt32_getLRU (
+    RRDS_DATA * bpt32_getIO (
         BPT32_DATA  *this
     )
     {
@@ -847,11 +852,36 @@ extern "C" {
         }
 #endif
         
-        return (LRU_DATA *)this;
+        return this->pIO;
     }
     
     
-
+    bool        bpt32_setIO (
+        BPT32_DATA  *this,
+        RRDS_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+#ifdef  PROPERTY_PATH_OWNED
+        obj_Retain(pValue);
+        if (this->pIO) {
+            obj_Release(this->pIO);
+        }
+#endif
+        this->pIO = pValue;
+        
+        return true;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                          P a t h
     //---------------------------------------------------------------
@@ -1263,7 +1293,10 @@ extern "C" {
         }
 #endif
         
-        eRc = rrds_Close((RRDS_DATA *)this, fDelete);
+        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pClose(
+                                                        this->pIO,
+                                                        fDelete
+                );
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1417,6 +1450,11 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        if (OBJ_NIL == this->pIO) {
+            eRc = bpt32_SetupRRDS(this);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
         
         this->pPath = path_Copy(pPath);
         if (OBJ_NIL == this->pPath) {
@@ -1424,8 +1462,8 @@ extern "C" {
         }
         
         // Set up rrds.
-        eRc =   rrds_SetupSizes(
-                                (RRDS_DATA *)this,
+        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pSetupSizes(
+                                this->pIO,
                                 this->blockSize,
                                 RRDS_RCD_TRM_NONE,
                                 this->cLRU,
@@ -1445,7 +1483,7 @@ extern "C" {
         this->pHdr->actualSize = ROUNDUP4(this->dataSize);
         this->pHdr->cRecords = 1;                   // Allow for Header
 
-        eRc = rrds_Create((RRDS_DATA *)this, pPath);
+        eRc = ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pCreate(this->pIO, pPath);
         
         eRc = bpt32_BlockRequest(this, OBJ_NIL, BPT32_REQUEST_NEW_LEAF, &pLeaf);
         if (ERESULT_FAILED(eRc)) {
@@ -1494,6 +1532,7 @@ extern "C" {
         }
 #endif
 
+        bpt32_setIO(this, OBJ_NIL);
         bpt32_setPath(this, OBJ_NIL);
         bpt32_setRoot(this, OBJ_NIL);
         bpt32_setStr(this, OBJ_NIL);
@@ -1700,8 +1739,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)rrds_Init((RRDS_DATA *)this);      // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BPT32);
+        //this = (OBJ_ID)rrds_Init((RRDS_DATA *)this);      // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BPT32);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1726,8 +1765,6 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        rrds_setFillChar((RRDS_DATA *)this, '\0');
-
 #ifdef NDEBUG
     #else
         if (!bpt32_Validate(this)) {
@@ -1881,7 +1918,12 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+        if (OBJ_NIL == this->pIO) {
+            eRc = bpt32_SetupRRDS(this);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+
         this->pPath = path_Copy(pPath);
         if (OBJ_NIL == this->pPath) {
             return ERESULT_OUT_OF_MEMORY;
@@ -1894,15 +1936,18 @@ extern "C" {
         }
         
         // Setup sizes from our merged sizes.
-        eRc =   rrds_SetupSizes(
-                                (RRDS_DATA *)this,
+        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pSetupSizes(
+                                this->pIO,
                                 this->blockSize,
                                 RRDS_RCD_TRM_NONE,
                                 this->cLRU,
                                 this->cHash
-                                );
+                );
 
-        eRc = rrds_Open((RRDS_DATA *)this, pPath);
+        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pOpen(
+                                                    this->pIO,
+                                                    pPath
+                );
         
 #ifdef XYZZY
         this->pBlock = mem_Calloc(1, this->blockSize);
@@ -2050,6 +2095,41 @@ extern "C" {
     //----------------------------------------------------------
     //                      S e t u p
     //----------------------------------------------------------
+    
+    ERESULT         bpt32_SetupRRDS(
+        BPT32_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!bpt32_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pIO) {
+            this->pIO = rrds_New( );
+            if (OBJ_NIL == this->pIO) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pSetupSizes(
+                                                    this->pIO,
+                                                    this->blockSize,
+                                                    RRDS_RCD_TRM_NONE,
+                                                    this->cLRU,
+                                                    this->cHash
+                );
+
+        // Return to caller.
+        return eRc;
+    }
+    
     
     ERESULT         bpt32_SetupSizes(
         BPT32_DATA      *this,

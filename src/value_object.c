@@ -284,7 +284,8 @@ OBJ_INFO        value_Info = {
     "Primitive Value",
     (OBJ_DATA *)&value_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&value_Vtbl
+    (OBJ_IUNKNOWN *)&value_Vtbl,
+    sizeof(VALUE_DATA)
 };
 
 

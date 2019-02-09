@@ -5,6 +5,30 @@
  *
  */
 
+/*
+ We eventually want to allow several different types of text files.
+ 
+ The first is unix-like record which is terminated with a CR, CRLF or LF
+ and which is not continued since it can be very large if needed.
+ 
+ The second is the same as the first except that it can have some form
+ of line continuation such as a '\' and everything after that is
+ ignored in the line.
+ 
+ The third is a fixed size line which may or may not be terminated with
+ a CR, CRLF or LF.  This line simulates the old IBM 80-col card where
+ any char in col-72 denoted continuation on the next card and cols 73-80
+ were optionally used for line numbers.  With line continuation, you
+ also have a starting column for the continued data on the next ensuing
+ cards.
+ 
+ We could potentially define an interface and have several different
+ objects conform to the interface.
+ 
+ */
+
+
+
  
 /*
  This is free and unencumbered software released into the public domain.

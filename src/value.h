@@ -125,21 +125,21 @@ extern "C" {
      released.
      @return:   pointer to value object if successful, otherwise OBJ_NIL.
      */
-    VALUE_DATA *     value_Alloc(
+    VALUE_DATA *     value_Alloc (
         void
     );
     
     
-    OBJ_ID          value_Class(
+    OBJ_ID          value_Class (
         void
     );
     
     
-    VALUE_DATA *     value_New(
+    VALUE_DATA *     value_New (
         void
     );
     
-    VALUE_DATA *    value_NewData(
+    VALUE_DATA *    value_NewData (
         int32_t         length,
         uint8_t         *pData
     );
@@ -148,53 +148,53 @@ extern "C" {
      Create a value object where the data will be freed upon
      release of the object.
      */
-    VALUE_DATA *    value_NewDataFree(
+    VALUE_DATA *    value_NewDataFree (
         int32_t         length,
         uint8_t         *pData
     );
     
-    VALUE_DATA *    value_NewI8(
+    VALUE_DATA *    value_NewI8 (
         int8_t          value
     );
     
-    VALUE_DATA *    value_NewI16(
+    VALUE_DATA *    value_NewI16 (
         int16_t         value
     );
     
-    VALUE_DATA *    value_NewI32(
+    VALUE_DATA *    value_NewI32 (
         int32_t         value
     );
     
-    VALUE_DATA *    value_NewI64(
+    VALUE_DATA *    value_NewI64 (
         int64_t         value
     );
     
-    VALUE_DATA *    value_NewObject(
+    VALUE_DATA *    value_NewObject (
         OBJ_DATA        *pValue
     );
     
-    VALUE_DATA *    value_NewU8(
+    VALUE_DATA *    value_NewU8 (
         uint8_t         value
     );
     
-    VALUE_DATA *    value_NewU16(
+    VALUE_DATA *    value_NewU16 (
         uint16_t        value
     );
     
-    VALUE_DATA *    value_NewU32(
+    VALUE_DATA *    value_NewU32 (
         uint32_t        value
     );
     
-    VALUE_DATA *    value_NewU64(
+    VALUE_DATA *    value_NewU64 (
         uint64_t        value
     );
     
     
-    VALUE_DATA *    value_NewFromJSONString(
+    VALUE_DATA *    value_NewFromJSONString (
         ASTR_DATA       *pString
     );
     
-    VALUE_DATA *    value_NewFromJSONStringA(
+    VALUE_DATA *    value_NewFromJSONStringA (
         const
         char            *pString
     );
@@ -206,92 +206,109 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint8_t *       value_getData(
+    uint8_t *       value_getData (
         VALUE_DATA      *this
     );
     
-    uint32_t        value_getDataLen(
+    uint32_t        value_getDataLen (
         VALUE_DATA      *this
     );
     
+    bool            value_setData (
+        VALUE_DATA      *this,
+        uint32_t        length,
+        void            *pValue
+    );
     
-    int16_t         value_getI16(
+    bool            value_setDataFree (
+        VALUE_DATA      *this,
+        uint32_t        length,
+        void            *pValue
+    );
+
+
+    int16_t         value_getI16 (
         VALUE_DATA      *this
     );
     
-    bool            value_setI16(
+    bool            value_setI16 (
         VALUE_DATA      *this,
         int16_t         value
     );
     
     
-    int32_t         value_getI32(
+    int32_t         value_getI32 (
         VALUE_DATA      *this
     );
     
-    bool            value_setI32(
+    bool            value_setI32 (
         VALUE_DATA      *this,
         int32_t         value
     );
     
     
-    int64_t         value_getI64(
+    int64_t         value_getI64 (
         VALUE_DATA      *this
     );
     
-    bool            value_setI64(
+    bool            value_setI64 (
         VALUE_DATA      *this,
         int64_t         value
     );
     
     
-    ERESULT         value_getLastError(
-        VALUE_DATA      *this
-    );
-
-
-    OBJ_DATA *      value_getObject(
+    OBJ_DATA *      value_getObject (
         VALUE_DATA      *this
     );
     
-    bool            value_setObject(
+    bool            value_setObject (
         VALUE_DATA      *this,
         OBJ_DATA        *pValue
     );
     
     
-    uint16_t        value_getType(
+    uint16_t        value_getType (
         VALUE_DATA      *this
     );
     
     
-    uint16_t        value_getU16(
+    uint16_t        value_getU16 (
         VALUE_DATA      *this
     );
     
-    bool            value_setU16(
+    bool            value_setU16 (
         VALUE_DATA      *this,
         uint16_t        value
     );
     
     
-    uint32_t        value_getU32(
+    uint32_t        value_getU32 (
         VALUE_DATA      *this
     );
     
-    bool            value_setU32(
+    bool            value_setU32 (
         VALUE_DATA      *this,
         uint32_t        value
     );
     
     
-    uint64_t        value_getU64(
+    uint64_t        value_getU64 (
         VALUE_DATA      *this
     );
     
-    bool            value_setU64(
+    bool            value_setU64 (
         VALUE_DATA      *this,
         uint64_t        value
+    );
+    
+    
+    uint32_t        value_getUser (
+        VALUE_DATA      *this
+    );
+    
+    bool            value_setUser (
+        VALUE_DATA      *this,
+        uint32_t        value
     );
     
     
@@ -301,67 +318,10 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    VALUE_DATA *   value_Init(
+    VALUE_DATA *   value_Init (
         VALUE_DATA     *this
     );
 
-    VALUE_DATA *    value_InitData(
-        VALUE_DATA      *this,
-        int32_t         length,
-        uint8_t         *pData
-    );
-    
-    VALUE_DATA *    value_InitDataFree(
-        VALUE_DATA      *this,
-        int32_t         length,
-        uint8_t         *pData
-    );
-    
-    VALUE_DATA *    value_InitI8(
-        VALUE_DATA      *this,
-        int8_t          value
-    );
-    
-    VALUE_DATA *    value_InitI16(
-        VALUE_DATA      *this,
-        int16_t         value
-    );
-    
-    VALUE_DATA *    value_InitI32(
-        VALUE_DATA      *this,
-        int32_t         value
-    );
-    
-    VALUE_DATA *    value_InitI64(
-        VALUE_DATA      *this,
-        int64_t         value
-    );
-    
-    VALUE_DATA *    value_InitObject(
-        VALUE_DATA      *this,
-        OBJ_DATA        *pValue
-    );
-    
-    VALUE_DATA *    value_InitU8(
-        VALUE_DATA      *this,
-        uint8_t         value
-    );
-    
-    VALUE_DATA *    value_InitU16(
-        VALUE_DATA      *this,
-        uint16_t        value
-    );
-    
-    VALUE_DATA *    value_InitU32(
-        VALUE_DATA      *this,
-        uint32_t        value
-    );
-    
-    VALUE_DATA *    value_InitU64(
-        VALUE_DATA      *this,
-        uint64_t        value
-    );
-    
 
     /*!
      Create a string that describes this object and the objects within it.
@@ -375,7 +335,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    value_ToDebugString(
+    ASTR_DATA *    value_ToDebugString (
         VALUE_DATA     *this,
         int             indent
     );

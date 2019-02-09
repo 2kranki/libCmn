@@ -106,13 +106,11 @@ extern "C" {
         );
         ERESULT         (*pCreate) (
             OBJ_ID          this,
-            PATH_DATA       *pPath,
-            uint16_t        cLRU            // Number of LRU Buffers
+            PATH_DATA       *pPath
         );
         ERESULT         (*pOpen) (
             OBJ_ID          this,
-            PATH_DATA       *pPath,
-            uint16_t        cLRU            // Number of LRU Buffers
+            PATH_DATA       *pPath
         );
         ERESULT         (*pRead) (
             OBJ_ID          this,
@@ -123,6 +121,14 @@ extern "C" {
             OBJ_ID          this,
             uint32_t        recordNum,
             uint8_t         *pData
+        );
+        ERESULT         (*pSetupSizes) (
+            OBJ_ID       this,
+            uint16_t        recordSize,     // Record Size without optional terminator
+            uint16_t        recordTerm,     // Record Terminator Type
+            //                              // (See rrds_rcd_trm_e above)
+            uint16_t        cLRU,           // Number of LRU Buffers
+            uint16_t        cHash           // Number of LRU Hash Chains
         );
     } RRDS_VTBL;
 

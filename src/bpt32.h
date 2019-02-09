@@ -53,7 +53,6 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <lru.h>
 #include        <rrds.h>
 
 
@@ -175,16 +174,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    LRU_DATA *  bpt32_getLRU (
+    RRDS_DATA * bpt32_getIO (
         BPT32_DATA  *this
     );
     
-    
-    RRDS_DATA * bpt32_getRRDS (
-        BPT32_DATA  *this
+    bool        bpt32_setIO (
+        BPT32_DATA  *this,
+        RRDS_DATA   *pValue
     );
-    
 
+    
 
     
     //---------------------------------------------------------------

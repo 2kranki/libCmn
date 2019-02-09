@@ -399,6 +399,7 @@ RRDS_VTBL     rrds_Vtbl = {
     (void *)rrds_Open,
     (void *)rrds_RecordRead,
     (void *)rrds_RecordWrite,
+    (void *)rrds_SetupSizes
 
 };
 

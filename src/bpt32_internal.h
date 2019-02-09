@@ -45,7 +45,7 @@
 #include        <jsonIn.h>
 #include        <lru_internal.h>
 #include        <objArray.h>
-#include        <rrds_internal.h>
+#include        <rrds.h>
 
 
 #ifndef BPT32_INTERNAL_H
@@ -53,6 +53,7 @@
 
 
 
+#define     PROPERTY_IO_OWNED       1
 #define     PROPERTY_PATH_OWNED     1
 #define     PROPERTY_ROOT_OWNED     1
 #define     PROPERTY_STR_OWNED      1
@@ -99,11 +100,12 @@ extern "C" {
 struct bpt32_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    RRDS_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
     // OBJ_FLAG_USER1 is used in LRU
 
     // Common Data
+    RRDS_DATA       *pIO;
     uint32_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
     uint16_t        cLRU;
@@ -199,7 +201,7 @@ struct bpt32_data_s	{
     );
     
     
-    BPT32_DATA *       bpt32_ParseObject (
+    BPT32_DATA *    bpt32_ParseObject (
         JSONIN_DATA     *pParser
     );
 
@@ -211,6 +213,11 @@ struct bpt32_data_s	{
     );
 
 
+    ERESULT         bpt32_SetupRRDS(
+        BPT32_DATA      *this
+    );
+    
+    
     ASTR_DATA *     bpt32_ToJSON (
         BPT32_DATA      *this
     );

@@ -427,7 +427,7 @@ extern "C" {
         else
             return ERESULT_INVALID_PARAMETER;
 
-        pData = mem_Malloc(cLen / 2);
+        pData = mem_Malloc((cLen + 1) / 2);
         if (NULL == pData) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -449,20 +449,18 @@ extern "C" {
         }
         
         if (ERESULT_FAILED(eRc)) {
-            mem_Free(pData);
-            pData = NULL;
             eRc = ERESULT_PARSE_ERROR;
         }
         else {
             pValue = value_NewDataFree((cLen / 2), pData);
             if (OBJ_NIL == pValue) {
-                mem_Free(pData);
-                pData = NULL;
                 eRc = ERESULT_OUT_OF_MEMORY;
             }
             *ppOutput = pValue;
         }
-        
+        mem_Free(pData);
+        pData = NULL;
+
         // Return to caller.
         return eRc;
     }

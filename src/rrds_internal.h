@@ -151,11 +151,6 @@ struct rrds_data_s	{
     );
     
     
-    ASTR_DATA *     rrds_ToJSON (
-        RRDS_DATA      *this
-    );
-
-
 
 
 #ifdef NDEBUG

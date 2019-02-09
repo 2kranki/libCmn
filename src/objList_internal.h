@@ -74,6 +74,8 @@ struct objList_data_s	{
     
     // Common Data
     LISTDL_DATA     list;           // Main List
+    OBJLIST_RECORD  *pCur;
+    
 
 };
 #pragma pack(pop)

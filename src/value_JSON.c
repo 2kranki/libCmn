@@ -87,6 +87,7 @@ extern "C" {
         //OBJ_ID          pObj;
         int64_t         integer;
         int64_t         intIn;
+        uint32_t        user;
 
         pInfo = obj_getInfo(value_Class());
         
@@ -101,6 +102,9 @@ extern "C" {
             goto exit00;
         }
 
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "user", &intIn);
+        pObject->user = (uint32_t)intIn;
+        
         eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         type = (uint16_t)intIn;
         pObject->type = type;
@@ -305,7 +309,12 @@ extern "C" {
         }
         
         pStr = AStr_New();
-        AStr_AppendPrint(pStr, "{ \"objectType\":\"%s\"", pInfo->pClassName);
+        AStr_AppendPrint(
+                         pStr,
+                         "{ \"objectType\":\"%s\", \"user\":%d",
+                         pInfo->pClassName,
+                         this->user
+        );
         
         switch (this->type) {
                 

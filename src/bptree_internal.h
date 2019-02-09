@@ -41,7 +41,7 @@
 
 
 #include    <bptree.h>
-#include    <rrds32_internal.h>
+#include    <rrds_internal.h>
 #include    "blkdrcds16_internal.h"
 
 

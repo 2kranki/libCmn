@@ -64,12 +64,12 @@ struct value_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint16_t        type;           // Value Type (see VALUE_TYPE)
     uint16_t        reserved;
+    uint32_t        user;           // User Specified
     union {
         int8_t          i8;
         int16_t         i16;
@@ -105,12 +105,6 @@ struct value_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-   bool            value_setLastError(
-        VALUE_DATA     *this,
-        ERESULT         value
-    );
-
 
     void            value_Dealloc(
         OBJ_ID          objId

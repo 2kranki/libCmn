@@ -92,12 +92,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    OBJLIST_DATA *  objList_Alloc(
+    OBJLIST_DATA *  objList_Alloc (
         void
     );
     
     
-    OBJLIST_DATA *  objList_New(
+    OBJLIST_DATA *  objList_New (
         void
     );
     
@@ -112,11 +112,11 @@ extern "C" {
      vtbl compare routine.  For Ordered to work properly all objects
      in the list should be of the same type.
      */
-    bool            objList_getOrdered(
+    bool            objList_getOrdered (
         OBJLIST_DATA    *this
     );
     
-    bool            objList_setOrdered(
+    bool            objList_setOrdered (
         OBJLIST_DATA    *this,
         bool            fValue
     );
@@ -125,7 +125,7 @@ extern "C" {
     /*!
      Size property is the numbers of objects on the list.
      */
-    uint32_t        objList_getSize(
+    uint32_t        objList_getSize (
         OBJLIST_DATA   *this
     );
     
@@ -136,13 +136,13 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         objList_Add2Head(
+    ERESULT         objList_Add2Head (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     );
     
     
-    ERESULT         objList_Add2Tail(
+    ERESULT         objList_Add2Tail (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     );
@@ -161,7 +161,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an
      ERESULT_* error
      */
-    ERESULT         objList_Assign(
+    ERESULT         objList_Assign (
         OBJLIST_DATA    *this,
         OBJLIST_DATA    *pOther
     );
@@ -178,7 +178,7 @@ extern "C" {
      otherwise OBJ_NIL.
      @warning   Remember to release the returned the OBJLIST object.
      */
-    OBJLIST_DATA *     objList_Copy(
+    OBJLIST_DATA *     objList_Copy (
         OBJLIST_DATA       *this
     );
     
@@ -194,21 +194,21 @@ extern "C" {
      otherwise OBJ_NIL.
      @warning   Remember to release the returned the OBJLIST object.
      */
-    OBJLIST_DATA *  objList_DeepCopy(
+    OBJLIST_DATA *  objList_DeepCopy (
         OBJLIST_DATA    *this
     );
     
     
-    ERESULT         objList_DeleteHead(
+    ERESULT         objList_DeleteHead (
         OBJLIST_DATA	*this
     );
     
-    ERESULT         objList_DeleteIndex(
+    ERESULT         objList_DeleteIndex (
         OBJLIST_DATA    *this,
         uint32_t        index
     );
     
-    ERESULT         objList_DeleteTail(
+    ERESULT         objList_DeleteTail (
         OBJLIST_DATA	*this
     );
     
@@ -218,46 +218,57 @@ extern "C" {
      OBJ_NIL.
      @warning   Remember to release the returned ENUM object.
      */
-    OBJENUM_DATA *  objList_Enum(
+    OBJENUM_DATA *  objList_Enum (
         OBJLIST_DATA    *this
     );
     
     
-    ERESULT         objList_ForEach(
+    ERESULT         objList_ForEach (
         OBJLIST_DATA    *this,
         P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObject,        // Used as first parameter of scan method
-        void            *pArg3
+        //                              // Second Argument is current list element
+        void            *pArg3          // Third Argument of Scan
     );
     
     
-    OBJ_ID          objList_Head(
+    OBJ_ID          objList_Head (
         OBJLIST_DATA    *this
     );
 
    
-    OBJ_ID          objList_Index(
+    OBJ_ID          objList_Index (
         OBJLIST_DATA    *this,
         int32_t			index					// (relative to 1)
     );
     
     
-    OBJLIST_DATA *   objList_Init(
+    OBJLIST_DATA *   objList_Init (
         OBJLIST_DATA    *this
     );
 
 
-    OBJARRAY_DATA *  objList_Objects(
+    OBJ_ID          objList_Next (
         OBJLIST_DATA    *this
     );
     
     
-    ERESULT         objList_SortAscending(
+    OBJARRAY_DATA *  objList_Objects (
         OBJLIST_DATA    *this
     );
     
     
-    OBJ_ID          objList_Tail(
+    OBJ_ID          objList_Prev (
+        OBJLIST_DATA    *this
+    );
+    
+    
+    ERESULT         objList_SortAscending (
+        OBJLIST_DATA    *this
+    );
+    
+    
+    OBJ_ID          objList_Tail (
         OBJLIST_DATA    *this
     );
     
@@ -274,7 +285,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    objList_ToDebugString(
+    ASTR_DATA *    objList_ToDebugString (
         OBJLIST_DATA     *this,
         int             indent
     );

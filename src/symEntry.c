@@ -1171,6 +1171,35 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                       I s A b s o l u t e
+    //---------------------------------------------------------------
+    
+    bool            symEntry_IsAbsolute (
+        SYMENTRY_DATA   *this
+    )
+    {
+        bool            fRc = true;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!symEntry_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->entry.reloc) {
+            fRc = false;
+        }
+        
+        // Return to caller.
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
@@ -1288,6 +1317,18 @@ extern "C" {
                         }
                         break;
 
+                    case 'G':
+                        if (str_Compare("GetValue", (char *)pStr) == 0) {
+                            return symEntry_getValue;
+                        }
+                        break;
+                        
+                   case 'I':
+                        if (str_Compare("IsAbsolute", (char *)pStr) == 0) {
+                            return symEntry_IsAbsolute;
+                        }
+                        break;
+                        
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return symEntry_ToDebugString;

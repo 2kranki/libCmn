@@ -140,7 +140,6 @@
         "psxThread":{srcDeps:["cmn_defs.h","AStr.h","psxMutex.h","psxSem.h"], "test":null},
         "ptrArray":{srcDeps:["cmn_defs.h"], "test":null},
         "rrds":{srcDeps:["cmn_defs.h","AStr.h","hash32.h","listdl.h","path.h"], "test":null},
-        "rrds32":{srcDeps:["cmn_defs.h","AStr.h","hash32.h","listdl.h","path.h"], "test":null},
         "scanner":["cmn_defs.h","AStr.h"],
         "screen":["cmn_defs.h","AStr.h"],
         "sgraph":["cmn_defs.h","AStr.h"],

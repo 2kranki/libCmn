@@ -1832,22 +1832,6 @@ test_rrds: $(TEST_SRC)/test_rrds.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/rrds32_object.o
-
-$(OBJDIR)/rrds32_object.o: $(SRCDIR)/rrds32_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/rrds32.o
-
-$(OBJDIR)/rrds32.o: $(SRCDIR)/rrds32.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/hash32.h $(SRCDIR)/listdl.h $(SRCDIR)/path.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += test_rrds32
-
-test_rrds32: $(TEST_SRC)/test_rrds32.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
 OBJS += $(OBJDIR)/scanner_object.o
 
 $(OBJDIR)/scanner_object.o: $(SRCDIR)/scanner_object.c 

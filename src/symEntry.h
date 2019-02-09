@@ -304,13 +304,13 @@ extern "C" {
     );
 
    
-    SYMENTRY_DATA *   symEntry_Init (
-        SYMENTRY_DATA     *this
+    SYMENTRY_DATA * symEntry_Init (
+        SYMENTRY_DATA   *this
     );
 
 
-    ERESULT     symEntry_IsEnabled (
-        SYMENTRY_DATA		*this
+    bool            symEntry_IsAbsolute (
+        SYMENTRY_DATA   *this
     );
     
  

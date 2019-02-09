@@ -115,6 +115,8 @@ extern "C" {
         { PPLEX_KWD_INT32,          PPLEX_LANG_C,		"int32_t" },
         { PPLEX_KWD_INT64,          PPLEX_LANG_C,		"int64_t" },
         { PPLEX_KWD_INT8,           PPLEX_LANG_C,		"int8_t" },
+        { PPLEX_KWD_INTERFACE,      PPLEX_LANG_OOBJ,    "interface" },
+        { PPLEX_KWD_INTERNAL,       PPLEX_LANG_LL1,     "internal" },
         { PPLEX_KWD_LONG,           PPLEX_LANG_C,		"long" },
         { PPLEX_KWD_LTORG,          PPLEX_LANG_ASM,     "ltorg" },
         { PPLEX_KWD_NEW,            PPLEX_LANG_CPP,	    "new" },

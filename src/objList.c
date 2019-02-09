@@ -60,7 +60,7 @@ extern "C" {
     ****************************************************************/
 
     
-    OBJLIST_RECORD * objList_FindObj(
+    OBJLIST_RECORD * objList_FindObj (
         OBJLIST_DATA    *this,
         OBJ_ID          pObj
     )
@@ -88,7 +88,7 @@ extern "C" {
     
     
     static
-    int             objList_SortCompare(
+    int             objList_SortCompare (
         OBJ_ID          pNode1,
         OBJ_ID          pNode2
     )
@@ -125,7 +125,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    OBJLIST_DATA *  objList_Alloc(
+    OBJLIST_DATA *  objList_Alloc (
         void
     )
     {
@@ -142,7 +142,7 @@ extern "C" {
 
 
 
-    OBJLIST_DATA *     objList_New(
+    OBJLIST_DATA *     objList_New (
         void
     )
     {
@@ -163,13 +163,13 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    LISTDL_DATA *   objList_getList(
+    LISTDL_DATA *   objList_getList (
         OBJLIST_DATA    *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if(!objList_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -183,7 +183,7 @@ extern "C" {
     //                       O r d e r e d
     //---------------------------------------------------------------
     
-    bool            objList_getOrdered(
+    bool            objList_getOrdered (
         OBJLIST_DATA    *this
     )
     {
@@ -202,7 +202,7 @@ extern "C" {
             return false;
     }
     
-    bool            objList_setOrdered(
+    bool            objList_setOrdered (
         OBJLIST_DATA    *this,
         bool            fValue
     )
@@ -230,7 +230,7 @@ extern "C" {
     
 
     
-    uint32_t        objList_getSize(
+    uint32_t        objList_getSize (
         OBJLIST_DATA    *this
     )
     {
@@ -258,7 +258,7 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
     
-    ERESULT         objList_Add2Head(
+    ERESULT         objList_Add2Head (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     )
@@ -304,7 +304,7 @@ extern "C" {
     }
     
     
-    ERESULT         objList_Add2Tail(
+    ERESULT         objList_Add2Tail (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     )
@@ -368,7 +368,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
-    ERESULT         objList_Assign(
+    ERESULT         objList_Assign (
         OBJLIST_DATA    *this,
         OBJLIST_DATA    *pOther
     )
@@ -431,7 +431,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned the OBJLIST object.
      */
-    OBJLIST_DATA *     objList_Copy(
+    OBJLIST_DATA *     objList_Copy (
         OBJLIST_DATA       *this
     )
     {
@@ -466,7 +466,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            objList_Dealloc(
+    void            objList_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -520,7 +520,7 @@ extern "C" {
      otherwise OBJ_NIL.
      @warning   Remember to release the returned the OBJLIST object.
      */
-    OBJLIST_DATA *  objList_DeepCopy(
+    OBJLIST_DATA *  objList_DeepCopy (
         OBJLIST_DATA    *this
     )
     {
@@ -572,7 +572,7 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    ERESULT         objList_DeleteHead(
+    ERESULT         objList_DeleteHead (
         OBJLIST_DATA	*this
     )
     {
@@ -602,7 +602,7 @@ extern "C" {
     }
     
     
-    ERESULT         objList_DeleteIndex(
+    ERESULT         objList_DeleteIndex (
         OBJLIST_DATA    *this,
         uint32_t        index
     )
@@ -633,7 +633,7 @@ extern "C" {
     }
     
     
-    ERESULT         objList_DeleteTail(
+    ERESULT         objList_DeleteTail (
         OBJLIST_DATA	*this
     )
     {
@@ -668,7 +668,7 @@ extern "C" {
     //                        E n u m
     //---------------------------------------------------------------
     
-    OBJENUM_DATA *  objList_Enum(
+    OBJENUM_DATA *  objList_Enum (
         OBJLIST_DATA    *this
     )
     {
@@ -709,7 +709,7 @@ extern "C" {
     //                          F o r  E a c h
     //---------------------------------------------------------------
     
-    ERESULT         objList_ForEach(
+    ERESULT         objList_ForEach (
         OBJLIST_DATA    *this,
         P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObject,        // Used as first parameter of scan method
@@ -751,7 +751,7 @@ extern "C" {
     //                          H e a d
     //---------------------------------------------------------------
 
-    OBJ_ID          objList_Head(
+    OBJ_ID          objList_Head (
         OBJLIST_DATA    *this
     )
     {
@@ -771,6 +771,7 @@ extern "C" {
         if (pNode) {
             pObject = pNode->pObject;
         }
+        this->pCur = pNode;
         
         // Return to caller.
         return pObject;
@@ -782,7 +783,7 @@ extern "C" {
     //                          I n d e x
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_Index(
+    OBJ_ID          objList_Index (
         OBJLIST_DATA    *this,
         int32_t			index					// (relative to 1)
     )
@@ -814,7 +815,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    OBJLIST_DATA *  objList_Init(
+    OBJLIST_DATA *  objList_Init (
         OBJLIST_DATA    *this
     )
     {
@@ -872,10 +873,46 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                          N e x t
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objList_Next (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJ_ID          pObject = OBJ_NIL;
+        OBJLIST_RECORD  *pNode = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObject;
+        }
+#endif
+        
+        if (this->pCur) {
+            pNode = listdl_Next(&this->list, this->pCur);
+        }
+        else {
+            pNode = listdl_Head(&this->list);
+        }
+        this->pCur = pNode;
+        if (pNode)
+            pObject = pNode->pObject;
+        
+        // Return to caller.
+        return pObject;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                        O b j e c t s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * objList_Objects(
+    OBJARRAY_DATA * objList_Objects (
         OBJLIST_DATA    *this
     )
     {
@@ -913,6 +950,42 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          P r e v
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objList_Prev (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJ_ID          pObject = OBJ_NIL;
+        OBJLIST_RECORD  *pNode = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObject;
+        }
+#endif
+        
+        if (this->pCur) {
+            pNode = listdl_Prev(&this->list, this->pCur);
+        }
+        else {
+            pNode = listdl_Tail(&this->list);
+        }
+        this->pCur = pNode;
+        if (pNode)
+            pObject = pNode->pObject;
+        
+        // Return to caller.
+        return pObject;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -938,7 +1011,7 @@ extern "C" {
      OBJ_QUERYINFO_TYPE_METHOD: method pointer,
      OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          objList_QueryInfo(
+    void *          objList_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -996,7 +1069,7 @@ extern "C" {
     //                         S o r t
     //---------------------------------------------------------------
     
-    ERESULT         objList_SortAscending(
+    ERESULT         objList_SortAscending (
         OBJLIST_DATA    *this
     )
     {
@@ -1032,7 +1105,7 @@ extern "C" {
     //                          T a i l
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_Tail(
+    OBJ_ID          objList_Tail (
         OBJLIST_DATA    *this
     )
     {
@@ -1052,7 +1125,8 @@ extern "C" {
         if (pNode) {
             pObject = pNode->pObject;
         }
-        
+        this->pCur = pNode;
+
         // Return to caller.
         return pObject;
     }
@@ -1075,7 +1149,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     objList_ToDebugString(
+    ASTR_DATA *     objList_ToDebugString (
         OBJLIST_DATA      *this,
         int             indent
     )
@@ -1134,7 +1208,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            objList_Validate(
+    bool            objList_Validate (
         OBJLIST_DATA      *this
     )
     {

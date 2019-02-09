@@ -273,6 +273,7 @@ int         test_hex_ScanData01(
             );
     TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
     TINYTEST_TRUE( (pValue) );
+    TINYTEST_TRUE( (outputLength == value_getDataLen(pValue)) );
     pBuffer = (char *)value_getData(pValue);
     TINYTEST_TRUE( (0 == memcmp(pBuffer, pOutputCheck, outputLength)) );
     obj_Release(pValue);

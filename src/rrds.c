@@ -1328,9 +1328,6 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return rrds_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return rrds_ToJSON;
-                        }
                         break;
                         
                     default:
@@ -1341,8 +1338,6 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == rrds_ToDebugString)
                     return "ToDebugString";
-                if (pData == rrds_ToJSON)
-                    return "ToJSON";
                 break;
                 
             default:
@@ -1351,6 +1346,49 @@ extern "C" {
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
+    
+    
+    
+    //----------------------------------------------------------------
+    //              RecordBuffer - Read a Block into Memory
+    //----------------------------------------------------------------
+    
+    uint8_t *       rrds_RecordBuffer (
+        RRDS_DATA       *this,
+        uint32_t        recordNum,
+        uint8_t         **ppData
+    )
+    {
+        ERESULT         eRc;
+        //size_t          fileOffset;
+        uint8_t         *pBuffer;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !rrds_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return NULL;
+        }
+        if (!fileio_IsOpen(this->pIO)) {
+            DEBUG_BREAK();
+            //return ERESULT_DATA_NOT_FOUND;
+            return NULL;
+        }
+#endif
+        
+        eRc = rrds_RecordRead(this, recordNum, NULL);
+        if (ERESULT_FAILED(eRc)) {
+            return NULL;
+        }
+        
+        pBuffer = (uint8_t *)lru_FindBuffer((LRU_DATA *)this->pIO, recordNum);
+        
+        // Return to caller.
+        return pBuffer;
+    }
+    
     
     
     
@@ -1551,45 +1589,6 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     rrds_ToJSON (
-        RRDS_DATA       *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!rrds_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
     }
     
     

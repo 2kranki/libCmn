@@ -101,6 +101,7 @@ extern "C" {
         PPLEX_LANG_LL1      = 0x0400,
         PPLEX_LANG_MSC      = 0x0200,           // Microsoft C Extensions of C
         PPLEX_LANG_OBJC     = 0x0100,           // Obj-C Keywords Extension of C
+        PPLEX_LANG_OOBJ     = 0x0080,           // Our Object Keywords Extension of C
     } PPLEX_LANG;
     
     
@@ -269,6 +270,7 @@ extern "C" {
         PPLEX_KWD_INT64,
         PPLEX_KWD_INT128,
         PPLEX_KWD_INT256,
+        PPLEX_KWD_INTERFACE,                // OOBJ
         PPLEX_KWD_INTERNAL,                 // LL1
         PPLEX_KWD_LONG,
         PPLEX_KWD_LTORG,                    // ASM360
