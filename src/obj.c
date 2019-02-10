@@ -1219,19 +1219,14 @@ extern	"C" {
     {
         OBJ_DATA        *this = objId;
         
+        // objId may be an Interface which is not pointing to OBJ_DATA.
+        // So, we have to be careful to just forward on if we can.
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         if (NULL == this->pVtbl) {
             return OBJ_NIL;
         }
-#ifdef NDEBUG
-#else
-        if (0 == this->cbRetainCount) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
         if (this->pVtbl->pRelease) {
             this->pVtbl->pRelease(this);
         }
@@ -1295,21 +1290,17 @@ extern	"C" {
     {
         OBJ_DATA        *this = objId;
 
+        // objId may be an Interface which is not pointing to OBJ_DATA.
+        // So, we have to be careful to just forward on if we can.
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
-        if (obj_IsFlag(this, OBJ_FLAG_ALLOC)) {
-            if (this->pVtbl->pRetain) {
-                this->pVtbl->pRetain(this);
-            }
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
         }
-#ifdef NDEBUG
-#else
-        // Check for Retain Count Overflow.
-        if (0 == this->cbRetainCount) {
-            DEBUG_BREAK();
+        if (this->pVtbl->pRetain) {
+            this->pVtbl->pRetain(this);
         }
-#endif
         return objId;
     }
     
