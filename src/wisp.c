@@ -137,7 +137,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -158,7 +157,6 @@ extern "C" {
 
         //this->priority = value;
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -184,7 +182,6 @@ extern "C" {
         size = u32Array_getSize(this->pMem);
         size = size >> 1;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return size;
     }
 
@@ -208,7 +205,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
@@ -232,7 +228,6 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -256,8 +251,6 @@ extern "C" {
         }
 #endif
 
-        
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -289,9 +282,10 @@ extern "C" {
      */
     ERESULT         wisp_Assign(
         WISP_DATA		*this,
-        WISP_DATA      *pOther
+        WISP_DATA       *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -333,11 +327,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -397,7 +391,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -488,7 +481,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -562,7 +554,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -591,7 +582,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -625,7 +615,6 @@ extern "C" {
         else {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return fRc;
         }
 #endif
@@ -636,7 +625,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return fRc;
     }
             
@@ -665,7 +653,6 @@ extern "C" {
         else {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return fRc;
         }
 #endif
@@ -676,7 +663,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return fRc;
     }
     
@@ -703,8 +689,7 @@ extern "C" {
             ;
         else {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            //return ERESULT_INVALID_PARAMETER;
             return car;
         }
 #endif
@@ -712,7 +697,6 @@ extern "C" {
         car = u32Array_Get(this->pMem, idx) & 0x7FFFFFFF;
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return car;
     }
     
@@ -739,8 +723,7 @@ extern "C" {
             ;
             else {
                 DEBUG_BREAK();
-                //return ERESULT_INVALID_OBJECT;
-                obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+                //return ERESULT_INVALID_PARAMETER;
                 return cdr;
             }
     #endif
@@ -748,7 +731,6 @@ extern "C" {
         cdr = u32Array_Get(this->pMem, idx) & 0x7FFFFFFF;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return cdr;
     }
                     
@@ -790,7 +772,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&wisp_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
         
@@ -838,12 +819,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1193,7 +1172,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1226,7 +1204,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1263,12 +1240,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(WISP_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

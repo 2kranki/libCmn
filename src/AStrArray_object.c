@@ -122,9 +122,7 @@ ASTRARRAY_CLASS_DATA  AStrArray_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(ASTRARRAY_CLASS_DATA),       // cbSize
-        OBJ_IDENT_ASTRARRAY_CLASS,          // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

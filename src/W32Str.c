@@ -1687,7 +1687,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_W32STR);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (void *)&W32Str_Vtbl);
         array_setElemSize((ARRAY_DATA *)this, sizeof(W32CHR_T));

@@ -1178,7 +1178,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_PATH);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&path_Vtbl);
         
@@ -1911,7 +1910,6 @@ extern "C" {
             pWrkD = OBJ_NIL;
             obj_Release(pWrkE);
             pWrkE = OBJ_NIL;
-            obj_setLastError(this, ERESULT_DATA_TOO_SMALL);
             return pPath;
         }
         

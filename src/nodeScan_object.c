@@ -197,9 +197,7 @@ NODESCAN_CLASS_DATA  nodeScan_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(NODESCAN_CLASS_DATA),       // cbSize
-        OBJ_IDENT_NODESCAN_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

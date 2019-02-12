@@ -116,9 +116,7 @@ U32ARRAY_CLASS_DATA  u32Array_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(U32ARRAY_CLASS_DATA),        // cbSize
-        OBJ_IDENT_U32ARRAY_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

@@ -247,7 +247,6 @@ extern "C" {
         if (pValue) {
             pStr = AStr_Copy(pValue);
             if (OBJ_NIL == pStr) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return false;
             }
         }
@@ -481,7 +480,6 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        int32_t         i;
         
         // Do initialization.
 #ifdef NDEBUG

@@ -203,9 +203,7 @@ NODEGRAPH_CLASS_DATA  nodeGraph_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&obj_Vtbl,    // pVtbl
         sizeof(NODEGRAPH_CLASS_DATA),       // cbSize
-        OBJ_IDENT_NODEGRAPH_CLASS,          // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

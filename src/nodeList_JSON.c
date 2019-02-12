@@ -511,15 +511,7 @@ extern "C" {
         NODELIST_NODE   *pEntry;
 #endif
         //NODE_DATA       *pNode;
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
         //ASTR_DATA       *pWrkStr;
-        ASTR_DATA *     (*pToJSON)(
-            OBJ_ID          objId
-        );
 
 #ifdef NDEBUG
 #else
@@ -548,7 +540,6 @@ extern "C" {
         }
 #endif
         if (!fRc) {
-            obj_setLastError(this, ERESULT_DATA_ERROR);
             return OBJ_NIL;
         }
         

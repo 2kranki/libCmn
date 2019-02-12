@@ -122,10 +122,8 @@ const
 PPLEX1_CLASS_DATA  pplex1_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(PPLEX1_CLASS_DATA),        // cbSize
-        OBJ_IDENT_PPLEX1_CLASS,           // cbIdent
+        sizeof(PPLEX1_CLASS_DATA),          // cbSize
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

@@ -119,9 +119,7 @@ BLOCKS_CLASS_DATA  blocks_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(BLOCKS_CLASS_DATA),          // cbSize
-        OBJ_IDENT_BLOCKS_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

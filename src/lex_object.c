@@ -119,9 +119,7 @@ LEX_CLASS_DATA  lex_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(LEX_CLASS_DATA),             // cbSize
-        OBJ_IDENT_LEX_CLASS,                // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

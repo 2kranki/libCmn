@@ -122,9 +122,7 @@ DBFIELD_CLASS_DATA  dbField_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(DBFIELD_CLASS_DATA),         // cbSize
-        OBJ_IDENT_DBFIELD_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

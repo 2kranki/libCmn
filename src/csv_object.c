@@ -122,9 +122,7 @@ CSV_CLASS_DATA  csv_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(CSV_CLASS_DATA),             // cbSize
-        OBJ_IDENT_CSV_CLASS,                // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

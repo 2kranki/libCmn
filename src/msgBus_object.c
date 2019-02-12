@@ -121,9 +121,7 @@ MSGBUS_CLASS_DATA  msgBus_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(MSGBUS_CLASS_DATA),          // cbSize
-        OBJ_IDENT_MSGBUS_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

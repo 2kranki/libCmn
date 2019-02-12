@@ -121,9 +121,7 @@ ENUM_CLASS_DATA  enum_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(ENUM_CLASS_DATA),            // cbSize
-        OBJ_IDENT_ENUM_CLASS,               // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

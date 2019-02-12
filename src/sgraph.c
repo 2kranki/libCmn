@@ -229,7 +229,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -250,7 +249,6 @@ extern "C" {
 
         //this->priority = value;
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -272,7 +270,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -297,7 +294,6 @@ extern "C" {
 #endif
 
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -329,9 +325,10 @@ extern "C" {
      */
     ERESULT         sgraph_Assign(
         SGRAPH_DATA		*this,
-        SGRAPH_DATA      *pOther
+        SGRAPH_DATA     *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -373,11 +370,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -437,7 +434,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -484,7 +480,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -555,7 +550,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -658,7 +652,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -700,7 +693,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&sgraph_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
         
@@ -755,12 +747,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1211,7 +1201,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1245,7 +1234,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1282,12 +1270,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(SGRAPH_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

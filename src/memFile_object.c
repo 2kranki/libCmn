@@ -141,10 +141,8 @@ MEMFILE_CLASS_VTBL    class_Vtbl = {
 MEMFILE_CLASS_DATA  memFile_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(MEMFILE_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_MEMFILE_CLASS,                     // cbIdent
+        sizeof(MEMFILE_CLASS_DATA),             // cbSize
         0,                                      // cbFlags
-        0,                                      // eRc
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },

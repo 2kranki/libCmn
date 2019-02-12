@@ -126,9 +126,7 @@ MD5CHKSUM_CLASS_DATA  md5ChkSum_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(MD5CHKSUM_CLASS_DATA),       // cbSize
-        OBJ_IDENT_MD5CHKSUM_CLASS,          // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

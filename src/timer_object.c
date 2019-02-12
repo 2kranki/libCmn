@@ -119,9 +119,7 @@ TIMER_CLASS_DATA  timer_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(TIMER_CLASS_DATA),           // cbSize
-        OBJ_IDENT_TIMER_CLASS,              // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

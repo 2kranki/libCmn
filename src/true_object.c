@@ -121,9 +121,7 @@ TRUE_CLASS_DATA  true_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(TRUE_CLASS_DATA),            // cbSize
-        OBJ_IDENT_TRUE_CLASS,               // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

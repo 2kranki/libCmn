@@ -629,6 +629,7 @@ extern "C" {
         ARRAY_DATA      *pOther
     )
     {
+        ERESULT         eRc;
         uint32_t        newSize = 0;
         
         // Do initialization.
@@ -666,7 +667,6 @@ extern "C" {
         pOther->elemSize = this->elemSize;
         pOther->pArray = mem_Malloc(newSize);
         if (pOther->pArray == NULL) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return ERESULT_OUT_OF_MEMORY;
         }
         memmove(pOther->pArray, this->pArray, newSize);
@@ -677,9 +677,9 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
-        return obj_getLastError(this);
+        return eRc;
     }
     
     
@@ -1137,7 +1137,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&array_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->fZeroNew = 1;
 
     #ifdef NDEBUG
@@ -1604,7 +1603,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1769,7 +1767,6 @@ extern "C" {
         eRc = array_Expand(this, (offset + numElems));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            obj_setLastError(this, eRc);
             return eRc;
         }
         

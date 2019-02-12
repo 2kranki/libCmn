@@ -437,7 +437,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_PPLEX2);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&pplex2_Vtbl);
         

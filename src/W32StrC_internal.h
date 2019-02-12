@@ -121,6 +121,20 @@ struct W32StrC_data_s	{
     );
     
     
+    void *          W32StrC_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+    
+    
+    ERESULT         W32StrC_SetupA(
+        W32STRC_DATA    *this,
+        const
+        char            *pStr
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			W32StrC_Validate(

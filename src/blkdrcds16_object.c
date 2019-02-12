@@ -126,9 +126,7 @@ BLKDRCDS16_CLASS_DATA  blkdrcds16_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(BLKDRCDS16_CLASS_DATA),      // cbSize
-        OBJ_IDENT_BLKDRCDS16_CLASS,         // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

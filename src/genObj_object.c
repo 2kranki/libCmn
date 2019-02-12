@@ -121,9 +121,7 @@ GENOBJ_CLASS_DATA  genObj_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(GENOBJ_CLASS_DATA),          // cbSize
-        OBJ_IDENT_GENOBJ_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

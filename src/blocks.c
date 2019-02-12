@@ -820,7 +820,6 @@ extern "C" {
         uint32_t        recordSize
     )
     {
-        uint32_t        i;
         
         // Do initialization.
         if (blockSize == 0)
@@ -942,7 +941,6 @@ extern "C" {
         BLOCKS_DATA      *this
     )
     {
-        uint32_t        i;
 
         if( this ) {
             if ( obj_IsKindOf(this,OBJ_IDENT_BLOCKS) )

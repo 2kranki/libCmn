@@ -118,9 +118,7 @@ W32STR_CLASS_DATA  W32Str_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(W32STR_CLASS_DATA),          // cbSize
-        OBJ_IDENT_W32STR_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

@@ -76,7 +76,6 @@ extern "C" {
                 ;
             else {
                 // pObj <= the current entry
-                obj_setLastError(this, eRc);
                 return pObjInt;
             }
             pObjInt = listdl_Next(&this->list, pObjInt);
@@ -844,7 +843,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);                          // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJLIST);      // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objList_Vtbl);
         

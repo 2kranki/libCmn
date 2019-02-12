@@ -1176,7 +1176,6 @@ extern "C" {
         }
         if( OBJ_NIL == pNode ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -1210,7 +1209,6 @@ extern "C" {
         }
         if( OBJ_NIL == pNameA ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -1445,7 +1443,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);                          // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_NODEHASH);     // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeHash_Vtbl);
         

@@ -73,14 +73,12 @@ extern "C" {
         }
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_OUT_OF_RANGE);
             return -1;
         }
         if ((1 <= x) && (x <= this->xSize)) {
         }
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_OUT_OF_RANGE);
             return -1;
         }
 #endif
@@ -90,12 +88,10 @@ extern "C" {
         }
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_OUT_OF_RANGE);
             return -1;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return index;
     }
     
@@ -187,7 +183,6 @@ extern "C" {
         
         pBuild = mem_Calloc( 1, sizeof(MATRIX_BUILD) );
         if( NULL == pBuild ) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return NULL;
         }
         pBuild->ySize = this->ySize;
@@ -196,20 +191,17 @@ extern "C" {
         pBuild->baseMax = baseMax;
         pBuild->pBase = (int32_t *)mem_Calloc( this->ySize, sizeof(int32_t) );
         if( NULL == pBuild->pBase ) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             mem_Free(pBuild);
             return NULL;
         }
         pBuild->pValue  = (uint32_t *)mem_Calloc( baseMax, sizeof(uint32_t) );
         if( NULL == pBuild->pValue ) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             mem_Free(pBuild->pBase);
             mem_Free(pBuild);
             return NULL;
         }
         pBuild->pCheck  = (uint32_t *)mem_Calloc( baseMax, sizeof(uint32_t) );
         if( NULL == pBuild->pCheck ) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             mem_Free(pBuild->pValue);
             mem_Free(pBuild->pBase);
             mem_Free(pBuild);
@@ -222,7 +214,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pBuild;
     }
     
@@ -367,7 +358,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
@@ -388,7 +378,6 @@ extern "C" {
 
         //this->priority = value;
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -410,7 +399,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -435,7 +423,6 @@ extern "C" {
 #endif
 
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -459,7 +446,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->xSize;
     }
     
@@ -479,7 +465,6 @@ extern "C" {
         
         this->xSize = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -503,7 +488,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->ySize;
     }
     
@@ -523,7 +507,6 @@ extern "C" {
         
         this->ySize = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -598,6 +581,7 @@ extern "C" {
         U32MATRIX_DATA  *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -639,11 +623,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -703,7 +687,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -750,7 +733,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -826,7 +808,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -855,7 +836,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -907,16 +887,9 @@ extern "C" {
             sizeBuild += pBuild->highest * sizeof(uint16_t);    // Check
             sizeBuild += pBuild->highest * sizeof(uint16_t);    // Value
         }
-        if (sizeMatrix > sizeBuild) {
-            obj_setLastError(this, ERESULT_SUCCESS);
-        }
-        else {
-            obj_setLastError(this, ERESULT_OUT_OF_RANGE);
-        }
         
         pStr = AStr_New();
         if( NULL == pStr ) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -1137,13 +1110,21 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-#endif
-        
-        offset = u32Matrix_index(this, x, y);
-        if (ERESULT_FAILED(obj_getLastError(this))) {
+        if ((1 <= y) && (y <= this->ySize)) {
+        }
+        else {
             DEBUG_BREAK();
             return 0;
         }
+        if ((1 <= x) && (x <= this->xSize)) {
+        }
+        else {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        offset = u32Matrix_index(this, x, y);
         value = this->pElems[offset];
 
         // Return to caller.
@@ -1212,7 +1193,6 @@ extern "C" {
         this->ySize  = ySize;
         this->cElems = cElems;
 
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -1253,12 +1233,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1288,14 +1266,12 @@ extern "C" {
         }
         if( !u32Matrix_Validate(pOther) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
         if (this->xSize == pOther->ySize)
             ;
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -1303,7 +1279,6 @@ extern "C" {
         pMatrix = u32Matrix_New(this->ySize, pOther->xSize);
         if (pMatrix == OBJ_NIL) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -1319,7 +1294,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pMatrix;
     }
     
@@ -1535,13 +1509,21 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if ((1 <= y) && (y <= this->ySize)) {
+        }
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if ((1 <= x) && (x <= this->xSize)) {
+        }
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
         
         offset = u32Matrix_index(this, x, y);
-        if (ERESULT_FAILED(obj_getLastError(this))) {
-            DEBUG_BREAK();
-            return obj_getLastError(this);
-        }
         this->pElems[offset] = value;
         
         // Return to caller.
@@ -1582,7 +1564,6 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1678,7 +1659,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1715,12 +1695,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(U32MATRIX_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

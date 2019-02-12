@@ -121,9 +121,7 @@ MSGDATA_CLASS_DATA  msgData_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(MSGDATA_CLASS_DATA),         // cbSize
-        OBJ_IDENT_MSGDATA_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

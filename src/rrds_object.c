@@ -141,10 +141,8 @@ RRDS_CLASS_VTBL    class_Vtbl = {
 RRDS_CLASS_DATA  rrds_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(RRDS_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_RRDS_CLASS,                     // cbIdent
+        sizeof(RRDS_CLASS_DATA),                // cbSize
         0,                                      // cbFlags
-        0,                                      // eRc
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },

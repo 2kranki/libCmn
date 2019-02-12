@@ -119,9 +119,7 @@ TEXTOUT_CLASS_DATA  textOut_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(TEXTOUT_CLASS_DATA),         // cbSize
-        OBJ_IDENT_TEXTOUT_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

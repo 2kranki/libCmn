@@ -186,12 +186,17 @@ extern "C" {
     
     
     /*!
-     @result
-     If successful, a NUL-terminated UTF-8 string that
-     needs to be freed with mem_Free(). Otherwise, NULL.
+     @result        If successful, a NUL-terminated UTF-8 string that
+                    needs to be freed with mem_Free(). Otherwise, NULL.
      */
     char *          W32StrC_CStringA(
         W32STRC_DATA	*this
+    );
+    
+    
+    W32CHR_T        W32StrC_GetCharW32(
+        W32STRC_DATA    *this,
+        uint32_t        offset              // Relative to 1
     );
     
     

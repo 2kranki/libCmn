@@ -119,9 +119,7 @@ W32STRC_CLASS_DATA  W32StrC_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(W32STRC_CLASS_DATA),         // cbSize
-        OBJ_IDENT_W32STRC_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },
@@ -180,7 +178,7 @@ W32STRC_VTBL_INTERNAL W32StrC_Vtbl = {
             W32StrC_Dealloc,
             W32StrC_Class,
             W32StrC_WhoAmI,
-            NULL,           // (P_OBJ_QUERYINFO)
+            (P_OBJ_QUERYINFO)W32StrC_QueryInfo,
             (P_OBJ_TOSTRING)W32StrC_ToDebugString,
             NULL,			// WStrC_Enable,
             NULL,			// WStrC_Disable,

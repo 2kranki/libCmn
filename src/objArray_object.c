@@ -160,9 +160,7 @@ OBJARRAY_CLASS_DATA  objArray_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(OBJARRAY_CLASS_DATA),        // cbSize
-        OBJ_IDENT_OBJARRAY_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

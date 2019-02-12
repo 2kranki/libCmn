@@ -124,9 +124,7 @@ FALSE_CLASS_DATA  false_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(FALSE_CLASS_DATA),           // cbSize
-        OBJ_IDENT_FALSE_CLASS,              // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

@@ -783,7 +783,6 @@ extern "C" {
         }
         if( !(parent > 0) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
 #endif
@@ -839,12 +838,10 @@ extern "C" {
         }
         if( !(parent <= nodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if( pNode == OBJ_NIL || (!obj_IsKindOf(pNode, OBJ_IDENT_NODELINK)) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -856,7 +853,6 @@ extern "C" {
         if (parent == 0) {
             if( !(nodeArray_getSize(this->pArray) == 0) ) {
                 DEBUG_BREAK();
-                obj_setLastError(this, ERESULT_DATA_ALREADY_EXISTS);
                 return 0;
             }
             eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
@@ -865,7 +861,6 @@ extern "C" {
             }
             else {
                 DEBUG_BREAK();
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return 0;
             }
             goto eom;
@@ -931,12 +926,10 @@ extern "C" {
         }
         if( !(parent <= nodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if (parent == 0) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -960,7 +953,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
     //eom:
         return count;
     }
@@ -980,7 +972,7 @@ extern "C" {
         va_list         pList;
         NODELINK_DATA   *pChild;
         uint32_t        nodeIndex;
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -997,8 +989,7 @@ extern "C" {
             if (pChild) {
                 nodeIndex = nodeTree_ChildAdd(this, parent, pChild);
                 if (nodeIndex == 0) {
-                    eRc = obj_getLastError(this);
-                    return eRc;
+                    return ERESULT_GENERAL_FAILURE;
                 }
             }
             else
@@ -1006,8 +997,7 @@ extern "C" {
         }
         
         // Return to caller.
-        eRc = obj_getLastError(this);
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1209,7 +1199,6 @@ extern "C" {
         }
         if( !((index > 0) && (index <= nodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return pNode;
         }
 #endif
@@ -1396,19 +1385,16 @@ extern "C" {
         }
         if((pNode == OBJ_NIL) || (!obj_IsKindOf(pNode, OBJ_IDENT_NODELINK))) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
         
         eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
         if (ERESULT_FAILED(eRc)) {
-            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             index = 0;
         }
         else {
             nodeLink_setIndex(pNode, index);
-            obj_setLastError(this, ERESULT_SUCCESS);
         }
         
         // Return to caller.
@@ -1441,7 +1427,6 @@ extern "C" {
         pNode = nodeLink_NewWithUTF8ConAndClass(cls, pName, pData);
         if( pNode == OBJ_NIL ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 
@@ -1477,7 +1462,6 @@ extern "C" {
         }
         if( index == 0 ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1485,10 +1469,6 @@ extern "C" {
         pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
         if (pEntry) {
             parent = nodeLink_getParent(pEntry);
-            obj_setLastError(this, ERESULT_SUCCESS);
-        }
-        else {
-            obj_setLastError(this, ERESULT_DATA_NOT_FOUND);
         }
         
         // Return to caller.
@@ -1605,12 +1585,10 @@ extern "C" {
         }
         if( !(sibling <= nodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if( pNode == OBJ_NIL  || (!obj_IsKindOf(pNode, OBJ_IDENT_NODELINK))) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1622,7 +1600,6 @@ extern "C" {
         if (sibling == 0) {
             if( !(nodeArray_getSize(this->pArray) == 0) ) {
                 DEBUG_BREAK();
-                obj_setLastError(this, ERESULT_DATA_ALREADY_EXISTS);
                 return 0;
             }
             eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
@@ -1631,7 +1608,6 @@ extern "C" {
             }
             else {
                 DEBUG_BREAK();
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return 0;
             }
             goto eom;
@@ -1668,7 +1644,6 @@ extern "C" {
         
         // Return to caller.
     eom:
-        obj_setLastError(this, eRc);
         return index;
     }
     
@@ -1696,12 +1671,10 @@ extern "C" {
         }
         if( !(node <= nodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if (node == 0) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1725,7 +1698,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         //eom:
         return count;
     }
@@ -1755,21 +1727,17 @@ extern "C" {
         }
         if( !(sibling && (sibling <= nodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
     #endif
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         
         pSibling = (NODELINK_DATA *)nodeArray_Get(this->pArray, sibling);
         if (pSibling) {
             childIndex = nodeLink_getChild(pSibling);
-            if (childIndex == 0) {     // No children
-                obj_setLastError(this, ERESULT_DATA_OUT_OF_RANGE);
-            }
+            if (childIndex == 0)       // No children
+                ;
             else {
                 pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
-                obj_setLastError(this, ERESULT_SUCCESS);
             }
         }
         
@@ -1809,7 +1777,7 @@ extern "C" {
             if (pNodeList) {
                 nodeIndex = nodeTree_SiblingAdd(this, node, pNodeList);
                 if (nodeIndex == 0) {
-                    return obj_getLastError(this);
+                    return ERESULT_DATA_ERROR;
                 }
             }
             else
@@ -1817,7 +1785,7 @@ extern "C" {
         }
         
         // Return to caller.
-        return obj_getLastError(this);
+        return ERESULT_SUCCESS;
     }
     
     
@@ -1979,12 +1947,10 @@ extern "C" {
         }
         if( !(parent && (parent <= nodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
         if( pTree == OBJ_NIL || (!obj_IsKindOf(pTree, OBJ_IDENT_NODETREE)) ) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -2085,7 +2051,7 @@ extern "C" {
                     break;
                 }
                 pName = node_getName((NODE_DATA *)pEntry);
-                if ((OBJ_NIL == pName) || (obj_getIdent(pName) == OBJ_IDENT_NAME))
+                if ((OBJ_NIL == pName) || (obj_getType(pName) == OBJ_IDENT_NAME))
                     ;
                 else {
                     pVtbl = obj_getVtbl(pEntry);

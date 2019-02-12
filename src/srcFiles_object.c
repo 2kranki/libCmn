@@ -119,9 +119,7 @@ SRCFILES_CLASS_DATA  srcFiles_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(SRCFILES_CLASS_DATA),        // cbSize
-        OBJ_IDENT_SRCFILES_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

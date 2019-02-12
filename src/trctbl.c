@@ -498,7 +498,7 @@ extern "C" {
 
         // Do initialization.
 
-        if( cbp && (OBJ_IDENT_TRCTBL == obj_getIdent(cbp)) )
+        if( cbp && (OBJ_IDENT_TRCTBL == obj_getType(cbp)) )
             ;
         else
             return false;

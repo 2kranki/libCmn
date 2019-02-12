@@ -339,8 +339,8 @@ extern "C" {
         ERESULT         eRc;
         uint8_t         *pChr;
         int32_t         chr = 0;
-        uint32_t        amtRead;
-        off_t           fileOffset;
+        //uint32_t        amtRead;
+        //off_t           fileOffset;
         
         // Do initialization.
 #ifdef NDEBUG

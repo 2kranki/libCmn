@@ -121,9 +121,7 @@ BITSET_CLASS_DATA  bitSet_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(BITSET_CLASS_DATA),          // cbSize
-        OBJ_IDENT_BITSET_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

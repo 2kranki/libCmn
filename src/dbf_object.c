@@ -122,9 +122,7 @@ DBF_CLASS_DATA  dbf_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(DBF_CLASS_DATA),             // cbSize
-        OBJ_IDENT_DBF_CLASS,                // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

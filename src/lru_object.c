@@ -116,12 +116,10 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 
 const
 LRU_CLASS_DATA  lru_ClassObj = {
-    {
+{
         &obj_Vtbl,                          // pVtbl
         sizeof(LRU_CLASS_DATA),             // cbSize
-        OBJ_IDENT_LRU_CLASS,                // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

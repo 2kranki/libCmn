@@ -226,15 +226,13 @@ extern "C" {
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pObject);
-            this->eRc = obj_getLastError(this->pArray);
-            return this->eRc;
+            return eRc;
         }
         if (pIndex) {
             *pIndex = array_getSize(this->pArray);
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return ERESULT_SUCCESS;
     }
     
@@ -1207,7 +1205,6 @@ extern "C" {
         OBJARRAY_DATA   *this
     )
     {
-        ERESULT         eRc;
         ARRAY_ENTRY     *pEntry = NULL;
         OBJ_ID          pObj = OBJ_NIL;
         uint32_t        size;

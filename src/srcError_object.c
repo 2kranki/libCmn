@@ -119,9 +119,7 @@ SRCERROR_CLASS_DATA  srcError_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(SRCERROR_CLASS_DATA),        // cbSize
-        OBJ_IDENT_SRCERROR_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

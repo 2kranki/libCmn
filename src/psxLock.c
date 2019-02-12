@@ -547,7 +547,6 @@ extern "C" {
 #if defined(__MACOSX_ENV__)
         iRc = pthread_mutex_trylock(&this->mutex);
         if (iRc) {
-            obj_setLastError(this, ERESULT_BUSY);
             return false;
         }
 #endif
@@ -606,7 +605,6 @@ extern "C" {
         if (iRc == 0) {
         }
         else {
-            obj_setLastError(this, ERESULT_NOT_BUSY);
             return false;
         }
 #endif
@@ -631,7 +629,6 @@ extern "C" {
         
         // Return to caller.
         obj_FlagOff(this, PSXLOCK_FLAG_LOCKED);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     

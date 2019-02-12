@@ -121,9 +121,7 @@ DBCSV_CLASS_DATA  dbCsv_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(DBCSV_CLASS_DATA),           // cbSize
-        OBJ_IDENT_DBCSV_CLASS,              // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

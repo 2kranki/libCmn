@@ -138,10 +138,8 @@ HASHTBL_CLASS_VTBL    class_Vtbl = {
 HASHTBL_CLASS_DATA  hashtbl_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(HASHTBL_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_HASHTBL_CLASS,                     // cbIdent
+        sizeof(HASHTBL_CLASS_DATA),             // cbSize
         0,                                      // cbFlags
-        0,                                      // eRc
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },

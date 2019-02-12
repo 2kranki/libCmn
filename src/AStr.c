@@ -2169,7 +2169,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);         // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_ASTR);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStr_Vtbl);
         
@@ -2821,7 +2820,6 @@ extern "C" {
         iMax = AStr_getLength(this);
         pArray = AStrArray_New( );
         if (OBJ_NIL == pArray) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
 
@@ -2841,7 +2839,6 @@ extern "C" {
                     eRc = AStr_Mid(this, start, len, &pWrkStr);
                     if (ERESULT_FAILED(eRc)) {
                         obj_Release(pArray);
-                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                         return OBJ_NIL;
                     }
                 }
@@ -2849,7 +2846,6 @@ extern "C" {
                     pWrkStr = AStr_New( );
                     if (OBJ_NIL == pWrkStr) {
                         obj_Release(pArray);
-                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                         return OBJ_NIL;
                     }
                 }
@@ -2858,7 +2854,6 @@ extern "C" {
                 pWrkStr = OBJ_NIL;
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(pArray);
-                    obj_setLastError(this, eRc);
                     return OBJ_NIL;
                 }
             }
@@ -2870,7 +2865,6 @@ extern "C" {
                     eRc = AStr_Mid(this, start, len, &pWrkStr);
                     if (ERESULT_FAILED(eRc)) {
                         obj_Release(pArray);
-                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                         return OBJ_NIL;
                     }
                 }
@@ -2878,7 +2872,6 @@ extern "C" {
                     pWrkStr = AStr_New( );
                     if (OBJ_NIL == pWrkStr) {
                         obj_Release(pArray);
-                        obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                         return OBJ_NIL;
                     }
                 }
@@ -2887,13 +2880,11 @@ extern "C" {
                 pWrkStr = OBJ_NIL;
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(pArray);
-                    obj_setLastError(this, eRc);
                     return OBJ_NIL;
                 }
             }
         }
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pArray;
     }
 

@@ -113,9 +113,7 @@ U8ARRAY_CLASS_DATA  u8Array_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(U8ARRAY_CLASS_DATA),         // cbSize
-        OBJ_IDENT_U8ARRAY_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

@@ -84,7 +84,6 @@ extern "C" {
         // Fake Obj initialization.
         memset(this, 0, cbSize);
         obj_setVtbl(this, obj_StaticVtblShared());
-        obj_setIdent(this, OBJ_IDENT_OBJ);
         obj_setSize(this, cbSize);
         obj_setRetainCount(this, 1);
         

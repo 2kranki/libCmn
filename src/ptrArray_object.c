@@ -119,9 +119,7 @@ PTRARRAY_CLASS_DATA  ptrArray_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(PTRARRAY_CLASS_DATA),        // cbSize
-        OBJ_IDENT_PTRARRAY_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

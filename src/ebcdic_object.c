@@ -208,9 +208,7 @@ EBCDIC_CLASS_DATA  ebcdic_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(EBCDIC_CLASS_DATA),          // cbSize
-        OBJ_IDENT_EBCDIC_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

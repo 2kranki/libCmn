@@ -295,7 +295,6 @@ extern	"C" {
             memset(this, 0, newSize);
             this->pVtbl = &obj_Vtbl;
             this->cbSize = size;
-            this->cbIdent = OBJ_IDENT_OBJ;
             this->cbRetainCount = 1;
             //this->cbFlags = 0;
             obj_FlagOn(this, OBJ_FLAG_ALLOC);
@@ -383,39 +382,6 @@ extern	"C" {
     
     
     
-    uint16_t        obj_getIdent(
-        OBJ_ID          objId
-    )
-    {
-        OBJ_DATA		*this = objId;
-        
-        return this->cbIdent;
-    }
-    
-    
-    bool			obj_setIdent(
-        OBJ_ID          objId,
-        uint16_t        value
-    )
-    {
-        OBJ_DATA		*this = objId;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( 0 == value) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->cbIdent = value;
-        
-        return true;
-    }
-    
-    
-    
     const
     OBJ_INFO *      obj_getInfo(
         OBJ_ID          objId
@@ -430,30 +396,6 @@ extern	"C" {
             return NULL;
         }
         return this->pVtbl->pInfo;
-    }
-    
-    
-    
-    int16_t         obj_getLastError(
-        void            *pVoid
-    )
-    {
-        OBJ_DATA        *this = pVoid;
-        
-        return this->eRc;
-    }
-    
-    
-    bool            obj_setLastError(
-        OBJ_ID          objId,
-        int16_t         value
-    )
-    {
-        OBJ_DATA        *this = objId;
-        
-        this->eRc = value;
-        
-        return true;
     }
     
     
@@ -1008,7 +950,7 @@ extern	"C" {
         
         if (this) {
             if ( (this->pVtbl == &obj_Vtbl)
-                && (OBJ_IDENT_OBJ == this->cbIdent)
+                && (OBJ_IDENT_OBJ == obj_getType(this))
                 && (obj_IsFlag(this, OBJ_FLAG_ALLOC))
             ) {
 #ifdef NDEBUG
@@ -1027,7 +969,6 @@ extern	"C" {
             // OBJ_DATA structure;
             this->pVtbl = &obj_Vtbl;
             this->cbSize = size;
-            this->cbIdent = objectIdentifier;
             obj_FlagOn(this, OBJ_FLAG_INIT);
             this->cbRetainCount = 1;
             //this->cbMisc = 0;
@@ -1068,7 +1009,6 @@ extern	"C" {
         // OBJ_DATA structure;
         this->pVtbl = &obj_Vtbl;
         this->cbSize = size;
-        this->cbIdent = objectIdentifier;
         obj_FlagOn(this, OBJ_FLAG_INIT);
         this->cbRetainCount = 1;
         //this->cbMisc = 0;

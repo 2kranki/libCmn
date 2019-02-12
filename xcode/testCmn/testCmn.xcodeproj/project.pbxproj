@@ -284,7 +284,7 @@
 		C47FB38F21EBDD7D0022C1CC /* memFile.c in Sources */ = {isa = PBXBuildFile; fileRef = C47FB38D21EBDD7C0022C1CC /* memFile.c */; };
 		C47FB39421EBE2A80022C1CC /* blks.c in Sources */ = {isa = PBXBuildFile; fileRef = C47FB39021EBE2A60022C1CC /* blks.c */; };
 		C47FB39521EBE2A80022C1CC /* blks_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47FB39221EBE2A70022C1CC /* blks_object.c */; };
-		C49158ED220B83950015FAF2 /* test_bpt32.c in Sources */ = {isa = PBXBuildFile; fileRef = C49158EC220B83950015FAF2 /* test_bpt32.c */; };
+		C4803E3022125C8A00617D85 /* test_nodeLink.c in Sources */ = {isa = PBXBuildFile; fileRef = C4803E2F22125C8A00617D85 /* test_nodeLink.c */; };
 		C4917E01210A96C200FE234E /* screen.c in Sources */ = {isa = PBXBuildFile; fileRef = C4917DFF210A96C000FE234E /* screen.c */; };
 		C4917E02210A96C200FE234E /* screen_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4917E00210A96C100FE234E /* screen_object.c */; };
 		C4917E07210A978700FE234E /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = C4917E03210A978100FE234E /* scanner.c */; };
@@ -906,7 +906,7 @@
 		C47FB39121EBE2A70022C1CC /* blks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blks.h; sourceTree = "<group>"; };
 		C47FB39221EBE2A70022C1CC /* blks_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blks_object.c; sourceTree = "<group>"; };
 		C47FB39321EBE2A80022C1CC /* blks_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blks_internal.h; sourceTree = "<group>"; };
-		C49158EC220B83950015FAF2 /* test_bpt32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_bpt32.c; sourceTree = "<group>"; };
+		C4803E2F22125C8A00617D85 /* test_nodeLink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_nodeLink.c; sourceTree = "<group>"; };
 		C4917DFD210A96BD00FE234E /* screen_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = screen_internal.h; sourceTree = "<group>"; };
 		C4917DFE210A96BF00FE234E /* screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = screen.h; sourceTree = "<group>"; };
 		C4917DFF210A96C000FE234E /* screen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = screen.c; sourceTree = "<group>"; };
@@ -1043,7 +1043,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C49158EC220B83950015FAF2 /* test_bpt32.c */,
+				C4803E2F22125C8A00617D85 /* test_nodeLink.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
 			);
@@ -2022,6 +2022,7 @@
 				C4E02E8A21FA0E4C003DA92E /* memOSX.c in Sources */,
 				C459802C21B02298001B8375 /* rbt_tree.c in Sources */,
 				C4359B001FC9C3D800CA858E /* msgData_object.c in Sources */,
+				C4803E3022125C8A00617D85 /* test_nodeLink.c in Sources */,
 				C4359B061FC9C3D800CA858E /* nodeArray_object.c in Sources */,
 				C4359BD81FC9C48400CA858E /* szTbl_object.c in Sources */,
 				C43877211FDA83AF00F7B3B0 /* textOut.c in Sources */,
@@ -2083,7 +2084,6 @@
 				C4F1BFD921A8FBAB0048474D /* nodeEnum.c in Sources */,
 				C4E02E8821FA0E4C003DA92E /* memOSX_object.c in Sources */,
 				C43599B91FC9C36800CA858E /* block32_object.c in Sources */,
-				C49158ED220B83950015FAF2 /* test_bpt32.c in Sources */,
 				C43599B81FC9C36800CA858E /* blkdrcds16.c in Sources */,
 				C4359BD31FC9C48400CA858E /* u16Array_object.c in Sources */,
 				C4359BEA1FC9C48400CA858E /* szHash_object.c in Sources */,

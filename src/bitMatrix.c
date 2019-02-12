@@ -194,7 +194,6 @@ extern "C" {
         }
 #endif
 
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->cElems;
     }
 
@@ -219,7 +218,6 @@ extern "C" {
 #endif
 
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -243,7 +241,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->xSize;
     }
     
@@ -263,7 +260,6 @@ extern "C" {
         
         this->xSize = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -287,7 +283,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return this->ySize;
     }
     
@@ -307,7 +302,6 @@ extern "C" {
         
         this->ySize = value;
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -342,7 +336,8 @@ extern "C" {
         BITMATRIX_DATA      *pOther
     )
     {
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -373,7 +368,7 @@ extern "C" {
             pOther->xSize = 0;
             pOther->ySize = 0;
             pOther->cElems = 0;
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            eRc = ERESULT_OUT_OF_MEMORY;
             goto eom;
         }
 
@@ -383,9 +378,9 @@ extern "C" {
         pOther->cElems = this->cElems;
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
-        return obj_getLastError(this);
+        return eRc;
     }
     
     
@@ -445,7 +440,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        obj_setLastError(this, eRc);
         return eRc;
     }
     
@@ -492,7 +486,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -568,7 +561,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -626,7 +618,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1146,7 +1137,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&bitMatrix_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -1318,12 +1308,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            obj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1577,14 +1565,12 @@ extern "C" {
             ;
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
         if ((y > 0) && (y <= this->ySize))
             ;
         else {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -1600,7 +1586,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -1818,7 +1803,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1848,7 +1832,6 @@ extern "C" {
         
         pMatrix = u16Matrix_New(this->xSize,this->ySize);
         if (pMatrix == OBJ_NIL) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -1857,7 +1840,6 @@ extern "C" {
                 if (ERESULT_SUCCESS_TRUE == bitMatrix_Get(this, x, y)) {
                     eRc = u16Matrix_Set(pMatrix, x, y, 1);
                     if (ERESULT_FAILED(eRc)) {
-                        obj_setLastError(this, eRc);
                         obj_Release(pMatrix);
                         pMatrix = OBJ_NIL;
                         return OBJ_NIL;
@@ -1866,7 +1848,6 @@ extern "C" {
                 else {
                     eRc = u16Matrix_Set(pMatrix, x, y, 0);
                     if (ERESULT_FAILED(eRc)) {
-                        obj_setLastError(this, eRc);
                         obj_Release(pMatrix);
                         pMatrix = OBJ_NIL;
                         return OBJ_NIL;
@@ -1875,7 +1856,6 @@ extern "C" {
             }
         }
         
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pMatrix;
     }
     
@@ -2009,12 +1989,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(BITMATRIX_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

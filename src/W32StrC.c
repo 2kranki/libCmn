@@ -492,6 +492,38 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       G e t  C h a r
+    //---------------------------------------------------------------
+    
+    W32CHR_T        W32StrC_GetCharW32(
+        W32STRC_DATA    *this,
+        uint32_t        offset
+    )
+    {
+        W32CHR_T        chr = -1;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if( (0 == offset) || (offset > this->len) ) {
+            return EOF;
+        }
+        
+        chr = this->pArray[offset-1];
+        
+        // Return to caller.
+        return chr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------
     
@@ -769,6 +801,114 @@ extern "C" {
         return pNewStr;
     }
     
+    
+    
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          W32StrC_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        W32STRC_DATA    *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return W32Str_ToDebugString;
+                        }
+#ifdef XYZZY
+                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                            return W32Str_ToJSON;
+                        }
+#endif
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    ERESULT         W32StrC_SetupA(
+        W32STRC_DATA    *this,
+        const
+        char            *pStr
+    )
+    {
+        uint32_t        len;
+        uint32_t        i;
+        W32CHR_T        *pInsert;
+        uint32_t        chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        len = (uint32_t)utf8_StrLenA(pStr);
+        pInsert = mem_Malloc((len + 1) * sizeof(W32CHR_T));
+        if (NULL == pInsert) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        if (this->pArray) {
+            mem_Free((void *)this->pArray);
+            //this->pArray = NULL;
+        }
+        this->pArray = pInsert;
+        this->len = len;
+        obj_FlagOn(this, W32STRC_FLAG_MALLOC);
+        
+        for (i=0; i<len; ++i) {
+            chr = utf8_Utf8ToW32_Scan(&pStr);
+            *pInsert++ = chr;
+        }
+        *pInsert = '\0';
+        
+        obj_FlagSet(this, OBJ_FLAG_RO, true);
+        return ERESULT_SUCCESS;
+    }
     
     
     //---------------------------------------------------------------

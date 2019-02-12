@@ -119,9 +119,7 @@ AUDIOWAV_CLASS_DATA  audioWAV_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(AUDIOWAV_CLASS_DATA),        // cbSize
-        OBJ_IDENT_AUDIOWAV_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

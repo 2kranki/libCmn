@@ -87,7 +87,6 @@ extern "C" {
         //OBJ_ID          pObj;
         int64_t         integer;
         int64_t         intIn;
-        uint32_t        user;
 
         pInfo = obj_getInfo(value_Class());
         

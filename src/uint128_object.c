@@ -120,9 +120,7 @@ UINT128_CLASS_DATA  uint128_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(UINT128_CLASS_DATA),         // cbSize
-        OBJ_IDENT_UINT128_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

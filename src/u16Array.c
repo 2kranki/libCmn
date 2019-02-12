@@ -546,7 +546,6 @@ extern "C" {
         }
         array_setElemSize((ARRAY_DATA *)this, 2);
         obj_setSize(this, cbSize);
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_U16ARRAY);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u16Array_Vtbl);
         

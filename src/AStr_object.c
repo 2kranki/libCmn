@@ -117,9 +117,7 @@ ASTR_CLASS_DATA  AStr_ClassObj = {
     {
         &obj_Vtbl,                  // pVtbl
         sizeof(ASTR_CLASS_DATA),    // cbSize
-        OBJ_IDENT_ASTR_CLASS,       // cbIdent
         0,                          // cbFlags
-        0,                          // eRc
         1,                          // cbRetainCount
         {0}                         // cbMisc
     },

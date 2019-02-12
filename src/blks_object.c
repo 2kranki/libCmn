@@ -139,9 +139,7 @@ BLKS_CLASS_DATA  blks_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
         sizeof(BLKS_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_BLKS_CLASS,                     // cbIdent
         0,                                      // cbFlags
-        0,                                      // eRc
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },

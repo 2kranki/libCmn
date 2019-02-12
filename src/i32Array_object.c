@@ -129,9 +129,7 @@ I32ARRAY_CLASS_DATA  i32Array_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(I32ARRAY_CLASS_DATA),        // cbSize
-        OBJ_IDENT_I32ARRAY_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

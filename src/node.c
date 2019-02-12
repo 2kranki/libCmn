@@ -448,7 +448,6 @@ extern "C" {
             eRc = ERESULT_SUCCESS;
         }
         
-        obj_setLastError(this, eRc);
         return hash;
     }
     
@@ -1128,7 +1127,6 @@ extern "C" {
         
         pOther = node_New( );
         if (OBJ_NIL == pOther) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -1138,7 +1136,6 @@ extern "C" {
                 pData = obj_getVtbl(this->pData)->pDeepCopy(this->pData);
             }
             else {
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
@@ -1149,12 +1146,10 @@ extern "C" {
                 pData = obj_getVtbl(this->pName)->pDeepCopy(this->pName);
             }
             else {
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
         else {
-            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
 
@@ -1183,7 +1178,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1211,7 +1205,6 @@ extern "C" {
         
         pData = node_getData(this);
         if (OBJ_NIL == pData) {
-            obj_setLastError(this, ERESULT_DATA_MISSING);
             return pArray;
         }
         
@@ -1220,15 +1213,6 @@ extern "C" {
         }
         else if (obj_IsKindOf(pData,OBJ_IDENT_NODEARRAY)) {
             pArray = nodeArray_Copy((NODEARRAY_DATA *)pData);
-            if (pArray) {
-                obj_setLastError(this, ERESULT_SUCCESS);
-            }
-            else {
-                obj_setLastError(this, ERESULT_DATA_ERROR);
-            }
-        }
-        else {
-            obj_setLastError(this, ERESULT_DATA_MISSING);
         }
 
         // Return to caller.

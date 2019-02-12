@@ -206,9 +206,7 @@ NODEARC_CLASS_DATA  nodeArc_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(NODEARC_CLASS_DATA),         // cbSize
-        OBJ_IDENT_NODEARC_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

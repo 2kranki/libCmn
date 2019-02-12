@@ -224,7 +224,6 @@ extern "C" {
                 break;
         }
         
-        obj_setLastError(this, eRc);
         return value;
     }
     
@@ -238,7 +237,6 @@ extern "C" {
         NAME_DATA       *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -249,7 +247,6 @@ extern "C" {
         }
 #endif
         
-        obj_setLastError(this, eRc);
         return name_Hash(this);
     }
     
@@ -740,7 +737,6 @@ extern "C" {
                 pOther->pChrs = str_DupA(this->pChrs);
                 if (NULL == pOther->pChrs) {
                     DEBUG_BREAK();
-                    obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                     obj_Release(pOther);
                     return OBJ_NIL;
                 }
@@ -752,7 +748,6 @@ extern "C" {
                 
             default:
                 DEBUG_BREAK();
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 obj_Release(pOther);
                 return OBJ_NIL;
                 

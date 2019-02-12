@@ -120,9 +120,7 @@ BLOCK32_CLASS_DATA  block32_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(BLOCK32_CLASS_DATA),         // cbSize
-        OBJ_IDENT_BLOCK32_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

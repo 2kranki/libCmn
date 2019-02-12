@@ -619,7 +619,6 @@ extern "C" {
         char            *pNameA
     )
     {
-        ERESULT         eRc;
         NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
@@ -633,7 +632,6 @@ extern "C" {
 #endif
         
         pNode = nodeHash_FindA(this->pNodes, cls, pNameA);
-        eRc = obj_getLastError(this->pNodes);
 
         // Return to caller.
         return pNode;
@@ -662,7 +660,6 @@ extern "C" {
 #endif
         
         pArray = nodeHash_Nodes(this->pNodes);
-        obj_setLastError(this, obj_getLastError(this->pNodes));
         
         // Return to caller.
         return pArray;
@@ -744,12 +741,10 @@ extern "C" {
         else
             return false;
         if( !(obj_getSize(this) >= sizeof(NODEGRAPH_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

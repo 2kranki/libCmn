@@ -125,9 +125,7 @@ SZTBL_CLASS_DATA  szTbl_ClassObj = {
     {
         &obj_Vtbl,                  // pVtbl
         sizeof(SZTBL_CLASS_DATA),   // cbSize
-        OBJ_IDENT_SZTBL_CLASS,      // cbIdent
         0,                          // cbFlags
-        0,                          // eRc
         1,                          // cbRetainCount
         {0}                         // cbMisc
     },

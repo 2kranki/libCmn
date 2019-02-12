@@ -353,7 +353,6 @@ extern "C" {
         }
         if((pObject == OBJ_NIL) || (!obj_IsKindOf(pObject, OBJ_IDENT_NODE))) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -923,7 +922,6 @@ extern "C" {
         }
         if((pObject == OBJ_NIL) || (!obj_IsKindOf(pObject, OBJ_IDENT_NODE))) {
             DEBUG_BREAK();
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return 0;
         }
 #endif
@@ -1175,12 +1173,10 @@ extern "C" {
         else
             return false;
         if( !(obj_getSize(this) >= sizeof(NODEARRAY_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

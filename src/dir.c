@@ -101,8 +101,8 @@ extern "C" {
         DIRENTRY_DATA   *pEntry
     )
     {
-        DIR_DATA        *this = pObj;
-        ERESULT         eRc;
+        //DIR_DATA        *this = pObj;
+        //ERESULT         eRc;
         
         
         return true;

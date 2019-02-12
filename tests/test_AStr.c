@@ -1268,8 +1268,8 @@ int         test_AStr_SplitOn01(
         
         pArray = AStr_SplitOnCharW32(pObj, '/');
         XCTAssertFalse( (OBJ_NIL == pArray) );
-        eRc = obj_getLastError(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (0 == AStrArray_getSize(pArray)) );
         
@@ -1306,8 +1306,8 @@ int         test_AStr_SplitOn02(
         
         pArray = AStr_SplitOnCharW32(pObj, '/');
         XCTAssertFalse( (OBJ_NIL == pArray) );
-        eRc = obj_getLastError(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
         pStr = AStrArray_Get(pArray, 1);
@@ -1350,8 +1350,8 @@ int         test_AStr_SplitOn03(
         
         pArray = AStr_SplitOnCharW32(pObj, '/');
         XCTAssertFalse( (OBJ_NIL == pArray) );
-        eRc = obj_getLastError(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         fprintf(stderr, "\tArray Size = %d\n", AStrArray_getSize(pArray));
         XCTAssertTrue( (5 == AStrArray_getSize(pArray)) );
@@ -1407,8 +1407,8 @@ int         test_AStr_SplitOn04(
         
         pArray = AStr_SplitOnCharW32(pObj, '/');
         XCTAssertFalse( (OBJ_NIL == pArray) );
-        eRc = obj_getLastError(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         fprintf(stderr, "\tArray Size = %d\n", AStrArray_getSize(pArray));
         XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
@@ -1452,8 +1452,8 @@ int         test_AStr_SplitOn05(
         
         pArray = AStr_SplitOnCharW32(pObj, '/');
         XCTAssertFalse( (OBJ_NIL == pArray) );
-        eRc = obj_getLastError(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         fprintf(stderr, "\tArray Size = %d\n", AStrArray_getSize(pArray));
         XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );

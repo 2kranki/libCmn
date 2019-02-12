@@ -121,9 +121,7 @@ ASCII_CLASS_DATA  ascii_ClassObj = {
     {
         &obj_Vtbl,                      // pVtbl
         sizeof(ASCII_CLASS_DATA),       // cbSize
-        OBJ_IDENT_ASCII_CLASS,          // cbIdent
         0,                              // cbFlags
-        0,                              // eRc
         1,                              // cbRetainCount
         {0}                             // cbMisc
     },

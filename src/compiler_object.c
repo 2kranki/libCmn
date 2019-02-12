@@ -119,9 +119,7 @@ COMPILER_CLASS_DATA  compiler_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(COMPILER_CLASS_DATA),        // cbSize
-        OBJ_IDENT_COMPILER_CLASS,           // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

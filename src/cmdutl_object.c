@@ -121,9 +121,7 @@ CMDUTL_CLASS_DATA  cmdutl_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(CMDUTL_CLASS_DATA),          // cbSize
-        OBJ_IDENT_CMDUTL_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

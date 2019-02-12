@@ -121,9 +121,7 @@ JSONOUT_CLASS_DATA  jsonOut_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(JSONOUT_CLASS_DATA),         // cbSize
-        OBJ_IDENT_JSONOUT_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

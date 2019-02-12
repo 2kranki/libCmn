@@ -567,7 +567,6 @@ extern "C" {
         }
         array_setElemSize((ARRAY_DATA *)this, 4);
         obj_setSize(this, cbSize);
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_U32ARRAY);
         this->pSuperVtbl = obj_getVtbl(this);   // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u32Array_Vtbl);
 
@@ -657,13 +656,11 @@ extern "C" {
         
         pNew = u32Array_Copy(this);
         if (OBJ_NIL == pNew) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         eRc = u32Array_SortAscending(pNew);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pNew);
-            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
         iMax = u32Array_getSize(pNew);
@@ -671,14 +668,12 @@ extern "C" {
         pNew2 = u32Array_Copy(pOther);
         if (OBJ_NIL == pNew2) {
             obj_Release(pNew);
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         eRc = u32Array_SortAscending(pNew);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pNew);
             obj_Release(pNew2);
-            obj_setLastError(this, ERESULT_GENERAL_FAILURE);
             return OBJ_NIL;
         }
         jMax = u32Array_getSize(pNew2);

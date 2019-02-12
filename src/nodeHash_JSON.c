@@ -499,7 +499,6 @@ extern "C" {
         NODEHASH_DATA   *this
     )
     {
-        uint32_t        i;
         uint32_t        j;
         bool            fRc;
         ASTR_DATA       *pStr;
@@ -563,7 +562,6 @@ extern "C" {
         }
         
         if (!fRc) {
-            obj_setLastError(this, ERESULT_DATA_ERROR);
             return OBJ_NIL;
         }
         

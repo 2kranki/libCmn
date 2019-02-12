@@ -119,9 +119,7 @@ TEXTIN_CLASS_DATA  textIn_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(TEXTIN_CLASS_DATA),          // cbSize
-        OBJ_IDENT_TEXTIN_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

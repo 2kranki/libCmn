@@ -138,10 +138,8 @@ BPT32LF_CLASS_VTBL    class_Vtbl = {
 BPT32LF_CLASS_DATA  bpt32lf_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(BPT32LF_CLASS_DATA),                  // cbSize
-        OBJ_IDENT_BPT32LF_CLASS,                     // cbIdent
+        sizeof(BPT32LF_CLASS_DATA),             // cbSize
         0,                                      // cbFlags
-        0,                                      // eRc
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },

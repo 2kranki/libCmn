@@ -127,9 +127,7 @@ DISK_CLASS_DATA  disk_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(DISK_CLASS_DATA),            // cbSize
-        OBJ_IDENT_DISK_CLASS,               // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

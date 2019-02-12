@@ -118,9 +118,7 @@ PSXSEM_CLASS_DATA  psxSem_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(PSXSEM_CLASS_DATA),          // cbSize
-        OBJ_IDENT_PSXSEM_CLASS,             // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

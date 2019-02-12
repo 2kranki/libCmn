@@ -125,6 +125,22 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     utf8_Utf16beToW32() converts from UTF-16 to UTF-32
+     */
+    int             utf8_Utf16beToW32(
+        const
+        char            *pSrc,
+        W32CHR_T        *pChr
+    );
+    
+    int             utf8_Utf16leToW32(
+        const
+        char            *pSrc,
+        W32CHR_T        *pChr
+    );
+    
+
     /* Alloc() allocates an area large enough for the utf8 including
      * the stack.  If 0 is passed for the stack size, then an ap-
      * propriate default is chosen. The stack size is passed to Init()
@@ -298,6 +314,17 @@ extern "C" {
         char            *pDest          // max 11-byte buffer
     );
     
+    
+    int             utf8_W32ToUtf16be(
+        W32CHR_T        wc,
+        char            *pSrc
+    );
+    
+    int             utf8_W32ToUtf16le(
+        W32CHR_T        wc,
+        char            *pSrc
+    );
+
     
     /*!
      WCToChrConStr() converts an input string to a character

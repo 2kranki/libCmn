@@ -114,7 +114,6 @@ extern	"C" {
         const
         OBJ_IUNKNOWN    *pVtbl;
         uint16_t        cbSize;         /* Total Control Block Size */
-        uint16_t		cbIdent;        /* enum obj_ids_e values */
         uint16_t        cbFlags;        /* Control Flags */
 #define OBJ_FLAG_ALLOC      0               /* Object was allocated in obj_Alloc(). */
 #define OBJ_FLAG_INIT       1               /* Object is initialized. */
@@ -130,7 +129,6 @@ extern	"C" {
 #define OBJ_FLAG_USER6      13
 #define OBJ_FLAG_USER7      14
 #define OBJ_FLAG_USER8      15              /* Last User Useable flag */
-        int16_t         eRc;                /* Last Error Code */
         uint32_t		cbRetainCount;
         union {
             uint32_t        cbMisc;
@@ -233,7 +231,6 @@ extern	"C" {
         memset(this, 0, cbSize);                        \
         obj_setVtbl(this, obj_StaticVtblShared());      \
         obj_setSize(this, cbSize);                      \
-        obj_setIdent(this, OBJ_IDENT_OBJ);              \
         obj_setRetainCount(this, -1);                   \
         obj_setFlags(this, OBJ_FLAG_INIT);              \
     }
@@ -321,33 +318,13 @@ extern	"C" {
         uint16_t        value
     );
     
-    
-    uint16_t        obj_getIdent(
-        OBJ_ID          objId
-    );
-    
-    bool			obj_setIdent(
-        OBJ_ID          objId,
-        uint16_t        value
-    );
 
-   
     const
     OBJ_INFO *      obj_getInfo(
         OBJ_ID          objId
     );
     
-    
-    int16_t         obj_getLastError(
-        OBJ_ID          objId
-    );
-    
-    bool            obj_setLastError(
-        OBJ_ID          objId,
-        int16_t         value
-    );
-    
-    
+   
     uint32_t        obj_getMisc(
         OBJ_ID          objId
     );

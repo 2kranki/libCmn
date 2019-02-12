@@ -120,9 +120,7 @@ PLIST_CLASS_DATA  plist_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(PLIST_CLASS_DATA),           // cbSize
-        OBJ_IDENT_PLIST_CLASS,              // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

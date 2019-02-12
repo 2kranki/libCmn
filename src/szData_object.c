@@ -125,10 +125,8 @@ const
 SZDATA_CLASS_DATA  szData_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(SZDATA_CLASS_DATA),        // cbSize
-        OBJ_IDENT_SZDATA_CLASS,           // cbIdent
+        sizeof(SZDATA_CLASS_DATA),          // cbSize
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

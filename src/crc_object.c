@@ -121,9 +121,7 @@ CRC_CLASS_DATA  crc_ClassObj = {
     {
         &obj_Vtbl,                          // pVtbl
         sizeof(CRC_CLASS_DATA),             // cbSize
-        OBJ_IDENT_CRC_CLASS,                // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },
