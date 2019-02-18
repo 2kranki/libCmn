@@ -3,6 +3,12 @@
  * File:   bpt32.c
  *	Generated 01/12/2019 14:04:44
  *
+ * Todo:
+ *  *   Implement deletion using delete block upon empty and put block
+ *      on a free list to be re-used.  See the article on header to
+ *      understand why not to merge 1/2 full.  Or add the option to do
+ *      either.
+ *  *   Implement block/file locking.
  */
 
  

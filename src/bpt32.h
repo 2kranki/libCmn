@@ -7,14 +7,15 @@
  * Program
  *			B-Plus 32-Bit Tree (bpt32)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate bpt32 to run things without complications
- *          of interfering with the main bpt32. A bpt32 may be 
- *          called a bpt32 on other O/S's.
+ *			This object provides support for a B-Plus Tree which
+ *          has 32-bit integer keys.
  *
  * Remarks
  *	1.      None
  *
+ * References
+ *  1.      "Reexamining B-trees", Ted Johnson and Dennis Shasha,
+ *          Dr Dobb's Journal, January 1992
  * History
  *	01/12/2019 Generated
  */

@@ -17,7 +17,8 @@ The library contains a variety of objects such as:
     csv file parsing
     simple wav file object used to generate morse code
     big/small endian support
-to name just a few of them.
+to name just a few of them.  Look in src/cmn_defs.h for a
+comprehensive list of the objects available.
 
 It is intended that each object be self documenting and consistent
 in its usage from other objects within this library.
