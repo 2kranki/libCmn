@@ -127,11 +127,11 @@ void            rbt_DumpTree            (RBT_TREE *this);
 int             rbt_VerifyTree          (RBT_TREE *this, RBT_NODE *pNode);
 
 RBT_ITER *      rbt_iter_alloc          (void);
-RBT_ITER *      rbt_iter_init           (RBT_ITER *this);
-RBT_ITER *      rbt_iter_create         (void);
+RBT_ITER *      rbt_iter_init           (RBT_ITER *this, RBT_TREE *pTree);
+RBT_ITER *      rbt_iter_create         (RBT_TREE *pTree);
 void            rbt_iter_dealloc        (RBT_ITER *this);
-void           *rbt_iter_first          (RBT_ITER *this, RBT_TREE *tree);
-void           *rbt_iter_last           (RBT_ITER *this, RBT_TREE *tree);
+void           *rbt_iter_first          (RBT_ITER *this);
+void           *rbt_iter_last           (RBT_ITER *this);
 void           *rbt_iter_next           (RBT_ITER *this);
 void           *rbt_iter_prev           (RBT_ITER *this);
 

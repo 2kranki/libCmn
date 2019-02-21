@@ -203,13 +203,16 @@ int         test_rbt_Tree_AddFind01(
     BLOCKS_DATA     *pBlocks = OBJ_NIL;
     RBT_TREE        tree = {0};
     RBT_TREE        *pTree = &tree;
+    RBT_ITER        iter = {0};
     NODE_RECORD     record = {0};
     NODE_RECORD     *pRecord = &record;
     char            *pFound = NULL;
     ERESULT         eRc;
     bool            fRc;
-    char            **pStrA;
+    char            **ppStrA;
+    char            *pStrA;
     int             iRc;
+    int             i;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -229,48 +232,57 @@ int         test_rbt_Tree_AddFind01(
                 );
         TINYTEST_TRUE( (&tree == pTree) );
         
-        pStrA = strings;
-        while (*pStrA) {
-            NODE_RECORD     newRcd = {0};
-            fprintf(stderr, "\tInserting %s\n", *pStrA);
+        ppStrA = strings;
+        while (*ppStrA) {
+            //NODE_RECORD     newRcd = {0};
+            fprintf(stderr, "\tInserting %s\n", *ppStrA);
             //pRecord = blocks_RecordNew(pBlocks);
-            fRc = rbt_Insert(pTree, *pStrA, *pStrA);
+            fRc = rbt_Insert(pTree, *ppStrA, *ppStrA);
             TINYTEST_TRUE( (fRc) );
             fRc = rbt_VerifyTree(pTree, pTree->pRoot);
             TINYTEST_TRUE( (fRc) );
-            fprintf(stderr, "\tFinding %s\n", *pStrA);
-            pFound = rbt_Find(pTree, *pStrA);
+            fprintf(stderr, "\tFinding %s\n", *ppStrA);
+            pFound = rbt_Find(pTree, *ppStrA);
             TINYTEST_FALSE( (NULL == pFound) );
-            TINYTEST_TRUE( (0 == strcmp(pFound, *pStrA)) );
+            TINYTEST_TRUE( (0 == strcmp(pFound, *ppStrA)) );
             fprintf(stderr, "\t\tFound\n");
-            ++pStrA;
+            ++ppStrA;
         }
         
-        pStrA = strings;
-        while (*pStrA) {
-            NODE_RECORD     newRcd = {0};
-            fprintf(stderr, "\tFinding %s\n", *pStrA);
-            pFound = rbt_Find(pTree, *pStrA);
-            XCTAssertTrue( (0 == strcmp(pFound, *pStrA)) );
+        ppStrA = strings;
+        while (*ppStrA) {
+            //NODE_RECORD     newRcd = {0};
+            fprintf(stderr, "\tFinding %s\n", *ppStrA);
+            pFound = rbt_Find(pTree, *ppStrA);
+            XCTAssertTrue( (0 == strcmp(pFound, *ppStrA)) );
             fprintf(stderr, "\t\tFound\n");
-            ++pStrA;
+            ++ppStrA;
         }
         
+        fprintf(stderr, "\tAscending Iteration:\n");
+        rbt_iter_init(&iter, pTree);
+        i = 0;
+        for (pStrA=rbt_iter_first(&iter); pStrA; pStrA=rbt_iter_next(&iter)) {
+            fprintf(stderr, "\t\t%s\n", pStrA);
+            i++;
+        }
+        XCTAssertTrue( (33 == i) );
+
         fprintf(stderr, "\tDeleting every other entry:\n");
-        pStrA = strings;
-        while (*pStrA) {
-            NODE_RECORD     newRcd = {0};
-            fprintf(stderr, "\tDeleting %s\n", *pStrA);
-            iRc = rbt_Delete(pTree, *pStrA);
+        ppStrA = strings;
+        while (*ppStrA) {
+            //NODE_RECORD     newRcd = {0};
+            fprintf(stderr, "\tDeleting %s\n", *ppStrA);
+            iRc = rbt_Delete(pTree, *ppStrA);
             TINYTEST_TRUE( (iRc) );
             fRc = rbt_VerifyTree(pTree, pTree->pRoot);
             TINYTEST_TRUE( (fRc) );
-            fprintf(stderr, "\tFinding %s\n", *pStrA);
-            pFound = rbt_Find(pTree, *pStrA);
+            fprintf(stderr, "\tFinding %s\n", *ppStrA);
+            pFound = rbt_Find(pTree, *ppStrA);
             TINYTEST_TRUE( (NULL == pFound) );
             fprintf(stderr, "\t\tNot Found\n");
-            ++pStrA;
-            ++pStrA;
+            ++ppStrA;
+            ++ppStrA;
         }
         
         rbt_DumpTree(pTree);

@@ -97,6 +97,7 @@
 #   include        <windows.h>
 #   include        <windowsx.h>
 #   include        <signal.h>
+#   include        <unistd_win.h>
 #endif
 #include        <ctype.h>
 #include        <fcntl.h>

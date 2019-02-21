@@ -188,6 +188,7 @@
         "obj.c",
         "rbt_tree.c",
         "shellSortPtrs.c",
+        "stackTraces.c",
         "str.c",
     ],
     "macosx": [

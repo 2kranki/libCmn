@@ -435,6 +435,45 @@ void * 			listdl_DeleteTail(
 
 
 /**********************************************************
+                        D e q u e u e
+ **********************************************************/
+
+void *             listdl_Dequeue(
+    LISTDL_DATA     *pCB
+)
+{
+    void            *pRet;
+    
+    // Validate the input parameters.
+    pRet = listdl_DeleteTail(pCB);
+    
+    // Return to caller.
+    return pRet;
+}
+
+
+
+/**********************************************************
+                        E n q u e u e
+ **********************************************************/
+
+void *             listdl_Enqueue(
+    LISTDL_DATA     *pCB,
+    void            *pData
+)
+{
+    void            *pRet;
+    
+    // Validate the input parameters.
+    pRet = listdl_Add2Head(pCB, pData);
+    
+    // Return to caller.
+    return pRet;
+}
+
+
+
+/**********************************************************
 						H e a d
  **********************************************************/
 
@@ -663,6 +702,24 @@ void * 			listdl_Next(
 
 
 
+/**********************************************************
+                        P o p
+ **********************************************************/
+
+void *             listdl_Pop(
+    LISTDL_DATA     *pCB
+)
+{
+    void            *pRet;
+    
+    // Validate the input parameters.
+    pRet = listdl_DeleteHead(pCB);
+    
+    // Return to caller.
+    return pRet;
+}
+
+
 
 //**********************************************************
 //						P r e v
@@ -694,6 +751,25 @@ void * 			listdl_Prev(
 	return( Node2Ptr( pNode ) );
 }
 
+
+
+/**********************************************************
+                        P u s h
+ **********************************************************/
+
+void *             listdl_Push(
+    LISTDL_DATA     *pCB,
+    void            *pData
+)
+{
+    void            *pRet;
+    
+    // Validate the input parameters.
+    pRet = listdl_Add2Head(pCB, pData);
+    
+    // Return to caller.
+    return pRet;
+}
 
 
 
@@ -791,6 +867,31 @@ void * 			listdl_Tail(
     
 	// Return to caller.
 	return( Node2Ptr( pNode ) );
+}
+
+
+
+//**********************************************************
+//                        T o p
+//**********************************************************
+
+void *             listdl_Top(
+    LISTDL_DATA     *pCB
+)
+{
+    LISTDL_NODE     *pNode = NULL;
+    
+    // Do initialization.
+    
+    // Set the Current node to the Tail of the List.
+    if( pCB->pHead && (pCB->cCount > 0) )
+        ;
+    else
+        return( NULL );
+    pNode = pCB->pHead;
+    
+    // Return to caller.
+    return Node2Ptr(pNode);
 }
 
 

@@ -211,6 +211,53 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      R e h a s h
+    //---------------------------------------------------------------
+    
+    ERESULT         objHash_Rehash(
+        OBJHASH_DATA    *this
+    )
+    {
+        uint32_t        cHash;
+        RBT_TREE        *pHash;     // Main Hash Table
+        RBT_ITER        *pIter;
+        RBT_NODE        *pNode;
+        uint32_t        i;
+
+        // Do initialization.
+        cHash = this->cHash;
+        pHash = this->pHash;
+        
+        // Allocate and initialize a new hash table.
+        this->cHashIndex += 1;
+        this->cHash = misc_Pwr2_Prime(this->cHashIndex);
+        i = this->cHash * sizeof(RBT_TREE);
+        this->pHash = (RBT_TREE *)mem_Malloc( i );
+        if (NULL == this->pHash) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        for (i=0; i<this->cHash; ++i) {
+            rbt_Init(&this->pHash[i], (void *)objHash_ObjCmp);
+            this->pHash[i].pNodeAlloc = (void *)blocks_RecordNew;
+            this->pHash[i].pNodeFree = (void *)blocks_RecordFree;
+            this->pHash[i].pObjAllocFree = this;
+            this->pHash[i].dataSize = sizeof(OBJHASH_RECORD) - sizeof(RBT_NODE);
+        }
+        
+        // Now rehash the old table into the new one.
+        rbt_iter_init(&iter);
+        for (i=0; i<cHash; i++) {
+            
+        }
+
+        
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
 
 
 
@@ -805,7 +852,9 @@ extern "C" {
                         this,
                         NULL
         );
-
+        
+        
+        this->cHashIndex = 2;
         this->cHash = cHash;
         cbSize = cHash * sizeof(RBT_TREE);
         this->pHash = (RBT_TREE *)mem_Malloc( cbSize );

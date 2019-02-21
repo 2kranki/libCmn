@@ -68,7 +68,10 @@ extern "C" {
         RBT_NODE        node;
         uint32_t        hash;
         uint32_t        unique;
-        LISTDL_DATA     dups;           // List Head or Node of Duplicate Chain
+        union {
+            LISTDL_DATA     dups;           // List Head or Node of Duplicate Chain
+            LISTDL_NODE     dupNode;
+        };
     } OBJHASH_RECORD;
 #pragma pack(pop)
     
@@ -91,6 +94,7 @@ struct objHash_data_s	{
     uint32_t        unique;         // Unique number given to entries as they are
     //                              // added to the hash table
     uint32_t        size;
+    uint32_t        cHashIndex;     // Index into Prime Table
     uint32_t        cHash;          // Number of Hash Buckets
     uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
     RBT_TREE        *pHash;         // Main Hash Table

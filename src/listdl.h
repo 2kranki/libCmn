@@ -230,6 +230,28 @@ extern	"C" {
     );
         
         
+    // Dequeue() is an alias for DeleteTail() which deletes the
+    // last entry of the chain and returns a ptr to it.
+    // Returns:
+    //    Record Ptr      =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *          listdl_Dequeue (
+        LISTDL_DATA     *this
+    );
+    
+    
+    // Enqueue() is an alias for Add2Head() which adds a new entry
+    // to the Doubly-Linked list as the First Entry in the List.
+    // It should be used in conjunction with Pop() and Top().
+    // Returns:
+    //    Record Ptr        =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *          listdl_Enqueue (
+        LISTDL_DATA     *this,
+        void            *pRecord
+    );
+    
+    
     // Head() returns the first entry in the Doubly-Linked List.
     // The Current Entry is set to the First Entry in the List.
     // Returns:
@@ -303,6 +325,16 @@ extern	"C" {
     );
 
 
+    // Pop() is an alias for DeleteHead() which deletes the
+    // first entry of the chain and returns a ptr to it.
+    // Returns:
+    //    Record Ptr      =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *          listdl_Pop (
+        LISTDL_DATA     *this
+    );
+    
+    
     // Prev() returns the previous entry from the current entry in the
     // Doubly-Linked List.	The current pointer is updated to the
     // Next Entry.	If the Current Entry was at the end of the list,
@@ -316,6 +348,18 @@ extern	"C" {
     );
 
 
+    // Push() is an alias for Add2Head() which adds a new entry
+    // to the Doubly-Linked list as the First Entry in the List.
+    // It should be used in conjunction with Pop() and Top().
+    // Returns:
+    //    Record Ptr        =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *          listdl_Push (
+        LISTDL_DATA     *this,
+        void            *pRecord
+    );
+    
+    
     // Sort() sorts the list in order provided by the supplied
     // comparison routine. The comparison routine needs to return
     // 0 if *p0 == *p1, -n if *p0 < *p1 or +n if *p0 > *p1.
@@ -335,6 +379,17 @@ extern	"C" {
     //	NULL        	=	Unsuccessful Completion
     void * 			listdl_Tail (
         LISTDL_DATA		*this
+    );
+    
+    
+    // Top() is an alias for Head() which returns the first
+    // entry in the Doubly-Linked List.  The Current Entry
+    // is set to the Last Entry in the List.
+    // Returns:
+    //    Node Ptr        =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *          listdl_Top (
+        LISTDL_DATA     *this
     );
     
     

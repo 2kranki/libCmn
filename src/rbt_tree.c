@@ -498,10 +498,14 @@ rbt_iter_alloc () {
 
 
 
-RBT_ITER *              rbt_iter_init(RBT_ITER *this)
+RBT_ITER *      rbt_iter_init(
+    RBT_ITER        *this,
+    RBT_TREE        *pTree
+)
 {
     if (this) {
-        this->tree = NULL;
+        //this->tree = NULL;
+        this->tree = pTree;
         this->node = NULL;
         this->top = 0;
     }
@@ -510,9 +514,11 @@ RBT_ITER *              rbt_iter_init(RBT_ITER *this)
 
 
 
-RBT_ITER *
-rbt_iter_create () {
-    return rbt_iter_init(rbt_iter_alloc());
+RBT_ITER *      rbt_iter_create (
+    RBT_TREE        *pTree
+)
+{
+    return rbt_iter_init(rbt_iter_alloc(), pTree);
 }
 
 
@@ -530,12 +536,11 @@ void            rbt_iter_dealloc (
 // Internal function, init traversal object, dir determines whether
 // to begin traversal at the smallest or largest valued node.
 static
-void *          rbt_iter_start(RBT_ITER *this, RBT_TREE *tree, int dir)
+void *          rbt_iter_start(RBT_ITER *this, int dir)
 {
     void            *result = NULL;
     if (this) {
-        this->tree = tree;
-        this->node = tree->pRoot;
+        this->node = this->tree->pRoot;
         this->top = 0;
 
         // Save the path for later selfersal
@@ -555,7 +560,11 @@ void *          rbt_iter_start(RBT_ITER *this, RBT_TREE *tree, int dir)
 
 // Traverse a red black tree in the user-specified direction (0 asc, 1 desc)
 static 
-void *          rbt_iter_move (RBT_ITER *this, int dir) {
+void *          rbt_iter_move (
+    RBT_ITER        *this,
+    int             dir
+)
+{
     if (this->node->pLink[dir] != NULL) {
 
         // Continue down this branch
@@ -581,23 +590,28 @@ void *          rbt_iter_move (RBT_ITER *this, int dir) {
     return this->node == NULL ? NULL : this->node->pKey;
 }
 
-void *
-rbt_iter_first (RBT_ITER *this, RBT_TREE *tree) {
-    return rbt_iter_start(this, tree, RBT_LEFT);
+void *          rbt_iter_first (
+    RBT_ITER        *this
+)
+{
+    return rbt_iter_start(this, RBT_LEFT);
 }
 
-void *
-rbt_iter_last (RBT_ITER *this, RBT_TREE *tree) {
-    return rbt_iter_start(this, tree, RBT_RIGHT);
+void *          rbt_iter_last (
+    RBT_ITER        *this
+)
+{
+    return rbt_iter_start(this, RBT_RIGHT);
 }
 
-void *
-rbt_iter_next (RBT_ITER *this) {
+void *          rbt_iter_next (
+    RBT_ITER        *this
+)
+{
     return rbt_iter_move(this, RBT_RIGHT);
 }
 
-void *
-rbt_iter_prev (RBT_ITER *this) {
+void *          rbt_iter_prev (RBT_ITER *this) {
     return rbt_iter_move(this, RBT_LEFT);
 }
 

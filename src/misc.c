@@ -61,8 +61,8 @@ extern "C" {
         uint32_t        prime;      // prime number > power_of_2
     } PWR_OF_2;
     
-    PWR_OF_2        pwr_of_2[] = {
-        {1, 0, 3},
+    PWR_OF_2        pwr_of_2[33] = {
+        {1, 0, 1},
         {2, 1, 3},
         {4, 2, 5},
         {8, 3, 11},
@@ -180,18 +180,12 @@ extern "C" {
         uint32_t        amt
     )
     {
-        PWR_OF_2        *pEntry = pwr_of_2;
-        uint32_t        shiftAmt = -1;
+        uint32_t        prime = 0;
         
-        while (pEntry->pwr_of_2) {
-            if (amt == pEntry->pwr_of_2) {
-                shiftAmt = pEntry->prime;
-                break;
-            }
-            ++pEntry;
-        }
+        if (amt < 32)
+            prime = pwr_of_2[amt].prime;
         
-        return shiftAmt;
+        return prime;
     }
     
     

@@ -108,7 +108,8 @@ int             str_CompareSpcl(
     char            *pszStr1,
     const
     char            *pszStr2,
-    int             *pOffset
+    int             *pOffset            // Optional Returned offset where the
+//                                      // strings differ.
 );
 
 int             str_CompareW32(

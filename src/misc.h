@@ -226,6 +226,16 @@ extern "C" {
     
     
     
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code:
+     ASTR_DATA      *pDesc = misc_ToDebugString(this,4);
+     @endcode:
+     @param     amt     a power (0 =< amt < 32)
+     @return    0 If unsuccessful, othwise a prime number slightly greater than
+                2 ** amt (ie 2 to the amt'th power)
+     */
     uint32_t        misc_Pwr2_Prime(
         uint32_t        amt
     );
