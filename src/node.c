@@ -964,7 +964,7 @@ extern "C" {
         NODE_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int             i = 0;
 
         // Do initialization.
@@ -1008,7 +1008,7 @@ extern "C" {
         char            *pName
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
         // Do initialization.
 #ifdef NDEBUG

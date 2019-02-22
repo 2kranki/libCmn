@@ -1446,7 +1446,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeHash_Vtbl);
         
-        this->cHash = cHash;
         eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEHASH_RECORD));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -1454,15 +1453,15 @@ extern "C" {
             return OBJ_NIL;
         }
         blocks_setDeleteExit(
-                             (BLOCKS_DATA *)this,
-                             (void *)nodeHash_DeleteExit,
-                             this,
-                             NULL
-                             );
+             (BLOCKS_DATA *)this,
+             (void *)nodeHash_DeleteExit,
+             this,
+             NULL
+        );
         
         this->cHash = cHash;
         cbSize = cHash * sizeof(RBT_TREE);
-        this->pHash = (RBT_TREE *)mem_Malloc( cbSize );
+        this->pHash = (RBT_TREE *)mem_Malloc(cbSize);
         if (NULL == this->pHash) {
             DEBUG_BREAK();
             obj_Release(this);

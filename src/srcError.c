@@ -479,7 +479,7 @@ extern "C" {
         SRCERROR_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
         // Do initialization.
 #ifdef NDEBUG

@@ -419,14 +419,15 @@ extern "C" {
         OBJHASH_DATA    *this
     )
     {
+        uint32_t        i;
         uint32_t        j;
         bool            fRc;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         ASTR_DATA       *pData;
-        LISTDL_DATA     *pList = NULL;
-        BLOCKS_NODE     *pEntry = NULL;
+        LISTDL_DATA     *pNodeList;
+        OBJHASH_NODE    *pNode;
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -450,49 +451,17 @@ extern "C" {
         // Scan the Hash Table insuring that all entries have
         // an "ToJSON" method.
         fRc = true;
-        pList = blocks_getList((BLOCKS_DATA *)this);
-        pEntry = listdl_Head(pList);
-        while (pEntry) {
-            OBJHASH_RECORD      *pRecord = (OBJHASH_RECORD *)pEntry->data;
-            RBT_NODE            *pNode = &pRecord->node;
-            
-            //FIXME: pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
-#ifdef XYZZY
-            if (pQueryInfo) {
-                pToJSON = (*pQueryInfo)(
-                                        pNode->pData,
-                                        OBJ_QUERYINFO_TYPE_METHOD,
-                                        "ToJSON"
-                                        );
-                if (NULL == pToJSON) {
-                    fRc = false;
-                    break;
-                }
-            }
-            else {
-                fRc = false;
-                break;
-            }
-#endif
-
-            pEntry = listdl_Next(pList, pEntry);
-        }
-        
-        if (fRc) {
-            pList = blocks_getList((BLOCKS_DATA *)this);
-            pEntry = listdl_Head(pList);
-            while (pEntry) {
-                OBJHASH_RECORD      *pRecord = (OBJHASH_RECORD *)pEntry->data;
-                RBT_NODE            *pNode = &pRecord->node;
-                
-#ifdef XYZZY
-                pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
+        for (i=0; ((i < this->cHash) && fRc); ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
                 if (pQueryInfo) {
                     pToJSON = (*pQueryInfo)(
-                                            pNode->pData,
-                                            OBJ_QUERYINFO_TYPE_METHOD,
-                                            "ToJSON"
-                                            );
+                                pNode->pObject,
+                                OBJ_QUERYINFO_TYPE_METHOD,
+                                "ToJSON"
+                            );
                     if (NULL == pToJSON) {
                         fRc = false;
                         break;
@@ -502,12 +471,11 @@ extern "C" {
                     fRc = false;
                     break;
                 }
-#endif
-                
-                pEntry = listdl_Next(pList, pEntry);
+                pNode = listdl_Next(pNodeList, pNode);
             }
         }
         if (!fRc) {
+            this->eRc = ERESULT_DATA_ERROR;
             return OBJ_NIL;
         }
         
@@ -516,44 +484,41 @@ extern "C" {
                          pStr,
                          "{\"objectType\":\"%s\",\n\t\"count\":%d,\n\t\"entries:[\n",
                          pInfo->pClassName,
-                         this->size
+                         this->num
         );
         
         // Scan the Hash Table creating entries for each of the objects
         // in the table and appending them to the array.
-        j = this->size;
-        pList = blocks_getList((BLOCKS_DATA *)this);
-        pEntry = listdl_Head(pList);
-        while (pEntry) {
-            OBJHASH_RECORD      *pRecord = (OBJHASH_RECORD *)pEntry->data;
-            RBT_NODE            *pNode = &pRecord->node;
-            
-#ifdef XYZZY
-            pQueryInfo = obj_getVtbl(pNode->pData)->pQueryInfo;
-            if (pQueryInfo) {
-                pToJSON = (*pQueryInfo)(
-                                        pNode->pData,
-                                        OBJ_QUERYINFO_TYPE_METHOD,
-                                        "ToJSON"
-                                        );
-                if (pToJSON) {
-                    pData = (*pToJSON)(pNode->pData);
-                    if (pData) {
-                        AStr_Append(pStr, pData);
-                        obj_Release(pData);
-                        pData = OBJ_NIL;
-                        if (j-- > 1) {
-                            AStr_AppendA(pStr, ",\n");
-                        }
-                        else {
-                            AStr_AppendA(pStr, "\n");
+        j = this->num;
+        for (i=0; ((i < this->cHash) && fRc); ++i) {
+            pNodeList = &this->pHash[i];
+            pNode = listdl_Head(pNodeList);
+            while (pNode) {
+                pData = OBJ_NIL;
+                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
+                if (pQueryInfo) {
+                    pToJSON =   (*pQueryInfo)(
+                                          pNode->pObject,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJSON"
+                                );
+                    if (pToJSON) {
+                        pData = (*pToJSON)(pNode->pObject);
+                        if (pData) {
+                            AStr_Append(pStr, pData);
+                            obj_Release(pData);
+                            pData = OBJ_NIL;
+                            if (j-- > 1) {
+                                AStr_AppendA(pStr, ",\n");
+                            }
+                            else {
+                                AStr_AppendA(pStr, "\n");
+                            }
                         }
                     }
                 }
+                pNode = listdl_Next(pNodeList, pNode);
             }
-#endif
-            
-            pEntry = listdl_Next(pList, pEntry);
         }
         AStr_AppendA(pStr, "]\n\n\n");
 

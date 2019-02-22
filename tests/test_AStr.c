@@ -175,7 +175,7 @@ int         test_AStr_OpenClose(
         XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
         
         eRc = AStr_CompareA(pObj, "abcdef");
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         eRc = AStr_CompareA(pObj, "aaaaaa");
         XCTAssertTrue( (ERESULT_SUCCESS_GREATER_THAN == eRc) );
@@ -586,22 +586,31 @@ int         test_AStr_File(
     ERESULT     eRc;
     PATH_DATA   *pPath = OBJ_NIL;
     ASTR_DATA	*pOther = OBJ_NIL;
+    const
+    char        *pPathA = "~/git/libCmn/tests/files/test.txt";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pObj = AStr_NewFromEnv("HOME");
     XCTAssertFalse( (OBJ_NIL == pObj) );
+    pPath = path_NewA("~");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = path_Clean(pPath);
+    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+    fprintf(stderr, "\tastr: \"%s\"\n", AStr_getData(pObj));
+    fprintf(stderr, "\tpath: \"%s\"\n", path_getData(pPath));
+    eRc = AStr_Compare(pObj, (ASTR_DATA *)pPath);
+    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
     if (pObj) {
         
-        eRc = AStr_CompareA(pObj, "/Users/bob");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        eRc = AStr_AppendA(pObj, "/test.txt");
-        
+        eRc = AStr_AppendA(pObj, "/git/libCmn/tests/files/test.txt");
+        XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+
         pPath = path_NewFromAStr(pObj);
         XCTAssertFalse( (OBJ_NIL == pPath) );
         if (pPath) {
-            eRc = AStr_CompareA((ASTR_DATA *)pPath, "/Users/bob/test.txt");
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
             eRc = AStr_ToUtf8File(pObj, pPath);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             pOther = AStr_NewFromUtf8File(pPath);
@@ -878,7 +887,7 @@ int         test_AStr_Trim(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         // Trailing spaces
         eRc = AStr_AppendA( pObj, "   " );
@@ -889,7 +898,7 @@ int         test_AStr_Trim(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         eRc = AStr_Truncate( pObj, 0 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -904,7 +913,7 @@ int         test_AStr_Trim(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESSFUL_COMPLETION == eRc) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1009,7 +1018,7 @@ int         test_AStr_JSON01(
     char        *pTestName
 )
 {
-    ERESULT     eRc;
+    //ERESULT     eRc;
     ASTR_DATA   *pObj = OBJ_NIL;
     ASTR_DATA   *pJsonStr = OBJ_NIL;
     ASTR_DATA   *pJsonStrOut = OBJ_NIL;
@@ -1192,7 +1201,7 @@ int         test_AStr_ExpandVars01(
         eRc = AStr_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
         //obj_Release(pStr);
         //pStr = NULL;
         
@@ -1235,7 +1244,7 @@ int         test_AStr_ExpandVars02(
         eRc = AStr_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1255,7 +1264,7 @@ int         test_AStr_SplitOn01(
 )
 {
     ASTR_DATA       *pObj = OBJ_NIL;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     //int             len = 0;
@@ -1293,7 +1302,7 @@ int         test_AStr_SplitOn02(
 )
 {
     ASTR_DATA       *pObj = OBJ_NIL;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     //int             len = 0;
@@ -1334,7 +1343,7 @@ int         test_AStr_SplitOn03(
 )
 {
     ASTR_DATA       *pObj = OBJ_NIL;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     //int             len = 0;
@@ -1391,7 +1400,7 @@ int         test_AStr_SplitOn04(
                                 )
 {
     ASTR_DATA       *pObj = OBJ_NIL;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     //int             len = 0;
@@ -1436,7 +1445,7 @@ int         test_AStr_SplitOn05(
 )
 {
     ASTR_DATA       *pObj = OBJ_NIL;
-    ERESULT         eRc;
+    //ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     //int             len = 0;

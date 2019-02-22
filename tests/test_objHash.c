@@ -125,7 +125,7 @@ int         test_objHash_OpenClose(
                 index = 0;
                 eRc = objHash_Add(pObj, pStr, &index);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-                //fprintf(stderr, "i=%d  index=%d\n", i, index);
+                fprintf(stderr, "i=%d  index=%d\n", i, index);
                 TINYTEST_TRUE( (index == (i + 1)) );
                 obj_Release(pStr);
                 pStr = OBJ_NIL;

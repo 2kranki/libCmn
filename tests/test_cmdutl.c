@@ -156,23 +156,23 @@ int         test_cmdutl_CommandString01(
 
         pStr = AStrArray_Get(pArray, 1);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (0 == AStr_CompareA(pStr, "")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "")) );
         
         pStr = AStrArray_Get(pArray, 2);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (0 == AStr_CompareA(pStr, "a")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "a")) );
         
         pStr = AStrArray_Get(pArray, 3);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (0 == AStr_CompareA(pStr, "b")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "b")) );
         
         pStr = AStrArray_Get(pArray, 4);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (0 == AStr_CompareA(pStr, "--c")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "--c")) );
         
         pStr = AStrArray_Get(pArray, 5);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (0 == AStr_CompareA(pStr, "d")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "d")) );
         
         obj_Release(pArray);
         pArray = OBJ_NIL;

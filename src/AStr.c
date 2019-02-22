@@ -1649,7 +1649,7 @@ extern "C" {
         ASTR_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -1670,8 +1670,8 @@ extern "C" {
         }
         
         i = utf8_StrCmp(
-                    array_Ptr(this->pData,1),
-                    array_Ptr(pOther->pData,1)
+                    array_Ptr(this->pData, 1),
+                    array_Ptr(pOther->pData, 1)
             );
         if( i < 0 )
             eRc = ERESULT_SUCCESS_LESS_THAN;
@@ -1809,7 +1809,7 @@ extern "C" {
         W32CHR_T        *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.

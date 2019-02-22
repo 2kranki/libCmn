@@ -444,7 +444,7 @@ extern "C" {
         ASTRC_DATA      *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -484,7 +484,7 @@ extern "C" {
         char            *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -520,7 +520,7 @@ extern "C" {
         W32CHR_T        *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.

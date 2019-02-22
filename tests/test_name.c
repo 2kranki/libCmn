@@ -117,7 +117,7 @@ int         test_name_UTF8(
     if (pName1) {
 
         pAStr1 = name_getStrA(pName1);
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
@@ -152,7 +152,7 @@ int         test_name_UTF8Con(
     if (pName1) {
         
         pAStr1 = name_getStrA(pName1);
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
         
@@ -187,7 +187,7 @@ int         test_name_Int(
         
         pAStr1 = name_getStrA(pName1);
         fprintf(stderr, "strA = \"%s\"\n", AStr_getData(pAStr1));
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "0000000000000123456")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr1, "0000000000000123456")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
         
@@ -338,7 +338,7 @@ int         test_name_JSON01_Int(
         pAStr = name_getStrA(pName1);
         fprintf(stderr, "Need = \"0000000000000123456\"\n");
         fprintf(stderr, "Got  = \"%s\"\n", AStr_getData(pAStr));
-        XCTAssertTrue( (0 == AStr_CompareA(pAStr, "0000000000000123456")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr, "0000000000000123456")) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
         

@@ -233,7 +233,7 @@ extern "C" {
         W32CHR_T        *pStr2
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int             i;
         
         for( ;; ) {
@@ -1181,7 +1181,7 @@ extern "C" {
         W32STR_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1213,7 +1213,7 @@ extern "C" {
         char            *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         uint32_t        str1len;
         const
         W32CHR_T        *pStr1;
@@ -1278,7 +1278,7 @@ extern "C" {
         W32CHR_T        *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         uint32_t        str1len;
         const
         W32CHR_T        *pStr1;

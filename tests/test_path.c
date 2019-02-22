@@ -200,7 +200,7 @@ int         test_path_NewFromEnv(
     if (pObj) {
         
         eRc = path_CompareA(pObj, "/Users/bob");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1014,7 +1014,7 @@ int         test_path_ToBash(
         eRc = path_ToBash(pObj,&pStr);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == AStr_getLength(pStr)) );
-        XCTAssertTrue( (0 == AStr_CompareA(pStr, "xy\\ z.txt")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "xy\\ z.txt")) );
         obj_Release(pStr);
         pStr = NULL;
         
@@ -1052,7 +1052,7 @@ int         test_path_ExpandEnvVars01(
         eRc = path_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
         //obj_Release(pStr);
         //pStr = NULL;
         
@@ -1095,7 +1095,7 @@ int         test_path_ExpandEnvVars02(
         eRc = path_ExpandVars(pObj, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;

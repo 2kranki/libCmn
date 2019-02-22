@@ -263,7 +263,7 @@ extern "C" {
         W32STRC_DATA    *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -295,7 +295,7 @@ extern "C" {
         char            *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         const
         W32CHR_T        *pStr1;
         W32CHR_T        chr2;
@@ -354,7 +354,7 @@ extern "C" {
         W32CHR_T        *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         
         // Do initialization.
 #ifdef NDEBUG

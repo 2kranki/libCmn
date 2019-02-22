@@ -1,13 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   objHash_internal.h
- *	Generated 11/27/2018 11:34:09
+ *	Generated 10/24/2015 13:59:04
  *
  * Notes:
  *  --	N/A
  *
  */
-
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -39,144 +38,124 @@
 
 
 
-#include        <objHash.h>
-#include        <array.h>
-#include        <blocks_internal.h>
-#include        <jsonIn.h>
-#include        <listdl.h>
-#include        <rbt_tree.h>
-#include        <u32Array.h>
-
-
 #ifndef OBJHASH_INTERNAL_H
 #define	OBJHASH_INTERNAL_H
 
+
+#include    <objHash.h>
+#include    <array.h>
+#include    <blocks_internal.h>
+#include    <listdl.h>
+#include    <rbt_tree.h>
+#include    <u32Array.h>
 
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
+#define HASH_SCOPE_INC   1              /* Incremental Scope Size */
 
-    //                      Hash Record Descriptor
-    
-    // Duplicate entries are not allowed in the red-black binary tree (RBT).
-    // So, we handle duplicates via a chain off of one entry in the RBT.
-    
+    //      Hash Node Descriptor
 #pragma pack(push, 1)
-    typedef struct  objHash_record_s {
-        RBT_NODE        node;
+    typedef struct  objHash_node_s {
+        LISTDL_NODE     list;
         uint32_t        hash;
         uint32_t        unique;
-        union {
-            LISTDL_DATA     dups;           // List Head or Node of Duplicate Chain
-            LISTDL_NODE     dupNode;
-        };
-    } OBJHASH_RECORD;
+        uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
+        uint32_t        scopeNext;
+        OBJ_ID          pObject;        // OBJ_NIL == deleted node
+    } OBJHASH_NODE;
 #pragma pack(pop)
     
     
-
-
-    //---------------------------------------------------------------
-    //                  Object Data Description
-    //---------------------------------------------------------------
-
+    // Block Descriptor
+#pragma pack(push, 1)
+    typedef struct  objHash_block_s {
+        LISTDL_NODE     list;
+        OBJHASH_NODE    node[0];
+    } OBJHASH_BLOCK;
+#pragma pack(pop)
+    
+    
 #pragma pack(push, 1)
 struct objHash_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     BLOCKS_DATA     super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define OBJHASH_FLAG_DUPS  OBJ_FLAG_USER5  /* true == allow duplicates */
+    OBJ_IUNKNOWN    *pSuperVtbl;     // Needed for Inheritance
 
     // Common Data
+    ERESULT         eRc;
     uint32_t        unique;         // Unique number given to entries as they are
     //                              // added to the hash table
-    uint32_t        size;
-    uint32_t        cHashIndex;     // Index into Prime Table
+    uint32_t        num;            // Current Number of Entries
+    uint8_t         fDups;          // true == Allow Duplicate Names
+    uint8_t         rsvd8[3];
+    uint32_t        cBlock;         // Number of Nodes per Block
     uint32_t        cHash;          // Number of Hash Buckets
+    uint32_t        cHashIdx;       // Hash Bucket Size Index
     uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
-    RBT_TREE        *pHash;         // Main Hash Table
-    
+    LISTDL_DATA     blocks;
+    LISTDL_DATA     freeList;       // Free Node Linked List
+    LISTDL_DATA     *pHash;         // Main Hash Table
+
+    ARRAY_DATA      *pScope;
+    U32ARRAY_DATA   *pScopes;
+    U32ARRAY_DATA   *pProcs;
+
 };
 #pragma pack(pop)
 
     extern
-    struct objHash_class_data_s  objHash_ClassObj;
-
-    extern
     const
-    OBJHASH_VTBL         objHash_Vtbl;
+    OBJHASH_VTBL    objHash_Vtbl;
 
 
 
-    //---------------------------------------------------------------
-    //              Class Object Method Forward Definitions
-    //---------------------------------------------------------------
-
-#ifdef  OBJHASH_SINGLETON
-    OBJHASH_DATA *     objHash_getSingleton(
+    // Internal Functions
+    OBJ_ID          objHash_Class(
         void
     );
-
-    bool            objHash_setSingleton(
-     OBJHASH_DATA       *pValue
-);
-#endif
-
-
-
-    //---------------------------------------------------------------
-    //              Internal Method Forward Definitions
-    //---------------------------------------------------------------
-
-    OBJ_IUNKNOWN *  objHash_getSuperVtbl(
-        OBJHASH_DATA     *this
-    );
-
-
+    
+    
     void            objHash_Dealloc(
         OBJ_ID          objId
     );
 
-
-    OBJHASH_RECORD * objHash_FindRecord(
-        OBJHASH_DATA    *this,
-        uint32_t        hash,
-        OBJ_ID          pObject
-    );
     
-    
-    OBJHASH_DATA *  objHash_ParseObject(
-        JSONIN_DATA     *pParser
-    );
-
-
     void *          objHash_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-
-
-    ASTR_DATA *     objHash_ToJSON(
-        OBJHASH_DATA      *this
+    
+    
+    ERESULT         objHash_ScopeClose(
+        OBJHASH_DATA    *this
     );
-
-
-    RBT_TREE *      objHash_TreeFromHash (
+    
+    
+    uint32_t        objHash_ScopeCurrent(
+        OBJHASH_DATA    *this
+    );
+    
+    
+    OBJENUM_DATA *  objHash_ScopeEnum(
         OBJHASH_DATA    *this,
-        uint32_t        hash
+        uint32_t        level
     );
     
     
-
-
+    uint32_t        objHash_ScopeOpen(
+        OBJHASH_DATA    *this
+    );
+    
+    
 #ifdef NDEBUG
 #else
     bool			objHash_Validate(
-        OBJHASH_DATA       *this
+        OBJHASH_DATA    *this
     );
 #endif
 
