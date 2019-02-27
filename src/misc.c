@@ -162,6 +162,25 @@ extern "C" {
 
 
 
+    int             misc_RangeCmpI32(
+        int32_t         amt1,
+        int32_t         amt2,
+        uint32_t        epsilon
+    )
+    {
+        int32_t         iRc = 0;
+        
+        iRc = (amt1 - amt2);
+        if (iRc < 0)
+            iRc = -iRc;
+        if (iRc <= epsilon)
+            return 1;
+        
+        return 0;
+    }
+    
+
+    
     MISC_DATA *     misc_New(
     )
     {

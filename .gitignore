@@ -4,7 +4,7 @@
 # exclude patterns (uncomment them if you want to use them):
 *.[od]
 *~
-.DS_Store
+*.DS_Store
 *.pyc
 *.swp
 *.tmp
@@ -25,6 +25,7 @@ build/
 
 # Backup files
 *~.nib
+*~.swp
 
 # MPLABX files
 *.dmp
@@ -34,6 +35,8 @@ build/
 *.p1
 *.sdb
 *.sym
+*.so
+*.dylib
 **/nbproject/private/
 **/nbproject/private/*
 **/nbproject/Makefile-*
@@ -44,4 +47,6 @@ debug/
 dist/
 nbbuild/
 nbdist/
+pkg/
+bin/
 

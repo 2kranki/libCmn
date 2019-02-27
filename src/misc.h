@@ -179,6 +179,21 @@ extern "C" {
     );
     
     
+    /*!
+     Compare two numbers against a range value.
+     @param     amt1    integer amount
+     @param     amt2    integer amount
+     @param     epsilon variance allowed
+     @return    1 if absolute value of the difference between amt1 and amt2
+                is less than or equal to epsilon, otherwise, 0.
+     */
+    int             misc_RangeCmpI32(
+        int32_t         amt1,
+        int32_t         amt2,
+        uint32_t        epsilon
+    );
+    
+    
     // Simple but slow routine to check if a number is prime.
     bool            misc_IsPrime(
         uint64_t        amt

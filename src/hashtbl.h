@@ -125,7 +125,7 @@ extern "C" {
      released.
      @return    pointer to hashtbl object if successful, otherwise OBJ_NIL.
      */
-    HASHTBL_DATA *     hashtbl_Alloc (
+    HASHTBL_DATA *  hashtbl_Alloc (
         void
     );
     
@@ -135,7 +135,7 @@ extern "C" {
     );
     
     
-    HASHTBL_DATA *     hashtbl_New (
+    HASHTBL_DATA *  hashtbl_New (
         void
     );
     
@@ -152,23 +152,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     hashtbl_Disable (
-        HASHTBL_DATA		*this
+    ERESULT         hashtbl_Disable (
+        HASHTBL_DATA	*this
     );
 
 
-    ERESULT     hashtbl_Enable (
-        HASHTBL_DATA		*this
+    ERESULT         hashtbl_Enable (
+        HASHTBL_DATA	*this
     );
 
    
-    HASHTBL_DATA *   hashtbl_Init (
-        HASHTBL_DATA     *this
+    HASHTBL_DATA *  hashtbl_Init (
+        HASHTBL_DATA    *this
     );
 
 
-    ERESULT     hashtbl_IsEnabled (
-        HASHTBL_DATA		*this
+    ERESULT         hashtbl_IsEnabled (
+        HASHTBL_DATA	*this
     );
     
  
@@ -185,7 +185,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    hashtbl_ToDebugString (
-        HASHTBL_DATA     *this,
+        HASHTBL_DATA    *this,
         int             indent
     );
     
