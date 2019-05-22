@@ -359,9 +359,10 @@ extern "C" {
      */
     ERESULT         genWIN_Assign(
         GENWIN_DATA		*this,
-        GENWIN_DATA      *pOther
+        GENWIN_DATA     *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -403,11 +404,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        obj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return obj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -983,7 +984,7 @@ extern "C" {
         }
         pPath = path_NewA(pName);
         if (OBJ_NIL == pPath) {
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            //obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
         eRc = path_SplitFile(pPath, &pFileName, &pFileExt);
@@ -997,7 +998,7 @@ extern "C" {
             pFileName = OBJ_NIL;
             obj_Release(pPath);
             pPath = OBJ_NIL;
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         
@@ -1136,7 +1137,7 @@ extern "C" {
             pPath = OBJ_NIL;
             obj_Release(pStr);
             pStr = OBJ_NIL;
-            obj_setLastError(this, ERESULT_INVALID_PARAMETER);
+            //obj_setLastError(this, ERESULT_INVALID_PARAMETER);
             return OBJ_NIL;
         }
         if (!fCO && fExec) {
@@ -1153,7 +1154,7 @@ extern "C" {
         pFileName = OBJ_NIL;
         obj_Release(pPath);
         pPath = OBJ_NIL;
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1505,7 +1506,7 @@ extern "C" {
 #endif
         pFullName = this->pLibName(this, pName, pLibNamePrefix);
         if ( OBJ_NIL == pFullName) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
@@ -1517,7 +1518,7 @@ extern "C" {
         if (pLibIncludePath) {
             pPath = path_NewA(pLibIncludePath);
             if (OBJ_NIL == pPath) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
@@ -1525,7 +1526,7 @@ extern "C" {
         else {
             pPath = path_NewA(AStr_getData(pFullName));
             if (OBJ_NIL == pPath) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = ERESULT_SUCCESS;
@@ -1534,7 +1535,7 @@ extern "C" {
         // Return to caller.
         obj_Release(pFullName);
         pFullName = OBJ_NIL;
-        obj_setLastError(this, eRc);
+        //obj_setLastError(this, eRc);
         return pPath;
     }
     
@@ -1574,7 +1575,7 @@ extern "C" {
 #endif
         pFullName = this->pLibName(this, pName, pLibNamePrefix);
         if ( OBJ_NIL == pFullName) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
@@ -1586,7 +1587,7 @@ extern "C" {
         if (pLibInstalledPath) {
             pPath = path_NewA(pLibInstalledPath);
             if (OBJ_NIL == pPath) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
@@ -1594,7 +1595,7 @@ extern "C" {
         else {
             pPath = path_NewA(AStr_getData(pFullName));
             if (OBJ_NIL == pPath) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = ERESULT_SUCCESS;
@@ -1603,7 +1604,7 @@ extern "C" {
         // Return to caller.
         obj_Release(pFullName);
         pFullName = OBJ_NIL;
-        obj_setLastError(this, eRc);
+        //obj_setLastError(this, eRc);
         return pPath;
     }
     
@@ -1641,7 +1642,7 @@ extern "C" {
         if (pLibNamePrefix) {
             pFullName = AStr_NewA(pLibNamePrefix);
             if (OBJ_NIL == pFullName) {
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+                //obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
             eRc = AStr_AppendA(pFullName, pName);
@@ -1649,13 +1650,13 @@ extern "C" {
         else {
             pFullName = AStr_NewA(pName);
             if (OBJ_NIL == pFullName) {
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+                //obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pFullName;
     }
     
@@ -1693,11 +1694,9 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);                          // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, MAIN_IDENT_GENWIN);       // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genWIN_Vtbl);
         
-        obj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -1941,7 +1940,7 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1975,7 +1974,7 @@ extern "C" {
         
         AStr_AppendA(pStr, "}\n");
         
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     

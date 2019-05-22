@@ -704,7 +704,11 @@ extern "C" {
         else if (unicodeChar == 0x00A0) {       // no-break space
             fRc = true;
         }
-        else if (unicodeChar == 0x200B) {       // zero width space
+        else if (unicodeChar == 0x1680) {       // OGHAM space mark
+            fRc = true;
+        }
+        else if ((unicodeChar >= 0x2000)        // General Punctuation space
+                 && (unicodeChar <= 0x200B)) {
             fRc = true;
         }
         else if (unicodeChar == 0x2028) {       // LS - Line Separator
@@ -713,7 +717,10 @@ extern "C" {
         else if (unicodeChar == 0x2029) {       // PS - Paragraph Separator
             fRc = true;
         }
-        else if (unicodeChar == 0x2060) {       // word joiner
+        else if (unicodeChar == 0x205F) {       // Medium Mathematical space
+            fRc = true;
+        }
+        else if (unicodeChar == 0x202F) {       // Narrow No-Break space
             fRc = true;
         }
         else if (unicodeChar == 0x3000) {       // ideographic space

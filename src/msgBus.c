@@ -186,49 +186,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         msgBus_getLastError(
-        MSGBUS_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !msgBus_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            msgBus_setLastError(
-        MSGBUS_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !msgBus_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
     NODEARRAY_DATA * msgBus_getRegistry(
         MSGBUS_DATA     *this
     )
@@ -243,7 +200,6 @@ extern "C" {
         }
 #endif
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return this->pRegistry;
     }
     
@@ -267,7 +223,6 @@ extern "C" {
         }
         this->pRegistry = pValue;
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -290,7 +245,6 @@ extern "C" {
         
         size = nodeArray_getSize(this->pRegistry);
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return size;
     }
     
@@ -310,7 +264,6 @@ extern "C" {
         }
 #endif
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return this->msWait;
     }
     
@@ -330,7 +283,6 @@ extern "C" {
         
         this->msWait = value;
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -365,17 +317,18 @@ extern "C" {
         MSGBUS_DATA      *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
         if( !msgBus_Validate(pOther) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(pOther);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -406,11 +359,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        msgBus_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return msgBus_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -441,19 +394,16 @@ extern "C" {
 
         pEntry = msgData_New(msgOrigin, msgDest, msgLen, pMsgData);
         if (OBJ_NIL == pEntry) {
-            msgBus_setLastError(this, ERESULT_INVALID_DATA);
             return ERESULT_INVALID_DATA;
         }
         fRc = objCb_Put(this->pBuffer, pEntry);
         obj_Release(pEntry);
         pEntry = OBJ_NIL;
         if (!fRc) {
-            msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
             return ERESULT_GENERAL_FAILURE;
         }
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -475,10 +425,10 @@ extern "C" {
      @warning   Remember to release the returned the MSGBUS object.
      */
     MSGBUS_DATA *     msgBus_Copy(
-        MSGBUS_DATA       *this
+        MSGBUS_DATA     *this
     )
     {
-        MSGBUS_DATA       *pOther = OBJ_NIL;
+        MSGBUS_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -501,7 +451,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -579,14 +528,13 @@ extern "C" {
 
         // Do initialization.
         if (NULL == this) {
-            msgBus_setLastError(this, ERESULT_INVALID_OBJECT);
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -595,8 +543,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return msgBus_getLastError(this);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -615,7 +562,7 @@ extern "C" {
     #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
         
@@ -624,8 +571,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
-        return msgBus_getLastError(this);
+        return ERESULT_SUCCESS;
     }
 
 
@@ -652,7 +598,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&msgBus_Vtbl);
         
-        msgBus_setLastError(this, ERESULT_GENERAL_FAILURE);
         this->msWait = 10;
 
         // WARNING: Order is important here!
@@ -693,10 +638,8 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "msgBus::offsetof(eRc) = %lu\n", offsetof(MSGBUS_DATA,eRc));
-        fprintf(stderr, "msgBus::sizeof(OBJMETHOD_DATA) = %lu\n", sizeof(MSGBUS_DATA));
+        //fprintf(stderr, "msgBus::sizeof(OBJMETHOD_DATA) = %lu\n", sizeof(MSGBUS_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(MSGBUS_DATA));
     #endif
 
@@ -719,18 +662,16 @@ extern "C" {
 #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            msgBus_setLastError(this, ERESULT_SUCCESS_TRUE);
-            return msgBus_getLastError(this);
+            return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS_FALSE);
-        return msgBus_getLastError(this);
+        return ERESULT_SUCCESS_FALSE;
     }
     
     
@@ -811,14 +752,13 @@ extern "C" {
 #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (this->pRegistry == OBJ_NIL) {
             this->pRegistry = nodeArray_New();
             if (this->pRegistry == OBJ_NIL) {
-                msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
@@ -826,7 +766,6 @@ extern "C" {
         ++this->unique;
         pNode = node_NewWithInt(this->unique, pRcvObj);
         if (pNode == OBJ_NIL) {
-            msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return ERESULT_OUT_OF_MEMORY;
         }
         
@@ -835,7 +774,6 @@ extern "C" {
         pNode = OBJ_NIL;
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -854,14 +792,13 @@ extern "C" {
 #else
         if( !msgBus_Validate(this) ) {
             DEBUG_BREAK();
-            return msgBus_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (this->pRegistry == OBJ_NIL) {
             this->pRegistry = nodeArray_New();
             if (this->pRegistry == OBJ_NIL) {
-                msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
@@ -869,7 +806,6 @@ extern "C" {
         ++this->unique;
         pNode = node_NewWithInt(this->unique, pRcvObj);
         if (pNode == OBJ_NIL) {
-            msgBus_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return ERESULT_OUT_OF_MEMORY;
         }
         node_setMisc1(pNode, vtblOffset);
@@ -879,7 +815,6 @@ extern "C" {
         pNode = OBJ_NIL;
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -950,7 +885,6 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(msgBus)}\n", this);
         AStr_AppendA(pStr, str);
         
-        msgBus_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -984,7 +918,6 @@ extern "C" {
 #endif
         
         if (this->pRegistry == OBJ_NIL) {
-            msgBus_setLastError(this, ERESULT_DATA_NOT_FOUND);
             return ERESULT_DATA_NOT_FOUND;
         }
         
@@ -997,7 +930,6 @@ extern "C" {
                     pNode = nodeArray_Delete(this->pRegistry, i+1);
                     obj_Release(pNode);
                     pNode = OBJ_NIL;
-                    msgBus_setLastError(this, ERESULT_SUCCESS);
                     return ERESULT_SUCCESS;
                     break;
                 }
@@ -1005,7 +937,6 @@ extern "C" {
         }
         
         // Return to caller.
-        msgBus_setLastError(this, ERESULT_DATA_NOT_FOUND);
         return ERESULT_DATA_NOT_FOUND;
     }
     
@@ -1042,12 +973,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(MSGBUS_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

@@ -84,8 +84,10 @@ struct screen_data_s	{
     int             ncols;
 #ifdef  SCREEN_USE_CURSES
     WINDOW          *pWndMain;
-#else
+#endif
+#ifdef  SCREEN_USE_ANSI
     int             termType;
+    FILE            *pScrnOut;
 #endif
 
 };

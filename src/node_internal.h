@@ -110,6 +110,13 @@ struct node_data_s	{
     const
     struct node_class_data_s   node_ClassObj;
     
+    extern
+    const
+    uint32_t        node_cProps;
+    extern
+    const
+    OBJ_PROP        node_pProps[];
+    
 
 
     // Internal Functions

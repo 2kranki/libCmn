@@ -25,7 +25,6 @@ build/
 
 # Backup files
 *~.nib
-*~.swp
 
 # MPLABX files
 *.dmp

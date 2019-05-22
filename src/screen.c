@@ -43,6 +43,9 @@
 /* Header File Inclusion */
 #include        <screen_internal.h>
 #include        <trace.h>
+#include        <sys/ioctl.h>
+#include        <stdio.h>
+#include        <unistd.h>
 
 
 
@@ -59,16 +62,32 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            screen_task_body(
-        void            *pData
+    //---------------------------------------------------------------
+    //                    S c r e e n  S i z e
+    //---------------------------------------------------------------
+    
+    bool            screen_ScreenSizeGet(
+        SCREEN_DATA       *this
     )
     {
-        //SCREEN_DATA  *this = pData;
+        struct winsize w;
         
-    }
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
 #endif
+        
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        this->nrows = w.ws_row;
+        this->ncols = w.ws_col;
+        
+        return 0;
+    }
+    
+    
 
 
 
@@ -90,7 +109,7 @@ extern "C" {
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+        this = obj_Alloc(cbSize);
         
         // Return to caller.
         return this;
@@ -376,35 +395,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          C l e a r
-    //---------------------------------------------------------------
-    
-    ERESULT         screen_Clear(
-        SCREEN_DATA     *this
-    )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !screen_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#ifdef  SCREEN_USE_CURSES
-        clear( );
-#else
-#endif
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -506,6 +496,36 @@ extern "C" {
         // Return to caller.
         //obj_Release(pOther);
         return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          C u r s o r
+    //---------------------------------------------------------------
+    
+    ERESULT         screen_CursorHome(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[H)");
+#endif
+        
+        // Put code here...
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
     
     
@@ -647,6 +667,141 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          E r a s e
+    //---------------------------------------------------------------
+    
+    ERESULT         screen_EraseDown(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[J");     // Erase entire line.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_EraseLine(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[2K");     // Erase entire line.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_EraseScreen(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[2J");     // Erase screen and home cursor.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_EraseToLineEnd(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[K");     // Erase from current cursor to EOL.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_EraseUp(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[1J");     // Erase entire line.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+
+    //---------------------------------------------------------------
     //                        G e t c h
     //---------------------------------------------------------------
     
@@ -654,7 +809,11 @@ extern "C" {
         SCREEN_DATA     *this
     )
     {
+#ifdef  SCREEN_USE_CURSES
         int             chr = ERR;
+#else
+        int             chr = -1;
+#endif
         
         // Do initialization.
 #ifdef NDEBUG
@@ -668,7 +827,6 @@ extern "C" {
         
 #ifdef  SCREEN_USE_CURSES
         chr = getch( );
-#else
 #endif
 
         // Return to caller.
@@ -724,6 +882,9 @@ extern "C" {
         this->ncols = getmaxx(this->pWndMain);
         clear( );               // clear screen, send cursor to position (0,0)
         refresh( );             // implement all changes since last refresh
+#endif
+#ifdef SCREEN_USE_ANSI
+        this->termType = SCREEN_TYPE_ANSI;
 #endif
         
     #ifdef NDEBUG
@@ -813,12 +974,16 @@ extern "C" {
             va_start( arg_ptr, pFormat );
             size = vsnprintf( pStr, size, pFormat, arg_ptr );
             va_end( arg_ptr );
+#ifdef  SCREEN_USE_CURSES
             mvaddstr(row, col, str);
+#endif
             mem_Free( pStr );
             pStr = NULL;
         }
         else {
+#ifdef  SCREEN_USE_CURSES
             mvaddstr(row, col, str);
+#endif
         }
         
         // Return to caller.
@@ -980,6 +1145,143 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          S c r o l l
+    //---------------------------------------------------------------
+    
+    ERESULT         screen_ScrollDown(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033D");     // Erase entire line.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_ScrollScreen(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[r");     // Erase screen and home cursor.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_ScrollScreenLines(
+        SCREEN_DATA     *this,
+        uint16_t        beg,
+        uint16_t        end
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[%d;%dr", beg, end);
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_ScrollToLineEnd(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033[K");     // Erase from current cursor to EOL.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         screen_ScrollUp(
+        SCREEN_DATA     *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !screen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+#ifdef  SCREEN_USE_CURSES
+        // clear( );
+#endif
+#ifdef SCREEN_USE_ANSI
+        fprintf(this->pScrnOut, "\033M");     // Erase entire line.
+#endif
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

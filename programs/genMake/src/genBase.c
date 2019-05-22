@@ -1945,7 +1945,7 @@ ERESULT         genBase_GenMakefile(
 #endif
         pFullName = this->pLibName(this, pName, pLibNamePrefix);
         if ( OBJ_NIL == pFullName) {
-            obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
             return OBJ_NIL;
         }
         TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
@@ -1958,7 +1958,7 @@ ERESULT         genBase_GenMakefile(
         if (pLibInstalledPath) {
             pPath = path_NewA(pLibInstalledPath);
             if (OBJ_NIL == pPath) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
@@ -1966,7 +1966,7 @@ ERESULT         genBase_GenMakefile(
         else {
             pPath = path_NewA(AStr_getData(pFullName));
             if (OBJ_NIL == pPath) {
-                obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
+                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
                 return OBJ_NIL;
             }
             eRc = ERESULT_SUCCESS;
@@ -1975,7 +1975,7 @@ ERESULT         genBase_GenMakefile(
         // Return to caller.
         obj_Release(pFullName);
         pFullName = OBJ_NIL;
-        obj_setLastError(this, eRc);
+        //obj_setLastError(this, eRc);
         return pPath;
     }
 
@@ -2020,7 +2020,7 @@ ERESULT         genBase_GenMakefile(
         if (pLibNamePrefix) {
             pFullName = AStr_NewA(pLibNamePrefix);
             if (OBJ_NIL == pFullName) {
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+                //obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
             eRc = AStr_AppendA(pFullName, pName);
@@ -2028,13 +2028,13 @@ ERESULT         genBase_GenMakefile(
         else {
             pFullName = AStr_NewA(pName);
             if (OBJ_NIL == pFullName) {
-                obj_setLastError(this, ERESULT_GENERAL_FAILURE);
+                //obj_setLastError(this, ERESULT_GENERAL_FAILURE);
                 return OBJ_NIL;
             }
         }
         
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return pFullName;
     }
 

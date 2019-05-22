@@ -125,11 +125,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         msgBus_getLastError(
-        MSGBUS_DATA		*this
-    );
-
-
     uint32_t        msgBus_getRegistrySize(
         MSGBUS_DATA     *this
     );

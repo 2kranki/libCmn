@@ -269,6 +269,23 @@ NODE_VTBL       node_Vtbl = {
 };
 
 
+const
+uint32_t        node_cProps = 8;
+const
+OBJ_PROP        node_pProps[] = {
+    { "cls","","","Class Categorization","int32_t","","public","NODE_DATA",offsetof(NODE_DATA,cls),(sizeof(int32_t) << 3),0    },
+    { "type","","","???","int32_t","","public","NODE_DATA",offsetof(NODE_DATA,type),(sizeof(int32_t) << 3),0    },
+    { "unique","","","unique integer identifier","uint32_t","","ro","NODE_DATA",offsetof(NODE_DATA,unique),(sizeof(uint32_t) << 3),0    },
+    { "name","pName","","Name Identifier","NAME_DATA","","ro","NODE_DATA",offsetof(NODE_DATA,pName),(sizeof(NAME_DATA *) << 3),0    },
+    { "data","pData","","associated data object","OBJ_ID","","public","NODE_DATA",offsetof(NODE_DATA,pData),(sizeof(OBJ_ID) << 3),0    },
+    { "extra","pExtra","","an optional extra associated object","OBJ_ID","","public","NODE_DATA",offsetof(NODE_DATA,pExtra),(sizeof(OBJ_ID) << 3),0    },
+    { "other","pOther","","an optional extra associated object","OBJ_ID","","public","NODE_DATA",offsetof(NODE_DATA,pOther),(sizeof(OBJ_ID) << 3),0    },
+    { "properties","pProperties","","Associated Properties","NODEBTP_DATA","","public","NODE_DATA",offsetof(NODE_DATA,pProperties),(sizeof(NODEBTP_DATA *) << 3),0    },
+    
+    {NULL}
+};
+
+
 
 static
 const

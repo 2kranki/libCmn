@@ -1,0 +1,11 @@
+{
+    "cmd":"cobj",
+    "data":"./node.json.txt",
+    "debug":true,
+    "force":true,
+    "mdldir":"${HOME}/git/gen/src/models",
+    "noop":false,
+    "outdir":"${HOME}/git/libTest",
+    "quiet":false,
+    "replace":true
+}

@@ -92,6 +92,7 @@ extern	"C" {
 #define             OBJ_NIL ((OBJ_ID)0)
     typedef struct obj_iunknown_s  OBJ_IUNKNOWN;
     typedef struct obj_info_s  OBJ_INFO;
+    typedef struct obj_prop_s  OBJ_PROP;            // Property
     typedef void (*DEALLOC_METHOD)(void *);
     
     typedef struct obj_data_s   OBJ_DATA;   /* One Interface */
@@ -159,7 +160,37 @@ extern	"C" {
 #pragma pack(pop)
     
     
+    // Object Property Definition
+#pragma pack(push, 1)
+    struct obj_prop_s {
+        const
+        char            *pName;             // Name
+        const
+        char            *pInternal;         // Internal Name (if object, use p${titled.pName})
+        const
+        char            *pExternal;         // External Name (used for JSON/HJSON, etc)
+        const
+        char            *pDesc;             // Description
+        const
+        char            *pType;             // Type (if object, use ${object.upper}_DATA)
+        const
+        char            *pInit;             // Initialization Code
+        const
+        char            *pVis;              // Visibility - public,private,read-only,ro,none
+        const
+        char            *pBase;             // Base Structure/Pointer
+        uint32_t        offset;             // Offset into Base
+        // If property is part of a combined field, we can generate a mask and shift amount to
+        // add, extract or delete the property from the combined field.
+        uint32_t        sizeInBits;         // Size of property in bits if integer
+        uint32_t        shiftAmt;           // Amount to shift right to put in lowest bits
+        uint8_t         fObject;            // true == object
+        uint8_t         filler8[3];
+    };
+#pragma pack(pop)
     
+    
+
 //#pragma pack(push, 1)
     struct obj_iunknown_s {
         const

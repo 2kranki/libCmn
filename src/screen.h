@@ -65,7 +65,8 @@ extern "C" {
 #endif
     
     
-#define  SCREEN_USE_CURSES 1
+//#define  SCREEN_USE_CURSES  1
+#define  SCREEN_USE_ANSI    1
 
     
 
@@ -85,7 +86,38 @@ extern "C" {
         //bool        (*pIsEnabled)(SCREEN_DATA *);
     } SCREEN_VTBL;
 
+#ifdef  SCREEN_USE_ANSI
+    enum screen_colors {
+        SCREEN_COLOR_RESET=0,
+        SCREEN_COLOR_BRIGHT,
+        SCREEN_COLOR_DIM,
+        SCREEN_COLOR_UNDERSCORE,
+        SCREEN_COLOR_BLINK,
+        SCREEN_COLOR_REVERSE,
+        SCREEN_COLOR_HIDDEN,
+        SCREEN_FORE_BLACK=30,
+        SCREEN_FORE_RED,
+        SCREEN_FORE_GREEN,
+        SCREEN_FORE_YELLOW,
+        SCREEN_FORE_BLUE,
+        SCREEN_FORE_MAGENTA,
+        SCREEN_FORE_CYAN,
+        SCREEN_FORE_WHITE,
+        SCREEN_BACK_BLACK=40,
+        SCREEN_BACK_RED,
+        SCREEN_BACK_GREEN,
+        SCREEN_BACK_YELLOW,
+        SCREEN_BACK_BLUE,
+        SCREEN_BACK_MAGENTA,
+        SCREEN_BACK_CYAN,
+        SCREEN_BACK_WHITE
+    };
+#endif
 
+    
+    
+    
+    
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *

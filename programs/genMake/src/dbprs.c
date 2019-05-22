@@ -2132,12 +2132,12 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(DBPRS_DATA)) ) {
-            obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return false;
         }
 
         // Return to caller.
-        obj_setLastError(this, ERESULT_SUCCESS);
+        //obj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     #endif

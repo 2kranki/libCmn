@@ -4,7 +4,8 @@
         inheritsFrom:[obj], 
         properties: [
             {name:priority, type:uint16_t, class:private, gen:[both,internal], internal:true},
-            {name:str, dataName:pStr, type:"ASTR_DATA", pointer:1, class:public, gen:[both,internal], internal:true},
+            {name:str, dataName:pStr, type:"ASTR_DATA", pointer:1, class:public, 
+                        gen:[both,internal], internal:true},
             {name:size, type:uint32_t, class:public, gen:[get,internal]},
             {name:superVtbl, type:"OBJ_DATA *", class:public, gen:get}
         ],

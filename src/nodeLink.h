@@ -171,6 +171,11 @@ extern "C" {
     );
     
     
+    int32_t         nodeLink_getClass(
+        NODELINK_DATA   *this
+    );
+    
+    
     OBJ_ID          nodeLink_getData(
         NODELINK_DATA   *this
     );
@@ -240,6 +245,16 @@ extern "C" {
     );
     
     
+    uint16_t        nodeLink_getMisc1(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setMisc1(
+        NODELINK_DATA   *this,
+        uint16_t        value
+    );
+    
+
     NAME_DATA *     nodeLink_getName(
         NODELINK_DATA   *this
     );

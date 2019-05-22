@@ -91,7 +91,7 @@ extern "C" {
             "backup",
             'n',
             CMDUTL_ARG_OPTION_NONE,
-            APPL_ARG_INCR,
+            CMDUTL_TYPE_INCR,
             offsetof(MAIN_DATA, fBackup),
             NULL,
             "Backup output file if it exists"
@@ -1707,7 +1707,6 @@ extern "C" {
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);                        // Needed for Inheritance
-        obj_setIdent((OBJ_ID)this, OBJ_IDENT_MAIN);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&main_Vtbl);
         

@@ -126,9 +126,7 @@ GENBASE_CLASS_DATA  genBase_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(GENBASE_CLASS_DATA),         // cbSize
-        OBJ_IDENT_GENBASE_CLASS,            // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

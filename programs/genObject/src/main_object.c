@@ -142,9 +142,7 @@ MAIN_CLASS_DATA  main_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(MAIN_CLASS_DATA),            // cbSize
-        OBJ_IDENT_MAIN_CLASS,               // cbIdent
         0,                                  // cbFlags
-        0,                                  // eRc
         1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },

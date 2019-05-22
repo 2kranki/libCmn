@@ -1,0 +1,99 @@
+{
+    "name":"nodeArc",
+    "super":"node",
+    "properties":[
+        {
+            "name":"cls",
+            "desc":"Class Categorization",                
+            "type":"int32_t",
+            "object":false,             
+            "vis":"public",             
+            "base":"",                  
+            "offset":-1,                
+            "size":0,                   
+            "shift":0                      
+        },
+        {
+            "name":"type",
+            "desc":"???",               
+            "type":"int32_t",
+            "object":false,             
+            "vis":"public",             
+            "base":"",                  
+            "offset":-1,                
+            "size":0,                   
+            "shift":0                     
+        },
+        {
+            "name":"unique",
+            "desc":"unique integer identifier",
+            "type":"uint32_t",
+            "object":false,            
+            "vis":"ro", 
+            "base":"",                 
+            "offset":-1,                
+            "size":0,                  
+            "shift":0                      
+        },
+       {
+            "name":"name",
+            "internal":"pName",
+            "desc":"Name Identifier",
+            "type":"NAME_DATA",
+            "object":true,
+            "vis":"ro",
+            "base":null,
+            "offset":-1,
+            "size":0,
+            "shift":0 
+        },
+        {
+            "name":"data",
+            "internal":"pData",
+            "desc":"associated data object",
+            "type":"OBJ_ID",
+            "object":true,
+            "vis":"public",
+            "base":null,
+            "offset":-1,
+            "size":0,
+            "shift":0
+        },
+        {
+            "name":"extra",
+            "internal":"pExtra",
+            "desc":"an optional extra associated object",
+            "type":"OBJ_ID",
+            "object":true,
+            "vis":"public",
+            "base":null,
+            "offset":-1,
+            "size":0,
+            "shift":0
+        },
+        {
+            "name":"other",
+            "internal":"pOther",
+            "desc":"an optional extra associated object",
+            "type":"OBJ_ID",
+            "object":true,
+            "vis":"public",
+            "base":null,
+            "offset":-1,
+            "size":0,
+            "shift":0
+        },
+       {
+            "name":"properties",
+            "internal":"pProperties",
+            "desc":"Associated Properties",
+            "type":"NODEBTP_DATA",
+            "object":true,
+            "vis":"public",
+            "base":null,
+            "offset":-1,
+            "size":0,
+            "shift":0 
+        }
+    ]
+}

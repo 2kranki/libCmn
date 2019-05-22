@@ -70,7 +70,6 @@ struct msgBus_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     PSXLOCK_DATA    *pLock;
     NODEARRAY_DATA  *pRegistry;
     PSXTHREAD_DATA  *pThread;
@@ -107,10 +106,6 @@ struct msgBus_data_s	{
         void            *pData
     );
 
-    bool            msgBus_setLastError(
-        MSGBUS_DATA     *this,
-        ERESULT         value
-    );
 
 
 
