@@ -150,12 +150,14 @@ extern "C" {
         OBJ_IDENT_ARRAY_CLASS,
         OBJ_IDENT_ASCII,                // ASCII Character Set
         OBJ_IDENT_ASCII_CLASS,
-        OBJ_IDENT_ASTR,                 // ASCII String
+        OBJ_IDENT_ASTR,                 // ASCII/UTF-8 String
         OBJ_IDENT_ASTR_CLASS,
-        OBJ_IDENT_ASTRARRAY,            // an Array of ASCII Strings
+        OBJ_IDENT_ASTRARRAY,            // an Array of ASCII/UTF-8 Strings
         OBJ_IDENT_ASTRARRAY_CLASS,
         OBJ_IDENT_ASTRC,                // ASCII String Constant
         OBJ_IDENT_ASTRC_CLASS,
+        OBJ_IDENT_ASTRCREADER,          // ASCII String Constant Reader
+        OBJ_IDENT_ASTRCREADER_CLASS,
         OBJ_IDENT_AUDIOCW,              // Morse Code Audio
         OBJ_IDENT_AUDIOCW_CLASS,
         OBJ_IDENT_AUDIOWAV,             // WAV Audio
@@ -275,6 +277,8 @@ extern "C" {
         OBJ_IDENT_HJSON_CLASS,
         OBJ_IDENT_I32ARRAY,             // Array of int32_t
         OBJ_IDENT_I32ARRAY_CLASS,
+        OBJ_IDENT_IOBASE,               // I/O Base Logic
+        OBJ_IDENT_IOBASE_CLASS,
         OBJ_IDENT_JSONIN,               // Standardized JSON Input
         OBJ_IDENT_JSONIN_CLASS,
         OBJ_IDENT_JSONOUT,              // Standardized JSON Output
@@ -423,6 +427,8 @@ extern "C" {
         OBJ_IDENT_RRDS32_CLASS,
         OBJ_IDENT_SCANNER,              // Tablized Command Processor
         OBJ_IDENT_SCANNER_CLASS,
+        OBJ_IDENT_SCANREADER,           // ASCII String Constant Reader
+        OBJ_IDENT_SCANREADER_CLASS,
         OBJ_IDENT_SCREEN,               // Terminal Screen Handler
         OBJ_IDENT_SCREEN_CLASS,
         OBJ_IDENT_SGRAPH,               // Simple Graph

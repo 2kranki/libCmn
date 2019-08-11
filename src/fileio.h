@@ -56,6 +56,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ioInterface.h>
 #include        <path.h>
 
 
@@ -73,6 +74,9 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    // Defined in cmn_defs:
+        // OBJ_IDENT_FILEIO,               // File I/O
+        // OBJ_IDENT_FILEIO_CLASS,
 
     typedef struct fileio_data_s	FILEIO_DATA;    // Inherits from OBJ.
 
@@ -248,7 +252,8 @@ extern "C" {
     /*!
      Read a line from the file and store it into the buffer. Stop when either
      (cBuffer - 1) characters are read, the newline character is read, or the
-     end-of-file is reached, whichever comes first.
+     end-of-file is reached, whichever comes first. '\n' & '\r' are considered
+     end-of-line characters and are not included in the buffer.
      @param     this    object pointer
      @param     cBuffer size of the buffer which must be greater than 1
      @param     pBuffer buffer pointer

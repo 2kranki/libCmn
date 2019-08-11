@@ -133,15 +133,6 @@ extern "C" {
     }
 
 
-
-    const
-    W32CHR_T *      lex_WhiteSpaceW(
-    )
-    {
-        return W32Str_WhiteSpaceW32();
-    }
-    
-    
     
     
 

@@ -78,6 +78,13 @@ struct AStrC_data_s	{
 
 
     // Internal Functions
+    bool            AStrC_setData(
+        ASTRC_DATA      *this,
+        const
+        char            *pDataA
+    );
+    
+    
     void            AStrC_Dealloc(
         OBJ_ID          objId
     );

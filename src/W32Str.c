@@ -68,24 +68,6 @@ extern "C" {
 
     
     
-    static
-    const
-    W32CHR_T        whiteSpaceW[12] = {
-                            ' ',
-                            '\f',
-                            '\n',
-                            '\r',
-                            '\t',
-                            0x0085,     // Next New Line (Paragraph break)
-                            0x00A0,     // no-break space
-                            0x200B,     // zero width space
-                            0x2060,     // word joiner
-                            0x3000,     // ideographic space
-                            0xFEFF,     // zero width no-break space
-                            0
-    };
-
-    
     /*
      
      size_t    strcspn(const char *str1, const char *str2)
@@ -270,24 +252,6 @@ extern "C" {
     
     
     
-    bool            W32Str_IsWhiteSpaceW32(
-        W32CHR_T        chr
-    )
-    {
-        bool            fRc = false;
-        uint32_t        j;
-        
-        j = W32Str_ChrInStr(chr, whiteSpaceW);
-        if (j) {
-            fRc = true;
-        }
-        
-        // Return to caller.
-        return fRc;
-    }
-    
-    
-    
     uint32_t        W32Str_StrLen(
         const
         W32CHR_T        *pData
@@ -458,14 +422,6 @@ extern "C" {
     
     
     
-    const
-    W32CHR_T *      W32Str_WhiteSpaceW32(
-    )
-    {
-        return whiteSpaceW;
-    }
-    
-    
     
 
     
@@ -621,7 +577,7 @@ extern "C" {
                     len
                 );
         
-        // Copy the data.
+        // Copy the data converting UTF-8 to UTF-32.
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pInsert = array_Ptr((ARRAY_DATA *)this, index);
             for (i=0; i<len; ++i) {
@@ -818,7 +774,7 @@ extern "C" {
     //                    A p p e n d  P r i n t
     //---------------------------------------------------------------
     
-    ERESULT         W32Str_AppendPrint(
+    ERESULT         W32Str_AppendPrintA(
         W32STR_DATA		*this,
         const
         char            *pFormat,
@@ -2133,7 +2089,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         W32Str_SetChar(
-        W32STR_DATA		*cbp,
+        W32STR_DATA		*this,
         uint32_t        offset,
         const
         char            chr
@@ -2144,17 +2100,17 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !W32Str_Validate( cbp ) ) {
+        if( !W32Str_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
 #endif
-        lenStr = W32Str_getLength(cbp);
+        lenStr = W32Str_getLength(this);
         if ((0 == offset) || (offset > lenStr)) {
             return ERESULT_INVALID_PARAMETER;
         }
         
-        *((uint32_t *)array_Ptr((ARRAY_DATA *)cbp, offset)) = chr;
+        *((uint32_t *)array_Ptr((ARRAY_DATA *)this, offset)) = chr;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -2167,7 +2123,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         W32Str_SpanW32(
-        W32STR_DATA		*cbp,
+        W32STR_DATA		*this,
         uint32_t        *pIndex,
         const
         W32CHR_T        *pSetStr
@@ -2181,7 +2137,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !W32Str_Validate( cbp ) ) {
+        if( !W32Str_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -2192,7 +2148,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        lenStr = W32Str_getLength(cbp);
+        lenStr = W32Str_getLength(this);
         
         index = *pIndex;
         if (0 == index) {
@@ -2203,9 +2159,9 @@ extern "C" {
             return ERESULT_OUT_OF_RANGE;
         }
         
-        pChr = array_Ptr((ARRAY_DATA *)cbp,index);
+        pChr = array_Ptr((ARRAY_DATA *)this, index);
         for ( i=index; i<lenStr; ++i,++pChr ) {
-            if (W32Str_ChrInStr(*pChr,pSetStr))
+            if (W32Str_ChrInStr(*pChr, pSetStr))
                 ;
             else {
                 *pIndex = i;
@@ -2392,7 +2348,6 @@ extern "C" {
         ERESULT         eRc;
         uint32_t        i;
         uint32_t        j;
-        uint32_t        k;
         uint32_t        lenStr;
         W32CHR_T        *pData;
         
@@ -2411,17 +2366,15 @@ extern "C" {
 
         // Remove leading characters.
         pData = (W32CHR_T *)W32Str_getData(this);
-        k = 0;
-        for (i=1; i<=lenStr; ++i) {
-            j = W32Str_ChrInStr(*pData, whiteSpaceW);
-            if (0 == j) {
+        j = 0;
+        for (i=0; i<lenStr; ++i) {
+            if (!ascii_isWhiteSpaceW32(*pData))
                 break;
-            }
-            ++k;
+            ++j;
             ++pData;
         }
-        if (k) {
-            eRc = W32Str_Remove(this, 1, k);
+        if (j) {
+            eRc = W32Str_Remove(this, 1, j);
         }
         
         lenStr = W32Str_getLength(this);
@@ -2431,16 +2384,14 @@ extern "C" {
         
         // Remove trailing characters.
         pData = (W32CHR_T *)W32Str_getData(this);
-        k = 0;
+        j = 0;
         for (i=lenStr; i; --i) {
-            j = W32Str_ChrInStr(pData[i-1], whiteSpaceW);
-            if (0 == j) {
+            if (!ascii_isWhiteSpaceW32(*(pData+i-1)))
                 break;
-            }
-            ++k;
+            ++j;
         }
-        if (k) {
-            eRc = W32Str_Truncate(this, (lenStr - k));
+        if (j) {
+            eRc = W32Str_Truncate(this, (lenStr - j));
         }
         
         // Return to caller.

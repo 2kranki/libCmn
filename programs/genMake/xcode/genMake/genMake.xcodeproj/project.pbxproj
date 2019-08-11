@@ -332,6 +332,7 @@
 					"$(HOME)/Support/lib/macosx/libCmn/include",
 				);
 				LIBRARY_SEARCH_PATHS = "$(HOME)/Support/lib/macosx/libCmn/";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -347,6 +348,7 @@
 					"$(HOME)/Support/lib/macosx/libCmn/include",
 				);
 				LIBRARY_SEARCH_PATHS = "$(HOME)/Support/lib/macosx/libCmn/";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -1073,7 +1073,7 @@ extern "C" {
         NODEARRAY_DATA  *pSrcsTest = OBJ_NIL;
         bool            fJson = false;
         bool            fTest = true;
-        char            *pName;
+        char            *pNameA;
         ASTR_DATA       *pStr = OBJ_NIL;
 
         // Do initialization.
@@ -1093,33 +1093,33 @@ extern "C" {
         }
 #endif
         
-        pName = node_getNameUTF8(pNode);
-        if (OBJ_NIL == pName) {
+        pNameA = node_getNameUTF8(pNode);
+        if (OBJ_NIL == pNameA) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
 
-        if (0 == strcmp(pName, "string")) {
-            mem_Free(pName);
+        if (0 == strcmp(pNameA, "string")) {
+            mem_Free(pNameA);
             //pName = NULL;
-            pName = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
+            pNameA = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
         }
         else {
             pData = node_getData(pNode);
             if (OBJ_NIL == pData) {
                 DEBUG_BREAK();
-                if (pName) {
-                    mem_Free(pName);
-                    pName = NULL;
+                if (pNameA) {
+                    mem_Free(pNameA);
+                    pNameA = NULL;
                 }
                 return ERESULT_DATA_MISSING;
             }
             pData = node_getData(pData);
             if (OBJ_NIL == pData) {
                 DEBUG_BREAK();
-                if (pName) {
-                    mem_Free(pName);
-                    pName = NULL;
+                if (pNameA) {
+                    mem_Free(pNameA);
+                    pNameA = NULL;
                 }
                 return ERESULT_DATA_MISSING;
             }
@@ -1222,9 +1222,9 @@ extern "C" {
             }
             else {
                 DEBUG_BREAK();
-                if (pName) {
-                    mem_Free(pName);
-                    pName = NULL;
+                if (pNameA) {
+                    mem_Free(pNameA);
+                    pNameA = NULL;
                 }
                 return ERESULT_DATA_ERROR;
             }
@@ -1234,7 +1234,7 @@ extern "C" {
             if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileObject) {
                 pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileObject(
                                     this->pGen,
-                                    pName,
+                                    pNameA,
                                     NULL,
                                     NULL,
                                     NULL,
@@ -1252,7 +1252,7 @@ extern "C" {
                 if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileJson) {
                     pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileJson(
                                 this->pGen,
-                                pName,
+                                pNameA,
                                 NULL,
                                 NULL,
                                 NULL,
@@ -1271,7 +1271,7 @@ extern "C" {
                 if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
                     pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
                                     this->pGen,
-                                    pName,
+                                    pNameA,
                                     NULL,
                                     NULL,
                                     NULL,
@@ -1289,9 +1289,9 @@ extern "C" {
         }
 
         // Return to caller.
-        if (pName) {
-            mem_Free(pName);
-            pName = NULL;
+        if (pNameA) {
+            mem_Free(pNameA);
+            pNameA = NULL;
         }
         return ERESULT_SUCCESS;
     }
@@ -1455,7 +1455,7 @@ extern "C" {
         NODEARRAY_DATA  *pDepsTest = OBJ_NIL;
         NODEARRAY_DATA  *pSrcsTest = OBJ_NIL;
         bool            fTest = false;
-        char            *pName;
+        char            *pNameA;
         ASTR_DATA       *pStr = OBJ_NIL;
         
         // Do initialization.
@@ -1475,33 +1475,33 @@ extern "C" {
         }
 #endif
         
-        pName = node_getNameUTF8(pNode);
-        if (OBJ_NIL == pName) {
+        pNameA = node_getNameUTF8(pNode);
+        if (NULL == pNameA) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
         
-        if (0 == strcmp(pName, "string")) {
-            mem_Free(pName);
+        if (0 == strcmp(pNameA, "string")) {
+            mem_Free(pNameA);
             //pName = NULL;
-            pName = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
+            pNameA = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
         }
         else {
             pData = node_getData(pNode);
             if (OBJ_NIL == pData) {
                 DEBUG_BREAK();
-                if (pName) {
-                    mem_Free(pName);
-                    pName = NULL;
+                if (pNameA) {
+                    mem_Free(pNameA);
+                    pNameA = NULL;
                 }
                 return ERESULT_DATA_MISSING;
             }
             pData = node_getData(pData);
             if (OBJ_NIL == pData) {
                 DEBUG_BREAK();
-                if (pName) {
-                    mem_Free(pName);
-                    pName = NULL;
+                if (pNameA) {
+                    mem_Free(pNameA);
+                    pNameA = NULL;
                 }
                 return ERESULT_DATA_MISSING;
             }
@@ -1576,9 +1576,9 @@ extern "C" {
             }
             else {
                 DEBUG_BREAK();
-                if (pName) {
-                    mem_Free(pName);
-                    pName = NULL;
+                if (pNameA) {
+                    mem_Free(pNameA);
+                    pNameA = NULL;
                 }
                 return ERESULT_DATA_ERROR;
             }
@@ -1588,7 +1588,7 @@ extern "C" {
             if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileRoutine) {
                 pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileRoutine(
                                                 this->pGen,
-                                                pName,
+                                                pNameA,
                                                 NULL,
                                                 NULL,
                                                 NULL,
@@ -1608,7 +1608,7 @@ extern "C" {
                 if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
                     pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
                                                 this->pGen,
-                                                pName,
+                                                pNameA,
                                                 NULL,
                                                 NULL,
                                                 NULL,
@@ -1626,9 +1626,9 @@ extern "C" {
         }
         
         // Return to caller.
-        if (pName) {
-            mem_Free(pName);
-            pName = NULL;
+        if (pNameA) {
+            mem_Free(pNameA);
+            pNameA = NULL;
         }
         return ERESULT_SUCCESS;
     }

@@ -3340,7 +3340,6 @@ extern "C" {
     {
         ERESULT         eRc;
         uint32_t        i;
-        uint32_t        j;
         uint32_t        k;
         uint32_t        lenStr;
         uint32_t        off;
@@ -3366,10 +3365,8 @@ extern "C" {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
-            j = W32Str_ChrInStr(chr, W32Str_WhiteSpaceW32());
-            if (0 == j) {
+            if (!ascii_isWhiteSpaceW32(chr))
                 break;
-            }
             ++k;
         }
         if (k) {
@@ -3387,10 +3384,8 @@ extern "C" {
             off = utf8_StrOffset(AStr_getData(this), i);
             pData  = array_Ptr(this->pData, off);
             utf8_Utf8ToW32(pData, &chr);
-            j = W32Str_ChrInStr(chr, W32Str_WhiteSpaceW32());
-            if (0 == j) {
+            if (!ascii_isWhiteSpaceW32(chr))
                 break;
-            }
             ++k;
         }
         if (k) {

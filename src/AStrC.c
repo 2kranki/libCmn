@@ -226,6 +226,37 @@ extern "C" {
     }
     
     
+    bool            AStrC_setData(
+        ASTRC_DATA      *this,
+        const
+        char            *pDataA
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->len = 0;
+        if (obj_IsFlag(this, ASTRC_FLAG_MALLOC)) {
+            if (this->pData) {
+                mem_Free((void *)this->pData);
+                this->pData = NULL;
+            }
+        }
+
+        this->pData = pDataA;
+        this->len = utf8_StrLenA(this->pData);
+        
+        return true;
+    }
+    
+    
 
     uint32_t        AStrC_getDataLength(
         ASTRC_DATA       *this

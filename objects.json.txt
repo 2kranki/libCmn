@@ -12,9 +12,11 @@
             [
                 "cmn_defs.h",
                 "chario.h",
+                "ioInterface.h",
                 "mem.h",
                 "obj.h",
-                "str.h"
+                "str.h",
+                "w32Reader.h"
             ],
             "test":
             [
@@ -40,6 +42,7 @@
         "AStr":{"srcDeps":["cmn_defs.h","array.h"], "json":true, "test":null},
         "AStrArray":{"srcDeps":["cmn_defs.h","AStr.h"], "test":null},
         "AStrC":["cmn_defs.h"],
+        "AStrReader":{"srcDeps":["cmn_defs.h","AStrC.h"], "test":true},
         "audioCW":["cmn_defs.h","AStr.h","audioWAV.h"],
         "audioWAV":["cmn_defs.h","AStr.h","fbso.h","u8Array.h"],
         "bitMatrix":{"srcDeps":["cmn_defs.h","AStr.h","bitSet.h","u16Matrix.h"], "json":true,"test":null},
@@ -140,8 +143,9 @@
         "psxThread":{srcDeps:["cmn_defs.h","AStr.h","psxMutex.h","psxSem.h"], "test":null},
         "ptrArray":{srcDeps:["cmn_defs.h"], "test":null},
         "rrds":{srcDeps:["cmn_defs.h","AStr.h","hash32.h","listdl.h","path.h"], "test":null},
-        "scanner":["cmn_defs.h","AStr.h"],
-        "screen":["cmn_defs.h","AStr.h"],
+        "scanner":{srcDeps:["cmn_defs.h","AStr.h"], "test":true},
+        "scanReader":{"srcDeps":["cmn_defs.h","AStr.h"], "test":true},
+        "screen":{srcDeps:["cmn_defs.h","AStr.h"], "test":true},
         "sgraph":["cmn_defs.h","AStr.h"],
         "sidx":["cmn_defs.h","AStr.h"],
         "sidxe":["cmn_defs.h","AStr.h","srcLoc.h"],

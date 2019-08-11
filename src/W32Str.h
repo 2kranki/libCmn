@@ -5,7 +5,7 @@
 //****************************************************************
 /*
  * Program
- *			Wide (32 bit) NUL-terminated String (W32Str)
+ *			Wide (UTF-32) NUL-terminated String (W32Str)
  * Purpose
  *			This object provides a NUL-terminated Wide string
  *          and its manipulation.
@@ -121,11 +121,6 @@ extern "C" {
     );
     
     
-    bool            W32Str_IsWhiteSpaceW32(
-        W32CHR_T        chr
-    );
-    
-    
     uint32_t        W32Str_StrLen(
         const
         W32CHR_T        *pData
@@ -176,14 +171,6 @@ extern "C" {
     );
     
     
-    // Returns a ptr to an array of white space
-    // characters terminated with a NUL.
-    const
-    W32CHR_T *      W32Str_WhiteSpaceW32(
-        void
-    );
-    
-    
 
     
     //---------------------------------------------------------------
@@ -225,7 +212,7 @@ extern "C" {
     );
     
     
-    ERESULT         W32Str_AppendPrint(
+    ERESULT         W32Str_AppendPrintA(
         W32STR_DATA		*this,
         const
         char            *pFormat,
@@ -460,9 +447,11 @@ extern "C" {
     );
     
     
-    // Calculates the index into the string for all the
-    // characters found in the Set String. Returns 0
-    // if the end of string is found.
+    // Scans this string until it finds a character that
+    // is not in the Nul-terminated Set String.
+    // Returns:
+    //      0 if the end of string is found.
+    //      n where n is the offset into the string
     ERESULT         W32Str_SpanW32(
         W32STR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]

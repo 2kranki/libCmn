@@ -93,6 +93,38 @@ test_AStrC: $(TEST_SRC)/test_AStrC.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/AStrCReader_object.o
+
+$(OBJDIR)/AStrCReader_object.o: $(SRCDIR)/AStrCReader_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/AStrCReader.o
+
+$(OBJDIR)/AStrCReader.o: $(SRCDIR)/AStrCReader.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_AStrCReader
+
+test_AStrCReader: $(TEST_SRC)/test_AStrCReader.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/scanReader_object.o
+
+$(OBJDIR)/scanReader_object.o: $(SRCDIR)/scanReader_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/scanReader.o
+
+$(OBJDIR)/scanReader.o: $(SRCDIR)/scanReader.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_scanReader
+
+test_scanReader: $(TEST_SRC)/test_scanReader.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/SRecords_object.o
 
 $(OBJDIR)/SRecords_object.o: $(SRCDIR)/SRecords_object.c 

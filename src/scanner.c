@@ -77,8 +77,7 @@ extern "C" {
         char            *pCurCmd;
         char            quote;
         
-        /* Do initialization.
-         */
+        // Do initialization.
         if( pCmdStr == NULL )
             return( false );
         cbp->cArg = 1;
@@ -91,8 +90,7 @@ extern "C" {
             return false;
         *(cbp->ppArg) = "";     // Set program name.
         
-        /* Scan off the each parameter.
-         */
+        // Scan off the each parameter.
         while( *pCmdStr ) {
             pCurCmd = NULL;
             // Pass over white space.
@@ -231,7 +229,7 @@ extern "C" {
         //int             chrLen = 0;
 
         // Scan off leading white-space.
-        scanner_ScanWhite( &pCurChr, NULL );
+        scanner_ScanWhite(&pCurChr, NULL);
         
         // Scan the paramter.
         if( *pCurChr ) {

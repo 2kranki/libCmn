@@ -1193,7 +1193,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr = OBJ_NIL;
         
         // Do initialization.
-        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")", pName);
+        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")\n", pName);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
@@ -1249,7 +1249,7 @@ extern "C" {
     ASTR_DATA *     genOSX_GenCompileObject(
         GENOSX_DATA    *this,
         const
-        char            *pName,             // Object Name
+        char            *pNameA,            // Object Name
         const
         char            *pSrcDir,           // Default - "SRCDIR"
         const
@@ -1273,7 +1273,8 @@ extern "C" {
         ASTR_DATA       *pFileExt = OBJ_NIL;
 
         // Do initialization.
-        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")", pName);
+        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")\n", pNameA);
+        BREAK_NULL(pNameA);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
@@ -1281,7 +1282,7 @@ extern "C" {
             //genOSX_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
         }
-        if(NULL == pName) {
+        if(NULL == pNameA) {
             DEBUG_BREAK();
             //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return OBJ_NIL;
@@ -1294,7 +1295,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pFileName = AStr_NewA(pName);
+        pFileName = AStr_NewA(pNameA);
         if (OBJ_NIL == pFileName) {
             DEBUG_BREAK();
             obj_Release(pStr);
@@ -1359,7 +1360,7 @@ extern "C" {
     ASTR_DATA *     genOSX_GenCompileRoutine(
         GENOSX_DATA    *this,
         const
-        char            *pName,             // Routine File Name including extension
+        char            *pNameA,            // Routine File Name including extension
         const
         char            *pSrcDir,           // Default - "SRCDIR"
         const
@@ -1388,7 +1389,8 @@ extern "C" {
         uint32_t        iMax;
         
         // Do initialization.
-        TRC_OBJ( this, "genOSX_CompileRoutine(\"%s\")", pName);
+        TRC_OBJ( this, "genOSX_CompileRoutine(\"%s\")\n", pNameA);
+        BREAK_NULL(pNameA);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
@@ -1406,7 +1408,7 @@ extern "C" {
         if (NULL == pObjVar) {
             pObjVar = pObjsA;
         }
-        pPath = path_NewA(pName);
+        pPath = path_NewA(pNameA);
         if (OBJ_NIL == pPath) {
             return OBJ_NIL;
         }
@@ -1439,7 +1441,7 @@ extern "C" {
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
-                                     pName
+                                     pNameA
                                      );
             if (pSrcDeps) {
                 iMax = nodeArray_getSize(pSrcDeps);
@@ -1507,7 +1509,7 @@ extern "C" {
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
-                                     pName
+                                     pNameA
                                      );
             eRc =   AStr_AppendPrint(
                                      pStr,
@@ -1524,7 +1526,7 @@ extern "C" {
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
-                                     pName
+                                     pNameA
                                      );
             eRc =   AStr_AppendPrint(
                                      pStr,
@@ -1540,7 +1542,7 @@ extern "C" {
                                      pObjDir,
                                      AStr_getData(pFileName),
                                      pSrcDir,
-                                     pName
+                                     pNameA
                                      );
             eRc =   AStr_AppendPrint(
                                      pStr,
@@ -1608,7 +1610,8 @@ extern "C" {
         uint32_t        iMax;
 
         // Do initialization.
-        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")", pName);
+        TRC_OBJ( this, "genOSX_CompileObject(\"%s\")\n", pName);
+        BREAK_NULL(pNameA);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
@@ -1771,7 +1774,7 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
-        TRC_OBJ(this, "genOSX_LibIncludePath(\"%s\", %s", pName);
+        TRC_OBJ(this, "genOSX_LibIncludePath(\"%s\", %s, %s)\n", pName, pLibIncludePath, pLibNamePrefix);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
@@ -1835,7 +1838,7 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
-        TRC_OBJ(this, "genOSX_LibInstalledPath(\"%s\", %s", pName);
+        TRC_OBJ(this, "genOSX_LibInstalledPath(\"%s\")\n", pName);
 #ifdef NDEBUG
 #else
         if( !genOSX_Validate(this) ) {
