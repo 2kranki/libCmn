@@ -523,6 +523,8 @@ extern "C" {
         OBJ_IDENT_W32STRARRAY_CLASS,
         OBJ_IDENT_W32STRC,
         OBJ_IDENT_W32STRC_CLASS,
+        OBJ_IDENT_W32_READER,           // UTF-32 Reader
+        OBJ_IDENT_W32_READER_CLASS,
         OBJ_IDENT_WISP,                 // A Lisp-like machine
         OBJ_IDENT_WISP_CLASS,
         OBJ_IDENT_XML,

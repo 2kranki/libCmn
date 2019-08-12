@@ -320,6 +320,9 @@ bool            AStrCReader_IsKindOf (
     if (OBJ_IDENT_ASTRCREADER == classID) {
        return true;
     }
+    if (OBJ_IDENT_W32_READER == classID) {
+        return true;
+    }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }

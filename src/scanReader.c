@@ -577,7 +577,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "scanReader::sizeof(SCANREADER_DATA) = %lu\n", sizeof(SCANREADER_DATA));
+        //fprintf(stderr, "scanReader::sizeof(SCANREADER_DATA) = %lu\n", sizeof(SCANREADER_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SCANREADER_DATA));
     #endif
@@ -675,7 +675,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((n == 0) || (this->pStr == NULL) || (this->pData == NULL)) {
+        if ((n == 0) || (this->pStr == NULL)) {
             return -1;
         }
 #endif

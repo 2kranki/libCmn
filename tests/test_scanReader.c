@@ -167,8 +167,60 @@ int             test_scanReader_Test01(
 
 
 
+int             test_scanReader_Test02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANREADER_DATA *pObj = OBJ_NIL;
+    W32CHR_T        chr;
+    W32_READER      *pRdr;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = scanReader_NewA( "abc" );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        //obj_TraceSet(pObj, true);
+        pRdr = scanReader_getReader(pObj);
+        
+        chr = pRdr->pVtbl->pNext(pRdr);
+        TINYTEST_TRUE( (chr == 'a') );
+        chr = pRdr->pVtbl->pNext(pRdr);
+        TINYTEST_TRUE( (chr == 'b') );
+        chr = pRdr->pVtbl->pNext(pRdr);
+        TINYTEST_TRUE( (chr == 'c') );
+        chr = pRdr->pVtbl->pNext(pRdr);
+        fprintf(stderr, "-1 == %d\n", chr);
+        TINYTEST_TRUE( (chr == -1) );
+        
+        eRc = pRdr->pVtbl->pRescan(pRdr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        chr = pRdr->pVtbl->pPeek(pRdr, 1);
+        TINYTEST_TRUE( (chr == 'a') );
+        chr = pRdr->pVtbl->pPeek(pRdr, 2);
+        TINYTEST_TRUE( (chr == 'b') );
+        chr = pRdr->pVtbl->pPeek(pRdr, 3);
+        TINYTEST_TRUE( (chr == 'c') );
+        chr = pRdr->pVtbl->pPeek(pRdr, 4);
+        fprintf(stderr, "-1 == %d\n", chr);
+        TINYTEST_TRUE( (chr == -1) );
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_scanReader);
+    TINYTEST_ADD_TEST(test_scanReader_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_scanReader_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_scanReader_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
