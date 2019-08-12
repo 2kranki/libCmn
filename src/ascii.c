@@ -516,6 +516,15 @@ extern "C" {
         else if ( (w32Char >= 'A') && (w32Char <= 'F') ) {
             fRc = true;
         }
+        else if ( (w32Char >= 0xFF10) && (w32Char <= 0xFF19) ) {
+            fRc = true;
+        }
+        else if ( (w32Char >= 0xFF21) && (w32Char <= 0xFF26) ) {
+            fRc = true;
+        }
+        else if ( (w32Char >= 0xFF41) && (w32Char <= 0xFF46) ) {
+            fRc = true;
+        }
 
         return fRc;
         
@@ -537,7 +546,16 @@ extern "C" {
         else if ( (w32Char >= 'A') && (w32Char <= 'F') ) {
             iRc = w32Char - 'A';
         }
-        
+        else if ( (w32Char >= 0xFF10) && (w32Char <= 0xFF19) ) {
+            iRc = w32Char - 0xFF10;
+        }
+        else if ( (w32Char >= 0xFF21) && (w32Char <= 0xFF26) ) {
+            iRc = w32Char - 0xFF21;
+        }
+        else if ( (w32Char >= 0xFF41) && (w32Char <= 0xFF46) ) {
+            iRc = w32Char - 0xFF41;
+        }
+
         return iRc;
         
     }

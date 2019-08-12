@@ -51,6 +51,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <srcLoc.h>
 
 
 
@@ -59,25 +60,25 @@
 
     
 typedef struct w32_reader_vtbl_s    {
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Properties:
-        // Methods:
-        // Next() reads the next UTF-32 character from the scan string.
-        // It will return -1 if an error or end-of-string (EOS) is encountered.
-        W32CHR_T    (*pNext)(OBJ_ID);
-        // Peek() returns the n'th character after the current one or -1 if
-        // beyond the end-of-string (EOS).
-        W32CHR_T    (*pPeek)(
-                OBJ_ID, 
-                uint32_t                    // Number of chars to look ahead 
-        );
-        // Rescan() restarts the scan to the beginning of the data.
-        ERESULT     (*pRescan)(OBJ_ID);
-    } W32_READER_VTBL;
+    OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+    // Properties:
+    // Methods:
+    // Next() reads the next UTF-32 character from the scan string.
+    // It will return -1 if an error or end-of-string (EOS) is encountered.
+    W32CHR_T    (*pNext)(OBJ_ID);
+    // Peek() returns the n'th character after the current one or -1 if
+    // beyond the end-of-string (EOS).
+    W32CHR_T    (*pPeek)(
+            OBJ_ID,
+            uint32_t                    // Number of chars to look ahead
+    );
+    // Rescan() restarts the scan to the beginning of the data.
+    ERESULT     (*pRescan)(OBJ_ID);
+} W32_READER_VTBL;
     
-    typedef struct w32_reader_s    {
-        W32_READER_VTBL *pVtbl;
-    } W32_READER;
+typedef struct w32_reader_s    {
+    W32_READER_VTBL *pVtbl;
+} W32_READER;
     
 #define W32_READER_DATA(data,obj_id,interface) (data *)(((uint8_t *)objId)-offsetof(data,interface))
 

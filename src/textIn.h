@@ -9,8 +9,8 @@
  * Purpose
  *			This object provides the means of processing an input
  *          text file from several different types of sources and
- *          tracking the source location as each character is
- *          returned.
+ *          tracking the source location as each character or
+ *          line is returned.
  *
  * Remarks
  *	1.      None
@@ -193,8 +193,8 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Read a line of text into the given buffer if it will fit. Ignore
-     '\r' in the file.
+     Read a line of text into the given buffer if it will fit. '\n'
+     is considered the line terminator. Ignore '\r' in the file.
      @param     this    object pointer
      @param     pBuffer UTF-8 Buffer for data
      @param     size    size of buffer
