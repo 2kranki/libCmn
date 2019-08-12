@@ -386,8 +386,10 @@ ASTRCREADER_VTBL     AStrCReader_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //AStrCReader_IsEnabled,
- 
+    (void *)AStrCReader_Next,
+    (void *)AStrCReader_Peek,
+    (void *)AStrCReader_Rescan,
+
 };
 
 

@@ -163,6 +163,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    W32_READER *    AStrCReader_getReader (
+        ASTRCREADER_DATA *this
+    );
+    
+    
     ASTRC_DATA * AStrCReader_getStr (
         ASTRCREADER_DATA *this
     );

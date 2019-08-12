@@ -164,6 +164,15 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    W32_READER *    scanReader_getReader (
+        SCANREADER_DATA *this
+    );
+    
+    
+    const
+    char *          scanReader_getStr (
+        SCANREADER_DATA     *this
+    );
 
 
     

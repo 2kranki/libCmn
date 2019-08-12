@@ -141,6 +141,24 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    W32_READER *    AStrCReader_getReader (
+        ASTRCREADER_DATA *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!AStrCReader_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (W32_READER *)this;
+    }
+    
+    
     //---------------------------------------------------------------
     //                              S t r
     //---------------------------------------------------------------

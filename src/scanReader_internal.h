@@ -91,7 +91,7 @@ struct scanReader_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  SCANREADER_SINGLETON
-    SCANREADER_DATA *     scanReader_getSingleton (
+    SCANREADER_DATA * scanReader_getSingleton (
         void
     );
 

@@ -386,8 +386,10 @@ SCANREADER_VTBL     scanReader_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //scanReader_IsEnabled,
- 
+    (void *)scanReader_Next,
+    (void *)scanReader_Peek,
+    (void *)scanReader_Rescan,
+
 };
 
 
