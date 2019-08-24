@@ -47,6 +47,7 @@
 #include        <genWIN.h>
 #include        <hjson.h>
 #include        <srcErrors.h>
+#include        <srcParse.h>
 
 
 
@@ -903,7 +904,33 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                          V e r b o s e
+    //---------------------------------------------------------------
     
+    int             main_getVerbose(
+        MAIN_DATA       *this
+    )
+    {
+        int             iRc = -1;
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !main_Validate(this) ) {
+            DEBUG_BREAK();
+            return iRc;
+        }
+#endif
+        
+        iRc = appl_getVerbose((APPL_DATA *)this);
+        
+        return iRc;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                          M e t h o d s
@@ -1371,6 +1398,7 @@ extern "C" {
         }
 #endif
         
+        // Set up the O/S Generator.
         switch (this->osType) {
                 
             case OSTYPE_MACOS:
@@ -1404,6 +1432,7 @@ extern "C" {
             exit(12);
         }
         
+        // Set up a Parser and Generator for the input.
         pPrs = dbprs_NewWithDictAndGen(this->pDict, pGen);
         if (OBJ_NIL == pPrs) {
             fprintf(stderr, "FATAL - Could not create database parser object!\n\n\n");
@@ -1416,8 +1445,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
+        
+        // Handle "library" or "program" section of source file.
         pNode = nodeHash_FindA(pHash, 0, "library");
         if (pNode) {
+            if (main_getVerbose(this)) {
+                fprintf(stderr, "Generating Library Header...\n");
+            }
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
                 genBase_setMakeType(pGen, GENMAKE_TYPE_LIB);
@@ -1444,6 +1478,9 @@ extern "C" {
         else {
             pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "program");
             if (pNode) {
+                if (main_getVerbose(this)) {
+                    fprintf(stderr, "Generating Program Header...\n");
+                }
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
                     genBase_setMakeType(pGen, GENMAKE_TYPE_PGM);
@@ -1477,8 +1514,12 @@ extern "C" {
             }
         }
 
+        // Handle "objects" section of source file.
         pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "objects");
         if (pNode) {
+            if (main_getVerbose(this)) {
+                fprintf(stderr, "Generating Object(s) compile/testing...\n");
+            }
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
                 eRc = dbprs_ParseObjects(pPrs, pHashWrk);
@@ -1501,8 +1542,12 @@ extern "C" {
             }
         }
         
+        // Handle "routines" section of source file.
         pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "routines");
         if (pNode) {
+            if (main_getVerbose(this)) {
+                fprintf(stderr, "Generating Routine(s) compilation...\n");
+            }
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
                 eRc = dbprs_ParseRoutines(pPrs, pArray);
@@ -1517,8 +1562,12 @@ extern "C" {
             }
         }
         
+        // Handle "tests" section of source file.
         pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "tests");
         if (pNode) {
+            if (main_getVerbose(this)) {
+                fprintf(stderr, "Generating extra Tests...\n");
+            }
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
                 eRc = dbprs_ParseTests(pPrs, pArray);
@@ -1533,11 +1582,15 @@ extern "C" {
             }
         }
         
+        // Handle O/S section of source file.
         switch (this->osType) {
                 
             case OSTYPE_MACOS:
                 pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "macosx");
                 if (pNode) {
+                    if (main_getVerbose(this)) {
+                        fprintf(stderr, "Generating MacOS routines...\n");
+                    }
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
                         eRc = dbprs_ParseRoutines(pPrs, pArray);
@@ -1557,6 +1610,9 @@ extern "C" {
             case OSTYPE_MSC32:
                 pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win32");
                 if (pNode) {
+                    if (main_getVerbose(this)) {
+                        fprintf(stderr, "Generating Win32 routines...\n");
+                    }
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
                         eRc = dbprs_ParseRoutines(pPrs, pArray);
@@ -1575,6 +1631,9 @@ extern "C" {
             case OSTYPE_MSC64:
                 pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win64");
                 if (pNode) {
+                    if (main_getVerbose(this)) {
+                        fprintf(stderr, "Generating Win64 routines...\n");
+                    }
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
                         eRc = dbprs_ParseRoutines(pPrs, pArray);
@@ -1597,6 +1656,8 @@ extern "C" {
                            );
                 exit(8);
         }
+        
+        // Generate the trailing part of the Makefile.
         eRc = dbprs_Finalize(pPrs);
         
         pStr = dbprs_getStr(pPrs);
@@ -1662,6 +1723,7 @@ extern "C" {
                           (void *)main_UsageProgLine,
                           (void *)main_UsageOptions
         );
+        ((APPL_DATA *)this)->iVerbose++;
         
     #ifdef NDEBUG
     #else
@@ -1873,6 +1935,7 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pFileNode;
+        SRCPARSE_DATA   *pParser;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1901,6 +1964,10 @@ extern "C" {
                     fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
+                    pStr = node_ToString(pFileNode);
+                    fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
                 }
             }
             
@@ -1924,6 +1991,15 @@ extern "C" {
             fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
             exit(12);
         }
+        
+        // Scan the JSON Node structure for consistancy with defined grammar.
+        pParser = srcParse_New();
+        if (OBJ_NIL == pParser) {
+            fprintf(stderr, "ERROR - Unable to create Source Scanner!\n\n\n");
+            exit(12);
+        }
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1957,7 +2033,6 @@ extern "C" {
         
         pObj = hjson_NewA(pStrA, 4);
         if (pObj) {
-            
             if  (appl_getDebug((APPL_DATA *)this)) {
                 obj_TraceSet(pObj, true);
             }
@@ -1971,12 +2046,12 @@ extern "C" {
                     pWrk = OBJ_NIL;
                 }
             }
-            
+
             obj_Release(pObj);
             pObj = OBJ_NIL;
         }
         srcErrors_ExitOnFatal(OBJ_NIL);
-        
+
         if (this->pNodes) {
             pHash = node_getData(this->pNodes);
             if (OBJ_NIL == pHash) {
@@ -2024,6 +2099,13 @@ extern "C" {
     }
     
     
+    /*!
+     Process each command line argument, parsing the HJSON file and
+     generating the Makefile.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
     ERESULT         main_ProcessArg(
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
@@ -2097,6 +2179,7 @@ extern "C" {
         obj_Release(pPath);
         pPath = OBJ_NIL;
         
+        // Create the output file path if given.
         if (OBJ_NIL == this->pOutputPath) {
             pMakefile = path_NewA("Makefile.${" osTypeID "}.txt");
             if (OBJ_NIL == pMakefile) {
@@ -2140,6 +2223,7 @@ extern "C" {
             fprintf(stderr, "\t\tCreating %s\n", path_getData(this->pOutputPath));
         }
 
+        // Generate the Makefile.
         eRc = main_GenMakefile(this);
         
         obj_Release(this->pOutput);
@@ -2436,7 +2520,7 @@ extern "C" {
         
         fprintf(pOutput, "  --clp              Set type to Command Line Program\n");
         fprintf(pOutput, "                     (Default is Library)\n");
-        fprintf(pOutput, "  --macosx           Generate MacOSX nmake file (default)\n");
+        fprintf(pOutput, "  --macos            Generate MacOSX nmake file (default)\n");
         fprintf(pOutput, "  --msc32            Generate MSC Win32 nmake file\n");
         fprintf(pOutput, "  --msc64            Generate MSC Win64 nmake file\n");
         fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");

@@ -173,11 +173,25 @@ struct main_data_s	{
         char            ***pppArgV
     );
     
+    /*!
+     Parse the given file into a JSON Node structure and
+     perform some cursory checks on the structure.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
     ERESULT         main_ParseInputFile(
         MAIN_DATA       *this,
         PATH_DATA       *pPath
     );
     
+    /*!
+     Parse the given string into a JSON Node structure and
+     perform some cursory checks on the structure.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
     ERESULT         main_ParseInputStr(
         MAIN_DATA       *this,
         const
@@ -188,6 +202,13 @@ struct main_data_s	{
         MAIN_DATA       *this
     );
     
+    /*!
+     Process each command line argument, parsing the HJSON file and
+     generating the Makefile.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
     ERESULT         main_ProcessArg(
         MAIN_DATA       *this,
         ASTR_DATA       *pStr

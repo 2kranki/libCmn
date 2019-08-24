@@ -111,6 +111,28 @@ extern "C" {
     
     
     
+    ERESULT_DATA *  eResult_NewAStr(
+        ASTR_DATA       *pValue
+    )
+    {
+        ERESULT_DATA    *this;
+        
+        // Do initialization.
+        
+        this = eResult_Alloc( );
+        if (this) {
+            this = eResult_Init(this);
+            if (this && pValue) {
+                eResult_setError(this, pValue);
+            }
+        }
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
+    
     ERESULT_DATA *	eResult_Shared(
     )
     {
@@ -170,8 +192,8 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT        eResult_getLastError(
-        ERESULT_DATA     *this
+    ASTR_DATA *     eResult_getError(
+        ERESULT_DATA    *this
     )
     {
 
@@ -183,11 +205,53 @@ extern "C" {
         }
 #endif
 
-        return this->eRc;
+        return this->pMsg;
     }
 
     
-    bool            eResult_setLastError(
+    bool            eResult_setError(
+        ERESULT_DATA    *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !eResult_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pMsg) {
+            obj_Release(this->pMsg);
+            // this->pMsg = OBJ_NIL;
+        }
+        this->pMsg = pValue;
+        
+        return true;
+    }
+
+
+
+    ERESULT        eResult_getErrorNum(
+        ERESULT_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !eResult_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->eRc;
+    }
+    
+    
+    bool            eResult_setErrorNum(
         ERESULT_DATA    *this,
         uint16_t        value
     )
@@ -204,9 +268,9 @@ extern "C" {
         
         return true;
     }
-
-
-
+    
+    
+    
     uint32_t        eResult_getSize(
         ERESULT_DATA       *this
     )

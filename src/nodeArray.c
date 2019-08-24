@@ -1017,6 +1017,9 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeArray_ToDebugString;
                         }
+                        if (str_Compare("ToString", (char *)pStr) == 0) {
+                            return nodeArray_ToString;
+                        }
                         break;
                         
                     default:
@@ -1153,7 +1156,51 @@ extern "C" {
     }
     
     
+    ASTR_DATA *     nodeArray_ToString(
+        NODEARRAY_DATA  *this
+    )
+    {
+        int             indent = 2;
+        int             j;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk;
+        NODE_DATA       *pNode;
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToString)(
+            OBJ_ID          objId
+        );
+
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+        
+        pStr = AStr_New();
+        AStr_AppendA(pStr, "Array[\n");
+        
+        if (this->pArray) {
+            for (j=0; j<objArray_getSize(this->pArray); ++j) {
+                pNode = objArray_Get(this->pArray, j+1);
+                pWrk = node_ToString(pNode);
+                if (pWrk) {
+                    AStr_AppendA(pStr, "  ");
+                    AStr_Append(pStr, pWrk);
+                    obj_Release(pWrk);
+                }
+            }
+        }
+        
+        AStr_AppendA(pStr, "]\n\n");
+        
+        return pStr;
+    }
     
+    
+    
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

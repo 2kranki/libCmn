@@ -250,6 +250,11 @@ extern "C" {
     );
     
     
+    ERESULT_DATA *  eResult_NewAStr(
+        ASTR_DATA       *pValue
+    );
+    
+    
     ERESULT_DATA *  eResult_Shared(
         void
     );
@@ -263,6 +268,15 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+    
+    ASTR_DATA *     eResult_getError(
+        ERESULT_DATA    *this
+    );
+    
+    bool            eResult_setError(
+        ERESULT_DATA    *this,
+        ASTR_DATA       *pValue
+    );
     
     /*!
      Shared Result is the ERESULT which is a part of the shared singleton

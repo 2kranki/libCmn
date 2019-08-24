@@ -41,6 +41,7 @@
 
 #include    <scanner.h>
 #include    <jsonIn.h>
+#include    <scanReader.h>
 
 
 #ifndef SCANNER_INTERNAL_H
@@ -70,6 +71,7 @@ struct scanner_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        reserved;
     ASTR_DATA       *pStr;
+    W32_READER      *pRdr;
 
 };
 #pragma pack(pop)
@@ -88,6 +90,12 @@ struct scanner_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            scanner_setRdr(
+        SCANNER_DATA    *this,
+        W32_READER      *pValue
+    );
+    
+    
     OBJ_IUNKNOWN *  scanner_getSuperVtbl(
         SCANNER_DATA     *this
     );
@@ -110,6 +118,12 @@ struct scanner_data_s	{
     );
 
 
+    bool            scanner_ScanHex(
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
     /*!
      Scan a UTF-8 hexadecimal value such as ([1-9a-fA-F][0-9a-fA-F]*).
      (('-' | ) [1-9][0-9]+). The converted value scanned is returned if scan
@@ -126,6 +140,12 @@ struct scanner_data_s	{
     bool            scanner_ScanHex32(
         char            **ppCmdStr,         // NUL terminated string pointer
         uint32_t        *pScannedLen,       // (returned) Scanned Length
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
+    bool            scanner_ScanOct(
+        SCANNER_DATA    *this,
         uint32_t        *pValue             // (returned) Scanned Number
     );
     

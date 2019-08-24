@@ -179,7 +179,7 @@ ASTRC_VTBL      AStrC_Vtbl = {
         AStrC_Dealloc,
         AStrC_Class,
         AStrC_WhoAmI,
-        NULL,
+        (P_OBJ_QUERYINFO)AStrC_QueryInfo,
         (P_OBJ_TOSTRING)AStrC_ToDebugString,
         NULL,			// AStrC_Enable,
         NULL,			// AStrC_Disable,

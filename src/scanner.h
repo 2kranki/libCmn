@@ -54,6 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrArray.h>
+#include        <w32Reader.h>
 
 
 #ifndef         SCANNER_H
@@ -111,6 +112,11 @@ extern "C" {
     
     SCANNER_DATA *  scanner_New (
         void
+    );
+    
+    
+    SCANNER_DATA *  scanner_NewReader(
+        W32_READER      *pRdr
     );
     
     
@@ -193,6 +199,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    W32_READER *    scanner_getRdr(
+        SCANNER_DATA    *this
+    );
 
 
     
@@ -205,6 +214,55 @@ extern "C" {
     );
 
 
+    /*!
+     Scan a UTF-8 decimal value such as:
+     ('0' ('x' | 'X') [0-9a-fA-F]*)      ** Hexadecimal **
+     |   ('0' [0-7]*)                        ** Octal **
+     |   (('-' | '+' | ) [1-9][0-9]+)        ** Decimal **
+     The scan is successful if the number has a valid format and
+     it is properly terminated.
+     The value scanned is returned if scan is successful.
+     Nothing is changed if the scan is unsuccessful.
+     @param     this    object pointer
+     @param     pValue      Optional pointer to where value will be returned
+     @return    If successful, true and *pValue contains the amount converted,
+                otherwise false.
+     */
+    bool            scanner_ScanDec (
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
+    /*!
+     Scan a UTF-8 number such as:
+     ('0' ('x' | 'X') [0-9a-fA-F]*)      ** Hexadecimal **
+     |   ('0' [0-7]*)                        ** Octal **
+     |   (('-' | '+' | ) [1-9][0-9]+)        ** Decimal **
+     The scan is successful if the number has a valid format.
+     The value scanned is returned if scan is successful.
+     Nothing is changed if the scan is unsuccessful.
+     @param     this    object pointer
+     @param     pValue      Optional pointer to where value will be returned
+     @return    If successful, true and *pValue contains the amount converted,
+     otherwise false.
+     */
+    bool            scanner_ScanNumber (
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    );
+    
+    
+    /*!
+     Scan UTF-8 white-space from the input string discarding it.
+     @param     this    object pointer
+     @return    If successful, true, otherwise false.
+     */
+    bool            scanner_ScanWS (
+        SCANNER_DATA    *this
+    );
+    
+    
     ERESULT         scanner_Setup (
         SCANNER_DATA    *this,
         const

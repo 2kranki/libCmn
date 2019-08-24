@@ -210,12 +210,12 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
         
         pFalse = node_getData(pObj);
-        if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_TRUE)) {
+        if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_FALSE)) {
             return OBJ_NIL;
         }
         

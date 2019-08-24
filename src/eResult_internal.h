@@ -65,6 +65,7 @@ struct eResult_data_s	{
     uint32_t        maxErrors;          // Maximum number of errors until fatal
     uint32_t        numErrors;
     ERESULT         eRc;
+    ASTR_DATA       *pMsg;
 
 };
 #pragma pack(pop)

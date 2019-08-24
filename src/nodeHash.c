@@ -1672,6 +1672,9 @@ extern "C" {
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return nodeHash_ToJSON;
                         }
+                        if (str_Compare("ToString", (char *)pStr) == 0) {
+                            return nodeHash_ToString;
+                        }
                         break;
                         
                     default:
@@ -1806,7 +1809,55 @@ extern "C" {
     }
     
     
+    ASTR_DATA *     nodeHash_ToString(
+        NODEHASH_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        int             i;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        NODEARRAY_DATA  *pArray;
+        NODE_DATA       *pNode;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!nodeHash_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        eRc = AStr_AppendPrint(pStr, "Hash{\n");
+        pArray = nodeHash_Nodes(this);
+        if (pArray) {
+            for (i=0; i < nodeArray_getSize(pArray); i++) {
+                pNode = nodeArray_Get(pArray, i);
+                if (pNode) {
+                    pWrk = node_ToString(pNode);
+                    if (pWrk) {
+                        AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                    }
+                }
+            }
+        }
+        
+        eRc =   AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
+    }
     
+    
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

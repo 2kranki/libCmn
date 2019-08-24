@@ -469,6 +469,19 @@ extern "C" {
     );
     
     /*!
+     Attempt to convert the node's name and data to a string if possible separated by ':'.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                data parameter in string form, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object when you are done
+                with it.
+     */
+    ASTR_DATA *     node_ToString(
+        NODE_DATA       *this
+    );
+    
+    
+    /*!
      Convert the Data Object to a string if possible and return it.
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the

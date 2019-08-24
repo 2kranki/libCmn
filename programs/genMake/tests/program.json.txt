@@ -3,19 +3,21 @@
         "name":"genMake",
         "libDeps":["Cmn"],
         "headers_private":["genMake.h"],
-        "headers_public":[],
         "headers_test":["test_defs.h"],
         "main":"mainProgram.c"
     },
     "objects":{
-        "dbprs":{"deps":["genMake.h"], "test":null},
-        "genBase":{"deps":["genMake.h"], "test":null},
-        "genOSX":{"deps":["genMake.h"], "test":null},
-        "genWIN":{"deps":["genMake.h"], "test":null},
-        "main":{"deps":["genMake.h"], "test":null},
-    },
-    "macosx": {
-    },
-    "win32": {
-    },
+        "dbprs":{"srcDeps":["genMake.h"], "test":null},
+        "genBase":{"srcDeps":["genMake.h"], "test":null},
+        "genOSX":{"srcDeps":["genMake.h"], "test":null},
+        "genWIN":{"srcDeps":["genMake.h"], "test":null},
+        "hdrNode":{"srcDeps":["genMake.h"], "test":null},
+        "libNode":{"srcDeps":["genMake.h"], "test":null},
+        "objNode":{"srcDeps":["genMake.h"], "test":null},
+        "pgmNode":{"srcDeps":["genMake.h"], "test":null},
+        "rtnNode":{"srcDeps":["genMake.h"], "test":null},
+        "srcParse":{"srcDeps":["genMake.h"], "test":null},
+        "tstNode":{"srcDeps":["genMake.h"], "test":null},
+        "main":{"srcDeps":["genMake.h"], "test":null}
+    }
 }

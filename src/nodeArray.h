@@ -347,6 +347,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     nodeArray_ToString(
+        NODEARRAY_DATA  *this
+    );
+    
+    
     /*!
      Visit each node of the array in ascending index order.  Terminate
      the visiting is an ERESULT_* error code is returned by the visitor.

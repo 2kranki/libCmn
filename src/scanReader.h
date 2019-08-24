@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SCANREADER Console Transmit Task (scanReader) Header
+//          Scanner UTF-32 Reader (scanReader) Header
 //****************************************************************
 /*
  * Program
- *			Separate scanReader (scanReader)
+ *			Scanner UTF-32 Reader (scanReader)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate scanReader to run things without complications
- *          of interfering with the main scanReader. A scanReader may be 
- *          called a scanReader on other O/S's.
+ *			A Scanner UTF-32 Reader is responsible for providing
+ *          UTF-32 characters one at a time from a UTF-8 buffer.
+ *          Instead of supporting push back, it supports look-ahead
+ *          via the peek() function.
  *
  * Remarks
  *	1.      None
@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <srcLoc.h>
 #include        <w32Reader.h>
 
 
@@ -121,7 +122,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SCANREADER_SINGLETON
-    SCANREADER_DATA *     scanReader_Shared (
+    SCANREADER_DATA * scanReader_Shared (
         void
     );
 
@@ -180,7 +181,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SCANREADER_DATA *   scanReader_Init (
+    SCANREADER_DATA * scanReader_Init (
         SCANREADER_DATA     *this
     );
 

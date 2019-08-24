@@ -129,6 +129,20 @@ extern "C" {
     );
     
     
+    /*!
+        Other is a property to hold any object that the user of this
+        object may want to put in it.
+     */
+    OBJ_ID          objArray_getOther(
+        OBJARRAY_DATA   *this
+    );
+    
+    bool            objArray_setOther(
+        OBJARRAY_DATA   *this,
+        OBJ_ID          pValue
+    );
+    
+
     uint32_t        objArray_getSize(
         OBJARRAY_DATA   *this
     );

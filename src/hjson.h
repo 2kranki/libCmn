@@ -36,6 +36,11 @@
  *          the errors and then exit if any fatal errors occurred.
  *          See srcErrors.h for more information.
  *
+ *          The output of this parsing can be determined by looking
+ *          at the grammar below. The output is nodes with specific
+ *          names and the node data being the provide data object.
+ *          The highest node should be a "hash" nodes.
+ *
  * Remarks
  *	1.      I changed the definition of the quoteless string to end
  *          with '\n' and any of '{','}','[',']',':',','. This al-
@@ -60,25 +65,25 @@
  
  
  
- object     :   '{' members '}'
+ object     :   '{' members '}'             <= OBJ_IDENT_NODE("hash") -> (data) OBJ_IDENT_NODEHASH
             ;
  members    :   pair ((',' | '\n') pair?)*
             |
             ;
  pair       :   (string | quoteless-string) (':' | '=') value
             ;
- array      :   '[' elements ']'
+ array      :   '[' elements ']'            <= OBJ_IDENT_NODE("array") -> (data) OBJ_IDENT_NODEARRAY
             ;
  elements   :   value (',' value)*
             |
             ;
- value      :   string
-            |   number
-            |   object
-            |   array
-            |   "true"
-            |   "false"
-            |   "null"
+ value      :   string                      <= OBJ_IDENT_NODE("string") -> (data) OBJ_IDENT_ASTR
+            |   number                      <= OBJ_IDENT_NODE("integer") -> (data) OBJ_IDENT_ASTR
+            |   object                      <= OBJ_IDENT_NODE("hash") -> (data) OBJ_IDENT_NODEHASH
+            |   array                       <= OBJ_IDENT_NODE("array") -> (data) OBJ_IDENT_NODEARRAY
+            |   "true"                      <= OBJ_IDENT_NODE("true") -> (data) OBJ_IDENT_TRUE
+            |   "false"                     <= OBJ_IDENT_NODE("false") -> (data) OBJ_IDENT_FALSE
+            |   "null"                      <= OBJ_IDENT_NODE("null") -> (data) OBJ_IDENT_NULL
             ;
  string     :   '"' char* '"'
             ;

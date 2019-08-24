@@ -263,6 +263,16 @@ extern "C" {
     
     
     /*!
+     Create an AStr object from this string.
+     @return:   If successful, an AStr object which must be released,
+     otherwise OBJ_NIL.
+     */
+    ASTRC_DATA *    AStrC_ToString(
+        ASTRC_DATA      *this
+    );
+    
+    
+    /*!
      Create a string that describes this object and the
      objects within it.
      @return:   If successful, an AStr object which must be released,

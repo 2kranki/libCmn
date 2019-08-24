@@ -245,6 +245,11 @@ extern "C" {
     );
     
     
+    int             main_getVerbose(
+        MAIN_DATA       *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -258,10 +263,6 @@ extern "C" {
    
     /*!
      Generate a makefile given the internal nodes and the dictionary.
-     Example:
-     @code
-     ASTR_DATA      *pDesc = main_ToDebugString(this,4);
-     @endcode
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.

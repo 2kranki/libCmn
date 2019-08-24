@@ -100,28 +100,12 @@ $(OBJDIR)/AStrCReader_object.o: $(SRCDIR)/AStrCReader_object.c
 
 OBJS += $(OBJDIR)/AStrCReader.o
 
-$(OBJDIR)/AStrCReader.o: $(SRCDIR)/AStrCReader.c $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/AStrCReader.o: $(SRCDIR)/AStrCReader.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStrC.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 TESTS += test_AStrCReader
 
 test_AStrCReader: $(TEST_SRC)/test_AStrCReader.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
-OBJS += $(OBJDIR)/scanReader_object.o
-
-$(OBJDIR)/scanReader_object.o: $(SRCDIR)/scanReader_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/scanReader.o
-
-$(OBJDIR)/scanReader.o: $(SRCDIR)/scanReader.c $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += test_scanReader
-
-test_scanReader: $(TEST_SRC)/test_scanReader.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1560,6 +1544,27 @@ test_objEnum: $(TEST_SRC)/test_objEnum.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/objHash_object.o
+
+$(OBJDIR)/objHash_object.o: $(SRCDIR)/objHash_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/objHash.o
+
+$(OBJDIR)/objHash.o: $(SRCDIR)/objHash.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/objHash_JSON.o
+
+$(OBJDIR)/objHash_JSON.o: $(SRCDIR)/objHash_JSON.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_objHash
+
+test_objHash: $(TEST_SRC)/test_objHash.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/objList_object.o
 
 $(OBJDIR)/objList_object.o: $(SRCDIR)/objList_object.c 
@@ -1861,6 +1866,22 @@ $(OBJDIR)/rrds.o: $(SRCDIR)/rrds.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDI
 TESTS += test_rrds
 
 test_rrds: $(TEST_SRC)/test_rrds.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+OBJS += $(OBJDIR)/scanReader_object.o
+
+$(OBJDIR)/scanReader_object.o: $(SRCDIR)/scanReader_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/scanReader.o
+
+$(OBJDIR)/scanReader.o: $(SRCDIR)/scanReader.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_scanReader
+
+test_scanReader: $(TEST_SRC)/test_scanReader.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2211,7 +2232,7 @@ $(OBJDIR)/timer_object.o: $(SRCDIR)/timer_object.c
 
 OBJS += $(OBJDIR)/timer.o
 
-$(OBJDIR)/timer.o: $(SRCDIR)/timer.c 
+$(OBJDIR)/timer.o: $(SRCDIR)/timer.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 TESTS += test_timer
@@ -2480,6 +2501,22 @@ test_wav: $(TEST_SRC)/test_wav.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/wisp_object.o
+
+$(OBJDIR)/wisp_object.o: $(SRCDIR)/wisp_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/wisp.o
+
+$(OBJDIR)/wisp.o: $(SRCDIR)/wisp.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_wisp
+
+test_wisp: $(TEST_SRC)/test_wisp.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/xml_object.o
 
 $(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c 
@@ -2519,6 +2556,11 @@ $(OBJDIR)/rbt_tree.o: $(SRCDIR)/rbt_tree.c
 OBJS += $(OBJDIR)/shellSortPtrs.o
 
 $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/stackTraces.o
+
+$(OBJDIR)/stackTraces.o: $(SRCDIR)/stackTraces.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 OBJS += $(OBJDIR)/str.o

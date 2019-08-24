@@ -870,6 +870,7 @@ extern "C" {
         genBase_setNodes(this, OBJ_NIL);
         genBase_setObjDirs(this, OBJ_NIL);
         genBase_setOutput(this, OBJ_NIL);
+        genBase_setSrcDeps(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

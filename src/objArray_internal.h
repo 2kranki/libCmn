@@ -67,6 +67,7 @@ struct objArray_data_s	{
     // Common Data
     ERESULT         eRc;
     ARRAY_DATA      *pArray;
+    OBJ_ID          pOther;
 
 };
 #pragma pack(pop)

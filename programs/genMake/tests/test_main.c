@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <srcErrors.h>
 #include    <trace.h>
 #include    <main_internal.h>
 
@@ -57,6 +58,7 @@ int         tearDown(
 
     
     szTbl_SharedReset( );
+    srcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -151,7 +153,7 @@ int         test_main_MakeFile01(
     "CFLAGS_LIBS = \n"
     "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
     "CFLAGS += -D__MACOSX_ENV__\n\n"
-    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses\n\n"
     "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
     "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
     "LIBDIR = $(BASEDIR)/$(SYS)\n"

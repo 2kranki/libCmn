@@ -73,6 +73,7 @@ struct scanReader_data_s	{
     char            *pData;
     const
     char            *pStr;
+    SRCLOC          loc;
 
 };
 #pragma pack(pop)

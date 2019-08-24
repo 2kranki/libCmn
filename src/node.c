@@ -1540,6 +1540,9 @@ extern "C" {
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
                             return node_ToJSON;
                         }
+                        if (str_Compare("ToString", (char *)pStr) == 0) {
+                            return node_ToString;
+                        }
                         break;
                         
                     default:
@@ -1636,6 +1639,68 @@ extern "C" {
     }
     
     
+    ASTR_DATA *     node_ToString(
+        NODE_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToString)(
+            OBJ_ID          objId
+        );
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !node_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = name_ToString(node_getName(this));
+        
+        if (pStr && this->pData) {
+            if (obj_IsKindOf(this, OBJ_IDENT_ASTR)) {
+                pWrk = AStr_Copy((ASTR_DATA *)this->pData);
+            }
+            else if (obj_IsKindOf(this, OBJ_IDENT_PATH)) {
+                pWrk = AStr_Copy(path_getAStr((PATH_DATA *)this->pData));
+            }
+            else {
+                pQueryInfo = obj_getVtbl(this->pData)->pQueryInfo;
+                if (pQueryInfo) {
+                    pToString = (*pQueryInfo)(
+                                              this->pData,
+                                              OBJ_QUERYINFO_TYPE_METHOD,
+                                              "ToString"
+                                              );
+                    if (pToString) {
+                        pWrk = pToString(this->pData);
+                    }
+                }
+            }
+            if (pWrk) {
+                AStr_AppendA(pStr, ":");
+                AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+        }
+        if (pStr) {
+            AStr_AppendA(pStr, "\n");
+        }
+
+        return pStr;
+    }
+    
+    
+    
     ASTR_DATA *     node_ToString_Data(
         NODE_DATA       *this
     )
@@ -1675,7 +1740,7 @@ extern "C" {
                                         "ToString"
                                 );
                     if (pToString) {
-                        pStr = (*pToString)(this->pData);
+                        pStr = pToString(this->pData);
                     }
                 }
             }

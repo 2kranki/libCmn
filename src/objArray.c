@@ -124,6 +124,51 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                        O t h e r
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objArray_getOther(
+        OBJARRAY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pOther;
+    }
+    
+    
+    bool            objArray_setOther(
+        OBJARRAY_DATA   *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
+        
+        return true;
+    }
+    
+    
+    
     uint32_t        objArray_getSize(
         OBJARRAY_DATA       *this
     )

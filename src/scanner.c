@@ -188,6 +188,24 @@ extern "C" {
 
 
 
+    SCANNER_DATA *  scanner_NewReader(
+        W32_READER      *pRdr
+    )
+    {
+        SCANNER_DATA       *this;
+        
+        this = scanner_Alloc( );
+        if (this) {
+            this = scanner_Init(this);
+            if (this) {
+                scanner_setRdr(this, pRdr);
+            }
+        }
+        return this;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                    S c a n D a t e
     //---------------------------------------------------------------
@@ -891,6 +909,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          R d r
+    //---------------------------------------------------------------
+    
+    W32_READER *    scanner_getRdr(
+        SCANNER_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pRdr;
+    }
+    
+    
+    bool            scanner_setRdr(
+        SCANNER_DATA    *this,
+        W32_READER      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pRdr) {
+            obj_Release(this->pRdr);
+        }
+        this->pRdr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -1465,6 +1529,313 @@ extern "C" {
         }
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    S c a n D e c
+    //---------------------------------------------------------------
+    
+    bool            scanner_ScanDec(
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    )
+    {
+        bool            fRc = false;
+        char            *pCurChr = NULL;
+        bool            fNegative = false;
+        uint32_t        cDec = 0;
+        uint32_t        value = 0;
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        TRC_OBJ(this, "scanner_ScanDec(%c)\n", chr);
+#endif
+
+        // Scan off leading white-space.
+        scanner_ScanWS(this);
+        
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        if ('0' == chr) {
+            chr2 = this->pRdr->pVtbl->pPeek(this->pRdr, 2);
+            if (('x' == chr2) || ('X' == chr2)) {
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                fRc = scanner_ScanHex(this, &value);
+                goto Exit80;
+            }
+            else {
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                fRc = scanner_ScanOct32(&pCurChr, &cDec, &value);
+                goto Exit80;
+            }
+        }
+        
+        if( '-' == chr ) {
+            fNegative = true;
+            this->pRdr->pVtbl->pNext(this->pRdr);
+        }
+        else if( '+' == chr ) {
+            this->pRdr->pVtbl->pNext(this->pRdr);
+        }
+        
+        for (;;) {
+            chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+            if( ('0' <= chr) && ('9' >= chr) ) {
+                value = (value << 3) + (value << 1) + (chr - '0');
+                this->pRdr->pVtbl->pNext(this->pRdr);
+            }
+            else
+                break;
+        }
+        
+    Exit80:
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        if( ascii_isWhiteSpaceW32(chr) || ('\0' == chr) || (',' == chr) ) {
+            if( cDec ) {
+                fRc = true;
+                if( fNegative ) {
+                    value = -value;
+                }
+            }
+        }
+        else {
+            if ('\0' == chr) {
+                fRc = true;
+                if( fNegative ) {
+                    value = -value;
+                }
+            }
+        }
+        
+        // Return to caller.
+    Exit90:
+        if( fRc && pValue ) {
+            *pValue = value;
+        }
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S c a n H e x
+    //---------------------------------------------------------------
+    
+    bool            scanner_ScanHex(
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    )
+    {
+        bool            fRc = false;
+        uint32_t        value = 0;
+        W32CHR_T        chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        TRC_OBJ(this, "scanner_ScanHex(%c)\n", chr);
+#endif
+
+        // Scan off leading white-space.
+        scanner_ScanWS(this);
+        
+        // Scan off each parameter.
+        for (;;) {
+            chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+            if (ascii_isHexW32(chr)) {
+                value = (value << 4) + ascii_FromHexW32(chr);
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                fRc = true;
+            }
+            else
+                break;
+        }
+
+        // Return to caller.
+        if( fRc && pValue ) {
+            *pValue = value;
+        }
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    S c a n N u m b e r
+    //---------------------------------------------------------------
+    
+    bool            scanner_ScanNumber(
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    )
+    {
+        bool            fRc = false;
+        char            *pCurChr = NULL;
+        bool            fNegative = false;
+        uint32_t        cDec = 0;
+        uint32_t        value = 0;
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        TRC_OBJ(this, "scanner_ScanDec(%c)\n", chr);
+#endif
+        
+        // Scan off leading white-space.
+        scanner_ScanWS(this);
+        
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        if ('0' == chr) {
+            chr2 = this->pRdr->pVtbl->pPeek(this->pRdr, 2);
+            if (('x' == chr2) || ('X' == chr2)) {
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                fRc = scanner_ScanHex(this, &value);
+                goto Exit;
+            }
+            else {
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                fRc = scanner_ScanOct32(&pCurChr, &cDec, &value);
+                goto Exit;
+            }
+        }
+        
+        if( '-' == chr ) {
+            fNegative = true;
+            this->pRdr->pVtbl->pNext(this->pRdr);
+        }
+        else if( '+' == chr ) {
+            this->pRdr->pVtbl->pNext(this->pRdr);
+        }
+        
+        for (;;) {
+            chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+            if( ('0' <= chr) && ('9' >= chr) ) {
+                value = (value << 3) + (value << 1) + (chr - '0');
+                this->pRdr->pVtbl->pNext(this->pRdr);
+            }
+            else
+                break;
+        }
+        
+        // Return to caller.
+        fRc = true;
+    Exit:
+        if( fRc && pValue ) {
+            if( fNegative ) {
+                value = -value;
+            }
+            *pValue = value;
+        }
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      S c a n O c t
+    //---------------------------------------------------------------
+    
+    bool            scanner_ScanOct(
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    )
+    {
+        bool            fRc = false;
+        uint32_t        value = 0;
+        W32CHR_T        chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        TRC_OBJ(this, "scanner_ScanOct(%c)\n", chr);
+#endif
+
+        // Scan off leading white-space.
+        scanner_ScanWS(this);
+        
+        // Scan off each parameter.
+        for (;;) {
+            chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+            if( ('0' <= chr) && ('7' >= chr) ) {
+                value = (value << 3) + (chr - '0');
+                this->pRdr->pVtbl->pNext(this->pRdr);
+                fRc = true;
+            }
+            else
+                break;
+        }
+        
+        // Return to caller.
+        if( fRc && pValue ) {
+            *pValue = value;
+        }
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                    S c a n W h i t e S p a c e
+    //---------------------------------------------------------------
+    
+    bool            scanner_ScanWS(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+        TRC_OBJ(this, "scanner_ScanWhiteSpace(%c)\n", chr);
+#endif
+        
+        // Scan off leading white-space.
+        for (;;) {
+            chr = this->pRdr->pVtbl->pPeek(this->pRdr, 1);
+            if (ascii_isWhiteSpaceW32(chr)) {
+                this->pRdr->pVtbl->pNext(this->pRdr);
+            }
+            else
+                break;
+        }
+        
+        // Return to caller.
+        TRC_OBJ(this, "...scanner_ScanWhiteSpace(true)\n");
+        return true;
     }
     
     

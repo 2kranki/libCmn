@@ -426,8 +426,8 @@ extern "C" {
      ascending order.
      @param     this    Object Pointer
      @return    NodeArray object pointer which must be released if
-     successful.  Otherwise, OBJ_NIL and object's error
-     code is set to the specific error.
+                successful.  Otherwise, OBJ_NIL and object's error
+                code is set to the specific error.
      @warning   Remember to release the returned object.
      */
     NODEARRAY_DATA * nodeHash_Nodes (
@@ -460,6 +460,11 @@ extern "C" {
      otherwise OBJ_NIL.
      */
     ASTR_DATA *     nodeHash_ToJSON (
+        NODEHASH_DATA   *this
+    );
+    
+    
+    ASTR_DATA *     nodeHash_ToString(
         NODEHASH_DATA   *this
     );
     

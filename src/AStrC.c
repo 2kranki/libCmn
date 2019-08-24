@@ -920,6 +920,63 @@ extern "C" {
 
     
     //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    void *          AStrC_QueryInfo(
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        ASTRC_DATA      *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+            case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return AStrC_ToDebugString;
+                        }
+                        if (str_Compare("ToString", (char *)pStr) == 0) {
+                            return AStrC_ToString;
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          T o  A S t r
     //---------------------------------------------------------------
     
@@ -941,6 +998,31 @@ extern "C" {
         pNew = AStr_NewA(this->pData);
         
         return pNew;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          T o  S t r i n g
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStrC_ToString(
+        ASTRC_DATA      *this
+    )
+    {
+        
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        obj_Retain(this);
+        
+        return this;
     }
     
     

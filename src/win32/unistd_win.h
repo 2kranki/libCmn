@@ -1,10 +1,6 @@
 #ifndef _UNISTD_H
 #define _UNISTD_H    1
-
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#else
-#   error   unistd.h is only supported in Win32 or Win64! 
-#endif
 
 /* This file intended to serve as a drop-in replacement for 
  *  unistd.h on Windows
@@ -61,6 +57,8 @@
 
 
 
+#else
+#endif
 #endif /* unistd.h  */
 
 

@@ -19,6 +19,20 @@
 		C47D8C1C20878151005C8239 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D8C1120878150005C8239 /* main.c */; };
 		C47D8C1D20878151005C8239 /* genWIN.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D8C1220878150005C8239 /* genWIN.c */; };
 		C47D8C1E20878151005C8239 /* mainProgram.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D8C1520878151005C8239 /* mainProgram.c */; };
+		C4D97FAF2311E25200767A01 /* libNode_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FAA2311E25100767A01 /* libNode_object.c */; };
+		C4D97FB02311E25200767A01 /* libNode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FAB2311E25100767A01 /* libNode.c */; };
+		C4D97FB12311E25200767A01 /* hdrNode_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FAC2311E25100767A01 /* hdrNode_object.c */; };
+		C4D97FB22311E25200767A01 /* hdrNode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FAD2311E25200767A01 /* hdrNode.c */; };
+		C4D97FC72311E29700767A01 /* rtnNode_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FB32311E29000767A01 /* rtnNode_object.c */; };
+		C4D97FC82311E29700767A01 /* tstNode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FB62311E29100767A01 /* tstNode.c */; };
+		C4D97FC92311E29700767A01 /* tstNode_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FB72311E29100767A01 /* tstNode_object.c */; };
+		C4D97FCA2311E29700767A01 /* srcParse_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FBA2311E29200767A01 /* srcParse_object.c */; };
+		C4D97FCB2311E29700767A01 /* srcParse.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FBB2311E29300767A01 /* srcParse.c */; };
+		C4D97FCC2311E29700767A01 /* rtnNode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FBE2311E29400767A01 /* rtnNode.c */; };
+		C4D97FCD2311E29700767A01 /* objNode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FBF2311E29400767A01 /* objNode.c */; };
+		C4D97FCE2311E29700767A01 /* pgmNode_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FC02311E29400767A01 /* pgmNode_object.c */; };
+		C4D97FCF2311E29700767A01 /* objNode_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FC52311E29600767A01 /* objNode_object.c */; };
+		C4D97FD02311E29700767A01 /* pgmNode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97FC62311E29600767A01 /* pgmNode.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,6 +72,34 @@
 		C47D8C1320878151005C8239 /* genMake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genMake.h; sourceTree = "<group>"; };
 		C47D8C1420878151005C8239 /* genOSX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genOSX.h; sourceTree = "<group>"; };
 		C47D8C1520878151005C8239 /* mainProgram.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mainProgram.c; sourceTree = "<group>"; };
+		C4D97FA72311E25000767A01 /* hdrNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hdrNode.h; sourceTree = "<group>"; };
+		C4D97FA82311E25000767A01 /* hdrNode_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hdrNode_internal.h; sourceTree = "<group>"; };
+		C4D97FA92311E25100767A01 /* libNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libNode.h; sourceTree = "<group>"; };
+		C4D97FAA2311E25100767A01 /* libNode_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libNode_object.c; sourceTree = "<group>"; };
+		C4D97FAB2311E25100767A01 /* libNode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libNode.c; sourceTree = "<group>"; };
+		C4D97FAC2311E25100767A01 /* hdrNode_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hdrNode_object.c; sourceTree = "<group>"; };
+		C4D97FAD2311E25200767A01 /* hdrNode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hdrNode.c; sourceTree = "<group>"; };
+		C4D97FAE2311E25200767A01 /* libNode_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libNode_internal.h; sourceTree = "<group>"; };
+		C4D97FB32311E29000767A01 /* rtnNode_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtnNode_object.c; sourceTree = "<group>"; };
+		C4D97FB42311E29000767A01 /* srcParse_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srcParse_internal.h; sourceTree = "<group>"; };
+		C4D97FB52311E29100767A01 /* tstNode_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tstNode_internal.h; sourceTree = "<group>"; };
+		C4D97FB62311E29100767A01 /* tstNode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tstNode.c; sourceTree = "<group>"; };
+		C4D97FB72311E29100767A01 /* tstNode_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tstNode_object.c; sourceTree = "<group>"; };
+		C4D97FB82311E29200767A01 /* rtnNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtnNode.h; sourceTree = "<group>"; };
+		C4D97FB92311E29200767A01 /* pgmNode_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pgmNode_internal.h; sourceTree = "<group>"; };
+		C4D97FBA2311E29200767A01 /* srcParse_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = srcParse_object.c; sourceTree = "<group>"; };
+		C4D97FBB2311E29300767A01 /* srcParse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = srcParse.c; sourceTree = "<group>"; };
+		C4D97FBC2311E29300767A01 /* pgmNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pgmNode.h; sourceTree = "<group>"; };
+		C4D97FBD2311E29300767A01 /* srcParse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srcParse.h; sourceTree = "<group>"; };
+		C4D97FBE2311E29400767A01 /* rtnNode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtnNode.c; sourceTree = "<group>"; };
+		C4D97FBF2311E29400767A01 /* objNode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objNode.c; sourceTree = "<group>"; };
+		C4D97FC02311E29400767A01 /* pgmNode_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pgmNode_object.c; sourceTree = "<group>"; };
+		C4D97FC12311E29500767A01 /* objNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objNode.h; sourceTree = "<group>"; };
+		C4D97FC22311E29500767A01 /* objNode_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objNode_internal.h; sourceTree = "<group>"; };
+		C4D97FC32311E29500767A01 /* tstNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tstNode.h; sourceTree = "<group>"; };
+		C4D97FC42311E29600767A01 /* rtnNode_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtnNode_internal.h; sourceTree = "<group>"; };
+		C4D97FC52311E29600767A01 /* objNode_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objNode_object.c; sourceTree = "<group>"; };
+		C4D97FC62311E29600767A01 /* pgmNode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pgmNode.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,11 +167,39 @@
 				C47D8C0520878150005C8239 /* genWIN_object.c */,
 				C47D8C1220878150005C8239 /* genWIN.c */,
 				C47D8C0D20878150005C8239 /* genWIN.h */,
+				C4D97FA82311E25000767A01 /* hdrNode_internal.h */,
+				C4D97FAC2311E25100767A01 /* hdrNode_object.c */,
+				C4D97FAD2311E25200767A01 /* hdrNode.c */,
+				C4D97FA72311E25000767A01 /* hdrNode.h */,
+				C4D97FAE2311E25200767A01 /* libNode_internal.h */,
+				C4D97FAA2311E25100767A01 /* libNode_object.c */,
+				C4D97FAB2311E25100767A01 /* libNode.c */,
+				C4D97FA92311E25100767A01 /* libNode.h */,
 				C47D8C0E20878150005C8239 /* main_internal.h */,
 				C47D8C0420878150005C8239 /* main_object.c */,
 				C47D8C1120878150005C8239 /* main.c */,
 				C47D8C0720878150005C8239 /* main.h */,
 				C47D8C1520878151005C8239 /* mainProgram.c */,
+				C4D97FC22311E29500767A01 /* objNode_internal.h */,
+				C4D97FC52311E29600767A01 /* objNode_object.c */,
+				C4D97FBF2311E29400767A01 /* objNode.c */,
+				C4D97FC12311E29500767A01 /* objNode.h */,
+				C4D97FB92311E29200767A01 /* pgmNode_internal.h */,
+				C4D97FC02311E29400767A01 /* pgmNode_object.c */,
+				C4D97FC62311E29600767A01 /* pgmNode.c */,
+				C4D97FBC2311E29300767A01 /* pgmNode.h */,
+				C4D97FC42311E29600767A01 /* rtnNode_internal.h */,
+				C4D97FB32311E29000767A01 /* rtnNode_object.c */,
+				C4D97FBE2311E29400767A01 /* rtnNode.c */,
+				C4D97FB82311E29200767A01 /* rtnNode.h */,
+				C4D97FB42311E29000767A01 /* srcParse_internal.h */,
+				C4D97FBA2311E29200767A01 /* srcParse_object.c */,
+				C4D97FBB2311E29300767A01 /* srcParse.c */,
+				C4D97FBD2311E29300767A01 /* srcParse.h */,
+				C4D97FB52311E29100767A01 /* tstNode_internal.h */,
+				C4D97FB72311E29100767A01 /* tstNode_object.c */,
+				C4D97FB62311E29100767A01 /* tstNode.c */,
+				C4D97FC32311E29500767A01 /* tstNode.h */,
 			);
 			name = src;
 			path = ../../src;
@@ -191,14 +261,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4D97FCC2311E29700767A01 /* rtnNode.c in Sources */,
 				C47D8C1720878151005C8239 /* genWIN_object.c in Sources */,
+				C4D97FC72311E29700767A01 /* rtnNode_object.c in Sources */,
+				C4D97FCD2311E29700767A01 /* objNode.c in Sources */,
+				C4D97FCB2311E29700767A01 /* srcParse.c in Sources */,
+				C4D97FC92311E29700767A01 /* tstNode_object.c in Sources */,
 				C45573D220CBEB90002F9BFE /* genBase.c in Sources */,
 				C47D8C1920878151005C8239 /* genOSX.c in Sources */,
+				C4D97FCF2311E29700767A01 /* objNode_object.c in Sources */,
+				C4D97FB02311E25200767A01 /* libNode.c in Sources */,
 				C47D8C1D20878151005C8239 /* genWIN.c in Sources */,
+				C4D97FB12311E25200767A01 /* hdrNode_object.c in Sources */,
+				C4D97FC82311E29700767A01 /* tstNode.c in Sources */,
 				C47D8C1E20878151005C8239 /* mainProgram.c in Sources */,
 				C47D8C1C20878151005C8239 /* main.c in Sources */,
+				C4D97FD02311E29700767A01 /* pgmNode.c in Sources */,
 				C45573D320CBEB90002F9BFE /* genBase_object.c in Sources */,
 				C4699554216E903E0088D22F /* dbprs_object.c in Sources */,
+				C4D97FCE2311E29700767A01 /* pgmNode_object.c in Sources */,
+				C4D97FCA2311E29700767A01 /* srcParse_object.c in Sources */,
+				C4D97FB22311E25200767A01 /* hdrNode.c in Sources */,
+				C4D97FAF2311E25200767A01 /* libNode_object.c in Sources */,
 				C47D8C1A20878151005C8239 /* genOSX_object.c in Sources */,
 				C47D8C1620878151005C8239 /* main_object.c in Sources */,
 				C4699555216E903E0088D22F /* dbprs.c in Sources */,

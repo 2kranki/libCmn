@@ -384,7 +384,7 @@ int             test_genOSX_Routine04(
         ASTR_DATA       *pStr;
         pStr = AStr_NewA(strings[i]);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        pNode = node_NewWithUTF8ConAndClass("string", 0, pStr);
+        pNode = node_NewWithUTF8ConAndClass(0, "string", pStr);
         XCTAssertFalse( (OBJ_NIL == pNode) );
         node_setClass(pNode, i+1);
         eRc = nodeArray_AppendNode(pObjDeps, pNode, &idx);
@@ -502,7 +502,7 @@ int             test_genOSX_GenInitial01(
         "CFLAGS_LIBS = \n"
         "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
         "CFLAGS += -D__MACOSX_ENV__\n\n"
-        "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
+        "TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses\n\n"
         "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
         "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
         "LIBDIR = $(BASEDIR)/$(SYS)\n"
@@ -581,7 +581,7 @@ int             test_genOSX_GenInitial02(
     "CFLAGS_LIBS = \n"
     "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
     "CFLAGS += -D__MACOSX_ENV__\n\n"
-    "TEST_FLGS = -Itests $(CFLAGS_LIBS)\n\n"
+    "TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses\n\n"
     "INSTALL_BASE = $(HOME)/Support/bin\n"
     "INSTALLDIR = $(INSTALL_BASE)\n"
     "LIBDIR = $(BASEDIR)/$(SYS)\n"

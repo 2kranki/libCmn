@@ -47,8 +47,6 @@
 #define	CMN_PIC32_INTERNAL_H
 
 
-#include    "cmn.h"
-
 
 #ifdef	__cplusplus
 extern "C" {
