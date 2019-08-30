@@ -1477,7 +1477,7 @@ extern "C" {
             return ERESULT_PARSE_ERROR;
         }
         
-        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        pHash = jsonIn_CheckNodeForHash(pNode);
         if (OBJ_NIL == pHash) {
             obj_Release(pNode);
             obj_Release(pParser);
