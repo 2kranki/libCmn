@@ -59,6 +59,14 @@ typedef struct AStr_class_data_s ASTR_CLASS_DATA;
 
 
 static
+void *          AStrClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+static
 const
 OBJ_INFO        AStr_Info;            // Forward Reference
 
@@ -102,7 +110,7 @@ OBJ_IUNKNOWN    obj_Vtbl = {
     NULL,
     AStr_Class,
     obj_ClassWhoAmI,
-    NULL,                       // aStrClass_QueryInfo
+    (P_OBJ_QUERYINFO)AStrClass_QueryInfo,
     NULL                        // aStrClass_ToDebugString
 };
 
@@ -123,6 +131,91 @@ ASTR_CLASS_DATA  AStr_ClassObj = {
     },
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
+static
+void *          AStrClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    ASTR_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+            
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(ASTR_DATA);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+            // Query for an address to specific data within the object.
+            // This should be used very sparingly since it breaks the
+            // object's encapsulation.
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+                    
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&AStr_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return AStr_New;
+                    }
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
+                        return AStr_ParseObject;
+                    }
+                    break;
+                    
+                case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return obj_ClassWhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
 
 
 

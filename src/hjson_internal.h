@@ -63,7 +63,6 @@ struct hjson_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     //PATH_DATA       *pPath;
     LEXJ_DATA       *pLexJ;
     NODEHASH_DATA   *pFileObject;

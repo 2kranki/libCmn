@@ -71,6 +71,7 @@
             |
             ;
  pair       :   (string | quoteless-string) (':' | '=') value
+                                            <= OBJ_IDENT_NODE(name string) -> (data) value node (see below)
             ;
  array      :   '[' elements ']'            <= OBJ_IDENT_NODE("array") -> (data) OBJ_IDENT_NODEARRAY
             ;
@@ -231,7 +232,6 @@ extern "C" {
     );
     
     
-
     HJSON_DATA *    hjson_NewFromPath(
         PATH_DATA       *pPath,         // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
@@ -246,11 +246,6 @@ extern "C" {
 
     NODEHASH_DATA * hjson_getFileObject(
         HJSON_DATA      *this
-    );
-    
-    
-    ERESULT         hjson_getLastError(
-        HJSON_DATA		*this
     );
     
     

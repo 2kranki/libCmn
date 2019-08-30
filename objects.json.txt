@@ -95,6 +95,7 @@
         "i32Array":{"srcDeps":["cmn_defs.h"], "test":null},
         "jsonIn":{"srcDeps":["cmn_defs.h"], "test":null},
         "jsonOut":{"srcDeps":["cmn_defs.h"], "test":null},
+        "jsonPP":{"srcDeps":["cmn_defs.h"], "test":null},
         "lex":{"srcDeps":["cmn_defs.h"], "test":null},
         "lexj":{"srcDeps":["cmn_defs.h"], "test":null},
         "lru":{"srcDeps":["cmn_defs.h","AStr.h","listdl.h"], "test":null},
@@ -206,7 +207,7 @@
         "memWin32.c",
         "memWin32_object.c"
     ],
-    "programs": ["genGetterSetter", "genMake", "lexFileToJSON", "md5Util"],
+    "programs": ["genGetterSetter", "genMake", "jsonPP", "lexFileToJSON", "md5Util"],
     "tests": [
         "listdl.c",
         "rbt_tree.c",

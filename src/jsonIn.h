@@ -124,8 +124,16 @@ extern "C" {
         void
     );
     
+    JSONIN_DATA *   jsonIn_NewFromAStr(
+        ASTR_DATA       *pStr
+    );
+    
     JSONIN_DATA *   jsonIn_NewFromHash(
         NODEHASH_DATA   *pHash
+    );
+    
+    JSONIN_DATA *   jsonIn_NewFromPath(
+        PATH_DATA       *pPath
     );
     
 
@@ -154,7 +162,13 @@ extern "C" {
     );
     
     
-    int64_t         jsonIn_CheckNodeDataForInteger(
+    /*!
+     Check the given node's data for an integer object and return the string
+     representation of the integer if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string object; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     jsonIn_CheckNodeDataForInteger(
         NODE_DATA       *pNode
     );
     
@@ -180,6 +194,82 @@ extern "C" {
     
     
     TRUE_DATA *     jsonIn_CheckNodeDataForTrue(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a node array and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the node array; otherwise OBJ_NIL.
+     */
+    NODEARRAY_DATA * jsonIn_CheckNodeForArray(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a false object (ie node's
+     data) and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the false object; otherwise OBJ_NIL.
+     */
+    FALSE_DATA *     jsonIn_CheckNodeForFalse(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node for a string (ie data object is an
+     ASTR_DATA object) and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string; otherwise OBJ_NIL.
+     */
+    NODEHASH_DATA * jsonIn_CheckNodeForHash(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for an integer object and
+     return the string representation of the integer if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string object; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     jsonIn_CheckNodeForInteger(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a null object and return
+     it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the null object; otherwise OBJ_NIL.
+     */
+    NULL_DATA *     jsonIn_CheckNodeForNull(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a string object and
+     return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     jsonIn_CheckNodeForString(
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Check the given node's data for a true object (ie node's
+     data) and return it if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the true object; otherwise OBJ_NIL.
+     */
+    TRUE_DATA *     jsonIn_CheckNodeForTrue(
         NODE_DATA       *pNode
     );
     
@@ -351,7 +441,8 @@ extern "C" {
     /*!
      Parse the given input string using the HJSON parser and set up
      the returned node structure to be analyzed by other methods
-     in this object.
+     in this object. The parser is called with a default tab space
+     of 4.
      @param     this    JSONIN object pointer
      @param     pStr    pointer to AStr input string (required)
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
@@ -372,6 +463,21 @@ extern "C" {
      */
     OBJ_ID          jsonIn_ParseObject(
         JSONIN_DATA     *this
+    );
+    
+    
+    /*!
+     Parse the given input file using the HJSON parser and set up
+     the returned node structure to be analyzed by other methods
+     in this object. The parser is called with a default tab space
+     of 4.
+     @param     this    JSONIN object pointer
+     @param     pPath   File Path to be parsed (required)
+     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
+     */
+    ERESULT         jsonIn_ParsePath(
+        JSONIN_DATA     *this,
+        PATH_DATA       *pPath
     );
     
     

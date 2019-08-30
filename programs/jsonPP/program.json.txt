@@ -1,0 +1,13 @@
+{
+    "program":{
+        "name":"jsonPP",
+        "libDeps":["Cmn"],
+        "headers_private":["jsonPP_defs.h"],
+        "headers_test":["test_defs.h"],
+        "main":"mainProgram.c"
+    },
+    "objects":{
+        "jsonPP":{"srcDeps":["jsonPP_defs.h"], "test":null}
+        "main":{"srcDeps":["jsonPP_defs.h"], "test":null}
+    }
+}

@@ -66,7 +66,7 @@ extern "C" {
     //                   P a r s e  A r r a y
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseArray(
+    NODE_DATA *     hjson_ParseArray (
         HJSON_DATA      *this
     )
     {
@@ -175,7 +175,7 @@ extern "C" {
     //                   P a r s e  H a s h
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseHash(
+    NODE_DATA *     hjson_ParseHash (
         HJSON_DATA      *this
     )
     {
@@ -289,7 +289,7 @@ extern "C" {
     //                   P a r s e  K e y  W o r d
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseKeyWord(
+    NODE_DATA *     hjson_ParseKeyWord (
         HJSON_DATA      *this
     )
     {
@@ -352,7 +352,7 @@ extern "C" {
     //                   P a r s e  N a m e
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseName(
+    NODE_DATA *     hjson_ParseName (
         HJSON_DATA      *this
     )
     {
@@ -399,7 +399,7 @@ extern "C" {
     //                   P a r s e  N u m b e r
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseNumber(
+    NODE_DATA *     hjson_ParseNumber (
         HJSON_DATA      *this
     )
     {
@@ -493,7 +493,7 @@ extern "C" {
     // being that string and the value being the data portion of the
     // node.
     
-    NODE_DATA *     hjson_ParsePair(
+    NODE_DATA *     hjson_ParsePair (
         HJSON_DATA      *this
     )
     {
@@ -580,7 +580,7 @@ extern "C" {
     //                   P a r s e  S t r i n g
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseString(
+    NODE_DATA *     hjson_ParseString (
         HJSON_DATA      *this
     )
     {
@@ -628,7 +628,7 @@ extern "C" {
     //                   P a r s e  V a l u e
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseValue(
+    NODE_DATA *     hjson_ParseValue (
         HJSON_DATA      *this
     )
     {
@@ -702,7 +702,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    HJSON_DATA *    hjson_Alloc(
+    HJSON_DATA *    hjson_Alloc (
     )
     {
         HJSON_DATA      *this;
@@ -718,7 +718,7 @@ extern "C" {
 
 
 
-    HJSON_DATA *     hjson_New(
+    HJSON_DATA *     hjson_New (
     )
     {
         HJSON_DATA       *this;
@@ -732,7 +732,7 @@ extern "C" {
 
 
 
-    HJSON_DATA *    hjson_NewA(
+    HJSON_DATA *    hjson_NewA (
         const
         char            *pSzStr,        // Buffer of file data
         uint16_t        tabSize         // Tab Spacing if any
@@ -756,7 +756,7 @@ extern "C" {
     
     
     
-    HJSON_DATA *    hjson_NewAStr(
+    HJSON_DATA *    hjson_NewAStr (
         ASTR_DATA       *pAStr,        // Buffer of file data
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -772,7 +772,7 @@ extern "C" {
     
     
     
-    HJSON_DATA *    hjson_NewFromFile(
+    HJSON_DATA *    hjson_NewFromFile (
         FILE            *pFile,         // Input File
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -788,7 +788,7 @@ extern "C" {
     
     
     
-    HJSON_DATA *    hjson_NewFromPath(
+    HJSON_DATA *    hjson_NewFromPath (
         PATH_DATA       *pFilePath,     // Input File Path
         uint16_t		tabSize         // Tab Spacing if any
     )
@@ -811,7 +811,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    NODEHASH_DATA * hjson_getFileObject(
+    NODEHASH_DATA * hjson_getFileObject (
         HJSON_DATA      *this
     )
     {
@@ -825,15 +825,14 @@ extern "C" {
         }
 #endif
         
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return this->pFileObject;
     }
     
     
-    bool        hjson_setFileObject(
+    bool        hjson_setFileObject (
         HJSON_DATA      *this,
         NODEHASH_DATA   *pValue
-                              )
+    )
     {
 #ifdef NDEBUG
 #else
@@ -849,56 +848,12 @@ extern "C" {
         }
         this->pFileObject = pValue;
         
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
     
     
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         hjson_getLastError(
-        HJSON_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !hjson_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            hjson_setLastError(
-        HJSON_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !hjson_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
-    uint16_t        hjson_getPriority(
+    uint16_t        hjson_getPriority (
         HJSON_DATA     *this
     )
     {
@@ -912,13 +867,12 @@ extern "C" {
         }
 #endif
 
-        hjson_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            hjson_setPriority(
+    bool            hjson_setPriority (
         HJSON_DATA     *this,
         uint16_t        value
     )
@@ -933,13 +887,12 @@ extern "C" {
 
         //this->priority = value;
 
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
 
 
-    uint32_t        hjson_getSize(
+    uint32_t        hjson_getSize (
         HJSON_DATA       *this
     )
     {
@@ -951,7 +904,6 @@ extern "C" {
         }
 #endif
 
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -981,11 +933,12 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
-    ERESULT         hjson_Assign(
+    ERESULT         hjson_Assign (
         HJSON_DATA		*this,
         HJSON_DATA      *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1027,11 +980,11 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        hjson_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        hjson_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return hjson_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -1051,7 +1004,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned the HJSON object.
      */
-    HJSON_DATA *     hjson_Copy(
+    HJSON_DATA *     hjson_Copy (
         HJSON_DATA       *this
     )
     {
@@ -1078,7 +1031,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -1088,7 +1040,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            hjson_Dealloc(
+    void            hjson_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -1110,6 +1062,7 @@ extern "C" {
             obj_Release(this->pLexJ);
             this->pLexJ = OBJ_NIL;
         }
+        hjson_setFileObject(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1126,21 +1079,20 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         hjson_Disable(
+    ERESULT         hjson_Disable (
         HJSON_DATA		*this
     )
     {
 
         // Do initialization.
         if (NULL == this) {
-            hjson_setLastError(this, ERESULT_INVALID_OBJECT);
             return ERESULT_INVALID_OBJECT;
         }
     #ifdef NDEBUG
     #else
         if( !hjson_Validate(this) ) {
             DEBUG_BREAK();
-            return hjson_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -1149,7 +1101,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1159,7 +1110,7 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         hjson_Enable(
+    ERESULT         hjson_Enable (
         HJSON_DATA		*this
     )
     {
@@ -1178,7 +1129,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -1188,7 +1138,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    HJSON_DATA *    hjson_Init(
+    HJSON_DATA *    hjson_Init (
         HJSON_DATA      *this
     )
     {
@@ -1220,7 +1170,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&hjson_Vtbl);
         
-        hjson_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
@@ -1231,7 +1180,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->eRc);
+        BREAK_NOT_BOUNDARY4(&this->pFileObject);
         BREAK_NOT_BOUNDARY4(sizeof(HJSON_DATA));
     #endif
 
@@ -1239,7 +1188,7 @@ extern "C" {
     }
 
      
-    HJSON_DATA *    hjson_InitAStr(
+    HJSON_DATA *    hjson_InitAStr (
         HJSON_DATA      *this,
         ASTR_DATA       *pAStr,         // Buffer of file data
         uint16_t		tabSize         // Tab Spacing if any
@@ -1281,7 +1230,7 @@ extern "C" {
     }
     
     
-    HJSON_DATA *    hjson_InitFile(
+    HJSON_DATA *    hjson_InitFile (
         HJSON_DATA      *this,
         FILE            *pFile,
         uint16_t		tabSize         // Tab Spacing if any
@@ -1312,7 +1261,7 @@ extern "C" {
     }
     
     
-    HJSON_DATA *    hjson_InitPath(
+    HJSON_DATA *    hjson_InitPath (
         HJSON_DATA      *this,
         PATH_DATA       *pPath,
         uint16_t		tabSize         // Tab Spacing if any
@@ -1348,7 +1297,7 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         hjson_IsEnabled(
+    ERESULT         hjson_IsEnabled (
         HJSON_DATA		*this
     )
     {
@@ -1363,12 +1312,10 @@ extern "C" {
 #endif
         
         if (obj_IsEnabled(this)) {
-            hjson_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        hjson_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -1378,7 +1325,7 @@ extern "C" {
     //                          P a r s e
     //---------------------------------------------------------------
     
-    NODE_DATA *     hjson_ParseFileHash(
+    NODE_DATA *     hjson_ParseFileHash (
         HJSON_DATA		*this
     )
     {
@@ -1407,7 +1354,7 @@ extern "C" {
     }
     
     
-    NODE_DATA *     hjson_ParseFileValue(
+    NODE_DATA *     hjson_ParseFileValue (
         HJSON_DATA        *this
     )
     {
@@ -1441,7 +1388,7 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          hjson_QueryInfo(
+    void *          hjson_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1513,7 +1460,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     hjson_ToDebugString(
+    ASTR_DATA *     hjson_ToDebugString (
         HJSON_DATA      *this,
         int             indent
     )
@@ -1567,7 +1514,6 @@ extern "C" {
         j = snprintf(str, sizeof(str), " %p(hjson)}\n", this);
         AStr_AppendA(pStr, str);
         
-        hjson_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1579,7 +1525,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            hjson_Validate(
+    bool            hjson_Validate (
         HJSON_DATA      *this
     )
     {
@@ -1604,12 +1550,10 @@ extern "C" {
 
 
         if( !(obj_getSize(this) >= sizeof(HJSON_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

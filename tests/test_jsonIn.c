@@ -175,7 +175,8 @@ int             test_jsonIn_01(
         fprintf(stderr, "\tCount = %lld\n", count);
         pNode = nodeHash_FindA(pObj->pHash, 0, "Count");
         TINYTEST_FALSE( (NULL == pNode) );
-        count = jsonIn_CheckNodeDataForInteger(pNode);
+        pStrWrk = jsonIn_CheckNodeDataForInteger(pNode);
+        count = AStr_ToInt64(pStrWrk);
         fprintf(stderr, "\tCount from check = %lld\n", count);
 
         eRc = jsonIn_FindArrayNodeInHashA(pObj, "Entries", &pArray);

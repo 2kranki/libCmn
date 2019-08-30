@@ -380,10 +380,10 @@ extern "C" {
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppStr   Pointer to a string pointer to be returned if
-     ERESULT_SUCCESS is returned and this pointer
-     is non-null.
+                ERESULT_SUCCESS is returned and this pointer
+                is non-null.
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
-     if ppStr is non-null. Otherwise, an ERESULT_* error code.
+                if ppStr is non-null. Otherwise, an ERESULT_* error code.
      @note      See Remark #1 above.
      */
     ERESULT         nodeHash_FindStringNodeInHashA (
@@ -402,7 +402,7 @@ extern "C" {
      @param     pObj    First parameter of the pScan Method when called
      @param     pArg3   Third parameter of the pScan Method when called
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
-     if ppStr is non-null. Otherwise, an ERESULT_* error code.
+                if ppStr is non-null. Otherwise, an ERESULT_* error code.
      @note      See Remark #1 above.
      */
     ERESULT         nodeHash_ForEach (

@@ -283,6 +283,8 @@ extern "C" {
         OBJ_IDENT_JSONIN_CLASS,
         OBJ_IDENT_JSONOUT,              // Standardized JSON Output
         OBJ_IDENT_JSONOUT_CLASS,
+        OBJ_IDENT_JSONPP,               // JSON Pretty Printer
+        OBJ_IDENT_JSONPP_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner
         OBJ_IDENT_LEX_CLASS,
         OBJ_IDENT_LEXJ,                 // Simple Lexical Scanner for HJSON
