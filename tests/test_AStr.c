@@ -27,6 +27,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <AStr_internal.h>
+#include    <srcErrors.h>
 
 
 // Faked UTF-8 of 0x01..0x04 in 1..4 bytes
@@ -98,6 +99,7 @@ int         tearDown(
     // test method in the class.
 
     
+    srcErrors_SharedReset( );
     szTbl_SharedReset( ); 
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {

@@ -286,7 +286,7 @@ extern "C" {
     
     /*!
      Parse the input file assuming that it is a JSON Hash, ('{'...'}'), is
-     at the highest level.
+     at the highest level. Insure that srcErrors is reset before calling this.
      @param     this    HJSON object pointer
      @return    If successful, a Hash Node object which must be released,
                 otherwise OBJ_NIL.

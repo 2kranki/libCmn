@@ -11,7 +11,8 @@
  *          The Scanner accepts a source input token stream and 
  *          combines those character tokens into JSON sub-phrases
  *          such as numbers, strings, etc. It then emits an output
- *          token stream for use in a HJSON parser.
+ *          token stream for use in a HJSON parser. It absorbs
+ *          white-space and does not pass it on.
  *
  * Remarks
  *	1.      I changed the definition of the quoteless string to end

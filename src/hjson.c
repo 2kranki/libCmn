@@ -1348,6 +1348,10 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pNode = hjson_ParseHash(this);
+        if (srcErrors_getNumErrors(OBJ_NIL)) {
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+        }
         
         // Return to caller.
         return pNode;

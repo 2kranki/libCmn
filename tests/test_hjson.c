@@ -24,9 +24,11 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
+#include    <jsonIn.h>
 #include    <hjson_internal.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
+#include    <srcErrors.h>
 
 
 
@@ -74,6 +76,7 @@ int         tearDown(
 
     
     szTbl_SharedReset( );
+    srcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -128,7 +131,6 @@ int         test_hjson01(
     char        *pTestName
 )
 {
-    ERESULT         eRc;
     HJSON_DATA      *pHJSON = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODEHASH_DATA   *pHash;
@@ -249,7 +251,6 @@ int         test_hjson02(
     char        *pTestName
 )
 {
-    ERESULT         eRc;
     HJSON_DATA      *pHJSON = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODEHASH_DATA   *pHash;
@@ -372,7 +373,6 @@ int         test_hjson04(
     char        *pTestName
 )
 {
-    ERESULT         eRc;
     HJSON_DATA      *pHJSON = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODEHASH_DATA   *pHash;
@@ -434,7 +434,6 @@ int         test_hjson05(
     char        *pTestName
 )
 {
-    ERESULT         eRc;
     HJSON_DATA      *pHJSON = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODEHASH_DATA   *pHash;
@@ -598,8 +597,99 @@ int             test_hjson_File02(
 
 
 
+int         test_hjson_Simple01(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParseA = "{\"one\" : +123}";
+    NODEHASH_DATA   *pHash;
+    int64_t         num = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = hjson_NewA(pStringToParseA, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            
+        }
+        
+        pHash = jsonIn_CheckNodeForHash(pFileNode);
+        XCTAssertFalse( (OBJ_NIL == pHash) );
+        eRc = nodeHash_FindIntegerNodeInHashA(pHash, "one", &num);
+        XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (123 == num) );
+        XCTAssertFalse( (srcErrors_getFatal(OBJ_NIL)) );
+        XCTAssertTrue( (0 == srcErrors_getNumErrors(OBJ_NIL)) );
+
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hjson_Simple02(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParseA = "{\"one\" : +123'}";
+    NODEHASH_DATA   *pHash;
+    int64_t         num = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = hjson_NewA(pStringToParseA, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertTrue( (OBJ_NIL == pFileNode) );
+        XCTAssertTrue( (srcErrors_getFatal(OBJ_NIL)) );
+        XCTAssertTrue( (1 == srcErrors_getNumErrors(OBJ_NIL)) );
+        srcErrors_Print(OBJ_NIL);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_hjson);
+    TINYTEST_ADD_TEST(test_hjson_Simple02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_Simple01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson05,setUp,tearDown);

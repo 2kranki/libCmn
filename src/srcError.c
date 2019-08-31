@@ -987,7 +987,7 @@ extern "C" {
                 );
         
         if (this->pErrorStr) {
-            AStr_AppendA(pStr, AStr_getData(this->pErrorStr));
+            AStr_Append(pStr, this->pErrorStr);
         }
         AStr_AppendA(pStr, "!\n");
         

@@ -21,13 +21,14 @@
 
 
 
-#include        <tinytest.h>
-#include        <cmn_defs.h>
-#include        <nodeArray.h>
-#include        <szTbl.h>
-#include        <trace.h>
-#include        <jsonIn_internal.h>
-#include        <utf8_internal.h>
+#include    <tinytest.h>
+#include    <cmn_defs.h>
+#include    <nodeArray.h>
+#include    <szTbl.h>
+#include    <trace.h>
+#include    <jsonIn_internal.h>
+#include    <srcErrors.h>
+#include    <utf8_internal.h>
 
 
 
@@ -54,6 +55,7 @@ int         tearDown(
     // test method in the class.
 
     
+    srcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {

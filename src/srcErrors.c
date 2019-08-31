@@ -246,6 +246,10 @@ extern "C" {
     {
         
         // Validate the input parameters.
+        if (OBJ_NIL == this) { // Dont activate Shared() for this.
+            this = &singleton;
+            return this->fFatal;
+        }
 #ifdef NDEBUG
 #else
         if (!srcErrors_Validate(this)) {
@@ -319,6 +323,13 @@ extern "C" {
         uint32_t            num = 0;
         
         // Validate the input parameters.
+        if (OBJ_NIL == this) {              // Dont activate Shared() for this.
+            this = &singleton;
+            if (this->pErrors) {
+                num = objArray_getSize(this->pErrors);
+            }
+            return num;
+        }
 #ifdef NDEBUG
 #else
         if (!srcErrors_Validate(this)) {
@@ -1219,6 +1230,35 @@ extern "C" {
         }
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                      R e s e t
+    //---------------------------------------------------------------
+    
+    void            srcErrors_Reset(
+        SRCERRORS_DATA  *this
+    )
+    {
+        
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = srcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if (!srcErrors_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+        
+        objArray_DeleteAll(this->pErrors);
+        this->fFatal = false;
+        
+        // Return to caller.
     }
     
     

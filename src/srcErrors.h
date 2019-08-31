@@ -25,6 +25,8 @@
  *  2.      If OBJ_NIL is passed in the "this" parameter, then
  *          internally srcErrors_Shared() is substituted for
  *          the object pointer.
+ *  3.      If errors occur when parsing the input, then those errors
+ *          can be found in the Shared instance of srcErrors.
  *
  * History
  *	12/17/2017 Generated
@@ -153,7 +155,7 @@ extern "C" {
      The Fatal Property is true if any of the errors added were "fatal".
      */
     bool            srcErrors_getFatal(
-        SRCERRORS_DATA  *this
+        SRCERRORS_DATA  *this                   // OBJ_NIL for Shared instance
     );
     
     
@@ -172,8 +174,11 @@ extern "C" {
     );
     
     
+    /*!
+     Total number of errors property
+     */
     uint32_t        srcErrors_getNumErrors(
-        SRCERRORS_DATA  *this
+        SRCERRORS_DATA  *this           // OBJ_NIL for Shared instance
     );
     
     
@@ -313,7 +318,7 @@ extern "C" {
      execute the fatal error exit if present, then exit with
      the given error code.  If no fatal errors occurred, simply
      return without any impact.
-     @param     this        object pointer
+     @param     this        object pointer or OBJ_NIL for Shared instance
      */
     void            srcErrors_ExitOnFatal(
         SRCERRORS_DATA  *this
@@ -332,9 +337,18 @@ extern "C" {
     
     /*!
      Print all errors on stderr.
-     @param     this        object pointer
+     @param     this        object pointer or OBJ_NIL for Shared instance
      */
     void            srcErrors_Print(
+        SRCERRORS_DATA  *this
+    );
+    
+    
+    /*!
+     Clear all errors and error status.
+     @param     this        object pointer or OBJ_NIL for Shared instance
+     */
+    void            srcErrors_Reset(
         SRCERRORS_DATA  *this
     );
     

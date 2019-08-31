@@ -26,6 +26,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <dec_internal.h>
+#include    <srcErrors.h>
 
 
 
@@ -52,6 +53,7 @@ int         tearDown(
     // test method in the class.
 
     
+    srcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {

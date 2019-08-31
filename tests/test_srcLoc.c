@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <srcLoc_internal.h>
+#include    <srcErrors.h>
 #include    <szTbl.h>
 
 
@@ -53,6 +54,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
+    srcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
