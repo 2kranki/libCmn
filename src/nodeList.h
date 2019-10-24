@@ -286,7 +286,7 @@ extern "C" {
     
     
     /*!
-     Sort the list in ascending sequence.
+     Sort the list by Name in ascending sequence.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
      error.

@@ -115,7 +115,7 @@ extern "C" {
         void
     );
 
-      NAME_DATA *     name_NewFromJSONString(
+      NAME_DATA *   name_NewFromJSONString(
         ASTR_DATA       *pString
     );
     
@@ -192,7 +192,7 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
                  otherwise OBJ_NIL.
      */
-    ASTR_DATA *     name_getStrA(
+    ASTR_DATA *     name_getStr(
         NAME_DATA       *this
     );
     

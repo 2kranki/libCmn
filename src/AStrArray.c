@@ -419,6 +419,9 @@ extern "C" {
 #endif
 
         if (this->pArray) {
+            if (obj_getRetainCount(this->pArray) > 1) {
+                DEBUG_BREAK();
+            }
             obj_Release(this->pArray);
             this->pArray = OBJ_NIL;
         }
@@ -743,7 +746,7 @@ extern "C" {
         ASTRARRAY_DATA	*this
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
         if (NULL == this) {
@@ -757,7 +760,9 @@ extern "C" {
         }
 #endif
         
-        eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStr_Compare);
+        if (this->pArray) {
+            eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStr_Compare);
+        }
         
         // Return to caller.
         return eRc;

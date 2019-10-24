@@ -360,6 +360,7 @@ extern "C" {
         if (OBJ_NIL == this->pArray) {
             this->pArray = objArray_New();
             if (OBJ_NIL == this->pArray) {
+                DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
@@ -487,6 +488,12 @@ extern "C" {
 #endif
 
         if (this->pArray) {
+#ifdef NDEBUG
+#else
+            if (obj_getRetainCount(this->pArray) > 1) {
+                DEBUG_BREAK();
+            }
+#endif
             obj_Release(this->pArray);
             this->pArray = OBJ_NIL;
         }
@@ -929,6 +936,7 @@ extern "C" {
         if (OBJ_NIL == this->pArray) {
             this->pArray = objArray_New();
             if (OBJ_NIL == this->pArray) {
+                DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
@@ -967,6 +975,7 @@ extern "C" {
         if (OBJ_NIL == this->pArray) {
             this->pArray = objArray_New();
             if (OBJ_NIL == this->pArray) {
+                DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
@@ -1128,9 +1137,10 @@ extern "C" {
         AStr_AppendCharRepeatA(pStr, indent, ' ');
         AStr_AppendPrint(
                          pStr,
-                         "{%p(nodeArray) Size=%d\n\n",
+                         "{%p(nodeArray) Size=%d pArray=%p\n\n",
                          this,
-                         (this->pArray ? objArray_getSize(this->pArray) : 0)
+                         (this->pArray ? objArray_getSize(this->pArray) : 0),
+                         this->pArray
         );
         
         if (this->pArray) {
@@ -1160,19 +1170,10 @@ extern "C" {
         NODEARRAY_DATA  *this
     )
     {
-        int             indent = 2;
         int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrk;
         NODE_DATA       *pNode;
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToString)(
-            OBJ_ID          objId
-        );
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;

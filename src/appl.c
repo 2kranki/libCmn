@@ -2167,7 +2167,33 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //              V e r b o s e  I n c r e a s e
+    //---------------------------------------------------------------
     
+    ERESULT         appl_VerboseIncrease(
+        APPL_DATA       *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        appl_UsageNoMsg(this);
+        this->exitRC = 4;
+        
+        return ERESULT_GENERAL_FAILURE;
+    }
+    
+    
+    
+
     
 #ifdef	__cplusplus
 }

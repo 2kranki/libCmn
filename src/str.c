@@ -39,6 +39,7 @@
 /* Header File Inclusion
  */
 #include	<str_internal.h>
+#include    <ascii.h>
 
 
 // Hashing function described in
@@ -233,8 +234,81 @@ int             str_CompareSpcl(
             }
             break;
         }
-        ++pszStr1;
-        ++pszStr2;
+        pszStr1++;
+        pszStr2++;
+    }
+    if (result)
+        DEBUG_BREAK();
+    
+    // Return to caller.
+    return result;
+}
+
+
+int             str_CompareSpcl_NoWS(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             *pOffset
+)
+{
+    int             i;
+    int             result = 0;
+    const
+    char            *pszStr;
+    int             offset = 0;
+    
+    // Do initialization.
+    if (pOffset) {
+        *pOffset = 0;
+    }
+    pszStr = pszStr1;
+
+    //    Compare the strings.
+    for( ;; ) {
+        while (*pszStr1 && ascii_isWhiteSpaceA(*pszStr1)) {
+            pszStr1++;
+            offset++;
+        }
+        if( *pszStr1 )
+            ;
+        else {
+            while (*pszStr2 && ascii_isWhiteSpaceA(*pszStr2)) {
+                pszStr2++;
+            }
+            if( *pszStr2 ) {
+                result = -1;
+            }
+            break;
+        }
+        while (*pszStr2 && ascii_isWhiteSpaceA(*pszStr2)) {
+            pszStr2++;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1 ) {
+                result = 1;
+            }
+            break;
+        }
+        i = *pszStr1 - *pszStr2;
+        if( i ) {
+            if( i < 0 ) {
+                if (pOffset)
+                    *pOffset = (int)(pszStr1 - pszStr);
+                result = -1;
+            }
+            else {
+                if (pOffset)
+                    *pOffset = (int)(pszStr1 - pszStr);
+                result = 1;
+            }
+            break;
+        }
+        pszStr1++; offset++;
+        pszStr2++;
     }
     if (result)
         DEBUG_BREAK();

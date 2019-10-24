@@ -24,19 +24,16 @@
  *          object which would add the specialization needed by
  *          the particular application.
  *  4.      Normal Program flow looks like:
- *              appl:                    application:
- *                  SetupFromArgV()
- *                                          ParseArgsDefaults()
- *                                          cmdutl - parse options
- *                                              and do option execs()
- *
- *                                          do {
- *                                              if (!appl_IsMore())
- *                                                  break
- *                                              appl_ProcessOptions()
- *                                              appl_NextArg()
- *                                              // process this argument
- *                                          } (forever)
+ *                appl_SetupFromArgV()
+ *                ParseArgsDefaults()       // Parse options and do option
+ *                                          // execs() per cmdutl
+ *                do {
+ *                    appl_ProcessOptions() // Merge in the next set of options
+ *                    if (!appl_IsMore())
+ *                        break
+ *                    appl_NextArg()
+ *                    // process this argument
+ *                } (forever)
  *
  * History
  *	06/05/2017 Generated
@@ -385,6 +382,15 @@ extern "C" {
     );
 
     
+    /*!
+     Parse and merge the next set of zero or more options per their option
+     definitions. The parsing stops when the next argument is reached or
+     there are no more options and arguments.
+     @param     this        object pointer
+     and
+     @return:   If successful, ERESULT_SUCCESS and the appropriate argument
+                processing was performed; otherwise, an ERESULT_* error code.
+     */
     ERESULT         appl_ProcessOptions(
         APPL_DATA       *this
     );
@@ -447,6 +453,15 @@ extern "C" {
     );
     
     
+    /*!
+     Increase the Verbosity level by 1 allowing the program to increase it if necessary.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         appl_VerboseIncrease(
+        APPL_DATA       *this
+    );
 
     
 #ifdef	__cplusplus

@@ -158,9 +158,15 @@ extern "C" {
     );
 
     
-    ASTR_DATA * jsonPP_getStr (
+    ASTR_DATA *     jsonPP_getStr (
         JSONPP_DATA     *this
     );
+    
+    bool            jsonPP_setStr (
+        JSONPP_DATA     *this,
+        ASTR_DATA       *pValue
+    );
+
     
 
 

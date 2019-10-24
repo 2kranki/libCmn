@@ -862,7 +862,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if(OBJ_NIL == pStrA) {
+        if(NULL == pStrA) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -880,6 +880,36 @@ extern "C" {
             }
             pStrA += len;
         }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT             textOut_PutAStr(
+        TEXTOUT_DATA        *this,
+        ASTR_DATA           *pStr
+    )
+    {
+        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        const
+        char                *pStrA;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!textOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        pStrA = AStr_getData(pStr);
+        
+        eRc = textOut_PutA(this, pStrA);
         
         // Return to caller.
         return eRc;
@@ -1149,6 +1179,55 @@ extern "C" {
         }
 #endif
         
+        if ((this->type == TEXTOUT_TYPE_FILE_CLOSE) && this->pFile) {
+            fclose(this->pFile);
+        }
+        
+        pFile = fopen(path_getData(pPath), "w+");
+        if (NULL == pFile) {
+            DEBUG_BREAK();
+            return ERESULT_OPEN_ERROR;
+        }
+        
+        this->pFile = pFile;
+        this->type = TEXTOUT_TYPE_FILE_CLOSE;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT             textOut_SetupPathAppend(
+        TEXTOUT_DATA        *this,
+        PATH_DATA           *pPath
+    )
+    {
+        //ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        FILE                *pFile = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!textOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (0 == this->type)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+        
+        if ((this->type == TEXTOUT_TYPE_FILE_CLOSE) && this->pFile) {
+            fclose(this->pFile);
+        }
+        
         pFile = fopen(path_getData(pPath), "w");
         if (NULL == pFile) {
             DEBUG_BREAK();
@@ -1157,6 +1236,31 @@ extern "C" {
         
         this->pFile = pFile;
         this->type = TEXTOUT_TYPE_FILE_CLOSE;
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT             textOut_SetupStdout(
+        TEXTOUT_DATA        *this
+    )
+    {
+        //ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        //W32CHR_T            chr;
+        //int                 len;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!textOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        this->pFile = stdout;
+        this->type = TEXTOUT_TYPE_FILE;
         
         // Return to caller.
         return ERESULT_SUCCESS;

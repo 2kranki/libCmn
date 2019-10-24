@@ -686,8 +686,64 @@ int         test_hjson_Simple02(
 
 
 
+int             test_dbprs_Object01(
+    const
+    char            *pTestName
+)
+{
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    const
+    char            *pGoodJsonObject1 =
+    "{\n"
+        "\"AStr\":{"
+            "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+            "\"srcs\":[\"str.c\",\"ascii.c\"],"
+            "\"json\":true,"
+            "\"test\":{\"reqArch\":\"X86\",\"reqOS\":\"macos\",srcs:[\"abc.c\"]}"
+        "}\n"
+    "}\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = hjson_NewA(pGoodJsonObject1, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pFileNode) );
+        TINYTEST_FALSE( (srcErrors_getFatal(OBJ_NIL)) );
+
+        if (pFileNode) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "===> GoodJsonObject1:\n%s\n\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+            
+            pHash = node_getData(pFileNode);
+            TINYTEST_FALSE( (OBJ_NIL == pHash) );
+            TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
+
+            obj_Release(pFileNode);
+            pFileNode = OBJ_NIL;
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+        
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_hjson);
+    TINYTEST_ADD_TEST(test_dbprs_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);

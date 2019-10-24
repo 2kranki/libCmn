@@ -96,14 +96,31 @@ int             str_CompareN(
     int             len
 );
 
-/* str_Compare() compares two Input Strings to each other. If the
- * two strings differ, the offset of that difference is returned.
+/* str_CompareSpcl() compares two Input Strings to each other. If the
+ * two strings differ, the offset of that difference in Str1 is returned.
  * Returns:
  *    -1              =    Str1 <  Str2  and offset of difference
  *    0               =    Str1 == Str2
  *    1               =    Str1 >  Str2  and offset of difference
  */
 int             str_CompareSpcl(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             *pOffset            // Optional Returned offset where the
+//                                      // strings differ.
+);
+
+/* str_CompareSpcl_NoWS() compares two Input Strings to each other
+ * excluding white-space. If the two strings differ, the offset of
+ * that difference in Str1 is returned.
+ * Returns:
+ *    -1              =    Str1 <  Str2  and offset of difference
+ *    0               =    Str1 == Str2
+ *    1               =    Str1 >  Str2  and offset of difference
+ */
+int             str_CompareSpcl_NoWS(
     const
     char            *pszStr1,
     const

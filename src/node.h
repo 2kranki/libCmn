@@ -199,6 +199,13 @@ extern "C" {
     );
     
     
+    NODE_DATA *     node_NewWithAStr(
+        ASTR_DATA       *pName,
+        OBJ_ID          pData
+    );
+
+
+
     NODE_DATA *     node_NewWithInt(
         int64_t         ident,
         OBJ_ID          pData
@@ -302,6 +309,14 @@ extern "C" {
                 the Node's Name object, otherwise 0.
      */
     uint64_t        node_getNameInt(
+        NODE_DATA       *this
+    );
+    
+    /*!
+     @return    If successful, an Name object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     node_getNameStr(
         NODE_DATA       *this
     );
     

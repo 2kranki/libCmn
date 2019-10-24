@@ -98,22 +98,22 @@ extern "C" {
      released.
      @return    pointer to textOut object if successful, otherwise OBJ_NIL.
      */
-    TEXTOUT_DATA *     textOut_Alloc(
+    TEXTOUT_DATA *  textOut_Alloc (
         void
     );
     
     
-    TEXTOUT_DATA *     textOut_New(
+    TEXTOUT_DATA *  textOut_New (
         void
     );
     
     
-    TEXTOUT_DATA *     textOut_NewAStr(
+    TEXTOUT_DATA *  textOut_NewAStr (
         void
     );
     
     
-    TEXTOUT_DATA *  textOut_NewFromPath(
+    TEXTOUT_DATA *  textOut_NewFromPath (
         PATH_DATA       *pPath
     );
     
@@ -124,37 +124,37 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    FILE *          textOut_getFile(
+    FILE *          textOut_getFile (
         TEXTOUT_DATA    *this
     );
 
-    bool            textOut_setFile(
+    bool            textOut_setFile (
         TEXTOUT_DATA    *this,
         FILE            *pValue
     );
     
     
-    uint16_t        textOut_getOffset(
+    uint16_t        textOut_getOffset (
         TEXTOUT_DATA    *this
     );
     
-    bool            textOut_setOffset(
+    bool            textOut_setOffset (
         TEXTOUT_DATA    *this,
         uint16_t        value
     );
     
 
-    char            textOut_getOffsetChr(
+    char            textOut_getOffsetChr (
         TEXTOUT_DATA    *this
     );
     
-    bool            textOut_setOffsetChr(
+    bool            textOut_setOffsetChr (
         TEXTOUT_DATA    *this,
         char            value
     );
     
     
-    ASTR_DATA *     textOut_getStr(
+    ASTR_DATA *     textOut_getStr (
         TEXTOUT_DATA    *this
     );
     
@@ -165,12 +165,12 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    TEXTOUT_DATA *  textOut_Init(
+    TEXTOUT_DATA *  textOut_Init (
         TEXTOUT_DATA     *this
     );
 
 
-    ERESULT         textOut_Print(
+    ERESULT         textOut_Print (
         TEXTOUT_DATA    *this,
         const
         char            *pFormat,
@@ -185,21 +185,34 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
                 an ERESULT_* error code
      */
-    ERESULT         textOut_PutA(
+    ERESULT         textOut_PutA (
         TEXTOUT_DATA    *this,
         const
         char            *pStrA
     );
     
     
-    ERESULT         textOut_Putc(
+    /*!
+     Output the given utf-8 string.
+     @param     this    Object Pointer
+     @param     pStr    Pointer to string
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+     an ERESULT_* error code
+     */
+    ERESULT         textOut_PutAStr (
+        TEXTOUT_DATA    *this,
+        ASTR_DATA       *pStr
+    );
+    
+    
+    ERESULT         textOut_Putc (
         TEXTOUT_DATA    *this,
         const
         char            chr
     );
     
     
-    ERESULT         textOut_Putwc(
+    ERESULT         textOut_Putwc (
         TEXTOUT_DATA    *this,
         const
         W32CHR_T        chr
@@ -214,7 +227,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an
      ERESULT_* error code.
      */
-    ERESULT             textOut_SetupFile(
+    ERESULT             textOut_SetupFile (
         TEXTOUT_DATA        *this,
         FILE                *pFile,
         bool                fClose
@@ -222,15 +235,41 @@ extern "C" {
     
     
     /*!
-     Set up this object to write to a file path.
+     Set up this object to write to a file path deleting a prior
+     file if it exists.
      @param     this    object pointer
      @param     pPath   file path to write to
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an
                 ERESULT_* error code.
      */
-    ERESULT             textOut_SetupPath(
+    ERESULT             textOut_SetupPath (
         TEXTOUT_DATA        *this,
         PATH_DATA           *pPath
+    );
+    
+    
+    /*!
+     Set up this object to write to a file path appending to any
+     prior data in the file if it exists.
+     @param     this    object pointer
+     @param     pPath   file path to write to
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an
+     ERESULT_* error code.
+     */
+    ERESULT             textOut_SetupPathAppend (
+        TEXTOUT_DATA        *this,
+        PATH_DATA           *pPath
+    );
+    
+
+    /*!
+     Set up stdout as the file to write to.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT             textOut_SetupStdout (
+        TEXTOUT_DATA        *this
     );
     
     
@@ -246,7 +285,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    textOut_ToDebugString(
+    ASTR_DATA *    textOut_ToDebugString (
         TEXTOUT_DATA     *this,
         int             indent
     );

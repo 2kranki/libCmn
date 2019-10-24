@@ -425,20 +425,30 @@ extern "C" {
         }
 #endif
 
-        iMax = array_getSize(this->pArray);
-        for (i=0; i<iMax; ++i) {
-            pEntry = array_Ptr(this->pArray, (i + 1));
-            if (pEntry && pEntry->pObj) {
-                if (obj_getRetainCount(pEntry->pObj)) {
-                    obj_Release(pEntry->pObj);
-                    memset(pEntry, 0, sizeof(ARRAY_ENTRY));
+        if (this->pArray) {
+            iMax = array_getSize(this->pArray);
+            for (i=0; i<iMax; ++i) {
+                pEntry = array_Ptr(this->pArray, (i + 1));
+                if (pEntry && pEntry->pObj) {
+                    if (obj_getRetainCount(pEntry->pObj)) {
+                        obj_Release(pEntry->pObj);
+                        memset(pEntry, 0, sizeof(ARRAY_ENTRY));
+                    }
                 }
             }
+            
+            if (obj_getRetainCount(this->pArray) > 1) {
+                DEBUG_BREAK();
+            }
+            obj_Release(this->pArray);
+            this->pArray = OBJ_NIL;
         }
         
-        obj_Release(this->pArray);
-        this->pArray = OBJ_NIL;
-        
+        if (this->pOther) {
+            obj_Release(this->pOther);
+            this->pOther = OBJ_NIL;
+        }
+
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.

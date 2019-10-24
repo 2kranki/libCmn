@@ -245,6 +245,14 @@ extern "C" {
     );
     
 
+    void            eResult_ErrorFatalOn(
+        ERESULT         eRc,
+        const
+        char            *fmt,
+        ...
+    );
+
+
     ERESULT_DATA *  eResult_New(
         void
     );

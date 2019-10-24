@@ -256,7 +256,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA *     name_getStrA(
+    ASTR_DATA *     name_getStr(
         NAME_DATA       *this
     )
     {

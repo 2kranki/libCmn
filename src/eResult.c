@@ -185,6 +185,27 @@ extern "C" {
     
     
     
+    void            eResult_ErrorFatalOn(
+        ERESULT         eRc,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+        
+        if (ERESULT_FAILED(eRc)) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Fatal Error:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n\n\n" );
+            exit( 100 );
+        }
+    }
+    
+    
+    
 
     
 

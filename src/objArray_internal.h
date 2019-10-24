@@ -73,10 +73,11 @@ struct objArray_data_s	{
 #pragma pack(pop)
 
     extern
-    struct objArray_class_data_s	objArray_ClassObj;
+    struct objArray_class_data_s
+                    objArray_ClassObj;
 
     extern
-    OBJARRAY_VTBL         objArray_Vtbl;
+    OBJARRAY_VTBL   objArray_Vtbl;
 
 
     // Internal Functions

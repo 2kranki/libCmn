@@ -169,6 +169,29 @@ extern "C" {
     
     
     
+    NODE_DATA *     node_NewWithAStr(
+        ASTR_DATA       *pName,
+        OBJ_ID          pData
+    )
+    {
+        NODE_DATA       *this;
+
+        this = node_New( );
+        if (this) {
+            this->pName = name_NewAStr(pName);
+            if (OBJ_NIL == this->pName) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            node_setData(this, pData);
+        }
+        
+        return this;
+    }
+    
+    
+    
     NODE_DATA *     node_NewWithInt(
         int64_t         ident,
         OBJ_ID          pData
@@ -568,8 +591,25 @@ extern "C" {
         return name_getInt(this->pName);
     }
     
-    
-    
+        
+        ASTR_DATA *     node_getNameStr(
+            NODE_DATA       *this
+        )
+        {
+            
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !node_Validate(this) ) {
+                DEBUG_BREAK();
+                return OBJ_NIL;
+            }
+    #endif
+            
+            return name_getStr(this->pName);
+        }
+
+        
     char *          node_getNameUTF8(
         NODE_DATA       *this
     )

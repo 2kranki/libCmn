@@ -95,6 +95,33 @@ int         tearDown(
 
 
 
+int         test_str_CompareSpcl_NoWS(
+    const
+    char        *pTestName
+)
+{
+    int             iRc;
+    int             offset = -1;
+    const
+    char            *pStr1 = "Hello, world!";
+    const
+    char            *pStr2 = " Hello,   world! ";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    iRc = str_CompareSpcl_NoWS(pStr1, pStr2, &offset);
+    XCTAssertTrue( (0 == iRc) );
+    XCTAssertTrue( (0 == offset) );
+    iRc = str_CompareSpcl_NoWS(pStr2, pStr1, &offset);
+    XCTAssertTrue( (0 == iRc) );
+    XCTAssertTrue( (0 == offset) );
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_str_Concat(
     const
     char        *pTestName
@@ -296,6 +323,7 @@ TINYTEST_START_SUITE(test_str);
     TINYTEST_ADD_TEST(test_str_DupA,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_CopyFill01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_Concat,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_CompareSpcl_NoWS,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_str);
