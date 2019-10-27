@@ -1097,8 +1097,73 @@ extern "C" {
         // Return to caller.
         return eRc;
     }
+
     
     
+    //---------------------------------------------------------------
+    //                      S h i f t  H e a d
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objList_ShiftHead (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJ_ID          pObject = OBJ_NIL;
+        OBJLIST_RECORD  *pNode;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObject;
+        }
+#endif
+        
+        pNode = listdl_ShiftHead(&this->list);
+        if (pNode) {
+            pObject = pNode->pObject;
+        }
+        this->pCur = pNode;
+
+        // Return to caller.
+        return pObject;
+    }
+            
+            
+            
+    //---------------------------------------------------------------
+    //                      S h i f t  T a i l
+    //---------------------------------------------------------------
+    
+    OBJ_ID          objList_ShiftTail (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJ_ID          pObject = OBJ_NIL;
+        OBJLIST_RECORD  *pNode;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !objList_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObject;
+        }
+#endif
+        
+        pNode = listdl_ShiftTail(&this->list);
+        if (pNode) {
+            pObject = pNode->pObject;
+        }
+        this->pCur = pNode;
+
+        // Return to caller.
+        return pObject;
+    }
+        
+        
+        
     //---------------------------------------------------------------
     //                          T a i l
     //---------------------------------------------------------------

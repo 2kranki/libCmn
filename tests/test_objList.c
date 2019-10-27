@@ -270,10 +270,120 @@ int         test_objList_BasicList01(
 
 
 
+int         test_objList_Shift(
+    const
+    char        *pTestName
+)
+{
+    OBJLIST_DATA    *pObj = OBJ_NIL;
+    NAME_DATA       *pNameA = OBJ_NIL;
+    NAME_DATA       *pNameB = OBJ_NIL;
+    NAME_DATA       *pNameC = OBJ_NIL;
+    NAME_DATA       *pNameD = OBJ_NIL;
+    NAME_DATA       *pNameE = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NAME_DATA       *pEntry;
+    char            *pStrA;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = objList_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = objList_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pNameA = name_NewUTF8("A");
+        XCTAssertFalse( (OBJ_NIL == pNameA) );
+        pNameB = name_NewUTF8("B");
+        XCTAssertFalse( (OBJ_NIL == pNameB) );
+        pNameC = name_NewUTF8("C");
+        XCTAssertFalse( (OBJ_NIL == pNameC) );
+        pNameD = name_NewUTF8("D");
+        XCTAssertFalse( (OBJ_NIL == pNameD) );
+        pNameE = name_NewUTF8("E");
+        XCTAssertFalse( (OBJ_NIL == pNameE) );
+        
+        eRc = objList_Add2Head(pObj, pNameA);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = objList_Add2Head(pObj, pNameB);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = objList_Add2Head(pObj, pNameC);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = objList_Add2Head(pObj, pNameD);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = objList_Add2Head(pObj, pNameE);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+        // Verify that the linkage fields are correct.
+        pEntry = objList_Head(pObj);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameE) );
+        pEntry = objList_Index(pObj, 1);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameE) );
+        pEntry = objList_Index(pObj, 2);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameD) );
+        pEntry = objList_Index(pObj, 3);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameC) );
+        pEntry = objList_Index(pObj, 4);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameB) );
+        pEntry = objList_Index(pObj, 5);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameA) );
+        
+        pStr = objList_ToDebugString(pObj, 0);
+        fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        pEntry = objList_ShiftHead(pObj);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameA) );
+        pStr = objList_ToDebugString(pObj, 0);
+        fprintf(stderr, "After ShiftHead = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pEntry = objList_ShiftTail(pObj);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameE) );
+        pStr = objList_ToDebugString(pObj, 0);
+        fprintf(stderr, "After ShiftTail = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pNameE);
+        pNameE = OBJ_NIL;
+        obj_Release(pNameD);
+        pNameD = OBJ_NIL;
+        obj_Release(pNameC);
+        pNameC = OBJ_NIL;
+        obj_Release(pNameB);
+        pNameB = OBJ_NIL;
+        obj_Release(pNameA);
+        pNameA = OBJ_NIL;
+        
+        XCTAssertTrue( (obj_IsFlag(pObj, OBJ_FLAG_ALLOC)) );
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_objList);
-  TINYTEST_ADD_TEST(test_objList_BasicList01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_objList_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_objList_Shift,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_objList_BasicList01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_objList_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_objList);

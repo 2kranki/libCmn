@@ -48,6 +48,7 @@
 #include        <hjson.h>
 #include        <srcErrors.h>
 #include        <srcParse.h>
+#include        <trace.h>
 
 
 
@@ -2132,6 +2133,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        TRC_OBJ(this, "main_ProcessArg(%s)\n", AStr_getData(pStr));
         
         if (!appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));

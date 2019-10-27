@@ -263,6 +263,24 @@ extern "C" {
     );
     
     
+    /*! Shift the tail to the head and returns the new head.
+     @return    If successful, the current head bject is returned.
+                Otherwise, OBJ_NIL.
+     */
+    OBJ_ID          objList_ShiftHead (
+        OBJLIST_DATA    *this
+    );
+    
+    
+    /*! Shift the head to the tail and returns the new head.
+     @return    If successful, the current head bject is returned.
+                Otherwise, OBJ_NIL.
+     */
+    OBJ_ID          objList_ShiftTail (
+        OBJLIST_DATA    *this
+    );
+    
+    
     ERESULT         objList_SortAscending (
         OBJLIST_DATA    *this
     );
