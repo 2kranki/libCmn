@@ -153,7 +153,8 @@ int         test_listdl_Sort(
             i--;
             pEntry = listdl_Next(&list, pEntry);
         }
-        
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
+
         fRc = listdl_Sort(&list, compare);
         XCTAssertTrue( (fRc) );
         
@@ -207,6 +208,7 @@ int         test_listdl_PushPop(
         pEntry = listdl_Top(&list);
         i = num - 1;
         XCTAssertTrue( (0 == strcmp(stringTable[i], pEntry->pString)) );
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
 
         fprintf(stderr, "Original List:\n");
         pEntry = listdl_Head(&list);
@@ -217,7 +219,8 @@ int         test_listdl_PushPop(
 
         fRc = listdl_Sort(&list, compare);
         XCTAssertTrue( (fRc) );
-        
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
+
         fprintf(stderr, "Sorted List:\n");
         pEntry = listdl_Head(&list);
         while (pEntry) {
@@ -268,6 +271,7 @@ int         test_listdl_Queue(
         pEntry = listdl_Top(&list);
         i = num - 1;
         XCTAssertTrue( (0 == strcmp(stringTable[i], pEntry->pString)) );
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
 
         fprintf(stderr, "Original List:\n");
         pEntry = listdl_Head(&list);
@@ -290,6 +294,7 @@ int         test_listdl_Queue(
                 mem_Free(pEntry);
                 i++;
             }
+            XCTAssertTrue( (listdl_IsValidList(&list)) );
         }
         cLT = 0;
     }
@@ -300,8 +305,86 @@ int         test_listdl_Queue(
 
 
 
+int         test_listdl_Shift(
+    const
+    char            *pTestName
+)
+{
+    LISTDL_DATA     list = {0};
+    bool            fRc;
+    uint16_t        i;
+    LIST_ENTRY      *pEntry;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    cLT = 0;
+    fRc = listdl_Init(&list,0);
+    XCTAssertTrue( (fRc) );
+    if (fRc) {
+        for (i=0; i<num; ++i) {
+            pEntry = mem_Malloc(sizeof(LIST_ENTRY));
+            pListTable[cLT++] = pEntry;
+            XCTAssertFalse( (NULL == pEntry) );
+            if (pEntry) {
+                pEntry->pString = stringTable[i];
+                listdl_Add2Head(&list, pEntry);
+            }
+        }
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
+
+        fprintf(stderr, "Original List:\n");
+        pEntry = listdl_Head(&list);
+        i = num - 1;
+        while (pEntry) {
+            fprintf(stderr, "\t%p - %s\n", pEntry, pEntry->pString);
+            XCTAssertTrue( (0 == strcmp(stringTable[i], pEntry->pString)) );
+            i--;
+            pEntry = listdl_Next(&list, pEntry);
+        }
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
+
+        pEntry = listdl_ShiftHead(&list);
+        XCTAssertTrue( (0 == strcmp("now", pEntry->pString)) );
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
+        fprintf(stderr, "\n\nAfter ShiftHead:\n");
+        pEntry = listdl_Head(&list);
+        i = num - 1;
+        while (pEntry) {
+            fprintf(stderr, "\t%p - %s\n", pEntry, pEntry->pString);
+            i--;
+            pEntry = listdl_Next(&list, pEntry);
+        }
+
+        pEntry = listdl_ShiftTail(&list);
+        XCTAssertTrue( (listdl_IsValidList(&list)) );
+        XCTAssertTrue( (0 == strcmp("someday", pEntry->pString)) );
+        fprintf(stderr, "\n\nAfter ShiftTail:\n");
+        pEntry = listdl_Head(&list);
+        i = num - 1;
+        while (pEntry) {
+            fprintf(stderr, "\t%p - %s\n", pEntry, pEntry->pString);
+            i--;
+            pEntry = listdl_Next(&list, pEntry);
+        }
+
+        while (listdl_Count(&list)) {
+            pEntry = listdl_DeleteHead(&list);
+            if (pEntry) {
+                mem_Free(pEntry);
+            }
+        }
+        cLT = 0;
+    }
+    
+    fprintf(stderr, "\n...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_listdl);
+    TINYTEST_ADD_TEST(test_listdl_Shift,setUp,tearDown);
     TINYTEST_ADD_TEST(test_listdl_Queue,setUp,tearDown);
     TINYTEST_ADD_TEST(test_listdl_PushPop,setUp,tearDown);
     TINYTEST_ADD_TEST(test_listdl_Sort,setUp,tearDown);

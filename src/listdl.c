@@ -498,7 +498,6 @@ void * 			listdl_Head(
 
 
 
-
 /**********************************************************
 						I n d e x
  **********************************************************/
@@ -769,6 +768,82 @@ void *             listdl_Push(
     
     // Return to caller.
     return pRet;
+}
+
+
+
+/**********************************************************
+                    S h i f t  H e a d
+ **********************************************************/
+
+// ShiftHead() shifts the tail to the head and returns the
+// new head.
+void *             listdl_ShiftHead(
+    LISTDL_DATA     *pCB
+)
+{
+    LISTDL_NODE     *pTail;         // Original Values.
+    LISTDL_NODE     *pHead;
+
+
+    // Do initialization.
+    if( pCB->pHead && (pCB->cCount > 0) )
+        ;
+    else
+        return NULL;
+
+    // Save current head and tail.
+    pHead = pCB->pHead;
+    pTail = pCB->pTail;
+    
+    // Rechain the tail to the head.
+    pCB->pTail = pTail->pPrev;
+    pCB->pHead = pTail;
+    pTail->pPrev->pNext = NULL;
+    pHead->pPrev = pTail;
+    pTail->pPrev = NULL;
+    pTail->pNext = pHead;
+
+    // Return to caller with new head (old tail).
+    return ((uint8_t *)pTail - pCB->iOffset);
+}
+
+
+
+/**********************************************************
+                    S h i f t  T a i l
+ **********************************************************/
+
+// ShiftTail() shifts the head to the tail and returns the
+// new head.
+void *             listdl_ShiftTail (
+    LISTDL_DATA     *pCB
+)
+{
+    LISTDL_NODE     *pTail;         // Original Values.
+    LISTDL_NODE     *pHead;
+
+
+    // Do initialization.
+    if( pCB->pTail && (pCB->cCount > 0) )
+        ;
+    else
+        return NULL;
+
+    // Save current head and tail.
+    pHead = pCB->pHead;
+    pTail = pCB->pTail;
+    
+    // Rechain the head to the tail.
+    pCB->pHead = pHead->pNext;
+    pHead->pNext->pPrev = NULL;
+    pCB->pTail = pHead;
+    pTail->pNext = pHead;
+    pHead->pPrev = pTail;
+    pHead->pNext = NULL;
+
+    // Return to caller with new head (old tail).
+    return ((uint8_t *)pCB->pHead - pCB->iOffset);
 }
 
 

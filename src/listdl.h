@@ -372,6 +372,28 @@ extern	"C" {
     );
     
     
+    // ShiftHead() shifts the tail to the head and returns the
+    // new head.
+    // The Current Entry is set to the Head Entry in the List.
+    // Returns:
+    //    Node Ptr        =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *             listdl_ShiftHead (
+        LISTDL_DATA        *this
+    );
+    
+    
+    // ShiftTail() shifts the head to the tail and returns the
+    // new head.
+    // The Current Entry is set to the Head Entry in the List.
+    // Returns:
+    //    Node Ptr        =    Successful Completion
+    //    NULL            =    Unsuccessful Completion
+    void *             listdl_ShiftTail (
+        LISTDL_DATA        *this
+    );
+    
+    
     // Tail() returns the last entry in the Doubly-Linked List.
     // The Current Entry is set to the Last Entry in the List.
     // Returns:
