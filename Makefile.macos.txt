@@ -1051,6 +1051,22 @@ test_jsonOut: $(TEST_SRC)/test_jsonOut.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/jsonPP_object.o
+
+$(OBJDIR)/jsonPP_object.o: $(SRCDIR)/jsonPP_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/jsonPP.o
+
+$(OBJDIR)/jsonPP.o: $(SRCDIR)/jsonPP.c $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += test_jsonPP
+
+test_jsonPP: $(TEST_SRC)/test_jsonPP.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/lex_object.o
 
 $(OBJDIR)/lex_object.o: $(SRCDIR)/lex_object.c 
