@@ -453,7 +453,7 @@ extern	"C" {
     );
     
     
-    /* OBJ_Enable() is used to activate an object if needed.
+    /* obj_Enable() is used to activate an object if needed.
      * This method simply sets the 'enabled' flag.
      * Returns:
      *		TRUE = Successful Completion, otherwise FALSE
@@ -461,8 +461,13 @@ extern	"C" {
     bool            obj_Enable(
         OBJ_ID          objId
     );
-    
 
+
+    /* obj_IsA() compares the given object identifier against
+     * WhoAmI() returns.
+     * Returns:
+     *		TRUE == Match, otherwise FALSE
+     */
     bool            obj_IsA(
         OBJ_ID          objId,
         uint16_t        type
@@ -523,8 +528,14 @@ extern	"C" {
     //                              //          from another object
         bool            fValue
     );
-    
-    
+
+
+    /* obj_IsKindOf() compares the given object identifier against
+     * the objects in IsKindOf() which should represent the object
+     * inheritance chain.
+     * Returns:
+     *		TRUE == Match, otherwise FALSE
+     */
     bool            obj_IsKindOf(
         OBJ_ID          objId,
         uint16_t        type

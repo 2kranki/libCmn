@@ -34,11 +34,11 @@ int         setUp(
 )
 {
     mem_Init( );
-    trace_Shared( ); 
+    trace_Shared( );
     // Put setup code here. This method is called before the invocation of each
     // test method in the class.
-    
-    return 1; 
+
+    return 1;
 }
 
 
@@ -51,7 +51,7 @@ int         tearDown(
     // test method in the class.
 
     
-    trace_SharedReset( ); 
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -65,12 +65,9 @@ int         tearDown(
         return 0;
     }
     mem_Release( );
-    
+
     return 1; 
 }
-
-
-
 
 
 
