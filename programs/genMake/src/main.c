@@ -1518,12 +1518,13 @@ extern "C" {
         // Handle "objects" section of source file.
         pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "objects");
         if (pNode) {
+            NODEARRAY_DATA  *pArray = OBJ_NIL;
             if (main_getVerbose(this)) {
                 fprintf(stderr, "Generating Object(s) compile/testing...\n");
             }
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
-                eRc = dbprs_ParseObjects(pPrs, pHashWrk);
+                eRc = dbprs_ParseObjects(pPrs, pHashWrk, &pArray);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -1532,6 +1533,7 @@ extern "C" {
                             );
                     exit(12);
                 }
+                //TODO: Do something with pArray!
             }
             else {
                 fprintf(

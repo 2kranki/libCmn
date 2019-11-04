@@ -10,15 +10,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5827bbf9-f8e6-401d-a974-8274d662bb64" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../.idea/libCmn.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/genMake.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile.macos.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile.macos.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbprs.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbprs.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbprs.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbprs.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/genMake.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/genMake.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/obj.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../src/obj.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../tests/test_value.c" beforeDir="false" afterPath="$PROJECT_DIR$/../../tests/test_value.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../xcode/testCmn/testCmn.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/../../xcode/testCmn/testCmn.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hdrNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hdrNode.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hdrNode_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hdrNode_object.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/libNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/libNode.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/libNode_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/libNode_object.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/objNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/objNode.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/objNode_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/objNode_object.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pgmNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pgmNode.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pgmNode_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pgmNode_object.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rtnNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rtnNode.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rtnNode_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rtnNode_object.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tstNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tstNode.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tstNode_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tstNode_object.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_hdrNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_libNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_objNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_pgmNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_rtnNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_tstNode.c" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +73,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C/C++" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -58,6 +87,31 @@
       </list>
     </option>
   </component>
+  <component name="RunManager" selected="Makefile.All">
+    <configuration name="All" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="Makefile.macos.txt" target="all" workingDirectory="$PROJECT_DIR$" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="Install" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="Makefile.macos.txt" target="install" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="Test" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="Makefile.macos.txt" target="test" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Makefile.All" />
+      <item itemvalue="Makefile.Test" />
+      <item itemvalue="Makefile.Install" />
+    </list>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -68,7 +122,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1572395583094</updated>
-      <workItem from="1572395585964" duration="612000" />
+      <workItem from="1572395585964" duration="3977000" />
+      <workItem from="1572819520575" duration="10647000" />
     </task>
     <servers />
   </component>
@@ -80,7 +135,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

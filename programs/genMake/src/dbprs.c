@@ -42,9 +42,15 @@
 
 /* Header File Inclusion */
 #include        <dbprs_internal.h>
+#include        <NodeBase.h>
 #include        <nodeArray.h>
 #include        <nodeHash.h>
+#include        <NodeObj.h>
+#include        <NodePgm.h>
+#include        <NodeRtn.h>
+#include        <srcErrors.h>
 #include        <trace.h>
+#include        <NodeTest.h>
 
 
 
@@ -61,16 +67,192 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            dbprs_task_body(
-        void            *pData
+    //---------------------------------------------------------------
+    //              A c c u m u l a t e  S t r i n g s
+    //---------------------------------------------------------------
+    
+    /*!
+     Given an node array of strings accumulate them into the given
+     ASTR array.
+     @param     this    DBPRS object pointer
+     @return    If successful, a DBPRS object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    ERESULT         dbprs_AccumStrings(
+        DBPRS_DATA      *this,
+        NODEARRAY_DATA  *pNodes,
+        ASTRARRAY_DATA  *pArray
     )
     {
-        //DBPRS_DATA  *this = pData;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODE_DATA       *pNode;
+        uint32_t        i;
+        uint32_t        iMax;
+        ASTR_DATA       *pStr;
         
-    }
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pNodes) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
+        
+        iMax = nodeArray_getSize(pNodes);
+        for (i=0; i<iMax; i++) {
+            pNode = nodeArray_Get(pNodes, i+1);
+            if (pNode) {
+                pStr = jsonIn_CheckNodeForString(pNode);
+                if (pStr) {
+                    eRc = AStrArray_AppendStr(pArray, pStr, NULL);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    /*!
+     Dependencies and Extra Source files are common to several
+     different type, so, we parse them here and accumulate
+     them in the given node.
+     @param     this    object pointer
+     @param     pNode   Input Node to be searched and parsed
+     @param     ppBase  Base Node to be filled in with the data or released.
+     @param     ppHash  Hash Node if found
+     @return    If successful, a DBPRS object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    ERESULT         dbprs_ParseSubObj(
+        DBPRS_DATA      *this,
+        NODE_DATA       *pNode,
+        NODEBASE_DATA   **ppBase,
+        NODEHASH_DATA   **ppHash
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODEARRAY_DATA  *pArray;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pHashItem;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == ppBase) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == *ppBase) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (jsonIn_CheckNodeForNull(pNode)) {
+            return ERESULT_SUCCESS;
+        }
+        else if (jsonIn_CheckNodeForFalse(pNode)) {
+            obj_Release(*ppBase);
+            *ppBase = OBJ_NIL;
+            return ERESULT_SUCCESS;
+        }
+        else if (jsonIn_CheckNodeForTrue(pNode)) {
+            return ERESULT_SUCCESS;
+        }
+        pArray = jsonIn_CheckNodeForArray(pNode);
+        if (pArray) {
+            // We have an array of Dependencies. So, add them to the base routine.
+            eRc = dbprs_AccumStrings(this, node_getData(pNode), NodeBase_getDeps(*ppBase));
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            return ERESULT_SUCCESS;
+        }
+        pHash = jsonIn_CheckNodeForHash(pNode);
+        if (pHash) {
+            // Ok, we have a hash, so there might a lot to parse here.
+            if (ppHash) {
+                *ppHash = pHash;
+            }
+            
+            pHashItem = nodeHash_FindA(pHash, 0, "deps");
+            if (pHashItem) {
+                pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                if (pArray) {
+                    eRc = dbprs_AccumStrings(this, pArray, NodeBase_getDeps(*ppBase));
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+
+            pHashItem = nodeHash_FindA(pHash, 0, "srcs");
+            if (pHashItem) {
+                pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                if (pArray) {
+                    eRc = dbprs_AccumStrings(this, pArray, NodeBase_getSrcs(*ppBase));
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+            
+            pHashItem = nodeHash_FindA(pHash, 0, "reqArch");
+            if (pHashItem) {
+                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                if (pStr) {
+                    eRc = NodeBase_setReqArch(*ppBase, pStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+            
+            pHashItem = nodeHash_FindA(pHash, 0, "reqOS");
+            if (pHashItem) {
+                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                if (pStr) {
+                    eRc = NodeBase_setReqOS(*ppBase, pStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+            
+        }    // End of Hash Checking
+
+        // Return to caller.
+        return eRc;
+    }
+            
+            
+            
 
 
 
@@ -841,6 +1023,124 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //           I n p u t  F i l e  t o  J S O N
+    //---------------------------------------------------------------
+    
+    ERESULT         dbprs_InputFileToJSON(
+        DBPRS_DATA      *this,
+        PATH_DATA       *pPath,
+        NODE_DATA       **ppNodes
+    )
+    {
+        HJSON_DATA      *pObj = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pNodes = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pObj = hjson_NewFromPath(pPath, 4);
+        if (pObj) {
+            pNodes = hjson_ParseFileHash(pObj);
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+        srcErrors_ExitOnFatal(OBJ_NIL);
+        
+        if (pNodes) {
+            pHash = node_getData(pNodes);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+        
+        // Return to caller.
+        if (ppNodes) {
+            *ppNodes = pNodes;
+        }
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         dbprs_InputStrToJSON(
+        DBPRS_DATA      *this,
+        const
+        char            *pStrA,
+        NODE_DATA       **ppNodes
+    )
+    {
+        HJSON_DATA      *pObj = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pFileNode = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "dbprs_InputStrToJSON():\n");
+#ifdef NDEBUG
+#else
+        if( !dbprs_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pStrA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        pObj = hjson_NewA(pStrA, 4);
+        if (pObj) {
+            pFileNode = hjson_ParseFileHash(pObj);
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+        srcErrors_ExitOnFatal(OBJ_NIL);
+
+        if (pFileNode) {
+            pHash = node_getData(pFileNode);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+        
+        // Return to caller.
+        if (ppNodes) {
+            *ppNodes = pFileNode;
+        }
+        TRC_OBJ(this, "...dbprs_InputStrToJSON(): ERESULT_SUCCESS\n");
+        return ERESULT_SUCCESS;
+    }
+        
+        
+
+    //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
@@ -864,111 +1164,6 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS_FALSE;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  P a r s e  I n p u t
-    //---------------------------------------------------------------
-    
-    ERESULT         dbprs_ParseInputFile(
-        DBPRS_DATA      *this,
-        PATH_DATA       *pPath
-    )
-    {
-        //ERESULT         eRc;
-        HJSON_DATA      *pObj = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        //NODEHASH_DATA   *pHash;
-        NODE_DATA       *pFileNode;
-        //NODE_DATA       *pNode;
-        //NODEARRAY_DATA  *pArray;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !dbprs_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pPath) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pObj = hjson_NewFromPath(pPath, 4);
-        if (pObj) {
-            
-            if  (appl_getDebug((APPL_DATA *)this)) {
-                obj_TraceSet(pObj, true);
-            }
-            pFileNode = hjson_ParseFileHash(pObj);
-            if (pFileNode) {
-                this->pNodes = pFileNode;
-                if (appl_getDebug((APPL_DATA *)this)) {
-                    pStr = node_ToDebugString(pFileNode, 0);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         dbprs_ParseInputStr(
-        DBPRS_DATA      *this,
-        const
-        char            *pStrA
-    )
-    {
-        //ERESULT         eRc;
-        HJSON_DATA      *pObj = OBJ_NIL;
-        NODE_DATA       *pFileNode;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !dbprs_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pStrA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pObj = hjson_NewA(pStrA, 4);
-        if (pObj) {
-            
-            pFileNode = hjson_ParseFileHash(pObj);
-            if (pFileNode) {
-                this->pNodes = pFileNode;
-                if (obj_Trace((APPL_DATA *)this)) {
-                    ASTR_DATA       *pWrk = OBJ_NIL;
-                    pWrk = node_ToDebugString(pFileNode, 8);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pWrk));
-                    obj_Release(pWrk);
-                    pWrk = OBJ_NIL;
-                }
-            }
-            
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
     }
     
     
@@ -1060,21 +1255,21 @@ extern "C" {
     
     ERESULT         dbprs_ParseObject(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODE_DATA       *pNode,
+        NODEARRAY_DATA  **ppNodes
     )
     {
+        ERESULT         eRc;
         NODEHASH_DATA   *pHash = OBJ_NIL;
-        OBJ_ID          pData = OBJ_NIL;
-        NODEARRAY_DATA  *pDepsObj = OBJ_NIL;
-        NODEARRAY_DATA  *pSrcsObj = OBJ_NIL;
-        NODEARRAY_DATA  *pDepsJson = OBJ_NIL;
-        NODEARRAY_DATA  *pSrcsJson = OBJ_NIL;
-        NODEARRAY_DATA  *pDepsTest = OBJ_NIL;
-        NODEARRAY_DATA  *pSrcsTest = OBJ_NIL;
-        bool            fJson = false;
-        bool            fTest = true;
-        char            *pNameA;
+        ASTR_DATA       *pName = OBJ_NIL;
+        ASTR_DATA       *pNameH = OBJ_NIL;
+        ASTR_DATA       *pNameInternalH = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
+        NODEARRAY_DATA  *pNodes = OBJ_NIL;
+        NODERTN_DATA    *pRtn = OBJ_NIL;        // Primary Object
+        NODERTN_DATA    *pRtnObj = OBJ_NIL;     // Object's Object
+        NODERTN_DATA    *pRtnJSON = OBJ_NIL;    // Object's JSON methods
+        NODETEST_DATA   *pTst = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1092,208 +1287,246 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        if (ppNodes) {
+            *ppNodes = OBJ_NIL;
+        }
         
-        pNameA = node_getNameUTF8(pNode);
-        if (OBJ_NIL == pNameA) {
+        // The node passed in has its name being the object's name and
+        // its data is a node hash.
+        pName = node_getNameStr(pNode);
+        if (OBJ_NIL == pName) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
-
-        if (0 == strcmp(pNameA, "string")) {
-            mem_Free(pNameA);
-            //pName = NULL;
-            pNameA = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
+        pNameH = AStr_Copy(pName);
+        if (OBJ_NIL == pNameH) {
+            DEBUG_BREAK();
+            eRc = ERESULT_DATA_MISSING;
+            goto errorExit;
         }
-        else {
-            pData = node_getData(pNode);
-            if (OBJ_NIL == pData) {
-                DEBUG_BREAK();
-                if (pNameA) {
-                    mem_Free(pNameA);
-                    pNameA = NULL;
-                }
-                return ERESULT_DATA_MISSING;
-            }
-            pData = node_getData(pData);
-            if (OBJ_NIL == pData) {
-                DEBUG_BREAK();
-                if (pNameA) {
-                    mem_Free(pNameA);
-                    pNameA = NULL;
-                }
-                return ERESULT_DATA_MISSING;
-            }
-            if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
-                ;
-            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                pDepsObj = pData;
-            }
-            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                NODE_DATA           *pHashNode;
-                pHash = pData;
-#ifdef XYZZY
-                {
-                    ASTR_DATA       *pDebug;
-                    pDebug = nodeHash_ToDebugString(pHash, 4);
-                    fprintf(stderr, "%s\n\n", AStr_getData(pDebug));
-                    obj_Release(pDebug);
-                }
-#endif
-                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
-                if (pHashNode) {
-                    pDepsObj = jsonIn_CheckNodeDataForArray(pHashNode);
-                }
-                pHashNode = nodeHash_FindA(pHash, 0, "json");
-                if (pHashNode) {
-                    pData = node_getData(pHashNode);
-                    if (pData) {
-                        pData = node_getData(pData);
-                        if (pData) {
-                            if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
-                                fJson = false;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
-                                fJson = true;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
-                                fJson = true;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                fJson = true;
-                                pSrcsTest = pData;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                                NODEHASH_DATA       *pHash;
-                                NODE_DATA           *pHashNode;
-                                pHash = pData;
-                                fJson = true;
-                                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
-                                if (pHashNode) {
-                                    pDepsJson = jsonIn_CheckNodeDataForArray(pHashNode);
-                                }
-                                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
-                                if (pHashNode) {
-                                    pSrcsJson = jsonIn_CheckNodeDataForArray(pHashNode);
-                                }
-                            }
-                        }
-                    }
-                }
-                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
-                if (pHashNode) {
-                    pSrcsObj = jsonIn_CheckNodeDataForArray(pHashNode);
-                }
-                pHashNode = nodeHash_FindA(pHash, 0, "test");
-                if (pHashNode) {
-                    pData = node_getData(pHashNode);
-                    if (pData) {
-                        pData = node_getData(pData);
-                        if (pData) {
-                            if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
-                                fTest = false;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
-                                fTest = true;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
-                                fTest = true;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                fTest = true;
-                                pDepsTest = pData;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                                NODEHASH_DATA       *pHash;
-                                NODE_DATA           *pHashNode;
-                                pHash = pData;
-                                fTest = true;
-                                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
-                                if (pHashNode) {
-                                    pDepsTest = jsonIn_CheckNodeDataForArray(pHashNode);
-                                }
-                                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
-                                if (pHashNode) {
-                                    pSrcsTest = jsonIn_CheckNodeDataForArray(pHashNode);
-                                }
-                            }
-                        }
-                    }
+        eRc = AStr_AppendA(pNameH, ".h");
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        pNameInternalH = AStr_Copy(pName);
+        if (OBJ_NIL == pNameH) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        eRc = AStr_AppendA(pNameInternalH, "_internal.h");
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+
+        // Set up the primary node.
+        pRtn = NodeRtn_New();
+        if (OBJ_NIL == pRtn) {
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        NodeRtn_setName(pRtn, pName);
+        eRc = NodeRtn_AppendDeps(pRtn, pNameH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        eRc = NodeRtn_AppendDeps(pRtn, pNameInternalH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+
+        // Set up the optional JSON Node.
+        pRtnJSON = NodeRtn_New();
+        if (OBJ_NIL == pRtnJSON) {
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        pStr = AStr_Copy(pName);
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        eRc = AStr_AppendA(pStr, "_JSON");
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        NodeRtn_setName(pRtnJSON, pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = NodeRtn_AppendDeps(pRtnJSON, pNameH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        eRc = NodeRtn_AppendDeps(pRtnJSON, pNameInternalH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+
+        // Set up the Object Node.
+        pRtnObj = NodeRtn_New();
+        if (OBJ_NIL == pRtnObj) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        pStr = AStr_Copy(pName);
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        eRc = AStr_AppendA(pStr, "_object");
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        NodeRtn_setName(pRtnObj, pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = NodeRtn_AppendDeps(pRtnObj, pNameH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        eRc = NodeRtn_AppendDeps(pRtnObj, pNameInternalH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+
+        // Set up the Optional Test Node. The default is
+        // for it to be provided.  It is only gotten rid
+        // of if "test=false" is found.
+        pTst = NodeTest_New();
+        if (OBJ_NIL == pRtn) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        pStr = AStr_Copy(pName);
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        eRc = AStr_AppendA(pStr, "_test");
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        NodeTest_setName(pTst, pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = NodeTest_AppendDeps(pTst, pNameH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        eRc = NodeTest_AppendDeps(pTst, pNameInternalH);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+
+        pHash = OBJ_NIL;
+        eRc = dbprs_ParseSubObj(this, node_getData(pNode),
+                                        (NODEBASE_DATA **)&pRtn, &pHash);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
+        }
+        if (pHash) {
+            NODE_DATA       *pHashNode;
+            pHashNode = nodeHash_FindA(pHash, 0, "json");
+            if (pHashNode) {
+                eRc = dbprs_ParseSubObj(this, node_getData(pHashNode),
+                                            (NODEBASE_DATA **)&pRtnJSON, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    goto errorExit;
                 }
             }
             else {
-                DEBUG_BREAK();
-                if (pNameA) {
-                    mem_Free(pNameA);
-                    pNameA = NULL;
+                obj_Release(pRtnJSON);
+                pRtnJSON = OBJ_NIL;
+            }
+            pHashNode = nodeHash_FindA(pHash, 0, "test");
+            if (pHashNode) {
+                eRc = dbprs_ParseSubObj(this, node_getData(pHashNode),
+                                            (NODEBASE_DATA **)&pTst, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    goto errorExit;
                 }
-                return ERESULT_DATA_ERROR;
             }
         }
+        else {
+            obj_Release(pRtnJSON);
+            pRtnJSON = OBJ_NIL;
+        }
 
-        if (this->pGen) {
-            if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileObject) {
-                pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileObject(
-                                    this->pGen,
-                                    pNameA,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    pDepsObj,
-                                    pSrcsObj
-                        );
+        // Create a node array and add the routine/test nodes to the array.
+        pNodes = nodeArray_New();
+        if (OBJ_NIL == pNodes) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtn));
+        eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtn), NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pNodes);
+            goto errorExit;
+        }
+        eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtnObj));
+        eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtnObj), NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pNodes);
+            goto errorExit;
+        }
+        if (pRtnJSON) {
+            eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtnJSON));
+            eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtnJSON), NULL);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(pNodes);
+                goto errorExit;
             }
-            if (pStr) {
-                AStr_Append(this->pStr, pStr);
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-            if (fJson) {
-                if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileJson) {
-                    pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileJson(
-                                this->pGen,
-                                pNameA,
-                                NULL,
-                                NULL,
-                                NULL,
-                                NULL,
-                                pDepsJson,
-                                pSrcsJson
-                            );
-                }
-                if (pStr) {
-                    AStr_Append(this->pStr, pStr);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            if (fTest) {
-                if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
-                    pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
-                                    this->pGen,
-                                    pNameA,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    pDepsTest,
-                                    pSrcsTest
-                            );
-                }
-                if (pStr) {
-                    AStr_Append(this->pStr, pStr);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
+        }
+        if (pTst) {
+            eRc = NodeBase_SortArrays(NodeTest_getNodeBase(pTst));
+            eRc = nodeArray_AppendNode(pNodes, NodeTest_getNode(pTst), NULL);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(pNodes);
+                goto errorExit;
             }
         }
 
         // Return to caller.
-        if (pNameA) {
-            mem_Free(pNameA);
-            pNameA = NULL;
+        eRc = ERESULT_SUCCESS;
+        if (ppNodes) {
+            *ppNodes = pNodes;
         }
-        return ERESULT_SUCCESS;
+    errorExit:
+        obj_Release(pNameInternalH);
+        obj_Release(pNameH);
+        obj_Release(pName);
+        obj_Release(pRtn);
+        obj_Release(pRtnJSON);
+        obj_Release(pRtnObj);
+        obj_Release(pTst);
+        return eRc;
     }
     
     
@@ -1304,14 +1537,17 @@ extern "C" {
     
     ERESULT         dbprs_ParseObjects(
         DBPRS_DATA      *this,
-        NODEHASH_DATA   *pHash
+        NODEHASH_DATA   *pHash,
+        NODEARRAY_DATA  **ppArray
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NODE_DATA       *pNode = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
+        NODEARRAY_DATA  *pItems = OBJ_NIL;
+        NODEARRAY_DATA  *pWork = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1329,20 +1565,46 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pArray = nodeHash_Nodes(pHash);
-        
-        iMax = nodeArray_getSize(pArray);
-        for(i=0; i<iMax; ++i) {
-            pNode = nodeArray_Get(pArray, (i+1));
-            if (pNode) {
-                eRc = dbprs_ParseObject(this, pNode);
-            }
+        if (ppArray) {
+            *ppArray = pItems;
+        }
+        pItems = nodeArray_New();
+        if (OBJ_NIL == pItems) {
+            return ERESULT_OUT_OF_MEMORY;
         }
         
+        pArray = nodeHash_Nodes(pHash);
+        if (pArray) {
+            iMax = nodeArray_getSize(pArray);
+            for(i=0; i<iMax; ++i) {
+                pNode = nodeArray_Get(pArray, (i+1));
+                if (pNode) {
+                    eRc = dbprs_ParseObject(this, pNode, &pWork);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pItems);
+                        pItems = OBJ_NIL;
+                        break;
+                    }
+                    else {
+                        eRc = nodeArray_Append(pItems, pWork);
+                        obj_Release(pWork);
+                        pWork = OBJ_NIL;
+                    }
+                }
+            }
+            obj_Release(pArray);
+            pArray = OBJ_NIL;
+        }
+
         // Return to caller.
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
-        return ERESULT_SUCCESS;
+        if (ppArray) {
+            *ppArray = pItems;
+        }
+        else {
+            obj_Release(pItems);
+            pItems = OBJ_NIL;
+        }
+        return eRc;
     }
     
     
@@ -1445,19 +1707,17 @@ extern "C" {
     
     ERESULT         dbprs_ParseRoutine(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODE_DATA       *pNode,
+        NODEARRAY_DATA  **ppNodes
     )
     {
+        ERESULT         eRc;
         NODEHASH_DATA   *pHash = OBJ_NIL;
-        OBJ_ID          pData = OBJ_NIL;
-        NODEARRAY_DATA  *pDepsObj = OBJ_NIL;
-        NODEARRAY_DATA  *pSrcsObj = OBJ_NIL;
-        NODEARRAY_DATA  *pDepsTest = OBJ_NIL;
-        NODEARRAY_DATA  *pSrcsTest = OBJ_NIL;
-        bool            fTest = false;
-        char            *pNameA;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        
+        ASTR_DATA       *pName = OBJ_NIL;
+        NODERTN_DATA    *pRtn = OBJ_NIL;        // Primary Object
+        NODETEST_DATA   *pTst = OBJ_NIL;
+        NODEARRAY_DATA  *pNodes = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1475,162 +1735,67 @@ extern "C" {
         }
 #endif
         
-        pNameA = node_getNameUTF8(pNode);
-        if (NULL == pNameA) {
+        // The node passed in has its name being the object's name and
+        // its data is a node hash.
+        pName = node_getNameStr(pNode);
+        if (OBJ_NIL == pName) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
         
-        if (0 == strcmp(pNameA, "string")) {
-            mem_Free(pNameA);
-            //pName = NULL;
-            pNameA = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
+        pHash = OBJ_NIL;
+        eRc = dbprs_ParseSubObj(this, node_getData(pNode),
+                                        (NODEBASE_DATA **)&pRtn, &pHash);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            goto errorExit;
         }
-        else {
-            pData = node_getData(pNode);
-            if (OBJ_NIL == pData) {
-                DEBUG_BREAK();
-                if (pNameA) {
-                    mem_Free(pNameA);
-                    pNameA = NULL;
-                }
-                return ERESULT_DATA_MISSING;
-            }
-            pData = node_getData(pData);
-            if (OBJ_NIL == pData) {
-                DEBUG_BREAK();
-                if (pNameA) {
-                    mem_Free(pNameA);
-                    pNameA = NULL;
-                }
-                return ERESULT_DATA_MISSING;
-            }
-            if (obj_IsKindOf(pData, OBJ_IDENT_NULL))
-                ;
-            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                pDepsObj = node_getData((NODE_DATA *)pData);
-            }
-            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                NODE_DATA           *pHashNode;
-                pHash = pData;
-                pHashNode = nodeHash_FindA(pHash, 0, srcDepsID);
-                if (pHashNode) {
-                    pData = node_getData(pHashNode);    // Get "array" node.
-                    pData = node_getData(pData);        // Get NodeArray.
-                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                        pDepsObj = pData;
-                    }
-                }
-                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
-                if (pHashNode) {
-                    pData = node_getData(pHashNode);    // Get "array" node.
-                    pData = node_getData(pData);        // Get NodeArray.
-                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                        pSrcsObj = pData;
-                    }
-                }
-                pHashNode = nodeHash_FindA(pHash, 0, "test");
-                if (pHashNode) {
-                    pData = node_getData(pHashNode);
-                    if (pData) {
-                        pData = node_getData(pData);
-                        if (pData) {
-                            if (obj_IsKindOf(pData, OBJ_IDENT_FALSE)) {
-                                fTest = false;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NULL)) {
-                                fTest = true;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_TRUE)) {
-                                fTest = true;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                fTest = true;
-                                pDepsTest = pData;
-                            }
-                            else if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-                                NODEHASH_DATA       *pHash;
-                                NODE_DATA           *pHashNode;
-                                pHash = pData;
-                                fTest = true;
-                                pHashNode = nodeHash_FindA(pHash, 0, "deps");
-                                if (pHashNode) {
-                                    pData = node_getData(pHashNode);    // Get "array" node.
-                                    pData = node_getData(pData);        // Get NodeArray.
-                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                        pDepsTest = pData;
-                                    }
-                                }
-                                pHashNode = nodeHash_FindA(pHash, 0, "srcs");
-                                if (pHashNode) {
-                                    pData = node_getData(pHashNode);    // Get "array" node.
-                                    pData = node_getData(pData);        // Get NodeArray.
-                                    if(obj_IsKindOf(pData, OBJ_IDENT_NODEARRAY)) {
-                                        pSrcsTest = pData;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                DEBUG_BREAK();
-                if (pNameA) {
-                    mem_Free(pNameA);
-                    pNameA = NULL;
-                }
-                return ERESULT_DATA_ERROR;
-            }
-        }
-        
-        if (this->pGen) {
-            if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileRoutine) {
-                pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileRoutine(
-                                                this->pGen,
-                                                pNameA,
-                                                NULL,
-                                                NULL,
-                                                NULL,
-                                                NULL,
-                                                pDepsObj,
-                                                pSrcsObj,
-                                                true,
-                                                false
-                        );
-            }
-            if (pStr) {
-                AStr_Append(this->pStr, pStr);
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-            if (fTest) {
-                if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
-                    pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
-                                                this->pGen,
-                                                pNameA,
-                                                NULL,
-                                                NULL,
-                                                NULL,
-                                                NULL,
-                                                pDepsTest,
-                                                pSrcsTest
-                            );
-                }
-                if (pStr) {
-                    AStr_Append(this->pStr, pStr);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
+        if (pHash) {
+            NODE_DATA       *pHashNode;
+            pHashNode = nodeHash_FindA(pHash, 0, "test");
+            if (pHashNode) {
+                eRc = dbprs_ParseSubObj(this, node_getData(pHashNode),
+                                            (NODEBASE_DATA **)&pTst, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    goto errorExit;
                 }
             }
         }
-        
+
+        // Create a node array and add the routine/test nodes to the array.
+        pNodes = nodeArray_New();
+        if (OBJ_NIL == pNodes) {
+            DEBUG_BREAK();
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto errorExit;
+        }
+        eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtn));
+        eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtn), NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pNodes);
+            goto errorExit;
+        }
+        if (pTst) {
+            eRc = NodeBase_SortArrays(NodeTest_getNodeBase(pTst));
+            eRc = nodeArray_AppendNode(pNodes, NodeTest_getNode(pTst), NULL);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(pNodes);
+                goto errorExit;
+            }
+        }
         // Return to caller.
-        if (pNameA) {
-            mem_Free(pNameA);
-            pNameA = NULL;
+        eRc = ERESULT_SUCCESS;
+        if (ppNodes) {
+            *ppNodes = pNodes;
         }
-        return ERESULT_SUCCESS;
+    errorExit:
+        obj_Release(pName);
+        obj_Release(pRtn);
+        obj_Release(pTst);
+        return eRc;
     }
     
     
@@ -1672,7 +1837,7 @@ extern "C" {
             pNode = nodeArray_Get(pArray, (i+1));
             if (pNode) {
                 if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
-                    eRc = dbprs_ParseRoutine(this, pNode);
+                    //eRc = dbprs_ParseRoutine(this, pNode);
                 }
             }
         }
@@ -1689,15 +1854,17 @@ extern "C" {
     
     ERESULT         dbprs_ParseTest(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODE_DATA       *pNode,
+        ASTR_DATA       *pName          // Base Name for Test
     )
     {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         OBJ_ID          pData = OBJ_NIL;
         NODEARRAY_DATA  *pDepsObj = OBJ_NIL;
         NODEARRAY_DATA  *pSrcsObj = OBJ_NIL;
-        char            *pName;
+        char            *pNameA;
         ASTR_DATA       *pStr = OBJ_NIL;
+        NODETEST_DATA   *pTest = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1716,16 +1883,16 @@ extern "C" {
         }
 #endif
         
-        pName = node_getNameUTF8(pNode);
+        pNameA = node_getNameUTF8(pNode);
         if (OBJ_NIL == pName) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
         
-        if (0 == strcmp(pName, "string")) {
+        if (0 == strcmp(pNameA, "string")) {
             mem_Free(pName);
             //pName = NULL;
-            pName = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
+            pNameA = AStr_CStringA((ASTR_DATA *)node_getData(pNode), NULL);
         }
         else {
             pData = node_getData(pNode);
@@ -1785,7 +1952,7 @@ extern "C" {
             if (((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest) {
                 pStr =  ((GENBASE_VTBL *)obj_getVtbl(this->pGen))->pGenCompileTest(
                                                     this->pGen,
-                                                    pName,
+                                                    pNameA,
                                                     NULL,
                                                     NULL,
                                                     NULL,
@@ -1802,9 +1969,9 @@ extern "C" {
         }
         
         // Return to caller.
-        if (pName) {
-            mem_Free(pName);
-            pName = NULL;
+        if (pNameA) {
+            mem_Free(pNameA);
+            pNameA = NULL;
         }
         return ERESULT_SUCCESS;
     }
@@ -1848,7 +2015,7 @@ extern "C" {
             pNode = nodeArray_Get(pArray, (i+1));
             if (pNode) {
                 if (obj_IsKindOf(node_getData(pNode), OBJ_IDENT_ASTR)) {
-                    eRc = dbprs_ParseTest(this, pNode);
+                    //FIXME: eRc = dbprs_ParseTest(this, pNode);
                 }
             }
         }

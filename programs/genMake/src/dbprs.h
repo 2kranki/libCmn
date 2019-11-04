@@ -188,16 +188,35 @@ extern "C" {
     );
 
 
-    ERESULT         dbprs_ParseInputFile(
+    /*!
+     Parse the given file into a JSON Node structure and
+     perform some cursory checks on the structure.
+     @param     this    object pointer
+     @param     pPath   File Path of UTF-8 file to be parsed
+     @param     ppNodes Converted Nodes object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         dbprs_InputFileToJSON(
         DBPRS_DATA      *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        NODE_DATA       **ppNodes
     );
     
-    
-    ERESULT         dbprs_ParseInputStr(
+    /*!
+     Parse the given string into a JSON Node structure and
+     perform some cursory checks on the structure.
+     @param     this    object pointer
+     @param     pStr    UTF-8 String to be parsed
+     @param     ppNodes Converted Nodes object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         dbprs_InputStrToJSON(
         DBPRS_DATA      *this,
         const
-        char            *pStr
+        char            *pStr,
+        NODE_DATA       **ppNodes
     );
     
     
@@ -230,7 +249,9 @@ extern "C" {
     
     
     /*!
-     Parse an object and generate its components
+     Parse an object and generate its components. An object consists
+     of two routines, object and object_object, an optional JSON routine
+     and an optional test program.
      Node Grammar:
      object     : string                // Object's Name
                 | node ':' objectData   // Node's Name == Object's Name
@@ -259,7 +280,7 @@ extern "C" {
      test_Hash  :
             "deps"  : '[' deps ']'
                     ;
-            "srcs"  : '[' deps ']'
+            "srcs"  : '[' source files ']'
                     ;
                 ;
      // Additional Dependency Files must be in the same directory
@@ -273,18 +294,20 @@ extern "C" {
 
      @param     this    Object Pointer
      @param     pNode   Object Node Pointer
+     @param     ppNodes Output Object Node Array Pointer of RTN and TST Nodes
      @return    If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
+                description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
     ERESULT         dbprs_ParseObject(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODE_DATA       *pNode,
+        NODEARRAY_DATA  **ppNodes
     );
     
     
     /*!
-     Parse an object and generate its components
+     Parse objects and generate its components
      Node Grammar:
      objects     : '{' objects_Hash '}'
                  ;
@@ -294,13 +317,15 @@ extern "C" {
      Note: See ParseObject() for definition of objectNode.
      @param     this    Object Pointer
      @param     pHash   Node Hash Pointer
-     @return    If successful, an AStr object which must be released containing the
-     description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @param     ppArray Pointer to return area for an array of routine/test nodes
+     @return    If successful, an NODEARRAY_DATA object which must be released containing
+                an array of routine/test nodes, otherwise OBJ_NIL.
+     @warning   Remember to release the returned Array object.
      */
     ERESULT         dbprs_ParseObjects(
         DBPRS_DATA      *this,
-        NODEHASH_DATA   *pHash
+        NODEHASH_DATA   *pHash,
+        NODEARRAY_DATA  **ppArray
     );
     
     
@@ -333,7 +358,7 @@ extern "C" {
     
     
     /*!
-     Parse an object and generate its components
+     Parse a routine and generate its components
      Node Grammar:
      object     : string                // Object's Name
                 | node ':' objectData   // Node's Name == Object's Name
@@ -382,7 +407,8 @@ extern "C" {
      */
     ERESULT         dbprs_ParseRoutine(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODE_DATA       *pNode,
+        NODEARRAY_DATA  **ppNodes
     );
     
     
@@ -429,7 +455,8 @@ extern "C" {
      */
     ERESULT         dbprs_ParseTest(
         DBPRS_DATA      *this,
-        NODE_DATA       *pNode
+        NODE_DATA       *pNode,
+        ASTR_DATA       *pName          // Base Name for Test
     );
     
     
