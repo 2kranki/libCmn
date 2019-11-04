@@ -112,6 +112,7 @@ extern "C" {
     
     
     ERESULT_DATA *  eResult_NewAStr(
+        ERESULT         eRc,
         ASTR_DATA       *pValue
     )
     {
@@ -123,6 +124,7 @@ extern "C" {
         if (this) {
             this = eResult_Init(this);
             if (this && pValue) {
+                this->eRc = eRc;
                 eResult_setError(this, pValue);
             }
         }

@@ -281,6 +281,112 @@ extern "C" {
     }
 
 
+    //---------------------------------------------------------------
+    //           I n p u t  F i l e  t o  J S O N
+    //---------------------------------------------------------------
+
+    ERESULT         dbprs_InputFileToJSON(
+        PATH_DATA       *pPath,
+        NODE_DATA       **ppNodes
+    )
+    {
+        HJSON_DATA      *pObj = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pNodes = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+    #endif
+
+        pObj = hjson_NewFromPath(pPath, 4);
+        if (pObj) {
+            pNodes = hjson_ParseFileHash(pObj);
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+        srcErrors_ExitOnFatal(OBJ_NIL);
+
+        if (pNodes) {
+            pHash = node_getData(pNodes);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+
+        // Return to caller.
+        if (ppNodes) {
+            *ppNodes = pNodes;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         dbprs_InputStrToJSON(
+        const
+        char            *pStrA,
+        NODE_DATA       **ppNodes
+    )
+    {
+        HJSON_DATA      *pObj = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pFileNode = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (NULL == pStrA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+    #endif
+
+        pObj = hjson_NewA(pStrA, 4);
+        if (pObj) {
+            pFileNode = hjson_ParseFileHash(pObj);
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+        srcErrors_ExitOnFatal(OBJ_NIL);
+
+        if (pFileNode) {
+            pHash = node_getData(pFileNode);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+
+        // Return to caller.
+        if (ppNodes) {
+            *ppNodes = pFileNode;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+
     DBPRS_DATA *     dbprs_New(
         void
     )
@@ -1021,124 +1127,6 @@ extern "C" {
     }
 
      
-
-    //---------------------------------------------------------------
-    //           I n p u t  F i l e  t o  J S O N
-    //---------------------------------------------------------------
-    
-    ERESULT         dbprs_InputFileToJSON(
-        DBPRS_DATA      *this,
-        PATH_DATA       *pPath,
-        NODE_DATA       **ppNodes
-    )
-    {
-        HJSON_DATA      *pObj = OBJ_NIL;
-        NODEHASH_DATA   *pHash;
-        NODE_DATA       *pNodes = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !dbprs_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pPath) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pObj = hjson_NewFromPath(pPath, 4);
-        if (pObj) {
-            pNodes = hjson_ParseFileHash(pObj);
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        srcErrors_ExitOnFatal(OBJ_NIL);
-        
-        if (pNodes) {
-            pHash = node_getData(pNodes);
-            if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-                exit(12);
-            }
-            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
-                exit(12);
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-            exit(12);
-        }
-        
-        // Return to caller.
-        if (ppNodes) {
-            *ppNodes = pNodes;
-        }
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         dbprs_InputStrToJSON(
-        DBPRS_DATA      *this,
-        const
-        char            *pStrA,
-        NODE_DATA       **ppNodes
-    )
-    {
-        HJSON_DATA      *pObj = OBJ_NIL;
-        NODEHASH_DATA   *pHash;
-        NODE_DATA       *pFileNode = OBJ_NIL;
-
-        // Do initialization.
-        TRC_OBJ(this, "dbprs_InputStrToJSON():\n");
-#ifdef NDEBUG
-#else
-        if( !dbprs_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pStrA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pObj = hjson_NewA(pStrA, 4);
-        if (pObj) {
-            pFileNode = hjson_ParseFileHash(pObj);
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        srcErrors_ExitOnFatal(OBJ_NIL);
-
-        if (pFileNode) {
-            pHash = node_getData(pFileNode);
-            if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-                exit(12);
-            }
-            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
-                exit(12);
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-            exit(12);
-        }
-        
-        // Return to caller.
-        if (ppNodes) {
-            *ppNodes = pFileNode;
-        }
-        TRC_OBJ(this, "...dbprs_InputStrToJSON(): ERESULT_SUCCESS\n");
-        return ERESULT_SUCCESS;
-    }
-        
-        
 
     //---------------------------------------------------------------
     //                       I s E n a b l e d

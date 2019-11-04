@@ -321,6 +321,11 @@ extern "C" {
     );
 
 
+    ASTR_DATA *     NodeBase_ToString (
+        NODEBASE_DATA   *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -25,7 +25,7 @@
 #include    <cmn_defs.h>
 #include    <hjson.h>
 #include    <nodeHash.h>
-#include    <srcError.h>
+#include    <srcErrors.h>
 #include    <trace.h>
 #include    <NodeBase_internal.h>
 
@@ -165,27 +165,108 @@ int             test_NodeBase_Parse01(
     char            *pTestName
 )
 {
-    ERESULT         eRc = ERESULT_SUCCESS;
-    NODEBASE_DATA	    *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    NODE_DATA       *pNode = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    NODEHASH_DATA   *pHashOut;
+    NODEARRAY_DATA  *pOutNodes = OBJ_NIL;
+    NODEBASE_DATA   *pBase = OBJ_NIL;
+    uint32_t        i;
+    uint32_t        iMax;
+    const
+    char            *pGoodJsonObject1 =
+        "{\n"
+        "\"AStr\":{"
+        "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+        "\"srcs\":[\"str.c\",\"ascii.c\"],"
+        "\"json\":true,"
+        "\"test\":{\"reqArch\":\"X86\",\"reqOS\":\"macos\",srcs:[\"abc.c\"]}"
+        "}\n"
+        "}\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = NodeBase_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = NodeBase_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
+    //pObj = dbprs_New( );
+    //TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    //if (pObj) {
 
+        // Process the JSON data.
         //obj_TraceSet(pObj, true);
-
-        // Test something.
+        eRc = InputStrToJSON(pGoodJsonObject1, &pNodes);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
+        pHash = node_getData(pNodes);
+        TINYTEST_FALSE( (OBJ_NIL == pHash) );
+        if (pHash) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = nodeHash_ToDebugString(pHash, 0);
+            fprintf(stderr, "Parsed JSON:\n%s\n\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
 
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
+        // Parse the Object.
+        pNode = nodeHash_FindA(pHash, 0, "AStr");
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
+        pHash = node_getData(pNode);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE((obj_IsKindOf(pNode, OBJ_IDENT_NODEHASH)));
+        eRc = NodeBase_ParseSubObj(pNode, &pBase, &pHashOut);
+        TINYTEST_FALSE((ERESULT_FAILED(eRc)));
+        TINYTEST_FALSE( (OBJ_NIL == pOutNodes) );
+        TINYTEST_TRUE((4 == nodeArray_getSize(pOutNodes)));
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+        // Display the Output.
+#ifdef XYZZY
+        {
+            fprintf(stderr, "===> OutNodes:\n\n");
+            ASTR_DATA   *pStr = nodeArray_ToDebugString(pOutNodes, 0);
+            fprintf(stderr, "%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+#endif
+        fprintf(stderr, "===> OutNodes:\n\n");
+        iMax = nodeArray_getSize(pOutNodes);
+        for (i=0; i<iMax; i++) {
+            NODE_DATA   *pNode = nodeArray_Get(pOutNodes, i+1);
+            ASTR_DATA   *pStr = NodeBase_ToString((NODEBASE_DATA *)pNode);
+            fprintf(stderr, "%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+
+#ifdef XYZZY
+        // Validate the output.
+        pNode = nodeArray_Get(pOutNodes, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE((obj_IsKindOf(pNode, MAIN_IDENT_RTNNODE)));
+        pBase = rtnNode_getBase((RTNNODE_DATA *)pNode);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(baseNode_getName(pBase),
+                                                              "AStr")));
+        TINYTEST_TRUE((4 == AStrArray_getSize(baseNode_getDeps(pBase))));
+        TINYTEST_TRUE((2 == AStrArray_getSize(baseNode_getSrcs(pBase))));
+
+        pNode = nodeArray_Get(pOutNodes, 2);
+        TINYTEST_FALSE( (OBJ_NIL == pNode) );
+        TINYTEST_TRUE((obj_IsKindOf(pNode, MAIN_IDENT_RTNNODE)));
+        pBase = rtnNode_getBase((RTNNODE_DATA *)pNode);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(baseNode_getName(pBase),
+                                                              "AStr_object")));
+        TINYTEST_TRUE((2 == AStrArray_getSize(baseNode_getDeps(pBase))));
+        TINYTEST_TRUE((0 == AStrArray_getSize(baseNode_getSrcs(pBase))));
+#endif
+
+        obj_Release(pOutNodes);
+        pOutNodes = OBJ_NIL;
+
+        obj_Release(pNodes);
+        pNodes = OBJ_NIL;
+    //}
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 

@@ -110,6 +110,7 @@ int         test_main_OpenClose(
 
 
 
+#ifdef XYZZY
 int         test_main_MakeFile01(
     const
     char        *pTestName
@@ -403,15 +404,18 @@ int         test_main_MakeFile04(
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
+#endif
 
 
 
 
 TINYTEST_START_SUITE(test_main);
+#ifdef XYZZY
     TINYTEST_ADD_TEST(test_main_MakeFile04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_MakeFile03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_MakeFile02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_main_MakeFile01,setUp,tearDown);
+#endif
     TINYTEST_ADD_TEST(test_main_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

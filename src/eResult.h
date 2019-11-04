@@ -259,6 +259,7 @@ extern "C" {
     
     
     ERESULT_DATA *  eResult_NewAStr(
+        ERESULT         eRc,
         ASTR_DATA       *pValue
     );
     
